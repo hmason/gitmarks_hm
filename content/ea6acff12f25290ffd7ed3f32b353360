@@ -1,0 +1,1122 @@
+<html>
+<head>
+<title>no|wrap.de - Flasm</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link title="Classic" rel="stylesheet" type="text/css" href="classic.css">
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+<meta name="description" content="Flasm is a free command line assembler/disassembler of Flash ActionScript bytecode. It lets you make changes to any SWF. Flasm fully supports SWFs produced by Macromedia Flash 8 and earlier.">
+</head>
+<body topmargin=35 leftmargin=35 rightmargin=35 bottommargin=35 marginwidth=35 marginheight=35>
+<table width="100%" cellpadding=30 cellspacing=0 border=0>
+<tr><td id="menutd">
+<table width="100%" cellpadding=0 cellspacing=0 border=0><tr>
+<td id="menu"><b><a href="http://www.nowrap.de/index.html">Vorwort</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.nowrap.de/portfolio.html">Portfolio</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.nowrap.de/flare.html">Flare</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Flasm&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.nowrap.de/photo.html">Photo</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.nowrap.de/kontakt.html">Kontakt</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
+<td>&nbsp;</td>
+<td id="menu" align="right"><a href="http://www.nowrap.de/login.php"><b>Login</b></a></td>
+</tr></table>
+<hr id="whitehr" noshade size="1">
+<i id="subhead">Flasm is a free command line assembler/disassembler of Flash ActionScript bytecode. It lets you make changes to any SWF. Flasm fully supports SWFs produced by Macromedia Flash 8 and earlier Flash versions.</i>
+</td></tr>
+<tr><td id="contenttd">
+<a href="#about">About</a> &#183;
+<a href="#download">Download</a> &#183;
+<a href="#whatsnew">What's&nbsp;new</a> &#183;
+<a href="#usage">Usage</a> &#183;
+<a href="#flashvm">Flash&nbsp;virtual&nbsp;machine</a> &#183;
+<a href="#syntax">Assembler&nbsp;syntax</a> &#183;
+<a href="#embedding">Embedding&nbsp;Flasm</a> &#183;
+<a href="#optimization">Optimization&nbsp;techniques</a> &#183;
+<a href="#__bytecode__">__bytecode__</a> &#183;
+<a href="#filesize">File&nbsp;size&nbsp;difference</a> &#183;
+<a href="#hugescripts">Huge&nbsp;scripts</a> &#183;
+<a href="#bugs">Quirks,&nbsp;bugs&nbsp;and&nbsp;crashes</a> &#183;
+<a href="#history">History</a> &#183;
+<a href="#projectstate">Project&nbsp;state</a> &#183;
+<a href="#resources">Resources</a> &#183;
+<a href="#useterms">Terms&nbsp;of&nbsp;use</a> &#183;
+<a href="#enjoy">Enjoy</a>
+
+
+<h3><a name="about"></a>About</h3>
+Flasm disassembles your entire SWF including all the timelines and events. Looking at disassembly, you learn how the Flash compiler works, which improves your ActionScript skills. You can also do some <a href="#optimization">optimizations</a> on the disassembled code by hand or adjust the code as you wish. Flasm then applies your changes to the original SWF, replacing original actions.
+<p>
+It's also possible to <a href="#embedding">embed Flasm actions</a> in your ActionScript,
+making optimizing of large projects more comfortable.
+<p>
+Flasm is not a decompiler. What you get is the human readable representation of SWF bytecodes, not ActionScript source. If you're looking for a decompiler, <a href="http://www.nowrap.de/flare.html">Flare</a> may suit your needs. However, Flare can't alter the SWF.
+<p>
+Page too long? You don't have to read it all. First, make yourself familiar with <a href="#usage">usage</a>. Then read <a href="#flashvm">flash virtual machine</a> topic to understand the concept of registers and stack. Disassemble some of your SWFs, starting with simpler ones, to see the inner workings of the Flash compiler. The rest of this page tries to address questions you may have at this point.
+
+
+<h3><a name="download"></a>Download</h3>
+Most recent Flasm version is <b>1.62</b>.
+<p>
+Windows binary:&nbsp; <a href="http://www.nowrap.de/download/flasm16win.zip">flasm16win.zip</a><br>
+Mac OS X binary:&nbsp; <a href="http://www.nowrap.de/download/flasm16mac.tgz">flasm16mac.tgz</a><br>
+Linux x86 binary:&nbsp; <a href="http://www.nowrap.de/download/flasm16linux.tgz">flasm16linux.tgz</a>
+<p>
+There is no installation procedure. Just create a folder named <code>flasm</code> somewhere and unpack the archive there. To uninstall, delete the folder and you're done. Flasm doesn't touch your system files or registry.
+<p>
+<b>Third-party distributions and translations</b>
+<p>
+FreeBSD port is maintained by Jun Kuriyama, <a href="http://shield.jp/~dseg/rpms/flasm/">Redhat RPMs</a> are built by Daichi Shinozaki. They may be some versions behind the current and are not tested by me. If something goes wrong, please contact the maintainers. Jaco has translated Flasm manual <a href="http://www.pixeldump.org/index.php?blog=1&p=58">into Italian.</a>
+<p>
+<b>Want to compile from sources?</b>
+<p>
+Source code, platform independent: <a href="http://www.nowrap.de/download/flasm16src.zip">flasm16src.zip</a>
+<p>
+You will need gcc or cc compiler with <code>flex</code>, <code>bison</code>, <code>gperf</code>, <code>zlib</code> and <code>zlib-devel</code> packages installed. It should compile well without any changes. Tested on Windows 2000 (<a href="http://www.cygwin.com">Cygwin</a>), Mac OS X, and Linux. For Cygwin, please install <code>mingw</code>, <code>mingw-runtime</code> and <code>mingw-zlib</code> packages too. On Windows, <nobr>MS Visual C++</nobr> and other not entirely POSIX compatible compilers will require plenty of changes to the source. Consider Cygwin. 
+
+
+<h3><a name="whatsnew"></a>What's new in Flasm 1.6 series</h3>
+<b>Flasm 1.62</b>
+<p>
+<ul>
+<li>Bug fixes, thanks to Petr Ovtchenkov et al.</li>
+</ul>
+<p>
+<b>Flasm 1.61</b>
+<p>
+<ul>
+<li><code>importAssets2</code> tag fix</li>
+<li><code>placeObject2</code> tag fix (Flash 4)</li>
+<li>Calculate path to the <code>flasm.ini</code> in a more reliable way</li>
+</ul>
+<p>
+<b>Flasm 1.6</b>
+<p>
+<ul>
+<li>Flash 8: support for <code>metadata</code>, <code>fileAttributes</code> tags</li>
+<li>Flash 8: support for <code>placeObject3</code>, <code>importAssets2</code> tags (Wang Zhen)</li>
+<li>"Update with Flasm and Preview" JSFL action now works in Flash 8 IDE</li>
+<li>Windows binary includes zlib 1.2.3</li>
+<li>Fixed: names of register parameters of <code><a href="#function2">function2</a></code> may contain non-English characters
+<li>Calling Flasm without a command: <nobr><code>flasm foo.flm</code></nobr> has the same effect as <nobr><code>flasm -a foo.flm</code></nobr>
+</ul>
+<p>
+Older changes are listed in <code>CHANGES.TXT</code> included in distribution.
+
+
+<h3><a name="usage"></a>Usage</h3>
+Flasm is a command line tool. To use it, you have to open DOS window first (Windows). On Mac OS X, open terminal window: <code>Applications/Utilities/Terminal</code>. Then go to the Flasm folder with <nobr><code>cd c:\Flasm</code></nobr> (Windows)&nbsp; or <nobr><code>cd /flasm</code></nobr> (Mac/Linux), assuming you saved it here. To execute Flasm, simply type in <code>flasm</code> (Windows) or <code>./flasm</code> (Mac/Linux). Called without arguments, Flasm will show you the list of possible commands described below.
+<p>
+<code>flasm <i>command filename</i></code>
+<p>
+<code><i>command</i></code><br>
+<code>-d</code> &nbsp;  Disassemble SWF file to the console<br>
+<code>-a</code> &nbsp;  Assemble Flasm project<br>
+<code>-u</code> &nbsp;  Update SWF file, replace Flasm macros<br>
+<code>-b</code> &nbsp;  Assemble actions to <code>__bytecode__()</code> instruction or byte sequence<br>
+<code>-z</code> &nbsp;  Compress SWF with zlib<br>
+<code>-x</code> &nbsp;  Decompress SWF<br>
+<p>
+<code>-d foo.swf</code><br>
+Disassemble <code>foo.swf</code> to the console. <a name="offsets"></a>To see action offsets in disassembly set <code>showoffset</code> and <code>hexoffset</code> options in <code>flasm.ini</code>.
+<p>
+<code>-d foo.swf &gt; foo.flm</code><br>
+Disassemble <code>foo.swf</code>, redirect the output to <code>foo.flm</code>. Calling Flasm without a command on a <code>.swf</code> file has the same effect.
+<p>
+<code>-a foo.flm</code><br>
+Assemble <code>foo.flm</code> and update the SWF <a href="#moviename">defined inside.</a> Calling Flasm without a command on a <code>.flm</code> file has the same effect.<br>
+The backup of original SWF is created with <code>.$wf</code> extension.
+<p>
+<code>-u foo.swf</code><br>
+Disassemble <code>foo.swf</code> to the temporary file.<br>
+Execute <a href="#embedding">Flasm macros</a> embedded in SWF.<br>
+Make trivial optimizations automatically: remove <a href="#doublenots">double nots</a>, <a href="#replace0">replace <code>0.0</code> with <code>0</code></a>, <a href="#rebuildconstants">rebuild constant pools</a>, <a href="#clearregisterargs">clear register arguments</a>.<br>
+Create <code>.$wf</code> backup, update the original SWF.
+<p>
+It's a good idea to update the final version of SWF with <nobr><code>flasm -u</code>.</nobr>
+Don't expect the SWF to be noticeably faster, it will just make it a bit smaller.
+<p>
+<a name="bmode"><code>-b foo.txt</code></a><br>
+produce <code><a href="#__bytecode__">__bytecode__</a></code> instruction or byte sequence, depending on <code>boutput</code> setting in <code>flasm.ini</code>. Takes as input a simple
+action list without any <code>movie</code> or <code>frame</code> declarations. Output is sent to console. Redirect it to file if you wish: <nobr><code>flasm -b foo.txt &gt; foo.as</code></nobr> When <code>boutput</code> is set to <code>1</code>, Flasm produces binary output&nbsp;&#8212; probably of use for inserting raw action chunks into swf files build by other tools on server.
+<p>
+<code>-x foo.swf</code><br>
+Decompress <code>foo.swf</code>, create <code>.$wf</code> backup.
+<p>
+<code>-z foo.swf</code><br>
+Compress <code>foo.swf</code>, create <code>.$wf</code> backup.
+Source SWF doesn't have to be Flash MX file. However, only Flash MX and later players
+will be able to play the resulting compressed file.
+<p>
+Flasm settings are read from the configuration file <code>flasm.ini</code>. Available options are commented in <code>flasm.ini</code> and explained at appropriate places in the documentation. <code>flasm.ini</code> is searched for in the working directory and, if not found, in the directory where the Flasm binary resides.
+<p>
+<a name="logfile"></a>All errors and warnings go to the console. If you want to log them in a file instead, uncomment <code>logto</code> option in <code>flasm.ini</code> and enter the desired log file name there. Set <code>logmode</code> option to <code>0</code> (default) to append new messages to the log file. If <code>logmode</code> is set to <code>1</code> the log file will be overwritten each time you run Flasm.
+<p>
+If you like Flasm and use it often, you may want to add it to Windows right-click context menu for SWF files.
+The explanation is for Windows 2000, but it should work with minor changes for any Windows version.<br>
+Start Windows Explorer. Select <code>View, Folder Options,</code> click the <code>File Types</code> tab, and choose <code>Flash player movie</code> (or similar) type, which stands for SWF file extension. Click <code>Edit</code> button, then click <code>New</code> button. In the <code>Action</code> field enter <code>Disassemble</code>. Click the <code>Browse</code> button, navigate to the Flasm's folder, and double-click on <code>flasm.exe</code>. No parameters are needed. Click <code>OK, Close,</code> and <code>Close</code> again. Now right click on any SWF and choose <code>Disassemble</code>. The disassembly of <code>somename.swf</code> will be stored in file <code>somename.flm</code> in SWF's folder.
+Further automating is possible, adding <nobr><code>flasm -u</code></nobr> for updating SWFs or <nobr><code>flasm -a</code></nobr> for assembling flm files.
+<p>
+If you don't want to do that, look at <a href="#winflasm">WinFlasm</a>&nbsp;&#8212; simple windows GUI wrapper for Flasm. Note WinFlasm is old and does not support all Flasm commands.
+
+
+<h3><a name="flashvm"></a>Flash virtual machine</h3>
+<p>
+<a href="#stack">Stack</a><br>
+<a href="#constants">Constant pool</a><br>
+<a href="#registers">Global&nbsp;registers</a><br>
+<a href="#lregisters">Local&nbsp;registers</a>
+<p>
+
+Every ActionScript statement is compiled by Flash into a couple of
+simple bytecode actions. For example, <code>a=b*b;</code> is transformed into
+<p><code>
+constants 'a', 'b'<br>
+push 'a', 'b'<br>
+getVariable<br>
+push 'b'<br>
+getVariable<br>
+multiply<br>
+setVariable
+</code><p>
+The bytecodes are stored in SWF in binary form. They are interpreted by the <i>virtual machine</i>
+of the Flash Player. The code above is the visual representation of the bytecodes, created by Flasm.
+<p>
+I'll call actions inside of a frame or event <i>action blocks.</i>
+Flash executes action blocks one after another, so the execution flow inside of a block is <i>never</i> interrupted, neither by event nor by <code>gotoAndPlay()</code> or similar actions. Real parallel execution would be nicer? I'm sure it would dramatically affect player stability, which is great now, considering all things going on in a complex movie.
+<p>
+
+<b><a name="stack"></a>Stack</b>
+<p>
+Flash virtual machine is stack based, you can not refer to the particular memory location.
+The stack is a place in memory where data can be stored so that the
+last entered (pushed) value will be extracted (popped) first from the stack.
+Every command reads (and pops) operands from stack and pushes the result (if any) onto the stack.
+<p>
+The stack may contain elements of arbitrary type&nbsp;&#8212; integers, strings, floats and some others.
+If needed, type conversion happens during execution&nbsp;&#8212; like in ActionScript.
+Often there's no difference between the string <code>'10'</code>, integer <code>10</code> or double <code>10.0</code>. 
+<p>
+Further stack explanation by Robert Penner:<br>
+<blockquote>If you're familiar with <code>Array.push</code> and <code>Array.pop</code>, those commands are similar to stack manipulations. The stack is like an array of values, except you can only access the value on top, push another value onto the top, or swap the top two values.<br>
+For instance, to add two numbers, you have to push both of them onto the stack, then call <code>add</code>. The <code>add</code> command will pop the top two values off the stack, add them together, and push the value onto the stack.</blockquote>
+<p>
+The <code>pop</code> action leads to no errors if the stack is empty. The special <code>UNDEF</code> value is popped then, that corresponds to the ActionScript's <code>undefined</code>.
+<p>
+<a name="dupswap"></a>These two actions give you additional functionality for stack handling: <code>dup</code> and <code>swap</code>.
+<code>dup</code> duplicates the value on top of the stack, <code>swap</code> swaps the two topmost values. Currently Flash doesn't use <code>dup</code> and <code>swap</code> very often as you'll see in disassembly, but they are of great importance for <a href="#optimization">optimization</a>.
+<p>
+Every ActionScript statement, regardless of its complexity, leaves the stack empty after execution. In Flash IDE you don't see the bytecodes and don't have to worry about it.
+Making changes to bytecodes with Flasm, however, you should always count what's on stack.
+Improper stack manipulation often doesn't lead to any errors in Flash player.
+You will not see the 10.000 dead stack entries your loop produced, but the execution will slow down and the SWF probably runs out of memory at some point.
+<p>
+The stack was global in Flash 5. If the value was pushed in frame 1, frame 5 could trace it successfully. It was accessible in movie clips too. With Flash MX the situation changed: Flash Players 6 and 7 flush stack contents after every action block.
+<p>
+
+<b><a name="constants"></a>Constant pool</b>
+<p>
+At the beginning of every action block where variables, methods or strings are used more than once, Flash creates so called <i>constant pool</i>. In fact, if at least one variable is used twice, the pool is created for all strings in the block.
+Here is an example:
+<p>
+<code>constants 'bottom', 'paused', 'aliensleft', 'fire'</code>
+<p>
+Constant pool can hold up to 65535 strings (in theory). These can be addressed later in your actions with 1 byte (first 256 strings in the pool)
+or 2 byte (the rest of the pool) reference. Commonly no more than 256 strings are stored, so you rarely meet 2 byte references in SWF. Practically the number of strings is limited by overall size of <code>constants</code> action, which can't exceed 65535 bytes like any other action.
+<p>
+<a name="constrefs"></a>Flasm disassembler abstracts constant references away by default. They are showed as strings. To see actual references in disassembly, set <code>literalconstants</code> option in <code>flasm.ini</code> to <code>0</code>. The difference between strings and constant pool members will be obvious then.
+<p>
+Writing <code>push c:1</code> after the above <code>constants</code> definition means <i>push second constant from the pool</i> (counting from 0). Writing <code>push 'paused'</code> will in turn have the same effect, because Flasm finds the constant in the pool automatically and substitutes string with reference during assembly.
+<p>
+If no previous constant pool declaration is found in the same action block, however, the string <code>'paused'</code> will be pushed as is. The difference is in code size only, not in execution speed&nbsp;&#8212; naturally, the string <code>'paused'</code> takes five bytes more than one-byte reference. Don't forget to add your strings to the constant pool.
+<p>
+<a name="rebuildconstants"></a>In update mode <nobr>(<code>flasm -u foo.swf</code>)</nobr> Flasm rebuilds all constants, removing empty strings and those referenced only once.
+<p>
+The constant pool defined at the start of the frame is valid for every function in this frame. I've never seen constants defined in functions in disassembly. Every event has its own constant pool though.
+<p>
+Although Flash itself never redefines constant pool in the middle of the action block, theoretically you're allowed to do this. Flasm disassembler versions &lt; 1.52 couldn't really deal with multiple constant pools. Flasm 1.52 will show constant references in <code>c:xx</code> form. To always show strings (resembles Flasm &lt; 1.52 behavior, may be inaccurate) set <code>literalconstants</code> to <code>2</code>.
+<p>
+
+<b><a name="registers"></a>Global registers</b>
+<p>
+Flash virtual machine has 4 global registers that are addressed <code>r:0, r:1, r:2, r:3</code>.
+Accessing variables is much slower than accessing registers, so you should store your most
+used variables there. Flash versions before MX 2004 only used <code>r:0</code>, so there was enough room for optimization. Flash MX 2004's compiler, however, may substitute local variables with other registers&nbsp;&#8212; a very good reason to use local variables in ActionScript.
+<p>
+To store something in a register, you should first put this something onto the stack and then execute
+<code>setRegister</code> command:
+<p>
+<code>push 'paused'<br>
+getVariable<br>
+setRegister r:1</code>
+<p>
+Now the value of variable <code>paused</code> is stored in <code>r:1</code>.
+Instead of asking for <code>paused</code> next time, use <code>push r:1</code>.<br>
+<b>Note:</b> Unlike most other commands, <code>setRegister</code> does not pop the top value from stack! If you don't need the value stored in register to be on stack, you should manually <code>pop</code> it.
+<p>
+The value of global register, defined in a particular frame on <code>_root</code>,
+is available to all functions in this frame. If some function is defined or movie clip happens here, it can access or overwrite the register too. It looks like after the <code>showFrame</code> tag occurs in SWF, registers disappear. Generally you don't know what happens to the global register. Of course, calling function A from the middle of function B should leave registers untouched. Flash MX 2004's compiler takes care of it&nbsp;&#8212; at the start of the function registers are saved on stack, at the end original values are restored. You should pay some attention here, too.
+<p>
+<b><a name="lregisters"></a>Local registers</b>
+<p>
+Inside of <code><a href="#function2">function2</a></code> (Flash Player 6.0.65 and above), and only there, up to 255 local registers exist&nbsp;&#8212; from <code>r:0</code> to <code>r:254</code>. Why not 256? In the <code>function2</code> header, the number of local registers used in this function is stored in a byte. At the start of <code>function2</code> the place for local registers is allocated somewhere in memory. The highest possible value for a byte is 255.
+<p>
+Generally, you don't have to care about the number of allocated registers&nbsp;&#8212; Flasm calculates this number automatically, and it's not shown in disassembly. Please take consequent registers numbers&nbsp;&#8212; using <code>r:1</code> and <code>r:254</code> only forces Flasm and Flash Player to allocate 255 registers, which may have impact on memory.
+<p>
+Since local registers are addressed by the same bytecodes as global registers&nbsp;&#8212; <code>setRegister</code> and <code>push r:<i>something</i></code>, <code>function2</code> has no access to the global registers. Even more confusing is the scope&nbsp;&#8212; imagine you have <code>frame&nbsp;A</code>, <code>function2&nbsp;B</code> inside of <code>A</code>, and <code>function&nbsp;C</code> inside of <code>B</code>. Now <code>function2&nbsp;B</code> nicely has its own set of registers, and is totally unaware of global registers. That's OK. But <code>function&nbsp;C</code> will share four global registers with <code>frame&nbsp;A</code>!
+<p>
+Besides of all that, local registers function just like global ones. There's no speed difference, too. To summarize: in SWF7 there are still four global registers everywhere outside <code>function2</code>, but any <code>function2</code> may allocate a set of 255 local registers.
+
+
+<h3><a name="syntax"></a>Assembler syntax</h3>
+<a href="#push">Data&nbsp;types&nbsp;and&nbsp;push</a><br>
+<a href="#controlflow">Control&nbsp;flow</a><br>
+<a href="#buttonevents">Button&nbsp;events</a><br>
+<a href="#playhead">Play head&nbsp;control</a><br>
+<a href="#settarget">setTarget/setTargetExpr</a><br>
+<a href="#function2">function2</a><br>
+<a href="#try">try/catch/finally</a><br>
+<a href="#protect">protect/enableDebugger</a><br>
+<a href="#scriptlimits">scriptLimits</a><br>
+<a href="#unknown">Unknown&nbsp;actions</a>
+<p>
+For details on SWF file format, read <a href="http://www.macromedia.com/licensing/developer/">Macromedia's description</a> and <a href="http://sswf.sourceforge.net/SWFalexref.html">Alexis' SWF Reference</a>. Macromedia has updated the docs for Flash 7 file format in November 2003. For historical reasons Flasm has its own names for some actions, slightly different from Macromedia's names. Important differences and abstractions are described here. If in doubt, look into <code>action.h</code> from Flasm's <a href="http://www.nowrap.de/download/flasm15src.zip">source distribution</a>.
+<p>
+<a name="moviename"></a>Every Flasm project must start with <code>movie&nbsp;'<i>moviename</i>.swf'</code>.
+The <code><i>moviename</i>.swf</code> is the name of your SWF origin.
+Don't forget to include the file name in quotes. At assembling time Flasm
+first looks here and then tries to overwrite the file. The backup of target SWF is created
+with <code>.$wf</code> extension.
+If update fails for whatever reason, however, the original file will not be destroyed and no backup will be created.
+<p>
+<a name="compressed"></a>If <code>compressed</code> attribute is found just after movie name
+<nobr>(<code>movie '<i>moviename</i>.swf' compressed</code>),</nobr> SWF will be compressed after assembling. Original SWF may be compressed or not, <code>compressed</code> keyword decides about compression of updated&nbsp;SWF.
+<p>
+Flasm is case insensitive (excluding string values that <i>may</i> be case sensitive).
+If you must use a single quote in your strings, escape it like this: <nobr><code>'it\'s beautiful'</code></nobr>.
+Alternatively you can include string in double quotes: <nobr><code>"it's beautiful"</code></nobr>.
+<p>
+Comments look exactly like in ActionScript:<br>
+<code>// calculating distance</code><br>
+or multi-line comment:<br>
+<code>/* calculating<br>
+distance */</code>
+<p>
+
+Flasm implements <code>#include</code> macro. <code>#include 'loop.flm'</code> will be substituted with the contents of <code>loop.flm</code>.
+Nested and multiple includes are allowed too: <code>foo.flm</code> includes <code>routine.flm</code>, which includes <code>loop.flm</code> and <code>calc.flm</code>.
+Maximum nesting depth is 10.
+<p>
+
+I introduced some extra constructs in order to match the SWF structure. These serve as containers for Flash actions: <code>frame</code>, <code>defineButton</code>, <code>defineMovieClip</code>, <code>initMovieClip</code>, <code>movie</code>, <code>on</code>, <code>onClipEvent</code>, <code>placeMovieClip</code>.
+<p>
+Other supported tags:
+<code>enableDebugger</code>,
+<code>enableDebugger2</code>,
+<code>exportAssets</code>,
+<code>fileAttributes</code>.
+<code>importAssets</code>,
+<code>importAssets2</code>,
+<code>metadata</code>,
+<code>protect</code>,
+<code>scriptLimits</code>.
+<p>
+Please don't alter the SWF structure!
+It means don't delete, replace or add action block containers! Well, you may add or delete an extra event without causing any damage. But if you remove a frame or change the movie clip id, Flasm will be no more able to find the pendant to it and any subsequent statements at assembling time.
+<p>
+
+<b><a name="push"></a>Data types and push</b>
+<p>
+Well, <code>push</code> is the core action in SWF and we'll go a bit more into detail here.
+Since you can push all kinds of values onto the stack, the <code>push</code> action has
+an internal type attribute in SWF. While you don't see and can't access the push type from within Flasm,
+Flasm decides what type to use based on how your data is formatted.
+<p>
+<table cellspacing=0 cellpadding=3 border="0">
+<tr><td>Push type&nbsp; &nbsp; &nbsp;</td><td>Number of bytes&nbsp; &nbsp; &nbsp;</td><td>What it means</td><td>Example</td></tr>
+<tr><td><code>0</code></td><td><code>string length + 1&nbsp;</code></td><td><code>string</code></td><td><code>push 'Hello'</code></td></tr>
+<tr><td><code>1</code></td><td><code>4</code></td><td><code>float</code></td><td><code>push Y_PROPERTY</code></td></tr>
+<tr><td><code>2</code></td><td><code>0</code></td><td><code>null</code></td><td><code>push NULL</code></td></tr>
+<tr><td><code>3</code></td><td><code>0</code></td><td><code>undefined</code></td><td><code>push UNDEF</code></td></tr>
+<tr><td><code>4</code></td><td><code>1</code></td><td><code><a href="#registers">register</a></code></td><td><code>push r:2</code></td></tr>
+<tr><td><code>5</code></td><td><code>1</code></td><td><code>boolean</code></td><td><code>push TRUE</code></td></tr>
+<tr><td><code>6</code></td><td><code>8</code></td><td><code>double</code></td><td><code>push 3.1415926</code></td></tr>
+<tr><td><code>7</code></td><td><code>4</code></td><td><code>integer</code></td><td><code>push 25</code></td></tr>
+<tr><td><code>8</code></td><td><code>1</code></td><td><code><a href="#constants">constant</a> (0-255)</code></td><td><code>push 'Hello'</code></td></tr>
+<tr><td><code>9</code></td><td><code>2</code></td><td><code><a href="#constants">constant</a> (256-65534)</code>&nbsp; &nbsp;</td><td><code>push 'Hello'</code></td></tr>
+</table>
+<p>
+Strings must be included in single or double quotes and may contain escape characters: <code>\b, \f, \n, \r, \t</code> and <code>\\</code>.
+No line break is allowed inside of a string.
+If Flasm founds <code>push 'Hello'</code> statement, it first looks into the constant pool
+for the current action block. If the string is defined there, 1- or 2-byte reference is pushed (push type <code>8</code> or <code>9</code>);
+if not, the string itself (type <code>0</code>).
+<p>
+Integers are recognized in decimal and hexadecimal notation (<code>0xF0F0</code>).
+Doubles are decimal: <code>-3.1415926</code>. The notation <code>9.4e-10</code>
+is supported too. In addition, constants <code>_NAN</code>,
+<code>POSITIVE_INFINITY</code> and <code>NEGATIVE_INFINITY</code> are defined
+as double values.
+<p>
+<code>0.0</code> is considered double; <code>0</code> is an integer.
+<a name="replace0"></a>Flash compiler itself always stores <code>0</code> as double <code>0.0</code>. In update mode Flasm will automatically replace all <code>0.0</code> occurrences with <code>0</code>, saving 4&nbsp;bytes per each replace.
+<p>
+Push type <code>1</code> is only used by Flash to store property values. Flash 4 stored all number values as strings (push type <code>0</code>), Flash 5+ utilizes push type <code>7</code> for integers and push type <code>6</code> for floats.
+<p>
+However, Flash is not the only program creating SWFs. I know now of at least one third-party program (3D-Flash Animator),
+which uses type <code>1</code> for actually storing numbers. So while Flasm will disassemble type <code>1</code> to property constant if
+possible, all values that couldn't be resolved to any constant will be shown as floats: <code>-3.1415926f</code>
+or <code>100.0f</code>. You can use this notation in your Flasm projects too, saving 4 bytes
+per number. Any floating point value which ends with <code>f</code> will be treated as
+single-precision float and stored with push type <code>1</code> (beware of limited precision). The constants <code>_NANF</code>,
+<code>POSITIVE_INFINITYF</code> and <code>NEGATIVE_INFINITYF</code> are defined too.
+<p>
+One <code>push</code> statement can handle multiple values of different types:
+<code>push 'Hello', 3.141, XSCALE_PROPERTY</code>. It's not just a shortcut
+in Flasm for 3 single <code>push</code> actions, but a shorter and faster way.
+<p>
+
+<b><a name="controlflow"></a>Control flow</b>
+<p>
+Jumps inside of the action block are implemented with <code>branch</code> and <code>branchIfTrue</code> actions. Every high level ActionScript construct like <nobr><code>if (..) then .. else ..</code></nobr> or <nobr><code>while (..) do ..</code></nobr> is converted to some <code>branch/branchIfTrue</code> pattern. <code>branch</code> simply jumps to the specified label. For example, the translation of <nobr><code>if .. then .. else</code></nobr> construct always has a <code>branch</code> after its <code>then</code> part, which skips the <code>else</code> part and jumps forward to the end of <code>if</code>. Backward jumps are allowed too, loops always contain them. <code>branchIfTrue</code> takes the condition from stack.
+<p>
+Internally relative numerical branch offsets are stored in SWF after every branch instruction. During disassembling Flasm creates unique label for every offset with the name <code>label1 .. labelN</code>, which hides the branch offset from your eyes and makes the disassembly more readable. The syntax is <code>branch label4</code> or <code>branchIfTrue label6</code>. Somewhere in the same action block the label (identifier followed by colon) must be present. You are by no means forced to use identifiers like <code>label5:</code>. Choose meaningful names (<code>LoopStart:</code>, <code>SearchComplete:</code> etc.) instead.
+<p>
+Let's take an example: the really fast countdown loop, which can't be made with Flash (and can't be decompiled to any valid ActionScript).
+<p>
+<code>
+push 0,1,2,3,4,5,6,7,8,9,10<br>
+loopstart<b>:</b><br>
+dup<br>
+trace<br>
+branchIfTrue loopstart
+</code>
+<p>
+First 10 values are pushed onto the stack. Note the last pushed value (<code>10</code>)
+will be on top of the stack. We have to duplicate the value in loop with <code>dup</code>,
+because we need it two times: <code>trace</code> pops the first value,
+<code>branchIfTrue</code> gets the second as loop condition.
+Since <code>branchIfTrue</code> converts condition to boolean,
+loop executes until <code>0</code> is found, which evaluates to false and stops the loop.
+<p>
+
+<b><a name="buttonevents"></a>Button events</b>
+<p>
+Every single button event <code>on</code> contains one or multiple of the following:
+<p>
+<table cellspacing=0 cellpadding=3 border="0">
+<tr><td><code>idleToOverUp</code></td><td><code>overUpToIdle</code></td><td><code>overUpToOverDown</code></td></tr>
+<tr><td><code>overDownToOverUp</code> &nbsp; &nbsp;</td><td><code>overDownToOutDown</code> &nbsp; &nbsp;</td><td><code>outDownToOverDown</code></td></tr>
+<tr><td><code>outDownToIdle</code></td><td><code>idleToOverDown</code></td><td><code>overDownToIdle</code></td></tr>
+<tr><td><code>keyPress</code></td><td>&nbsp;</td><td>&nbsp;</td></tr>
+</table>
+<p>
+There's no one-to-one relation of ActionScript button events and events stored in SWF. Some ActionScript events actually set multiple SWF events. That's why the names are different.
+<p>
+<code>keyPress</code> is used in the form <nobr><code>keyPress '<i>char</i>'</code></nobr> or <nobr><code>keyPpress <i>const</i></code>,</nobr>
+for example <code>keyPress 'a'</code> or <code>keyPress _SPACE</code>.
+All constants correspond to those in Flash authoring:
+<code>_BACKSPACE</code>,
+<code>_DELETE</code>,
+<code>_DOWN</code>,
+<code>_END</code>,
+<code>_ENTER</code>,
+<code>_ESCAPE</code>,
+<code>_HOME</code>,
+<code>_INSERT</code>,
+<code>_LEFT</code>,
+<code>_PAGEDOWN</code>,
+<code>_PAGEUP</code>,
+<code>_RIGHT</code>,
+<code>_SPACE</code>,
+<code>_TAB</code>,
+<code>_UP</code>.
+<p>
+You are free to change button event conditions in Flasm code.
+<p>
+
+<b><a name="playhead"></a>Play head control</b>
+<p>
+The SWF file format describes three actions for this task: <code>gotoFrame</code> (frame number as operand), <code>gotoFrame2</code> (takes the frame number from stack) and <code>gotoLabel</code> (frame label as operand).
+While Flasm's <code>gotoFrame</code> and <code>gotoLabel</code>
+actions are named exactly like their SWF format pendants, <code>gotoFrame2</code> action is not present.
+For your convenience <code>gotoFrame2</code> is showed as <code>gotoAndPlay</code>/<code>gotoAndStop</code>.
+In SWF <code>gotoFrame2</code> is a sole action with a byte&nbsp;flag for play/stop.
+<p>
+Additionally, if you have multiple scenes, Flash puts yet another argument here&nbsp;&#8212; the total number of frames in all scenes before the one you're jumping to.
+These frames will be skipped by Flash player&nbsp;&#8212; in other words, added to the expression on stack.
+This allows for using <code>gotoAndPlay</code>/<code>gotoAndStop</code> with
+a frame number inside of current scene instead of absolute frame number which starts from the beginning
+of SWF. Remember, scenes do not exist in SWF. In this case Flasm will show you something like
+<code>gotoAndStop skip 10</code>. Note you're in trouble if your expression
+represents label string instead of integer frame number. Flash player doesn't care and will add
+frames to skip here too&nbsp;&#8212; and play head jumps to the false frame. Try using <code>_root.gotoAndStop()</code>.
+Here movie clip method will be used instead of single instruction. It does no corrections and will
+work properly for labels.
+<p>
+Higher Flash versions tend to use <code>gotoAndPlay/gotoAndStop</code> methods of the movie clip object (passing them as strings) to control movie clips.
+<p>
+<code>gotoLabel</code> is rarely seen in disassembly, because Flash
+replaces it with frame-based actions exporting SWF.
+Only if Flash can't resolve the frame number (the label is not on the same timeline),
+<code>gotoLabel</code> will be left as is.
+Labels, however, are still present in SWF and may be accessed from javascript
+or whatever hosts the SWF, even if jumps to these labels were eliminated.
+<p>
+
+<b><a name="settarget"></a>setTarget and setTargetExpr</b>
+<p>
+<code>setTarget</code> action corresponds to <code>tellTarget</code> in ActionScript.
+If target is an expression, <code>setTargetExpr</code> is used, which pops the target string from stack.
+Flasm shows it like
+<p>
+<table cellspacing=0 cellpadding=3 border="0">
+<tr>
+<td><code>setTarget '/defender'<br>
+&nbsp; gotoFrame 1<br>
+&nbsp; play<br>
+end</code></td>
+<td>&nbsp; &nbsp; or &nbsp; &nbsp;</td>
+<td><code>setTargetExpr<br>
+&nbsp; gotoFrame 1<br>
+&nbsp; play<br>
+end</code></td>
+</tr>
+</table>
+<p>
+The <code>end</code> statement does not exist in bytecode; Flash uses
+<code>setTarget ''</code>
+to mark the end of &#8220;targeted&#8221; statements.
+<p>
+<table cellspacing=0 cellpadding=3 border="0">
+<tr>
+<td><code>setTarget '/defender'<br>
+gotoFrame 1<br>
+play<br>
+setTarget ''</code></td>
+<td>&nbsp; &nbsp; or &nbsp; &nbsp;</td>
+<td><code>setTargetExpr<br>
+gotoFrame 1<br>
+play<br>
+setTarget ''</code></td>
+</tr>
+</table>
+<p>
+Since every <code>setTarget</code> is handled by Flash this way, I decided to make it look more readable. Nesting of <code>setTarget</code> blocks is not allowed.
+<p>
+
+<b><a name="function2"></a>function2</b>
+<p>
+Flash MX 2004 introduced new <code>function2</code> bytecode, which works in Flash Player 6.0.65 and above.
+<code>function2</code> is an extended version of <code>function</code>.
+In disassembly, it looks like this:
+<p>
+<code>function2 test (r:3='arg1', 'arg2', r:4='arg3') (r:1='this', r:2='_root')</code>
+<p>
+In first parenthesis function arguments are shown.
+These arguments may be stored in <a href="#lregisters">local registers</a>.
+Each <code>function2</code> has its own set of local registers.
+If register is absent, the corresponding argument isn't stored in register and behaves just like normal function argument. If register is present, the corresponding argument is stored there before <code>function2</code> executes.
+<p>
+<a name="clearregisterargs"></a>You can't access arguments stored in registers by name (with <code>getVariable</code>), only by <code>r:<i>something</i></code> (<code><i>something</i></code> being numerical or literal, see below).
+That means their names are effectively useless in SWF. If <code>clearregisterargs</code> is set to <code>1</code> in <code>flasm.ini</code>, <nobr><code>flasm -u</code></nobr> will remove these names from SWF, making it a bit smaller and forcing decompilers to name arguments <code>arg1, arg2, ...,</code> because actual parameter names will be lost. To the best of my knowledge
+it doesn't affect code execution in any way.
+<p>
+Second parenthesis contains &#8220;automatic&#8221; parameters. Their values are calculated and stored in local registers before function executes, like function arguments. Currently (in SWF7) there are six possible values:
+<code>'this'</code>,
+<code>'arguments'</code>,
+<code>'super'</code>,
+<code>'_root'</code>,
+<code>'_parent'</code> and
+<code>'_global'</code>.
+Internally in SWF the corresponding bits in an unsigned integer
+value are set to indicate the presence of such value. For the
+sake of understandability Flasm shows them in literal form, however
+you can't add your own particular value here or affect register
+allocation. Registers are allocated by Flash Player in the above
+order, i.e the value of <code>'this'</code> goes to <code>r:1</code>, the value of <code>'arguments'</code>
+to <code>r:2</code> etc. If <code>'this'</code> is absent, <code>'arguments'</code> goes to <code>r:1</code>.
+If you accidentally tell Flasm to store automatic values in wrong registers, Flasm will report an error.
+<p>
+So the use of local registers in <code>function2</code> is threefold: arguments, &#8220;automatic&#8221; values and local variables are stored there.
+<p>
+<a name="literal"></a>If <code>literalregisters</code> flag is set to <code>1</code> in <code>flasm.ini</code>, Flasm will disassemble <code>function2</code> like this:
+<p>
+<code>
+function2 isSpace (r:1='char')<br>
+&nbsp;&nbsp;push r:char<br>
+&nbsp;&nbsp;...<br>
+end // of function isSpace
+</code>
+<p>
+instead of 
+<p>
+<code>
+function2 isSpace (r:1='char')<br>
+&nbsp;&nbsp;push r:1<br>
+&nbsp;&nbsp;...<br>
+end // of function isSpace
+</code>
+<p>
+I.e. all <code>function2</code> arguments and automatic values like <code>'this'</code>
+will be shown with their literal names after <code>r:</code>. Of course, you're free to write
+your own code using literal registers.
+<code>r:char</code> in the example above means exactly the same as <code>r:1</code>,
+and you may use numerical and literal notations together without any problems.
+However, you can't name other registers (local variables or like).
+<p>
+You can safely store your own values in local registers, Flasm automatically adjusts the number of registers to allocate for any <code>function2</code>. This number, although stored in SWF, is invisible in disassembly. A small side-effect: for whatever reason Flash compiler often allocates more registers than needed. Flasm will allocate the minimal possible number.
+<p>
+<a name="presup"></a>An edge case: <code>this</code>, <code>arguments</code> and <code>super</code> automatic parameters will be suppressed by Flash player if they don't appear in second parenthesis. They will neither be stored in registers nor accessible by name inside of <code>function2</code>. Normally, you don't care: if you need one of these, allocate a register for it. In the very special case where you don't want to do it, but still want to access the parameter by name, you can list it without register given. Listing <code>'_root'</code>, <code>'_parent'</code> and <code>'_global'</code> makes no difference. They are always available by name anyway. Nice, what?
+<p>
+<b><a name="try"></a>The try/catch/finally block</b>
+<p>
+There is a new <code>try-catch-finally</code> construct in Flash MX 2004. In SWF all <code>catch</code> blocks are merged into one, and exception condition checking is done with
+normal control flow there. In disassembly, the variable that holds the actual exception will be shown after <code>try</code> keyword, not <code>catch</code>. Like this:
+<p>
+<code>
+try 'e'<br>
+&nbsp;&nbsp;push 'x'<br>
+&nbsp;&nbsp;getVariable<br>
+&nbsp;&nbsp;throw<br>
+&nbsp;&nbsp;branch label1<br>
+catch<br>
+&nbsp;&nbsp;push 5<br>
+&nbsp;&nbsp;trace<br>
+&nbsp;label1:<br>
+end // of try<br>
+</code>
+<p>
+Alternatively, condition may be held in a register: <code>try r:2</code> or <code>try r:<i>something</i></code> &nbsp;(literal register). Data type exceptions, for example, are always transferred through register, usually <code>r:0</code>. Other registers are used if error variable is declared local inside of <code>try</code> block (thanks to Alex Bradley for finding this out), or given as parameter to <code>function2</code> that contains the <code>try/catch/finally</code> block.
+<p>
+The <code>throw</code> action stores condition in a variable or register given after the <code>try</code> keyword automatically, you don't have to do it explicitly.
+The condition is then available at the start of <code>catch</code> block.
+<p>
+
+<b><a name="protect"></a>protect, enableDebugger and enableDebugger2 tags</b>
+<p>
+<code>protect</code> was meant by Macromedia as a hint for authoring program, saying that the author of particular SWF doesn't wish it to be opened in Flash IDE. <code>protect</code> is not actually protecting anything, any program that deals with SWF can simply ignore it. In Flasm, <code>protect</code> will be shown, and can be added/deleted. You can place it anywhere in SWF, albeit usual location is somewhere near to the beginning. Note <code>protect</code> is not an action,
+so it has to be outside of action blocks. Passwords are encoded by Flash compiler into a 28 characters long string, consisting of these parts (Paul Cannon):
+<blockquote>
+The <code>$1$</code> at the start does signify an encryption scheme; it's the traditional way to
+indicate a crypt-MD5 password. Everything between the second and third <code>$</code> is the salt, and everything after the last <code>$</code> is the hashed password, in a sort of base-64 representation.
+</blockquote> 
+Flasm will show the encoded string, but not the password.
+<p>
+<code>enableDebugger</code> is another attempt to secure the content of SWF. Always protected by password (Flasm will show the encoded string), this tag gives you the ability to &#8220;remote debug&#8221; the SWF. If you don't know the password, debugger will not let you in. If you delete the password, debugger will not let you in. But if you change <code>enableDebugger</code> parameter to <code>'$1$.e$7cXTDev5MooPv3voVnOMX1'</code>, empty password will be accepted.
+<p>
+To say it clear one more time: above tags, including encrypted passwords, give you no protection and can be safely deleted or altered.
+<p>
+Flash MX allows debugging on source code level, so there is a new tag <code>enableDebugger2</code>, which is used instead of <code>enableDebugger</code>. It makes no difference at all. However, Flasm will not show another tag (63) or contents of external file used by debugger, don't know anything about their format.
+<p>
+
+<b><a name="scriptlimits"></a>scriptLimits tag</b>
+<p>
+Introduced with Flash Player 7, scriptLimits tag gives you control about the maximum recursion depth and the maximum time before the famous "Script causes the movie to run slowly.." message appears. So far I know, these settings can not be changed in Flash IDE. The following syntax is used:
+<p>
+<code>scriptLimits recursion 2000 timeout 10</code>
+<p>
+While increasing recursion depth (256 by default) is surely useful in some situations, you may actually want to <i>decrease</i> the time-out for ActionScript for testing purposes. Instead of standard 15 or 20 seconds, setting the value to 1 or 2 will immediately show you where the bottlenecks are.
+<p>
+
+<b><a name="unknown"></a>Unknown actions support</b>
+<p>
+Flasm 1.6 knows every Flash action, including Flash 8 actions. Only subset of possible bytecodes, however, is currently used by Flash. Part of bytecodes space is reserved for third-party applications. For example, Apple's QuickTime added tag <code>0xAA</code> for QuickTime actions. Flasm is able to disassemble/assemble actions it doesn't know. The disassembly line looks like
+<p>
+<code>swfAction 0x02 // Unknown action!</code>
+<p>
+If the action has additional data, <code>hexdata</code> part is present:
+<p>
+<code>swfAction 0xAA hexdata 0x43,0x12,0x18 // Unknown action!</code>
+<p>
+The data is shown as comma separated list of hex bytes.
+If you define your own actions for some proprietary application, there is no need to include tag length in <code>hexdata</code> field&nbsp;&#8212; the length is calculated and added automatically if <code>hexdata</code> keyword is found.
+Don't forget, only bytecodes <nobr>&gt; <code>0x80</code></nobr> may have additional data.
+
+
+<h3><a name="embedding"></a>Embedding Flasm code in ActionScript</h3>
+<p>
+If invoked with <code>-u</code> command <nobr>(<code>flasm -u foo.swf</code>),</nobr> Flasm processes macros embedded in your ActionScript and updates the SWF with Flasm statements.
+It's not unlike embedding assembler in C or Pascal. The syntax is a bit special to let Flash compile scripts without errors&nbsp;&#8212; you have to include Flasm statements in quotes. An example:
+<p>
+<code>
+"push 'Hello world!'"<br>
+"push myTextField"<br>
+"setVariable"
+</code>
+<p>
+The above has the same effect as <code>myTextField = "Hello world!";</code> ActionScript statement. Semicolons are not required, but will do no harm.
+Flasm code strings are allowed everywhere in your scripts, so don't worry about the
+right placement. Any restrictions? Sure. Don't define frames or movie clips in embedded Flasm. If you embed, you are already inside of some frame or event definition. Make sure the stack is empty after your embedded code executes. It's not a restriction, but you probably don't want to cause memory leaks.
+<p>
+All Flasm actions behave as expected, there is only one important difference to consider&nbsp;&#8212; if you use <code>constants</code> declaration in embedded scripts, Flasm will add them to the main pool in the action block instead of redefining it. The same goes for <code>constants</code> inside of any included file. Using <code>#include</code> as part of the embedded string, please take care of slashes. Use normal slashes and not backslashes in file path. Latter will be escaped,
+if not deleted by Flash.
+<p>
+While Flasm works just fine with compression enabled in Flash MX, update process will require two additional steps: decompressing and compressing.
+If your computer is slow, you may consider disabling compression in Flash publish settings. You can always compress SWF with <nobr><code>flasm -z</code></nobr> as last step before distribution.
+<p>
+
+<b><a name="testingembedded"></a>Testing embedded actions from within Flash IDE</b>
+<p>
+Of course you can export the SWF, update it with Flasm, and check for errors then. Testing directly from Flash IDE would be nicer. Since Flash IDE has no post processing interface, it's rather tricky.
+<p>
+<b>Flash 8 and Flash MX 2004</b>
+<p>
+I've written a dll and a JSFL script which manages to preview your SWF in internal player. Here we go.
+<ul>
+<li>Copy <code>flasmhelper.dll</code> from <code>helper</code> directory of Flasm distribution to <code>External Libraries</code> directory inside of your Flash configuration folder.<br>
+On windows 2000 and XP Flash 8 configuration is located here: <code>C:\Documents and Settings\<i>username</i>\Local Settings\Application Data\Macromedia\Flash 8\en\Configuration</code>. The path will vary for non-English Windows and/or Flash.
+<li>Copy <code>Update with Flasm and Preview.jsfl</code> to <code>Commands</code> directory inside Flash configuration folder.
+<li>Edit the first line of JSFL script and adjust path to the Flasm executable.
+<li>Start Flash 8/MX 2004. "Update with Flasm and Preview" should be now available under
+"Commands". If you wish, associate a shortcut with it.
+<li>You are all set. Execute the command to preview embedded Flasm actions. You have to write some first :) If unsure, re-read previous section.
+</ul>
+
+All Flasm messages and errors should go to the output window now. You may also use trace statements in Flasm code. Please note JSFL isn't that stable. Flash 8/MX 2004 may crash or run out of memory occasionally. This has nothing to do with my particular JSFL code or dll.
+<p>
+The dll is reasonably secure in the sense it will execute only a program called <code>flasm.exe</code>, no <code>command.com</code> or such. It should be enough to prevent simple abusing it from malicious JSFL scripts. The dll is tested under Windows 2000 and XP. Please tell me if it works for you on Windows 98/ME&nbsp;&#8212; or if it doesn't.
+<p>
+It shouldn't be too hard to port the library to Mac. To a pity, I don't own a Mac and can't do it myself. If you have interest in porting, drop me a line, I'll make the source available on request. To make sure you have all the prerequisites, try compiling the <a href="http://www.macromedia.com/support/documentation/en/flash/#flashjsdict">Mac sample</a> from Macromedia.
+<p>
+<b>Flash 5 or MX</b>
+<p>
+There was no JSFL. <a href="http://www.wildsmile.de">Sven K&ouml;nig</a> has found a way, and I've implemented it in Flasm. We'll make Flash believe Flasm is a browser.
+While proper installation requires some tweaking, it will work like a charm once you got it.
+I'll describe the procedure for Windows, but something similar should work on Mac too.
+<ul>
+<p>
+<li>Copy <code>flasm.exe</code> and <code>flasm.ini</code> into the <code>Browser</code> subdirectory of Flash.<br>
+For Flash 5, the <code>Browser</code> subdirectory is inside of your Flash install folder.<br>
+Flash MX, stores settings elsewhere. If <code>Browser</code> subdirectory does not exist, create it.<br>
+Windows 2000 or XP: <code>C:\Documents and Settings\<i>username</i>\Application Data\Macromedia\Flash MX\Configuration\Browser</code><br>
+Windows 98 or ME: <code>C:\Windows\Application Data\Macromedia\Flash MX\Configuration\Browser</code><br>
+Windows NT: <code>[Windows directory]\profiles\[username]\Application Data\Macromedia\Flash MX\Configuration\Browser</code><br>
+Mac OS X: <code>Hard Drive/Users/Library/Application Support/Macromedia/FlashMX/Configuration/Browser</code><br>
+Embedding on Mac is untested, please drop me a line if you get it to work.
+<li>Rename <code>flasm.exe</code> to <code>iexplore.exe</code>
+<li>Create shortcut to your new <code>iexplore.exe</code> in the same subdirectory. Don't worry, it doesn't affect
+the real browser.
+<li>Open <code>flasm.ini</code> in a text editor.
+Change <code>flaplayer</code> and <code>flabrowser</code>
+values to contain your Flash player and internet browser path, respectively.
+Long file names are not supported in dos, you should first discover what the corresponding short names look like:
+<code>"C:\PROGRA~1\INTERN~1\IEXPLORE.EXE"</code> or similar.
+Even if you're on Win 2000, please use short names.
+Set the value of <code>flatest</code> to &#8220;<code>flaplayer</code>&#8221;
+if you want to test your files in player, and to &#8220;<code>flabrowser</code>&#8221;,
+if you'll test in browser. You can change <code>flatest</code> value later while testing without restarting machine or Flash.
+or Flash IDE.
+<li>Done. Now open your file in Flash, insert Flasm code, make sure <code>HTML</code> and &#8220;<code>Use Default Names</code>&#8221;
+boxes are checked in Flash publish settings, and press <code>F12</code> (Publish Preview).
+<p>
+</ul>
+Flash will compile the SWF, look for browser shortcut, check the name (<code>iexplore.exe</code>) is ok, give the HTML file name to Flasm. After calculating the real SWF name Flasm will update the SWF and invoke browser or player to show it.
+The DOS box appears for the short time, but will only stay open if there are error messages to report.
+I guess (based on my experience) the most popular error would be &#8220;<code>Could not start: c:\...\...\foo.exe</code>&#8221;,
+because the path in <code>flaplayer</code> or <code>flabrowser</code> is wrong.
+Correct it and try again.
+<p>
+Doesn't work? Have you tried it with Flash MX 2004 by chance? MX 2004 doesn't seem to support default browser mechanism any more, use the first dll/JSFL method.
+<p>
+Sometimes Flash just doesn't start Flasm. Enter something in actions window.
+Or uncheck HTML in export settings, publish, check it again, publish. Or
+delete iexplore shortcut from browser directory, publish, restore shortcut.
+<code>#include</code> may fail in Flash IDE if you haven't exported
+the SWF to the right location before. Check publish settings.
+<p>
+In <a href="#resources">Resources</a> you'll find links to the small debugger by Pavils Jurjans and profiler by Ben Schleimer.
+
+
+<h3><a name="optimization"></a>Optimization techniques</h3>
+<a href="#optmeasure">Measurement</a><br>
+<a href="#optas">ActionScript optimizations</a><br>
+<a href="#optflasm">Flasm optimizations</a><br>
+<a href="#doublenots">Double nots</a><br>
+<a href="#optthanks">Thanks</a>
+<p>
+Huge bitmaps, not optimized vectors, false frame rates, animating many movie clips at the same time, loading large XML files, dealing with tons of editable text, streaming high quality sound, or simply viewing SWF on mac&nbsp;&#8212; in 95% of all cases, bad SWF performance has nothing to do with ActionScript.
+Flasm, although being &#8220;yet another cool tool&#8221;, is no solution for above problems.
+Optimizing with Flasm makes sense for games, 3D engines, path finding, actually converting large amounts of data&nbsp;&#8212; <i>computing</i> things in general. Flash MX 2004 and Flash 8 made things much better here, too&nbsp;&#8212; at least for newer Flash Players.
+<p>
+If you're unsure where is the bottle neck: slow drawing or slow calculating, there is
+a simple trick: make the player or browser window very small and switch aliasing off in the Flash Player. If performance increases significantly, you probably should optimize your graphics or movie clip structure first.
+<p>
+
+<b><a name="optmeasure"></a>Measurement</b>
+<p>
+Don't try to optimize every single line of your code&nbsp;&#8212; you'll just make it unreadable,
+probably omit some important places, and nobody will ever notice 10.000 hours of your hard work. The key to any optimization is measurement. Bottle necks are very hard to guess. I used to have plenty of tips here, well tested for Flash 5 and Flash 4, but it just can't work this way because of the current diversity of possible environments. Now we have Flash Player 8, 7, 6, 5 and (still) 4  out there, stand-alone applications, mobile devices, not to mention Windows, Mac and Linux. These all are entirely different species. It means only some general strategies still work everywhere, and you have to measure your particular application on your target environment yourself. But how?
+<p>
+Optimize and test for your target environment. Tests in Flash IDE are very rough estimates at best.
+<p>
+You should differentiate between ActionScript code in FLA and compiled code in SWF. For example, if &#8220;<code>Omit Trace Actions</code>&#8221; is checked during publishing, traces simply do not make it into SWF. They do not exist there. The same goes for commented code. <code>#include</code>d files are in effect exactly the same as inlined code, since they are first included, then compiled&nbsp;&#8212; nothing to test here, too. There are no classes in SWF&nbsp;&#8212; just functions. Flash compiler optimizes library function calls with constant arguments too.
+Calls like <code>f = Math.sin(0.25)</code> or <code>f = Math.max(3,5)</code>
+are never saved in SWF, the calculated values go here. Neither will <code>if</code> parts with condition that always evaluates to <code>false</code> be stored. Some local variables are stored in registers by the compiler, which makes a huge difference. And so on. Before you test, take a look at disassembly.
+<p>
+Compiled bytecodes for Flash Player 7 are, err, context-dependant. Code inside of <a href="#function2">function2</a> benefits from local registers. The same code in a frame will not.
+<p>
+In a standard procedural programming language, most of the program time is spent in loops and functions or methods called from those loops. In Flash, frame loops and often or parallel called events should be investigated too.
+<p>
+Ben Schleimer's <a href="http://snow.prohosting.com/bensch/flasp.html">Flasm Profiler</a> (or is it Flash Profiler?) and David Chang's <a href="http://www.nochump.com/asprof/">ASProf</a> are attempts to solve the main problem&nbsp;&#8212; what to optimize. I don't know how good they work, because I've not used them in a real-world project yet&nbsp;&#8212; they are relatively new. The profiler basically tells you execution times and number of calls for every function.
+<p>
+After you've found what's critical, find better algorithm first, or change your approach in general. Although you could improve the code in small, optimization should be the last resort.
+<p>
+Do all tests in a defined computer state&nbsp;&#8212; fresh booted, no virus scans or internet connection in background, all other programs closed. Don't move or resize widows during the test, don't do anything. Don't move your mouse, and let your mouse stay over flash movie. It <i>does</i> make a huge difference. That's not voodoo&nbsp;&#8212; OS manages your mouse, and Flash isn't the only running process. 
+<p>
+Think about graphics. A script is never interrupted, so it's relatively easy to measure. If, however, you start to measure in the first frame, and end in tenth, you measure everything in between and simply don't know what you measure. The result largely depends on player's mood and takes generally much longer, making your ActionScript test irrelevant. Network requests, <code>gotoAndPlay</code> actions and many other things related to screen refresh are executed asynchronously. Get them out of measured code parts.
+<p>
+Beware of loop overhead. Short test times are not reliable, since the loop itself takes most of the time. Calculate time for an empty loop, function, etc. and subtract it from your results. Use big loops, so that remaining times are bigger then, say, 1000 ms. Computers aren't that exact in ms. Generally, try to isolate the code in question from anything else and measure  that code only. Of course, try to get other factors out of consideration first&nbsp;&#8212; network bandwidth, graphics etc. Otherwise you results can't be compared because of hidden overhead.
+<p>
+Mac Flash Player is slow compared to PC. Test on Macs early.
+<p>
+Don't execute different tests together. If you try to compare optimization 1 with optimization 2, give them the same environment. One run&nbsp;&#8212; one test. If you put both tests in the same frame, you start to deal with caching.
+<p> 
+
+<b><a name="optas"></a>ActionScript optimizations</b>
+<p>
+Flash Player 7 and 8 are much faster with ActionScript. Because of player improvements, and because of compiler improvements in Flash MX 2004/Flash 8. The latter are only noticeable if you compile for Flash Player 6 or higher though. If that's your target audience, you mostly can do now without Flasm optimizations, because the compiler will use registers anyway. You will still be able to achieve better performance with Flasm, but your first step should be getting Flash 8 IDE for critical applications.
+<p>
+I used to elaborate on so called &#8220;deprecated Flash 4 actions&#8221; here, which are much faster in Flash Player 5 or 6. The worst example: <code>myMC.gotoAndStop()</code> was <i>25&nbsp;times</i> slower than
+<nobr><code>tellTarget("myMC") gotoAndStop()</code>.</nobr> In Flash Player 7 they finally don't seem to make a real difference. To insist on recommending them, I would have to re-do the whole testing, including mobile devices, so to hell with them.
+<p>
+Action blocks are always executed from the start to the end, no event or <code>gotoAndPlay()</code> will interrupt execution of other code. That's the reason why any large <code>for</code> loop will hang the player, no screen updates are made.
+<p>
+Define local variables in functions with <code>var</code> keyword. Local variables are
+faster, generally a good practice, and may be replaced with registers automatically, if compiled with Flash MX 2004/Flash 8.
+<p>
+<code>eval</code> is something special compared to, say, <code>this</code>
+or any other ActionScript keyword. In fact, <code>eval</code> is kind of macro&nbsp;&#8212; it doesn't have a bytecode, but simply writes its argument onto the stack&nbsp;&#8212; at compile time. No doubt it's faster than any method call. Starting with Flash MX, you're no longer allowed to use <code>eval</code> on the left side of assignment. Use <code>set</code> instead.
+<p>
+Unfortunately, identifier length still matters, even in Flash 8, so choose short names for variables. This can be extended to built-in functions too. Creating the function <nobr><code>t = Math.tan</code></nobr> and substituting all <code>Math.tan</code> occurrences with <code>t</code> will serve 2 purposes: no additional lookup is made for object <code>Math</code>, then for method <code>tan</code>; and the name itself is shorter. It works only for Flash 5+ methods and functions; Flash 4 functions will slow down.
+Of course, names of local variables don't matter if they are stored in registers.
+<p>
+The old trick with replacing <nobr><code>b = a*4</code></nobr> to <nobr><code>b = a&laquo;2</code></nobr> (shift) makes no speed difference in ActionScript.
+<p>
+Flash tries to precalculate constant parts of your expressions. The calculation order results from operator precedence. As Robert Penner noticed, <nobr><code>rad = Math.PI/180</code></nobr> will actually store calculated value in SWF, while <nobr><code>rad = c*Math.PI/180</code></nobr> will not. Conclusion: explicitly set the precedence to enable precalculation <nobr>(<code>rad = c*(Math.PI/180)</code> in this case).</nobr>
+<p>
+<code>for</code> and <code>while</code> loops show no speed difference.
+It depends on how you write them. The most optimized ActionScript examples of both, looping down to <code>0</code>, produce the same bytecode:
+<nobr><code>for(var i = 10; i--;) {}</code></nobr> and <nobr><code>i = 10; while (i--) {}</code></nobr>
+The third part of the <code>for</code> loop, absent in my example, is actually in the body of loop, so you can't compare it with a normal <code>while</code>.
+<p>
+Avoid multiple parallel <code>hitTest()</code> functions in events&nbsp;&#8212; often seen in games.
+If the player is killed after any touch with an enemy, and you have 100 duplicated enemy clips,
+don't include any code in the enemy clip <code>enterFrame</code> event.
+Create the new movie clip and insert the enemy clip here. Then duplicate inside of this parent clip.
+Now you can check with only one <code>hitTest()</code> if the collision
+takes place. If you need to, use some custom math then to calculate what enemy was hit. Since most of the time no collision occurs, you'll make a really big improvement in fps.
+<p>
+I mostly do not say <i>&#8220;3.45 times slower&#8221;</i>, because comparisons are very context dependant, exact values will vary. My <i>&#8220;slower&#8221;</i> just means <i>&#8220;noticeably slower, no situation ever makes it faster&#8221;</i>.
+<p>
+The list is by no means complete, and will never be. Technology may render some points incorrect, again. Please make your own tests.
+<p>
+
+<b><a name="optflasm"></a>Flasm optimizations</b>
+<p>
+After you're done in ActionScript, and the code is still slow, you can start to optimize with Flasm.
+Basically only two meaningful low-level features are not accessible from ActionScript and therefore subject of Flasm work: <a href="#stack">stack</a> and <a href="#registers">registers</a>.
+<p>
+Let's optimize a simple loop using stack. Our ActionScript is
+<p><code>
+for (var n=0; n&lt;1000; n++) {<br>
+&nbsp; someFunction(n);<br>
+}
+</code>
+<p>
+Flash compiles this loop to the following bytecodes:
+<p>
+<table cellspacing=0 cellpadding=0 border=0>
+<tr>
+<td valign=top nowrap><code>
+constants 'n', 'someFunction' &nbsp; &nbsp;<br>
+push 'n', 0.0<br>
+varEquals<br>
+&nbsp; label1:<br>
+push 'n'<br>
+getVariable<br>
+push 1000<br>
+lessThan<br>
+not<br>
+branchIfTrue label2<br>
+&nbsp;<br>
+push 'n'<br>
+getVariable<br>
+push 1, 'someFunction'<br>
+callFunction<br>
+pop<br>
+&nbsp;<br>
+push 'n', 'n'<br>
+getVariable<br>
+increment<br>
+setVariable<br>
+branch label1<br>
+&nbsp; label2:
+</code></td>
+<td valign=top nowrap><code>
+// Store all variables in constant pool<br>
+// Push the string 'n' and starting 0 onto the stack<br>
+// Initialize loop counter: n = 0<br>
+// Start of the loop<br>
+&nbsp;<br>
+// Get the value of 'n' again<br>
+// Push loop bound<br>
+// Evaluate boolean condition: &#8220;n &lt; 1000?&#8221;<br>
+// Invert: now &#8220;n &gt;= 1000?&#8221;<br>
+// If &#8220;true&#8221; is on stack, go to the end of the loop<br>
+&nbsp;<br>
+// Loop body<br>
+// Get the value of 'n' again<br>
+// Push the number of args (1) and function name<br>
+// function call is made with n as argument<br>
+// Pop the possible function result away&nbsp;&#8212; it's unused<br>
+&nbsp;<br>
+// Push 'n' two times<br>
+// Evaluate 'n' again<br>
+// n+1 on stack now<br>
+// n = n+1<br>
+// jump to the loop start&nbsp;&#8212; unconditional<br>
+// end of the loop&nbsp;&#8212; addressed with branchIfTrue above
+</code></td>
+</tr>
+</table>
+<p>
+What we immediately see, the <code>n</code> variable is evaluated many times here.
+<code>getVariable</code> action is slow compared to stack operations, and the <code>n</code>
+is only used as local counter.
+Why not discard <code>n</code>, keep the counter on stack and use it over and over,
+thus eliminating all <code>getVariable</code> calls?
+We also don't need the constant pool declaration, since <code>n</code> will disappear,
+and <code>someFunction</code> name will be only used once.
+The number of jumps can be reduces to one, too. We know we have to call <code>someFunction(0)</code>,
+so there is no need to check for the condition on the top of the loop.
+Look at optimized version:
+<p>
+<table cellspacing=0 cellpadding=0 border=0>
+<tr>
+<td valign=top nowrap><code>
+push 0<br>
+&nbsp; loopStart:<br>
+dup<br>
+<br>
+push 1, 'someFunction' &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <br>
+callFunction<br>
+pop<br>
+&nbsp;<br>                           
+increment<br>
+dup<br>
+push 1000<br>
+lessThan<br>
+branchIfTrue loopStart<br>
+pop 
+</code></td>
+<td valign=top nowrap><code>
+// No need for double 0.0, integer 0 will do it<br>
+// Choosing meaningful name<br>
+// dup the counter&nbsp;&#8212; our function will eat it up<br>
+<br>
+// Push the number of args (1) and function name<br>
+// function call is made with n as argument<br>
+// Pop the possible function result away&nbsp;&#8212; it's unused<br>
+// Now the counter is on top of the stack again<br>
+// Increment it<br>
+// Dup the counter&nbsp;&#8212; condition evaluation will eat it up<br>
+// Push loop bound<br>
+// Condition evaluation: counter &lt; 1000?<br>
+// Jump to the loop start, counter is on top<br>
+// Should remove counter from stack after the loop
+</code></td>
+</tr>
+</table>
+<p>
+We can go even further. If our function, say, fills an array with some calculated values, it makes no difference
+to do it from <code>0</code> to <code>999</code> or from <code>999</code> &#8220;down to&#8221; <code>0</code>. We can eliminate <code>lessThan</code>
+action in this case, because <code>branchIfTrue</code> is kind enough to convert
+<code>0</code> to false, and all other numbers to true for us.
+<p>
+<table cellspacing=0 cellpadding=0 border=0><tr><td valign=top nowrap><code>
+push 1000<br>
+&nbsp; loopStart:<br>
+decrement<br>
+dup<br>
+push 1, 'someFunction' &nbsp; &nbsp;<br>
+callFunction<br>
+pop<br>
+dup<br>
+branchIfTrue loopStart<br>
+pop
+</code></td></tr></table>
+<p>
+We moved <code>decrement</code> to the top of the loop, because otherwise
+<code>branchIfTrue</code> would immediately exit loop if
+the counter value is <code>0</code> and not let us execute <code>someFunction(0)</code>.
+<p>
+As you see, we end with a pretty clear loop version, which will be much faster than
+the original Flash. How much, depends on what <code>someFunction()</code>
+does. As the next step you would go there and optimize it.
+<p>
+The best way to learn how to use registers is to compile the same code in Flash MX 2004 for Flash 5, Flash 6, Flash 7, and look at the disassembly. Flash 5 version will use <code>r:0</code> only, Flash 6 will utilize all four global registers, and Flash 7/8 will add local <code>function2</code> registers.
+<p>
+Now if your target is Flash 5, you'll see from Flash 6' code what can be done. For higher targets, the room for further optimization is smaller. But there are still many places where the code could be improved&nbsp;&#8212; basically by eliminating useless <code>pop</code>s,  <code>push</code>es and <code>branch</code>es.
+<p>
+<code>push</code> statements may push multiple values, not just one. Try to merge single <code>push</code>es into one. That's way faster. You'll have to slightly re-arrange the code to do that.
+<p>
+Registers are faster than variables, but still slower than stack.
+Why not keep all the values on stack so they go to the top just in the moment you need them?
+The problem is, if you're doing this with 2 or more variables, your algorithm may want
+to access them in a different order than they're stored. 
+If some value is only required, say, at the start and at the end of your routine&nbsp;&#8212; no problem,
+it happily lives somewhere at the bottom, waiting for its time coming, and lets you work
+with other values on top. But for often needed values it doesn't work.
+While we have <code>swap</code> action to exchange two top values on stack,
+we can't directly access the third. Even if you find some illusionistic approach to access
+many variables, you'll just slow the execution with big amounts of <code>swap</code>
+commands.
+<p>
+
+<b><a name="doublenots"></a>Double nots</b>
+<p>
+In certain cases Flash writes double <code>not</code>s in your code.
+Consider ActionScript code <code>if (a&lt;=b) { ... } else { ... }</code> Two
+inversions are created here by Flash compiler:
+<p>
+<code>
+push 'b'<br>
+getVariable<br>
+push 'a'<br>
+getVariable<br>
+lessThan</code> // a&gt;b?<br><code>
+not</code> // now inverted: a&lt;=b?<br><code>
+not</code> // prepare for branch to the else condition: again a&gt;b?<br><code>
+branchIfTrue elseCondition<br>
+</code>
+<p>
+As you see, Flash is not very flexible compiling your statements and does not change the order of operands in expression or use another pattern for <code>if</code> statement.
+It doesn't really make sense. The only <i>purpose</i> here could be an attempt to force type conversion to boolean. The next action you always see in the code, however,
+is <code>branchIfTrue</code>. And this action does type conversion itself.<br>
+So Flasm will automatically remove those <code>not</code>s in update mode.
+<p>
+
+<b><a name="optthanks"></a>Thanks</b>
+<p>
+My very special thanks go to the people on flashcoders list, whose ideas helped me to
+the better understanding of optimization and flowed into above examples:
+<p>
+Rasheed Abdal-Aziz, Ralf Bokelberg, Robin Debreuil, Zeh Fernando, Gary Fixler, Branden Hall, Dave Hayden, Damien Morton, Amos Olson, Robert Penner, Casper Schuirink.
+
+
+<h3><a name="__bytecode__"></a>__bytecode__</h3>
+<p>
+<code>__bytecode__</code> function, first mentioned (<a href="http://blog.debreuil.com/archive/2003/10/15/150.aspx">1. post</a>, <a href="http://blog.debreuil.com/archive/2003/10/16/156.aspx">2. post</a>) by Robin Debreuil is a way to inject bytecodes directly into swf without using Flasm (compare <a href="#embedding">embedding</a>). It takes a string filled with hexadecimal numbers as parameter. Since <code>__bytecode__</code> is evaluated at compile time, it is not possible to give it a variable parameter. While it's convenient to not rely on Flasm updating the swf, <code>__bytecode__</code> also offers an excellent way to shoot yourself in the foot. No checks are made by compiler here. You better make sure values are correct. Well, using Flasm in <code>-b</code> mode to produce <code>__bytecode__</code> parameter (or any other tool) at least guarantees proper instruction layout. Some caveats remain though.
+<p>
+<code>__bytecode__</code> is a function and as such returns a value.
+So single <code>pop</code> action is added by Flash IDE if the result is unused. You may also assign the return value to variable, then it will be something else than <code>pop</code>. Normally, an extra <code>pop</code> is harmless.
+<p>
+There are possible complications here with <a href="#constants">constant pools</a>. Defining your own inside of <code>__bytecode__</code> will disable the pool automatically produced by compiler. Not defining makes the swf bigger. Define your own pool when needed and let <code>__bytecode__</code> reside in a place where there is no other ActionScript&nbsp;&#8212; don't mix. 
+
+
+<h3><a name="filesize"></a>File size difference</h3>
+<p>
+After assembling Flasm source or updating SWF with Flasm you'll often see your SWF having few less bytes even if you haven't changed anything in the bytecode. Besides of trivial optimizations Flasm does in update mode, there is one more reason for it. Flash may save block lengthes in the SWF as 2 or 6 byte records. 6&nbsp;bytes are only needed if the block is larger than 62 bytes. Flash, however, often uses 6 bytes where 2 bytes will do. Although Flasm does this too in certain cases, most blocks are optimized during assembling. So I get 400 less bytes on the file of 90kB length without optimizing anything. I don't know of any disadvantages, enjoy this unexpected Flasm bonus. Side note: ironically, there are places where long lengthes are required because of Flash player bugs, but Flasm is aware of this and will let them untouched.
+
+
+<h3><a name="hugescripts"></a>Huge scripts</h3>
+<p>
+While it's good practice to keep scripts smaller than 64k (compiled) per frame, it's possible to get larger. But the sole action record&nbsp;&#8212; <code>constants, push, function</code> and other is limited to 64k because of 2 bytes length field size.
+<p>
+Since Flash attempts to create the constant pool for all variables and methods, and never creates multiple constant pools, what does it do in such cases? Flash 5 compiler would silently write an overflowed value to the length field without errors or warnings. Later Flash versions are smarter: they would put so many strings as possible into constant pool, other strings just remain in place. Flash MX 2004 will even warn you about classes being too big. However, the compiler doesn't check other places where overflow may occur. Function length (ActionScript 1), for example, isn't verified and will be broken for very big functions.
+<p>
+If you try to execute this kind of SWF, Flash player crashes or actions are omitted. Disassembly will be incomplete and/or wrong. In most cases, Flasm will show an error message.
+
+
+<h3><a name="bugs"></a>Quirks, bugs and crashes</h3>
+Flasm may not be able to disassemble protected SWFs. The protection is usually achieved by inserting some kind of junk into SWF. Generally, such SWFs work in Flash Player, but break the SWF file format spec. Flasm, however, aims to support the spec, not to mimic essentially undefined behavior of some particular Flash Player version. What's my point here? Don't ask me to disassemble something you've downloaded somewhere. Neither will I tune Flasm to overcome any protections. They are not even interesting, and easy to fix with a hex editor.
+<p>
+Windows version of Flasm can't open unicode file names. It seems to be a Cygwin limitation.
+<p>
+When saving flm files in Windows Notepad/Editor, choose ANSI as encoding. In UTF-8 mode Notepad inserts so called byte order mark (BOM) at the start of the file, which irritates Flasm (and many other programs). If you work with UTF-8, please choose another editor, most of them don't add the BOM.
+<p>
+You can't compile something like <code>function 0123&auml;()</code> in Flash because of  parser limitations, the SWF format doesn't impose any restrictions on function names. Since Flasm deals with SWF directly, it should support such names, too. When assembling an SWF, you have to manually place quotes around problematic function names. Note: some of these (unicode names, for example, or Flasm keywords) are perfectly ok with Flash IDE, but interfere with Flasm parser.
+<p>
+An edge case: nested <code>tellTargets</code> don't work if one of them is inside of a function.
+<p>
+Don't know of any other bugs at the moment. If you find a nontrivial bug, fell free to <a href="http://www.nowrap.de/kontakt.html">send&nbsp;me</a> your file. Please try to produce a minimal sample where the bug still occurs. The relevant part of source code or FLA is also welcome.
+<p>
+To make it clear: provided the SWF is valid, it <i>must</i> run properly after disassembling and assembling back without changes. The update mode <i>must</i> work too. There are absolutely no voodoo behaviors or unsupported features in Flasm. If you encounter problems, there must be a serious bug in my implementation and your report is highly appreciated.
+
+
+<h3><a name="history"></a>History</h3>
+<p>
+<a href="http://www.opaque.net">Dave Hayden</a> released Flasm in cooperation with Damien Morton in April 2001.
+The first version was able to disassemble the main timeline of the SWF and assemble to the first frame only. Flasm was quite useful already. I was very excited to discover Flasm back then, and soon started to play with source code. I've expanded Flasm's functionality and fixed some bugs. Dave then started the project on <a href="http://sourceforge.net/projects/flasm/">sourceforge.net</a>. From 2002 until now I'm the only person developing and maintaining Flasm. Recently, Wang&nbsp;Zhen from <a href="http://www.genable.com">Genable Labs</a> has greatly contributed to Flasm 1.6.
+
+
+<h3><a name="projectstate"></a>Project state</h3>
+<p>
+After five years of development Flasm is stable enough to be used in real-life projects and to my best knowledge fully supports all quirks of SWF format. I'm happy that during these time Flasm's source code has helped to develop some third-party software. My special thanks go to all the people who reported problems and suggested improvements. Now I'm busy with other projects and will not be able to implement exciting new features. Please send me your bug reports though, bug fixes will continue to happen.
+<p>
+It's unlikely I'll ever add support for Flash 9. As you may know, Flash Player 9 contains the new virtual machine, which is nothing like the old one. I see it as a natural end of Flasm's life cycle&nbsp;&#8212; supporting that would in fact mean writing another Flasm from scratch.
+
+
+<h3><a name="resources"></a>Resources</h3>
+<p>
+This page can always be found at <a href="http://www.nowrap.de/flasm.html">http://www.nowrap.de/flasm.html</a>. The mirror at <a href="http://flasm.sourceforge.net">flasm.sourceforge.net</a> is updated from time to time.
+<p>
+The source is available here or may be downloaded from SourceForge's CVS. Project page is <a href="http://sourceforge.net/projects/flasm">http://sourceforge.net/projects/flasm</a>.
+<p>
+Take a look at my another project: <a href="http://www.nowrap.de/flare.html">Flare</a>, the free ActionScript decompiler.
+<p>
+On the <a href="http://www.opaque.net/~dave/flasm/">original Flasm page</a> resides the first version and the useful explanation of Flash 5 bytecodes by Dave.
+<p>
+Compare tree animations made by Amos Olson: <a href="http://www.amosolson.com/flash/tree.html">standard ActionScript</a> version and <a href="http://www.amosolson.com/flash/flasmtree.html">the optimized</a> one.
+<p>
+Look at <a href="http://www.schuirink.net/~casper/flash/AI/path-flasm.html">path finding swf</a> made with Flasm by Casper Schuirink.
+<a href="http://www.schuirink.net/~casper/zip/path-flasm.zip">Here</a> is the source.
+<p>
+<a href="http://www.mtasc.org">MTASC</a>, an open source ActionScript II compiler.
+<p>
+ActionScript problems are discussed on the highly frequented <a href="http://chattyfig.figleaf.com">flashcoders mailing list</a>,
+maintained by Branden Hall.
+<p>
+Alexis' <a href="http://sswf.sourceforge.net/SWFalexref.html">SWF Reference</a>
+<p>
+Macromedia's <a href="http://www.macromedia.com/licensing/developer/">SWF File Format description</a>
+<p>
+At the <a href="http://proto.layer51.com">prototype</a> site you'll find some Flash functions redefined for speed or flexibility, and also many new and useful ones. Often it's better to start Flasm optimizing from one of them.
+<p>
+<a href="http://lists.flashguru.co.uk/mailman/listinfo/extendflash">Extendflash mailing list</a> deals mostly with JSAPI, which allows customizing Flash MX 2004 and Flash 8 IDEs. Some posts about SWF internals.
+<p>
+<a href="http://www.kinesissoftware.com/">KineticFusion</a> by Kinesis Software converts your complete SWF to XML and back. Pricey.
+<p>
+Ben Schleimer's <a href="http://snow.prohosting.com/bensch/flasp.html">Flasm Profiler</a> shows you what to optimize in the first place.
+<p>
+Pavils Jurjans has written the <a href="http://www.jurjans.lv/flash/flasm_debug.html">little debugger</a> for Flasm,
+useful while embedding Flasm code in ActionScript. The debugger shows stack and register contents. 
+<p>
+Jon Bott's has written an <a href="http://home.byu.net/jtb64/Swob.htm">obfuscator</a>, based on Flasm.
+<p>
+<a name="winflasm"></a>For people who don't like to work with command line, and don't like to register Flasm as SWF handler in Windows Explorer either,
+there is a <a href="http://www.nowrap.de/download/winflasm.zip">WinFlasm</a> by <a href="mailto:nhytro-python@web.de">Sharriff Aina,</a>
+simple Windows interface to Flasm.
+<p>
+Albert Chosky has created <a href="ftp://ftp.editplus.com/files/flasm132.zip">Flasm  1.32 syntax files</a> for <a href="http://www.editplus.com">EditPlus</a>.
+<p>
+The older Flasm <a href="http://www.nowrap.de/download/UltraEdit_flasm.txt">syntax file</a> for <a href="http://www.ultraedit.com/">UltraEdit</a>, submitted by anonymous Russian flasmer.
+
+
+<h3><a name="useterms"></a>Terms of use</h3>
+<p>
+Copyright &copy; 2001&nbsp; Opaque Industries, &nbsp;&copy; 2002-2007&nbsp; Igor Kogan, &nbsp;&copy; 2005&nbsp; Wang Zhen<br>
+All rights reserved.
+<p>
+Flasm is completely free. It's provided &#8220;as is&#8221; and without any warranties. Please read the license included in the distribution for details.
+<p>
+Macromedia and Flash are registered trademarks of Adobe Systems Inc.
+<br>Adobe does not sponsor, affiliate, or endorse this product. 
+
+
+<h3><a name="enjoy"></a>Enjoy</h3>
+<a href="http://www.nowrap.de"><b>Igor Kogan</b></a>
+<p>
+<hr id="bluehr" noshade size="1">
+<table width="100%" cellpadding=0 cellspacing=0 border=0><tr>
+<td id="contenttd">Last significant update:&nbsp; 15 Juni 2007</td>
+<td align="right"><img src="logo.gif" alt="Logo" width="24" height="35" border="0"></td>
+</tr></table>
+</td></tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>ASProf - Realtime Actionscript Profiler</title>
+	<link href="asprof.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+	<div id="menu">
+		<div class="logo">
+			<h1 class="title">ASProf</h1>
+			<span class="subtitle">Realtime Actionscript Profiler</span><br/>
+		</div>
+		<br/>
+		<div class="author">
+			by David Chang<br/>
+			<a href="http://www.nochump.com">www.nochump.com</a><br/>
+			<a href="/contact">contact</a><br/>
+		</div>
+		<br/>
+		<div class="release">
+			<div class="header">Release</div>
+			1.0<br/>
+		</div>
+		<br/>
+		<div class="download">
+			<div class="header">Download</div>
+			<a href="downloads/ASProf-1.0.mxp">ASProf-1.0.mxp</a><br/>
+		</div>
+		<br/>
+		<div class="requirements">
+			<div class="header">Requirements</div>
+			Flash MX<br/>
+			Extension Manager<br/>
+		</div>
+	</div>
+	
+	<div id="description">
+		<h2>Description</h2>
+		ASProf is a realtime profiler for Macromedia Flash MX.<br/>
+	</div>
+	
+	<div id="features">
+		<h2>Features</h2>
+		<ul>
+			<li>profile any function including built-in ones</li>
+			<li>inline profiling of code segments</li>
+			<li>encapsulated design for clean usage and removal</li>
+			<li>provides one output type based on gprof flat graph</li>
+			<li>handles nested function calls for proper timing</li>
+			<li>code hints and reference help included</li>
+		</ul>
+	</div>
+	
+	<div id="methods">
+		<h2>Methods</h2>
+		<code><span class="identifier">ASProf</span>.<span class="identifier">profile</span>(<span class="string">"path.to.function"</span>);</code><br/>
+		Profiles a function.  The parameter is a string evaluable to the function.  Relative/absolute pathing, scope chain descending, and dot/slash notation are all valid.<br/>
+		<br/>
+		<code><span class="identifier">ASProf</span>.<span class="identifier">profileObject</span>(<span class="string">"path.to.object"</span>);</code><br/>
+		Profile all functions within an object.  Like ASProf.profile, the parameter is a string evaluable to the object.  This method is most useful for profiling the prototype object.<br/>
+		<br/>
+		<code><span class="identifier">ASProf</span>.<span class="identifier">begin</span>(<span class="string">"name"</span>);</code><br/>
+		Opens an inline code profile.  The parameter is a unique string label.  Note: must close with ASProf.end.<br/>
+		<br/>
+		<code><span class="identifier">ASProf</span>.<span class="identifier">end</span>();</code><br/>
+		Closes an inline code profile opened by ASProf.begin.<br/>
+		<br/>
+		<code><span class="identifier">ASProf</span>.<span class="identifier">getFlatGraph</span>();</code><br/>
+		Returns a string of the flat graph.  The graph is based on that of gprof's.  For information on reading the graph, please visit gprof's description <a href="http://www.gnu.org/software/binutils/manual/gprof-2.9.1/html_chapter/gprof_5.html#SEC11">here</a>.<br/>
+	</div>
+	
+	<div id="tips">
+		<h2>Tips</h2>
+		Keep your profile initializations together so they can be block commented at the final release to free up ASProf’s processing overhead.  You can also just comment the include line and all calls will be made to a null object thus doing nothing.<br/>
+		<br/>
+		Built-in functions generally run under 1ms however profiling them may be useful to track how often they are getting called.<br/>
+		<br/>
+		Profiling constructors may be useful for counting instance creations however a count occurs only when '<code>new</code>' is used.  So for instance, using [ ] to create an array will not affect the profile.<br/>
+		<br/>
+		Set a time interval on <code>getFlatGraph</code> to view realtime updates however bear in mind that <code>getFlatGraph</code>'s performance is relative to the number of profiles so try to keep the interval high.
+	</div>
+	
+	<div id="example">
+		<h2>Example</h2>
+		The example below demonstrates the various features of ASProf.  The AClass constructor is profiled to count intances.  Its prototype object is profiled to measure its methods’ execution times.  An inline profile labeled "main" measures the lines that follow.  Note that since profiles exist within "main", those timings are accounted for by the self time field of "main" in the flat graph. View a demo <a href="demo.html">here</a>.
+		<div class="header">source</div>
+		<code>
+			<span class="comment">// include the file</span><br/>
+			<span class="keyword">#include</span> <span class="string">"ASProf.as"</span><br/>
+			<span class="identifier">_global</span>.AClass = <span class="keyword">function</span>() {};<br/>
+			AClass.<span class="identifier">prototype</span>.loop = <span class="keyword">function</span>() {<br/>
+			&nbsp;&nbsp;&nbsp;<span class="keyword">for</span> (<span class="keyword">var</span> i = 0; i &lt; 10000; i++) {} // waste time</span><br/>
+			};<br/>
+			<span class="comment">// setup for for profiling</span><br/>
+			<span class="identifier">ASProf</span>.<span class="identifier">profile</span>(<span class="string">"AClass"</span>);<br/>
+			<span class="identifier">ASProf</span>.<span class="identifier">profileObject</span>(<span class="string">"AClass.prototype"</span>);<br/>
+			<span class="comment">// open inline profile<br/></span>
+			<span class="identifier">ASProf</span>.<span class="identifier">begin</span>(<span class="string">"main"</span>);<br/>
+			aClassInstance = <span class="keyword">new</span> AClass();<br/>
+			aClassInstance.loop();<br/>
+			<span class="identifier">ASProf</span>.<span class="identifier">end</span>(); <span class="comment">// close “main”<br/></span>
+			<span class="identifier">trace</span>(<span class="identifier">ASProf</span>.<span class="identifier">getFlatGraph</span>());<br/>
+		</code>
+		
+		<div class="header">output</div>
+		<code>
+			Flat profile:<br/>
+			<br/>
+			Each sample counts as 0.001 seconds.<br/>
+			&nbsp;&nbsp;%&nbsp;&nbsp;&nbsp;cumulative&nbsp;&nbsp;&nbsp;self&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;total<br/>
+			&nbsp;time&nbsp;&nbsp;seconds&nbsp;&nbsp;&nbsp;&nbsp;seconds&nbsp;&nbsp;&nbsp;&nbsp;calls&nbsp;&nbsp;ms/call&nbsp;&nbsp;ms/call&nbsp;&nbsp;name<br/>
+			98.507&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.066&nbsp;&nbsp;&nbsp;&nbsp;0.066&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;66&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;66&nbsp;&nbsp;AClass.prototype.loop<br/>
+			&nbsp;1.492&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.067&nbsp;&nbsp;&nbsp;&nbsp;0.001&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;67&nbsp;&nbsp;main<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.067&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;AClass<br/>
+		</code>
+	</div>
+</body>
+</html>

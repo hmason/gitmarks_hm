@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=iso-8859-1" />
+	 <title>37signals: An Introduction to Using Patterns in Web Design</title>
+    <link rel="Stylesheet" href="screen.css" type="text/css" media="screen" />
+</head>
+
+<body>
+<!-- BEGIN WEBSIDESTORY CODE v3.0.0 (pro)-->
+<!-- COPYRIGHT 1997-2003 WEBSIDESTORY, INC. ALL RIGHTS RESERVED. U.S.PATENT No. 6,393,479 B1. Privacy notice at: http://websidestory.com/privacy -->
+<script language="javascript">
+var _pn="Article+Patterns"; 	//page name(s)
+var _mlc="CONTENT+CATEGORY";	//multi-level content category
+var _cp="null"; 	//campaign
+var _acct="WE53032186AFWREN3"; 	//account number(s)
+var _pndef="title";	//default page name
+var _ctdef="full"; 	//default content category
+var _prc="";	//commerce price
+var _oid="";	//commerce order
+var _dlf="";	//download filter
+var _elf="";	//exit link filter
+var _epg=""; 	//event page identifier
+var _mn="wp179"; //machine name
+var _gn="phg.hitbox.com"; //gateway name
+var _hcv=68;function _wn(n){return((n.indexOf("NAME")>0&&n.indexOf("PUT")>-1)||
+(n.indexOf("CONTENT")>-1&&n.indexOf("CATEGORY")>0))};function _gd(x,w){var _ed=
+x.lastIndexOf("/");var _be=(w!="full")?x.lastIndexOf("/",_ed-2):x.indexOf("/");
+return(_be==_ed)?"/":x.substring(_be,_ed);};function _gf(x){return x.substring(
+x.lastIndexOf("/")+1,x.length);};var _hl=location;var _lp=_hl.protocol.indexOf(
+'https')>-1?'https://':'http://';var _zo=(new Date()).getTimezoneOffset();
+function _ps(_ip,_pml){return(_ip&&_wn(_pml))?((_pndef=="title"&&
+document.title!="")?document.title:_gf(_hl.pathname)?_gf(_hl.pathname):_pndef):
+(_wn(_pml)?_gd(_hl.pathname,_ctdef):_pml)};function _pm(m,_fml,h){if(m.indexOf(
+";")!=-1){_nml=m.substring(0,m.indexOf(";"));_rm=m.substring(m.indexOf(";")+1,
+m.length);_fml+=_ps(h,_nml)+";";return _pm(_rm,_fml,h);}else{return _fml+_ps(h,
+m);}};var _sv=10;var _hn=navigator;var _bn=_hn.appName;if(_bn.substring(0,9)==
+"Microsoft"){_bn="MSIE";};var _bv=(Math.round(parseFloat(_hn.appVersion)*100));
+if((_bn=="MSIE")&&(parseInt(_bv)==2))_bv=301;function _ex(v){return escape(v)};
+var _rf=_ex(document.referrer);_mlc=_pm(_mlc,"",0);_pn=_pm(_pn,"",1);</script>
+<script language="javascript1.1">_sv=11</script><script language="javascript1.1"
+src="http://stats.hitbox.com/js/hbp.js" defer></script><script
+language="javascript">if(_sv<11){if(document.cookie.indexOf("CP=")>-1){_ce="y";}
+else{document.cookie="CP=null*; path=/; expires=Wed, 1 Jan 2020 00:00:00 GMT";
+_ce=(document.cookie.indexOf("CP=")!=-1)?"y":"n";};if((_rf=="undefined")||
+(_rf=="")){_rf="bookmark";};_x2="<img src='"+_lp+_gn+"/HG?hc="+_mn+"&hb="+
+_ex(_acct)+"&n="+_ex(_pn);_x3="&cd=1&hv=6' border=0 height=1 width=1>";_ar=
+"&bn="+_ex(_bn)+"&bv="+_bv+"&ce="+_ce+"&ss=na&sc=na&ja=na&sv="+_sv+"&con="+
+_ex(_mlc)+"&vcon="+_ex(_mlc)+"&epg="+_epg+"&hp=u&cy=u&dt=&ln=na&cp="+_ex(_cp)+
+"&pl=&prc="+_ex(_prc)+"&oid="+_ex(_oid)+"&rf="+_rf;document.write(_x2+_ar+_x3);}
+if(_bn!='Netscape'&&_bv>399)document.write("<\!"+"--");</script><noscript><img
+src="http://phg.hitbox.com/HG?hc=wp179&cd=1&hv=6&ce=u&hb=WE53032186AFWREN3&n=Article+Patterns&vcon=CONTENT+CATEGORY" border='0' width='1' height='1'></noscript><!--//-->
+<!-- END WEBSIDESTORY CODE  -->
+
+	<div id="OuterContainer">
+	<div id="InnerContainer">
+
+		<div id="Logo">
+			<a href="http://37signals.com"><img src="http://www.37signals.com/images/37slogo.gif" width="100" height="22" alt="37signals" /></a>
+		</div>
+
+		<div id="Header">
+			<h1>An Introduction to Using Patterns in Web Design</h1>
+			<p>by Ryan Singer, October 5 2004</p>
+		</div>
+
+		<p>The biggest challenge for web designers is the unthinkably huge number of possible ways to solve any given problem. We usually don't think of this because we have our habits and traditions to fall back on, but there are literally billions of possible pixel combinations for each page we make.</p>
+
+  <p>There is a better way to manage this vast complexity than by making big decisions up front and hoping for the best. To make better sites &mdash; sites that are functional, beautiful, and "usable" &mdash; we have to break our design problems up into small independent chunks based on the real issues within our requirements. Christopher Alexander, who came up with this stuff, calls these chunks <em>patterns</em>.</p>
+  
+  <p>I'm going to show you how to sidestep your habits and assumptions and use patterns to make better design decisions. A lot of fancy stuff has been written about patterns. To be simple and clear in this introduction, I'll just call them <em>chunks</em>.</p>
+
+<h2><em>Step one:</em> List your bits</h2>
+
+<p>Start by making a list of all the specific bits that must fit together for the web page to succeed as a whole. By "bits" I mean any kind of design consideration. So this includes what info the page should get across, what actions it should support, important attitudes of the users, and so on. Do not prioritize, group, or categorize. If you start by grouping and organizing you'll just end up with your original habits and preferences in the end.</p>
+
+<p>Here are the bits for a "My Account" page that I recently designed:</p>
+
+<ol>
+	<li>Company info</li>
+	<li>Insurance info for company</li>
+	<li>My (current user) info</li>
+	<li>Other users on this account</li>
+	<li>My sales rep contact info</li>
+	<li>Current account plan</li>
+	<li>Link to change search preferences</li>
+	<li>Date account was created</li>
+	<li>People rarely view or change insurance info</li>
+	<li>Any user can edit anything except other users' info</li>
+	<li>Changing password is the most likely action</li>
+	<li>People might come here to change search preferences (which are on a separate page)</li>
+</ol>
+
+<p>Do this on paper if you're working on your own. It's faster.</p>
+
+<h2><em>Step two:</em> Figure out which bits relate to each other</h2>
+
+<p>Some bits affect each other (like 7 and 12) while others are pretty independent (1 and 9). Some bits will work out better if you think of them together and some bits will be the same regardless of the others. Put the bits into chunks based on whether they impact each other &mdash; not based on any conceptual or graphic ideas.</p>
+
+<blockquote>
+A: 1, 10<br />
+B: 2, 9, 10<br />
+C: 3, 10, 11<br />
+D: 4, 10<br />
+E: 5<br />
+F: 6, 10<br />
+G: 7, 12<br />
+H: 8
+</blockquote>
+
+<p>Let's look at C for example:</p>
+
+<blockquote>
+3. My (current user) info<br />
+10. Any user can edit anything except other user's info<br />
+11. Changing password is most likely action
+</blockquote>
+
+<p>The password (11) is part of the user info (3) and this can all be edited (10).</p>
+
+<p>Notice we're not building down from our assumptions. We're building <em>up</em> from what we know for sure.</p>
+
+<h2><em>Step three:</em> Prioritize</h2>
+
+<p>Decide which chunks are most important from a functional perspective. In other words, decide which chunks matter most to people.</p>
+
+<p>It isn't necessary to reorder the whole list. Just figure out which chunks are the most important and group them loosely:</p>
+
+<blockquote>
+Most important: C, A, G, E<br />
+Necessary: B, D, F<br />
+Nice to have: H
+</blockquote>
+
+<h2><em>Step four:</em> Design each chunk</h2>
+
+<p>Since we grouped all the directly related bits into chunks, we can design the chunks independently without worrying about conflicts. This idea is the heart of Alexander's patterns (which I'm calling chunks). You can get them right on their own and then fuse them together.</p>
+
+<p>Start with the high priority chunks and move down:</p>
+
+<blockquote>
+<h3>Sketch C</h3>
+<p><img src="pattern-C.gif" alt="Sketch C"/></p>
+
+<h3>Sketch A</h3>
+<p><img src="pattern-A.gif" alt="Sketch A"/></p>
+
+<h3>Sketch G</h3>
+<p><img src="pattern-G.gif" alt="Sketch G"/></p>
+<p>The blinky lines around G satisfy 12 by showing that it should stand out. ("12. People might come here to change search preferences").</p>
+
+<h3>Sketch E</h3>
+<p><img src="pattern-E.gif" alt="Sketch E"/></p>
+
+<h3>Sketch B</h3>
+<p><img src="pattern-B.gif" alt="Sketch B"/></p>
+<p>In my shorthand I've indicated that the link "Show/hide insurance info" will show or hide the block below it with Javascript. This satisfies 9 ("People rarely view or change insurance info").</p>
+
+<h3>Sketch D</h3>
+<p><img src="pattern-D.gif" alt="Sketch D"/></p>
+<p>This chunk can be duplicated for each additional user.</p>
+
+<h3>Sketch F</h3>
+<p><img src="pattern-F.gif" alt="Sketch F"/></p>
+
+<h3>Sketch H</h3>
+<p><img src="pattern-H.gif" alt="Sketch H"/></p>
+</blockquote>
+
+<p>Notice how the above sketches use scale and weight to show priority. These decisions will guide you in the next step.</p>
+
+<h2><em>Step five:</em> Put the chunks together</h2>
+
+<p>After the chunks are sketched, piece them together into a whole. Think about the constraints that went into the sketches. Think about priority. Think about balance. Do your design thing.</p>
+
+<p>Here I did two phases. First the rough layout:</p>
+
+<blockquote><img src="whole-1.gif" alt="Layout 1"/></blockquote>
+
+<p>Does this remind you of a wireframe?</p>
+
+<p>Next I did a loose sketch to guide my HTML prototype:</p>
+
+<blockquote><img src="whole-2.gif" alt="Layout 2"/></blockquote>
+
+<h2>Step six: Make it real</h2>
+
+<p>When you build the real thing you sometimes see that what worked on paper just isn't quite right on screen. In the final design I shifted the Company data (A) around for better balance and switched the sidebar (E,F,H) from the left to the right. I could tweak these chunks independently because they were designed independently. Have a look at the result:</p>
+
+<blockquote>
+	<a href="final.html"><img src="final-small.gif" alt="Final design"/></a>
+<p><a href="final.html">See it full size</a>.</p>
+</blockquote>
+
+
+<h2>So much for chunks</h2>
+
+<p>In this article I treated patterns in a very simplified way, as chunks. You might be wondering <em>well what are patterns then?</em> Patterns play a significant role in architecture, urban planning, and recently software design. In all of these cases <strong>a pattern is a way of dealing with a system of interacting forces</strong>. When you find that you often design a sidebar for helpful notes, details and references, you're using a pattern. The interacting forces are the requirements of those little bits and how they relate to the main content, and the sidebar is the best way to deal with them.</p>
+
+<p>For more on design patterns, see the links below or <a href="http://www.google.com/search?hl=en&ie=UTF-8&q=design+patterns&btnG=Google+Search">Google away</a>.</p>
+
+	<h2>Related books</h2>
+	<ul>
+		<li><a title="Go to Amazon" href="http://www.amazon.com/exec/obidos/tg/detail/-/0674627512/qid=1096664286/sr=8-1/ref=pd_csp_1/104-4858413-1111166?v=glance&s=books&n=507846">Notes on the Synthesis of Form</a></li>
+		<li><a title="Go to Amazon" href="http://www.amazon.com/exec/obidos/tg/detail/-/0195019199/qid=1096664299/sr=8-1/ref=pd_csp_1/104-4858413-1111166?v=glance&s=books&n=507846">A Pattern Language: Towns, Buildings, Construction</a></li>
+		<li><a title="Go to Amazon" href="http://www.amazon.com/exec/obidos/tg/detail/-/020172149X/103-9484949-6654232?v=glance">The Design of Sites: Patterns, Principles, and Processes&hellip;</a></li>
+	</ul>
+
+	<h2>Related links</h2>
+	<ul>
+		<li><a title="Article on Signal vs. Noise" href="http://www.37signals.com/svn/archives/000737.php">Interface Design Tip: Find the Epicenter</a></li>
+		<li><a href="http://www.welie.com/index.html">welie.com &mdash; patterns in Interaction Design</a></li>
+	</ul>
+
+	<h2>What do you think?</h2>
+
+	<p>Discuss this article on <a href="http://www.37signals.com/svn/archives/000877.php">Signal vs. Noise</a>.</p>
+
+	</div>
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,199 @@
+<html>
+<head>
+<title>PHP, Curl, and You!</title>
+</head>
+<body>
+<style>
+body {font-family: Verdana, Arial, Helvetica;
+    font-size: 75%;
+    background-image:url(http://blog.unitedheroes.net/images/bgg.png);
+    background-repeat: repeat-y;
+    margin: 0;
+    padding: 0;
+    }
+p {
+    margin: .5em 2em .5em 90px;
+    padding: .5em ;
+    }
+ul {
+    margin: 0 96px 0 90px;
+    }
+ul p {
+    margin: .5em;
+    }
+
+code {
+    display: block;
+    font-family: courier new;
+    font-size: 110%;
+    border: 1px solid black;
+    padding: 1em;
+    margin: 0 100px;
+    background-color: #ddd;
+}
+
+ul code {
+    margin: 0 100px 0 0;
+    }
+
+h2 
+{
+    margin: 30px 96px 0 96px;
+    border-bottom: 3px solid blue;
+}
+
+
+.title {
+    margin: 0 15em 0 96px;
+    }
+.title h1 {
+    margin: 0;
+    }
+.title h2 {
+    border:0;
+    margin:0;
+    }
+tt {
+    font-size: 120%;
+    }
+.footer    
+{
+    text-align: right;
+}
+
+.toc
+{
+    margin: 0;
+    padding: .5em;
+    display:block;
+    width:15em;
+    position:absolute;
+    top: 0;
+    right:0;
+    border-left: 2px solid black;
+    list-style: none;
+
+}
+</style>
+<div class="title">
+<h1>PHP, CURL, and YOU!</h2>
+<h2>Getting data without risking death</h2>
+</div>
+<a name="intro"><h2>Intro</h2></a>
+<p>If you've watched any TV in the U.S. lately, you've probably seen a commercial
+where nice, friendly folks are saying things like "I want my computer to be 
+infected by viruses.", "I want all of my family photos to disappear without
+a trace." or "I want my laptop to sound like a Yeti."</p>
+<p>Naturally, none of these folks honestly <i><b>want</b></i> that sort of 
+pain, but by not taking steps to protect themselves, they're letting in 
+bad guys. Understand, that like your home, car, or personal savings account,
+you can't just leave it wide open and trust in the kindness of strangers. Sadly,
+most strangers aren't really as nice as you'd hope. In fact, this probably explains
+why banks switched off keeping their money in a big bag out in the middle of an
+empty field after the first few days.</p>
+<p>Still, it's easy to make mistakes if nobody ever tells you what the right
+answer is. Ignorance isn't bad. Willful ignorance is, but since you're reading this
+I'll presume you're not that stupid.</p>
+<a name="not_to_do"><h2>What not to do</h2></a>
+<p>Here's a rundown of what not to do and why.</p>
+<ul>
+<li><code>&lt;?php include('http://example.com'); ?></code>
+<p>This is delicious, candy covered evil. What it means is "Go to http://example.com, fetch 
+the contents, and then run them just as if I were telling you to do it.". </p>
+<p>That's fine for something like the following:</p>
+<pre><code>&lt;b>Hello World&lt;/b></code></pre>
+<p>but not so fine if the site gets hacked (or the owner gets pissed at you) and it's replaced with:</p>
+<pre><code>Evil ruuLzzzzorz!!! &lt;?php system("rm -rf /*"); ?></code></pre>
+<p>which will delete ("<b>r</b>e<b>m</b>ove") everything on your computer. <p></li>
+<li><code>&lt;?php print read_file('http://example.com'); ?></code>
+<p>This is a little safer, since all it does is read the contents of a remote page and print them.
+There's no chance that someone could insert bad PHP code into this and have it execute, but it
+does mean that someone could inject bad Javascript, and suddenly your site is infesting
+your visitors with millions of pop-up ads. That will make them say very naughty things about you.</p>
+</ul>
+<p>There are lots of other things, but those are the "biggies". </p>
+<a name="to_do"><h2>What TO do</h2></a>
+<p>PHP has a very powerful library of calls that are specifically designed to safely fetch data from
+remote sites. It's called <a href="http://www.php.net/manual/en/ref.curl.php">CURL</a>. Now, don't let that big page of really confusing crap scare you, it's actually pretty simple.<p>
+<p>Here's a quick replacement for the <tt>read_file()</tt> command above:
+<pre><code>&lt;?php
+
+$curl_handle=curl_init();
+curl_setopt($curl_handle,CURLOPT_URL,'http://example.com');
+curl_exec($curl_handle);
+curl_close($curl_handle);
+
+?></code></pre>
+
+<p>That's it, and if you really wanted, the last <tt>curl_close()</tt> step is optional. </p>
+<p>Mind you, you're still subject to the evil javascript and cookie stealing crap from the remote
+site, but that involves more work than you probably want to do. If you do want to do it, I'd
+suggest brushing up on <a href="http://www.oreilly.com/catalog/regex2/index.html">Regular 
+Expressions</a> and <tt><a href="http://www.php.net/manual/en/function.preg-replace.php">preg_replace()</a></tt></p>
+<p>But let's really use CURL for what it can do. Let's say that example.com isn't really that reliable. 
+It bugs you that whenever they're down, your page takes 30 seconds to load. Well, there's a solution
+to that:
+<pre><code>&lt;?php
+
+$curl_handle=curl_init();
+curl_setopt($curl_handle,CURLOPT_URL,'http://example.com');
+<b>curl_setopt($curl_handle,CURLOPT_CONNECTTIMEOUT,2);</b>
+curl_exec($curl_handle);
+curl_close($curl_handle);
+
+?&gt;</code></pre></p>
+<p>What that says is to time out after only two seconds. Heck, you may want to set it to 1 second to make your page load even zippier. (Be careful not to set it to zero (zed to you outside of the US). That tells curl to never time out.)</p>
+<p>But what if we also want to display a message if you don't get anything back? Ha-ha! That's easy!</p>
+<pre><code>&lt;?php
+
+$curl_handle=curl_init();
+curl_setopt($curl_handle,CURLOPT_URL,'http://example.com');
+curl_setopt($curl_handle,CURLOPT_CONNECTTIMEOUT,2);
+<b>curl_setopt($curl_handle,CURLOPT_RETURNTRANSFER,1);</b>
+<b>$buffer = </b>curl_exec($curl_handle);
+curl_close($curl_handle);
+
+<b>if (empty($buffer))
+{
+    print "Sorry, example.com are a bunch of poopy-heads.&lt;p>";
+}
+else
+{
+    print $buffer;
+}</b>
+?></code></pre></p>
+<p>Are you starting to see the power of CURL?</p>
+<a name="where_next"><h2>Where to go from here</h2></a>
+<p>Well, first off, I'd make sure I have the latest copy of <a href="http://wordpress.org">Wordpress</a>,
+<a href="http://phpbb.com">phpBB</a>, and any other package I've already installed. If you're also a
+Dreamhost type person, you can take advantage of them being <a href="http://dreamhost.com/rewards.cgi?jrconlin">
+the best damn hosting company on the internet</a>
+and use their spiffy <a href="https://panel.dreamhost.com/index.cgi?tree=goodies.installer&">One click installs</a> to get the latest version.</p>
+<p>I'd then recommend reading up on PHP over at <a href="http://php.net/manual">php.net</a>. 
+Each of the help pages has comments and examples of how to use it. It's very helpful. 
+Generally, it's a good idea to know what you're running. Like reading your car's owners manual before
+your stuck on the side of the freeway wondering where the heck the jack is.</p>
+<p>I'd also add the following to my <tt>.htaccess</tt> file. (This should be at the top directory for
+your website, in the same directory as your very top page.) Files with periods at the front of them 
+are hidden on most systems, so you may have to turn on "Show Hidden Files in your <a href="http://filezilla.sourceforge.net/">FTP client</a></p>
+<code>
+php_value register_globals 0
+</code>
+<p>This will prevent PHP from automagically turning any value in the URL into a variable. That's a good
+thing because it means Evil Hacker People can't insert anything they like into your code simply
+by sticking it into your URL. The problem with this is that it breaks some packages, notably ones
+like ATP and phpNuke. There are safer, <a href="http://mamboserver.com/">better</a> versions out there, you just have to go get them, learn them and keep them up-to-date.</p>
+<p>There, now hopefully you understand and have some work-around fixes.</p>
+<p>The proprietor of tellinya.com points out that <a href="http://www.tellinya.com/read/2007/06/05/basic-curl-with-php-to-get-pages-and-post-data/">he has a few more advanced</a> usages and classes you might be interested in. I've not tested his code out, and he seems to set a lot of variables to their default values, but the code is fairly straight forward and shows you what you can do with cUrl.</p>
+<p>And most of all... Let's be careful out there.</p>
+<div class="footer"><a href="http://unitedheroes.net"><img src="http://unitedheroes.net/art/sponsor.png" width="289" height="16" border="0" alt="brought to you by unitedHeroes.net"></a><br />
+<a href="http://blog.unitedheroes.net/archives/p/1630/">Back to the blog</a></div>
+<ul class="toc">
+<li><a href="#intro">Intro</a></li>
+<li><a href="#not_to_do">What not to do</a></li>
+<li><a href="#to_do">What TO do</a></li>
+<li><a href="#where_next">Where to go from here</a></li>
+</ul>
+</body>
+</html>
+

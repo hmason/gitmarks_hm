@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="author" content="All: Petr Stanicek aka -pixy-; http://www.pixy.cz" />
+	<meta name="copyright" content="Petr Stanicek aka -pixy- and/or specified authors" />
+	<meta name="description" lang="en" content="Simple hack to set a CSS property for Windows MSIE only." />
+	<meta name="description" lang="cs" content="Jednoduchý hack, jak nastavit vlastnost CSS jen pro Windows MSIE." />
+	<meta name="keywords" lang="en" content="css valid hack underscore MSIE Explorer only" />
+	<meta name="keywords" lang="cs" content="css validní hack podtržítko jen MSIE Explorer" />
+	<title>[ws] The Underscore Hack | Podtržítkový hack</title>
+	<style type="text/css" media="screen,projection"> @import "style/layout.css"; </style>
+	
+	<link rel="stylesheet" type="text/css" media="print" href="style/print.css" />
+	<link rel="shortcut icon" href="favicon.ico" />
+	<script type="text/javascript" src="style/duallang.js"></script>
+</head>
+<body>
+<div id="page" class="page-english">
+
+<div id="logo"><a href="index.html" title="Go to / Jdi na WELLSTYLED.COM homepage"><strong><span>WellStyled.com</span></strong></a></div>
+
+<div id="content">
+
+<p class="bi-hidden center">
+	<a href="singlelang.php?lang=en&amp;page=css-underscore-hack.html">English-only</a> |
+	<a href="singlelang.php?lang=cs&amp;page=css-underscore-hack.html">Jenom česky</a> |
+	<a href="/css-underscore-hack.html">Bilingual/Dvojjazyčně</a>
+</p>
+
+<h1 class="english-only" lang="en"><em class="group">CSS Hack:</em> The Underscore Hack</h1>
+<h1 class="czech-only" lang="cs"><em class="group">CSS Hack:</em> Podtržítkový hack</h1>
+
+<div class="article bilingual">
+	<div class="english" lang="en">
+	<p>Let's start with three simple facts &mdash; as Petr Pisar found out.</p>
+	<ol>
+		<li>The underscore ("_") <a href="http://www.w3.org/TR/CSS21/syndata.html#tokenization">is allowed</a> in CSS identifiers by the CSS2.1 Specification</li>
+		<li>Browsers have to ignore unknown CSS properties</li>
+		<li>MSIE 5+ for Windows ignores the "_" at the beginning of any CSS property name</li>
+	</ol>
+	<p>Therefore, a CSS definition, e.&nbsp;g. <code>_color:red</code> is:</p>
+	<ol>
+		<li>Correct, for CSS 2.1 specification allows it (even if software validators, knowing only older version CSS 2.0, say it's a bug: they are wrong, it's correct).</li>
+		<li>Ignored in any browser but WinIE</li>
+		<li>Treated as <code>color:red</code> in WinIE</li>
+	</ol>
+	<p>Thus, this IE's bug/feature is very simple and clear way to set CSS properties for WinIE only (MacIE doesn't have this bug/feature). It's easy to fix e.&nbsp;g. mis-implemented <code>position:fixed</code> in WinIE (see the <a href="files/css-underscore-hack/example-position.html">example</a>).</p>
+	</div>
+	<div class="czech" lang="cs">
+	<p>Začněme se třemi prostými fakty &mdash; jak si jich všiml Petr Písař.</p>
+	<ol>
+		<li>Podtržítko ("_") <a href="http://www.w3.org/TR/CSS21/syndata.html#tokenization">je povoleno</a> v identifikátorech CSS specifikací CSS2.1</li>
+		<li>Prohlížeče musí ignorovat neznámé vlastnosti</li>
+		<li>MSIE 5+ pro Windows ignoruje znak "_" na začátku názvu jakékoli vlastnosti</li>
+	</ol>
+	<p>Tudíž definice CSS, např. <code>_color:red</code> je:</p>
+	<ol>
+		<li>Korektní, protože specifikace CSS 2.1 ji povoluje (ať si softwarové validátory, které znají jen starší verzi CSS 2.0, říkají, co chtějí &mdash; v tom, že je to chyba, se mýlí).</li>
+		<li>Ignorována v každém prohlížeči kromě WinIE</li>
+		<li>Zpracována jako <code>color:red</code> v WinIE</li>
+	</ol>
+	<p>Tato chyba/vlastnost IE je tak velmi jednoduchým a čistým způsobem, jak v CSS nastavit vlastnosti jen pro WinIE (MacIE tuto chybu/vlastnost nemá). Je třeba snadné opravit chybnou implementaci <code>position:fixed</code> ve WinIE (viz <a href="files/css-underscore-hack/example-position.html">příklad</a>).</p>
+	</div>
+</div>
+
+<pre>
+#menu {
+   position: fixed;
+   _position: absolute;
+   ...
+   }
+</pre>
+
+<div class="article bilingual">
+	<div class="english" lang="en">
+	<p>Same method may be used to fix the <code>min-height</code> property missing in WinIE (see the <a href="files/css-underscore-hack/example-minheight.html">example&nbsp;2</a>):</p>
+	</div>
+	<div class="czech" lang="cs">
+	<p>Stejnou metodu můžeme použít na opravení chybějící podpory <code>min-height</code> ve WinIE (viz <a href="files/css-underscore-hack/example-minheight.html">příklad&nbsp;2</a>):</p>
+	</div>
+</div>
+
+<pre>
+#box {
+   min-height: 300px;
+   height: auto;
+   _height: 300px;
+   ...
+   }
+</pre>
+
+<div class="article bilingual">
+	<div class="english" lang="en">
+	<p>Note: This uses another WinIE's bug, treating <code>overflow:visible</code> as <code>height:auto</code>. For details, see the article "<a href="css-minheight-hack.html">The "min-height" Hack</a>".</p>
+	<p>I tested it in Windows' MSIE 5, 5.5, 6, and Opera; Mac OSX's MSIE 5, Safari, and Camino; and in Mozilla and Firefox.</p>
+	</div>
+	<div class="czech" lang="cs">
+	<p>Pozn.: Zde je využita další chyba WinIE, kdy je hodnota <code>overflow:visible</code> zpracována jako <code>height:auto</code>. Podrobnosti najdete v článku "<a href="css-minheight-hack.html">Hack pro "min-height"</a>".</p>
+	<p>Testováno ve Windows v MSIE 5, 5.5, 6 a Opeře; na Mac OSX v MSIE 5, Safari a Caminu; a v Mozille a Firefoxu.</p>
+	</div>
+</div>
+
+</div>
+
+<hr class="hidden" />
+<h3 class="hidden">Menu</h3>
+
+<div id="menu"><div id="menuin">
+	
+	<div class="english-only" lang="en">
+	<a href="index.html">Home</a><span class="hidden"> |
+	</span><a href="about.html">About</a><span class="hidden"> |
+	</span><a href="archive.html">Articles</a><span class="hidden"> |
+	</span><a href="/tools">Tools</a><span class="hidden">
+<!-- 
+	|
+	</span><a href="links.html">Links</a>
+ -->
+	</div>
+
+	<div class="czech-only" lang="cs">
+	<a href="index.html">Úvod</a><span class="hidden"> |
+	</span><a href="about.html">O&nbsp;webu</a><span class="hidden"> |
+	</span><a href="archive.html">Články</a><span class="hidden"> |
+	</span><a href="/tools">Nástroje</a><span class="hidden">
+<!-- 
+	|
+	</span><a href="links.html">Odkazy</a>
+ -->
+	</div>
+
+</div></div>
+
+<hr class="hidden" />
+<div id="footer">
+<p><strong>First time published:</strong> 21 November 2003</p>
+<p><strong>Content update:</strong> 31 May 2004, 10.09 CET --- <strong>Page generated</strong>: 29 Apr 2009, 14.04 CET<br />
+<span class="english-only" lang="en">The article as is is copyrighted and cannot be published without author(s) permission. However, any technique, program code and example used on this page is free for use.</span>
+<span class="czech-only" lang="cs">Článek jako takový je chráněn copyrightem a nesmí být publikován bez svolení autora/autorů. Ale všechny postupy, programové kódy a příklady uvedené na této stránce jsou k volnému použití.</span><br />
+Copyright 2004+ &copy; Petr Staníček [aka -pixy-], <a href="http://www.pixy.cz">www.pixy.cz</a> and/or authors specified above.
+</p>
+</div>
+
+</div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-1465350-2");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+
+</body>
+</html>

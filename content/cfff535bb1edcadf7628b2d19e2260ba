@@ -1,0 +1,494 @@
+<html>
+<head>
+<script type="text/javascript" src="http://stuff.rancidbacon.com/count.js" defer>
+</script>
+<title>Google Maps Hacking and Bookmarklets</title>
+</head>
+<body>
+<h2>Google Maps Hacking and Bookmarklets</h2>
+
+<p style="background:#FFFF66;padding:20px;margin-left:40px;margin-right:40px;text-align:center;"><b style="color:red;">New: </b><a href="http://mygmaps.com/">myGmaps</a> enables you to create, save and host custom data files and display them with Google Maps. <br /> <a href="http://mygmaps.com/">Visit myGmaps.com for custom Google Maps.</a></p>
+
+<p><i>Update: </i>New version <tt>maps.6.js</tt>. Breaks at least <tt>onMapStateChanged</tt> handlers, now expects a function rather than an object&mdash;affects lat/long bookmarklet.</p>
+<p><i>Update: </i>There looks like a new version of Google Maps (<tt><strike>maps.4.js</strike></tt>&mdash;make that <tt>maps.5.js</tt>, someone's been busy--check out Part 13 for some rampant speculation :-) ) is on the scene. I haven't looked at what's changed&mdash;I've been too busy with the unauthorised <a href="http://stuff.rancidbacon.com/gmaps-standalone/">Google Maps Standalone Mode</a>.</p>
+<p><i>Update:</i>The latest version of Google Maps (<tt>maps.3.js</tt>) requires <a href="http://libgmail.sf.net/loadxml-0.0.4.js">http://libgmail.sf.net/loadxml-0.0.4.js</a> or later. The route following bookmarklets have not yet been updated to work with the latest Google Maps version.</p>
+
+<p> Ah, the lure of all things Google...
+
+</p><p> I've been poking around in <a href="http://maps.google.com/">Google Maps</a>
+and had some success I thought others might be able to build on. I've
+put this in a couple of places but thought I'd throw it here as well:
+</p>
+
+<h3>Part 1 : XML Handling</h3>
+<p>Okay, I've been playing around with sending requests to Gmaps via a Python proxy and manipulating the files returned on the fly.
+
+</p><p> As a result I've created a bookmarklet that loads the required XML file into the page: (<a href="javascript:(function() {window.parent._load('<?xml version=&quot;1.0&quot;?><page><title>Somewhere</title><query>Somewhere</query><center lat=&quot;49.275428&quot; lng=&quot;-123.116856&quot;/><span lat=&quot;0.017998&quot; lng=&quot;0.027586&quot;/><overlay panelStyle=&quot;/mapfiles/geocodepanel.xsl&quot;><location infoStyle=&quot;/mapfiles/geocodeinfo.xsl&quot; id=&quot;A&quot;><point lat=&quot;49.286428&quot; lng=&quot;-123.116856&quot;/><icon image=&quot;/mapfiles/marker.png&quot; class=&quot;local&quot;/><info><title xml:space=&quot;preserve&quot;></title><address><line>Somewhere</line></address></info></location></overlay></page>', window.document)})();">Google Maps Load XML Data Example Bookmarklet</a>)
+
+
+</p><p> </p><blockquote><tt>javascript:(function()
+{window.parent._load('&lt;?xml
+version="1.0"?&gt;&lt;page&gt;&lt;title&gt;Somewhere&lt;/title&gt;&lt;query&gt;Somewhere&lt;/query&gt;&lt;center
+lat="49.275428" lng="-123.116856"/&gt;&lt;span lat="0.017998"
+lng="0.027586"/&gt;&lt;overlay
+panelStyle="/mapfiles/geocodepanel.xsl"&gt;&lt;location
+infoStyle="/mapfiles/geocodeinfo.xsl" id="A"&gt;&lt;point
+lat="49.286428" lng="-123.116856"/&gt;&lt;icon
+image="/mapfiles/marker.png" class="local"/&gt;&lt;info&gt;&lt;title
+xml:space="preserve"&gt;&lt;/title&gt;&lt;address&gt;&lt;line&gt;Somewhere&lt;/line&gt;&lt;/address&gt;&lt;/info&gt;&lt;/location&gt;&lt;/overlay&gt;&lt;/page&gt;',
+window.document)})();
+
+</tt></blockquote>
+
+<p> If you save this book marklet and click on it when on any
+(?--certainly the home page) Gmaps page it should move you to a
+location in Vancouver, Canada.
+</p><p> By changing various values you can do some more
+experimenting... For example, I have successfully added another
+"location" tag with an id "B" and new coordinates. Also I changed the
+marker image to be a random png from the Google site--but discovered
+the image dimensions seem to be hard coded so it was distorted.
+</p>
+
+<h3>Part 2 : Direct Page Manipulation</h3>
+<p>I've located
+probably the most interesting object ("_m") on the page, which is
+demonstrated with this bookmarklet which pans the map: (<a href="javascript: (function() {_m.map.pan(100,0)}) ()">Google Maps Pan Example Bookmarklet</a>)
+</p><p> </p><blockquote><tt>
+javascript: (function() {_m.map.pan(100,0)}) ();
+</tt></blockquote>
+
+<p> (Some of) the available properties and methods are as follows (care of the handy JavaScript Shell bookmarklet):
+
+</p><p> </p><blockquote><tt>
+<pre>
+props(_m)
+
+Fields: map, mapContainer, panel, metaPanel, permalink, feedbackLink,
+urlMaker, vpage, vpageDoc, lastSearchSpan
+
+Methods of prototype: beforePrint, afterPrint, loadMap,
+createMapControl, onMapStateChanged, resizeMapView, getWindowSize,
+loadIconClasses, loadXML, loadVPage, showOverlayPanel,
+showDirectionsPanel, search, clearSearchState, getPageURL, email,
+print, initSafari, loadSafari
+
+Methods of prototype of prototype: setTimeout, _setTimeoutDispatcher,
+eventHandler, trace
+
+props(_m.map)
+
+Methods: onzoom, onmousedown, onresize
+
+Fields: container, disablePopups, disableDragging, zoomLevel,
+topLeftTile, currentPanOffset, centerBitmap, tilePaddingOffset,
+tableSize, overlays, locations, panDistance, panKeys, spec, viewSize,
+div, infoWindow, directionsDiv, dragObject, tileImages, onpan,
+onspecificationchange, oninfowindowclose, stateListeners,
+lastPageCenter, lastPageZoom, directions, centerLatLng, lastLatLng,
+openLocation, panSiner, panStart, panTimeout
+
+Methods of prototype: createMapDiv, loadTileImages, deleteTiles,
+initializeMap, getSpanLatLng, getCenterLatLng, getBoundsBitmap,
+getBoundsLatLng, calculateTileMeasurements, configureImage, onDrag,
+onMove, rotateTiles, rotateLeft, rotateRight, rotateUp, rotateDown,
+getTotalOffset, onDragStart, onDragEnd, onDoubleClick, onClick,
+getRelativeClickPoint, reconfigureAllImages, pan, doPan, cancelPan,
+recenterOrPanToLatLng, recenterOrPanToBitmap, centerAndZoom,
+centerAtLatLng, centerAtBitmap, addStateListener, onStateChanged,
+onResize, getCurrentOffset, switchSpecification, setSpecification,
+zoomTo, toggleTileBorders, addOverlay, createLocalMarker,
+createLocationMarker, clearOverlays, getDivCoordinate,
+repositionOverlays, setMarkerPosition, loadVPage, registerKeyHandlers,
+onKeyPress, onKeyUp, ignoreKeyEvent, startContinuousPan,
+doContinuousPan, onWindowBlur, onIconMouseDown, clearInfoWindowArgs,
+infoWindowNavigate, showInfoWindow, addMarkersToInfoWindowMask,
+addMarkerToInfoWindowMask, showSizedInfoWindow, showMapBlowup,
+createSpecChangeLink, onInfoCloseClick, closeInfoWindow,
+panToInfoWindow, repositionInfoWindow, getVMLPathString, createRawVML,
+getBitmapVectors, getVectorPath, getEncodedImageSource,
+createVectorSegments, createImageSegments, drawDirections,
+drawDirectionsMarkers, showDirectionsStart, showDirectionsEnd,
+showDirectionsStep, getDirIndicatorAngle, getDirIndicatorPath,
+hideDirectionsMarkers, directionsMarkersAreVisible, createMapControl,
+createZoomControls, createPanningControls, createZoomSlider,
+getRelativeZoomSliderPos, getZoomFromRelativeCoord, showCopyright,
+createCopyright
+
+Methods of prototype of prototype: setTimeout, _setTimeoutDispatcher,
+eventHandler, trace
+
+_m.map.viewSize
+(684, 516)
+</pre>
+</tt></p></blockquote>
+
+<p> This should allow specifying things like a pan from one place to
+another, and adding additional markers, via Javascript bookmarklets.
+This approach is probably more practical than intercepting the XML/JS
+retrieved from the server (which is still possible &amp; could be
+interesting).
+</p>
+
+
+<h3>Part 3 : Automatic route following</h3>
+<p>Last thing for the moment...
+
+
+</p><p> The following bookmarklet will follow a plotted route from start to finish, moving the map as appropriate: (<a href="javascript: (function () {mv = function(i) { c = _m.map.directions.polyline.getPoint(i);_m.map.recenterOrPanToLatLng(c); if (i < _m.map.directions.polyline.numPoints - 1) {window.setTimeout('mv('+(i+1) + ')',500)}}; mv(0)})();">Animate Google Maps Route Bookmarklet 1</a>)
+
+</p><p> </p><blockquote><tt>javascript: (function () {mv = function(i)
+{ c =
+_m.map.directions.polyline.getPoint(i);_m.map.recenterOrPanToLatLng(c);
+if (i &lt; _m.map.directions.polyline.numPoints - 1)
+{window.setTimeout("mv("+(i+1) + ")",500)}}; mv(0)})();
+</tt></blockquote>
+
+<p> It works best when you've zoomed in pretty closely. It has no error
+checking so ensure you have actually got directions currently listed.
+It takes no notice of the zoom level nor how many points there are in
+the route, so it could take a long time if the route is long. Obviously
+there are improvements that can be made along those lines.
+</p><p> I've tested this under FireFox 1.0 on Mac OS X, I'd be interested to know if it works successfully elsewhere.
+</p>
+
+<p><i>Update:</i>A comment by "matt"[<a href="#1">1</a>] extended the bookmarklet to move the start marker along as we follow the trail: (<a href="javascript: (function () {mv = function(i) { c = _m.map.directions.polyline.getPoint(i);_m.map.recenterOrPanToLatLng(c); _m.map.setMarkerPosition(_m.map.directionsStart, N.get(&quot;local&quot;), c); if (i < _m.map.directions.polyline.numPoints - 1) {window.setTimeout(&quot;mv(&quot;+(i+1) + &quot;)&quot;,750)}}; mv(0)})();">Animate Google Maps Route Bookmarklet 2</a>)
+<blockquote><tt>
+javascript: (function () {mv = function(i) { c = _m.map.directions.polyline.getPoint(i);_m.map.recenterOrPanToLatLng(c); _m.map.setMarkerPosition(_m.map.directionsStart, N.get("local"), c); if (i < _m.map.directions.polyline.numPoints - 1) {window.setTimeout("mv("+(i+1) + ")",750)}}; mv(0)})();
+</tt></blockquote>
+</p>
+
+<h3> Part 4 : Adding humanity</h3>
+
+<p>The following bookmarklet is like those in Part 3 above except it moves a non-Google-supplied image (of a person) along the route:
+ (<a href="javascript: (function () {if (!_m.map.me) {_m.map.me = _m.map.createLocationMarker(&quot;http://libgmail.sourceforge.net/man.png&quot;, N.get(&quot;local&quot;));}; mv = function(i) { c = _m.map.directions.polyline.getPoint(i);_m.map.recenterOrPanToLatLng(c); _m.map.setMarkerPosition(_m.map.me, N.get(&quot;local&quot;), c); if (i < _m.map.directions.polyline.numPoints - 1) {window.setTimeout(&quot;mv(&quot;+(i+1) + &quot;)&quot;,750)} else {_m.map.me.hide()}};_m.map.me.show();mv(0)})();">Animate Google Maps Route Bookmarklet 3</a>)
+
+<blockquote><tt>
+javascript: (function () {if (!_m.map.me) {_m.map.me = _m.map.createLocationMarker("http://libgmail.sourceforge.net/man.png", N.get("local"));}; mv = function(i) { c = _m.map.directions.polyline.getPoint(i);_m.map.recenterOrPanToLatLng(c); _m.map.setMarkerPosition(_m.map.me, N.get("local"), c); if (i < _m.map.directions.polyline.numPoints - 1) {window.setTimeout("mv("+(i+1) + ")",750)} else {_m.map.me.hide()}};_m.map.me.show();mv(0)})();
+</tt></blockquote>
+
+This provides an example of how to create totally custom and arbitrarily placed markers--this could be used to highlight locations of interest along the route, for example, or display a UFO or armies of attacking mutants--or something. (Hmmm, the SimCity idea is starting to look possible--where's Godzilla when you need him? Hmmm, animated storys on Google Maps? :-) ) </p>
+
+<p>At present the existing shadow is used. Still need to investigate changing image size.</p>
+
+<p><i>Update:</i> Using an image with a custom size: (<a href="
+javascript: (function () {if (!_m.map.it) {iti = new Object(); iti.x = 80; iti.y = 80; iti.shadowURL = &quot;&quot;; _m.map.it = _m.map.createLocationMarker(&quot;http://libgmail.sourceforge.net/spider.png&quot;, iti);}; mv = function(i) { c = _m.map.directions.polyline.getPoint(i);_m.map.recenterOrPanToLatLng(c); _m.map.setMarkerPosition(_m.map.it, N.get(&quot;local&quot;), c); if (i < _m.map.directions.polyline.numPoints - 1) {window.setTimeout(&quot;mv(&quot;+(i+1) + &quot;)&quot;,750)} else {_m.map.it.hide()}};_m.map.it.show();mv(0)})();">Arachnophobia</a>)
+<blockquote><tt>
+javascript: (function () {if (!_m.map.it) {iti = new Object(); iti.x = 80; iti.y = 80; iti.shadowURL = ""; _m.map.it = _m.map.createLocationMarker("http://libgmail.sourceforge.net/spider.png", iti);}; mv = function(i) { c = _m.map.directions.polyline.getPoint(i);_m.map.recenterOrPanToLatLng(c); _m.map.setMarkerPosition(_m.map.it, N.get("local"), c); if (i < _m.map.directions.polyline.numPoints - 1) {window.setTimeout("mv("+(i+1) + ")",750)} else {_m.map.it.hide()}};_m.map.it.show();mv(0)})();
+</tt></blockquote>
+
+Still need to offset the image so it looks correct.
+</p>
+<p><i>Update:</i> Same as above but with the image offset so it looks better: (<a href="javascript: (function () {if (!_m.map.it) {iti = new Object(); iti.x = 80; iti.y = 80; iti.shadowURL = &quot;&quot;; itd = new Object(); itd.width = 80; itd.height = 80; itd.pointCoord = new n(41, 34); _m.map.it = _m.map.createLocationMarker(&quot;http://libgmail.sourceforge.net/spider.png&quot;, iti);}; mv = function(i) { c = _m.map.directions.polyline.getPoint(i);_m.map.recenterOrPanToLatLng(c); _m.map.setMarkerPosition(_m.map.it, itd, c); if (i < _m.map.directions.polyline.numPoints - 1) {window.setTimeout(&quot;mv(&quot;+(i+1) + &quot;)&quot;,750)} else {_m.map.it.hide()}};_m.map.it.show();mv(0)})();
+">Arachnophobia 2</a>)
+<blockquote><tt>
+javascript: (function () {if (!_m.map.it) {iti = new Object(); iti.x = 80; iti.y = 80; iti.shadowURL = ""; itd = new Object(); itd.width = 80; itd.height = 80; itd.pointCoord = new n(41, 34); _m.map.it = _m.map.createLocationMarker("http://libgmail.sourceforge.net/spider.png", iti);}; mv = function(i) { c = _m.map.directions.polyline.getPoint(i);_m.map.recenterOrPanToLatLng(c); _m.map.setMarkerPosition(_m.map.it, itd, c); if (i < _m.map.directions.polyline.numPoints - 1) {window.setTimeout("mv("+(i+1) + ")",750)} else {_m.map.it.hide()}};_m.map.it.show();mv(0)})();
+</tt></blockquote>
+
+
+<h3>Part 5 : Now with InjectionPower!&trade;</h3>
+<p>The following approach uses a <a href="http://subsimple.com/bookmarklets/tips.asp">technique to "inject" an external script into an existing page</a>. According to the author of the original page, it only works with Internet Explorer, but I've had success with FireFox 1.0 (when a delay is added to the function call). I would be interested to know if anyone has success or failure with this technique. (<a href="javascript:(function(){if (typeof(extjs)=='undefined') {extjs='';}; extjs = prompt('File to inject:',extjs); var script=document.createElement('script'); script.src=extjs; document.getElementsByTagName('head')[0].appendChild(script); setTimeout('onInject()',1000)})();">Inject External File Bookmarklet</a>) </p>
+
+<blockquote><tt>
+javascript:(function(){if (typeof(extjs)=='undefined') {extjs='';}; extjs = prompt('File to inject:',extjs); var script=document.createElement('script'); script.src=extjs; document.getElementsByTagName('head')[0].appendChild(script); setTimeout('onInject()',1000)})();
+</tt></blockquote>
+
+<p>When prompted for the file to inject, enter: <tt>http://libgmail.sf.net/routefollow-0.0.1.js</tt> <i>Note: </i>When you do this, you are allowing your browser to run completely arbitrary code in a context where it has more control over your browser than usual--specifically, it will run as if it was loaded from the current page. Make sure you understand the implications of this before you use the above bookmarklet.</p>
+
+<p>You should now see "Go" and "Stop" links in the yellow bar near the top of the Google Maps page.</p>
+
+<p>I have extended this technique to allow an automatically updating clock (with the data retrieved from a non-Google URL) proof-of-concept which lays the groundwork for some interesting possibilities...</p>
+
+<p><i>Update:</i> Okay, here's a <i>much</i> nicer implementation of the injection code that doesn't require the timeout hack. It relies on using a "load" event triggered when the inserted script element has loaded--handy really: (<a href="javascript:(function(){if(typeof(extjs)=='undefined'){extjs='';};extjs=prompt('File to inject:',extjs);var script=document.createElement('script');script.src=extjs;var evl=new Object();evl.handleEvent=function (e){onInject();};script.addEventListener('load',evl,true);document.getElementsByTagName('head')[0].appendChild(script);})();">Inject External File Bookmarklet 2</a>)</p>
+
+<blockquote><tt>
+javascript:(function(){if(typeof(extjs)=='undefined'){extjs='';};extjs=prompt('File to inject:',extjs);var script=document.createElement('script');script.src=extjs;var evl=new Object();evl.handleEvent=function (e){onInject();};script.addEventListener('load',evl,true);document.getElementsByTagName('head')[0].appendChild(script);})();
+</tt></blockquote>
+ 
+
+<h3>Part 6 : Big Brother is listening</h3>
+<p>The following bookmark hooks into the "state listener" functionality Gmaps helpfully provides in order to update a Lat/Long display whenever the map is moved (it does not rely on polling): (<a href="javascript:(function(){scl=new Object();scl.onMapStateChanged=function (){document.getElementsByClassName('title')[0].innerHTML=_m.map.getCenterLatLng()};_m.map.addStateListener(scl);})()">LatLong Autoupdate Bookmarklet</a>)
+
+<blockquote><tt>
+javascript:(function(){scl=new Object();scl.onMapStateChanged=function (){document.getElementsByClassName('title')[0].innerHTML=_m.map.getCenterLatLng()};_m.map.addStateListener(scl);})()
+</tt></blockquote>
+</p> 
+
+<p><i>Update:</i> As of <tt>maps.6.js</tt> <tt>addStateListener</tt> expects a function, not an object: (<a href="javascript:(function(){_m.map.addStateListener(function(map){document.getElementsByClassName('title')[0].innerHTML=map.getCenterLatLng()});})()">LatLong Autoupdate Bookmarklet 2</a>)
+
+<blockquote><tt>
+javascript:(function(){_m.map.addStateListener(function(map) {document.getElementsByClassName('title')[0].innerHTML=map.getCenterLatLng()});})()
+</tt></blockquote>
+</p> 
+
+<h3>Part 7 : Arbitrary XML upload via GUI</h3>
+<p>There's currently a few alternative approachs to this about (that'll teach me not to release early and often! :-) ) but here's my cross-browser UI-based implementation of loading an arbitrary Google Maps format XML file into Google Maps.</p>
+
+<p>Using the "Inject External File Bookmarklet" from above (and after reading the associated warning) inject the following:
+<blockquote>
+<a href="http://libgmail.sourceforge.net/loadxml-0.0.1.js">http://libgmail.sourceforge.net/loadxml-0.0.1.js</a>
+</blockquote>
+
+This will add a text input box and "Upload" button. Supply any URL pointing to an XML file in the Google Maps format and it will use it. (There's a ten second delay before display at present to allow for retrieval time, which is rough but hopefully does the job until I improve it.)</p>
+
+<p>Sample files include:
+<ul>
+<li><a href="http://libgmail.sourceforge.net/test1.xml">http://libgmail.sourceforge.net/test1.xml</a></li>
+<li><a href="http://libgmail.sourceforge.net/test2.xml">http://libgmail.sourceforge.net/test2.xml</a></li>
+<li><a href="http://libgmail.sourceforge.net/test3.xml">http://libgmail.sourceforge.net/test3.xml</a></li>
+</ul>
+The last example is interesting because it doesn't work properly. :-) It supplys a non-Google .xsl file to format the info which XmlHttpRequest currently chokes on but I'm working on that...
+</p>
+
+<p>The <tt>loadxml-0.0.1.js</tt> script uses a (extremely rough) Python CGI script (thanks <a href="http://travisbsd.org/">TravisBSD.org</a>!) to retrieve the file, bypassing the lovely JavaScript same-domain security protection. I've tried to minimise its exploitability but if you've got any thoughts on it feel free to let me know (by email, rather than exploit!).</p>
+
+<p><blockquote><code><pre>
+#!/usr/bin/env python
+#
+#   getfile.cgi
+#
+import urllib2
+
+import cgi
+
+
+form = cgi.FieldStorage()
+
+url = form.getfirst("url","")
+
+data = ""
+
+# TODO: Make more robust
+if url.startswith("http://"):
+    data = urllib2.urlopen(url).read()
+
+    if not data.startswith('&lt;?xml version="1.0"?>'):
+        data = ""
+
+print 'Content-Type: text/javascript'
+print
+print """\
+function getData () {
+    return '%s';
+}
+""" % (data.replace("'", "\'").replace("\n","")) # TODO: Ensure robust.
+</pre></code></blockquote></p>
+
+<p><i>Update:</i> I have modified the <tt>loadxml</tt> script to use the new event-based loading method which results in better performance and reliability. Inject the following script as above:</p>
+<blockquote>
+<a href="http://libgmail.sourceforge.net/loadxml-0.0.2.js">http://libgmail.sourceforge.net/loadxml-0.0.2.js</a>
+</blockquote>
+
+<h3>Part 8 : Modifying Google Maps appearance with custom XSL files</h3>
+<p>The following will make custom XSL files available to Google Maps:
+<ul>
+<li>Inject: <a href="http://libgmail.sf.net/loadxml-0.0.3.js">http://libgmail.sf.net/loadxml-0.0.3.js</a></li>
+<li>Upload: <a href="http://libgmail.sf.net/test4.xml">http://libgmail.sf.net/test4.xml</a></li>
+<li>Click on a marker to view the new info panel layout</a>
+</ul>
+
+<table width="90%" cellspacing="12">
+<tr valign="top">
+<td>&nbsp;</td>
+<!-- What kind of web developer scales graphics like this? :-) -->
+<td align="right"><img src="custom-xsl-1.gif" height="200"/></td><td><img src="custom-xsl-2.gif" height="200"/></td>
+<td>&nbsp;</td>
+</tr>
+</table>
+
+Of course, I don't really know squat about XSL so I'm sure more impressive things are possible...</p>
+
+<p>How's it done? Well, I essentially implemented an extended XmlHttpRequest object that allows off-domain file retrieval and got Gmaps to use that instead of the normal one. (I just hand off same-domain calls to the usual object and use script tag injection to handle the off-domain calls.)</p>
+
+<p>The code's a mess but it works for me under Firefox. There's some XML parsing code I found somewhere which probably won't work under IE at the moment.</p>
+
+<h3>Part 9 : Real time information display</h3>
+<p>This is the beginning of an investigation into display of (near) real time information on Google Maps with the addition of custom content and appearance.
+
+<ul>
+<li>Inject: <a href="http://libgmail.sf.net/loadxml-0.0.3.js">http://libgmail.sf.net/loadxml-0.0.3.js</a></li>
+<li>Upload: <a href="http://stuff.rancidbacon.com/parse911.cgi">http://stuff.rancidbacon.com/parse911.cgi</a></li> (The source page updates every 60 seconds, we don't currently auto-upload, so you have to do that manually.)
+</ul>
+
+</p>
+
+<p>The information used for this research is from the <a href="http://www2.seattle.gov/fire/realtime911/getRecsForDatePub.asp?action=Today&incDate=&rad1=des">Seattle Fire Department's Real Time 911 information page</a>. A script <tt>parse911.cgi</tt> retrieves the page on request then currently performs a Google Maps search on the first ten (most recent) locations listed and aggregates the results. It also trys to locate the viewing area so all markers can be seen at once--this isn't perfect at the moment, however. It seems the data retrieved for any particular location is not always accurate, so bear that in mind if you think you see your dog's house burning down.
+</p>
+
+<p>There's additional information available at the site such as the incident type, and the number and type of vehicles present--which suggests some interesting possibilities... :-)</p>
+
+<p><i>Update: </i> Upload <a href="http://stuff.rancidbacon.com/parse911-0.2.0.cgi">http://stuff.rancidbacon.com/parse911-0.2.0.cgi</a> to see both custom XML and XSL files in action (still requires a manual refresh at present). Also, see the end of Part 11 for a tip for helping with custom XSL development.
+<table width="90%" cellspacing="10">
+<tr valign="top"><td align="center"><img src="custom-xsl-3.gif" width="217" height="250" /></td></tr>
+</table>
+</p>
+
+<h3>Part 10 : Google Maps Classes and Functions Reference</h3>
+<p>First rough draft of <a href="googlemaps/maps.js.html">Google Maps Classes and Functions Reference</a>. [Updated to <tt>maps.3.js</tt>]</p>
+
+<h3>Part 11 : Beta be more robust</h3>
+<p>The recent change to <tt>maps.3.js</tt> broke a few pieces of code on this page so I've been thinking of how to make things a bit more robust. For reasons of compression and/or obfuscation Gmaps mostly uses one or two letter identifiers for functions, classes and variables in its JavaScript code. In order to make these hacks more robust against code changes I've developed a utility function to determine the current identifier for a particular function or class.</p>
+
+<p>By adapting the technique used to update the generation of the Classes and Functions Reference in Part 10 we seek to identify a unique signature for a desired function or class and use that rather than the actual identifier used in any specific code version. This is all enabled by JavaScript's introspection capabilities.</p>
+
+<p>Consider the <a href="http://libgmail.sourceforge.net/googlemaps/maps.js.html#XmlHttpRequestFactory"><tt>XmlHttpRequestFactory</tt></a> whose <tt>create</tt> method needs to be replaced to enable off-domain file retrieval. In <tt>maps.2.js</tt> it was called <a href="http://libgmail.sourceforge.net/googlemaps/maps.2.html#XmlHttpRequestFactory"><tt>Yd</tt></a> but it is known more colloquially as <a href="http://libgmail.sourceforge.net/googlemaps/maps.3.html#XmlHttpRequestFactory"><tt>cg</tt></a> in <tt>maps.3.js</tt>:</p>
+
+<p>
+<table width="90%" cellpadding="5">
+<tr style="background: lightsteelblue;"><th>Extract from <tt>maps.2.js</tt></th><th>Extract from <tt>maps.3.js</tt></th></tr>
+<tr valign="top">
+<td width="50%" style="background: lightblue;">
+<pre>function <b>Yd</b>() {}
+
+Yd.<b>create</b>=function() {
+  if(m.type==1) {
+     var Vd=m.version==5?"Microsoft.XMLHTTP":"Msxml2.XMLHTTP";
+     return new ActiveXObject(Vd)
+  } else {
+    return new <b>XMLHttpRequest</b>()
+  }
+}</pre>
+</td>
+<td width="50%" style="background: lightblue;">
+<pre>function <b>cg</b>() {}
+
+cg.<b>create</b>=function() {
+  if(typeof ActiveXObject!="undefined") {
+     return new ActiveXObject("Microsoft.XMLHTTP")
+  } else if(typeof XMLHttpRequest!="undefined") {
+     return new <b>XMLHttpRequest</b>()
+  } else { 
+    ;return null
+  }
+}
+</pre>
+</td>
+</tr>
+</table>
+</p>
+
+<p>By comparing the two versions and other definitions in the scripts we can determine that if we have a function declaration with a <tt>create</tt> method that in turn contains the text <tt>XMLHttpRequest</tt> we can be reasonably certain it refers to <tt>XmlHttpRequestFactory</tt>. All we need is a helper to find it for us automatically. Hey, here's one now (this example is from <a href="http://libgmail.sf.net/loadxml-0.0.5.js">http://libgmail.sf.net/loadxml-0.0.5.js</a>):
+<blockquote><pre>
+_XmlHttpRequestFactory = deObf("function", "create", "XMLHttpRequest");
+
+function deObf(targetObjType,targetObjMethod,targetObjMethodSourceSnippet){
+  for(objName in this){
+    obj=this[objName];
+    if(typeof(obj)==targetObjType){
+      if(targetObjMethod!=""){
+        if(typeof(obj[targetObjMethod])=="function"){
+          objMethod=obj[targetObjMethod]
+        }
+        else
+          if((typeof(obj["prototype"])!="undefined")&&(typeof(obj["prototype"][targetObjMethod])=="function")){
+            objMethod=obj["prototype"][targetObjMethod]
+          }
+        else{
+          continue;
+        }
+      }
+      else{
+        objMethod=obj;
+      }
+      if(objMethod.toString().indexOf(targetObjMethodSourceSnippet)>0){
+        return obj;
+      }
+    }
+  }
+}
+</pre></blockquote></p>
+<p>In general the first argument will be <tt>"function"</tt> or <tt>"object"</tt>, the second argument will be a method name or blank if the target is only a function and the third argument will be a code snippet. This approach is probably too verbose for bookmarks--even when compressed--but it seems viable for longer scripts.</p>
+
+<p>Here are two more potentially useful examples:
+
+<blockquote><pre>
+_parseXmlFromString = deObf("function","", "parseFromString")
+
+_Xslt = deObf("function", "asynchronousTransform", "transformToHTML")
+</pre></blockquote>
+
+<i>Tip: </i>The object referred to by <tt>_Xslt</tt> includes a cache for the XSL style-sheets used to format the pop-up and side panels. The caching functionality can be unwanted when developing or debugging style-sheets so use the following to clear the cache and force a reload from the URL:
+
+<blockquote><pre>
+_Xslt.cache_ = new Object()
+</pre></blockquote>
+</p>
+
+<h4>Introspection references</h4>
+<p>For details on how functions are part of the global JavaScript namespace and <tt>this</tt> can be accessed as an array to retrieve the definitions consult these JavaScript introspection references:
+<ul>
+<li><a href="http://www.webweavertech.com/ovidiu/weblog/archives/000317.html">http://www.webweavertech.com/ovidiu/weblog/archives/000317.html</a></li>
+<li><a href="http://lists.firepipe.net/pipermail/cwe-lug/2004-September/001933.html">http://lists.firepipe.net/pipermail/cwe-lug/2004-September/001933.html</a></li>
+</ul></p>
+
+<p>Oh yeah, I just have to say again: the JavaScript Shell Bookmarklet is <i>fantastic</i>.</p>
+
+
+<h3>Part 12 : Whoops, how did that happen..?</h3>
+<p>Okay, this is just a screenshot at the moment, but here it is:
+
+<table width="90%" cellspacing="10">
+<tr valign="top"><td align="center"><img src="gmaps-standalone-1.gif" width="617" height="463" /></td></tr>
+</table>
+
+The above is a screenshot of a web page with an <tt>iframe</tt> that contains a page from another domain which is showing a totally interactive Gmaps view with custom data and stylesheets. This is a proof-of-concept for a "service" that could be supplied the URL of a data file and style-sheet and display the interactive map.</p>
+
+<p>There are <i>no</i> bookmarklets or other browser hacks involved and the original Gmaps <tt>maps.3.js</tt> Javascript file is used unmodified.
+</p>
+
+<p><i>Update: </i>Check out the unauthorised <a href="http://stuff.rancidbacon.com/gmaps-standalone/">Google Maps Standalone Mode</a>. I have no idea how long it'll be around for... :-)</p>
+
+<h3>Part 13 : An unofficial official Gmaps API?</h3>
+<p>I've just noticed something kinda interesting in the last two updates (4 & 5) to the Google Maps Javascript files (<tt>maps.X.js</tt>) and thought I'd indulge in some idle speculation. (Incidentally, it appears the "Local" search option uses a different Javascript file <a href="http://www.google.com/mapfiles/maps.local.1.js">http://www.google.com/mapfiles/maps.local.1.js</a>.)</p>
+<p>At the bottom of the Javascript we see the following:
+
+<blockquote><pre>
+var _Point=q;
+var _Map=c;
+var _IconClass=L;
+var _XMLHttp=we;
+var _MapsApplication=ga;
+</pre></blockquote>
+
+Now, tell me, can <i>you</i> see where in Google's code or HTML page those names are referenced?
+</p>
+
+<h3>Future</h3>
+<p>Now all I have to do now is come up with some totally gratuitous way to combine Gmail &amp; Gmaps via <a href="http://libgmail.sourceforge.net/"><tt>libgmail</tt></a> and a bookmarklet and I'll be all set... :-)</p>
+
+<h3>Tools/References</h3>
+<p>
+<ul>
+<li>Mozilla Firefox (which includes a DOM Inspector & JavaScript console)</li>
+<li><a href="http://www.squarefree.com/shell/">JavaScript Shell Bookmarklet</a> which niftily allows interaction using the context of the current page.</li>
+<li><a href="http://www.prettyprinter.de/">Online Pretty Printer</a> to make the Google Maps compressed/obfuscated JavaScript a bit more readable.</li>
+<li>Hacked up version of <a href="http://mail.python.org/pipermail/python-list/2003-June/168957.html">Python Tiny HTTP Proxy</a></li>
+<li>[<a name="1">1</a>] Initial posting and additional <a href="http://jgwebber.blogspot.com/2005/02/mapping-google.html">Google Maps information resources</a>.</li>
+<li><a href="http://www.get2testing.com/Comments_Elevator.htm">Source of man pictogram</a> edited with <a href="http://www.gimp.org/">The Gimp</a>.</li>
+<li><a href="http://openclipart.org/clipart//animals/spider.svg">Spider as vector graphic</a> located in <a href="http://openclipart.org/cgi-bin/navigate/animals">Animal category</a> with further meta data.</li>
+<li><a href="http://subsimple.com/bookmarklets/tips.asp">Tips for Writing Bookmarklets : Script Inclusion</a></li>
+<li><a href="http://www.sitepoint.com/print/bookmarklets">Better Living Through Bookmarklets : Appending Longer Scripts</a></li>
+<li><a href="http://sompost.atspace.org/maps.1.htm">Google Maps source pretty-printed and lightly commented</a></li>
+</ul>
+</p>
+
+<h3>Other resources</h3>
+<p>
+<ul>
+<li><a href="http://69.90.152.144/collab/GoogleMapsHacking">Google Maps hacking wiki</a> (based on this page)</li>
+<li><a href="http://www.gnik.com/maps/google/">Plot GPS/GPX data on Google Maps</a> (See also his <a href="http://www.gnik.com/index.cgi/Maps">Google Maps hacking blog entries</a> beginning 11-Feb-2005.)</li>
+<li><a href="http://gmap.glenmurphy.com/">Move Google Maps location based on live GPS data</a></li>
+<li><a href="http://www.ergul.com/maps/">Smoother animated route tracing</a></li>
+</ul>
+</p>
+
+
+<h3>Feedback/Discussion</h3>
+<p>Feel free to post comments in this <a href="http://sourceforge.net/forum/forum.php?thread_id=1228527&forum_id=388073">thread discussing Google Maps hacking</a>.</p>
+<p>Consider adding content to the <a href="http://69.90.152.144/collab/GoogleMapsHacking">Google Maps hacking wiki</a>.</p>
+<p>
+Alternatively, I can be contacted at the address follower at myrealbox.com if you prefer.</p>
+
+<p><font color="white">Hi Lynda! :-)</a></p>
+</body>
+</html>

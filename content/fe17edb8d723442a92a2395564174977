@@ -1,0 +1,511 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<title>BlogPulse</title>
+	<link rel="stylesheet" type="text/css" href="_inc/bpstyles.css">
+	<link rel="stylesheet" type="text/css" href="_inc/contentslider.css">
+	<link rel="stylesheet" type="text/css" href="_inc/content.css">
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	<script type="text/javascript" src="_inc/ajaxtabs.js"></script>
+	<script type="text/javascript" src="_inc/contentslider.js"></script>
+	<script language="JavaScript" type="text/JavaScript">
+<!--
+function MM_preloadImages() { //v3.0
+  var d=document; if(d.images){ if(!d.MM_p) d.MM_p=new Array();
+    var i,j=d.MM_p.length,a=MM_preloadImages.arguments; for(i=0; i<a.length; i++)
+    if (a[i].indexOf("#")!=0){ d.MM_p[j]=new Image; d.MM_p[j++].src=a[i];}}
+}
+
+function MM_findObj(n, d) { //v4.01
+  var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
+    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
+  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
+  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=MM_findObj(n,d.layers[i].document);
+  if(!x && d.getElementById) x=d.getElementById(n); return x;
+}
+
+function MM_nbGroup(event, grpName) { //v6.0
+  var i,img,nbArr,args=MM_nbGroup.arguments;
+  if (event == "init" && args.length > 2) {
+    if ((img = MM_findObj(args[2])) != null && !img.MM_init) {
+      img.MM_init = true; img.MM_up = args[3]; img.MM_dn = img.src;
+      if ((nbArr = document[grpName]) == null) nbArr = document[grpName] = new Array();
+      nbArr[nbArr.length] = img;
+      for (i=4; i < args.length-1; i+=2) if ((img = MM_findObj(args[i])) != null) {
+        if (!img.MM_up) img.MM_up = img.src;
+        img.src = img.MM_dn = args[i+1];
+        nbArr[nbArr.length] = img;
+    } }
+  } else if (event == "over") {
+    document.MM_nbOver = nbArr = new Array();
+    for (i=1; i < args.length-1; i+=3) if ((img = MM_findObj(args[i])) != null) {
+      if (!img.MM_up) img.MM_up = img.src;
+      img.src = (img.MM_dn && args[i+2]) ? args[i+2] : ((args[i+1])? args[i+1] : img.MM_up);
+      nbArr[nbArr.length] = img;
+    }
+  } else if (event == "out" ) {
+    for (i=0; i < document.MM_nbOver.length; i++) {
+      img = document.MM_nbOver[i]; img.src = (img.MM_dn) ? img.MM_dn : img.MM_up; }
+  } else if (event == "down") {
+    nbArr = document[grpName];
+    if (nbArr)
+      for (i=0; i < nbArr.length; i++) { img=nbArr[i]; img.src = img.MM_up; img.MM_dn = 0; }
+    document[grpName] = nbArr = new Array();
+    for (i=2; i < args.length-1; i+=2) if ((img = MM_findObj(args[i])) != null) {
+      if (!img.MM_up) img.MM_up = img.src;
+      img.src = img.MM_dn = (args[i+1])? args[i+1] : img.MM_up;
+      nbArr[nbArr.length] = img;
+  } }
+}
+
+function MM_swapImgRestore() { //v3.0
+  var i,x,a=document.MM_sr; for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;
+}
+
+function MM_swapImage() { //v3.0
+  var i,j=0,x,a=MM_swapImage.arguments; document.MM_sr=new Array; for(i=0;i<(a.length-2);i+=3)
+   if ((x=MM_findObj(a[i]))!=null){document.MM_sr[j++]=x; if(!x.oSrc) x.oSrc=x.src; x.src=a[i+2];}
+}
+
+function calcHeight()
+{
+var the_height=document.getElementById("statsframe").contentWindow.document.body
+.scrollHeight;
+document.getElementById("statsframe").height=the_height;
+}
+
+var topictrendtimer = null;
+
+function setTopicTrendRefresh() 
+{
+if (topictrendtimer==null) {
+  setTopicTrendTime();
+  topictrendtimer=setTimeout("setTopicTrendImage()", 10000); 
+}
+}
+
+function setTopicTrendTime() 
+{
+var monthNames = new Array("January","February","March","April","May","June","July",
+                           "August","September","October","November","December");
+var dt = new Date();
+
+var y  = dt.getYear();
+// Y2K compliant
+if (y < 1000) y +=1900;
+
+var s=monthNames[dt.getMonth()] + " " + dt.getDate() + ", " + y;
+
+var hour=dt.getHours();
+s+=" ";
+if (hour<10) s+="0";
+s+=hour;
+
+var minute=dt.getMinutes();
+s+=":";
+if (minute<10) s+="0";
+s+=minute;
+
+document.getElementById("topictrendtime").firstChild.data=s;
+}
+
+function setTopicTrendImage() 
+{ 
+var dt = new Date();
+var img=document.getElementById("topictrend");
+var src=img.src;
+var pos=src.indexOf('?');
+if (pos!=-1)
+  src=src.substring(0,pos);
+img.src=src+"?time="+(dt.getHours()*100+dt.getMinutes());
+topictrendtimer=null;
+setTopicTrendRefresh(); 
+}
+
+//-->
+</script>
+</head>
+
+<body>
+	<div id="pagecontainer">
+	<div style="float:right">
+		<div class="alltools">
+			<a href="help.html">Help</a>
+		</div>		
+	</div>		
+	<div id="brand"><a href="/"><img src="_images/bp_mh_logo.jpg" alt="BlogPulse" style="border:0;padding:0;" /></a><img src="_images/bp_mh_head.jpg" style="border:0;padding:0;" /><a href="http://www.nmincite.com/"><img src="_images/bp_mh_nlogo.jpg" alt="NMIncite" style="border:0;padding:0;" /></a></div>
+<div style="text-align:left;"><img src="_images/hdr-discover.gif" width="128" height="25" alt="" border="0" /><img src="_images/hdr-bpcomm.gif" width="128" height="25" alt="" border="0" style="position:relative;left:502px" /></div>
+<!--column 1-->
+<div id="col1">
+<!--top navigation-->
+	<div class="space-divider2"><!-- --></div>
+	<div id="discover-tabs">
+		<ul class="subtab">
+		</ul>
+	</div>
+	<div class="space-divider3"></div>
+	<div class="module-col1trends"><div class="side-options"><!--<a href="javascript:void(0);" title="RSS Feed"><img src="_images/icon-rss.gif" width="17" height="18" alt="RSS Feed" border="0" /></a>--></div><h1 class="mod"><a href="javascript:void(0);">TODAY’S HIGHLIGHTS</a></h1></div>
+	<div id="slider1" class="sliderwrapper">
+<!-- BEGIN BLOGPULSE HIGHLIGHTS -->
+<!--highlights.html iframe-->  
+<div class="contentdiv">
+	<div class="module-col1-trends">
+		<img src="hotimages/20101220_lunar_small.jpg"  border="0" /><br />
+		<h2 class="mod"><a href="http://www.blogpulse.com/trend?query1=%22lunar+eclipse%22&label1=Lunar+Eclipse+&query2=&label2=&query3=&label3=&days=60&x=29&y=9">Total Lunar Exclipse</a></h2>
+		Star watchers are preparing for the final lunar Eclipse for 2010, which is expected to begin early Tuesday morning. (12/20/2010)
+		</div>
+	<div class="module-col1-trendschrt"><img src="hotimages/20101220_lunar_large.jpg" width="400" height="254" border="0" /></div>
+</div>
+<div class="contentdiv">
+	<div class="module-col1-trends">
+		<img src="hotimages/20101220_snl_small.jpg"  border="0" /><br />
+		<h2 class="mod"><a href="http://www.blogpulse.com/trend?query1=%22Eminem%22&query2=%22lil+wayne%22+OR+%22lil%27+wayne%22&query3=%22saturday+night+live%22+OR+%22snl%22&label1=Eminem&label2=Lil+Wayne&label3=Saturday+NIght+Live&days=30&x=18&y=5">Lil Wayne and Eminem Rap On SNL</a></h2>
+		The hip-hop stars collaborate in a performance of "No Love" from Eminem's album Recovery on stage at Saturday Night Live. (12/20/2010)
+		</div>
+	<div class="module-col1-trendschrt"><img src="hotimages/20101220_snl_large.jpg" width="400" height="254" border="0" /></div>
+</div>
+<div class="contentdiv">
+	<div class="module-col1-trends">
+		<img src="hotimages/20101217_tron_small.jpg"  border="0" /><br />
+		<h2 class="mod"><a href="http://www.blogpulse.com/trend?query1=Tron+OR+%22Tron2%22+OR+TronLegacy&label1=Tron+2&query2=&label2=&query3=&label3=&days=30&x=10&y=4">Tron: Legacy Debuts in Theaters Today</a></h2>
+		The follow-up to the 1982 Sci-Fi cult classic opens in theaters Friday. (12/17/2010)
+		</div>
+	<div class="module-col1-trendschrt"><img src="hotimages/20101217_tron_large.jpg" width="400" height="254" border="0" /></div>
+</div>
+<div class="contentdiv">
+	<div class="module-col1-trends">
+		<img src="hotimages/20101217_larrykinglive_small.jpg"  border="0" /><br />
+		<h2 class="mod"><a href="http://www.blogpulse.com/trend?query1=%22larry+king%22&label1=Larry+King&query2=&label2=&query3=&label3=&days=30&x=39&y=15">Larry King Signs Off</a></h2>
+		After 25 years on the air, Larry King hosted his final show on CNN Thursday night. (12/17/2010)
+		</div>
+	<div class="module-col1-trendschrt"><img src="hotimages/20101217_larrykinglive_large.jpg" width="400" height="254" border="0" /></div>
+</div>
+<div class="contentdiv">
+	<div class="module-col1-trends">
+		<img src="hotimages/20101216_bobfeller_small.jpg"  border="0" /><br />
+		<h2 class="mod"><a href="http://www.blogpulse.com/trend?query1=%22bob+feller%22&label1=Bob+Feller&query2=&label2=&query3=&label3=&days=30&x=55&y=13">Hall of Fame Pitcher Passes Away At 92</a></h2>
+		Bob Feller, a Hall of Fame pitcher for the Indians and World War II veteran, died from leukemia Wednesday evening at the age of 92. (12/16/2010)
+		</div>
+	<div class="module-col1-trendschrt"><img src="hotimages/20101216_bobfeller_large.jpg" width="400" height="254" border="0" /></div>
+</div>
+<div class="contentdiv">
+	<div class="module-col1-trends">
+		<img src="hotimages/20101216_julianassange_small.jpg"  border="0" /><br />
+		<h2 class="mod"><a href="http://www.blogpulse.com/trend?query1=Assange&query2=Wikileaks+OR+wikileak&query3=&label1=Julian+Assange+&label2=Wikileaks&label3=&days=30&x=23&y=11">Assange Granted Bail</a></h2>
+		Julian Assange, co-founder of Wikileaks, defeated an appeal on his bail by UK Prosecutors on Wednesday. (12/16/2010)
+		</div>
+	<div class="module-col1-trendschrt"><img src="hotimages/20101216_julianassange_large.jpg" width="400" height="254" border="0" /></div>
+</div>
+<div class="contentdiv">
+	<div class="module-col1-trends">
+		<img src="hotimages/20101215_taxcuts_small.jpg"  border="0" /><br />
+		<h2 class="mod"><a href="http://www.blogpulse.com/trend?query1=Senate&label1=U.S.+Senate&query2=%22tax+cut%22+OR+%22tax+relief%22+OR+%22tax+bill%22+OR+%22tax+deal%22+&label2=Tax+Bill&query3=&label3=&days=30&x=45&y=11">Senate to Vote on Tax Cut Extension</a></h2>
+		The Senate will vote on Wednesday to extend tax cuts from the Bush administration. (12/15/2010)
+		</div>
+	<div class="module-col1-trendschrt"><img src="hotimages/20101215_taxcuts_large.jpg" width="400" height="254" border="0" /></div>
+</div>
+<div class="contentdiv">
+	<div class="module-col1-trends">
+		<img src="hotimages/20101215_zuckerber_small.jpg"  border="0" /><br />
+		<h2 class="mod"><a href="http://www.blogpulse.com/trend?query1=%22mark+zuckerberg%22&label1=Mark+Zuckerberg&query2=time+AND+%28%22man+of+the+year%22+OR+%22person+of+the+year%22%29&label2=Time%27s+Person+of+the+Year&query3=&label3=&days=30&x=38&y=13">Zuckerberg Named "Person of the Year"</a></h2>
+		Time names Mark Zuckerberg, co-founder and CEO of Facebook, as their Person of the Year for 2010. (12/15/2010)
+		</div>
+	<div class="module-col1-trendschrt"><img src="hotimages/20101215_zuckerber_large.jpg" width="400" height="254" border="0" /></div>
+</div>
+<div class="contentdiv">
+	<div class="module-col1-trends">
+		<img src="hotimages/20101214_gawkerhacked_small.jpg"  border="0" /><br />
+		<h2 class="mod"><a href="http://www.blogpulse.com/trend?query1=Gawker&label1=gawker&query2=&label2=&query3=&label3=&days=30&x=48&y=14">Gawker Media: Hacked</a></h2>
+		Hackers expose 100,000 user names and passwords of Gawker Media's member database to the public. Gawker, Gizmodo and Lifehacker are among the sites compromised. (12/14/2010)
+		</div>
+	<div class="module-col1-trendschrt"><img src="hotimages/20101214_gawkerhacked_large.jpg" width="400" height="254" border="0" /></div>
+</div>
+<div class="contentdiv">
+	<div class="module-col1-trends">
+		<img src="hotimages/20101214_dextersplit_small.jpg"  border="0" /><br />
+		<h2 class="mod"><a href="http://www.blogpulse.com/trend?query1=dexter+AND+%28%22split+up%22+OR+divorce+OR+%22break+up%22+OR+%22breaking+up%22+OR+seperating+OR+seperate%29&label1=Dexter+-+Couple+Seperating&query2=%22michael+c.+hall%22&label2=Michael+C.+Hall&query3=%22jennifer+carpenter%22&label3=Jennifer+Carpenter&days=30&x=60&y=11">"Dexter" Couple Splits</a></h2>
+		Michael C. Hall and Jennifer Carpetner, stars of the popular Showtime hit Dexter, are allegedly separating after nearly a year of marriage. (12/14/2010)
+		</div>
+	<div class="module-col1-trendschrt"><img src="hotimages/20101214_dextersplit_large.jpg" width="400" height="254" border="0" /></div>
+</div>
+<div class="contentdiv">
+	<div class="module-col1-trends">
+		<img src="hotimages/20101213_techlawsuit_small.jpg"  border="0" /><br />
+		<h2 class="mod"><a href="http://www.blogpulse.com/trend?query1=%22Paul+Allen%22&query2=&query3=&label1=Paul+Allen&label2=&label3=&days=30&x=43&y=8">Judge Dismisses Major Tech-Patient Suit</a></h2>
+		A suit filed by Microsoft co-founder Paul Allen against 11 tech companies, including Google and Facebook, has been thrown out for a lack of necessary details. (12/13/2010)
+		</div>
+	<div class="module-col1-trendschrt"><img src="hotimages/20101213_techlawsuit_large.jpg" width="400" height="254" border="0" /></div>
+</div>
+<div class="contentdiv">
+	<div class="module-col1-trends">
+		<img src="hotimages/20101213_midwest_small.jpg"  border="0" /><br />
+		<h2 class="mod"><a href="http://www.blogpulse.com/trend?query1=%28%22snow+storm%22+or+%22winter+storm%22%29+AND+midwest&label1=Midwest+Snow+Storm&query2=&label2=&query3=&label3=&days=30&x=35&y=7">US Midwest Blanketed by Winter Storm</a></h2>
+		The Midwest was hit hard by powerful winter storms, which led to cancellations of  many flights and a Giants-Vikings football game. (12/13/2010)
+		</div>
+	<div class="module-col1-trendschrt"><img src="hotimages/20101213_midwest_large.jpg" width="400" height="254" border="0" /></div>
+</div>
+<div class="contentdiv">
+	<div class="module-col1-trends">
+		<img src="hotimages/20101210_nobelpeace_small.jpg"  border="0" /><br />
+		<h2 class="mod"><a href="http://www.blogpulse.com/trend?query1=%22Liu+Xiaobo%22&operator=">Jailed Dissident Awarded Peace Prize</a></h2>
+		The Nobel Committee honored jailed Chinese dissident Liu Xiaobo with this year's Nobel Peace prize in a ceremony held Friday in Oslo, Norway. (12/10/2010)
+		</div>
+	<div class="module-col1-trendschrt"><img src="hotimages/20101210_nobelpeace_large.jpg" width="400" height="254" border="0" /></div>
+</div>
+<div class="contentdiv">
+	<div class="module-col1-trends">
+		<img src="hotimages/20101210_peytonmanning_small.jpg"  border="0" /><br />
+		<h2 class="mod"><a href="http://www.blogpulse.com/trend?query1=%28%22Peyton+Manning%22%29&label1=Peyton+Manning&query2=&label2=&query3=&label3=&days=60&x=30&y=15">Manning Leads Colts, Ends 3-Game Skid</a></h2>
+		In the middle of the worst stretch of his career, Peyton Manning still finds a way to defeat the Titans 30-28, to keep the Colts playoff hopes alive. (12/10/2010)
+		</div>
+	<div class="module-col1-trendschrt"><img src="hotimages/20101210_peytonmanning_large.jpg" width="400" height="254" border="0" /></div>
+</div>
+<div class="contentdiv">
+	<div class="module-col1-trends">
+		<img src="hotimages/20101209_wikileakscyberwar_small.jpg"  border="0" /><br />
+		<h2 class="mod"><a href="http://www.blogpulse.com/trend?query1=wikileaks+AND+%28hacker+OR+hackers+OR+hacking+OR+attack+OR+attacks+OR+attacking+OR+attacked+OR+activist+OR+activists+OR+cyberwar+OR+%22cyber+war%22+OR+coldblood+OR+anonymous%29&label1=WikiLeaks+%22Cyberwar%22&query2=&label2=&query3=&label3=&days=60&x=34&y=6">Hackers Retaliate In Support of WikiLeaks</a></h2>
+		On the heels of Julian Assange's arrest, hacker activitists start a "cyberwar", mounting digital attacks on websites of WikiLeaks' foes. (12/9/2010)
+		</div>
+	<div class="module-col1-trendschrt"><img src="hotimages/20101209_wikileakscyberwar_large.jpg" width="400" height="254" border="0" /></div>
+</div>
+ 
+<!-- END BLOGPULSE HIGHLIGHTS -->
+	</div>
+	
+	<div id="paginate-slider1" class="pagination">
+	
+	</div>
+	
+	<script type="text/javascript">
+	
+	featuredcontentslider.init({
+		id: "slider1",  //id of main slider DIV
+		contentsource: ["inline", ""],  //Valid values: ["inline", ""] or ["ajax", "path_to_file"]
+		toc: "#increment",  //Valid values: "#increment", "markup", ["label1", "label2", etc]
+		nextprev: ["", ""],  //labels for "prev" and "next" links. Set to "" to hide.
+		revealtype: "click", //Behavior of pagination links to reveal the slides: "click" or "mouseover"
+		enablefade: [true, 0.1],  //[true/false, fadedegree]
+		autorotate: [true, 4500],  //[true/false, pausetime]
+		onChange: function(previndex, curindex){  //event handler fired whenever script changes slide
+			//previndex holds index of last slide viewed b4 current (1=1st slide, 2nd=2nd etc)
+			//curindex holds index of currently shown slide (1=1st slide, 2nd=2nd etc)
+		}
+	})
+	
+	</script>
+
+	<div class="space-divider"><br /><br /></div>
+		<div id="twocolbg">
+		<!--column col1a-->
+		<div id="col1a">
+			<!--module start-->			
+			<div class="module-col1"><div class="side-options"><a href="links.rss" title="RSS Feed"><img src="_images/icon-rss.gif" width="17" height="18" alt="RSS Feed" border="0" /></a><a href="links.html" title="View More Top Links"><img src="_images/icon-more.gif" width="26" height="18" alt="View More Top Links" border="0" /></a></div><h1 class="mod"><a href="links.html">Top Links</a></h1></div>
+			<div class="module-col1-content">
+			The most popular links appearing in today’s blogs
+				<div class="space-divider2"></div>
+				<div id="toplinks">					
+					<!--links_home.html iframe-->  		
+  
+	<div id="topvideos"><table border="0" cellpadding="0" cellspacing="0"><tr><th width="25"><a href="javascript:void(0);">Rank</a></th><th><a href="javascript:void(0);">Link</a></th></tr><tr><td class="ctrcontent"><img src="_images/icon-1.gif" width="21" height="20" border="0"></td><td><a href="http://www.weblogsinc.com/feed-terms" target="_blank">Weblogs, Inc.</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-2.gif" width="21" height="20" border="0"></td><td><a href="http://mitcho.com/code/yarpp" target="_blank">Yet Another Related Posts Plugin</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-3.gif" width="21" height="20" border="0"></td><td><a href="http://vimeo.com" target="_blank">Vimeo, Video Sharing For You</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-4.gif" width="21" height="20" border="0"></td><td><a href="http://www.freeshippingday.com" target="_blank">Free Shipping Day</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-5.gif" width="21" height="20" border="0"></td><td><a href="http://www.engadget.com" target="_blank">Engadget</a></td></tr></table></div>		
+				
+
+				</div>	
+			</div><!--module end-->		
+			<div class="module-col1"><div class="side-options"><a href="topVideo.rss" title="RSS Feed"><img src="_images/icon-rss.gif" width="17" height="18" alt="RSS Feed" border="0" /></a><a href="topVideo.html" title="View More Top Videos"><img src="_images/icon-more.gif" width="26" height="18" alt="View More Top Videos" border="0" /></a></div><h1 class="mod"><a href="topVideo.html">Top Videos</a></h1></div>
+			<div class="module-col1-content">
+			Online videos earning the most blog buzz today
+				<div class="space-divider2"></div>
+				<div id="topvideos">				
+					<!--topVideo_home.html iframe-->  
+  
+				<div id="topvideos"><table border="0" cellpadding="0" cellspacing="0"><tr><th width="25"><a href="javascript:void(0);">Rank</a></th><th><a href="javascript:void(0);">Video</a></th></tr><tr><td class="ctrcontent"><img src="_images/icon-1.gif" width="21" height="20" border="0"></td><td><a href="http://www.youtube.com/watch?v=Q68bA28HDx8" target="_blank">
+    YouTube
+        - Beyonce Heat...</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-2.gif" width="21" height="20" border="0"></td><td><a href="http://www.youtube.com/watch?v=owGykVbfgUE" target="_blank">
+    YouTube
+        - Old Spice | ...</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-3.gif" width="21" height="20" border="0"></td><td><a href="http://www.youtube.com/watch?v=bXqUjiNw8fo&feature=player_embedded" target="_blank">
+    YouTube
+        - Athlete Robo...</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-4.gif" width="21" height="20" border="0"></td><td><a href="http://www.youtube.com/watch?v=OQSNhk5ICTI" target="_blank">
+    YouTube
+        - Yosemitebear...</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-5.gif" width="21" height="20" border="0"></td><td><a href="http://www.youtube.com/watch?v=h2OfQdYrHRs" target="_blank">
+    YouTube
+        - Introducing ...</a></td></tr></table></div>		
+				
+
+				</div>		
+			</div>	
+			<div class="module-col1"><div class="side-options"><a href="topWeblogGroup.rss" title="RSS Feed"><img src="_images/icon-rss.gif" width="17" height="18" alt="RSS Feed" border="0" /></a><a href="topWeblogGroup.html" title="View More Top Blogs"><img src="_images/icon-more.gif" width="26" height="18" alt="View More Top Blogs" border="0" /></a></div><h1 class="mod"><a href="topWeblogGroup.html">Top Blogs</a></h1></div>
+			<div class="module-col1-content">
+			Top 40 blogs, based on links by other bloggers
+				<div class="space-divider2"></div>
+				<div id="topblogs">					
+					<!--topWeblogGroup_home.html iframe-->  
+  
+				<div id="topvideos"><table border="0" cellpadding="0" cellspacing="0"><tr><th width="25"><a href="javascript:void(0);">Rank</a></th><th><a href="javascript:void(0);">Blog</a></th></tr><tr><td class="ctrcontent"><img src="_images/icon-1.gif" width="21" height="20" border="0"></td><td><a href="http://www.engadget.com" target="_blank">Engadget</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-2.gif" width="21" height="20" border="0"></td><td><a href="http://www.mtv.com/news" target="_blank">Breaking Music, Celebrity, Entertai...</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-3.gif" width="21" height="20" border="0"></td><td><a href="http://downloadsquad.switched.com" target="_blank">Download Squad - Gadgets, Gizmos, R...</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-4.gif" width="21" height="20" border="0"></td><td><a href="http://www.gizmodo.com" target="_blank">Gizmodo, The Gadget Guide</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-5.gif" width="21" height="20" border="0"></td><td><a href="http://slashdot.org" target="_blank">Slashdot: News for nerds, stuff tha...</a></td></tr></table></div>		
+				
+
+				</div>		
+			</div>			
+			<div class="module-col1"><div class="side-options"><a href="topPress.rss" title="RSS Feed"><img src="_images/icon-rss.gif" width="17" height="18" alt="RSS Feed" border="0" /></a><a href="topPress.html" title="View More Top News Stories"><img src="_images/icon-more.gif" width="26" height="18" alt="View More Top News Stories" border="0" /></a></div><h1 class="mod"><a href="topPress.html">Top News Stories</a></h1></div>
+			<div class="module-col1-content">
+			Timely news stories that bloggers cite today
+				<div class="space-divider2"></div>
+				<div id="topnewstories">					
+				<!--topPress_home.html iframe-->		
+  
+				<div id="topvideos"><table border="0" cellpadding="0" cellspacing="0"><tr><th width="25"><a href="javascript:void(0);">Rank</a></th><th><a href="javascript:void(0);">Article</a></th></tr><tr><td class="ctrcontent"><img src="_images/icon-1.gif" width="21" height="20" border="0"></td><td><a href="http://www.nytimes.com/2010/12/16/world/16wiki.html?hp" target="_blank">U.S. Tries to Build Case Against Wi...</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-2.gif" width="21" height="20" border="0"></td><td><a href="http://www.guardian.co.uk/help/feeds" target="_blank">http://www.guardian.co.uk/help/feed...</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-3.gif" width="21" height="20" border="0"></td><td><a href="http://www.time.com/time/specials/packages/article/0,28804,2036683_2037183,00.html" target="_blank">Mark Zuckerberg - Person of the Yea...</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-4.gif" width="21" height="20" border="0"></td><td><a href="http://www.nytimes.com/2010/12/16/science/16terror.html?pagewanted=2&_r=1&hp" target="_blank">New Advice for Nuclear Strike -  Do...</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-5.gif" width="21" height="20" border="0"></td><td><a href="http://www.boston.com/bigpicture/2010/12/2010_in_photos_part_1_of_3.html" target="_blank">2010 in photos (part 1 of 3) - The ...</a></td></tr></table></div>		
+				
+
+				</div>		
+			</div>								
+		</div>
+		<!--column col1b-->
+		<div id="col1b">
+			<div class="module-col1"><div class="side-options"><a href="keyPeople.rss" title="RSS Feed"><img src="_images/icon-rss.gif" width="17" height="18" alt="RSS Feed" border="0" /></a><a href="keyPeople.html" title="View More Top Key People"><img src="_images/icon-more.gif" width="26" height="18" alt="View More Top Key People" border="0" /></a></div><h1 class="mod"><a href="keyPeople.html">Key People</a></h1></div>
+			<div class="module-col1-content">
+			Prominently featured people in today’s blog buzz
+				<div class="space-divider2"></div>
+				<div id="topkeypeople">					
+					<!--keyPeople_home.html iframe-->  
+  
+				<div id="topvideos"><table border="0" cellpadding="0" cellspacing="0"><tr><th width="25"><a href="javascript:void(0);">Rank</a></th><th width="25">&nbsp;</th><th width="25"><a href="javascript:void(0);">Prev</a></th><th><a href="javascript:void(0);">Person</a></th></tr><tr><td class="ctrcontent"><img src="_images/icon-1.gif" width="21" height="20" border="0"></td><td><img src="_images/icon-arrowup.gif" width="20" height="20"></td><td class="ctrcontent"><img src="_images/icon-prev-4.gif" width="21" height="20" border="0"></td><td><a href="../search?query=%22President+Obama%22" target="_blank">President Obama</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-2.gif" width="21" height="20" border="0"></td><td><img src="_images/icon-arrowup.gif" width="20" height="20"></td><td class="ctrcontent"></td><td><a href="../search?query=%22Sepp+Blatter%22" target="_blank">Sepp Blatter</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-3.gif" width="21" height="20" border="0"></td><td><img src="_images/icon-arrowup.gif" width="20" height="20"></td><td class="ctrcontent"><img src="_images/icon-prev-10.gif" width="21" height="20" border="0"></td><td><a href="../search?query=%22Angelina+Jolie%22" target="_blank">Angelina Jolie</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-4.gif" width="21" height="20" border="0"></td><td><img src="_images/icon-arrowdown.gif" width="20" height="20"></td><td class="ctrcontent"><img src="_images/icon-prev-1.gif" width="21" height="20" border="0"></td><td><a href="../search?query=%22Lady+Gaga%22" target="_blank">Lady Gaga</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-5.gif" width="21" height="20" border="0"></td><td>&nbsp;</td><td class="ctrcontent"><img src="_images/icon-prev-5.gif" width="21" height="20" border="0"></td><td><a href="../search?query=%22Harry+Potter%22" target="_blank">Harry Potter</a></td></tr></table></div>		
+				
+
+				</div>		
+			</div>	
+			<div class="module-col1"><div class="side-options"><a href="topWeblog.rss" title="RSS Feed"><img src="_images/icon-rss.gif" width="17" height="18" alt="RSS Feed" border="0" /></a><a href="topWeblog.html" title="View More Top Top Blog Posts"><img src="_images/icon-more.gif" width="26" height="18" alt="View More Top Blog Posts" border="0" /></a></div><h1 class="mod"><a href="topWeblog.html">Top Blog Posts</a></h1></div>
+			<div class="module-col1-content">
+			Most-cited posts among today’s bloggers
+				<div class="space-divider2"></div>
+				<div id="topblogposts">					
+					<!--topWeblog_home.html iframe-->  
+  
+				<div id="topvideos"><table border="0" cellpadding="0" cellspacing="0"><tr><th width="25"><a href="javascript:void(0);">Rank</a></th><th><a href="javascript:void(0);">Post</a></th></tr><tr><td class="ctrcontent"><img src="_images/icon-1.gif" width="21" height="20" border="0"></td><td><a href="http://techcrunch.com/2010/12/16/is-yahoo-shutting-down-del-icio-us/" target="_blank">  Is Yahoo Shutting Down Del.icio.u...</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-2.gif" width="21" height="20" border="0"></td><td><a href="http://conversations.typepad.com/questions/433" target="_blank">TypePad Conversations - Imagine an ...</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-3.gif" width="21" height="20" border="0"></td><td><a href="http://blog.eu.playstation.com/2010/12/16/the-official-playstation-app-coming-soon-to-iphone-and-android-handsets/" target="_blank">The Official PlayStation App, Comin...</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-4.gif" width="21" height="20" border="0"></td><td><a href="http://socl.ru/blog/interesnosti/30.html" target="_blank">10 фактов о Fallout / Интересности ...</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-5.gif" width="21" height="20" border="0"></td><td><a href="http://www.engadget.com/2010/12/16/bing-2-0-brings-better-facebook-integration-and-the-very-useful/" target="_blank">Bing 2.0 brings better Facebook int...</a></td></tr></table></div>		
+				
+
+				</div>		
+			</div>	
+			<div class="module-col1"><div class="side-options"><a href="keyPhrases.rss" title="RSS Feed"><img src="_images/icon-rss.gif" width="17" height="18" alt="RSS Feed" border="0" /></a><a href="keyPhrases.html" title="View More Key Phrases"><img src="_images/icon-more.gif" width="26" height="18" alt="View More Key Phrases" border="0" /></a></div><h1 class="mod"><a href="keyPhrases.html">Key Phrases</a></h1></div>
+			<div class="module-col1-content">
+			Key phrases and themes in today’s blog entries
+				<div class="space-divider2"></div>
+				<div id="topkeyphrases">					
+					<!--keyPhrases_home.html iframe-->  
+  
+	<div id="topvideos"><table border="0" cellpadding="0" cellspacing="0"><tr><th width="25"><a href="javascript:void(0);">Rank</a></th><th><a href="javascript:void(0);">Phrase</a></th></tr><tr><td class="ctrcontent"><img src="_images/icon-1.gif" width="21" height="20" border="0"></td><td><a href="../search?query=%22word+lens%22" target="_blank">word lens</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-2.gif" width="21" height="20" border="0"></td><td><a href="../search?query=%22champions+league+following+friday+%E2%80%99+s+tie+at+uefa+headquarters%22" target="_blank">champions league following friday &rsquo;...</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-3.gif" width="21" height="20" border="0"></td><td><a href="../search?query=%22social+media+monitor%22" target="_blank">social media monitor</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-4.gif" width="21" height="20" border="0"></td><td><a href="../search?query=%22government+takeover+of+health+care%22" target="_blank">government takeover of health care</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-5.gif" width="21" height="20" border="0"></td><td><a href="../search?query=%22android+open+source+project%22" target="_blank">android open source project</a></td></tr></table></div>		
+				
+
+				</div>
+			</div>			
+			<div class="module-col1"><div class="side-options"><a href="topPressGroup.rss" title="RSS Feed"><img src="_images/icon-rss.gif" width="17" height="18" alt="RSS Feed" border="0" /></a><a href="topPressGroup.html" title="View More Top News Sources"><img src="_images/icon-more.gif" width="26" height="18" alt="View More Top News Sources" border="0" /></a></div><h1 class="mod"><a href="topPressGroup.html">Top News Sources</a></h1></div>
+			<div class="module-col1-content">
+			Key news sources that bloggers cite today
+				<div class="space-divider2"></div>
+				<div id="topnewssources">					
+					<!--topPressGroup_home.html iframe-->				
+  
+				<div id="topvideos"><table border="0" cellpadding="0" cellspacing="0"><tr><th width="25"><a href="javascript:void(0);">Rank</a></th><th><a href="javascript:void(0);">Source</a></th></tr><tr><td class="ctrcontent"><img src="_images/icon-1.gif" width="21" height="20" border="0"></td><td><a href="http://news.google.com" target="_blank">Google News</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-2.gif" width="21" height="20" border="0"></td><td><a href="http://sports.yahoo.com" target="_blank">Yahoo! Sports</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-3.gif" width="21" height="20" border="0"></td><td><a href="http://www.guardian.co.uk" target="_blank">Guardian Unlimited</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-4.gif" width="21" height="20" border="0"></td><td><a href="http://www.nytimes.com" target="_blank">The New York Times</a></td></tr><tr><td class="ctrcontent"><img src="_images/icon-5.gif" width="21" height="20" border="0"></td><td><a href="http://www.bbc.co.uk" target="_blank">BBC</a></td></tr></table></div>		
+				
+
+				</div>
+			</div>			
+		</div>
+		<div class="space-divider"></div>
+		</div>
+
+</div>
+<!--column 2-->
+<div id="col2">
+	<div class="space-divider2"></div>
+	<div id="bpcomm-tabs"></div>
+	<div class="space-divider3"></div>
+	<div class="module-col2"><div class="search-options"><a href="profile">Search Blog Profiles</a></div><h1 class="mod"><a href="search.html">Search Blogosphere</a></h1></div>
+	<ul id="searchtabs" class="searchmodtabs">
+	<li><a href="#" rel="#default" class="selected">Basic</a></li>
+	<li><a href="search-adv.html" rel="searchdivcontainer">Advanced</a></li>
+	<li><a href="search-trend.html" rel="searchdivcontainer">Trend</a></li>
+	<li><a href="search-url.html" rel="searchdivcontainer">URL</a></li>
+	<li><a href="search-tracker.html" rel="searchdivcontainer">Conversation Tracker</a></li>
+	</ul>
+	<div id="searchdivcontainer" style="float:left;text-align:left">
+		<form name="searchform" action="search" method="GET">
+			<div class="module-col2-searchbasic">
+				<div id="search">
+					<div style="float:left"> 
+						<div class="row">
+						    <span class="formw"><input type="text" name="query" class="inputbasic" value="Type a topic, keyword, or URL" onfocus="if (this.value == 'Type a topic, keyword, or URL') this.value ='';" /></span>
+						</div> 
+					</div>
+					<div style="float:left"><input type="image" src="_images/button-go.gif" id="gobasic" alt="Search" title="Search" /></div> 
+					<div class="space-divider"></div> 
+				</div> 
+			</div>
+		</form>
+	</div>
+	<script type="text/javascript">
+	var search=new ddajaxtabs("searchtabs", "searchdivcontainer")
+	search.setpersist(true)
+	search.setselectedClassTarget("link") //"link" or "linkparent"
+	search.init()
+	</script>
+	<div class="space-divider" style="margin-bottom:50px"></div>	
+	<div class="module-col2"><h1 class="mod">BLOGPULSE STATS</h1></div>
+	<div class="module-col2-content" style="border:1px solid #DCE5E9;"><div> <!-- class="bpstats" --><nobr><iframe id="statsframe" src="blogstats" width="100%" height="55px" align="center" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe></nobr></div></div>
+	<div class="space-divider" style="margin-bottom:50px"></div>
+	<div class="module-col2"><div class="side-options"><span id="topictrendtime" class="textSmaller">&nbsp;</span></div><h1 class="mod"><a href="bplive_full.html" onclick="popup = window.open('bplive_full.html', 'BlogPulse Live', 'height=650,width=715,scrollbars=yes,resizable=yes'); return false" target="_blank">BLOGPULSE LIVE</a></h1></div>
+	<div class="module-col2-content" style="border:1px solid #DCE5E9;">Real-time view of the most popular topics that bloggers are writing about.<br /><a href="bplive_full.html" onclick="popup = window.open('bplive_full.html', 'BlogPulse Live', 'height=650,width=715,scrollbars=yes,resizable=yes'); return false" target="_blank"><center><img id="topictrend" src="http://www.blogpulse.com/topic-trend.png" alt="BlogPulse Live Topic Trend" width="250" height="156" border="0" title="Click to open a full view of real-time posts by topic" onload="setTopicTrendRefresh()" /></center></a></div>
+	<div class="space-divider" style="margin-bottom:50px"></div>
+</div>
+
+<div class="space-divider"><br /></div>
+<!--footer-->
+	<div class="footer"><a href="/about.html">About BlogPulse</a>&nbsp;&nbsp;&middot;&nbsp;&nbsp;<a href="/contact.html">Contact Us</a>&nbsp;&nbsp;&middot;&nbsp;&nbsp;<a href="/help.html">Help</a><!--&nbsp;&nbsp;&middot;&nbsp;&nbsp;<a href="javascript:void(0);">Site Feedback</a>--></div>
+	<div id="footer" style="bottom: 0pt;">
+		<table width="966" cellspacing="0" cellpadding="0" border="0" align="center" style="color:#636363;font-family:Arial,Helvetica,sans-serif;font-size:10px;">
+		<tbody>
+			<tr></tr>
+			<tr>
+				<td valign="top" colspan="4">
+					<div id="left_footer" align="center">
+						<span id="copyright_data" class="GFN-text">&copy;
+	<script type="text/javascript">
+	<!--
+	var cur = new Date();
+	var year=cur.getFullYear();
+	document.write(year);
+	-->
+	</script>
+						The Nielsen Company. All Rights Reserved.</span>
+						<a class="GFN-text" href="http://en-us.nielsen.com/main/terms_of_use">Terms of Use</a>
+						<span class="GFN-text"> | </span>
+						<a class="GFN-text" href="http://en-us.nielsen.com/main/privacy_statement">Privacy Policy</a>
+					</div>
+				</td>
+	<!--
+				<td valign="top">
+					<div id="right_footer" align="right"><a class="GFN-text" href="http://en-us.nielsen.com/main/sitemap">Site Map</a></div>
+				</td>
+	-->
+			</tr>
+			<tr></tr>
+		</tbody>
+		</table>
+	</div>
+</div>
+<!-- BEGIN Nielsen//NetRatings SiteCensus V5.3 -->
+<!-- COPYRIGHT 2007 Nielsen//NetRatings -->
+<script type="text/javascript">
+	 var _rsCI="us-blogpulse";
+	 var _rsCG="0";
+	 var _rsDN="//secure-us.imrworldwide.com/";
+	 var _rsPLfl=0;
+	 var _rsCL=1;
+	 var _rsSE=1;
+	 var _rsSM=1.0;
+</script>
+<script type="text/javascript" src="//secure-us.imrworldwide.com/v53.js"></script>
+<noscript>
+	<div><img src="//secure-us.imrworldwide.com/cgi-bin/m?ci=us-blogpulse&amp;cg=0&cc=1" alt=""/></div>
+</noscript>
+<!-- END Nielsen//NetRatings SiteCensus V5.3 -->

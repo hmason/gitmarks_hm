@@ -1,0 +1,472 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+    <TITLE>Learn UNIX in 10 minutes</TITLE>
+    <META NAME="AUTHOR" CONTENT="cjohnson">
+   <META NAME="keywords" CONTENT="unix, cheatsheet">
+</HEAD>
+<center>
+</center>
+<P><FONT SIZE=+2><I><B><a href="http://freeengineer.org">FREEENGINEER.ORG</a></B></I></FONT>
+<hr>
+<PRE>
+Learn UNIX in 10 minutes. Version 1.3   
+
+<b><u>Preface</u></b>
+
+This is something that I had given out to students (CAD user training) in years past. 
+The purpose was to have on one page the basics commands for getting started using 
+the UNIX shell (so that they didn't call me asking what to do the first time someone 
+gave them a tape). 
+
+This document is copyrighted but freely redistributable under the terms of the <a href="http://www.gnu.org/copyleft/fdl.html">GFDL</a> . 
+
+Have an idea for this page?  <img src="xxx.png">
+Send me patches, comments, corrections</a>, about whatever you think is wrong or should be 
+included. I am always happy to hear from you. Please include the word "UNIX" in your subject.
+
+<b>Sections:</b><p>
+<a href="#Directories"><b>Directories:</b></a>
+<a href="#Navigating"><b>Moving around the file system:</b></a>
+<a href="#Listing"><b>Listing directory contents:</b></a>
+<a href="#Permissions"><b>Changing file permissions and attributes</b></a>
+<a href="#Moving"><b>Moving, renaming, and copying files:</b></a>
+<a href="#Viewing"><b>Viewing and editing files:</b></a>
+<a href="#Shells"><b>Shells </b></a>
+<a href="#EnvVar"><b>Environment variables</b></a>
+<a href="#History"><b>Interactive History</b></a>
+<a href="#FilenameComp"><b>Filename Completion</b></a>
+<a href="#Bash"><b>Bash is the way cool shell. </b></a>
+<a href="#Redirection"><b>Redirection:</b></a>
+<a href="#Pipes"><b>Pipes:</b></a>
+<a href="#CommandSubst"><b>Command Substitution</b></a>
+<a href="#Grep"><b>Searching for strings in files: The <i>grep</i>  command</b></a>
+<a href="#Find"><b>Searching for files : The <i>find</i> command</b></a>
+<a href="#Tar"><b>Reading and writing tapes, backups, and archives: The <i>tar</i> command  </b></a>
+<a href="#Compression"><b>File compression: <i>compress</i>, <i>gzip</i>, and <i>bzip2</i></b></a>
+<a href="#Man"><b>Looking for help: The <i>man</i> and <i>apropos</i> commands</b></a>
+<a href="#Vi"><b>Basics of the <i> vi</i> editor</b></a>
+<a href="#FAQS"><b>FAQs</b></a>
+
+******************************************************************************************
+   Basic UNIX Command Line (shell) navigation  : Last revised May 17 2001 
+******************************************************************************************
+
+<a name = "Directories">
+<b><u>Directories:</u></b>
+</a>
+
+File and directory paths in UNIX use the forward slash &quot;/&quot; 
+to separate directory names in a path.
+
+examples:
+
+/              &quot;root&quot; directory
+/usr           directory usr (sub-directory of / &quot;root&quot; directory)
+/usr/STRIM100  STRIM100 is a subdirectory of /usr
+<a name = "Navigating">
+<b><u>Moving around the file system:</u></b>
+</a>
+
+pwd               Show the &quot;present working directory&quot;, or current directory.
+cd                Change current directory to your HOME directory.
+cd /usr/STRIM100  Change current directory to /usr/STRIM100.
+cd INIT           Change current directory to INIT which is a sub-directory of the current 
+                        directory.
+cd ..             Change current directory to the parent directory of the current directory.
+cd $STRMWORK      Change current directory to the directory defined by the environment 
+                        variable 'STRMWORK'.
+cd ~bob           Change the current directory to the user bob's home directory (if you have permission).
+
+<a name = "Listing">
+<b><u>Listing directory contents:</u></b>
+</a>
+
+ls    list a directory
+ls -l    list a directory in long ( detailed ) format
+
+   for example:
+$ ls -l 
+drwxr-xr-x    4 cliff    user        1024 Jun 18 09:40 WAITRON_EARNINGS
+-rw-r--r--    1 cliff    user      767392 Jun  6 14:28 scanlib.tar.gz
+^ ^  ^  ^     ^   ^       ^           ^      ^    ^      ^
+| |  |  |     |   |       |           |      |    |      |  
+| |  |  |     | owner   group       size   date  time    name 
+| |  |  |     number of links to file or directory contents
+| |  |  permissions for world
+| |  permissions for members of group
+| permissions for owner of file: r = read, w = write, x = execute -=no permission
+type of file: - = normal file, d=directory, l = symbolic link, and others...
+
+ls -a        List the current directory including hidden files. Hidden files start 
+             with &quot;.&quot; 
+ls -ld *     List all the file and directory names in the current directory using 
+             long format. Without the &quot;d&quot; option, ls would list the contents 
+             of any sub-directory of the current. With the &quot;d&quot; option, ls 
+             just lists them like regular files. 
+
+<a name="Permissions">
+<b><u>Changing file permissions and attributes</u></b>
+</a>
+
+chmod 755 file       Changes the permissions of file to be rwx for the owner, and rx for 
+                     the group and the world. (7 = rwx = 111 binary. 5 = r-x = 101 binary)
+chgrp user file      Makes file belong to the group user.
+chown cliff file     Makes cliff the owner of file.
+chown -R cliff dir   Makes cliff the owner of dir and everything in its directory tree. 
+
+You must be the owner of the file/directory or be root before you can do any of these things. 
+<a name="Moving">
+<b><u>Moving, renaming, and copying files:</u></b>
+</a>
+
+cp file1 file2          copy a file
+mv file1 newname        move or rename a file
+mv file1 ~/AAA/         move file1 into sub-directory AAA in your home directory.
+rm file1 [file2 ...]    remove or delete a file
+rm -r dir1 [dir2...]    recursivly remove a directory and its contents BE CAREFUL!
+mkdir dir1 [dir2...]    create directories
+mkdir -p dirpath        create the directory dirpath, including all implied directories in the path.
+rmdir dir1 [dir2...]    remove an empty directory
+
+<a name="Viewing">
+<b><u>Viewing and editing files:</u></b>
+</a>
+
+cat filename      Dump a file to the screen in ascii. 
+more filename     Progressively dump a file to the screen: ENTER = one line down 
+                  SPACEBAR = page down  q=quit
+less filename     Like more, but you can use Page-Up too. Not on all systems. 
+vi filename       Edit a file using the vi editor. All UNIX systems will have vi in some form. 
+emacs filename    Edit a file using the emacs editor. Not all systems will have emacs. 
+head filename     Show the first few lines of a file.
+head -n  filename Show the first n lines of a file.
+tail filename     Show the last few lines of a file.
+tail -n filename  Show the last n lines of a file.
+
+<a name="Shells">
+<b><u>Shells </u></b>
+</a>
+
+The behavior of the command line interface will differ slightly depending 
+on the <i>shell</i> program that is being used. 
+
+Depending on the shell used, some extra behaviors can be quite nifty.
+
+You can find out what shell you are using by the command:
+
+    echo $SHELL
+
+Of course you can create a file with a list of shell commands and execute it like
+a program to perform a task. This is called a shell script. This is in fact the 
+primary purpose of most shells, not the interactive command line behavior. 
+
+<a name="EnvVar">
+<b><u>Environment variables</u></b>
+</a>
+
+You can teach your shell to remember things for later using environment variables.
+For example under the bash shell:
+
+export CASROOT=/usr/local/CAS3.0               Defines the variable CASROOT with the value 
+                                               /usr/local/CAS3.0.
+export LD_LIBRARY_PATH=$CASROOT/Linux/lib      Defines the variable LD_LIBRARY_PATH with 
+                                               the value of CASROOT with /Linux/lib appended, 
+                                               or /usr/local/CAS3.0/Linux/lib 
+
+By prefixing $ to the variable name, you can evaluate it in any command:
+
+cd $CASROOT         Changes your present working directory to the value of CASROOT
+
+echo $CASROOT       Prints out the value of CASROOT, or /usr/local/CAS3.0
+printenv CASROOT    Does the same thing in bash and some other shells. 
+
+<a name="History">
+<b><u>Interactive History</u></b>
+</a>
+
+A feature of bash and tcsh (and sometimes others) you can use 
+the up-arrow keys to access your previous commands, edit 
+them, and re-execute them.
+
+<a name="FilenameComp">
+<b><u>Filename Completion</u></b>
+</a>
+
+A feature of bash and tcsh (and possibly others) you can use the
+TAB key to complete a partially typed filename. For example if you
+have a file called constantine-monks-and-willy-wonka.txt in your 
+directory and want to edit it you can type 'vi const', hit the TAB key, 
+and the shell will fill in the rest of the name for you (provided the 
+completion is unique).
+
+<a name="Bash">
+<b><u>Bash is the way cool shell. </u></b>
+</a>
+Bash will even complete the name of commands and environment variables.
+And if there are multiple completions, if you hit TAB twice bash will show
+you all the completions. Bash is the default user shell for most Linux systems. 
+
+<a name="Redirection">
+<b><u>Redirection:</u></b>
+</a>
+
+grep string filename &gt; newfile           Redirects the output of the above grep
+                                         command to a file 'newfile'.
+grep string filename &gt;&gt; existfile        Appends the output of the grep command 
+                                         to the end of 'existfile'.
+
+The redirection directives, &gt; and &gt;&gt; can be used on the output of most commands 
+to direct their output to a file.
+<a name="Pipes">
+<b><u>Pipes:</u></b>
+</a>
+
+The pipe symbol &quot;|&quot; is used to direct the output of one command to the input 
+of another.
+
+For example:
+
+ls -l | more   This commands takes the output of the long format directory list command 
+               &quot;ls -l&quot; and pipes it through the more command (also known as a filter).
+               In this case a very long list of files can be viewed a page at a time.
+
+du -sc * | sort -n | tail  
+               The command "du -sc" lists the sizes of all files and directories in the 
+               current working directory. That is piped through "sort -n" which orders the 
+               output from smallest to largest size. Finally, that output is piped through "tail"
+               which displays only the last few (which just happen to be the largest) results.
+<a name="CommandSubst">
+<b><u>Command Substitution</u></b>
+</a>
+
+You can use the output of one command as an input to another command in another way 
+called command substitution. Command substitution is invoked when by enclosing the 
+substituted command in backwards single quotes. For example:
+
+cat `find . -name aaa.txt`
+
+which will cat ( dump to the screen ) all the files named aaa.txt that exist in the current 
+directory or in any subdirectory tree. 
+
+
+<a name="Grep">
+<b><u>Searching for strings in files: The <i>grep</i>  command</u></b>
+</a>
+
+grep string filename    prints all the lines in a file that contain the string
+
+<a name="Find">
+<b><u>Searching for files : The <i>find</i> command</u></b>
+</a>
+
+find search_path -name filename 
+
+find . -name aaa.txt    Finds all the files named aaa.txt in the current directory or 
+                        any subdirectory tree. 
+find / -name vimrc      Find all the files named 'vimrc' anywhere on the system. 
+find /usr/local/games -name &quot;*xpilot*&quot;       
+                        Find all files whose names contain the string 'xpilot' which 
+                        exist within the '/usr/local/games' directory tree. 
+
+<a name="Tar">
+<b><u>Reading and writing tapes, backups, and archives: The <i>tar</i> command  </u></b>
+</a>
+
+The tar command stands for &quot;tape archive&quot;. It is the &quot;standard&quot; way to read 
+and write archives (collections of files and whole directory trees).
+
+Often you will find archives of stuff with names like stuff.tar, or stuff.tar.gz.  This 
+is stuff in a tar archive, and stuff in a tar archive which has been compressed using the
+gzip compression program respectivly. 
+
+Chances are that if someone gives you a tape written on a UNIX system, it will be in tar format, 
+and you will use tar (and your tape drive) to read it. 
+
+Likewise, if you want to write a tape to give to someone else, you should probably use 
+tar as well. 
+
+Tar examples:
+
+tar xv      Extracts (x) files from the default tape drive while listing (v = verbose) 
+            the file names to the screen.
+tar tv      Lists the files from the default tape device without extracting them. 
+tar cv file1 file2      
+            Write files 'file1' and 'file2' to the default tape device.
+tar cvf archive.tar file1 [file2...]   
+            Create a tar archive as a file &quot;archive.tar&quot; containing file1, 
+            file2...etc.
+tar xvf archive.tar  extract from the archive file
+tar cvfz archive.tar.gz dname    
+            Create a gzip compressed tar archive containing everything in the directory 
+            'dname'. This does not work with all versions of tar.
+tar xvfz archive.tar.gz          
+            Extract a gzip compressed tar archive.  Does not work with all versions of tar. 
+tar cvfI archive.tar.bz2 dname   
+            Create a bz2 compressed tar archive. Does not work with all versions of tar
+
+<a name="Compression">
+<b><u>File compression: <i>compress</i>, <i>gzip</i>, and <i>bzip2</i></u></b>
+</a>
+
+The standard UNIX compression commands are compress and uncompress. Compressed files have 
+a suffix .Z added to their name. For example:
+
+compress part.igs    Creates a compressed file part.igs.Z
+
+uncompress part.igs  Uncompresseis part.igs from the compressed file part.igs.Z.
+                     Note the .Z is not required.
+
+Another common compression utility is gzip (and gunzip). These are the GNU compress and 
+uncompress utilities.  gzip usually gives better compression than standard compress, 
+but may not be installed on all systems.  The suffix for gzipped files is .gz
+
+gzip part.igs     Creates a compressed file part.igs.gz
+gunzip part.igs   Extracts the original file from part.igs.gz
+
+The bzip2 utility has (in general) even better compression than gzip, but at the cost of longer 
+times to compress and uncompress the files. It is not as common a utility as gzip, but is 
+becoming more generally available. 
+
+bzip2 part.igs       Create a compressed Iges file part.igs.bz2
+bunzip2 part.igs.bz2 Uncompress the compressed iges file. 
+
+
+<a name="Man">
+<b><u>Looking for help: The <i>man</i> and <i>apropos</i></a> commands</u></b>
+</a>
+Most of the commands have a manual page which give sometimes useful, often more or less 
+detailed, sometimes cryptic and unfathomable discriptions of their usage. Some say they 
+are called man pages because they are only for real men. 
+
+Example:
+
+man ls      Shows the manual page for the ls command
+
+You can search through the man pages using <i>apropos</i>
+
+Example:
+
+apropos build     Shows a list of all the man pages whose discriptions contain the word "build"
+
+Do a <b><i>man apropos</i></b> for detailed help on apropos.
+
+<a name="Vi">
+<b><u>Basics of the <i> vi</i> editor</b></u>
+</a>
+                Opening a file
+vi filename
+
+                Creating text 
+Edit modes: These keys enter editing modes and type in the text
+of your document. 
+
+i     Insert before current cursor position
+I     Insert at beginning of current line
+a     Insert (append) after current cursor position
+A     Append to end of line
+r     Replace 1 character
+R     Replace mode
+&lt;ESC&gt; Terminate insertion or overwrite mode
+
+                 Deletion of text
+
+x     Delete single character
+dd    Delete current line and put in buffer
+ndd   Delete n lines (n is a number) and put them in buffer
+J     Attaches the next line to the end of the current line (deletes carriage return).
+
+                 Oops
+
+u     Undo last command
+
+                 cut and paste
+yy    Yank current line into buffer
+nyy   Yank n lines into buffer
+p     Put the contents of the buffer after the current line
+P     Put the contents of the buffer before the current line
+
+                cursor positioning
+^d    Page down
+^u    Page up
+:n    Position cursor at line n
+:$    Position cursor at end of file
+^g    Display current line number
+h,j,k,l Left,Down,Up, and Right respectivly. Your arrow keys should also work if
+      if your keyboard mappings are anywhere near sane.
+
+               string substitution
+
+:n1,n2:s/string1/string2/[g]       Substitute string2 for string1 on lines
+                                   n1 to n2. If g is included (meaning global),  
+                                   all instances of string1 on each line
+                                   are substituted. If g is not included,
+                                   only the first instance per matching line is
+                                   substituted.
+
+    ^ matches start of line
+    . matches any single character
+    $ matches end of line
+
+These and other &quot;special characters&quot; (like the forward slash) can be &quot;escaped&quot; with \
+i.e to match the string &quot;/usr/STRIM100/SOFT&quot; say &quot;\/usr\/STRIM100\/SOFT&quot; 
+
+Examples:
+
+:1,$:s/dog/cat/g                   Substitute 'cat' for 'dog', every instance
+                                   for the entire file - lines 1 to $ (end of file)
+
+:23,25:/frog/bird/                 Substitute 'bird' for 'frog' on lines
+                                   23 through 25. Only the first instance 
+                                   on each line is substituted.
+
+
+              Saving and quitting and other "ex" commands
+
+These commands are all prefixed by pressing colon (:) and then entered in the lower
+left corner of the window. They are called "ex" commands because they are commands
+of the <i><b>ex</b></i> text editor - the precursor line editor to the screen editor 
+vi.   You cannot enter an "ex" command when you are in an edit mode (typing text onto the screen)
+Press &lt;ESC&gt; to exit from an editing mode.
+
+:w                Write the current file.
+:w new.file       Write the file to the name 'new.file'.
+:w! existing.file Overwrite an existing file with the file currently being edited. 
+:wq               Write the file and quit.
+:q                Quit.
+:q!               Quit with no changes.
+
+:e filename       Open the file 'filename' for editing.
+
+:set number       Turns on line numbering
+:set nonumber     Turns off line numbering
+
+
+<a name="FAQS">
+<b><u>FAQs</u></b>
+</a>
+The USENET FAQs should be the first place you look for an answer to specific questions.
+You can find most of them at <a href="ftp://rtfm.mit.edu/pub/">RTFM</a>
+The contents of <a href="ftp://rtfm.mit.edu/pub/usenet-by-hierarchy/comp/unix/questions/">this directory</a> includes vi, bash, and comp.unix.questions FAQs.
+Searching USENET archives are very useful too. 
+google.com has a USENET archive (formerly Deja.com's) . 
+<a href="http://groups.google.com/advanced_group_search">Advanced Group Search</a> rules.
+
+
+This document was converted from plain text using <a href="http://www.vim.org">Vim</a> and 
+then hacked.  Vim is the best version of the one true text editor: vi.
+
+Copyright (c)  2000-2006 <img src="xxx.png">
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1
+or any later version published by the Free Software Foundation;
+with Invariant Section: Preface, with Front-Cover Texts, and with no
+Back-Cover Texts. A copy of the license can be found on the GNU web site
+<a href="http://www.gnu.org/copyleft/fdl.html">here</a>.
+
+
+</PRE>
+<hr>
+<P><FONT SIZE=+1><I><B><a href="http://freeengineer.org">FREEENGINEER.ORG</a></B></I></FONT>
+</BODY>
+</HTML>

@@ -1,0 +1,226 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--************************************************************************-->
+<!--* Copyright 2000 by Mike Hall                                          *-->
+<!--* Please see http://www.brainjar.com for terms of use.                 *-->
+<!--************************************************************************-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>BrainJar.com: CSS Positioning</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="/common/article.css" rel="stylesheet" type="text/css" />
+<link href="illustrations.css"   rel="stylesheet" type="text/css" />
+
+</head>
+<body>
+
+<div id="adsense" style="width:160px; height:600px; position:absolute; top:1.5em; right:.5em;">
+	<script type="text/javascript"><!--
+		google_ad_client = "pub-0082593088265184";
+		/* General */
+		google_ad_slot = "9069151307";
+		google_ad_width = 160;
+		google_ad_height = 600;
+		//-->
+	</script>
+	<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
+</div>
+
+
+<div id="main">
+
+
+<div class="navBar">
+<a href="/">Home</a> | <span class="navCurrentPage">1</span> | <a href="default2.asp">2</a> | <a href="default3.asp">3</a> | <a href="default4.asp">4</a> | <a href="default5.asp">5</a>
+</div>
+
+<!-- AddThis Button BEGIN -->
+<div id="addThis">
+<a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;username=xa-4b72e5351a45bb48"><img src="http://s7.addthis.com/static/btn/v2/lg-share-en.gif" width="125" height="16" alt="Bookmark and Share" style="border:0"/></a><script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=xa-4b72e5351a45bb48"></script>
+</div>
+<!-- AddThis Button END -->
+
+
+<div id="content">
+
+<h2>CSS Positioning</h2>
+
+<span class="sideBox">Review the <a href="http://www.w3.org/TR/CSS21/">W3C CSS
+standard</a> recommendation.</span>
+
+<p>To use CSS for layout effectively, it helps to know how it's used to
+position page content. This article gives an overview of the methods and rules
+that govern visual rendering in the CSS2 specification. It also points out some
+things to watch out for.</p>
+
+<p>Although the specification applies to any device for displaying web pages,
+this article focuses on how it works in browsers. Many details are left out
+for the sake of simplicity. For a definitive reference, see the standards
+publication.</p>
+
+<p>It's important to remember that a given browser may not support a given
+feature or may even implement it incorrectly. Also, there is some leeway
+provided within the standards where individual browsers are free to deal with
+situations as they please. Where appropriate these inconsistencies are
+noted.</p>
+
+<h3>The Box Model</h3>
+
+<p>To understand positioning in CSS you must first understand the box model.
+For display purposes, every element in a document is considered to be a
+rectangular box which has a content area surrounded by padding, a border and
+margins. The illustration below shows these various parts.</p>
+
+<div class="marginBlock">
+  <div class="containingBlock">
+    <div class="contentBlock">
+    content content content content content content content content content
+    content content content content content content content content content
+    content content content content content content content content content
+    content content content content content content content content content
+    </div>
+  </div>
+</div>
+
+<p style="text-align:center;">
+<span style="border:dotted 1px #000000;">&nbsp;&nbsp;&nbsp;</span>
+margin
+<span style="background-color:#000000;border:solid 1px #000000;">&nbsp;&nbsp;&nbsp;</span>
+border
+<span style="background-color:#d0d0d0;border:solid 1px #eeeeee;">&nbsp;&nbsp;&nbsp;</span>
+padding
+<span style="background-color:#f0f0f0;">&nbsp;&nbsp;&nbsp;</span>
+content
+</p>
+
+<p>Margins are always transparent. Borders come in various styles. Background
+settings for an element apply to the the area just inside the borders which
+includes both the padding and content areas. For purposes of illustration
+however, the padding area is shown in a slightly darker color.</p>
+
+<p>When referring to boxes throughout this article, the term "margin edge,"
+"border edge", etc. means the the outer boundary of the corresponding box
+area as shown above.</p>
+
+<p>Margins, borders and padding are all optional but for purposes of
+calculating positions and sizes they are given a default width of zero if not
+specified. Different widths can be set for each individual side (top, right,
+bottom and left) if desired. Margins can even have negative values.</p>
+
+<p>The width and height of each box is equal to the width and height of the
+outer margin box. Note that this is not the necessarily the same as the width
+and height of the content area.</p>
+
+<p>A box can contain any number of other boxes, creating a hierarchy of boxes
+that corresponds to the nesting of page elements. The browser window serves as
+the root element for this hierarchy.</p>
+
+<h4>Box Types</h4>
+
+<p>There are two basic types of boxes, <i>block</i> and <i>inline.</i> Block
+boxes are generated by elements such as P, DIV or TABLE. Inline boxes are
+generated by tags such as B, I or SPAN and actual content like text and
+images.</p>
+
+<p>The box type may also be set using the <code>display</code> property.
+Setting a value of <code>block</code> on an inline element, for example, will
+cause it to be treated as a block element. Note that if you set the display
+to <code>none,</code> no box is created. The browser acts as if the element
+did not exist. Likewise, any nested elements are ignored as well, even if they
+specifically declare some other display value.</p>
+
+<div class="noteBox">
+There are other types of boxes which apply to special elements like lists and
+tables. However, these are ultimately treated as block or inline boxes for
+positioning purposes. As such, these other box types not covered here.
+</div>
+
+<h4>Containing Blocks</h4>
+
+<p>Block boxes act as a <i>containing block</i> for any boxes within them. For
+example, in this code:</p>
+
+<pre>
+&lt;div&gt;
+This is the first sentence.
+&lt;p&gt;This is the second sentence.&lt;/p&gt;
+&lt;/div&gt;
+</pre>
+
+<p>the DIV element establishes a containing block for both the first string of
+text and the P element. The P element in turn creates a containing block for
+the second text string.</p>
+
+<p>It's interesting to note that while the text of the first sentence in the
+above example generates an inline box, there is considered to be block box
+surrounding it. These "anonymous" block boxes are used to simplify the
+positioning process. The result is that a block box will only contain either
+all inline boxes or all block boxes, even if some of those block boxes only act
+as a wrapper for an inline box.</p>
+
+<p>This containing block is used in determining both the position of the boxes
+within it and in some cases, the dimensions of those boxes. For example, if an
+element has a style setting of <code>width:50%;</code> its width will be set to
+half the width of its containing block.</p>
+
+<p>For any element that is not absolutely positioned, the containing block is
+considered to be the content edge of its most recent, block-level ancestor. If
+none exists, the browser window serves as the containing block. Absolutely
+positioned elements are discussed separately.</p>
+
+<h4>Positioning Schemes</h4>
+
+<p>There are three positioning modes or schemes in CSS2: normal, float and
+absolute. Each has its own set of rules. Every box is positioned using one of
+these schemes but different boxes will use different schemes depending on their
+<code>position</code> and <code>float</code> style settings.</p>
+
+<h3>Normal Flow</h3>
+
+<p>Normal flow is the default scheme used for positioning. It applies to any
+element that does not specify <code>position:absolute</code> or
+<code>fixed</code> and is not floated.</p>
+
+<p>In this scheme, block boxes flow vertically starting at the top of their
+containing block with each placed directly below the preceding one. Inline
+boxes flow horizontally from left to right.</p>
+
+<p>You should note that vertical margins are collapsed in the normal flow.
+That is, instead of adding the bottom margin of a box to the top margin of the
+one immediately below it, only the larger of the two values is used, as
+illustrated here.</p>
+
+<div class="marginBlock" style="border-bottom-width:0px;padding-bottom:0px;width:50%;">
+  <div class="containingBlock">
+    <div class="contentBlock">
+    content content content content content content content content content
+    </div>
+  </div>
+</div>
+<div class="marginBlock" style="padding:24px;width:75%;">
+  <div class="containingBlock">
+    <div class="contentBlock">
+    content content content content content content content content content
+    content content content content content content content content content
+    </div>
+  </div>
+</div>
+
+<p>Horizontal margins, however, are never collapsed.</p>
+
+<p class="footer">
+<a href="default2.asp">Next</a>
+</p>
+
+</div>
+
+
+<div class="navBar">
+<span class="navCurrentPage" style="float:left;">BrainJar.com&nbsp;&middot;&nbsp;&copy;1999-2010 by Mike Hall&nbsp;</span><a href="/">Home</a> | <span class="navCurrentPage">1</span> | <a href="default2.asp">2</a> | <a href="default3.asp">3</a> | <a href="default4.asp">4</a> | <a href="default5.asp">5</a>
+</div>
+
+
+</div>
+
+</body>
+</html>

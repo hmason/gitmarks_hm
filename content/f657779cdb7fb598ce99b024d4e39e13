@@ -1,0 +1,1024 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+
+	<title>Highlight Source Code in Your PHP Application</title>
+
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="robots" content="all" />
+
+	<meta name="description" content="If you display source code on your site's pages, you need code highlighting! Stoyan shows how it's done using two techniques: the built-in PHP highlighter, and PEAR's Text_Highlighter package."/>
+	<link rel="shortcut icon" href="/favicon.ico" />
+	<link rel="search" type="application/opensearchdescription+xml" title="SitePoint Search" href="http://search.sitepoint.com/opensearch.xml"/>
+	<link rel="alternate" type="application/rss+xml" title="RSS - Articles" href="http://www.sitepoint.com/recent.rdf" />
+	<link rel="alternate" type="application/rss+xml" title="RSS - News" href="http://www.sitepoint.com/blogs/category/news/feed/" />
+	<link rel="alternate" type="application/rss+xml" title="RSS - Blogs" href="http://www.sitepoint.com/blogs.rdf" />
+	<link rel="alternate" type="application/rss+xml" title="RSS - Forums" href="http://www.sitepoint.com/forums/featured.rdf" />
+	<link rel="alternate" type="application/rss+xml" title="RSS - Books" href="http://www.sitepoint.com/books.rdf" />
+
+	<link rel="apple-touch-icon" href="http://1.sitepointstatic.com/images/icons/apple-touch-icon.png" />
+
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+	<script type="text/javascript" src="http://partner.googleadservices.com/gampad/google_service.js"></script><script type="text/javascript">GS_googleAddAdSenseService("ca-pub-9603645151104616"); GS_googleEnableAllServices(); </script><script type="text/javascript">GA_googleAddSlot("ca-pub-9603645151104616", "Articles_5_728x90"); GA_googleAddSlot("ca-pub-9603645151104616", "Articles_6_300x250"); GA_googleAddSlot("ca-pub-9603645151104616", "Articles_9a_300x100"); GA_googleAddSlot("ca-pub-9603645151104616", "Articles_9b_300x100"); GA_googleAddSlot("ca-pub-9603645151104616", "Articles_160x600_SkyScraper"); GA_googleAddSlot("ca-pub-9603645151104616", "Articles_300x250_2"); </script><script type="text/javascript">GA_googleFetchAds(); </script><link rel="stylesheet" href="http://1.sitepointstatic.com/bundle/standard.css,format.css,tabs-v5.css,cart.css,print.css?v=2.0.37" media="all" type="text/css" />
+<link rel="stylesheet" href="http://1.sitepointstatic.com/css3/structure.css?v=2.0.37" media="all" type="text/css" />
+<link rel="stylesheet" href="/static/articles/styles/article.css?v=2.0.37" media="screen,projection,print" type="text/css" />
+<link rel="stylesheet" href="http://i2.sitepoint.com/css2/promobar.css?v=2.0.37" media="all" type="text/css" />
+<!--[if lt IE 8]><link rel="stylesheet" href="http://1.sitepointstatic.com/css3/ie.css?v=2.0.37" media="screen,projection" type="text/css" /><![endif]-->
+<!--[if lt IE 7]><link rel="stylesheet" href="http://1.sitepointstatic.com/css3/ie6.css?v=2.0.37" media="screen,projection" type="text/css" /><![endif]-->
+</head>
+<body>
+<!--[if gte IE 8]><!-->
+
+
+<script type="text/javascript" src="http://sitepointstatic.com/frontpage/scripts/promobar.js"></script>
+<!--<![endif]--><script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script type="text/javascript">
+var SPMetrics_options = {
+	'original_referrer': document.referrer,
+	'context': 'articles',
+	'category': 'PHP & MySQL Reviews and Apps',
+	'group': 6
+};
+</script>
+<script src="http://metrics.aws.sitepoint.com/bouncer" type="text/javascript"></script>
+<div id="header">
+	<p>
+		<a href="http://www.sitepoint.com"><span></span>SitePoint</a>
+	</p>
+
+	<!-- Search -->
+
+	<form method="get" action="http://search.sitepoint.com" id="search">
+	<div>
+
+		<label for="mainsearchbox">Search Site</label>
+		<input id="mainsearchbox" type="text" name="q" value="" class="tbox" />
+		<input type="submit" value="Search" name="submit" class="button" />
+		<ul id="searchlinks">
+		<li><a href="http://search.sitepoint.com">Advanced Search</a></li>
+		<li><a href="http://www.sitepoint.com/sitemap">Sitemap</a></li>
+
+		</ul>
+	</div>
+	</form>
+
+</div>
+
+
+
+<!-- /Search -->
+  <!-- navigation bar -->
+  <div id="navcontainer">
+
+	<ul id="navlist">
+		
+		<li><a id="tabz" title="The best place to begin your SitePoint session" href="http://www.sitepoint.com/">Home</a></li>
+		<li><a id="taba" title="SitePoint&#8217;s renowned web development training products" href="http://products.sitepoint.com/">Products</a></li>
+		<li><a id="tabb" title="SitePoint&#8217;s renowned web development training courses" href="http://courses.sitepoint.com/">Courses</a></li>
+		<li><a accesskey="6" id="tabc" title="Our friendly, vibrant and well-informed community" href="http://www.sitepoint.com/forums/">Forums</a></li>
+		<li><a id="tabd" title="Daily comment across a range of web subjects by some of the top experts in their field" href="http://www.sitepoint.com/blogs/">Blogs</a></li>
+		<li><a id="tabe" title="Weekly podcast with news and commentary for professional web developers and designers" href="http://www.sitepoint.com/podcast/">Podcast</a></li>
+		<li><a id="tabf" title="One of the web&#8217;s largest repositories of &#8217;web know-how&#8217;" class="active" href="http://articles.sitepoint.com/">Articles</a></li>
+		<li><a accesskey="9" id="tabg" title="The Web&#8217;s most complete and up-to-date reference" href="http://reference.sitepoint.com/">Reference</a></li>
+		<li><a id="tabh" title="Buy and sell goods and services in one of the world&#8217;s largest web communities" href="http://marketplace.sitepoint.com/">Marketplace</a></li>
+		<li><a id="tabi" title="The place to go for help with anything to do with SitePoint" href="http://www.sitepoint.com/help/">Help</a></li>
+	</ul>
+
+<!-- reload -->
+	</div>
+
+<!-- /nav  -->
+
+<div id="content"  class="clearfix">
+	
+<div id="banner">
+<div id="adTopBanner1"><script type="text/javascript">GA_googleFillSlot("Articles_5_728x90");</script></div>
+</div>
+
+
+<div id="maincontent">
+<!-- *********  Start maincontent ******** -->
+<div id="flow" class="column">
+	<div id="tab">
+		<div class="wrap" >
+			<h3 class="main-type">Article</h3>
+			
+			<a name="content" class="nomargin"></a>
+                        			            <!-- Crumb trail -->
+            <div class="crumb">
+                                                            <a href="http://www.sitepoint.com/">Home</a>
+                                                                &raquo;
+                                                                                <a href="/category/server-side-coding">Server-side Coding</a>
+                                                                &raquo;
+                                                                                <a href="/category/php-reviews">PHP & MySQL Reviews and Apps</a>
+                                                                &raquo;
+                                                                                Highlight Source Code in Your PHP Application                                                                    </div>
+            <!-- End Crumb trail -->
+			<div id="topcontrols">
+  <div id="tools">
+    <span id="hiliteon"><a href="javascript:highlighton();" class="sublink" title="Highlight the searched text">Highlight On</a></span>
+    <span id="hiliteoff"><a href="javascript:highlightoff();" class="sublink" title="Switch the highlighted text off">Highlight Off</a></span>
+    <a class="printicon" href="/print/highlight-source-code-php" title="Print-Friendly version">Print</a>
+
+    <a class="emailicon" href="/email/highlight-source-code-php" onclick="acpopup(this.href,'console',450,280);return false;" title="Launch a window to send this article to a Friend">Email</a>
+  </div>
+</div>
+
+			<div id="article_content">
+	<div id="articlesidebar">
+				<div class="featureimage">
+					</div>
+                                                                            <div id="relatedarticles">
+                                    <div class="boxes">
+                                            <h4>Related Articles</h4>
+                                            <ol>
+                                                                                                                                                            <li>
+                                                            <a href="/article/object-oriented-php">
+                                                                    The PHP Anthology Volume 1, Chapter 2 - Object Oriented PHP                                                            </a>
+                                                            <br />
+                                                            <span class="subtext">Rated: <em>9.5/10</em></span>
+                                                    </li>
+                                                                                                                                                            <li>
+                                                            <a href="/article/pear-spreadsheet_excel_writer">
+                                                                    Generating Spreadsheets with PHP and PEAR                                                            </a>
+                                                            <br />
+                                                            <span class="subtext">Rated: <em>9/10</em></span>
+                                                    </li>
+                                                                                                                                                            <li>
+                                                            <a href="/article/perfect-php-pagination">
+                                                                    Perfect PHP Pagination                                                            </a>
+                                                            <br />
+                                                            <span class="subtext">Rated: <em>7.5/10</em></span>
+                                                    </li>
+                                                                                                </ol>
+                                    </div>
+                            </div>
+                    			
+                    
+    <div id="bio">
+                        <div class="boxes">
+                        <h3>About the Author</h3>
+                        <h4>Stoyan Stefanov</h4>
+                        <p>
+                                <img
+                                        height="67"
+                                        width="56"
+                                        alt="author_stoyan"
+                                        src="http://sitepointstatic.com/graphics/author_stoyan.jpg"
+                                />
+                                Stoyan is an engineer at Yahoo and the author the author of <a href="http://www.packtpub.com/object-oriented-javascript-applications-libraries/book">Object-Oriented
+JavaScript</a> and other books and articles about web development. Outside work, his time is spent
+experimenting with random web technologies, blogging at <a class="sublink" href="http://www.phpied.com">phpied.com</a> and playing the blues
+guitar to his daughters' despite their preference for Mickey
+Mouse CDs.
+							    <p>
+									<a href="http://www.sitepoint.com/articlelist/404">View all articles by Stoyan Stefanov...</a>
+							    </p>
+
+                        </p>
+                </div>
+            </div>
+		
+	</div> 
+	<h1>Highlight Source Code in Your PHP Application</h1>
+	
+		<div class="articledetail">
+						<h4>By <a href="http://www.sitepoint.com/articlelist/404" title="Find out more about this author">Stoyan Stefanov</a></h4>
+			<p class="date">
+					April 11th, 2005			</p>
+			<p class="date">
+				Reader Rating: 8.5			</p>
+								</div>
+	
+
+	
+<p><strong>If you run a Website about programming, chances are that you display source code on your site's pages. Wouldn't it be great if the source code was highlighted -- displayed using different colors -- in the same way the desktop programming editors and IDEs display it? This would certainly make it much easier for your visitors to read the code. </strong></p>
+
+<p>This tutorial explains how you can highlight source code shown on your Website for a number of programming languages without manually formatting and hand-coding the display.</p>
+
+<p>I'll show how to highlight source code in two ways:<br />
+<ol>
+	<li>Using the PHP's built-in highlighter for PHP source code</li><br />
+	<li>Using PEAR's <code>Text_Highlighter</code> package to highlight the source code for virtually any programming or markup language</li>
+</ol>
+</p>
+
+<p>This tutorial forms a sequel to my previous article, titled <a class="sublink" href="http://www.sitepoint.com/article/bb-code-php-application">Use BB Code in Your PHP Application</a>, and it uses the same setup for the code environment. While this article doesn't assume you've read the previous one, you might want to take a look at the Setup section of it.</p>
+
+<h5>Using PHP's Built-in Source Highlighter</h5>
+
+
+
+<p>PHP offer two functions for highlighting PHP code: <a class="sublink" href="http://php.net/highlight_file"><code>highlight_file()</code></a>  and <a class="sublink" href="http://php.net/highlight_string"><code>highlight_string()</code></a>. Both functions return the same results, but each has its own specific input parameters. As their names suggest, the first function takes the filename of the PHP script whose code is to be highlighted, while the second takes the input as a string.</p>
+
+<p><strong><em>A Quick Example</strong></em></p>
+
+<p>Let's take a look at an example of the <code>highlight_string()</code> function in action:</p>
+
+<p><code>&lt;?php <br />
+include_once 'init.inc.php'; <br />
+ <br />
+if (!empty($_POST['text'])){ <br />
+ &nbsp; &nbsp; <br />
+ &nbsp; &nbsp;echo '&lt;div style=&quot;border: solid 1px orange; padding: 20px; margin: 20px&quot;&gt;'; <br />
+ &nbsp; &nbsp;highlight_string($_POST['text']); <br />
+ &nbsp; &nbsp;echo '&lt;/div&gt;'; <br />
+} <br />
+?&gt; <br />
+ <br />
+&lt;form action=&quot;&lt;?php echo $_SERVER['PHP_SELF']?&gt;&quot; method=&quot;post&quot;&gt; <br />
+ &nbsp; &nbsp;&lt;textarea name=&quot;text&quot; style=&quot;width: 300px; height: 200px&quot;&gt;&lt;?php &nbsp;<br />
+ &nbsp; &nbsp; &nbsp; &nbsp;echo @$_POST['text']; &nbsp;<br />
+ &nbsp; &nbsp;?&gt;&lt;/textarea&gt; <br />
+ &nbsp; &nbsp;&lt;br /&gt; <br />
+ &nbsp; &nbsp;&lt;input type=&quot;submit&quot; /&gt; <br />
+&lt;/form&gt;</code></p>
+
+<p>This script displays a simple textbox into which you can type or paste the PHP code you want to highlight. The code for the example is available in <a class="sublink" href="http://www.sitepoint.com/examples/highlightcode/code_archive.zip">this article's code archive</a> and a <a class="sublink" href="http://www.w3clubs.com/sp/hilite/hi_test1.php">live demo is available online</a>. The purpose of the <code>init.inc.php</code> file required at the beginning of the script was explained in <a class="sublink" href="http://www.sitepoint.com/article/bb-code-php-application">the Setup section of my previous article</a>.</p>
+
+<p>Here's a screenshot of the script in action.</p>
+
+<p><img src="http://sitepointstatic.com/graphics/1.gif"  height="421" width="303" alt="1468_image1" /></p>
+
+<p>As you can see, the highlighted version of the code is much clearer and easier to follow than the standard black-and-white code.</p>
+
+<p><strong><em>Color Customization</strong></em></p>
+
+<p>The PHP highlighter uses the following colors to display the code:</p>
+
+<p><img src="http://sitepointstatic.com/graphics/thetable.png"  height="288" width="450" alt="1468_table1" /></p>
+
+<p>The identifiers in the first column are actually the names of PHP configuration directives. This means that you can customize the highlight colors by altering the PHP configuration. So, if you want your keywords to be pink for a change (not pretty, I know, but this is just an example), you can do so by using a simple .htaccess file, containing:</p>
+
+<p><code>php_value highlight.keyword #ff00ff</code></p>
+<div id="adz" class="vertical"><script type="text/javascript">GA_googleFillSlot("Articles_6_300x250");</script></div>
+<p><strong><em>Drawbacks of the Native PHP Method</strong></em></p>
+
+<p>As you can see, this method of highlighting PHP source code is very easy to use, gives great results, and is customizable. However, it has some downsides:</p>
+
+<p><ul>
+	<li>It will work properly on PHP source code only. Sometimes you can get somewhat acceptable results when highlighting other programming code, like HTML or JavaScript, but most times, the results won't be very good. This is simply because these highlight functions were designed specifically for PHP code.</li>
+	<li>The resulting HTML code, after the highlighting is performed, is not XHTML-compliant. This issue is corrected in PHP5, but in PHP4, the highlighter uses the <code>&lt;font&gt;</code> tag, something that is considered almost a crime by today's Web coders.</li>
+</ul>
+</p>
+
+<h5>Using PEAR: Say Hello to the <code>Text_Highlighter</code> Package</h5>
+
+
+
+<p>In its repository of PHP libraries, <a class="sublink" href="http://pear.php.net/">PEAR</a> has a special package for highlighting source code. It's called Text_Highlighter, and its <a class="sublink" href="http://pear.php.net/package/Text_Highlighter"><code></code>details, documentation and downloads are available</a> online. </p>
+
+<p>This package features:</p>
+
+<p><ul>
+	<li>The ability to highlight the source code for 12 different programming languages</li>
+	<li>Extensiblility; the package allows you to define more languages using a simple XML file</li>
+	<li>Line numbering and tab size options are available</li>
+	<li>The ability to highlight code in the console window</li>
+	<li>Output is provided in XHTML format, using <code>&lt;span&gt;</code> tags for semantics and CSS styles for formatting</li>
+</ul>
+</p>
+
+<p><em><strong>A Few Words on the Setup</strong></em></p>
+
+<p>To prepare your system to run the following examples:</p>
+
+<p><ol>
+	<li>Install the PEAR core libraries</li><br />
+	<li>Install the <code>Text_Highlighter</code> package</li><br />
+</li>Set up your environment, a.k.a. copy my 10-line <code>init.inc.php</code> file</li>
+</ol>
+</p>
+
+<p>These steps were described in detail in <a class="sublink" href="http://www.sitepoint.com/article/bb-code-php-application">the previous article</a> and are not hard to do. Don't be scared of the word &quot;install&quot; here: it's basically just a &quot;copy&quot; operation. The setup doesn't require you to have any special privileges on the server, and is easily done in low-cost shared hosting environments. If you want to <a class="sublink" href="http://www.w3clubs.com/sp/hilite/">see the directory structure of an example setup, browse the code examples</a> from this article.</p>
+
+<p><strong><em>Usage</em></strong></p>
+
+<p>Once you've finished the setup, you can start using the highlighter. In order to highlight the PHP source code contained in, let's say, <code>$some_source_code</code> variable, all you need to do is:</p>
+
+<p><ol>
+	<li>Include the class definition: <br />
+<code>require_once 'Text/Highlighter.php';</code></li></p>
+
+<p>	<li>Create an object of the class:<br />
+<code>$highlighter =&amp; Text_Highlighter::factory('php');</code></li></p>
+
+<p>	<li>Call the highlighting method and print the output:<br />
+<code>echo $highlighter-&gt;highlight($some_source_code);</code></li>
+</ol>
+</p>
+
+<p><strong><em>Test the Highlighter</em></strong></p>
+
+<p>Here's a simple script that you can use to test the highlighter package:</p>
+
+<p><code>&lt;?php <br />
+include_once 'init.inc.php'; <br />
+ <br />
+if (!empty($_POST['text'])){ <br />
+ &nbsp; &nbsp; <br />
+ &nbsp; &nbsp;echo '&lt;link rel=&quot;stylesheet&quot; href=&quot;hilight.css&quot; /&gt;'; <br />
+ &nbsp; &nbsp;echo '&lt;div style=&quot;border: solid 1px orange; padding: 20px; margin: 20px&quot;&gt;'; <br />
+ &nbsp; &nbsp; <br />
+ &nbsp; &nbsp;require_once 'Text/Highlighter.php'; <br />
+ &nbsp; &nbsp;$highlighter =&amp; Text_Highlighter::factory('php'); <br />
+ &nbsp; &nbsp;echo $highlighter-&gt;highlight($_POST['text']); <br />
+ &nbsp; &nbsp; <br />
+ &nbsp; &nbsp;echo '&lt;/div&gt;'; <br />
+} <br />
+?&gt; <br />
+ <br />
+&lt;form action=&quot;&lt;?php echo $_SERVER['PHP_SELF']?&gt;&quot; method=&quot;post&quot;&gt; <br />
+ &nbsp; &nbsp;&lt;textarea name=&quot;text&quot; style=&quot;width: 300px; height: 200px&quot;&gt;&lt;?php echo @$_POST['text']; ?&gt;&lt;/textarea&gt; <br />
+ &nbsp; &nbsp;&lt;br /&gt; <br />
+ &nbsp; &nbsp;&lt;input type=&quot;submit&quot; /&gt; <br />
+&lt;/form&gt;</code></p>
+
+<p>Here's a screenshot of the script in action.</p>
+
+<p><img src="http://sitepointstatic.com/graphics/2.gif"  height="161" width="396" alt="1468_image2" /></p>
+
+<p>You can <a class="sublink" href="http://www.w3clubs.com/sp/hilite/hi_test2.php">play around with a live demo here</a>.</p>
+
+<p><strong><em>Colors of the Rainbow</em></strong></p>
+
+<p>As you can see, the PEAR highlighter is working a lot like the built-in PHP highlighter we looked at first. The only visible difference from the previous example is in the number of colors: there are seven here, rather than the three we saw in the first example. This is made possible because the PEAR highlighter is more granular when it comes to the &quot;ingredients&quot; of the source code. </p>
+
+<p>If you view the source of the result of the script above, you'll see that the highlighting places <code>&lt;span class=&quot;hl-something&quot;&gt;</code> tags around the different source code elements. The CSS class names, such as <code>hl-xxxx</code>, need to be defined in order for the coloring to be displayed.</p>
+
+<p>You can take a peek at <a class="sublink" href="http://www.w3clubs.com/sp/hilite/hilight.css">the CSS file used in the example above</a> if you wish. As you can see, 18 style definitions are used in the CSS file, 15 of which are related to the different elements you might find in a source code file: variables, strings, brackets, quotes, etc. The CSS definitions give you the power to customize the colors used for highlighting as you find appropriate.</p>
+
+<p><em><strong>It's Not All PHP!</strong></em></p>
+
+<p>So far, all the examples have focused on coloring PHP code. But what if your site isn't about PHP? Tough luck, some might think, but not the <code>Text_Highlighter</code> package, which offers a colorful hand to 11 other programming and markup languages, including C++, CSS, JavaScript, XML (also used for HTML files), to name a few.</p>
+
+<p>To highlight the code of another language, just change the 'php' in the below line to reflect the language of your choice:</p>
+
+<p><code>$highlighter =&amp; Text_Highlighter::factory('php');</code></p>
+
+<p>Want to highlight CSS?</p>
+
+<p><code>$highlighter =&amp; Text_Highlighter::factory('css');</code></p>
+
+<p>You can now highlight a CSS stylesheet.</p>
+
+<p>Here's a full list of the language identifiers you can use when creating the highlighter object:</p>
+
+<p><ul>
+	<li><code>'cpp'</code></li>
+	<li><code>'css'</code></li>
+	<li><code> 'diff'</code></li>
+	<li><code>'dtd'</code></li>
+	<li><code>'javascript'</code></li>
+	<li><code>'mysql'</code></li>
+	<li><code>'perl'</code></li>
+	<li><code>'php'</code></li>
+	<li><code>'python'</code></li>
+	<li><code>'ruby'</code></li>
+	<li><code>'sql'</code></li>
+	<li><code>'xml'</code></li>
+</ul>
+</p>
+
+<p>You can <a class="sublink" href="http://www.w3clubs.com/sp/hilite/hi_test3.php">use this live demo</a> to see how other languages are colored. The source file is available in <a class="sublink" href="http://www.sitepoint.com/examples/highlightcode/code_archive.zip">this article's code archive</a>.</p>
+
+<p>As a side note: you've probably noticed already that an object of the highlighter class is created using its <code>factory()</code> method. This is a popular object-oriented technique (an OO pattern). Although an understanding the inner workings of the factory pattern is not required for this article, you can still find out more if you're interested; <a class="sublink" href="http://phppatterns.com/index.php/article/articleview/49/1/1/">this PHPPatterns entry</a> is a good starting point.</p>
+
+<p><em><strong>Fine Tuning the Highlighter</strong></em></p>
+
+<p>In addition to coloring, the highlighter can:<br />
+<ul>
+	<li>Display line numbers along with the source code</li>
+	<li>Use different tab sizes to indent code</li>
+</ul>
+</p>
+
+<p>The first feature can be activated in two ways: using a numbered list (<code>&lt;ol&gt;</code>) or an HTML table. In the latter case, you can use CSS to define a style for the column that contains the numbers, which is different than the one containing the source code.</p>
+
+<p>These options are passed as an array with keys:</p>
+
+<p><ul>
+	<li><code>'numbers'</code>: This setting accepts the following values:  
+<ul>
+	<li><code>0</code>: the default value, meaning no numbering is used</li>
+	<li><code>HL_NUMBERS_LI</code>: an ordered listing will be used</li>
+	<li><code>HL_NUMBERS_TABLE</code>: the code will be displayed in a table</li>
+</ul>
+</li><br />
+	<li><code>'tabsize'</code>: This option takes an integer value. It sets how many <code>&amp;nbsp;</code> will be used to replace a tab.</li>
+</ul>
+</p>
+
+<p>If you choose the table option, you can use the following CSS selectors to customize the look of the table: </p>
+
+<p><ul>
+	<li><code>h1-main</code> - for the row with the source code </li>
+	<li><code>hl-gutter</code> - the numbering row</li>
+	<li><code>hl-table</code> - the whole table</li>
+</ul>
+</p>
+
+<p>Take a look at <a class="sublink" href="http://www.w3clubs.com/sp/hilite/hilight.css">this article's stylesheet</a> for an example. The three CSS selectors mentioned above can be found at the bottom of the stylesheet. </p>
+
+<p>A sample options array will look like this:</p>
+
+<p><code> &nbsp; &nbsp;$options = array( <br />
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;'numbers' =&gt; HL_NUMBERS_TABLE, <br />
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;'tabsize' =&gt; 4, <br />
+ &nbsp; &nbsp; &nbsp; &nbsp;);</code></p>
+
+<p><strong><em>Setting the Options</em></strong></p>
+
+<p>There are two ways to set the options for highlighting:</p>
+
+<p><ol>
+	<li>The easy way: just add the options to the factory method. This is the simpler method in terms of syntax, but it exists only for backwards-compatibility purposes.<br />
+<code>$highlighter =&amp; Text_Highlighter::factory('php', $options);</code></li><br />
+	<li>The proper way: use the renderer object.</li>
+</ol>
+</p>
+
+<p>As mentioned above, in addition to the browser, the highlighter can also color code in the console window. In the future new display devices, like PDAs, phones, your beloved iPod or (last, but not least) your kitchen sink may also be supported -- who knows? To allow for this type of forward-compatibility, the display part of the work is passed to renderer objects. So far, two renderers exist: HTML and Console. All you need to do is create a renderer object, then pass it to the highlighter. Here's how:</p>
+
+<p><code> &nbsp; &nbsp;require_once 'Text/Highlighter.php'; <br />
+ &nbsp; &nbsp;require_once 'Text/Highlighter/Renderer/Html.php'; <br />
+ <br />
+ &nbsp; &nbsp;$options = array( <br />
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;'numbers' =&gt; HL_NUMBERS_TABLE, <br />
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;'tabsize' =&gt; 4, <br />
+ &nbsp; &nbsp; &nbsp; &nbsp;); <br />
+ &nbsp; &nbsp; <br />
+ &nbsp; &nbsp;$renderer =&amp; new Text_Highlighter_Renderer_HTML($options); <br />
+ &nbsp; &nbsp;$highlighter =&amp; Text_Highlighter::factory('php'); <br />
+ &nbsp; &nbsp;$highlighter-&gt;setRenderer($renderer); <br />
+ &nbsp; &nbsp;echo $highlighter-&gt;highlight($_POST['text']);</code></p>
+
+<p>The full source code listing is available in <a class="sublink" href="http://www.sitepoint.com/examples/highlightcode/code_archive.zip">this article's code archive</a>. A <a class="sublink" href="http://www.w3clubs.com/sp/hilite/hi_test4.php">live demo using the HTML renderer and tables to display the source code</a> is also available. Here's a screenshot of the script in action. </p>
+
+<p><img src="http://sitepointstatic.com/graphics/3.gif"  height="443" width="343" alt="1468_image3" /><br />
+ <br />
+</p><h5>Other Options</h5>
+
+
+
+<p>Here are some other options you might want to take a look at that are not covered in this article.</p>
+
+<p><ul>
+	<li>GeSHi: <a class="sublink" href="http://qbnz.com/highlighter/">Generic Syntax Highlighter</a> - a non-PEAR highlighter package, currently supporting 35 programming languages.</li>
+	<li>Aidan Lister's PHP repository contains two classes that use and extend the native PHP coloring. <a class="sublink" href="http://aidan.dotgeek.org/lib/?file=function.highlight_file_linenum.php">The first class</a> adds line numbers and makes the PHP functions into links to the PHP manual. <a class="sublink" href="http://aidan.dotgeek.org/lib/?file=PHP_Highlight.php">The second</a> does the same, but in its own way, without the use of the native PHP functions. It also produces XHTML output and can optionally use a stylesheet for color definitions.</li>
+	<li><a class="sublink" href="http://people.ssh.fi/mtr/genscript/">Enscript</a> is a command line tool for syntax highlighting. An example use of it is this <a class="sublink" href="http://scott.yang.id.au/2004/05/syntax-hilight-enscript/">WordPress plugin</a>.</li>
+</ul>
+ </p>
+
+<h5>Summary</h5>
+
+
+
+<p>In this article, we discussed in detail two ways to highlight source code in your PHP application. If you want to quickly colorize come PHP code, make a call or two to the native highlighting functions that are built into the language. Or, if you want to highlight more languages and have more display options, consider installing a copy of the PEAR's Text_Highlighter package. </p>
+
+<p>You now have a basic knowledge of how to use color coding to enhance the readability of Web pages that contain source code, and improve your visitors' experience. <br />
+</p>
+
+				<div id="adt">
+		<script type="text/javascript">GA_googleFillSlot("Articles_300x250_2");</script>	</div>
+
+	<div class="clearfix"> </div>
+	<div id="dostuff">
+		<a class="printicon"  href="/print/highlight-source-code-php">Print-Friendly&nbsp;Version</a>
+
+		<a class="emailicon" href="/email/highlight-source-code-php" rel="popup|450|450" title="Launch a window to send this article to a Friend">Email&nbsp;to&nbsp;a&nbsp;Friend</a>
+		<a class="articlesuggesticon" href="http://www.sitepoint.com/contact?reason=articlesuggest" title="Tell us which topic you would like to see us publish an article on">Suggest an Article</a>
+		<!--<a class="linkicon" href="/linktothis/1468" rel="popup|450|450" title="Get a code snippet to link to this article">Link to this Article</a>-->
+
+	</div> </div>
+		</div>
+
+					<div id="article_rating" class="wrap">
+		<form action="/article/highlight-source-code-php/1#article_rating" method="post">
+	<h3>Rate This Article</h3>
+	<ul>
+		<li class="hz">1<input type="radio" name="rating"  value="1"  onclick=''  /><br /><strong style="color:#06c">Poor</strong></li>
+		<li class="hz">2<input type="radio" name="rating"  value="2"  onclick=''  /></li>
+		<li class="hz">3<input type="radio" name="rating"  value="3"  onclick=''  /></li>
+		<li class="hz">4<input type="radio" name="rating"  value="4"  onclick=''  /></li>
+		<li class="hz">5<input type="radio" name="rating"  value="5"  onclick=''  /></li>
+		<li class="hz">6<input type="radio" name="rating"  value="6"  onclick=''  /></li>
+		<li class="hz">7<input type="radio" name="rating"  value="7"  onclick=''  /></li>
+		<li class="hz">8<input type="radio" name="rating"  value="8"  onclick=''  /></li>
+		<li class="hz">9<input type="radio" name="rating"  value="9"  onclick=''  /></li>
+		<li class="hz">10<input type="radio" name="rating"  value="10" onclick=''  /><br /><strong style="color:#f60">Great</strong></li>
+		<li class="hz"><input type="submit" name="submit" value="Submit" /></li>
+	</ul>
+	</form>
+	<br />
+	</div>
+							<div class="wrap">
+	<h3>Comment on This Article</h3>
+	  <h4 id="discuss">Have something to say? <a class="next" href="http://www.sitepoint.com/forums/showthread.php?t=252294">Join the discussion&hellip;</a></h4>
+</div>
+
+<div class="wrap">
+	<h3>Post A Comment</h3>
+
+
+	<a name="postcomment" class="nomargin"></a>
+
+	<form method="post" action="/comment/new" accept-charset="ISO-8859-1">
+
+			<p style="padding:10px;	border: 1px dashed #ddd; background-color:#efe;">You need to be a member of the SitePoint Forums to comment on this post. <a href="http://www.sitepoint.com/forums/register.php" rel="external">Sign Up</a></p>
+
+		<p><strong>Already a member?</strong> Post using your <a href="http://www.sitepoint.com/forums">SitePoint Forums</a> account:</p>
+		<p><label class="indented" for="feedbackusername">Username:</label>
+		<input type="text" id="feedbackusername" name="username" /></p>
+		<p><label class="indented" for="feedbackpassword">Password:</label>
+		<input type="password" id="feedbackpassword" name="password" /></p>
+	
+				<p><label class="indented" for="feedbackcomment">Comment:</label>
+	<textarea style="height: 90px;" rows="8" cols="45" id="feedbackcomment" name="commenttext"></textarea></p>
+				<p><input type="hidden" name="title" value="Bulletproof HTML: 37 Steps to Perfect Markup" />
+				<input type="hidden" name="articleid" value="1468" />
+				<input type="hidden" name="page" value="1" />
+	<input type="submit" name="submit" value="Post my comment" /></p>
+	</form>
+</div>
+			</div><!-- end #tab -->
+</div><!-- end #flow -->
+
+<div id="col1"  class="column">
+<div class="inner">
+
+<div id="most-popular-articles" class="nav">
+<h3>Popular Articles</h3>
+<h4>Most Popular This Month</h4>
+<ol>
+	<li class="navitem-atv">
+		<a href="/article/phps-killer-app-parts-1-3">
+			eZ publish: PHP's Killer App - Parts 1-3		</a>
+	</li>
+	<li class="navitem-atv">
+		<a href="/article/highlight-source-code-php">
+			Highlight Source Code in Your PHP Application		</a>
+	</li>
+	<li class="navitem-atv">
+		<a href="/article/phpbb3-forum-software-evolved">
+			phpBB3: Open Source Forum Software Evolved		</a>
+	</li>
+	<li class="navitem-atv">
+		<a href="/article/coming-soon-webserver-near">
+			PHP5: Coming Soon to a Webserver Near You		</a>
+	</li>
+	<li class="navitem-atv">
+		<a href="/article/review-php-4-bible">
+			Review - PHP 4 Bible		</a>
+	</li>
+</ol>
+<p class="wrapright"><a class="next" href="/category/php-reviews">More Articles</a></p>
+</div>
+<div id="guru-articles" class="nav">
+<h3>Guru Lists</h3>
+
+<h4>So You Want To Be A PHP Guru?</h4>
+<p>Try this list, compiled by <a href="http://www.sitepoint.com/forums/member.php?u=47894">kyberfabrikken</a></p>
+<ol>
+			<li class="navitem-atv"><a href="/article/hierarchical-data-database">
+			Storing Hierarchical Data in a Database		</a></li>
+			<li class="navitem-atv"><a href="/article/php5-standard-library">
+			Introducing PHP 5's Standard Library		</a></li>
+			<li class="navitem-atv"><a href="/article/php-command-line-1">
+			PHP on the Command Line - Part 1		</a></li>
+			<li class="navitem-atv"><a href="/article/http-authentication-php">
+			Apache HTTP Authentication with PHP		</a></li>
+			<li class="navitem-atv"><a href="/article/advanced-email-php">
+			Advanced email in PHP		</a></li>
+	</ol>
+<p class="wrapright"><a class="next" href="http://www.sitepoint.com/gurulists/">More Guru Lists</a></p>
+</div>
+<div class="topics nav">
+<h3>Topics</h3>
+<div id="navitem">
+	<h4>
+		<a href="/category/before-you-code" 
+			title="Steps to be taken in planning your web sites or online applications">
+			Before You Code		</a>
+	</h4>
+		<ul>
+			<li>
+			<a href="/category/hosting" 
+				title="Information regarding selecting a hosting option for your site, and tips about hosting requirements"> 
+					Hosting			</a>
+		</li>
+			<li>
+			<a href="/category/domain-names" 
+				title="How to choose, buy, manage and sell your domain names"> 
+					Domain Names			</a>
+		</li>
+			<li>
+			<a href="/category/site-planning" 
+				title="Strategies and tutorials for planning your web site or online business before you start"> 
+					Site Planning			</a>
+		</li>
+			<li>
+			<a href="/category/legal" 
+				title="Articles covering legal issues in relation to online businesses"> 
+					Legal Issues			</a>
+		</li>
+			<li>
+			<a href="/category/privacy" 
+				title="How to deal with issues such as privacy and trust with regard to your website or web business"> 
+					Privacy and Trust			</a>
+		</li>
+		</ul>
+		<h4>
+		<a href="/category/design-and-layout" 
+			title="Graphic design and web site layout">
+			Design and Layout		</a>
+	</h4>
+		<ul>
+			<li>
+			<a href="/category/usability" 
+				title="Strategies for making sure your websites and user interfaces are easy to use"> 
+					Usability and Information Architecture			</a>
+		</li>
+			<li>
+			<a href="/category/accessibility" 
+				title="Ways that you can make your web design accessible to the largest possible number of viewers"> 
+					Accessibility			</a>
+		</li>
+			<li>
+			<a href="/category/design-principles" 
+				title="Web design guidelines and design principles for building websites"> 
+					Design Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/design-practice" 
+				title="Articles covering graphic and web design practice."> 
+					Design Practice			</a>
+		</li>
+			<li>
+			<a href="/category/design-tips" 
+				title="Tutorials and solutions to common problems in web design and graphic design for the web"> 
+					Design Tips &amp; Tricks			</a>
+		</li>
+			<li>
+			<a href="/category/software-tutorials" 
+				title="Tutorials on using major software packages"> 
+					Software Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/flash" 
+				title="Tutorials for creating graphics, animations and web applications using Macromedia Flash"> 
+					Flash Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/adobe-air" 
+				title="Tutorials for creating cross-platform Rich Internet Applications for the Web and the desktop using Adobe AIR"> 
+					Adobe AIR Tutorials			</a>
+		</li>
+		</ul>
+		<h4>
+		<a href="/category/client-side-coding" 
+			title="Coding for the client side (the browser) using XHTML, JavaScript, CSS">
+			Client-side Coding		</a>
+	</h4>
+		<ul>
+			<li>
+			<a href="/category/html" 
+				title="Articles and tutorials on how to mark up your pages using HTML and XHTML"> 
+					HTML &amp; XHTML Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/javascript" 
+				title="Articles and tutorials on using JavaScript, Ajax and the DOM (Document Object Model)"> 
+					JavaScript &amp; Ajax Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/css" 
+				title="Tutorials and tips on using Cascading Style Sheets (CSS) to style and lay out your web designs"> 
+					CSS Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/xml" 
+				title="In-depth articles explaining the usages of XML-based data, processing it and transforming it using XSL XSLT."> 
+					XML, XSLT &amp; Web Services			</a>
+		</li>
+			<li>
+			<a href="/category/flex" 
+				title="Tutorials on how to build Rich Internet Applications in Adobe Flex"> 
+					Flex Tutorials			</a>
+		</li>
+		</ul>
+		<h4>
+		<a href="/category/server-side-coding" 
+			title="Creating online applications using server side scripts or code">
+			Server-side Coding		</a>
+	</h4>
+		<ul>
+			<li>
+			<a href="/category/asp" 
+				title="Tutorials on using Microsoft's ASP and ASP.NET for creating your online web applications"> 
+					ASP &amp; .NET Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/perl" 
+				title="Tutorials for developing web applications in Perl, and using CGI"> 
+					CGI &amp; Perl Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/java" 
+				title="Creating client-side and server-side applications using Java technology"> 
+					Java and J2EE			</a>
+		</li>
+			<li>
+			<a href="/category/other-technologies" 
+				title="Tutorials on configuring the two most popular web servers, Apache and IIS, for optimum performance"> 
+					Apache &amp; IIS Configuration			</a>
+		</li>
+			<li>
+			<a href="/category/php-news" 
+				title="News on the latest developments in PHP and interviews with some leading figures in PHP application development"> 
+					PHP &amp; MySQL News &amp; Interviews			</a>
+		</li>
+			<li>
+			<a href="/category/php-tutorials" 
+				title="Learn how to create web applications using PHP scripting language and MySQL database server"> 
+					PHP &amp; MySQL Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/php-reviews" 
+				title="Reviews of new or popular PHP and MySQL scripts and applications"> 
+					PHP &amp; MySQL Reviews and Apps			</a>
+		</li>
+			<li>
+			<a href="/category/server-side" 
+				title="Everything you need to know about server-side development in relation to other languages"> 
+					Server Side Essentials			</a>
+		</li>
+			<li>
+			<a href="/category/coldfusion" 
+				title="Tutorials and articles related to building online applications using Adobe ColdFusion"> 
+					ColdFusion Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/ruby" 
+				title="Learn how to create web applications using the object oriented Ruby language and the Ruby On Rails framework"> 
+					Ruby &amp; Rails			</a>
+		</li>
+		</ul>
+		<h4>
+		<a href="/category/site-strategy" 
+			title="Managing a successful website">
+			Site Strategy		</a>
+	</h4>
+		<ul>
+			<li>
+			<a href="/category/community-strategy" 
+				title="Community,Tutorials and views on creating an online community using bulletin boards, forums, chat rooms, and so on"> 
+					Community			</a>
+		</li>
+			<li>
+			<a href="/category/content-strategy" 
+				title="Writing and sourcing quality content for your site"> 
+					Content			</a>
+		</li>
+			<li>
+			<a href="/category/ecommerce-strategy" 
+				title="How to plan, build and manage an ecommerce website and do business on the internet"> 
+					eCommerce			</a>
+		</li>
+		</ul>
+		<h4>
+		<a href="/category/site-marketing" 
+			title="Tips and tutorials on website marketing">
+			Site Marketing		</a>
+	</h4>
+		<ul>
+			<li>
+			<a href="/category/traffic-analysis" 
+				title="Analyze your site statistics to gain a better understanding of the ways in which your visitors are using your web site"> 
+					Traffic Analysis			</a>
+		</li>
+			<li>
+			<a href="/category/searchmarketing" 
+				title="Information about marketing your web site or online business via search engines"> 
+					Search Marketing			</a>
+		</li>
+			<li>
+			<a href="/category/promotions" 
+				title="Deals with techniques to promote your site  outside search engines"> 
+					Other Promotions			</a>
+		</li>
+		</ul>
+		<h4>
+		<a href="/category/sell-your-services" 
+			title="Selling your web design or development services as a freelancer or in a team">
+			Sell Your Services		</a>
+	</h4>
+		<ul>
+			<li>
+			<a href="/category/services-start" 
+				title="Tips and resources for planning to sell services on the web"> 
+					Get Started			</a>
+		</li>
+			<li>
+			<a href="/category/find-clients" 
+				title="Find clients for your online business"> 
+					Find Clients			</a>
+		</li>
+			<li>
+			<a href="/category/work-smarter" 
+				title="Time management and scheduling strategies for web developers"> 
+					Work Smarter			</a>
+		</li>
+		</ul>
+	</div>
+</div>
+
+<div class="nav">
+<h3>SitePoint Jobs</h3>
+<h4>
+»
+<a class="alert" href="http://www.sitepoint.com/about/jobs/"> We're Hiring!</a>
+</h4>
+</div>
+<div class="nav">
+<h3>SitePoint Newsletters</h3>
+<form id="subs" action="/newsletter/manage" method="post">
+	
+	    
+	
+		<p>Get all the latest tips
+			on <strong><em> Advanced Design and Layout </em></strong>
+
+		by signing up to all of SitePoint&rsquo;s informative newsletters.</p>
+		
+	
+	<div style="margin-left: 6px;">
+	
+		<ul style="border:0px none">
+		<li>
+			<input type="hidden" value="subscribe" name="action" />
+			<input type="hidden" value="2" name="refererid" />
+			<input type="checkbox" checked="checked" name="newsletterid[]" value="3" id="checktt" /> <label for="checktt">SitePoint TechTimes</label>
+
+		</li>
+	
+		<li>
+			<input type="checkbox" checked="checked" name="newsletterid[]" value="2" id="checktr" /> <label for="checktr">SitePoint Tribune</label>
+		</li>
+		<li>
+			<input type="checkbox" checked="checked" name="newsletterid[]" value="5" id="checkdv" /> <label for="checkdv">SitePoint Design View</label>
+		</li>
+
+		<li>
+			<input type="checkbox" checked="checked" name="newsletterid[]" value="4" id="checkcc" /> <label for="checkcc">Community Crier</label>
+		</li>
+		</ul>
+	
+	
+	
+		<p><input class="tbox" onfocus="this.value=''" value="Enter Email" name="email" />
+		<input type="submit" value="Subscribe!" name="submit" /></p>
+	
+	
+		<p>
+		<input type="radio" checked="checked" value="html" name="format" id="radiohtml" /> HTML &nbsp;
+
+		 <input type="radio" value="text" name="format" id="radioplain" /> Plain</p>
+	
+	</div>
+</form>
+
+
+<h6 class="wrapcenter tiny"><br />View Our <a href="http://www.sitepoint.com/privacy.php">Privacy
+Policy</a></h6>
+<h6 class="wrapright tiny">
+Sample Our <a href="http://www.sitepoint.com/newsletter/archives">Newsletter Archives</a></h6>
+</div>
+</div> </div> <!-- end .inner -->
+</div>
+<!-- end #col1 -->
+
+<!-- end #maincontent -->
+
+<!-- ***************  Start Column 3 ************   -->
+<div id="col3" class="column">
+   <div class="inner">
+
+<div id="subscribe">
+	<ul>        
+		<li class="nl"><a href="http://www.sitepoint.com/newsletter/">Newsletters</a></li>
+		<li class="tw"><a href="http://twitter.com/sitepointdotcom" rel="nofollow">Twitter</a></li>
+		<li class="mb"><a href="http://m.sitepoint.com/">Mobile</a></li>
+		<li class="pod"><a href="http://www.sitepoint.com/podcast/">Podcast</a></li>
+		<li class="rss"><a href="http://www.sitepoint.com/subscribe/">RSS</a></li>                
+		<li class="fb"><a href="http://www.facebook.com/sitepoint/" rel="nofollow">Facebook</a></li>
+	</ul>
+</div>
+<div id="adcol3any"></div>
+<div id="ad250x250upper"><!-- Filled dynamically by script at end of page --></div>
+<div id="adHTMLFlexible1"><!-- Filled dynamically by script at end of page --></div>
+<div id="ad250x250middle"><!-- Filled dynamically by script at end of page --></div>
+<div id="ad250x250lower"><!-- Filled dynamically by script at end of page --></div>
+
+<div id="adHTMLFlexible2"><!-- Filled dynamically by script at end of page --></div>
+
+<div id="ad125x125left" class="ad125x125"><!-- Filled dynamically by script at end of page --></div>
+<div id="ad125x125right" class="ad125x125"><!-- Filled dynamically by script at end of page --></div>
+<div id="ad120x600left" class="ad120x600"><!-- Filled dynamically by script at end of page --></div>
+<div id="ad120x600right" class="ad120x600"><!-- Filled dynamically by script at end of page --></div>
+
+<div class="nav">
+<h3>Related Forum Discussions</h3>
+<p>
+Related Forum: <strong><a href="http://www.sitepoint.com/forums/forumdisplay.php?f=34">PHP</a></strong>
+</p>
+<ol>
+
+	<li><a href="http://www.sitepoint.com/forums/showthread.php?t=719728">Tag issues.</a></li>
+	<li><a href="http://www.sitepoint.com/forums/showthread.php?t=719707">php security qustion, to do with sessions and variables</a></li>
+	<li><a href="http://www.sitepoint.com/forums/showthread.php?t=719679">Variables in String</a></li>
+	<li><a href="http://www.sitepoint.com/forums/showthread.php?t=719672">Build your own database driven website second edition vs fourth edition</a></li>
+	<li><a href="http://www.sitepoint.com/forums/showthread.php?t=719666">space in inputting and in outputting</a></li>
+</ol>
+</div>
+<div class="nav">
+	<h3>Other Articles by Stoyan Stefanov</h3>
+	<p>
+	Stoyan Stefanov's other SitePoint Articles
+	</p>
+	<ul>
+			<li><a href="/article/bb-code-php-application" > Use BB Code in Your PHP Application</a>
+			<li><a href="/article/take-command-ajax" > Take Command with Ajax</a>
+			<li><a href="/article/web-site-optimization-steps" > Web Site Optimization: 13 Simple Steps</a>
+			<li><a href="/article/iphone-development-12-tips" > iPhone Development: 12 Tips To Get You Started</a>
+		</ul>
+</div>
+
+<script type="text/javascript">GA_googleFillSlot("Articles_160x600_SkyScraper");</script>
+</div><!-- end .inner -->
+</div><!-- end #col3 -->
+
+
+	<div id="lowerads">
+			<div id="lowerad1"><script type="text/javascript">GA_googleFillSlot("Articles_9a_300x100");</script></div>
+    	    <div id="lowerad2"><script type="text/javascript">GA_googleFillSlot("Articles_9b_300x100");</script></div>
+    </div>
+
+
+</div>
+
+</div><!-- end content -->
+
+<div id="footer">
+
+<div id="tertiary">
+
+<ul>
+	<li><a href="http://www.sitepoint.com/mediakit">Advertise</a> </li>
+
+	<li><a href="http://www.sitepoint.com/about/">About Us</a> </li>
+	<li><a href="http://www.sitepoint.com/contact">Contact Us</a> </li>
+	<li><a href="http://www.sitepoint.com/sitemap" accesskey="3">Site Map</a> </li>
+	<li><a href="http://www.sitepoint.com/about/writeforus">Write For Us</a> </li>
+	<li><a href="http://www.sitepoint.com/syndication/">RSS</a> </li>
+
+	<li><a href="http://www.sitepoint.com/newsletter/">Newsletters</a> </li>
+	<li><a href="http://www.sitepoint.com/search/search.php" accesskey="4">Search</a> </li>
+	<li><a href="http://www.sitepoint.com/privacy/" accesskey="8">Privacy</a> </li>
+	<li><a href="http://www.sitepoint.com/glossary.php?q=A">Glossary</a> </li>
+	<li><a href="http://www.sitepoint.com/about/terms.php/">Terms &amp; Conditions</a> </li>
+
+	<li><a href="http://www.sitepoint.com/about/jobs/">Jobs</a> </li>
+</ul>
+
+</div>
+<p>The contents of this webpage are copyright &copy; 1998-2010 SitePoint Pty. Ltd. All Rights Reserved.</p>
+
+<div>
+<a href="http://www.sitepoint.com.au"  title="Visit our development site">Web Design &amp; Development by SitePoint, Melbourne, Australia</a> - <a href="http://www.99designs.com" >Logo Design, Web page Design - 99designs.com </a>
+
+</div>
+
+</div><!-- end footer -->
+
+<script src="http://2.sitepointstatic.com/bundle/utilities.js,sortable.js" type="text/javascript"></script>
+<script src="http://2.sitepointstatic.com/js/sitepoint-ref-links.js" type="text/javascript"></script>
+
+
+<script type="text/javascript">
+	var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+	document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+	try{
+		var sitepointTracker = _gat._getTracker("UA-30131-1");
+		sitepointTracker._setDomainName(".sitepoint.com");
+		sitepointTracker._setAllowHash(false);
+		sitepointTracker._setCustomVar(1, "Context", "Articles", 3); 
+		sitepointTracker._trackPageview();
+	} catch(err) {}
+</script>
+
+</body>
+</html>

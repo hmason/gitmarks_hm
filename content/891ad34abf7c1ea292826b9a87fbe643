@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>
+      CSS Formatter and Optimiser/Optimizer (based on CSSTidy 1.3dev)
+    </title>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
+    <link rel="stylesheet" href="cssparse.css" type="text/css" />
+    <script type="text/javascript">
+    function enable_disable_preserve()
+    {
+        var inputs =   new Array('sort_sel', 'sort_de', 'optimise_shorthands', 'merge_selectors', 'none');
+        var inputs_v = new Array( true,       true,      true,                  true,              false);
+        for(var i = 0; i < inputs.length; i++)
+        {
+            if(document.getElementById('preserve_css').checked)  {
+                document.getElementById(inputs[i]).disabled = inputs_v[i];
+            } else {
+                document.getElementById(inputs[i]).disabled = !inputs_v[i];
+            }
+        }
+    }
+    function ClipBoard()
+    {
+        window.clipboardData.setData('Text',document.getElementById("copytext").innerText);
+    }
+    </script>
+  </head>
+  <body onload="enable_disable_preserve()">
+    <div><h1 style="display:inline">
+      CSS Formatter and Optimiser    </h1>
+    (based on <a
+      href="http://csstidy.sourceforge.net/">csstidy</a> 1.3dev)
+    </div><p>
+    Language: <a hreflang="en" href="?lang=en">English</a> <a hreflang="de" href="?lang=de">Deutsch</a> <a hreflang="fr" href="?lang=fr">French</a> <a hreflang="zh" href="?lang=zh">Chinese</a></p>
+    <p>Important Note:      Your code should be well-formed. This is <strong>no validator</strong> which points out errors in your CSS code. To make sure that your code is valid, use the <a href="http://jigsaw.w3.org/css-validator/">W3C Validator</a>.    </p>
+
+    <form method="post" action="">
+      <div>
+        <fieldset id="field_input">
+          <legend>CSS Input:</legend> <label for="css_text"
+          class="block">CSS-Code:</label><textarea id="css_text" name="css_text" rows="20" cols="35"></textarea>
+            <label for="url">CSS from URL:</label> <input type="text"
+          name="url" id="url"           size="35" /><br />
+          <input type="submit" value="Process CSS" id="submit" />
+        </fieldset>
+        <div id="rightcol">
+          <fieldset id="code_layout">
+            <legend>Code Layout:</legend> <label for="template"
+            class="block">Compression&nbsp;(code&nbsp;layout):</label> <select
+            id="template" name="template" style="margin-bottom:1em;">
+              
+Notice: Undefined index: template in /srv/www/vhosts/cdburnerxp.se/csstidy/index.php on line 153
+<option value="3">Highest (no readability, smallest size)</option><option value="2">High (moderate readability, smaller size)</option><option value="1" selected="selected">Standard (balance between readability and size)</option><option value="0">Low (higher readability)</option><option value="4">Custom (enter below)</option>            </select><br />
+            <label for="custom" class="block">
+            Custom <a href="http://csstidy.sourceforge.net/templates.php">template</a> </label> <textarea id="custom"
+            name="custom" cols="33" rows="4"></textarea>
+          </fieldset>
+          <fieldset id="options">
+         <legend>Options</legend>
+
+            <input onchange="enable_disable_preserve()" type="checkbox" name="preserve_css" id="preserve_css"
+                    />
+            <label for="preserve_css" title="Save comments, hacks, etc. Most optimisations can *not* be applied if this is enabled." class="help">Preserve CSS</label><br />
+
+
+            <input type="checkbox" name="sort_sel" id="sort_sel"
+                    />
+            <label for="sort_sel" title="Attention: This may change the behaviour of your CSS Code!" class="help">Sort Selectors (caution)</label><br />
+
+
+            <input type="checkbox" name="sort_de" id="sort_de"
+                    />
+            <label for="sort_de">Sort Properties</label><br />
+
+
+            <label for="merge_selectors">Regroup selectors</label>
+            <select style="width:15em;" name="merge_selectors" id="merge_selectors">
+              <option value="0">Do not change anything</option><option value="1">Only seperate selectors (split at ,)</option><option value="2" selected="selected">Merge selectors with the same properties (fast)</option>            </select><br />
+
+            <label for="optimise_shorthands">Optimise shorthands</label>
+            <select name="optimise_shorthands" id="optimise_shorthands">
+            <option value="0">Don&#039;t optimise</option><option value="1" selected="selected">Safe optimisations</option><option value="2">All optimisations</option>            </select><br />
+
+
+            <input type="checkbox" name="compress_c" id="compress_c"
+                   checked="checked" />
+            <label for="compress_c">Compress colors</label><br />
+
+
+            <input type="checkbox" name="compress_fw" id="compress_fw"
+                   checked="checked" />
+            <label for="compress_fw">Compress font-weight</label><br />
+
+
+            <input type="checkbox" name="lowercase" id="lowercase" value="lowercase"
+                    />
+            <label title="lowercase elementnames needed for XHTML" class="help" for="lowercase">Lowercase selectors</label><br />
+
+
+            Case for properties:<br />
+            <input type="radio" name="case_properties" id="none" value="0"
+                    />
+            <label for="none">None</label>
+            <input type="radio" name="case_properties" id="lower_yes" value="1"
+                   checked="checked" />
+            <label for="lower_yes">Lowercase</label>
+            <input type="radio" name="case_properties" id="upper_yes" value="2"
+                    />
+            <label for="upper_yes">Uppercase</label><br />
+
+            <input type="checkbox" name="rbs" id="rbs"
+                   checked="checked" />
+            <label for="rbs">Remove unnecessary backslashes</label><br />
+
+
+            <input type="checkbox" id="remove_last_sem" name="remove_last_sem"
+                    />
+   			<label for="remove_last_sem">Remove last ;</label><br />
+
+
+            <input type="checkbox" id="discard" name="discard"
+                    />
+            <label for="discard">Discard invalid properties</label>
+            <select name="css_level"><option value="CSS2.1" selected="selected">CSS2.1</option><option value="CSS2.0">CSS2.0</option><option value="CSS1.0">CSS1.0</option></select><br />
+
+
+            <input type="checkbox" id="timestamp" name="timestamp"
+                    />
+   			<label for="timestamp">Add timestamp</label><br />
+
+
+            <input type="checkbox" name="file_output" id="file_output" value="file_output"
+                    />
+            <label class="help" title="Bigger compression because of smaller newlines (copy &amp; paste doesn't work)" for="file_output">
+				<strong>Output as file</strong>
+			</label><br />
+
+          </fieldset>
+        <input type="hidden" name="post" />
+        </div>
+      </div>
+    </form>
+        <p style="text-align:center;font-size:0.8em;clear:both;">
+      For bugs and suggestions feel free to <a
+      href="http://csstidy.sourceforge.net/contact.php">contact me</a>.
+    </p>
+  </body>
+</html>

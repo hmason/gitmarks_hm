@@ -1,0 +1,1818 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<title>deconcept   &raquo; Proper Flash embedding: FlashObject Best Practices</title>
+
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+<link rel="stylesheet" href="http://blog.deconcept.com/wp-content/themes/ninjamonkeys/style.css" type="text/css" media="screen" />
+
+<link rel="stylesheet" href="http://blog.deconcept.com/wp-content/themes/ninjamonkeys/styles/white.css" type="text/css" media="screen" />
+
+
+<link rel="alternate" type="application/rss+xml" title="deconcept RSS Feed" href="http://blog.deconcept.com/feed/" />
+<link rel="pingback" href="http://blog.deconcept.com/xmlrpc.php" />
+
+<link rel="alternate" type="application/rss+xml" title="deconcept &raquo; Proper Flash embedding: FlashObject Best Practices Comments Feed" href="http://blog.deconcept.com/2005/03/31/proper-flash-embedding-flashobject-best-practices/feed/" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://blog.deconcept.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://blog.deconcept.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='deconcept' href='http://blog.deconcept.com/' />
+<link rel='start' title='T-shirts: Bush&#8217;s brain, Frankenkerry' href='http://blog.deconcept.com/2004/09/20/t-shirts-bushs-brain-frankenkerry/' />
+<link rel='prev' title='Safari and links to elements in overflow:auto content' href='http://blog.deconcept.com/2005/03/25/safari-and-links-to-elements-in-overflow-auto-content/' />
+<link rel='next' title='Flash in the can' href='http://blog.deconcept.com/2005/04/08/flash-in-the-can/' />
+<meta name="generator" content="WordPress 3.0.2" />
+<link rel='canonical' href='http://blog.deconcept.com/2005/03/31/proper-flash-embedding-flashobject-best-practices/' />
+<link rel='shortlink' href='http://blog.deconcept.com/?p=74' />
+</head>
+<body>
+	<div id="header">
+		<div class="inside">
+			<div id="search">
+				<form method="get" id="sform" action="http://www.google.com/custom">
+ 					<div class="searchimg"></div>
+<input type="hidden" value="blog.deconcept.com" name="sitesearch" />
+					<input type="text" id="q" value="" name="q" size="15" />
+				</form>
+			</div>
+			
+			<h2><a href="http://blog.deconcept.com/">deconcept</a></h2>
+			<p class="description">You&#8217;ve got your good thing, and I&#8217;ve got mine</p>
+		</div>
+	<div id="navbar">
+		<a href="/about">About</a> | <a href="/archives/">Archives</a> | <a href="feed:http://blog.deconcept.com/feed/">RSS</a>
+	</div>
+
+	</div>
+	<!-- [END] #header -->
+
+	<div id="primary" class="single-post">
+		<div class="inside">
+						<div class="navigation">
+				<div class="left">&laquo; <a href="http://blog.deconcept.com/2005/03/25/safari-and-links-to-elements-in-overflow-auto-content/" rel="prev">Safari and links to elements in overflow:auto content</a></div>
+				<div class="right"><a href="http://blog.deconcept.com/2005/04/08/flash-in-the-can/" rel="next">Flash in the can</a> &raquo;</div>
+			</div>
+			
+			
+			<div class="primary">
+				<h1>Proper Flash embedding: FlashObject Best Practices</h1>
+				<p class="note"><strong>UPDATE (7-24-2005):</strong> This page refers to an old version of the FlashObject script. For questions or comments, or to download the script, please refer to the <a href="http://blog.deconcept.com/flashobject/">permanent home of the FlashObject script</a>.</p>
+<p>This post is a continuation of a previous post. <a href="http://blog.deconcept.com/2004/10/14/web-standards-compliant-javascript-flash-detect-and-embed/" title="deconcept: Web standards compliant Javascript Flash detect and embed">Read this for more background information on the FlashObject embed method</a>.</p>
+<p>In the months since I posted the FlashObject embed I&#8217;ve had a chance to talk to a number of developers and <a href="http://www.snapple.com/" rel="external">use it in</a> <a href="http://www.newjetta.com/" rel="external">a few</a> <a href="http://www.cosmogirl.com" rel="external">high traffic</a> <a href="http://listen.xmradio.com/" rel="external">projects</a>. In doing so I&#8217;ve picked up some tips and best practices that I&#8217;ll be outlining here. I&#8217;ve also revamped the FlashObject script so it&#8217;s a bit more light weight and fixed a few small bugs.</p>
+<h4>What&#8217;s new?</h4>
+<ol>
+<li><strong>Alternate content is no longer written to the page by default</strong> &#8211; You may still use the <code>fo.altText</code> variable to add alternate content to your pages, but it is not recommended. The way to display alternate content in your pages with Flash content would be to place the alternate content on your page, and then specify the ID of the element with your content inside. The FlashObject script then writes your Flash content inside that element, replacing your alternate text/content so the end user with Flash will never see it, but users with no Javascript or without the required Flash version will see the alternate content. Google will also index your alternate content since it is just plain HTML.
+<p>Here is an example of what your embed should look like:</p>
+<pre><code>&lt;div id="flashcontent"&gt;
+  Place your alternate content here and users without the Flash plugin
+  or with Javascript turned off will see this.
+  Include a link to &lt;a href="?detectflash=false"&gt;bypass the detection&lt;/a&gt;
+  if you wish.
+&lt;/div&gt;
+&lt;script type="text/javascript"&gt;
+ // &lt;![CDATA[
+  var fo = new FlashObject("fo_tester.swf", "fo_tester", "300", "150", 6, "#336699");
+  fo.write("flashcontent");
+ // ]]&gt;
+&lt;/script&gt;</code></pre>
+<p>Because of this change, you should <em>always</em> specify the ID of an element to write your Flash content into. You should also be sure to always include alternate content on the page. If your Flash movie is purely decorational, you can leave the <code>div</code> empty, similar to using empty alt attributes (<code>alt=""</code>) on decorational images. Also note that with the new version you need to place your Javascript that writes the Flash content <em>after</em> the element that will contain your Flash content, as in the example above.</p>
+</li>
+<li><strong>Support for pulling variables from the URL string when using anchors</strong> &#8211; There have been some <a href="http://www.klynch.com/apps/flashlinking/howto.html" rel="external">discussion</a> about Flash state tracking and direct or &#8216;deep linking.&#8217; Most of the methods rely on parsing variables from the URL when the movie loads, so now you can pull vars out using the built in function <code>getQueryParamValue()</code>.
+<p>Example:</p>
+<p>If your URL is:</p>
+<pre><code>flashobjectpage.html#var1=value1&#038;var2=value2</code></pre>
+<p>You can pass those vars into your Flash movie by using the following code:</p>
+<pre><code>var fo = new FlashObject("fo_tester.swf", "fo_tester", "300", "150", 6, "#336699");
+<strong>fo.addVariable("var1", getQueryParamValue("var1"));
+fo.addVariable("var2", getQueryParamValue("var2"));</strong>
+fo.write("flashcontent");</code></pre>
+<p>The same works for normal URL parameters in URLs such as:</p>
+<pre><code>flashobjectpage.html?var1=value1&#038;var2=value2</code></pre>
+</li>
+</ol>
+<p>Just to recap some of the things posted in the <a href="http://blog.deconcept.com/2004/10/14/web-standards-compliant-javascript-flash-detect-and-embed/">previous FlashObject post</a>, here&#8217;s some of the thinking behind the FlashObject embed method:</p>
+<h4>Why Javascript?</h4>
+<p>Javascript is the best overall solution for a number of reasons, among them:</p>
+<ol>
+<li><strong>With Javascript you can detect the presence of the Flash Player on your user&#8217;s system and either display the Flash content or leave the existing (X)HTML on the page</strong>. This is also a huge advantage when it comes to search engine indexing since the alternate content is on the page and will be indexed as normal content. This also prevents novice users from seeing Internet Explorer&#8217;s ActiveX install box, which on Windows systems pre-SP2 is a very scary thing these days with all the Spyware and Malware running around on the internet. On most other browsers, you&#8217;ll likely see some empty box where the Flash content should be, sometimes with a broken image or puzzle piece icon which most novice users have no idea what to do with (Should they click on it? Is it part of the site?). If you include well written upgrade/install instructions in your alternate content, all of these problems are avoided.</li>
+<li><strong>No Extra configuration files for each Flash movie</strong>. Some alternate methods of embedding Flash content in XHTML documents include using extra configuration files or &#8216;holder&#8217; movies that load in other movies. With this method there is no need for any extra files aside from the single .js file.</li>
+<li><strong>Easy to serve different content to different browsers</strong>. I worked on a project recently that made extensive use of the <code>wmode=transparent</code> option. Well when you are using IE or Firefox you can use <code>wmode=transparent</code> with the Flash 6 player, but if you are using Apple&#8217;s Safari browser, you need Flash player 7 to see the content properly. So in the embeds on the page, we required Safari users to have the Flash 7 player, and everyone else the Flash 6 player. Without Javascript we would have had to force everyone to upgrade to Flash player 7, something we didn&#8217;t want to do, even though the Flash 7 player has a pretty high penetration percentage.</li>
+</ol>
+<h4>Problems with Flash Satay/pure Object tag embedding</h4>
+<p>The main issue with using any embed method that uses <em>only</em> <code>object</code> tags to embed any plugin on a page is that Safari ignores the <code>param</code> tags. For very basic embeds this isn&#8217;t a problem, but when you want to start passing in variables or change the background color of the movie without re-publishing it you start to run into problems.</p>
+<p>The one area where using pure <code>object</code> tag embeds shine is in using XHTML pages that are sent with a mime type of <code>application/xhtml+xml</code>. Since the FlashObject script uses <code>innerHTML</code> and sometimes <code>document.write</code>, it is not compatible with pages sent with the <code>application/xhtml+xml</code> mime type. Currently I have no plans to update it to work with these pages, as there are many issues with creating <code>object</code> tags using the DOM because almost every browser engine handles it differently and has little quirks that make it very hard to work around. If you are interested in seeing some of the code it would take to embed Flash in XHTML documents, check out the <a href="http://www.mikeindustries.com/blog/archive/2005/02/sifr-2.0-release-candidate-4" rel="external">excellent Javascript that comes along with sIFR 2.0</a>.</p>
+<h4>Download</h4>
+<p><s><a href="/code/flashobject1-1/flashobject1-1.zip">Download the source to FlashObject 1.1.1.</a></s></p>
+<p><a href="/flashobject/flashobject1-3.zip">Download the source to FlashObject 1.3.</a></p>
+<p><a href="/flashobject/flashobject.html">View sample pages using FlashObject 1.2 in different Flash embed situations.</a></p>
+<p><strong>UPDATE (5-5-2005):</strong> If anyone is interested, Paul Newman has wrapped this script into a <a href="http://www.communitymx.com/abstract.cfm?cid=A9FEC" rel="external">Dreamweaver extension</a>. It costs $15 (or free to CommunityMX subscribers), but if you are a not-so-technical Dreamweaver user I think it would be worth it.</p>
+<p><strong>UPDATE (5-17-2005):</strong> Made a small change to the <code>embed</code> tag output. I changed the <code>id</code> attribute to a <code>name</code> attribute as Firefox needs it that way in order to use LiveConnect and talk to the plugin via Javascript.</p>
+			</div>
+			<hr class="hide" />
+			<div class="secondary">
+<h3>About this page</h3>
+<p>blog.deconcept.com is a blog about nerdy internet stuff edited by <a href="/about">Geoff Stearns</a> since late 2004.</p>
+				<div class="featured">
+					<p>This entry was published on March 31st, 2005                                                and is tagged as <a href="http://blog.deconcept.com/category/flash/" title="View all posts in flash" rel="category tag">flash</a>, <a href="http://blog.deconcept.com/category/javascript/" title="View all posts in javascript" rel="category tag">javascript</a>, <a href="http://blog.deconcept.com/category/usability/" title="View all posts in usability" rel="category tag">usability</a>, <a href="http://blog.deconcept.com/category/xhtml/" title="View all posts in xhtml" rel="category tag">xhtml</a>.
+<br />You can follow any responses to this entry through the <a href='http://blog.deconcept.com/2005/03/31/proper-flash-embedding-flashobject-best-practices/feed/'>RSS 2.0</a> feed.</p>
+									</div>
+			</div>
+			<div class="clear"></div>
+		</div>
+	</div>
+	<!-- [END] #primary -->
+	
+	<hr class="hide" />
+	<div id="secondary">
+		<div class="inside">
+			
+							<div class="comment-head">
+					<h2>Comments are closed</h2>
+					<span class="details">Comments are currently closed on this entry.</span>
+				</div>	
+						
+			
+<!-- You can start editing here. -->
+
+
+	<ol id="comments">
+
+			<li id="comment-3184">
+			<cite>
+				<span class="author"><a href='http://fox.xdstudios.com/index.php?p=6' rel='external nofollow' class='url'>Jason Fox - The Ramblings &raquo; Javascript - Automatic flash content replacement</a></span>
+				<span class="date">05/17/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>[...] dy out there on the subject that I was able to modify and use.  If you take a look over on <a href="http://blog.deconcept.com/2005/03/31/proper-flash-embedding-flashobject-best-practices/">deconcept</a> he has developed the code that will work for mo [...]</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2437">
+			<cite>
+				<span class="author"><a href='http://www.cube-interactive.com' rel='external nofollow' class='url'>chrisgee</a></span>
+				<span class="date">03/31/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Fantastic additions! This solved the problem I was having in terms of displaying my XHTML region for users without Flash rather than the default text in the jold .js file. However, now for whatever reason my &#8220;leftcol&#8221; div is screwy. </p>
+<p><a href="http://www.cube-interactive.com/new_site/test/about2.html" rel="nofollow">http://www.cube-interactive.com/new_site/test/about2.html</a></p>
+<p>Anyone have any idea why this is getting pushed out of the red &#8220;topnav&#8221; div it&#8217;s supposed to be encased in? Keep in mind I&#8217;m a longtime web designer who is now trying to learn to become standards compliant. So if I&#8217;m making a rookie mistake or asking a rookie question, please forgive me.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2441">
+			<cite>
+				<span class="author">Flasher</span>
+				<span class="date">04/01/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Is it good practise to have version detection in Flash movie itself?<br />
+I have been using player version detection script from<br />
+<a href="http://www.macromedia.com/cfusion/knowledgebase/index.cfm?id=tn_14294" rel="nofollow">http://www.macromedia.com/cfusion/knowledgebase/index.cfm?id=tn_14294</a></p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2442">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">04/01/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>If you have a high concentration of users who will have Javascript disabled or unavailable but still have the Flash player installed, then it might be a good idea to use a Flash movie to detect the Flash player.</p>
+<p>But from my experience these days, plenty of people have javascript enabled and the scripting in FlashObject is very reliable &#8211; so far i&#8217;ve tested in these browsers: for PC: IE: 5, 5.1, 6 (should work in 4 as well), Firefox, Mozilla, and Opera. On Mac: Firefox, Safari, Opera, Mozilla, Camino. There really aren&#8217;t any incompatible browsers, it just depends on whether the user has Javascript enabled or not, and in my experience, most people who have Javascript disabled don&#8217;t have the Flash player installed anyway &#8211; in which case this method works better than a Flash movie for detection since you don&#8217;t need the extra page to redirect them to the upgrade page.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2444">
+			<cite>
+				<span class="author"><a href='http://www.mathewandamanda.com/blogs' rel='external nofollow' class='url'>mray</a></span>
+				<span class="date">04/01/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>How about flash subversion detection?<br />
+You can hack the moockFPI to allow you to detect the subversion, such as 7.0.19.0 in order to require specific bugrelease players to be present. Any plans to include this to your FlashObject class? Overall though, nice package!</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2445">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">04/01/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>I believe you can&#8217;t detect Flash sub-versions using VBScript, which is what this relies on for Internet Explorer Flash player detection. The best (and only way, really) to do proper sub-version detection is to put it inside a Flash movie.</p>
+<p>There&#8217;s no reason why you couldn&#8217;t use both &#8211; use FlashObject to detect the major version and embed the movie, then inside the movie double check the sub-version and either show an upgrade notice, or redirect them to somewhere else.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2521">
+			<cite>
+				<span class="author">Petkord</span>
+				<span class="date">04/03/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Hi, very useful stuff, excellent job done!<br />
+I have a problem with sending data through text flashVars though.<br />
+Whatever I do, I can&#8217;t get our Latin2 &#8211; extended chars displayed,<br />
+using either \u0161 or &#x0161; syntax.<br />
+I&#8217;m using utf-8 encoding and Slovenian language.<br />
+If somebody knows something about this issue, please let me know,<br />
+else keep working great and thanks for sharing it with us.<br />
+With sending XML-data it works perfect</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2523">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com/' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">04/03/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>You might try using <code>encodeURIComponent</code>, but some older browsers don&#8217;t have it, so you might need to jump through some extra hoops to make it usable. Here&#8217;s <a href="http://www.worldtimzone.com/res/encode/" rel="external">a page that might help</a>.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2524">
+			<cite>
+				<span class="author"><a href='http://www.macromedia.com/cfusion/knowledgebase/index.cfm?id=tn_14294' rel='external nofollow' class='url'>mark hill</a></span>
+				<span class="date">04/04/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>is this the same as the version checking JS provided from Macromedia?</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2527">
+			<cite>
+				<span class="author">Eric</span>
+				<span class="date">04/04/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>This works great except I get an error on IE4 (Object doesn&#8217;t support this property or method).  I&#8217;m no javascript expert so I just did a little hack which seems to work for me.  Maybe someone who is a better programmer can come up with a more elegant solution for dealing with this ie4 problem.</p>
+<p>I made a small change to line 97</p>
+<p>document.getElementById(elementId).innerHTML = this.getHTML();</p>
+<p>with </p>
+<p>var happyTemp=navigator.appVersion.split(&#8220;MSIE&#8221;);<br />
+			var happyVersion=parseFloat(happyTemp[1]);<br />
+			var happyBrowserVer=parseInt(happyVersion);<br />
+			// weed out ms ie 4&#8230; it chokes on this javascript<br />
+			if(happyBrowserVer != 4){<br />
+				document.getElementById(elementId).innerHTML = this.getHTML();<br />
+			}else{<br />
+				//alert(&#8216;You are running IE 4&#8230; which has problems with the required javascript.  Please upgrade!!!&#8217;);<br />
+			}</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2528">
+			<cite>
+				<span class="author">Don</span>
+				<span class="date">04/04/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Very good stuff&#8230; and it validates. Excellent.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2529">
+			<cite>
+				<span class="author"><a href='http://www.ambience.sk/flash-valid.htm' rel='external nofollow' class='url'>Flash Guy</a></span>
+				<span class="date">04/04/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>I agree with the solution, but still find FlashSatay more semantically correct.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2531">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com/' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">04/04/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Mark,</p>
+<p>No, this is all custom code.</p>
+<p>Eric,</p>
+<p>That&#8217;s odd, IE4 supports innerHTML &#8211; maybe something else is making it stumble?</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2539">
+			<cite>
+				<span class="author">AndyW</span>
+				<span class="date">04/05/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Hey there, gooood coding indeed.</p>
+<p>I&#8217;m getting a little <a href="http://www.bluerobot.com/web/css/fouc.asp">FOUC</a> style thing in IE6.</p>
+<p>Using the files supplied, I added an @import reference to a stylesheet and this seems to cause the alternate content in the div to flash up for a second before being replaced by the flash.</p>
+<p>Anyone else experiencing this/have any solutions other than avoiding @import?</p>
+<p>Other than that this code is spot on for my needs.</p>
+<p>Ta V Much.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2541">
+			<cite>
+				<span class="author">Eric</span>
+				<span class="date">04/05/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Geoff,</p>
+<p>Well, my test machine is a little odd.  I&#8217;m running XP and using a stand-alone version of IE 4.01 to test IE4.  You can download it from <a href="http://www.skyzyx.com/archives/000094.php">http://www.skyzyx.com/archives/000094.php</a></p>
+<p>Anyone have a machine set up with a true native install of IE 4.01?</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2542">
+			<cite>
+				<span class="author">Scott</span>
+				<span class="date">04/05/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>This updated script is <strong>MY GOD</strong> beautiful. I loved the first version but was trying to have the altTxt variable include a PHP file ( a gif file was suggested ) which contained my alternative html content and couldn&#8217;t get it to work. The idea of overwriting the div with the flash content is great. I&#8217;m a designer who dabbles in programming, not a programmer, so this kind of thing keeps me from jumping off a tall building. Kudos!</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2552">
+			<cite>
+				<span class="author">bruceontheloose</span>
+				<span class="date">04/08/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Thanks a lot for sharing your code and continuing to improve it, Geoff. I&#8217;ve implemented it (this version and the previous one) on two sites so far, with great results.</p>
+<p>Wanted to point out something in your instructions that I believe you accidentally overlooked. In the embed example in item 1 above, the &#8220;Include a link to bypass the detection&#8221; href value is <code>?dodetect=false</code>. That didn&#8217;t work for me, so I checked the code and found you meant to say the value should be <code>?detectflash=false</code>. That did the trick.</p>
+<p>Thanks again!</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2553">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com/' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">04/08/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Ah, you&#8217;re right, should be <code>detectflash=false</code>. Thanks!</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2555">
+			<cite>
+				<span class="author">Don</span>
+				<span class="date">04/09/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>First, as everyone says, Thanks for sharing your efforts!</p>
+<p>Second, my Flash movie calls back to JavaScript functions in my page via fscommand(). When trying out your code, I noticed that it would fail on certain browsers (specifically, FireFox 1.0.2). If I understand correctly, FireFox requires the Flash object to be &#8220;named&#8221; &#8211; so, I modified the flashHTML string generations from (abbreviated):</p>
+<p><code>  (...) '" id="' + this.id + '" align="' + this.align + '"';</code></p>
+<p>to</p>
+<p><code>  (...) '" id="' + this.id + '" name="' + this.id + '" align="' + this.align + '"';</code></p>
+<p>Now, <code>fscommand()</code> calling back to JavaScript works fine.</p>
+<p>Don</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2560">
+			<cite>
+				<span class="author">David Burrows</span>
+				<span class="date">04/11/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>I&#8217;m just wondering why you recommed using an innerHTML swap over a direct document.write?<br />
+What advantages does this have over just defaulting to using <code>&lt;noscript&gt;</code> tags if javascript is disabled.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2562">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com/' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">04/11/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Well this way made more sense as far as displaying alternate content goes. If a user doesn&#8217;t have the needed Flash player I would have to use <code>document.write</code> to write the alt content, so Google wouldn&#8217;t pick that content up, or I would have to duplicate it on the page by putting it in the Javascript and also repeating it in <code>noscript</code> tags.</p>
+<p>This way I only place my alt content once on the page, and google will read it, and if for some reason a user can&#8217;t see the Flash content (no Javascript <em>or</em> not a high enough Flash player) then the page still makes perfect sense sematically.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2563">
+			<cite>
+				<span class="author"><a href='http://www.swush.com' rel='external nofollow' class='url'>Michael Peo</a></span>
+				<span class="date">04/12/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>When placing a link to bypass the detection &#8230;<br />
+<blockquote>Include a link to <a href="?detectflash=false">bypass the detection</a> if you wish.</p></blockquote>
+<p>&#8230; How would i pass along variables/value pairs allready appended to the url. It seems to me that they are replaced with the <code>?detectflash=false</code>.<br />
+Sorry if this is a stupid question, but i am one of those <i>..I&#8217;m not a programmer, i&#8217;m a designer jadda, jadda, jadda</i>.<br />
+Thank you for a great solution to the ever precent Google cant crawl my flashcontent problem.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2565">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">04/12/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>You just need to add a little extra Javascript: you can either add a function that adds the extra var to the string, like so:</p>
+<p><code>
+<pre>function bypassDetect() {
+   var sep = (document.location.href.indexOf("?") > -1) ? "&#038;" : "?";
+   document.location = document.location.href + sep +"detectflash=false";
+}</pre>
+<p></code></p>
+<p>Then, on your bypass link:<br />
+<code>&lt;a href="javascript:void(0)" onclick="bypassDetect()"&gt;bypass detection&lt;/a&gt;</code></p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2567">
+			<cite>
+				<span class="author">sam</span>
+				<span class="date">04/13/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>thankyou!</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2569">
+			<cite>
+				<span class="author">Sara B</span>
+				<span class="date">04/13/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Hi there,</p>
+<p>Great script :)</p>
+<p>Can I call BASE attribute witht this script?</p>
+<p>BASE set to &#8220;.&#8221; &#8211; All the paths in the Flash Player movie file are relative to the directory in which the movie file is located. Suppose the movie file is located in a directory called movies.</p>
+<p>Thanks Sara</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2570">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">04/13/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Don,</p>
+<p>Well here&#8217;s the deal with the Javascript stuff: all browsers that use the Netscape plugin architechture have really poor support for <code>fscommand</code>, so what I normally do is use some method of detecting whether the user is using IE or something else (either using <code>System.capabilities.ActiveX</code> for Flash 7, or passing in a var after detecting it with Javascript as the page loads for all others) and then using <code>fscommand</code> calls for IE and direct Javascript calls for all others. The only reason I would even use fscommand with IE is to suppress the &#8216;click&#8217; noise the browser makes when you call a Javascript function.</p>
+<p>But, if for some reason you still want to add the <code>name</code> parameter to the embed tag, you can do it without modifying the flashobject.js file. Just use:</p>
+<p><code>fo.addParam("name", "mymoviename");</code></p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2571">
+			<cite>
+				<span class="author"><a href='http://slideshowpro.net' rel='external nofollow' class='url'>Todd Dominey</a></span>
+				<span class="date">04/13/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Sara &#8211; you should be able to call base like this (someone correct me if I&#8217;m wrong):</p>
+<p>fo.addParam(&#8220;base&#8221;, &#8220;.&#8221;);</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2572">
+			<cite>
+				<span class="author">Sara B</span>
+				<span class="date">04/13/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Sorry another question:<br />
+I have this and wondered how I incorporate it:</p>
+<p><code>&lt;param name="FlashVars" value="&amp;skinName=/inc/clearSkin_2&amp;streamName=/flash/media/nena512K_Stream001&amp;<br />
+autoPlay=false&amp;autoRewind=true" /&gt;</code></p>
+<p>Mnay thanks :)</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2576">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">04/13/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>You just add a var for each of your values:</p>
+<p><code>fo.addVariable("skinName", "/inc/clearSkin_2");<br />
+fo.addVariable("streamName", "/flash/media/nena512K_Stream001");<br />
+fo.addVariable("autoPlay", "false");<br />
+fo.addVariable("autoRewind", "true");</code></p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2580">
+			<cite>
+				<span class="author">moo</span>
+				<span class="date">04/14/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>I have looked at this solution and others and have thought about another possible solution:</p>
+<p>Use javascript to write the flash object into a div.<br />
+Javascript starts a timer.<br />
+Flash sends a GetURL(&#8220;javascript:FlashOK()&#8221;)<br />
+FlashOK() function tells javascript that everything is ok. Stop the timer.<br />
+If the timer isn&#8217;t stopped javascript runs a function to insert alternate content into the div.</p>
+<p>This is just an untried concept but it possibly would be smaller and wouldn&#8217;t rely vbscript and the flash movie could return a lot more info about the player version back to js. Also the scripts would be very simple to reuse.</p>
+<p>Anyone got any thoughts on this idea?</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2581">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">04/14/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>There&#8217;s a few things wrong with that:</p>
+<p>1) setting a timer and waiting for the Flash movie to call something is dangerous because your Flash movies can be different sizes and users will all have different connection speeds, so sometimes the timer would be longer, sometimes shorter.</p>
+<p>2) It&#8217;s better to have the alternate content in the div and have the Flash content placed using Javascript because then google will index your alt content and you&#8217;ll get better search engine results if done right.</p>
+<p>3) What&#8217;s wrong with relying on vbscript? IE supports it natively just fine, other browsers use Javascript to detect the plugin with no waiting and it&#8217;s very reliable.</p>
+<p>4) As far as returning more info to the JS &#8211; at that point the Flash movie would already be running so the extra info wouldn&#8217;t be of any use.</p>
+<p>5) It doesn&#8217;t get much easier to reuse the FlashObject script.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2582">
+			<cite>
+				<span class="author"><a href='http://www.imagesofvictoria.com.au' rel='external nofollow' class='url'>pete walsh</a></span>
+				<span class="date">04/15/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Geoff, thank you! I&#8217;ve just finished implementing deep linking on my flash site, url above, using yours and Kevin&#8217;s script, works a treat! </p>
+<p>FWIW for anyone doing a similar project, I found using #detectflash=false works better than ?detectflash=false esp if you are adding url vars via Flash afterwards to enable browser bookmarks</p>
+<p>A couple of people have commented that Firefox  with the latest Flash player occassionally screws up and gets shown the alt content instead of the swf, even if the required player version is set one or two versions lower than what they have installed. I doubted it, but then have seen the behaviour myself a couple of times &#8211; usually fixed by a reload. Which is why I wanted to be sure the bypass detection worked ok with bookmarks etc.</p>
+<p>Thanks again!</p>
+<p>Pete</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-2745">
+			<cite>
+				<span class="author">TonyS</span>
+				<span class="date">04/20/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>I know this is off topic, but you all seem much more experienced than I.  It has to do with using Flash in email.</p>
+<p>Outlook blocks the ActiveX control that allows the Flash to play on incoming emails.  I know that the user can change the settings as a workaround, but has anyone come up with a different way to handle the embedding or linking to the Flash file, so it appears w/out this warning.</p>
+<p>Seeing this Javascript option gave me hope that there&#8217;s another way to do the email as well since it uses HTML.</p>
+<p>I apologize if it is off topic.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3062">
+			<cite>
+				<span class="author"><a href='http://mark.cervarich.com/tm/archives/000072.php' rel='external nofollow' class='url'>Mark's Technomusings</a></span>
+				<span class="date">05/09/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p><strong>Proper Flash Embedding</strong><br />
+The auther has created an awesome toolkit that lets you, without much fuss, embed flash movies &#8212; as well as offer non-flash versions without sniffing. It works on the principle that most people who do NOT have Javascript also do&#8230;</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3066">
+			<cite>
+				<span class="author">Rasmus</span>
+				<span class="date">05/11/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>I just noticed an error in the source files. The link for bypassing the flash detection is: ?dodetect=false<br />
+It should be: ?detectflash=false</p>
+<p>And another thing.<br />
+When using IE the content of the flashcontent div tag is shown for a short while, before it&#8217;s replaced by the Flash.</p>
+<p>The solution is pretty simple, but it would be cool if you could include it in the flashobject script:<br />
+<code>
+<pre>
+&lt;div id="flashcontent"&gt;
+	&lt;script type="text/javascript"&gt;
+	// &lt;![CDATA[
+	// hide the flashcontent div tag
+	document.getElementById("flashcontent").style.display = "none";
+	// ]]&gt;
+	&lt;/script&gt;
+	Content goes here...
+&lt;/div>type="text/javascript"&gt;
+	// &lt;![CDATA[
+	var fo = new FlashObject("flash.swf", "flash", "250", "250", 7, "#ffffff");
+	fo.write("flashcontent");
+	// show the flashcontent div tag again
+	document.getElementById("flashcontent").style.display = "block";
+	// ]]&gt;
+</pre>
+<p></code></p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3068">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">05/11/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>You&#8217;re right about the bypass link. Must have been a typo &#8211; I actually thought I had fixed that already.</p>
+<p>As for the flash of alternate content, I&#8217;ve never seen that happen, so maybe there is something else on the page causing that? Maybe a specific browser setting? You shouldn&#8217;t need any extra code in there to make this work perfectly.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3082">
+			<cite>
+				<span class="author"><a href='http://www.finalsoul.net/' rel='external nofollow' class='url'>FinalSoul</a></span>
+				<span class="date">05/14/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>I use this:<br />
+<code>
+<pre>&lt;object type="application/x-shockwave-flash" data="flash.swf" width="300" height="100"&gt;
+  &lt;!--[if IE]>&lt;param name="movie" value="flash.swf" /&gt;&lt; ![endif]--&gt;
+  &lt;param name="quality" value="low" /&gt;
+  Place your alternate content here and users without the Flash plugin
+  or with Javascript turned off will see this.
+&lt;/param&gt;&lt;/&gt;&lt;/param&gt;&lt;/&gt;&lt;/object&gt;
+</pre>
+<p></code><br />
+It&#8217;s XHTML valid and it works perfectly.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3086">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com/' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">05/14/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Actually, that method has some problems in Safari (versions less than 1.3) that I talk about a bit in the post (and the <a href="http://blog.deconcept.com/2004/10/14/web-standards-compliant-javascript-flash-detect-and-embed/">original FlashObject post</a>): Safari ignores the <code>param</code> tags, so if you want to use any custom params they will be ignored. Things like <code>flashvars</code> and the different alignment options, and the &#8216;show menu&#8217; option for example.</p>
+<p>Also, if a user does not have Flash, they will get the ActiveX sercurity popup (or the small ActiveX bar on WinXP SP2, or the puzzile piece in Mozilla/Firefox) So novice users might have no idea what that is or what they have to do in order to install the correct plugin.</p>
+<p>If you use FlashObject, you have full control over the alternate content, and can give your users much more friendly and informative error messages and instructions on how to download the plugin.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3166">
+			<cite>
+				<span class="author"><a href='http://www.mexintl.com/index2.php' rel='external nofollow' class='url'>Mexico Bob</a></span>
+				<span class="date">05/15/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>I am having a problem with seeing the map div on my page.  It loads after the flash object and is absolutely positioned over the Flash.  If I just load the Flash normally, everything looks fine.  But when I use your Flash embedder, the map does not show.  I believe it is on a lyaer beneath the Flash movie.  I tried simply setting the map&#8217;s z-index to 2, but this does not help.</p>
+<p>Is it because the javascript is running AFTER the page is set up?  Is there a way to force the second div to the surface?</p>
+<p>Sorry if this question is a little elementary.  I am still learning CSS and javascript.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3174">
+			<cite>
+				<span class="author">croc</span>
+				<span class="date">05/16/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>bloody cool script! thank you!</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3175">
+			<cite>
+				<span class="author">nickbotulism</span>
+				<span class="date">05/16/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>about safari ignoring param tags in object tags: in my tests i&#8217;ve actually found that safari does see the param tags, at least on my mac (safari 1.0.3, flash 7). ie/mac, however, does not.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3188">
+			<cite>
+				<span class="author">sam</span>
+				<span class="date">05/20/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Great code works a treat its a pleasure to use and I think it is a vast improvement over straight copy n paste from MM code output</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3189">
+			<cite>
+				<span class="author">Bill</span>
+				<span class="date">05/21/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Hi,<br />
+I am very happily using your great flash detection method.  Thank you for sharing this with the net!  </p>
+<p>I generally work in flash using full-screen mode (awesome that you included an example using full-screen in the package!!).  But my html “alternative” page needs its scroll bars.<br />
+Question: Does anyone have any idea how to have a full-screen flash site but still have the scrollbars in the html page?  </p>
+<p>Maybe like some way to write the styles for the flash movie in at the same time we write into “flashcontent”?</p>
+<p>Any ideas or help would be super!</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3237">
+			<cite>
+				<span class="author"><a href='http://www.salttown.com' rel='external nofollow' class='url'>Ryan</a></span>
+				<span class="date">05/24/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Bill &#8211;<br />
+You could try this in your css:</p>
+<p>body {<br />
+	margin: 0;<br />
+	overflow: hidden;<br />
+	}</p>
+<p>this makes it so it attached the scrollbars only if they are needed.  I had that problem on a site I did.<br />
+You can see it in action here:<br />
+<a href="http://www.ucard.utah.edu/" rel="nofollow">http://www.ucard.utah.edu/</a></p>
+<p>The first page is full screen flash and all the other pages are html and use the same css.</p>
+<p>Good Luck.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3239">
+			<cite>
+				<span class="author">Bill</span>
+				<span class="date">05/25/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Uhm,<br />
+Ok Ryan.  Thanks but I dont understand.  That site you linked to has no html that I can find.  And I disabled my flash player and it doesn&#8217;t seem that you are using any Flash detection at all.  And also I didnt see a scroll-bar at any time (that was problematic whenever my browser was not filling up my screen btw, @ 1280 * 854 ).</p>
+<p><b>Here is the problem:</b>  We are forced to use the same styles for the body of our flash movie and our html alternative.  That&#8217;s no good!  As soon as I get time Ill figure it out myself.  I&#8217;m sure it willl be SUPER simple to write over the &#8220;styles&#8221; just like we write over &#8220;flashcontent&#8221; but I&#8217;m very new to Java Script.  Whatever, Ill get it.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3240">
+			<cite>
+				<span class="author">Bill</span>
+				<span class="date">05/25/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Hopefully someone who knows their Java Script better than I can jump in here and give a better solution.  But until that happens this seems to be working for me:</p>
+<p>this goes in your HEAD and links two different style sheets to the page but disables the first (the flash styles).</p>
+<pre><code>
+&lt;link rel="stylesheet" href="html/flashStyle.css" disabled id&gt;
+&lt;link rel="stylesheet" href="html/style.css"&gt;
+&lt;script language="JavaScript"&gt;
+	if (document.getElementsByTagName)
+        document.getElementsByTagName('link')[0].disabled = true;
+&lt;/script&gt;
+</code></pre>
+<p>Then we go into our lovely external flashobject.js file and add this below line 97:</p>
+<pre><code>
+document.getElementsByTagName('link')[0].disabled = false;
+document.getElementsByTagName('link')[1].disabled = true;
+</code><code>
+		if (elementId) {
+			document.getElementById(elementId).innerHTML = this.getHTML();
+			////////////////////////
+			document.getElementsByTagName('link')[0].disabled = false;
+			document.getElementsByTagName('link')[1].disabled = true;
+			////////////////////////
+		} else {
+			document.write(this.getHTML());
+		}
+</code></pre>
+<p>Ok so what is important here is that the order of your links to your css files is:  First Flash css.  Then Html css.</p>
+<p>Basta.</p>
+<p>Ok now somebody jump in here and give us a better solution.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3243">
+			<cite>
+				<span class="author">Bill</span>
+				<span class="date">05/25/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Rasmus,<br />
+I was having the same problem Using IE 5.2 on a Mac.  the alternative content was flashing up for a second before the flash movie.  I deleted my prferences, and restarted my machine, and all the rest.  And I was testing a freshly unziped version of the package.  Your fix worked great though!  Pretty smart!!! Thanks!</p>
+<p>Awesome solution.</p>
+<p>This is really the best method out there for delivering alternate content, Geoff.  I wish you lots of happiness and success!</p>
+<p>Thank you!</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3363">
+			<cite>
+				<span class="author">josh2go</span>
+				<span class="date">06/02/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Super-Great solution Geoff! However I am not so great, I can&#8217;t load a movie into the embedded .swf? I have tried everything. Its so elemetary, and I am beginning to think my files are corrupt. The movie loads the external movie using this.mc.loadmovie(&#8220;test.swf&#8221;) locally, but online it just sits there and doesnt load test.swf&#8230;.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3364">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">06/02/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>That shouldn&#8217;t have anything to do with the embed method. But if you want to be sure, try publishing your movie using the &#8220;Publish Movie&#8221; menu in Flash and then try that out.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3377">
+			<cite>
+				<span class="author">Keith Dodd</span>
+				<span class="date">06/03/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Am using the great FlashObject with the CommunityMX extension. Very nice!<br />
+In your Best Practices, you recommend not using the fo.altTxt and bypassTxt; just placing alternative content in the div. That, too works fine. However, is there a way to get the equilivant of fo.version as a variable to be able to use in the div (&#8220;You must upgrade to #fo.version#&#8221;&#8211;I&#8217;m using ColdFusion. Obviously, I could hard code it, but would be nice to have the variable.</p>
+<p>One other question: Just wanted to make sure that the false for detectflash is the string &#8220;false&#8221; and not boolean.</p>
+<p>Thanks for a very valuable tool!</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3378">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">06/03/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Keith,</p>
+<p>You could modify the <code>fo.write()</code> method to change the content of your div to show the version number if you wanted to, but it would take a bit of work. I have just been hard coding it on the page, as I almost always make custom alternate content for each Flash movie.</p>
+<p>the doDetect var is checking for the string &#8216;false&#8217; because it is pulled from the query string of the url as a string, but if you wanted to remove the quotes you could, as Javascript should evaluate the string &#8216;false&#8217; as the boolean false.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3379">
+			<cite>
+				<span class="author">Keith Dodd</span>
+				<span class="date">06/03/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Yes, since am putting the version into the script, no big deal to put it into the alternate.</p>
+<p>Just ran into something else.<br />
+Had a question as why my swf seemed to put itself at a higher z level than surrounding content.<br />
+From <a href="http://www.communitymx.com/content/article.cfm?cid=E5141" rel="nofollow">http://www.communitymx.com/content/article.cfm?cid=E5141</a>, it seems that there is a wmode parameter than can affect this.<br />
+I tried using<br />
+fo.addVariable(&#8220;wmode&#8221;, &#8220;opaque&#8221;);<br />
+like I added other parameters. That didn&#8217;t cause the right adjustment.<br />
+If I put it in as a regular parameter with the embed object, it does the correct effect.<br />
+Seems like the fo.addVariable(&#8220;wmode&#8221;, &#8220;opaque&#8221;); should work with FlashObject as it works with other parameters I used.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3380">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">06/03/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>You need to use <code>fo.addParam("wmode"...</code></p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3458">
+			<cite>
+				<span class="author"><a href='http://jesus2099.free.fr/blog/' rel='external nofollow' class='url'>jesus2099</a></span>
+				<span class="date">06/07/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Hi, here&#8217;s a little contribution:<br />
+The document.getElementById method is not recognised in every browser, here is a code to add in the begining of your script to make it work in IE4 and NS4:</p>
+<pre><code>if(document.all &#038;&#038; !document.getElementById) { /*ie4*/
+  document.getElementById= function(id) {
+    return(document.all(id));
+  }
+  document.getElementsByTagName= function(id) {
+    return(document.all.tags(id));
+  }
+}
+if(document.layers) { /*ns4*/
+  document.getElementById= function(id) {
+    return(document.layers[id]);
+  }
+}</code></pre>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3461">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">06/07/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Thanks! I won&#8217;t be adding that code into the main build, as I haven&#8217;t had to support ns4 for almost 2 years now, but it&#8217;s good to have the comment there for other people if they need to add that functionality.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3509">
+			<cite>
+				<span class="author"><a href='http://thejaffes.org/' rel='external nofollow' class='url'>Rory Jaffe</a></span>
+				<span class="date">06/13/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>For the function &#8220;getVariablePairs&#8221;, I found that the escape function was causing problems with such things as right single quotes. I removed that, and it now runs fine. Is there a specific reason you put that here (and not in the getParamTags function)?</p>
+<pre><code>
+FOP.getVariablePairs = function() {
+      var variablePairs = new Array();
+      for (var name in this.getVariables()) {
+        	variablePairs.push(name + "=" + <strike>escape(</strike>this.getVariable(name)<strike>)</strike>);
+      }
+      return (variablePairs.length > 0) ? variablePairs.join("&#038;"):false;
+}</code></pre>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3510">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">06/13/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Yeah that was an issue that popped up early on, and I removed it, but then decided to put it back in later. The problem is with unicode characters &#8211; <code>escape()</code> doesn&#8217;t handle them so well, so if you have to use them you can try using <code>encodeURIComponent()</code> instead, but the problem there is it doesn&#8217;t work in IE5 or Netscape lower than 6.</p>
+<p>As for best practices, I would recommend loading in content using an external XML file or text file instead of passing the info directly into your Flash movie.</p>
+<p>And the reason it&#8217;s not in the <code>getParamTags()</code> function is that there are no parameters with characters that would require escaping.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3512">
+			<cite>
+				<span class="author">Ray McCord</span>
+				<span class="date">06/14/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>I am currently developing a site using a modified version of FO, wherein I use the onload javascript event from within an external script mentioned in the document head. This eliminated the need to have extra script tags after each replaceable element in the markup, keeping things nice and clean. During script load, meaning before the onload event, I set the visibility of the replaceable to hidden and have the onload event reset the style to visible to avoid FOUC, too. All of this works really nicely in every browser I have access to, including: IE5+/Win, Opera 6+/Win|X11, FF1+/Win|X11, NS7/Win, KHTML3.2+/X11.</p>
+<p>Now, my only thing is wanting to eliminate the EMBED tag, since I want HTML 4.01 Strict to actually mean what it claims, even in Netscape-alikes. I realize this is a pain due to Safari ignoring PARAMS within OBJECT, but I have an idea:</p>
+<p>From what I understand, there is a method of passing variables to Flash via data sources like POST and GET using Actionscript&#8217;s LoadVars() method. Would it not be possible to simply manipulate one of the data sources LoadVars() can access, thereafter using said data source to pass into Flash such values as you would normally pass via a PARAM?</p>
+<p>Just for the sake of fleshing out the idea a bit, given that we are already scripting, this data source manipulation step could be taken after we have determined Flash to be available, but before the markup is actually written to the document. Then, anything that the Flash movie must set up &#8216;on load&#8217; will be available for the movie to do some dynamic configuration, such as set the background color before rendering Frame 1.</p>
+<p>Anyway, it&#8217;s just a thought. I am not generally a developer who uses Flash, but I had to do it for my current project. I would be interested to see if this idea could be fleshed out and possibly help overcome the inherent problems of applying the Hicks-style OBJECT-only techniques and at the same time make the actual rendered markup as compliant as the original source (e.g., no EMBED tags).</p>
+<p>Anyway, cheers.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3513">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">06/14/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Hey Ray,</p>
+<p>Some comments on your post:</p>
+<p>1) While using the <code>onload</code> event is tempting (and I&#8217;ll admit, much more &#8216;clean&#8217;), I don&#8217;t use it because if a user has Javascript disabled, in a browser that supports CSS, they will see no content at all, which is bad.</p>
+<p>2) The newest Safari update seems to support <code>param</code> tags now &#8211; I haven&#8217;t done a full set of tests, but Safari 2 and 1.3 on OSX 10.3 seem to be working correctly now, so that takes care of the main problem I had with using &#8216;Object tag only&#8217; embeds, but since there will still be users out there who don&#8217;t upgrade to the latest version, it will be a while before I make any changes to the FlashObject script.</p>
+<p>Your idea of passing in the params using an external data source will work, and there is already a Flash embed method that uses that type of method. It uses an external XML file with the parameters like Stage.align and the background colors (I think). I&#8217;m not a fan of this mainly because you have to keep an extra XML file (or pass the vars with a query string) with each one of your Flash movies which seems like a lot of extra hassle. (<a href="http://matteo.balocco.free.fr/tfl/" rel="external">Flash Totanus Loader</a>)</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3514">
+			<cite>
+				<span class="author"><a href='http://www.whosthemanual.com' rel='external nofollow' class='url'>Dave</a></span>
+				<span class="date">06/14/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Gangbusters dude&#8230;you are the man! I&#8217;m a complete moron and still got it to work!</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3518">
+			<cite>
+				<span class="author">Ray McCord</span>
+				<span class="date">06/15/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Geoff,</p>
+<p>Thanks for the reply.</p>
+<p>I can concede to your logic for using deprecated markup for compatibility sake. I also see the hassle posed by Flash Totanus Loader’s approach. However, I think you did not fully comprehend what I meant about my use of the onload event solving FOUC. With CSS enabled and JS disabled, nothing ever changes in the page and the content is not hidden in any way.</p>
+<p>I do this:</p>
+<p>In the head, I link to an external script:</p>
+<p><code><br />
+&lt;script type="text/javascript" src="script/dynamic-elements.js"&gt;&lt;/script&gt;<br />
+</code></p>
+<p>That external script includes your FO code and a little extra. When that external script is initially read, the browser comes upon this:</p>
+<p><code>hideDynamic = '&lt;style type="text/css"&gt;';<br />
+hideDynamic += '&lt;!-- #home-intro, #browse {visibility: hidden;} --&gt;&lt;/style&gt;';<br />
+document.write(hideDynamic);<br />
+</code><br />
+hides my flash container / fallback content element in the markup (obviously this is for one element with id=&#8221;home-intro&#8221;, but it could easily apply the style to a class instead). It programatically inserts the style into the document head, so CSS on, JS off is not a problem. Fallback content already exists in that element and is left visible in the static stylesheet. :)</p>
+<p>After the document completely loads, the onload event kicks in, as expected.</p>
+<p>At this point the scripting engine runs an ‘init’ function which sets the configurations you would normally place in the markup document after the element to replace. After that, it calls the FO functions to create the FO object and replace the designated content if Flash is installed. In any event, the element visibility is switched back on before the script ends by calling the showDynamic() function right before ending script execution.</p>
+<p>This approach kills any FOUC and all of the associated reflow acrobatics that may happen as a browser tries to layout the page for the initial fallback content and then compensate for a Flash movie of different dimensions than the fallback content. This increases usability, in that content and forms which have already loaded into the page are readable and can be used while the page is still loading, instead of (from a visitor perspective) arbitrarily jumping around (due to reflow). :)</p>
+<p>Here is the relevant code to show what I mean:</p>
+<pre><code>//   HIDE DYNAMIC ELEMENTS UNTIL AFTER SCRIPT PROCESSING COMPLETES
+hideDynamic = '&lt;style type="text/css"&gt;';
+hideDynamic += '&lt;!-- #home-intro, #browse {visibility: hidden;} --&gt;&lt;/style&gt;';
+document.write(hideDynamic);
+
+function showDynamic() {
+  document.getElementById('home-intro').style.visibility = 'visible';
+  document.getElementById('browse').style.visibility = 'visible';
+}
+
+//   FLASHOBJECT FUNCTION DEFINITIONS
+
+// ...
+
+//   INIT - TO BE RUN ONLOAD
+
+function init(){
+
+  var fo = new FlashObject("intro.swf", "flash-home", "546", "314", 6);
+  fo.addParam("menu", "false");
+  fo.write("home-intro");
+
+  showDynamic();
+}
+
+window.onload=init;
+</code></pre>
+<p>found this to both be a fully accessible approach, and much cleaner than embedding scripts into the markup.</p>
+<p>Anyway, I thought it might be useful to someone, even if you don’t decide to involve it with FO proper.</p>
+<p>Cheers.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3525">
+			<cite>
+				<span class="author"><a href='http://www.markme.com/jd/archives/007923.cfm' rel='external nofollow' class='url'>JD on MX</a></span>
+				<span class="date">06/16/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p><strong>Browser OBJECT support</strong><br />
+Browser OBJECT support: A few months back Geoff Stearns offered a handling for helping W3C validators not barf on realworld browsers&#8217; plugin markup (ie, use only OBJECT, no EMBED). What I didn&#8217;t know until today was that the comments to his post went&#8230;</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3531">
+			<cite>
+				<span class="author">diskgrinder</span>
+				<span class="date">06/20/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>I had a nasty surprise &#8211; Safari: if the user has flash installed, but has chosen to disable plug-ins then the user doesn&#8217;t see anything &#8211; the alternative content is not displayed. The detect script is not broken, it is reporting that, yes, flash <i>is</i> installed, but it doesn&#8217;t detect whether it&#8217;s enabled.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3532">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com/' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">06/20/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>That problem popped up a while back, and as far as I can tell, there is no way to determine if the user has Flash installed but has it disabled. In my opinion, this is a bug in Safari. The browser should alter the <code>navigator.plugins</code> array when you disable a plugin.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3534">
+			<cite>
+				<span class="author"><a href='http://www.delfox.com' rel='external nofollow' class='url'>grossebaf</a></span>
+				<span class="date">06/20/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Starting from the W3C validator, i spent the night reading on embedding flash files, from Satay to everything existing around. Now Geoff&#8217;s FlashObject will be inserted in all my projects. Congratulations and sincere thanks.<br />
+Hmm&#8230; what could be in the &#8220;but&#8221; ? Maybe 6ko and a .js file more, but what do you want for nothing, this is the price for a good flash detector, isn&#8217;t it ?<br />
+Satay is also very tempting, naked, straight and fast. I think i will use it sometimes, in complement of FlashObject.</p>
+<p>Some comments on the files you provide in your flashobject1-1.zip :<br />
+- the &#8220;?dodetect=false&#8221; is still present instead of the &#8220;?detectflash=false&#8221; in the html files.<br />
+- why not include a simple addParam line (like quality or wmode) just as an example in the main flashobject.html file ? (I&#8217;ve been stucked for a while with &#8216;fo.addVariable(&#8220;wmode&#8221;, &#8220;transparent&#8221;);&#8217;. Yes, the bed was walking to me at this moment&#8230;).</p>
+<p>And finally, why not create an official URL for flashobject.js that everyone can link to, without copying the file for every project, always relying on latest updated file, probably making you more famous than you are and all kind of things everyone can imagine that let you earn all the money that you diserves, sport cars, champaign and women.</p>
+<p>FlashObject successfully operating on latest versions of Opera, IE and Firefox under WinXP. Not a scoop&#8230;</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3535">
+			<cite>
+				<span class="author"><a href='http://www.jasia.net' rel='external nofollow' class='url'>trixienolix</a></span>
+				<span class="date">06/20/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Hey, thanks for the script it has been very useful. One thing I don&#8217;t understand is this: if my alternate content contains lots of images (e.g. a nav with rollover images).. do these get loaded even if the user has flash installed? or does the flash user only have to load the flash? Apologies if there is an obvious answer.. i&#8217;m not very techy<br />
+thanks</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3536">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">06/20/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Well, I think of you place the js function to replace the alternate content just below it, then the browser won&#8217;t have a chance to load the alternate content, and the images won&#8217;t get loaded&#8230; But I haven&#8217;t tested this extensively, and different browsers might behave differently. If anyone wants to run some tests, I would be very interested in the results.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3537">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">06/20/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>grossebaf, </p>
+<p>Thanks, I&#8217;ll see if I can get all that stuff cleared up.</p>
+<p>As for a single URL for the flashobject.js file &#8211; I would rather not do that&#8230; There are potentially thousands of people using the script, so the strain on my server would be something to consider, and if for some reason my server was down, all their Flash content would stop working.</p>
+<p>I would suggest checking back to this post every once in a while to check for updates, or subscribe to my RSS feed to see when/if I release updates to it.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3545">
+			<cite>
+				<span class="author"><a href='http://www.senton-media.com/clientarea/lbia/template.htm' rel='external nofollow' class='url'>BorkBoy</a></span>
+				<span class="date">06/22/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Hello! </p>
+<p>I may well be being a little stupid here but i&#8217;m having a problem trying to put more than one flash object in the page at the same time. i need this page to validate XHTML 1.0 Transitional and it&#8217;s not happy about using the same ID tag more than once (id=&#8221;flashcontent&#8221;). i&#8217;ve tried taking one of them out and changing it&#8217;s name but it drops one of the flash objects when displayed in the browser. </p>
+<p>If i&#8217;m missing something obvious then sorry but i really need the help.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3546">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">06/22/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>You need to give each div a unique ID and then use that ID when you write the flash content to the page.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3547">
+			<cite>
+				<span class="author">Das</span>
+				<span class="date">06/22/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Great script although I am experiencing an unusual problem&#8230;</p>
+<p>I have used the script within a php page to automatically fill in the navigation. Each element within the navigation is a small swf file where name and url parameters are passed. Using IE, before the swf objects are cached, many of the flash files don&#8217;t load properly until it gets some way down the navigation elements. Pushing &#8216;refresh&#8217; fixes the problem and the problem doesn&#8217;t seem to exist with Firefox at all. To reproduce the problem I clear out the temp files then reload the page.</p>
+<p>I have placed a sample of the problem at <a href="http://www.dsol.com.au/test" rel="nofollow">http://www.dsol.com.au/test</a></p>
+<p>Does anyone have any idea what is causing this and how to fix it? It&#8217;s been driving me crazy for days trying to figure it out.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3549">
+			<cite>
+				<span class="author"><a href='http://jaminhegeman.com' rel='external nofollow' class='url'>Jamin</a></span>
+				<span class="date">06/23/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>First, well done. I like your work.</p>
+<p>However, for Internet Explorer 6 on XP, I&#8217;m getting a Flash of the content that is to be replaced a second before the Flash object is embedded. Is this a known issue?</p>
+<p><a href="http://xserve.umc.pitt.edu:16080/development/philosophy/site/index.html">Example</a></p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3550">
+			<cite>
+				<span class="author">Das</span>
+				<span class="date">06/24/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>I finally found an &#8216;almost&#8217; workable solution to my problem mentioned above and it may help anyone else who needs to load in multiple instances of their movie files.</p>
+<p>First of all I should outline what the problem appeared to be (please correct me if I have not explained the process):-</p>
+<p>In IE6 and FlashPlayer 7, each Flash movie is loaded directly into memory as it loads in the page. If the movies are all different there is no problem because the FlashPlayer merely loads each according to its specification. If, however, the movie is duplicated then the FlashPlayer appears to start loading the movie while the rest of the page loads. When it receives the next command to load the same movie with different parameters, it uses the progress of the first movie as its starting point and, importantly, leaves the original movie in limbo. This continues through all the instances of the movie until the movie is finally loaded completely. Once it is loaded in one of the instances, all subsequent instances load properly but the original unloaded movies stay unloaded.</p>
+<p>You most likely wont see this occur on your local test machine because it will load the movie file quickly. Online the download speed is much slower and this is where the problem shows itself. Make sure you delete all instances of the movie from your temporary files cache before each test as the page will simply use the cached version and not show the problem.</p>
+<p>To correct this, the FlashPlayer needs a fully loaded instance of the movie before it will load the multiple instances correctly. To control this a dummy instance of the movie is placed in a hidden div block at the top of the page. Then the javascript window.onLoad call is used to activate all the movie instances after the page has finished loading.</p>
+<p>The only problem with this solution is that the divs containing the instances of the movie during the loading process need to be hidden, then made visible in the window.onLoad call. If the viewer doesn&#8217;t have javascript turned on in their browser then the non-flash alternative will also remain hidden.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3552">
+			<cite>
+				<span class="author"><a href='http://jaminhegeman.com' rel='external nofollow' class='url'>Jamin</a></span>
+				<span class="date">06/24/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>I figured out why for IE6/Win it was displaying my alternate content before replacing it and rendering the Flash. I&#8217;m importing my CSS file, and apparently this is a problem. Here&#8217;s an <a href="http://xserve.umc.pitt.edu:16080/development/philosophy/site/flashtest.html">example</a>.</p>
+<p>When I link the CSS file or write the CSS directly on the page, the FlashObject embed works perfectly in IE. But, unfortunately, I don&#8217;t want to do this, because I don&#8217;t want older browsers choking on my CSS. I&#8217;d rather they get nothing.</p>
+<p>Do you think this is just some strange IE bug? Is there any hope that the FlashObject method can be modified to correct this? Or is my only hope to detect the browser with JS and then link my CSS file if it&#8217;s a modern browser?</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3553">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">06/24/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Hmm, it sounds like it might be related to the <a href="http://www.bluerobot.com/web/css/fouc.asp" rel="external">FOUC bug</a> in IE. The way that I work around that bug is to add all &#8216;normal&#8217; css files using import, and then add in a print stylesheet using the <code>link</code> tag. This way you avoid the old browsers showing messed up css and IE won&#8217;t do the FOUC.</p>
+<p>BUT, I did look at the FOUC page, and it said that a single <code>script</code> element in the head will prevent it, and it looks like you are embedding the FlashObject script in the head? So I&#8217;m not sure. Maybe you found a completely new issue.</p>
+<p>Anyway, if you want to try this fix: import all your stylesheets as you normally would, then add one more stylesheet and link it as a &#8216;print&#8217; stylesheet &#8211; check the link to the FOUC page for an example.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3581">
+			<cite>
+				<span class="author"><a href='http://jaminhegeman.com' rel='external nofollow' class='url'>Jamin</a></span>
+				<span class="date">06/27/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>I added a link to my print style sheet, and that fixed the problem. It&#8217;s one of the last things I add to the site, so I didn&#8217;t have it in there yet. Though I would not have thought that not having it was the solution for IE. So thanks.</p>
+<p>I didn&#8217;t consider the FOUC bug because of the script elements I have in the head. Typically, that works. But apparently not so for the FlashObject solution.</p>
+<p>Thanks for your help.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3611">
+			<cite>
+				<span class="author"><a href='http://mcwilliamsworld.com' rel='external nofollow' class='url'>Jon-Paul</a></span>
+				<span class="date">06/28/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Wow!  Thank you so much!  I LOVE this script, it&#8217;s so simple and it does everything I need.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3613">
+			<cite>
+				<span class="author"><a href='http://www.ilovett.com' rel='external nofollow' class='url'>Bill Lovett</a></span>
+				<span class="date">06/28/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>In your changelog for v1, you mentioned that you took away the codebase attribute in October 04 because the flash tag wouldn&#8217;t get written in the first place if IE wasn&#8217;t already good to go. Consider putting codebase back in. There is at least one case where IE can have flash installed and pass flash detection, yet not display the content unless the codebase has been set. Not sure how it happened, but I have seen it happen.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3615">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">06/28/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>The codebase attribute is only used by the browser if you don&#8217;t have the plugin installed and the browser tries to find the files it needs for the plugin. It has nothing to do with actually displaying the Flash content if the user already has the plugin.</p>
+<p>Since the script doesn&#8217;t write the object tag to the page if there is no plugin detected, the browser would never use the codebase attribute to locate the missing plugin.</p>
+<p>If you have any examples of bugs or problems specifically with the FlashObject script, please post a link or e-mail me the files so I can test them out.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3620">
+			<cite>
+				<span class="author"><a href='http://www.mikeindustries.com/blog/' rel='external nofollow' class='url'>Mike D.</a></span>
+				<span class="date">06/28/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Geoff: I haven&#8217;t gone through all of the new comments in this thread since the last time I looked at it a couple of months ago, but with regards to the &#8220;caching&#8221; problem noted above by Das, it sounds eerily similar to something we ran into with sIFR where in some installs of IE, the replacements would basically happen too quickly thus crapping out and sometimes hanging the browser.  The way around this (and a small handful of other timing-related bugs in both IE and Safari) is to call your function from another function using a setTimeout of any value.  Even zero works.  I use &#8220;1&#8243; because I just can&#8217;t get myself to write a setTimeout function and wait &#8220;zero milliseconds&#8221;&#8230; just feels wrong.</p>
+<p>Anyway, that fixed the problem when it cropped up in a sIFR beta release a few months ago, so it may also fix this.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3627">
+			<cite>
+				<span class="author"><a href='http://www.dsol.com.au' rel='external nofollow' class='url'>Das</a></span>
+				<span class="date">06/28/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Thanks for your suggestions Mike.</p>
+<p>I had originally used setTimeout() and it appeared to work OK for small numbers of flash elements (about eight or so). When the number of elements increased it didn&#8217;t actually fix the problem ( see <a href="http://www.dsol.com.au/test/index02.php" rel="nofollow">http://www.dsol.com.au/test/index02.php</a> ).<br />
+Also, it was difficult to control the timing of the non-flash components. The test page listed hides the flash divs and then makes them visible after the page loads. But the setTimer doesn&#8217;t activate until after the page has loaded and so the results can be ugly if the non-flash content is visually different from the flash content.<br />
+Do you have any examples of how you used setTimer() to solve your problem?</p>
+<p>By the way, I should point out that this problem exists no matter how you place the flash content in the page &#8211; it isn&#8217;t a problem with Geoff&#8217;s script.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3767">
+			<cite>
+				<span class="author">diego</span>
+				<span class="date">07/05/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>thanks for the code, it was very helpful.<br />
+but I have a question about an issue I couldn&#8217;t resolve.<br />
+how can I do to pass new parameters to the swf movie when I resize the browser?<br />
+I want to change the dimension of the swf when I resize the window.<br />
+thank in advance.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3787">
+			<cite>
+				<span class="author">Jason Liske</span>
+				<span class="date">07/06/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Can someone email me with the detractors of using this: </p>
+<pre><code>
+   &lt;object data="index.swf" type="application/x-shockwave-flash" width="633" height="395" hspace="0" vspace="0"&gt;
+                        &lt;param name="movie" value="index.swf" /&gt;
+                        &lt;img src="../../images/getflash.gif" alt="flash" width="633" height="395" hspace="0" vspace="0" /&gt;
+                      &lt;/param&gt;</code></pre>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3805">
+			<cite>
+				<span class="author"><a href='http://www.intuitiveye.com/' rel='external nofollow' class='url'>David Frey</a></span>
+				<span class="date">07/07/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>I have been using <a href="http://www.aplus.co.yu/adxmenu/intro/">ADxMenu</a> with FlashObject and encountered the same layering problems that have already been mentioned. My work-around is slightly different in that I&#8217;ve added a couple of simple attributes to the JS code. Which tests fine in the latest versions of Firefox, IE, and Opera (Windows). The warning about Safari and Flash 6 is an acceptable margin of error for me in my situation.</p>
+<p>Added to the end of the flashHTML += &#8216;&lt;embed ..&#8217; line inside the FOP.getHTML function:</p>
+<p><code>wmode="transparent"</code></p>
+<p>Added to PC IE architecture inside the FOP.getHTML function:</p>
+<p><code>flashHTML += '&lt;param name="wmode" value="transparent" /&gt;';</code></p>
+<p>Now my ADxMenu drop-downs float on top of the Flash movie using CSS z-index.</p>
+<p><a href="http://www.intuitiveye.com/experiments/flashobject.js">Source Code Changes</a></p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3824">
+			<cite>
+				<span class="author"><a href='http://blogs.tamtam.nl/xander/PermaLink.aspx?guid=930bd4ca-5697-4638-a2b8-2af3ec92a378' rel='external nofollow' class='url'>Xander's Blog</a></span>
+				<span class="date">07/08/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p><strong>It&#8217;s a way of embedding flash into xhtml</strong></p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3825">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">07/08/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Jason,<br />
+There are a few things I don&#8217;t like about using just an object tag like that &#8211; read this post and the <a href="http://blog.deconcept.com/2004/10/14/web-standards-compliant-javascript-flash-detect-and-embed/">previous one</a>, as they both discuss the problems with each type of embed.</p>
+<p>David, you can set the <code>wmode</code> parameter without editing the js file&#8230;</p>
+<p>Just use: <code>fo.addParam("wmode", "transparent");</code></p>
+<p>That way you can pick which movies are transparent and those which shouldn&#8217;t be.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3908">
+			<cite>
+				<span class="author"><a href='http://blogs.tamtam.nl/xander/PermaLink.aspx?guid=930bd4ca-5697-4638-a2b8-2af3ec92a378' rel='external nofollow' class='url'>Xander's Blog</a></span>
+				<span class="date">07/15/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p><strong>How to Embed flash into xhtml, this could be a way of doing it</strong></p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3930">
+			<cite>
+				<span class="author"><a href='http://www.arkitrave.com/log/' rel='external nofollow' class='url'>Eric</a></span>
+				<span class="date">07/19/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>This appears to break in Netscape 7/8. I have it working in Firefox (which I thought was the same engine as N8&#8230;) and IE. In Netscape, I get the broken puzzle instead of the alternate content. I have a div with a paragrpah containing an image as my alternate content, and the script tags immediately below. The script looks like this:</p>
+<pre>
+&lt;script type="text/javascript"&gt;
+// &lt;![CDATA[
+var fo = new FlashObject("/us/swf/75LogoAnim.swf?from=homepage", "fp_animation", "162", "188", 6, "#eee");
+fo.addVariable("flashVarText", "this is passed in via FlashVars");
+fo.write("fp_logo");
+// ]]&gt;
+&lt;/script&gt;
+</pre>
+<p>Apologies if this is something simple I&#8217;ve overlooked&#8230;I&#8217;m really quite incompetent with Flash.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3931">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">07/19/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Eric,</p>
+<p>That is very odd that it displays the puzzle piece. That means that the FlashObject script found the correct plugin in the browser&#8217;s plugin array and wrote the object/embed tag out but then the browser couldn&#8217;t find a plugin to load the swf.</p>
+<p>Are you sure you have the Flash player installed correctly on each browser you are using? Netscape 7 and 8 are very different browsers. Netscape 8 can switch between IE rendering mode and Gecko rendering mode, so be sure that if you installed a plugin, that plugin is installed for each browser.</p>
+<p>I just downloaded Netscape 7 and 8 on my test PC, and both of them work fine on my example page. Does my example page work for you?</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3940">
+			<cite>
+				<span class="author"><a href='http://www.arkitrave.com/log/' rel='external nofollow' class='url'>Eric</a></span>
+				<span class="date">07/21/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>No, the sample page is broken as well. In fact, all your high profile projects do the same thing. What I&#8217;m actually getting, though, is a broken quicktime icon now (I can&#8217;t remember what I had a few days ago). This is with Flash NOT INSTALLED&#8230;so it should be going to the alternate content. I&#8217;m sorry to be confusing &#8211; I&#8217;m sure I was getting the puzzle piece when I wrote the first message, but now it&#8217;s just the broken page Q icon. When I install Flash, I get the Flash movie, it&#8217;s only when I don&#8217;t have Flash installed that it breaks.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3947">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com/' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">07/23/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>Hmm, I&#8217;m still convinced that it&#8217;s something specific to your install. Most likely the browser thinks the Flash player is still there even though you have removed it.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+			<li id="comment-3953">
+			<cite>
+				<span class="author"><a href='http://blog.deconcept.com/' rel='external nofollow' class='url'>Geoff</a></span>
+				<span class="date">07/24/2005</span>
+				<span class="edit"></span>
+			</cite>
+			<div class="content">
+								<p>This page refers to an old version of the FlashObject script. For questions or comments, or to download the script, please refer to the <a href="http://blog.deconcept.com/flashobject/">permanent home of the FlashObject script</a>.</p>
+<p>If you have questions or comments, you may post them on <a href="http://blog.deconcept.com/2005/07/24/flashobject-1-2/">this entry</a>.</p>
+			</div>
+			<div class="clear"></div>
+		</li>
+
+
+	
+	
+	</ol>
+
+ 
+
+			
+					</div>
+	</div>
+<hr class="hide" />
+	<div id="ancillary">
+		<div class="inside">
+			<div class="block first" style='margin:0;'>
+							</div>
+			
+			<div class="block">
+							</div>
+			
+			<div class="block">
+							</div>
+			
+			<div class="clear"></div>
+		</div>
+	</div>
+	<!-- [END] #ancillary -->	<div id="footer">
+		<div class="inside">
+			<p class="attributes"><a href="feed:http://blog.deconcept.com/feed/">Entries RSS</a> <a href="feed:http://blog.deconcept.com/comments/feed/">Comments RSS</a></p>
+		</div>
+	</div>
+	<!-- [END] #footer -->	
+
+	<!-- 13 queries. 0.855 seconds. -->
+	
+<!-- google analytics tracking code -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-69777-1");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+</div>
+</body>
+</html>

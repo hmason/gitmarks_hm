@@ -1,0 +1,903 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+
+	<title>AJAX: Usable Interactivity with Remote Scripting</title>
+
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="robots" content="all" />
+
+	<meta name="description" content="Remote Scripting, more sensationally known as AJAX, enables slick and powerful interactivity by making on-the-fly server requests without page reloads. But with this power comes the potential for usability nightmares."/>
+	<link rel="shortcut icon" href="/favicon.ico" />
+	<link rel="search" type="application/opensearchdescription+xml" title="SitePoint Search" href="http://search.sitepoint.com/opensearch.xml"/>
+	<link rel="alternate" type="application/rss+xml" title="RSS - Articles" href="http://www.sitepoint.com/recent.rdf" />
+	<link rel="alternate" type="application/rss+xml" title="RSS - News" href="http://www.sitepoint.com/blogs/category/news/feed/" />
+	<link rel="alternate" type="application/rss+xml" title="RSS - Blogs" href="http://www.sitepoint.com/blogs.rdf" />
+	<link rel="alternate" type="application/rss+xml" title="RSS - Forums" href="http://www.sitepoint.com/forums/featured.rdf" />
+	<link rel="alternate" type="application/rss+xml" title="RSS - Books" href="http://www.sitepoint.com/books.rdf" />
+
+	<link rel="apple-touch-icon" href="http://1.sitepointstatic.com/images/icons/apple-touch-icon.png" />
+
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+	<script type="text/javascript" src="http://partner.googleadservices.com/gampad/google_service.js"></script><script type="text/javascript">GS_googleAddAdSenseService("ca-pub-9603645151104616"); GS_googleEnableAllServices(); </script><script type="text/javascript">GA_googleAddSlot("ca-pub-9603645151104616", "Articles_5_728x90"); GA_googleAddSlot("ca-pub-9603645151104616", "Articles_6_300x250"); GA_googleAddSlot("ca-pub-9603645151104616", "Articles_9a_300x100"); GA_googleAddSlot("ca-pub-9603645151104616", "Articles_9b_300x100"); GA_googleAddSlot("ca-pub-9603645151104616", "Articles_160x600_SkyScraper"); GA_googleAddSlot("ca-pub-9603645151104616", "Articles_300x250_2"); </script><script type="text/javascript">GA_googleFetchAds(); </script><link rel="stylesheet" href="http://1.sitepointstatic.com/bundle/standard.css,format.css,tabs-v5.css,cart.css,print.css?v=2.0.37" media="all" type="text/css" />
+<link rel="stylesheet" href="http://1.sitepointstatic.com/css3/structure.css?v=2.0.37" media="all" type="text/css" />
+<link rel="stylesheet" href="/static/articles/styles/article.css?v=2.0.37" media="screen,projection,print" type="text/css" />
+<link rel="stylesheet" href="http://i2.sitepoint.com/css2/promobar.css?v=2.0.37" media="all" type="text/css" />
+<!--[if lt IE 8]><link rel="stylesheet" href="http://1.sitepointstatic.com/css3/ie.css?v=2.0.37" media="screen,projection" type="text/css" /><![endif]-->
+<!--[if lt IE 7]><link rel="stylesheet" href="http://1.sitepointstatic.com/css3/ie6.css?v=2.0.37" media="screen,projection" type="text/css" /><![endif]-->
+</head>
+<body>
+<!--[if gte IE 8]><!-->
+
+
+<script type="text/javascript" src="http://sitepointstatic.com/frontpage/scripts/promobar.js"></script>
+<!--<![endif]--><script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script type="text/javascript">
+var SPMetrics_options = {
+	'original_referrer': document.referrer,
+	'context': 'articles',
+	'category': 'JavaScript & Ajax Tutorials',
+	'group': 6
+};
+</script>
+<script src="http://metrics.aws.sitepoint.com/bouncer" type="text/javascript"></script>
+<div id="header">
+	<p>
+		<a href="http://www.sitepoint.com"><span></span>SitePoint</a>
+	</p>
+
+	<!-- Search -->
+
+	<form method="get" action="http://search.sitepoint.com" id="search">
+	<div>
+
+		<label for="mainsearchbox">Search Site</label>
+		<input id="mainsearchbox" type="text" name="q" value="" class="tbox" />
+		<input type="submit" value="Search" name="submit" class="button" />
+		<ul id="searchlinks">
+		<li><a href="http://search.sitepoint.com">Advanced Search</a></li>
+		<li><a href="http://www.sitepoint.com/sitemap">Sitemap</a></li>
+
+		</ul>
+	</div>
+	</form>
+
+</div>
+
+
+
+<!-- /Search -->
+  <!-- navigation bar -->
+  <div id="navcontainer">
+
+	<ul id="navlist">
+		
+		<li><a id="tabz" title="The best place to begin your SitePoint session" href="http://www.sitepoint.com/">Home</a></li>
+		<li><a id="taba" title="SitePoint&#8217;s renowned web development training products" href="http://products.sitepoint.com/">Products</a></li>
+		<li><a id="tabb" title="SitePoint&#8217;s renowned web development training courses" href="http://courses.sitepoint.com/">Courses</a></li>
+		<li><a accesskey="6" id="tabc" title="Our friendly, vibrant and well-informed community" href="http://www.sitepoint.com/forums/">Forums</a></li>
+		<li><a id="tabd" title="Daily comment across a range of web subjects by some of the top experts in their field" href="http://www.sitepoint.com/blogs/">Blogs</a></li>
+		<li><a id="tabe" title="Weekly podcast with news and commentary for professional web developers and designers" href="http://www.sitepoint.com/podcast/">Podcast</a></li>
+		<li><a id="tabf" title="One of the web&#8217;s largest repositories of &#8217;web know-how&#8217;" class="active" href="http://articles.sitepoint.com/">Articles</a></li>
+		<li><a accesskey="9" id="tabg" title="The Web&#8217;s most complete and up-to-date reference" href="http://reference.sitepoint.com/">Reference</a></li>
+		<li><a id="tabh" title="Buy and sell goods and services in one of the world&#8217;s largest web communities" href="http://marketplace.sitepoint.com/">Marketplace</a></li>
+		<li><a id="tabi" title="The place to go for help with anything to do with SitePoint" href="http://www.sitepoint.com/help/">Help</a></li>
+	</ul>
+
+<!-- reload -->
+	</div>
+
+<!-- /nav  -->
+
+<div id="content"  class="clearfix">
+	
+<div id="banner">
+<div id="adTopBanner1"><script type="text/javascript">GA_googleFillSlot("Articles_5_728x90");</script></div>
+</div>
+
+
+<div id="maincontent">
+<!-- *********  Start maincontent ******** -->
+<div id="flow" class="column">
+	<div id="tab">
+		<div class="wrap" >
+			<h3 class="main-type">Article</h3>
+			
+			<a name="content" class="nomargin"></a>
+                        			            <!-- Crumb trail -->
+            <div class="crumb">
+                                                            <a href="http://www.sitepoint.com/">Home</a>
+                                                                &raquo;
+                                                                                <a href="/category/client-side-coding">Client-side Coding</a>
+                                                                &raquo;
+                                                                                <a href="/category/javascript">JavaScript & Ajax Tutorials</a>
+                                                                &raquo;
+                                                                                AJAX: Usable Interactivity with Remote Scripting                                                                    </div>
+            <!-- End Crumb trail -->
+			<div id="topcontrols">
+  <div id="tools">
+    <span id="hiliteon"><a href="javascript:highlighton();" class="sublink" title="Highlight the searched text">Highlight On</a></span>
+    <span id="hiliteoff"><a href="javascript:highlightoff();" class="sublink" title="Switch the highlighted text off">Highlight Off</a></span>
+    <a class="printicon" href="/print/remote-scripting-ajax" title="Print-Friendly version">Print</a>
+
+    <a class="emailicon" href="/email/remote-scripting-ajax" onclick="acpopup(this.href,'console',450,280);return false;" title="Launch a window to send this article to a Friend">Email</a>
+  </div>
+</div>
+
+			<div id="article_content">
+	<div id="articlesidebar">
+				<div class="featureimage">
+							<img src="http://sitepointstatic.com/graphics/ajax.gif" alt="SitePoint Feature Article" />
+					</div>
+                                                                            <div id="relatedarticles">
+                                    <div class="boxes">
+                                            <h4>Related Articles</h4>
+                                            <ol>
+                                                                                                                                                            <li>
+                                                            <a href="/article/create-pop-up-notes-dhtml">
+                                                                    Create Pop-Up Notes with DHTML                                                            </a>
+                                                            <br />
+                                                            <span class="subtext">Rated: <em>9/10</em></span>
+                                                    </li>
+                                                                                                                                                            <li>
+                                                            <a href="/article/painless-javascript-prototype">
+                                                                    Painless JavaScript Using Prototype                                                            </a>
+                                                            <br />
+                                                            <span class="subtext">Rated: <em>9.5/10</em></span>
+                                                    </li>
+                                                                                                                                                            <li>
+                                                            <a href="/article/dhtml-utopia-modern-web-design">
+                                                                    DHTML Utopia: Modern Web Design Using JavaScript & DOM                                                            </a>
+                                                            <br />
+                                                            <span class="subtext">Rated: <em>9.5/10</em></span>
+                                                    </li>
+                                                                                                                                                            <li>
+                                                            <a href="/article/take-command-ajax">
+                                                                    Take Command with Ajax                                                            </a>
+                                                            <br />
+                                                            <span class="subtext">Rated: <em>9/10</em></span>
+                                                    </li>
+                                                                                                                                                            <li>
+                                                            <a href="/article/ruby-on-rails">
+                                                                    Get On Track with Ruby on Rails                                                            </a>
+                                                            <br />
+                                                            <span class="subtext">Rated: <em>9/10</em></span>
+                                                    </li>
+                                                                                                                                                    </ol>
+                                    </div>
+                            </div>
+                    			
+                    
+    <div id="bio">
+                        <div class="boxes">
+                        <h3>About the Author</h3>
+                        <h4>Cameron Adams</h4>
+                        <p>
+                                <img
+                                        height="50"
+                                        width="50"
+                                        alt="author_cameronadams"
+                                        src="http://sitepointstatic.com/graphics/author_cameron_adams.jpg"
+                                />
+                                Cameron has been adding to the Internet for over seven years and now runs his own design and development business: <a class="sublink" href="http://www.themaninblue.com">www.themaninblue.com</a>. He likes to combine the aesthetic with the technological on his <a class="sublink" href="http://www.themaninblue.com/writing/">Weblog</a>, which contains equal parts of JavaScript, design and CSS. 
+							    <p>
+									<a href="http://www.sitepoint.com/articlelist/412">View all articles by Cameron Adams...</a>
+							    </p>
+
+                        </p>
+                </div>
+            </div>
+		
+	</div> 
+	<h1>AJAX: Usable Interactivity with Remote Scripting</h1>
+	
+		<div class="articledetail">
+						<h4>By <a href="http://www.sitepoint.com/articlelist/412" title="Find out more about this author">Cameron Adams</a></h4>
+			<p class="date">
+					July 13th, 2005			</p>
+			<p class="date">
+				Reader Rating: 9			</p>
+										<p class="date">Page:
+																		<span class="thispage">1</span>
+																								<a class="pagenavtop" href="/article/remote-scripting-ajax/2">2</a>
+																								<a class="pagenavtop" href="/article/remote-scripting-ajax/3">3</a>
+																						<a class="nextlink" href="/article/remote-scripting-ajax/2">Next</a>
+									</p>
+					</div>
+	
+
+	
+<p><strong>If your bookmarks contain even one Web development blog, you'll undoubtedly know that remote scripting is being touted as the new &quot;future of the Web&quot;. </strong></p>
+
+<p>Although I get the feeling that a few people are perhaps a little over-excited about it, the recent release of numerous high-profile Web applications that use remote scripting has shown that there are definite advantages to utilising these techniques in the creation of seamless Web applications, and to augment Web page functionality.</p>
+
+<p>This article aims to give you an introduction to the foundations of remote scripting, in particular, the emerging XMLHttpRequest protocol. We'll then walk through an example application that demonstrates how to implement that protocol, while creating a usable interface. </p>
+
+<p>To begin, <a class="sublink" href="http://www.sitepoint.com/examples/scripting/remotescriptexamples.zip">download the code archive</a>, which contains all the files you'll need to create the working examples presented here.</p>
+
+<h5>What Is Remote Scripting?</h5>
+
+
+
+<p>Essentially, remote scripting allows client-side JavaScript to request data from a server without having to refresh the Web page. That's it. Everything else that goes into making a seamless Web application draws upon the established methods of manipulating the Document Object Model. This might be something as simple as creating a list of words to select from, as per <a class="sublink" href="http://www.google.com/webhp?complete=1">Google Suggest</a>. Or it could involve the creation of an entire interface for navigating and zooming map images, like that at <a class="sublink" href="http://map.search.ch/">map.search.ch</a>.</p>
+<div id="adz" class="vertical"><script type="text/javascript">GA_googleFillSlot("Articles_6_300x250");</script></div>
+<p>However, along with the ability to create new Web experiences, remote scripting gives us the ability to make new unusable Web experiences. Remote scripting and seamless applications bring with them a host of problems from the desktop application design realm, making those same issues possible on the Web. It's your duty to ensure that your remote scripting interfaces address those issues, and give your users the best possible experience they can get.</p>
+
+<h5>Remote Scripting and Accessibility</h5>
+
+
+
+<p>As with any online application or Web page, we must always take into consideration the needs of users. Some users may have browsers that lack JavaScript capabilities, or, even if they can execute JavaScript, they may not have remote scripting capabilities.</p>
+
+<p>It's a generally accepted best practice that JavaScript interaction and remote scripting functions add on to the basic functionality of Web-based content: the content must still be accessible and usable without these technologies. In the case of fully fledged Web applications, it may be acceptable to provide an entirely different system for users who don't have JavaScript or remote scripting capabilities. The team at <a class="sublink" href="http://www.gmail.com/">GMail</a> recently implemented a non-JavaScript, alternative interface to the service.</p>
+
+<h5>Remote Scripting Using XMLHttpRequest</h5>
+
+
+
+<p>Although XMLHttpRequest is <em>not</em> a public standard, most modern browsers implement it consistently, and it's well on its way to becoming a de facto standard for JavaScript data retrieval. Internet Explorer 5 for Windows, Mozilla 1.0, Safari 1.2 and the upcoming version 8.0 of Opera all introduce XMLHttpRequest as an available object. </p>
+
+<p><a class="sublink" href="http://msdn.microsoft.com/library/en-us/xmlsdk/html/xmobjpmexmlhttprequest.asp">The Internet Explorer XMLHttpRequest API</a> is available for download.</p>
+
+<p>You can also <a class="sublink" href="http://unstable.elemental.com/mozilla/build/latest/mozilla/extensions/dox/interfacensIXMLHttpRequest.html">download the Mozilla documentation</a>.</p>
+
+<p>If you require support for browsers that are older than these, methods using <a class="sublink" href="http://developer.apple.com/internet/webcontent/iframe.html">iframes</a> provide a viable solution; however, coding for these browsers will also limit your ability to utilize standard JavaScript DOM methods. This article will focus on the more contemporary XMLHttpRequest method.</p>
+
+<h5>Creating an XMLHttpRequest Object</h5>
+
+
+
+<p>For any browser, except Internet Explorer, we can create an XMLHttpRequest object like this:</p>
+
+<p><code>var requester = new XMLHttpRequest();</code></p>
+
+<p>However, in Internet Explorer, XMLHttpRequest is implemented as an ActiveX object. For IE, an object is created like this:</p>
+
+<p><code>var requester = new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;);</code></p>
+
+<p><em>Note: this also means that if users have ActiveX objects disabled in Internet Explorer, they will be unable to use XMLHttpRequest even if JavaScript is enabled.</em></p>
+
+<p>To cope with the differences in object creation syntax used by these browsers, it's best to use a try/catch structure to automatically provide you with the correct object, or return an error if the XMLHttpRequest object is not available:</p>
+
+<p><code>try <br />
+{ <br />
+ &nbsp;var requester = new XMLHttpRequest(); <br />
+} <br />
+catch (error) <br />
+{ <br />
+ &nbsp;try <br />
+ &nbsp;{ <br />
+ &nbsp; &nbsp;var requester = new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;); <br />
+ &nbsp;} <br />
+ &nbsp;catch (error) <br />
+ &nbsp;{ <br />
+ &nbsp; &nbsp;return false; <br />
+ &nbsp;} <br />
+}</code></p>
+
+<p>Thankfully, the difference between implementations ends there, and all subsequent method calls to the XMLHttpRequest object can be performed irrespective of which browser the script's running in.</p>
+
+<h5>Transporting Data using an XMLHttpRequest Object</h5>
+
+
+
+<p>Once an XMLHttpRequest object has been created, we must call two separate methods in order to get it to retrieve data from a server.</p>
+
+<p><code>open()</code> initialises the connection we wish to make, and takes two arguments, with several optionals. The first argument is the type of request we want to send; the second argument identifies the location from which we wish to request data. For instance, if we wanted to use a <code>GET</code> request to access feed.xml at the root of our server, we'd initialise the XMLHttpRequest object like this:</p>
+
+<p><code>requester.open(&quot;GET&quot;, &quot;/feed.xml&quot;);</code></p>
+
+<p>The URL can be either relative or absolute, but due to cross-domain security concerns, the target must reside on the same domain as the page that requests it.</p>
+
+<p>The <code>open()</code> method also takes an optional third boolean argument that specifies whether the request is made asynchronously (<code>true</code>, the default) or synchronously (<code>false</code>). With a synchronous request, the browser will freeze, disallowing any user interaction, until the object has completed. An asynchronous request occurs in the background, allowing other scripts to run and letting the user continue to access their browser. It's recommended that you use asynchronous requests; otherwise, we run the risk of a user's browser locking up while they wait for a request that went awry. <code>open()</code>'s optional fourth and fifth arguments are a username and password for authentication when accessing a password-protected URL.</p>
+
+<p>Once <code>open()</code> has been used to initialise a connection, the <code>send() </code> method activates the connection and makes the request. <code>send()</code> takes one argument, allowing us to send extra data, such as CGI variables, along with the call. Internet Explorer treats it as optional, but Mozilla will return an error if no value is passed, so it's safest to call it using:</p>
+
+<p><code>requester.send(null);</code></p>
+
+<p>To send CGI variables using the GET request method, we have to hardcode the variables into the <code>open()</code> URL:</p>
+
+<p><code>requester.open(&quot;GET&quot;, &quot;/query.cgi?name=Bob&amp;email=bob@example.com&quot;); <br />
+requester.send(null);</code></p>
+
+<p>To send CGI variables using the POST request method, the CGI variables can be passed to the <code>send()</code> method like so:</p>
+
+<p><code>requester.open(&quot;POST&quot;, &quot;/query.cgi&quot;); <br />
+requester.send(&quot;name=Bob&amp;email=bob@example.com&quot;);</code></p>
+
+<p>Once we've called <code>send()</code>, XMLHttpRequest will contact the server and retrieve the data we requested; however, this process takes an indeterminate amount of time. In order to find out when the object has finished retrieving data, we must use an event listener. In the case of an XMLHttpRequest object, we need to listen for changes in its <code>readyState</code> variable. This variable specifies the status of the object's connection, and can be any of the following:</p>
+
+<p><ul>
+	<li><code>0</code> – Uninitialised</li>
+	<li><code>1</code> – Loading</li>
+	<li><code>2</code> – Loaded</li>
+	<li><code>3</code> – Interactive</li>
+	<li><code>4</code> – Completed</li>
+</ul>
+</p>
+
+<p>Changes in the readyState variable can be monitored using a special onreadystatechange listener, so we'll need to set up a function to handle the event when the <code>readyState</code> is changed:</p>
+
+<p><code>requester.onreadystatechange = stateHandler;</code></p>
+
+<p><code>readyState</code> increments from 0 to 4, and the <code>onreadystatechange</code> event is triggered for each increment, but we really only want to know when the connection has completed (<code>4</code>), so our handling function needs to realise this. Upon the connection's completion, we also have to check whether the XMLHttpRequest object successfully retrieved the data, or was given an error code, such as 404: &quot;Page not found&quot;. This can be determined from the object's status property, which contains an integer code. &quot;200&quot; denotes a successful completion, but this value can be any of the HTTP codes that servers may return. If the request was not successful, we must specify a course of action for our program:</p>
+
+<p><code>function stateHandler() <br />
+{ <br />
+ &nbsp;if (requester.readyState == 4) <br />
+ &nbsp;{ <br />
+ &nbsp;if (requester.status == 200) <br />
+ &nbsp;{ <br />
+ &nbsp; &nbsp;success(); <br />
+ &nbsp;} <br />
+ &nbsp;else <br />
+ &nbsp;{ <br />
+ &nbsp; &nbsp;failure(); <br />
+ &nbsp;} <br />
+} <br />
+ <br />
+return true; <br />
+}</code></p>
+
+<p>Even though the XMLHttpRequest object allows us to call the <code>open()</code> method multiple times, each object can really only be used for one call, as the <code>onreadystatechange</code> event doesn't update again once <code>readyState</code> changes to &quot;4&quot; (in Mozilla). Therefore, we have to create a new XMLHttpRequest object every time we want to make a remote call.</p>
+
+<h5>Parsing the Data in an XMLHttpRequest Object</h5>
+
+
+
+<p>If we've made a successful request, two properties of the XMLHttpRequest object may contain data:</p>
+
+<p><ul>
+	<li><code>responseXML</code> stores a DOM-structured object of any XML data that was retrieved by the object. This object is navigable using the standard JavaScript DOM access methods and properties, such as <code>getElementsByTagName()</code>, <code>childNodes[ ]</code> and <code>parentNode</code>.</li>
+	<li><code>responseText</code> stores the data as one complete string. If the content type of the data supplied by the server was text/plain or text/html, then this is the only property that will contain data. A copy of any text/xml data will be flattened and placed here as an alternative to <code>responseXML</code>.</li>
+</ul>
+</p>
+
+<p>Depending upon the complexity of the data, it may be easier to return data simply as a plain text string, thereby making the XML in XMLHttpRequest redundant. However, for more complex data types, you'll probably want to use an XML format, such as this:<br />
+ <br />
+<code>&lt;?xml version=&quot;1.0&quot; ?&gt; <br />
+&lt;user&gt; <br />
+ &nbsp; &nbsp; &nbsp; &nbsp;&lt;name&gt;John Smith&lt;/name&gt; <br />
+ &nbsp; &nbsp; &nbsp; &nbsp;&lt;email&gt;john@smith.com&lt;/email&gt; <br />
+&lt;/user&gt;</code></p>
+
+<p>We are able to access different parts of the data using standard DOM access methods. Remember that data contained between tags is considered to represent child text nodes of the parent, so we have to take that extra layer of structure into account when we retrieve the data:</p>
+
+<p><code>var nameNode = requester.responseXML.getElementsByTagName(&quot;name&quot;)[0]; <br />
+var nameTextNode = nameNode.childNodes[0]; <br />
+var name = nameTextNode.nodeValue;</code></p>
+
+<p>We must also be careful about whitespace: indenting values in the XML file may produce unwanted whitespace in the value, or add additional text nodes.</p>
+
+<p>Once we've parsed the data from the XMLHttpRequest object, we're free to change, delete and write it onto our Web page as we see fit!</p>
+
+<h5>An Example Remote Scripting Application</h5>
+
+
+
+<p>In order to demonstrate how to use the XMLHttpRequest protocol inside a remote scripting application, I've created a simple, one-page example. It assumes that JavaScript and XMLHttpRequest are available in order to make the code more readable, but in any real-world application, you should always check that XMLHttpRequest is available and have a fallback (i.e. normal form submission) where it is not.</p>
+
+<p>The example application will allow the user to send a free ecard to a friend's email address. To do this, the user has first to enter a receipt number, which they received when they purchased goods previously, and which has since been stored in the database of ExampleCo. Then, the user must complete the remaining fields before the ecard is sent, entering the recipient's email address, the message, and the graphic image that will be used for the card:</p>
+
+<p><img src="http://sitepointstatic.com/graphics/ajax2-a.gif"  height="797" width="464" alt="1482_figure1" /></p>
+
+<p>Remote scripting is used for three actions in this example, to:<br />
+<ul>
+	<li>Minimise the waiting time for validation of the receipt number</li>
+	<li>Automate the entry of retrieved data into the form once a receipt number has been validated</li>
+	<li>Re-write the contents of the page once the ecard has been sent successfully</li>
+</ul>
+</p>
+
+<p>Along with these actions, the example contains JavaScript, which validates the other form fields before submission, and allows the user to select an ecard graphic. </p>
+
+<p>The example has been created in two separate versions. The first of these versions demonstrates the implementation of the XMLHttpRequest protocol inside an application, but it contains several less-than-desirable usability problems. These problems are tackled in the second example, which aims to highlight some of the issues that can be encountered as you move from a page-based application model towards a more dynamic and interactive environment.</p>
+
+<p>
+				<div id="bottompagenav" class="pagenav">
+			<span>Go to page:</span>
+												<span class="thispage">1</span>
+																<a href="/article/remote-scripting-ajax/2">2</a>
+																<a href="/article/remote-scripting-ajax/3">3</a>
+														<a class="next" href="/article/remote-scripting-ajax/2">Next</a>
+					</div>
+			<div id="adt">
+		<script type="text/javascript">GA_googleFillSlot("Articles_300x250_2");</script>	</div>
+
+	<div class="clearfix"> </div>
+	<div id="dostuff">
+		<a class="printicon"  href="/print/remote-scripting-ajax">Print-Friendly&nbsp;Version</a>
+
+		<a class="emailicon" href="/email/remote-scripting-ajax" rel="popup|450|450" title="Launch a window to send this article to a Friend">Email&nbsp;to&nbsp;a&nbsp;Friend</a>
+		<a class="articlesuggesticon" href="http://www.sitepoint.com/contact?reason=articlesuggest" title="Tell us which topic you would like to see us publish an article on">Suggest an Article</a>
+		<!--<a class="linkicon" href="/linktothis/1482" rel="popup|450|450" title="Get a code snippet to link to this article">Link to this Article</a>-->
+
+	</div> </div>
+		</div>
+
+					</div><!-- end #tab -->
+</div><!-- end #flow -->
+
+<div id="col1"  class="column">
+<div class="inner">
+
+<div id="most-popular-articles" class="nav">
+<h3>Popular Articles</h3>
+<h4>Most Popular This Month</h4>
+<ol>
+	<li class="navitem-atv">
+		<a href="/article/ajax-screenreaders-work">
+			Ajax and Screenreaders: When Can it Work?		</a>
+	</li>
+	<li class="navitem-atv">
+		<a href="/article/ajax-jquery">
+			Easy Ajax with jQuery		</a>
+	</li>
+	<li class="navitem-atv">
+		<a href="/article/oriented-programming-1">
+			JavaScript Object-Oriented Programming Part 1		</a>
+	</li>
+	<li class="navitem-atv">
+		<a href="/article/adapting-an-interface-for-touch-devices">
+			Adapting an Interface for Touch Devices		</a>
+	</li>
+	<li class="navitem-atv">
+		<a href="/article/server-side-xml-javascript">
+			Read and Display Server-Side XML with JavaScript		</a>
+	</li>
+</ol>
+<p class="wrapright"><a class="next" href="/category/javascript">More Articles</a></p>
+</div>
+<div id="guru-articles" class="nav">
+<h3>Guru Lists</h3>
+
+<h4>So You Want To Be A JavaScript Guru?</h4>
+<p>Try this list, compiled by <a href="http://www.sitepoint.com/forums/member.php?u=91093">Raffles</a></p>
+<ol>
+			<li class="navitem-atv"><a href="/article/simply-javascript">
+			Simply JavaScript: The Three Layers of the Web		</a></li>
+			<li class="navitem-atv"><a href="/article/javascript-from-scratch">
+			Script Smarter: Quality JavaScript from Scratch		</a></li>
+			<li class="navitem-atv"><a href="/article/unobtrusive-javascript">
+			Deck the Halls with Unobtrusive JavaScript		</a></li>
+			<li class="navitem-atv"><a href="/article/remote-scripting-ajax">
+			AJAX: Usable Interactivity with Remote Scripting		</a></li>
+			<li class="navitem-atv"><a href="/article/accessible-javascript">
+			Accessible JavaScript: Beyond the Mouse		</a></li>
+			<li class="navitem-atv"><a href="/article/oriented-programming-1">
+			JavaScript Object-Oriented Programming Part 1		</a></li>
+			<li class="navitem-atv"><a href="/article/oriented-programming-2">
+			JavaScript Object-Oriented Programming Part 2		</a></li>
+	</ol>
+<p class="wrapright"><a class="next" href="http://www.sitepoint.com/gurulists/">More Guru Lists</a></p>
+</div>
+<div class="topics nav">
+<h3>Topics</h3>
+<div id="navitem">
+	<h4>
+		<a href="/category/before-you-code" 
+			title="Steps to be taken in planning your web sites or online applications">
+			Before You Code		</a>
+	</h4>
+		<ul>
+			<li>
+			<a href="/category/hosting" 
+				title="Information regarding selecting a hosting option for your site, and tips about hosting requirements"> 
+					Hosting			</a>
+		</li>
+			<li>
+			<a href="/category/domain-names" 
+				title="How to choose, buy, manage and sell your domain names"> 
+					Domain Names			</a>
+		</li>
+			<li>
+			<a href="/category/site-planning" 
+				title="Strategies and tutorials for planning your web site or online business before you start"> 
+					Site Planning			</a>
+		</li>
+			<li>
+			<a href="/category/legal" 
+				title="Articles covering legal issues in relation to online businesses"> 
+					Legal Issues			</a>
+		</li>
+			<li>
+			<a href="/category/privacy" 
+				title="How to deal with issues such as privacy and trust with regard to your website or web business"> 
+					Privacy and Trust			</a>
+		</li>
+		</ul>
+		<h4>
+		<a href="/category/design-and-layout" 
+			title="Graphic design and web site layout">
+			Design and Layout		</a>
+	</h4>
+		<ul>
+			<li>
+			<a href="/category/usability" 
+				title="Strategies for making sure your websites and user interfaces are easy to use"> 
+					Usability and Information Architecture			</a>
+		</li>
+			<li>
+			<a href="/category/accessibility" 
+				title="Ways that you can make your web design accessible to the largest possible number of viewers"> 
+					Accessibility			</a>
+		</li>
+			<li>
+			<a href="/category/design-principles" 
+				title="Web design guidelines and design principles for building websites"> 
+					Design Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/design-practice" 
+				title="Articles covering graphic and web design practice."> 
+					Design Practice			</a>
+		</li>
+			<li>
+			<a href="/category/design-tips" 
+				title="Tutorials and solutions to common problems in web design and graphic design for the web"> 
+					Design Tips &amp; Tricks			</a>
+		</li>
+			<li>
+			<a href="/category/software-tutorials" 
+				title="Tutorials on using major software packages"> 
+					Software Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/flash" 
+				title="Tutorials for creating graphics, animations and web applications using Macromedia Flash"> 
+					Flash Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/adobe-air" 
+				title="Tutorials for creating cross-platform Rich Internet Applications for the Web and the desktop using Adobe AIR"> 
+					Adobe AIR Tutorials			</a>
+		</li>
+		</ul>
+		<h4>
+		<a href="/category/client-side-coding" 
+			title="Coding for the client side (the browser) using XHTML, JavaScript, CSS">
+			Client-side Coding		</a>
+	</h4>
+		<ul>
+			<li>
+			<a href="/category/html" 
+				title="Articles and tutorials on how to mark up your pages using HTML and XHTML"> 
+					HTML &amp; XHTML Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/javascript" 
+				title="Articles and tutorials on using JavaScript, Ajax and the DOM (Document Object Model)"> 
+					JavaScript &amp; Ajax Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/css" 
+				title="Tutorials and tips on using Cascading Style Sheets (CSS) to style and lay out your web designs"> 
+					CSS Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/xml" 
+				title="In-depth articles explaining the usages of XML-based data, processing it and transforming it using XSL XSLT."> 
+					XML, XSLT &amp; Web Services			</a>
+		</li>
+			<li>
+			<a href="/category/flex" 
+				title="Tutorials on how to build Rich Internet Applications in Adobe Flex"> 
+					Flex Tutorials			</a>
+		</li>
+		</ul>
+		<h4>
+		<a href="/category/server-side-coding" 
+			title="Creating online applications using server side scripts or code">
+			Server-side Coding		</a>
+	</h4>
+		<ul>
+			<li>
+			<a href="/category/asp" 
+				title="Tutorials on using Microsoft's ASP and ASP.NET for creating your online web applications"> 
+					ASP &amp; .NET Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/perl" 
+				title="Tutorials for developing web applications in Perl, and using CGI"> 
+					CGI &amp; Perl Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/java" 
+				title="Creating client-side and server-side applications using Java technology"> 
+					Java and J2EE			</a>
+		</li>
+			<li>
+			<a href="/category/other-technologies" 
+				title="Tutorials on configuring the two most popular web servers, Apache and IIS, for optimum performance"> 
+					Apache &amp; IIS Configuration			</a>
+		</li>
+			<li>
+			<a href="/category/php-news" 
+				title="News on the latest developments in PHP and interviews with some leading figures in PHP application development"> 
+					PHP &amp; MySQL News &amp; Interviews			</a>
+		</li>
+			<li>
+			<a href="/category/php-tutorials" 
+				title="Learn how to create web applications using PHP scripting language and MySQL database server"> 
+					PHP &amp; MySQL Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/php-reviews" 
+				title="Reviews of new or popular PHP and MySQL scripts and applications"> 
+					PHP &amp; MySQL Reviews and Apps			</a>
+		</li>
+			<li>
+			<a href="/category/server-side" 
+				title="Everything you need to know about server-side development in relation to other languages"> 
+					Server Side Essentials			</a>
+		</li>
+			<li>
+			<a href="/category/coldfusion" 
+				title="Tutorials and articles related to building online applications using Adobe ColdFusion"> 
+					ColdFusion Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/ruby" 
+				title="Learn how to create web applications using the object oriented Ruby language and the Ruby On Rails framework"> 
+					Ruby &amp; Rails			</a>
+		</li>
+		</ul>
+		<h4>
+		<a href="/category/site-strategy" 
+			title="Managing a successful website">
+			Site Strategy		</a>
+	</h4>
+		<ul>
+			<li>
+			<a href="/category/community-strategy" 
+				title="Community,Tutorials and views on creating an online community using bulletin boards, forums, chat rooms, and so on"> 
+					Community			</a>
+		</li>
+			<li>
+			<a href="/category/content-strategy" 
+				title="Writing and sourcing quality content for your site"> 
+					Content			</a>
+		</li>
+			<li>
+			<a href="/category/ecommerce-strategy" 
+				title="How to plan, build and manage an ecommerce website and do business on the internet"> 
+					eCommerce			</a>
+		</li>
+		</ul>
+		<h4>
+		<a href="/category/site-marketing" 
+			title="Tips and tutorials on website marketing">
+			Site Marketing		</a>
+	</h4>
+		<ul>
+			<li>
+			<a href="/category/traffic-analysis" 
+				title="Analyze your site statistics to gain a better understanding of the ways in which your visitors are using your web site"> 
+					Traffic Analysis			</a>
+		</li>
+			<li>
+			<a href="/category/searchmarketing" 
+				title="Information about marketing your web site or online business via search engines"> 
+					Search Marketing			</a>
+		</li>
+			<li>
+			<a href="/category/promotions" 
+				title="Deals with techniques to promote your site  outside search engines"> 
+					Other Promotions			</a>
+		</li>
+		</ul>
+		<h4>
+		<a href="/category/sell-your-services" 
+			title="Selling your web design or development services as a freelancer or in a team">
+			Sell Your Services		</a>
+	</h4>
+		<ul>
+			<li>
+			<a href="/category/services-start" 
+				title="Tips and resources for planning to sell services on the web"> 
+					Get Started			</a>
+		</li>
+			<li>
+			<a href="/category/find-clients" 
+				title="Find clients for your online business"> 
+					Find Clients			</a>
+		</li>
+			<li>
+			<a href="/category/work-smarter" 
+				title="Time management and scheduling strategies for web developers"> 
+					Work Smarter			</a>
+		</li>
+		</ul>
+	</div>
+</div>
+
+<div class="nav">
+<h3>SitePoint Jobs</h3>
+<h4>
+»
+<a class="alert" href="http://www.sitepoint.com/about/jobs/"> We're Hiring!</a>
+</h4>
+</div>
+<div class="nav">
+<h3>SitePoint Newsletters</h3>
+<form id="subs" action="/newsletter/manage" method="post">
+	
+	    
+	
+		<p>Get all the latest tips
+			on <strong><em> Advanced Design and Layout </em></strong>
+
+		by signing up to all of SitePoint&rsquo;s informative newsletters.</p>
+		
+	
+	<div style="margin-left: 6px;">
+	
+		<ul style="border:0px none">
+		<li>
+			<input type="hidden" value="subscribe" name="action" />
+			<input type="hidden" value="2" name="refererid" />
+			<input type="checkbox" checked="checked" name="newsletterid[]" value="3" id="checktt" /> <label for="checktt">SitePoint TechTimes</label>
+
+		</li>
+	
+		<li>
+			<input type="checkbox" checked="checked" name="newsletterid[]" value="2" id="checktr" /> <label for="checktr">SitePoint Tribune</label>
+		</li>
+		<li>
+			<input type="checkbox" checked="checked" name="newsletterid[]" value="5" id="checkdv" /> <label for="checkdv">SitePoint Design View</label>
+		</li>
+
+		<li>
+			<input type="checkbox" checked="checked" name="newsletterid[]" value="4" id="checkcc" /> <label for="checkcc">Community Crier</label>
+		</li>
+		</ul>
+	
+	
+	
+		<p><input class="tbox" onfocus="this.value=''" value="Enter Email" name="email" />
+		<input type="submit" value="Subscribe!" name="submit" /></p>
+	
+	
+		<p>
+		<input type="radio" checked="checked" value="html" name="format" id="radiohtml" /> HTML &nbsp;
+
+		 <input type="radio" value="text" name="format" id="radioplain" /> Plain</p>
+	
+	</div>
+</form>
+
+
+<h6 class="wrapcenter tiny"><br />View Our <a href="http://www.sitepoint.com/privacy.php">Privacy
+Policy</a></h6>
+<h6 class="wrapright tiny">
+Sample Our <a href="http://www.sitepoint.com/newsletter/archives">Newsletter Archives</a></h6>
+</div>
+</div> </div> <!-- end .inner -->
+</div>
+<!-- end #col1 -->
+
+<!-- end #maincontent -->
+
+<!-- ***************  Start Column 3 ************   -->
+<div id="col3" class="column">
+   <div class="inner">
+
+<div id="subscribe">
+	<ul>        
+		<li class="nl"><a href="http://www.sitepoint.com/newsletter/">Newsletters</a></li>
+		<li class="tw"><a href="http://twitter.com/sitepointdotcom" rel="nofollow">Twitter</a></li>
+		<li class="mb"><a href="http://m.sitepoint.com/">Mobile</a></li>
+		<li class="pod"><a href="http://www.sitepoint.com/podcast/">Podcast</a></li>
+		<li class="rss"><a href="http://www.sitepoint.com/subscribe/">RSS</a></li>                
+		<li class="fb"><a href="http://www.facebook.com/sitepoint/" rel="nofollow">Facebook</a></li>
+	</ul>
+</div>
+<div id="adcol3any"></div>
+<div id="ad250x250upper"><!-- Filled dynamically by script at end of page --></div>
+<div id="adHTMLFlexible1"><!-- Filled dynamically by script at end of page --></div>
+<div id="ad250x250middle"><!-- Filled dynamically by script at end of page --></div>
+<div id="ad250x250lower"><!-- Filled dynamically by script at end of page --></div>
+
+<div id="adHTMLFlexible2"><!-- Filled dynamically by script at end of page --></div>
+
+<div id="ad125x125left" class="ad125x125"><!-- Filled dynamically by script at end of page --></div>
+<div id="ad125x125right" class="ad125x125"><!-- Filled dynamically by script at end of page --></div>
+<div id="ad120x600left" class="ad120x600"><!-- Filled dynamically by script at end of page --></div>
+<div id="ad120x600right" class="ad120x600"><!-- Filled dynamically by script at end of page --></div>
+
+<div class="nav">
+<h3>Related Forum Discussions</h3>
+<p>
+Related Forum: <strong><a href="http://www.sitepoint.com/forums/forumdisplay.php?f=15">JavaScript</a></strong>
+</p>
+<ol>
+
+	<li><a href="http://www.sitepoint.com/forums/showthread.php?t=719615">problem in selecting second arraylist from mysql database</a></li>
+	<li><a href="http://www.sitepoint.com/forums/showthread.php?t=719605">jsmag</a></li>
+	<li><a href="http://www.sitepoint.com/forums/showthread.php?t=719584">jquery function runs multiple times</a></li>
+	<li><a href="http://www.sitepoint.com/forums/showthread.php?t=719569">Javascript Simple Cookie If</a></li>
+	<li><a href="http://www.sitepoint.com/forums/showthread.php?t=719537">Javascript syntax ?</a></li>
+</ol>
+</div>
+<div class="nav">
+	<h3>Other Articles by Cameron Adams</h3>
+	<p>
+	Cameron Adams's other SitePoint Articles
+	</p>
+	<ul>
+			<li><a href="/article/controlling-styles-with-javascript" > Controlling Styles with JavaScript </a>
+			<li><a href="/article/stripy-tables" > Stripy Tables</a>
+			<li><a href="/article/settimeout-cleartimeout" > setTimeout and clearTimeout</a>
+			<li><a href="/article/animated-accordion" > Animated Accordion</a>
+			<li><a href="/article/ajax-with-xmlhttprequest" > Ajax with XMLHttpRequest</a>
+		</ul>
+</div>
+
+<script type="text/javascript">GA_googleFillSlot("Articles_160x600_SkyScraper");</script>
+</div><!-- end .inner -->
+</div><!-- end #col3 -->
+
+
+	<div id="lowerads">
+			<div id="lowerad1"><script type="text/javascript">GA_googleFillSlot("Articles_9a_300x100");</script></div>
+    	    <div id="lowerad2"><script type="text/javascript">GA_googleFillSlot("Articles_9b_300x100");</script></div>
+    </div>
+
+
+</div>
+
+</div><!-- end content -->
+
+<div id="footer">
+
+<div id="tertiary">
+
+<ul>
+	<li><a href="http://www.sitepoint.com/mediakit">Advertise</a> </li>
+
+	<li><a href="http://www.sitepoint.com/about/">About Us</a> </li>
+	<li><a href="http://www.sitepoint.com/contact">Contact Us</a> </li>
+	<li><a href="http://www.sitepoint.com/sitemap" accesskey="3">Site Map</a> </li>
+	<li><a href="http://www.sitepoint.com/about/writeforus">Write For Us</a> </li>
+	<li><a href="http://www.sitepoint.com/syndication/">RSS</a> </li>
+
+	<li><a href="http://www.sitepoint.com/newsletter/">Newsletters</a> </li>
+	<li><a href="http://www.sitepoint.com/search/search.php" accesskey="4">Search</a> </li>
+	<li><a href="http://www.sitepoint.com/privacy/" accesskey="8">Privacy</a> </li>
+	<li><a href="http://www.sitepoint.com/glossary.php?q=A">Glossary</a> </li>
+	<li><a href="http://www.sitepoint.com/about/terms.php/">Terms &amp; Conditions</a> </li>
+
+	<li><a href="http://www.sitepoint.com/about/jobs/">Jobs</a> </li>
+</ul>
+
+</div>
+<p>The contents of this webpage are copyright &copy; 1998-2010 SitePoint Pty. Ltd. All Rights Reserved.</p>
+
+<div>
+<a href="http://www.sitepoint.com.au"  title="Visit our development site">Web Design &amp; Development by SitePoint, Melbourne, Australia</a> - <a href="http://www.99designs.com" >Logo Design, Web page Design - 99designs.com </a>
+
+</div>
+
+</div><!-- end footer -->
+
+<script src="http://2.sitepointstatic.com/bundle/utilities.js,sortable.js" type="text/javascript"></script>
+<script src="http://2.sitepointstatic.com/js/sitepoint-ref-links.js" type="text/javascript"></script>
+
+
+<script type="text/javascript">
+	var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+	document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+	try{
+		var sitepointTracker = _gat._getTracker("UA-30131-1");
+		sitepointTracker._setDomainName(".sitepoint.com");
+		sitepointTracker._setAllowHash(false);
+		sitepointTracker._setCustomVar(1, "Context", "Articles", 3); 
+		sitepointTracker._trackPageview();
+	} catch(err) {}
+</script>
+
+</body>
+</html>

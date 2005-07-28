@@ -1,0 +1,1418 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Migrate apps from Internet Explorer to Mozilla</title>
+<meta http-equiv="PICS-Label" content='(PICS-1.1 "http://www.icra.org/ratingsv02.html" l gen true r (cz 1 lz 1 nz 1 oz 1 vz 1) "http://www.rsac.org/ratingsv01.html" l gen true r (n 0 s 0 v 0 l 0) "http://www.classify.org/safesurf/" l gen true r (SS~~000 1))'/>
+<link rel="schema.DC" href="http://purl.org/DC/elements/1.0/"/>
+<link rel="SHORTCUT ICON" href="http://www.ibm.com/favicon.ico"/>
+<meta name="Owner" content="developerWorks Content/Raleigh/IBM"/>
+<meta name="DC.Language" scheme="rfc1766" content="en"/>
+<meta name="IBM.Country" content="ZZ"/>
+<meta name="Security" content="Public"/>
+<meta name="IBM.SpecialPurpose" content="SP001"/>
+<meta name="IBM.PageAttributes" content="sid=1003"/>
+<meta name="Source" content="v16 Template Generator"/>
+<meta name="Robots" content="index,follow"/>
+<meta name="Abstract" content="Ever have trouble getting your Internet Explorer-specific Web applications to work with Mozilla? This article covers common issues associated with migrating applications to the open source Mozilla-based browser. You'll first learn basic cross-browser development techniques, and then develop strategies for overcoming the differences between Mozilla and Internet Explorer."/>
+<meta name="Description" content="Ever have trouble getting your Internet Explorer-specific Web applications to work with Mozilla? This article covers common issues associated with migrating applications to the open source Mozilla-based browser. You'll first learn basic cross-browser development techniques, and then develop strategies for overcoming the differences between Mozilla and Internet Explorer."/>
+<meta name="Keywords" content="mozilla, gecko, netscape navigator, firefox, dhtml, Microsoft internet explorer, Doron Rosenberg, DOM, JavaScript, CSS, Cascading Style Sheets, cascading stylesheets, XML, XSLT, tttwaca, tttosca"/>
+<meta name="DC.Date" scheme="iso8601" content="2005-07-26"/>
+<meta name="DC.Type" scheme="IBM_ContentClassTaxonomy" content="CT316"/>
+<meta name="DC.Subject" scheme="IBM_SubjectTaxonomy" content="TTA00"/>
+<meta scheme="IBM_WTMCategory" name="IBM.WTMCategory" content="SOFDCDEVZZ" />
+<meta name="DC.Rights" content="© Copyright IBM Corporation 2005"/>
+<meta name="IBM.Effective" scheme="W3CDTF" content="2005-07-26"/>
+<meta name="title" content="Migrate apps from Internet Explorer to Mozilla"/>
+
+<!-- HEADER_SCRIPTS_AND_CSS_INCLUDE -->
+<link href="//dw1.s81c.com/common/v16/css/all.css" media="all" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/screen.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/screen-uas.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/zz/en/screen-fonts.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/handheld.css" media="handheld" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/print.css" media="print" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/overlay.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+
+<!-- dW-specific CSS -->
+<link href="//dw1.s81c.com/developerworks/css/dw-screen.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/developerworks/css/dw-screen-comments-ratings-signin.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.cluetip.css" media="screen,projection" rel="stylesheet"  title="www" type="text/css" />
+
+<script src="//dw1.s81c.com/common/js/ibmcommon.js" type="text/javascript">//</script>
+<script src="//dw1.s81c.com/common/js/dynamicnav.js" type="text/javascript">//</script>
+
+<!-- dW functional JS -->
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/urltactic.js" type="text/javascript"></script>
+<!-- Rating_START -->
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/artrating/showrating.js" type="text/javascript"></script>
+<style type="text/css">
+.metavalue {
+  display: none;
+}
+</style>
+<!-- Rating_END --><!-- RESERVED_HEADER_INCLUDE -->
+<script language="javascript" src="//dw1.s81c.com/developerworks/js/ajax1.js" type="text/javascript"></script>
+<script language="javascript" src="//dw1.s81c.com/developerworks/js/search_counter-maverick.js" type="text/javascript"></script>
+<script language="javascript" src="//dw1.s81c.com/developerworks/js/request_referer_capture-maverick.js" type="text/javascript"></script>
+<script language="JavaScript" type="text/javascript">
+ <!--
+ setDefaultQuery('');
+ //-->
+</script>
+<script language="JavaScript" type="text/javascript">
+ <!--
+ function openNewWindow(url,tar,arg){window.open(url,tar,arg);}
+ //-->
+</script>
+<!-- Include file support -->
+<script language="JavaScript" type="text/javascript">
+(function($) {
+	jQuery.extend({
+		getInc: function(u,d){
+			if(u==null)return;
+			jQuery.ajax({
+	    		type: "GET",
+			url: u,
+			dataType: "text",
+	        	success: function(t) {
+				jQuery(d).html(t);
+				ibmCommon.initShowHide(jQuery(d).children()[0]);			
+			},
+			async: true
+			});
+		}
+	});
+})(jQuery);
+</script>
+</head>
+
+<body id="ibm-com">
+<div id="ibm-top" class="ibm-landing-page">
+
+<!-- MASTHEAD_BEGIN -->
+<div class="ibm-access"><a href="#ibm-content">Skip to main content</a></div>
+<div id="ibm-masthead">
+<div id="ibm-logo"><a href="http://www.ibm.com/"><img height="50" src="//dw1.s81c.com/i/v16/t/ibm-logo.gif" width="110" alt="IBM®" /></a></div>
+<ul id="ibm-geo"><li id="ibm-country" class="ibm-first">Country/region</li><li id="ibm-change-country">[ <a href="http://www.ibm.com/developerworks/country/">select</a> ]</li></ul>
+  <form id="ibm-search-form" action="//www.ibm.com/developerworks/search/searchResults.jsp" method="get" name="form1"><input type="hidden" name="searchType" value="1"/><input type="hidden" name="searchSite" value="dW"/><p>
+<span id="ibm-search-scope">
+<label for="sn"><img src="//dw1.s81c.com/i/c.gif" width="1" height="1" alt="Search in:"/></label>
+<select name="searchScope" id="sn">
+<option value="dW" selected="selected">All of dW</option>
+<option value="dW">-----------------</option>
+<option value="aixunix">&nbsp;AIX and UNIX</option>
+<option value="db2">&nbsp;Information Mgmt</option>
+<option value="lotus">&nbsp;Lotus</option>
+<option value="rdd">&nbsp;Rational</option>
+<option value="tivoli">&nbsp;Tivoli</option>  
+<option value="WSDD">&nbsp;WebSphere</option>
+<option value="dW">-----------------</option> 
+<option value="javaZ">&nbsp;Java technology</option> 
+<option value="linuxZ">&nbsp;Linux</option> 
+<option value="opensrcZ">&nbsp;Open source</option>
+<option value="webservZ">&nbsp;SOA/Web services</option>
+<option value="webarchZ">&nbsp;Web development</option>  
+<option value="xmlZ">&nbsp;XML</option>
+<option value="dW">-----------------</option>
+<option value="forums">&nbsp;dW forums</option> 
+<option value="dW">-----------------</option>
+<option value="aI">University</option>
+<option value="dW">-----------------</option>
+<option value="aW">alphaWorks</option>
+<option value="dW">-----------------</option>
+<option value="all">All of IBM</option>
+</select>
+</span>
+
+<label for="q"><img alt="Search for:" height="1" width="1" src="//dw1.s81c.com/i/c.gif" /></label><input type="text" name="query" maxlength="100" id="q"/><input type="submit" id="ibm-search" class="ibm-btn-search" name="Search" value="Search" /></p></form>
+<div id="ibm-site-name">
+<!-- IBM site name container -->
+</div>
+<div id="ibm-universal-nav">
+<ul><li id="ibm-unav-home" class="ibm-first"><a href="http://www.ibm.com/">Home</a></li><li id="ibm-unav-solutions"><a href="http://www.ibm.com/solutions/">Solutions</a></li><li id="ibm-unav-services"><a href="http://www.ibm.com/technologyservices/">Services</a></li><li id="ibm-unav-products"><a href="http://www.ibm.com/products/">Products</a></li><li id="ibm-unav-support"><a href="http://www.ibm.com/support/">Support &amp; downloads</a></li><li id="ibm-unav-myibm"><a href="http://www.ibm.com/account/">My IBM</a></li></ul>
+</div>
+</div>
+<!-- MASTHEAD_END -->
+
+<div id="ibm-pcon">
+
+<!-- CONTENT_BEGIN -->
+<div id="ibm-content">
+
+<!-- Navigation_Trail_BEGIN -->
+<!-- &nbsp; -->
+      <div id="ibm-content-head"><ul id="ibm-navigation-trail"><li class="ibm-first"><a href="http://www.ibm.com/developerworks/">developerWorks</a></li><li><a href="http://www.ibm.com/developerworks/web/">Web development</a></li><li><a href="http://www.ibm.com/developerworks/views/web/library.jsp">Technical library</a></li></ul></div>
+<!-- Navigation_Trail_END -->
+
+<!-- dW_Summary Area_START -->
+<div id="dw-summary-article">
+
+<div class="dw-content-head">
+<h1>Migrate apps from Internet Explorer to Mozilla</h1><p><em>How to make Internet Explorer-specific Web applications work in Mozilla-based browsers</em></p>
+</div>
+
+<div class="ibm-container-body ibm-two-column">
+
+<div class="ibm-column ibm-first">
+<div class="author"><a class="dwauthor" rel="#authortip1" href="#author1">Doron Rosenberg</a> (<a href="mailto:doronr@us.ibm.com?subject=Migrate apps from Internet Explorer to Mozilla">doronr@us.ibm.com</a>), Staff Software Engineer, IBM, Software Group</div><div id="authortip1" class="dwauthor-onload-state ibm-no-print">Doron Rosenberg worked previously for Netscape before joining the Browser Development Center at IBM. He has been involved in the Mozilla project for over five years.</div>
+<p></p>
+<p><b>Summary:</b>&nbsp; Ever have trouble getting your Internet Explorer-specific Web applications to work with Mozilla? This article covers common issues associated with migrating applications to the open source Mozilla-based browser. You'll first learn basic cross-browser development techniques, and then develop strategies for overcoming the differences between Mozilla and Internet Explorer.</p>
+
+<div id="dw-tag-content" class="ibm-no-print"></div><div id="dw-moretags-access" class="ibm-access"></div>
+<p class="ibm-no-print"><div id="dw-tag-this" class="ibm-no-print"><a class="ibm-external-link" onclick="jQuery.launchTagThisWindow(); return false;" href="#">Tag this!</a></div><div id="interestShow" class="ibm-no-print"></div></p>
+</div>
+
+<div class="ibm-column ibm-second">
+<p class="leading"><b>Date:</b>&nbsp; 26 Jul  2005
+<br /><b>Level: </b>&nbsp;Introductory
+
+<br /><b>Also available in:&nbsp;</b>
+&nbsp;<a href="http://www.ibm.com/developerworks/cn/web/wa-ie2mozgd/">Chinese</a>
+
+
+
+
+
+
+<br />
+<br /><b>Activity:</b>&nbsp; 36089 views
+<br /><b>Comments:</b> &nbsp; <span id="nCmts"><img alt="" src="//dw1.s81c.com/developerworks/i/circle-preloader.gif" height="12" width="50" /><img alt="" src="//dw1.s81c.com/i/c.gif" height="14" width="1" /></span>
+<!-- Rating_Area_Begin -->
+<div id="art-rating-summary"></div>
+<!-- Rating_Area_End -->
+</p>
+</div>
+
+</div>
+</div>
+<!-- dW_Summary_Area_END -->
+
+<!-- CONTENT_BODY -->
+<div id="ibm-content-body">
+
+<!-- MAIN_COLUMN_BEGIN -->
+<div id="ibm-content-main">
+
+<!-- Related_Searches_Area -->
+<!-- Related_Searches_Area_Begin -->
+<script type="text/javascript" language="javascript">
+	     capture_referrer();
+</script>
+
+<div id="dw-related-searches-article" style="display:none">
+<div class="ibm-container ibm-alternate-two">
+<div class="ibm-container-body">
+
+<!--  START : HTML FOR ARTICLE SEARCH -->
+  <div id="article_results" style="display:block"></div>
+<!--  END : HTML FOR ARTICLE SEARCH -->
+
+</div>
+</div>
+</div>
+<!-- Related_Searches_Area_End -->
+<!-- MAIN_COLUMN_CONTAINER_BEGIN -->
+<div class="ibm-container">
+
+<!-- MAIN_COLUMN_CONTENT_BEGIN -->
+<p> When Netscape started the Mozilla browser, it made the conscious 
+decision to support W3C standards. As a result, Mozilla is not fully 
+backwards-compatible with Netscape Navigator 4.x and Microsoft Internet 
+Explorer legacy code; for example, Mozilla does not support <code>&lt;layer&gt;</code> as I will discuss later. Browsers, 
+like Internet Explorer 4, that were built before the conception of W3C 
+standards inherited many quirks. In this article, I will describe 
+Mozilla's quirks mode, which provides strong backwards HTML compatibility 
+with Internet Explorer and other legacy browsers.</p><p>I'll also cover nonstandard technologies, such as XMLHttpRequest and 
+rich text editing, that Mozilla does support because no W3C equivalent 
+existed at the time. They include:Â </p><ul><li><a href="http://www.w3.org/TR/html401/" target="_new">HTML 4.01</a> and <a href="http://www.w3.org/TR/xhtml1/" target="_new">XHTML 1.0/1.1</a></li><li>Cascade Style Sheets (CSS): <a href="http://www.w3.org/TR/REC-CSS1 " target="_new">CSS Level 1</a>, <a href="http://www.w3.org/TR/REC-CSS2/" target="_new">CSS Level 
+2</a> and parts of <a href="http://www.w3.org/Style/CSS/current-work.html " target="_new">CSS Level 3</a></li><li>Document Object Model (DOM): <a href="http://www.w3.org/TR/2000/WD-DOM-Level-1-20000929/" target="_new">DOM Level 1</a>, 
+<a href="http://www.w3.org/DOM/DOMTR#dom2" target="_new">DOM Level 2</a> and parts of <a href="http://www.w3.org/DOM/DOMTR#dom3" target="_new">DOM Level 3</a></li><li>Mathematical Markup Language: <a href="http://www.w3.org/Math/" target="_new">MathML 
+Version 2.0</a></li><li>Extensible Markup Language (XML): <a href="http://www.w3.org/TR/REC-xml" target="_new">XML 1.0</a>, <a href="http://www.w3.org/TR/REC-xml-names/" target="_new">Namespaces in XML</a>, <a href="http://www.w3.org/TR/xml-stylesheet/" target="_new">Associating Style Sheets with 
+XML Documents 1.0</a>, <a href="http://www.w3.org/TR/2003/NOTE-xml-fragid-20030912/" target="_new">Fragment Identifier for 
+XML</a></li><li>XSL Transformations: <a href="http://www.w3.org/TR/xslt" target="_new">XSLT 
+1.0</a></li><li>XML Path Language: <a href="http://www.w3.org/TR/xpath" target="_new">XPath 
+1.0</a></li><li>Resource Description Framework: <a href="http://www.w3.org/RDF/ " target="_new">RDF</a></li><li>Simple Object Access Protocol: <a href="http://www.w3.org/TR/SOAP/ " target="_new">SOAP 1.1</a></li><li>ECMA-262, revision 3 (JavaScript 1.5): <a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm " target="_new">ECMA</a></li></ul><p><a name="general_xb_coding_tips"><span class="atitle">General cross-browser coding tips</span></a></p><p>Even though Web standards do exist, different browsers behave 
+differently (in fact, the same browser may behave differently depending on 
+the platform). Many browsers, such as Internet Explorer, also support 
+pre-W3C APIs and have never added extensive support for the W3C-compliant 
+ones.</p><p>Before I go into the differences between Mozilla and Internet Explorer, 
+I'll cover some basic ways you can make a Web application extensible in 
+order to add new browser support later.</p><p>Since different browsers sometimes use different APIs for the same 
+functionality, you can often find multiple <code>if() 
+else()</code> blocks throughout the code to differentiate between the 
+browsers. The following code shows blocks designated for Internet 
+Explorer:</p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+. . . 
+
+var elm; 
+
+if (ns4) 
+Â  elm = document.layers["myID"]; 
+else if (ie4) 
+Â  elm = document.all["myID"]; 
+Â </pre></td></tr></table><br /><p> 
+Â  
+</p><p>The above code isn't extensible, so if you want it to support a new 
+browser, you must update these blocks throughout the Web application.</p><p>The easiest way to eliminate the need to recode for a new browser is to 
+abstract out functionality. Rather than multiple <code>if() 
+else()</code> blocks, you increase efficiency by taking common tasks and 
+abstracting them out into their own functions. Not only does this make the 
+code easier to read, it simplifies adding support for new clients:</p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+var elm = getElmById("myID"); 
+
+function getElmById(aID){ 
+Â  var element = null; 
+
+Â  if (isMozilla || isIE5) 
+   Â element = document.getElementById(aID) 
+Â  else if (isNetscape4) 
+Â    element = document.layers[aID] 
+Â  else if (isIE4) 
+Â    element = document.all[aID]; 
+
+Â  return element; 
+} 
+</pre></td></tr></table><br /><p>The above code still has the issue of <i>browser sniffing</i>, or 
+detecting which browser the user is using. Browser sniffing is usually 
+done through the useragent, such as:</p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+Â  Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.5) Gecko/20031016 
+Â  </pre></td></tr></table><br /><p>While using the useragent to sniff the browser provides detailed 
+information on the browser in use, code that handles useragents can make 
+mistakes when new browser versions arrive, thus requiring code 
+changes.</p><p>If the type of browser doesn't matter (suppose that you have 
+already blocked nonsupported browsers from accessing the Web application), it is better to 
+sniff by browser capability. You can usually do this by testing the 
+required functionality in JavaScript. For example, rather than:</p><p> 
+
+Â </p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+Â  Â if (isMozilla || isIE5) 
+Â </pre></td></tr></table><br /><p>You would use:</p><p> 
+
+Â </p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+Â  Â if (document.getElementById) 
+Â </pre></td></tr></table><br /><p>This would allow other browsers that support that method, such as Opera 
+or Safari, to work without any changes.</p><p>Useragent sniffing, however, makes sense when accuracy is important, 
+such as when you're verifying that a browser meets the Web application's 
+version requirements or you are trying to work around a bug.</p><p>JavaScript also allows inline conditional statements, which can help 
+with code readability:</p><p> 
+
+Â </p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+Â  Â var foo = (condition) ? conditionIsTrue : conditionIsFalse; 
+Â </pre></td></tr></table><br /><p>For example, to retrieve an element, you would use:</p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+Â  Â function getElement(aID){ 
+Â     return (document.getElementById) ? document.getElementById(aID)
+                                      : document.all[aID];
+Â  Â } 
+</pre></td></tr></table><br /><div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="html_differences"><span class="atitle">Differences between Mozilla and Internet Explorer</span></a></p><p>First, I'll discuss the differences in the way HTML behaves between 
+Mozilla and Internet Explorer.</p><p><a name="N10107"><span class="smalltitle">Tooltips</span></a></p><p>Legacy browsers introduced tooltips into HTML by showing them on links 
+and using the value of the <code>alt</code> attribute as a 
+tooltip's content.  The latest W3C HTML specification created the
+ <code>title</code> attribute, which is meant to contain a detailed
+description of the link. Modern browsers will use the <code>title</code> attribute
+to display tooltips, and Mozilla only supports showing tooltips for that attribute and not the
+<code>alt</code> attribute.</p><p><a name="N1011E"><span class="smalltitle">Entities</span></a></p><p>HTML markup can contain several entities, which the <a href="http://www.w3.org/TR/REC-html40/sgml/entities.html" target="_new">W3 standards 
+body</a> has defined. You can reference entities through their numerical or 
+character reference. For example, you can reference the white space 
+character #160 with <code>Â </code> or with its 
+equivalent character reference <code>&amp;nbsp;</code>.</p><p>Some older browsers, such as Internet Explorer, had such quirks as 
+allowing you to use entities by replacing the <code>;</code> 
+(semi-colon) character at the end with regular text content:</p><p>
+
+Â </p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+Â  Â &amp;nbsp Foo 
+Â  Â &amp;nbsp&amp;nbsp Foo 
+Â </pre></td></tr></table><br /><p>Mozilla will render the above <code>&amp;nbsp</code> as 
+white spaces, even though that is against the W3C specification. The 
+browser will not parse a <code>&amp;nbsp</code> if it is 
+directly followed by more characters, for example:</p><p> 
+
+Â </p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+Â  &amp;nbsp12345 
+Â </pre></td></tr></table><br /><p>This code does not work in Mozilla, since it is against the W3 standard.  Always use the correct form
+ (<code>&amp;nbsp;</code>) to avoid browser discrepancies.</p><div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="dom_differences"><span class="atitle">DOM 
+differences</span></a></p><p>The Document Object Model (DOM) is the tree structure that contains the 
+document elements. You can manipulate it through JavaScript APIs, which the 
+W3C has standardized. However, prior to W3C standardization, Netscape 4 and Internet Explorer 4 implemented the APIs similarly. Mozilla only 
+implements legacy APIs if they are unachievable with W3C standards.</p><p><a name="N1015E"><span class="smalltitle">Access elements</span></a></p><p>To retrieve an element reference following the cross-browser approach, 
+you use <code>document.getElementById(aID)</code>, which 
+works in Internet Explorer 5.5+, Mozilla, and is part of the DOM Level 1 
+specification.</p><p>Mozilla does not support accessing an element through <code>document.elementName</code> or even through the element's name, 
+which Internet Explorer does (also called <i>global namespace 
+polluting</i>). Mozilla also does not support the Netscape 4 <code>document.layers</code> method and Internet Explorer's <code>document.all</code>. While <code>document.getElementById</code> lets you retrieve one 
+element, you can also use <code>document.layers</code> and 
+<code>document.all</code> to obtain a list of all document 
+elements with a certain tag name, such as all <code>&lt;div&gt;</code> elements.</p><p>The W3C DOM Level 1 method gets references to all elements with the 
+same tag name through <code>getElementsByTagName()</code>. The 
+method returns an array in JavaScript, and can be called on the <code>document</code> element or other nodes to search only their 
+subtree. To get an array of all elements in the DOM tree, you can use 
+<code>getElementsByTagName(*)</code>.</p><p>The DOM Level 1 methods, as shown in Table 1, are commonly used to move 
+an element to a certain position and toggle its visibility (menus, 
+animations). Netscape 4 used the <code>&lt;layer&gt;</code> 
+tag, which Mozilla does not support, as an HTML element that can be 
+positioned anywhere. In Mozilla, you can position any element using the 
+<code>&lt;div&gt;</code> tag, which Internet Explorer uses as well and which you'll 
+find in the HTML specification.</p><br /><a name="table1"><b>Table 1. Methods used to access elements</b></a><br /><table border="0" cellpadding="0" cellspacing="0" class="ibm-data-table" summary="Methods used to access elements" width="100%"><tr><td><b>Method</b></td><td><b>Description</b></td></tr><tr><td>document.getElementById( aId )</td><td>Returns a reference to the element with the specified ID.</td></tr><tr><td>document.getElementsByTagName( aTagName )</td><td>Returns an array of elements with the specified name in the 
+document.</td></tr></table><p><a name="N101BF"><span class="smalltitle">Traverse the DOM</span></a></p><p>Mozilla supports the W3C DOM APIs for traversing the DOM tree through 
+JavaScript (see Table 2). The APIs exist for each node in the document and 
+allow walking the tree in any direction. Internet Explorer supports these 
+APIs as well, but it also supports its legacy APIs for walking a DOM tree, 
+such as the <code>children</code> property.</p><br /><a name="table2"><b>Table 2. Methods used to traverse the DOM</b></a><br /><table border="0" cellpadding="0" cellspacing="0" class="ibm-data-table" summary="Methods used to traverse the DOM" width="100%"><tr><td><b>Property/Method</b></td><td><b>Description</b></td></tr><tr><td>childNodes</td><td>Returns an array of all child nodes of the element.</td></tr><tr><td>firstChild</td><td>Returns the first child node of the element.</td></tr><tr><td>getAttribute( aAttributeName )</td><td>Returns the value for the specified attribute.</td></tr><tr><td>hasAttribute( aAttributeName )</td><td> 
+Â Returns a boolean stating if the current node has an attribute defined with the specified name. 
+Â  </td></tr><tr><td>hasChildNodes()</td><td> 
+Â Returns a boolean stating whether the current node has any child nodes. 
+Â  </td></tr><tr><td>lastChild</td><td>Returns the last child node of the element.</td></tr><tr><td>nextSibling</td><td>Returns the node immediately following the current one.</td></tr><tr><td>nodeName</td><td>Returns the name of the current node as a string.</td></tr><tr><td>nodeType</td><td> 
+Â Returns the type of the current node. 
+
+Â  Â <table class="ibm-data-table"><tr><td>Value</td><td>Description</td></tr><tr><td>1</td><td>Element Node</td></tr><tr><td>2</td><td>Attribute Node</td></tr><tr><td>3</td><td>Text Node</td></tr><tr><td>4</td><td>CDATA Section Node</td></tr><tr><td>5</td><td>Entity Reference Node</td></tr><tr><td>6</td><td>Entity Node</td></tr><tr><td>7</td><td>Processing Instruction Node</td></tr><tr><td>8</td><td>Comment Node</td></tr><tr><td>9</td><td>Document Node</td></tr><tr><td>10</td><td>Document Type Node</td></tr><tr><td>11</td><td>Document Fragment Node</td></tr><tr><td>12</td><td>Notation Node</td></tr></table> 
+
+Â  
+Â  </td></tr><tr><td>nodeValue</td><td>Returns the value of the current node. For nodes that contain text, such 
+as text and comment nodes, it will return their string value. For 
+attribute nodes, the attribute value is returned. For all other nodes, 
+<code>null</code> is returned. Â  </td></tr><tr><td>ownerDocument</td><td>Returns the <code>document</code> object containing 
+the current node.</td></tr><tr><td>parentNode</td><td>Returns the parent node of the current node.</td></tr><tr><td>previousSibling</td><td>Returns the node immediately preceding the current one.</td></tr><tr><td>removeAttribute( aName )</td><td>Removes the specified attribute from the current node.</td></tr><tr><td>setAttribute( aName, aValue )</td><td>Sets the value of the specified attribute with the specified 
+value.</td></tr></table><p>Internet Explorer has a nonstandard quirk, where many of these APIs 
+will skip white space text nodes that are generated, for example, by new 
+line characters. Mozilla will not skip these, so sometimes you need to 
+distinguish these nodes. Every node has a <code>nodeType</code> property specifying the node type. For example, an element node has type 1,  while a text node has type 3 and a comment node is type 8.  The best way to only process element nodes is to iterate over all child nodes and only process those with a nodeType of 1:</p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+Â  HTML: 
+Â    &lt;div id="foo"&gt; 
+Â      &lt;span&gt;Test&lt;/span&gt; 
+Â  c &lt;/div&gt; 
+
+Â  JavaScript: 
+Â    var myDiv = document.getElementById("foo"); 
+Â    var myChildren = myXMLDoc.childNodes; 
+Â    for (var i = 0; i &lt; myChildren.length; i++) { 
+Â  Â    if (myChildren[i].nodeType == 1){ 
+      Â  // element node
+   Â  Â }
+Â    }
+</pre></td></tr></table><br /><p><a name="N1027F"><span class="smalltitle">Generate and manipulate 
+content</span></a></p><p>Mozilla supports the legacy methods for adding content into the DOM 
+dynamically, such as <code>document.write</code>, <code>document.open</code> and <code>document.close</code>. Mozilla also supports Internet 
+Explorer's <code>InnerHTML</code> method, which it can call 
+on almost any node. It does not, however, support <code>OuterHTML</code> (which adds markup around an element, and 
+has no standard equivalent) and <code>innerText</code> 
+(which sets the text value of the node, and which you can achieve in 
+Mozilla by using <code>textContent</code>).</p><p>Internet Explorer has several content manipulation methods that are 
+nonstandard and unsupported in Mozilla, including retrieving the value; 
+inserting text; and inserting elements adjacent to a node, such as <code>getAdjacentElement</code> and <code>insertAdjacentHTML</code>. Table 3 shows how the W3C 
+standard and Mozilla manipulate content, all of which are methods of any 
+DOM node.</p><br /><a name="table3"><b>Table 3. Methods Mozilla uses to manipulate content</b></a><br /><table border="0" cellpadding="0" cellspacing="0" class="ibm-data-table" summary="Methods Mozilla uses to manipulate content" width="100%"><tr><td><b>Method</b></td><td><b>Description</b></td></tr><tr><td>appendChild( aNode )</td><td>Creates a new child node. Returns a reference to the new child 
+node.</td></tr><tr><td>cloneNode( aDeep )</td><td>Makes a copy of the node it is called on and returns the copy. If 
+aDeep is true, it copies over the node's entire subtree.</td></tr><tr><td>createElement( aTagName )</td><td>Creates and returns a new and parentless DOM node of the type 
+specified by aTagName.</td></tr><tr><td>createTextNode( aTextValue )</td><td>Creates and returns a new and parentless DOM textnode with the data 
+value specified by aTextValue.</td></tr><tr><td>insertBefore( aNewNode, aChildNode )</td><td>Inserts aNewNode before aChildNode, which must be a child of the 
+current node.</td></tr><tr><td>removeChild( aChildNode )</td><td>Removes aChildNode and returns a reference to it.</td></tr><tr><td>replaceChild( aNewNode, aChildNode )</td><td>Replaces aChildNode with aNewNode and returns a reference to the 
+removed node.</td></tr></table><p><a name="N102E2"><span class="smalltitle">Document fragments</span></a></p><p>For performance reasons, you can create documents in memory, rather 
+than working on the existing document's DOM. DOM Level 1 Core introduced 
+document fragments, which are lightweight documents that contain a subset 
+of a normal document's interfaces. For example, <code>getElementById</code> does not exist, but <code>appendChild</code> does. You can also easily add document 
+fragments to existing documents.</p><p>Mozilla creates document fragments through <code>document.createDocumentFragment()</code>, which returns an 
+empty document fragment.</p><p>Internet Explorer's implementation of document fragments, however, does 
+not comply with the W3C standard and simply returns a regular document.</p><div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="javascript_differences"><span class="atitle">JavaScript differences</span></a></p><p>Most differences between Mozilla and Internet Explorer are usually 
+blamed on JavaScript. However, the issues usually lie in the APIs that a 
+browser exposes to JavaScript, such as the DOM hooks. The two browsers 
+possess few core JavaScript differences; issues encountered are often 
+timing related.</p><p><a name="N10300"><span class="smalltitle">JavaScript date 
+differences</span></a></p><p>The only <code>Date</code> difference is the <code>getYear</code> method. Per the ECMAScript specification 
+(which is the specification JavaScript follows), the method is not 
+Y2k-compliant, and running <code>new Date().getYear()</code> 
+in 2004 will return "104". Per the ECMAScript specification, <code>getYear</code> returns the year minus 1900, originally meant 
+to return "98" for 1998. 
+<code>getYear</code> was deprecated in ECMAScript Version 3 
+and replaced with <code>getFullYear()</code>. Internet 
+Explorer changed <code>getYear()</code> to work like <code>getFullYear()</code> and make it Y2k-compliant, while 
+Mozilla kept the standard behavior.</p><p><a name="N10327"><span class="smalltitle">JavaScript execution 
+differences</span></a></p><p>Different browsers execute JavaScript differently. For example, the 
+following code assumes that the <code>div</code> node 
+already exists in the DOM by the time the <code>script</code> block executes:</p><p> 
+
+Â </p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+... 
+&lt;div id="foo"&gt;Loading...&lt;/div&gt; 
+
+&lt;script&gt; 
+Â  document.getElementById("foo").innerHTML = "Done."; 
+&lt;/script&gt; 
+Â </pre></td></tr></table><br /><p>However, this is not guaranteed. To be sure that all elements exist, 
+you should use the <code>onload</code> event handler on the 
+<code>&lt;body&gt;</code> tag:</p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+&lt;body onload="doFinish()"&gt; 
+
+&lt;div id="foo"&gt;Loading...&lt;/div&gt; 
+
+&lt;script&gt; 
+Â  function doFinish() { 
+Â    var element = document.getElementById("foo");
+	  element.innerHTML = "Done."; 
+Â  } 
+&lt;/script&gt; 
+... 
+</pre></td></tr></table><br /><p>Such timing-related issues are also hardware-related -- slower systems 
+can reveal bugs that faster systems hide. One concrete example is <code>window.open</code>, which opens a new window:
+Â </p><p> 
+
+Â </p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+&lt;script&gt; 
+Â  function doOpenWindow(){ 
+Â var myWindow = window.open("about:blank"); 
+Â myWindow.location.href = "http://www.ibm.com"; 
+Â  } Â  
+&lt;/script&gt; 
+Â </pre></td></tr></table><br /><p>The problem with the code is that <code>window.open</code> is asynchronous -- it does not block the 
+JavaScript execution until the window has finished loading. Therefore, you 
+may execute the line after the <code>window.open</code> line 
+before the new window has finished. You can deal with this by having an 
+<code>onload</code> handler in the new window and then call 
+back into the opener window (using <code>window.opener</code>).</p><p><a name="N1036A"><span class="smalltitle">Differences in 
+JavaScript-generating HTML</span></a></p><p>JavaScript can, through <code>document.write</code>, generate 
+HTML on the fly from a string. The main issue here is when JavaScript, 
+embedded inside an HTML document (thus, inside an <code>&lt;script&gt;</code> tag), generates HTML that contains a 
+<code>&lt;script&gt;</code> tag. If the document is in <a href="#html_modes">strict rendering mode</a>, it will parse the <code>&lt;/script&gt;</code> inside the string as the closing tag 
+for the enclosing <code>&lt;script&gt;</code>. The following 
+code illustrates this best:</p><p> 
+
+Â </p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+Â  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt; 
+... 
+&lt;script&gt; 
+Â  document.write("&lt;script&gt;alert("Hello")&lt;/script&gt;") 
+&lt;/script&gt; 
+Â </pre></td></tr></table><br /><p>Since the page is in strict mode, Mozilla's parser will see the first 
+<code>&lt;script&gt;</code> and 
+parse until it finds a closing tag for it, which would be the first <code>&lt;/script&gt;</code>. This is 
+because the parser has no knowledge about JavaScript (or any other 
+language) when in strict mode. In quirks mode, the parser is aware of 
+JavaScript when parsing (which slows it down). Internet Explorer is always 
+in quirks mode, as it does not support true XHTML. To make this work in 
+strict mode in Mozilla, separate the string into two parts:Â </p><p> 
+
+Â </p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+Â  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt; 
+... 
+&lt;script&gt; 
+Â  document.write("&lt;script&gt;alert("Hello")&lt;/" + "script&gt;") 
+&lt;/script&gt; 
+Â </pre></td></tr></table><br /><p><a name="N103AD"><span class="smalltitle">Debug JavaScript</span></a></p><p>Mozilla provides several ways to debug JavaScript-related issues found 
+in applications created for Internet Explorer. The first tool is the 
+built-in JavaScript console, shown in Figure 1, where errors and warnings 
+are logged. You can access it in Mozilla by going to <b>Tools -&gt; Web Development -&gt; JavaScript Console</b>, or in Firefox (the standalone browser product from Mozilla) at <b>Tools -&gt; JavaScript Console</b>.</p><br /><a name="fig1"><b>Figure 1. JavaScript console</b></a><br /><img alt="JavaScript  console" height="300" src="jsconsole.jpg" width="599"/><br /><p>The JavaScript console can show the full log list or just 
+errors, warnings, and messages. The error message in Figure 1 says that at 
+aol.com, line 95 tries to access an undefined variable called is_ns70. 
+Clicking on the link will open Mozilla's internal view source window with 
+the offending line highlighted.</p><p>The console also allows you to evaluate JavaScript. To evaluate the entered JavaScript syntax, type in <code>1+1</code> into the input field and press <b>Evaluate</b>, as Figure 2 shows.</p><br /><a name="fig2"><b>Figure 2. JavaScript console evaluating</b></a><br /><img alt="JavaScript console evaluating" height="300" src="jsconsole-eval.jpg" width="599"/><br /><p>Mozilla's JavaScript engine has built-in support for debugging, and 
+thus can provide powerful tools for JavaScript developers. Venkman, shown 
+in Figure 3, is a powerful, cross-platform JavaScript debugger that 
+integrates with Mozilla. It is usually bundled with Mozilla releases; you 
+can find it at <b>Tools -&gt; Web Development -&gt; JavaScript 
+Debugger</b>. For Firefox, the debugger isn't bundled; instead, you can 
+download and install it from <a href="http://www.mozilla.org/projects/venkman/ " target="_new">http://www.mozilla.org/projects/venkman/</a>. You can also find 
+tutorials at the development page, located at <a href="http://www.hacksrus.com/~ginda/venkman/ " target="_new">http://www.hacksrus.com/~ginda/venkman/</a>.</p><br /><a name="fig3"><b>Figure 3. Mozilla's JavaScript debugger</b></a><br /><img alt="Mozilla's  JavaScript debugger" height="437" src="venkman.jpg" width="600"/><br /><p>The JavaScript debugger can debug JavaScript running in the Mozilla 
+browser window. It supports such standard debugging features as breakpoint 
+management, call stack inspection, and variable/object inspection. All 
+features are accessible through the user interface or through the debugger's 
+interactive console. With the console, you al can execute arbitrary 
+JavaScript in the same scope as the JavaScript currently being debugged.</p><div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="css_differences"><span class="atitle">CSS 
+differences</span></a></p><p>Mozilla has the strongest support for Cascading Style Sheets (CSS), 
+including most of CSS1, CSS2, and parts of CSS3, compared to Internet Explorer as well as 
+all other browsers.</p><p>For most issues mentioned below, Mozilla will add an error or warning 
+entry into the JavaScript console. Check the JavaScript console if you encounter CSS-related issues.</p><p><a name="N10406"><span class="smalltitle">Mimetypes (when CSS files are 
+not applied)</span></a></p><p>The most common CSS-related issue is that CSS definitions inside 
+referenced CSS files are not applied. This is usually due to the server 
+sending the wrong mimetype for the CSS file. The CSS specification states 
+that CSS files should be served with the <code>text/css</code> mimetype. Mozilla will respect this and only 
+load CSS files with that mimetype if the Web page is in strict standards 
+mode. Internet Explorer will always load the CSS file, no matter with 
+which mimetype it is served. Web pages are considered in strict standards 
+mode when they start with a strict doctype. To solve this problem, you can 
+make the server send the right mimetype or remove the doctype. I'll 
+discuss more about doctypes in the next section.</p><p><a name="N10411"><span class="smalltitle">CSS and units</span></a></p><p>Many Web applications do not use units with their CSS, especially when 
+you use JavaScript to set the CSS. Mozilla tolerates this, as long as the 
+page is not rendered in strict mode. Since Internet Explorer doesn't 
+support true XHTML, it does not care if no units are specified. If the 
+page is in strict standards mode, and no units are used, then Mozilla 
+ignores the style: </p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt; 
+&lt;html&gt; 
+  &lt;body&gt; 
+    // works in strict mode 
+Â    &lt;div style="width:40<strong>px</strong>; border:1px solid black;"&gt;
+      Text
+    &lt;/div&gt;
+
+    // will fail in strict mode 
+         &lt;div style="width:40; border:1px solid black;"&gt;
+                  Text
+         &lt;/div&gt;
+  &lt;/body&gt; 
+&lt;/html&gt; 
+</pre></td></tr></table><br /><p>Since the above example has a strict doctype, the page is rendered in 
+strict standards mode. The first div will have a width of 40px, since it 
+uses units, but the second div won't get a width, and thus will default to 
+100% width. The same would apply if the width were set through JavaScript.</p><p><a name="N10421"><span class="smalltitle">JavaScript and CSS</span></a></p><p>Since Mozilla supports the CSS standards, it also supports the CSS DOM 
+standard for setting CSS through JavaScript. You can access, remove, and 
+change an element's CSS rules through the element's <code>style</code> member: </p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+&lt;div id="myDiv" border:1px solid black;"&gt;
+  Text
+&lt;/div&gt; 
+
+&lt;script&gt; 
+  var myElm = document.getElementById("myDiv"); 
+Â  myElm.style.width = "40px"; 
+&lt;/script&gt; 
+</pre></td></tr></table><br /><p>You can reach every CSS attribute that way. Again, if the Web page is in strict mode, you must set a unit or else Mozilla will ignore the command.</p><p> 
+Â  
+</p><p>When you query a value, say through <code>.style.width</code>, 
+in Mozilla and Internet Explorer, the returned value will contain the 
+unit, meaning a string is returned. You can convert the string into a 
+number through <code>parseFloat("40px")</code>.</p><p><a name="N1043F"><span class="smalltitle">CSS overflow 
+differences</span></a></p><p>CSS added the notion of overflow, which allows you to define how to 
+handle overflow; for example, when the contents of a <code>div</code> with a specified height are taller than that 
+height. The CSS standard defines that if no overflow behavior is set in 
+this case, the <code>div</code> contents will overflow. 
+However, Internet Explorer does not comply with this, and will expand the 
+<code>div</code> beyond its set height in order to hold the 
+contents. Below is an example that shows this difference:</p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+&lt;div style="height:100px; border: 1px solid black;"&gt; 
+  &lt;div style="height:150px; border: 1px solid red; 
+                 margin:10px;"&gt;
+    a
+  &lt;/div&gt; 
+&lt;/div&gt; 
+</pre></td></tr></table><br /><p>As you can see in Figure 4, Mozilla acts like the standard specifies. 
+The standard says that in this case, the inner <code>div</code> overflows to the bottom since the inner content 
+is taller than it's parent. If you prefer the Internet Explorer behavior, simply don't 
+specify a height on the outer element.</p><br /><a name="N1045D"><b>Figure 4. DIV overflow</b></a><br /><img alt="DIV  overflow" height="358" src="overflow.jpg" width="468"/><br /><p><a name="N10469"><span class="smalltitle">hover differences</span></a></p><p>The nonstandard CSS hover behavior in Internet Explorer occurs on quite 
+a few IBM Web sites. It usually manifests itself by changing text style 
+when hovered over in Mozilla, but not in Internet Explorer. This is because the <code>a:hover</code> CSS selector in Internet Explorer matches 
+<code>&lt;a href="" /&gt;</code> but not <code>&lt;a name="" /&gt;</code>, which sets anchors in HTML. The 
+text changes occur because authors encapsulate the areas with the 
+anchor-setting markup:</p><p> 
+
+Â </p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+Â CSS: 
+a:hover {color:green;} 
+
+Â HTML: 
+&lt;a href="foo.com"&gt;This should turn green when you hover over it.&lt;/a&gt; 
+
+&lt;a name="anchor-name"&gt; 
+Â  This should change color when hovered over, but doesn't 
+   in Internet Explorer. 
+&lt;/a&gt; 
+Â </pre></td></tr></table><br /><p>Mozilla follows the CSS specification correctly and will change the 
+color to green in this example. You can use two ways to make Mozilla behave 
+like Internet Explorer and not change the color of the text when hovered 
+over:</p><ul><li>First, you can change the CSS rule to be <code>a:link:hover {color:green;}</code>, which will only change 
+the color if the element is a link (has an <code>href</code> 
+attribute).</li><li> Alternatively, you can change the markup and close the opened 
+<code>&lt;a /&gt;</code> before the start of the text -- the 
+anchor will continue to work this way.</li></ul><div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="html_modes"><span class="atitle">Quirks versus standards 
+mode</span></a></p><p>Older legacy browsers, such as Internet Explorer 4, rendered with so-called quirks 
+under certain conditions. While Mozilla aims to be a standards-compliant 
+browser, it has three modes that support older Web pages created with 
+these quirky behaviors. The page's content and delivery determine which 
+mode Mozilla will use. Mozilla will list the rendered mode in <b>View -&gt; Page Info</b> (or Ctrl-i). The mode in which a page is located depends on its doctype.</p><p> 
+
+Â </p><p>Doctypes (short for document type declarations) look like this:</p><p><code> &lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd"&gt;</code></p><p>The section in blue is called the public identifier, the green part is 
+the system identifier, which is a URI.</p><p><a name="N104B2"><span class="smalltitle">Standards mode</span></a></p><p>Standards mode is the strictest rendering mode -- it will render pages 
+per the W3C HTML and CSS specifications and will not support any quirks. 
+Mozilla uses it for the following conditions:</p><ul><li>If a page is sent with a <code>text/xml</code> mimetype 
+or any other XML or XHTML mimetype</li><li>For any "DOCTYPE HTML SYSTEM" doctype (for example, <code>&lt;!DOCTYPE HTML SYSTEM 
+"http://www.w3.org/TR/REC-html40/strict.dtd"&gt;</code>), except for the IBM 
+doctype</li><li>For unknown doctypes or doctypes without DTDs</li></ul><p><a name="N104C8"><span class="smalltitle">Almost standards mode</span></a></p><p>Mozilla introduced almost standards mode for one reason: a section in 
+the CSS 2 specification breaks designs based on a precise layout of small 
+images in table cells. Instead of forming one image to the user, each 
+small image ends up with a gap next to it. The old IBM homepage shown in 
+Figure 5 offers an example.</p><br /><a name="N104D0"><b>Figure 5. Image gap</b></a><br /><img alt="Image gap" height="215" src="imagegap.jpg" width="482"/><br /><p>Almost standards mode behaves almost exactly as standards mode, except 
+when it comes to an image gap issue. The issue occurs often on 
+standards-compliant pages and causes them to display incorrectly.</p><p>Mozilla uses almost standards mode for the following conditions:</p><ul><li>For any "loose" doctype (for example, <code>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 
+Transitional//EN"&gt;</code>, <code>&lt;!DOCTYPE HTML PUBLIC 
+"-//W3C//DTD HTML 4.01 Transitional//EN" 
+"http://www.w3.org/TR/html4/loose.dtd"&gt;</code>)</li><li>For the IBM doctype (<code>&lt;!DOCTYPE html SYSTEM 
+"http://www.ibm.com/data/dtd/v11/ibmxhtml1-transitional.dtd"&gt;</code>)</li></ul><p>You can read more about the <a href="http://developer-test.mozilla.org/en/docs/Images%2C_Tables%2C_and_Mysterious_Gaps" target="_new">image gap issue</a>.</p><p><a name="N104F8"><span class="smalltitle">Quirks mode</span></a></p><p>Currently, the Web is full of invalid HTML markup, as well as markup 
+that only functions due to bugs in browsers. The old Netscape browsers, 
+when they were the market leaders, had bugs. When Internet Explorer 
+arrived, it mimicked those bugs in order to work with the content at that 
+time. As newer browsers came to market, most of these original bugs, 
+usually called <b>quirks</b>, were kept for backwards compatibility. 
+Mozilla supports many of these in its quirks rendering mode. Note that due 
+to these quirks, pages will render slower than if they were fully 
+standards-compliant. Most Web pages are rendered under this mode.</p><p>Mozilla uses quirks mode for the following conditions:</p><ul><li>When no doctype is specified</li><li>For doctypes without a system identifier (for example, <code>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 
+Transitional//EN"&gt;</code>)</li></ul><p>For further reading, check out: <a href="http://www.mozilla.org/docs/web-developer/quirks/quirklist.html " target="_new">List of Quirks</a> and <a href="http://www.mozilla.org/docs/web-developer/quirks/doctypes.html" target="_new">List 
+of Doctypes and What Modes They Cause</a>. 
+Â </p><div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="event_differences"><span class="atitle">Event 
+differences</span></a></p><p>Mozilla and Internet Explorer are almost completely different in the 
+area of events. The Mozilla event model follows the W3C and Netscape 
+model. In Internet Explorer, if a function is called from an event, it can 
+access the <code>event</code> object through <code>window.event</code>. Mozilla passes an <code>event</code> object to event handlers. They must specifically pass 
+the object on to the function called through an argument. A cross-browser 
+event handling example follows:</p><p> 
+
+Â </p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+Â &lt;div onclick="handleEvent(<strong>event</strong>)"&gt;Click me!&lt;/div&gt; 
+
+Â &lt;script&gt; 
+function handleEvent(<strong>aEvent</strong>){ 
+Â  // if aEvent is null, means the Internet Explorer event model, 
+  // so get window.event. 
+Â  var myEvent = aEvent ? aEvent : window.event; 
+} Â  
+Â &lt;/script&gt; 
+Â </pre></td></tr></table><br /><p>The properties and functions that the event object exposes are also 
+often named differently between Mozilla and Internet Explorer, as Table 4 shows. 
+Â </p><br /><a name="table4"><b>Table 4. Event properties differences between Mozilla and Internet 
+Explorer</b></a><br /><table border="0" cellpadding="0" cellspacing="0" class="ibm-data-table" summary="Event properties differences between Mozilla and Internet Explorer" width="100%"><tr><td><b>Internet Explorer Name</b></td><td><b>Mozilla Name</b></td><td><b>Description</b></td></tr><tr><td>altKey</td><td>altKey</td><td>Boolean property that returns whether the alt key was pressed during 
+the event.</td></tr><tr><td>cancelBubble</td><td>stopPropagation()</td><td>Used to stop the event from bubbling farther up the tree.</td></tr><tr><td>clientX</td><td>clientX</td><td>The X coordinate of the event, in relation to the client.</td></tr><tr><td>clientY</td><td>clientY</td><td>The Y coordinate of the event, in relation to the client.</td></tr><tr><td>ctrlKey</td><td>ctrlKey</td><td>Boolean property that returns whether the Ctrl key was pressed 
+during the event.</td></tr><tr><td>fromElement</td><td>relatedTarget</td><td>For mouse events, this is the element from which the mouse moved 
+away.</td></tr><tr><td>keyCode</td><td>keyCode</td><td>For keyboard events, this is a number representing the key that was 
+pressed. It is 0 for mouse events.</td></tr><tr><td>returnValue</td><td>preventDefault()</td><td>Used to prevent the event's default action from occurring.</td></tr><tr><td>screenX</td><td>screenX</td><td>The X coordinate of the event, in relation to the screen.</td></tr><tr><td>screenX</td><td>screenY</td><td>The Y coordinate of the event, in relation to the screen.</td></tr><tr><td>shiftKey</td><td>shiftKey</td><td>Boolean property that returns whether the Shift key was pressed 
+during the event.</td></tr><tr><td>srcElement</td><td>target</td><td>The element to which the event was originally dispatched.</td></tr><tr><td>toElement</td><td>currentTarget</td><td>For mouse events, this is the element to which the mouse moved.</td></tr><tr><td>type</td><td>type</td><td>Returns the name of the event.</td></tr></table><p><a name="N105B3"><span class="smalltitle">Attach event handlers</span></a></p><p>Mozilla supports two ways to attach events through JavaScript. The first, 
+supported by all browsers, sets event properties directly on objects. To 
+set a <code>click</code> event handler, a function reference 
+is passed to the object's <code>onclick</code> property:</p><p> 
+
+Â </p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+Â &lt;div id="myDiv"&gt;Click me!&lt;/div&gt; 
+
+Â &lt;script&gt; 
+
+function handleEvent(aEvent){ 
+Â  // if aEvent is null, means the Internet Explorer event model, 
+  // so get window.event. 
+Â  var myEvent = aEvent ? aEvent : window.event; 
+} 
+
+
+function onPageLoad(){ 
+Â  document.getElementById("myDiv").onclick = handleEvent; 
+} 
+
+Â &lt;/script&gt; 
+Â </pre></td></tr></table><br /><p>Mozilla fully supports the W3C standard way of attaching listeners to 
+DOM nodes. You use the <code>addEventListener()</code> and 
+<code>removeEventListener()</code> methods, and have the 
+benefit of being able to set multiple listeners for the same event type. 
+Both methods require three parameters: the event type, a function 
+reference, and a boolean denoting whether the listener should catch events in 
+their capture phase. If the boolean is set to false, it will only catch 
+bubbling events. W3C events have three phases: capturing, at target, and 
+bubbling. Every event object has an <code>eventPhase</code> 
+attribute indicating the phase numerically (0 indexed). Every time you 
+trigger an event, the event starts at the DOM's outermost element, the 
+element at the top of the DOM tree. It then walks the DOM using the most 
+direct route toward the target, which is the capturing phase. When the 
+event reaches the target, the event is in the target phase. Â After 
+arriving at the target, it walks up the DOM tree back to the outermost 
+node; this is <b>bubbling</b>. Internet Explorer's event model only has 
+the bubbling phase; therefore, setting the third parameter to false 
+results in Internet Explorer-like behavior: </p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+&lt;div id="myDiv"&gt;Click me!&lt;/div&gt; 
+
+&lt;script&gt; 
+
+  function handleEvent(aEvent) { 
+Â    // if aEvent is null, it is the Internet Explorer event model, 
+    // so get window.event. 
+Â    var myEvent = aEvent ? aEvent : window.event; 
+  } 
+
+  function onPageLoad() {
+Â    Â    var element = document.getElementById("myDiv");
+Â    element.addEventListener("click", handleEvent, false); 
+  } 
+&lt;/script&gt; 
+</pre></td></tr></table><br /><p>One advantage of <code>addEventListener()</code> and 
+<code>removeEventListener()</code> over setting properties 
+is that you can have multiple event listeners for the same event, each 
+calling another function. Thus, to remove an event listener requires 
+all three parameters be the same as the ones you use when adding the 
+listener.</p><p>Mozilla does not support Internet Explorer's method of converting 
+&lt;script&gt; tags into event handlers, which extends &lt;script&gt; with 
+<code>for</code> and <code>event</code> 
+attributes (see Table 5). It also does not support the <code>attachEvent</code> and <code>detachEvent</code> methods. Instead, you should use the 
+<code>addEventListener</code> and <code>removeEventListener</code> methods. Internet Explorer does 
+not support the W3C events specification.</p><br /><a name="table5"><b>Table 5. Event method differences between Mozilla and Internet 
+Explorer</b></a><br /><table border="0" cellpadding="0" cellspacing="0" class="ibm-data-table" summary="Event method differences between Mozilla and Internet  Explorer" width="100%"><tr><td><b>Internet Explorer Method</b></td><td><b>Mozilla Method</b></td><td><b>Description</b></td></tr><tr><td>attachEvent(aEventType, aFunctionReference)</td><td>addEventListener(aEventType, aFunctionReference, aUseCapture)</td><td>Adds an event listener to a DOM element.</td></tr><tr><td>detachEvent(aEventType, aFunctionReference)</td><td>removeEventListener(aEventType, aFunctionReference, 
+aUseCapture)</td><td>Removes an event listener to a DOM element.</td></tr></table><div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="rte"><span class="atitle">Rich text editing</span></a></p><p>While Mozilla prides itself with being the most W3C standards-compliant 
+browser, it does support nonstandard functionality, such as <code>innerHTML</code> and rich text editing, if no W3C equivalent 
+exists. </p><p>Mozilla 1.3 introduced an implementation of Internet Explorer's 
+designMode feature, which turns an HTML document into a rich text editor 
+field. Once turned into the editor, commands can run on the document through 
+the <code>execCommand</code> command. Mozilla does not 
+support Internet Explorer's <code>contentEditable</code> attribute for 
+making any widget editable. You can use an iframe to add a rich text 
+editor.</p><p><a name="N1063B"><span class="smalltitle">Rich text differences</span></a></p><p> 
+Â  
+</p><p>Mozilla supports the W3C standard of accessing iframe's document object 
+through <code>IFrameElm.contentDocument</code>, while Internet Explorer 
+requires you to access it through <code>document.frames["name"]</code> and then access the resulting 
+<code>document</code>: </p><p> 
+
+Â </p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+Â  function getIFrameDocument(aID){ 
+Â var rv = null; 
+
+Â // if contentDocument exists, W3C compliant (Mozilla) 
+Â if (document.getElementById(aID).contentDocument){ 
+Â  Â rv = document.getElementById(aID).contentDocument; 
+Â } else { 
+Â  Â // IE 
+Â  Â rv = document.frames[aID].document; 
+Â } 
+
+Â return rv; 
+Â  } 
+Â </pre></td></tr></table><br /><p>Another difference between Mozilla and Internet Explorer is the HTML 
+that the rich text editor creates. Mozilla defaults to using CSS for the 
+generated markup. However, Mozilla allows you to toggle between HTML and 
+CSS mode using the <code>useCSS</code> execCommand and 
+toggling it between true and false. Internet Explorer always uses HTML 
+markup. </p><p> 
+
+Â </p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+Â  Mozilla (CSS): 
+Â &lt;span style="color: blue;"&gt;Big Blue&lt;/span&gt; 
+
+Â  Mozilla (HTML): 
+Â &lt;font color="blue"&gt;Big Blue&lt;/font&gt; 
+
+Â  Internet Explorer: 
+Â &lt;FONT color="blue"&gt;Big Blue&lt;/FONT&gt; 
+Â </pre></td></tr></table><br /><p>Below is a list of commands that execCommand in Mozilla supports:</p><br /><a name="table5"><b>Table 6. Rich text editing commands</b></a><br /><table border="0" cellpadding="0" cellspacing="0" class="ibm-data-table" summary="Rich text editing commands" width="100%"><tr><td><b>Command Name</b></td><td><b>Description</b></td><td><b>Argument</b></td></tr><tr><td>bold</td><td>Toggles the selection's bold attribute.</td><td>---</td></tr><tr><td>createlink</td><td>Generates an HTML link from the selected text.</td><td>The URL to use for the link</td></tr><tr><td>delete</td><td>Deletes the selection.</td><td>---</td></tr><tr><td>fontname</td><td>Changes the font used in the selected text.</td><td>The font name to use (Arial, for example)</td></tr><tr><td>fontsize</td><td>Changes the font size used in the selected text.</td><td>The font size to use</td></tr><tr><td>fontcolor</td><td>Changes the font color used in the selected text.</td><td>The color to use</td></tr><tr><td>indent</td><td>Indents the block where the caret is.</td><td>---</td></tr><tr><td>inserthorizontalrule</td><td>Inserts an &lt;hr&gt; element at the cursor's position.</td><td>---</td></tr><tr><td>insertimage</td><td>Inserts an image at the cursor's position.</td><td>URL of the image to use</td></tr><tr><td>insertorderedlist</td><td>Inserts an ordered list (&lt;ol&gt;) element at the cursor's 
+position.</td><td>---</td></tr><tr><td>insertunorderedlist</td><td>Inserts an unordered list (&lt;ul&gt;) element at the cursor's 
+position.</td><td>---</td></tr><tr><td>italic</td><td>Toggles the selection's italicize attribute.</td><td>---</td></tr><tr><td>justifycenter</td><td>Centers the content at the current line.</td><td>---</td></tr><tr><td>justifyleft</td><td>Justifies the content at the current line to the left.</td><td>---</td></tr><tr><td>justifyright</td><td>Justifies the content at the current line to the right.</td><td>---</td></tr><tr><td>outdent</td><td>Outdents the block where the caret is.</td><td>---</td></tr><tr><td>redo</td><td>Redoes the previous undo command.</td><td>---</td></tr><tr><td>removeformat</td><td>Removes all formatting from the selection.</td><td>---</td></tr><tr><td>selectall</td><td>Selects everything in the rich text editor.</td><td>---</td></tr><tr><td>strikethrough</td><td>Toggles the strikethrough of the selected text.</td><td>---</td></tr><tr><td>subscript</td><td>Converts the current selection into subscript.</td><td>---</td></tr><tr><td>superscript</td><td>Converts the current selection into superscript.</td><td>---</td></tr><tr><td>underline</td><td>Toggles the underline of the selected text.</td><td>---</td></tr><tr><td>undo</td><td>Undoes the last executed command.</td><td>---</td></tr><tr><td>unlink</td><td>Removes all link information from the selection.</td><td>---</td></tr><tr><td>useCSS</td><td>Toggles the usage of CSS in the generated markup.</td><td>Boolean value</td></tr></table><p>For more information, visit <a href="http://web.archive.org/web/20040717081108/http://devedge.netscape.com/viewsource/2003/midas/01/" target="_new">DevEdge</a>.</p><div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="xml_differences"><span class="atitle">XML 
+differences</span></a></p><p>Mozilla has strong support for XML and XML-related technologies, such 
+as XSLT and Web services. It also supports some nonstandard Internet 
+Explorer extensions, such as XMLHttpRequest.</p><p><a name="N10741"><span class="smalltitle">How to handle XML</span></a></p><p> Â  
+</p><p>As with standard HTML, Mozilla supports the W3C XML DOM specification, 
+which allows you to manipulate almost any aspect of an XML document. 
+Differences between Internet Explorer's XML DOM and Mozilla are usually caused by Internet Explorer's 
+nonstandard behaviors. Probably the most common difference is how they 
+handle white space text nodes. Often when XML generates, it contains white 
+spaces between XML nodes. Internet Explorer, when using <code>XMLNode.childNodes[]</code>, will not contain these white 
+space nodes. In Mozilla, those nodes will be in the array.</p><p> 
+
+Â </p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+Â  XML: 
+Â &lt;?xml version="1.0"?&gt; 
+Â &lt;myXMLdoc xmlns:myns="http://myfoo.com"&gt; 
+Â  Â &lt;myns:foo&gt;bar&lt;/myns:foo&gt; 
+Â &lt;/myXMLdoc&gt; 
+
+Â  JavaScript: 
+Â var myXMLDoc = getXMLDocument().documentElement; 
+Â alert(myXMLDoc.childNodes.length); 
+Â </pre></td></tr></table><br /><p>The first line of JavaScript loads the XML document and accesses the 
+root element (<code>myXMLDoc</code>) by retrieving the <code>documentElement</code>. The second line simply alerts the 
+number of child nodes. Per the W3C specification, the white spaces and new 
+lines merge into one text node if they follow each other. For Mozilla, the 
+<code>myXMLdoc</code> node has three children: a text node 
+containing a new line and two spaces; the <code>myns:foo</code> node; and another text node with a new line. 
+Internet Explorer, however, does not abide by this and will return "1" for 
+the above code, namely only the <code>myns:foo</code> node. 
+Therefore, to walk the child nodes and disregard text nodes, you must 
+distinguish such nodes.</p><p>As mentioned earlier, every node has a <code>nodeType</code> attribute representing the node type. For 
+example, an element node has type 1, while a document node has type 9. To 
+disregard text nodes, you must check for types 3 (text node) and 8 
+(comment node).</p><p> 
+
+Â </p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+Â  XML: 
+Â &lt;?xml version="1.0"?&gt; Â  
+Â &lt;myXMLdoc xmlns:myns="http://myfoo.com"&gt; 
+Â  Â &lt;myns:foo&gt;bar&lt;/myns:foo&gt; 
+Â &lt;/myXMLdoc&gt; Â  
+
+Â  JavaScript: 
+Â var myXMLDoc = getXMLDocument().documentElement; 
+Â var myChildren = myXMLDoc.childNodes; 
+Â for (var run = 0; run &lt; myChildren.length; run++){ 
+Â  Â if ( (myChildren[run].nodeType != 3) &amp;&amp; 
+(myChildren[run].nodeType != 8) ){ 
+Â  // not a text or comment node 
+Â  Â } 
+Â } 
+Â </pre></td></tr></table><br /><p><a name="N10779"><span class="smalltitle">XML data islands</span></a></p><p>Internet Explorer has a nonstandard feature called <i>XML data 
+islands</i>, which allow you to embed XML inside an HTML document using 
+the nonstandard HTML tag <code>&lt;xml&gt;</code>. Mozilla does 
+not support XML data islands and handles them as unknown HTML tags. You 
+can achieve the same functionality using XHTML; however, because Internet 
+Explorer's support for XHTML is weak, this is usually not an option.</p><p>One cross-browser solution is to use DOM parsers, which parse a 
+string that contains a serialized XML document and generates the document 
+for the parsed XML. Mozilla uses the <code>DOMParser</code> 
+class, which takes the serialized string and creates an XML document out 
+of it. In Internet Explorer, you can achieve the same functionality using 
+ActiveX. A new <code>Microsoft.XMLDOM</code> generates and 
+has a <code>loadXML</code> method that can take in a string 
+and generate a document from it. The following code shows you how: </p><p> 
+
+Â </p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+Â  IE XML data island: 
+Â .. 
+Â &lt;xml id="xmldataisland"&gt; 
+Â  Â &lt;foo&gt;bar&lt;/foo&gt; 
+Â &lt;/xml&gt; Â  
+
+Â  Cross-browser solution: 
+Â var xmlString = "&lt;xml 
+id=\"xmldataisland\"&gt;&lt;foo&gt;bar&lt;/foo&gt;&lt;/xml&gt;"; 
+Â var myDocument; 
+Â  
+Â if (document.implementation.createDocument){ 
+Â  Â // Mozilla, create a new DOMParser 
+Â  Â var parser = new DOMParser(); 
+Â  Â myDocument = parser.parseFromString(xmlString, "text/xml"); 
+Â } else if (window.ActiveXObject){ 
+Â  Â // Internet Explorer, create a new XML document using ActiveX 
+Â  Â // and use loadXML as a DOM parser. 
+Â  Â myDocument = new ActiveXObject("Microsoft.XMLDOM") 
+Â  Â myDocument.async="false"; 
+Â  Â myDocument.loadXML(xmlString); Â  
+Â } 
+Â </pre></td></tr></table><br /><p><a name="N1079C"><span class="smalltitle">XML HTTP request</span></a></p><p>Internet Explorer allows you to send and retrieve XML files using 
+MSXML's <code>XMLHTTP</code> class, which is instantiated 
+through ActiveX using <code>new 
+ActiveXObject("Msxml2.XMLHTTP")</code> or <code>new 
+ActiveXObject("Microsoft.XMLHTTP")</code>. Since there is no standard 
+method of doing this, Mozilla provides the same functionality in the 
+global JavaScript <code>XMLHttpRequest</code> object. The 
+object generates asynchronous requests by default.</p><p> 
+Â  
+</p><p>After instantiating the object using <code>new 
+XMLHttpRequest()</code>, you can use the <code>open</code> 
+method to specify what type of request (GET or POST) you use, which 
+file you load, and if it is asynchronous or not. If the call 
+is asynchronous, then give the <code>onload</code> member a function reference, which is called once the request has completed.</p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"><strong><i>Synchronous request:</i></strong> 
+
+Â  var myXMLHTTPRequest = new XMLHttpRequest(); 
+Â  myXMLHTTPRequest.open("GET", "data.xml", false); 
+Â  myXMLHTTPRequest.send(null); 
+
+Â  var myXMLDocument = myXMLHTTPRequest.responseXML; 
+
+<strong><i>Asynchronous request:</i></strong> 
+
+Â  var myXMLHTTPRequest; 
+
+Â  function <strong>xmlLoaded</strong>() { 
+Â    var myXMLDocument = myXMLHTTPRequest.responseXML; 
+Â  } 
+
+Â  function loadXML(){ 
+   Â myXMLHTTPRequest = new XMLHttpRequest();
+
+   Â myXMLHTTPRequest.open("GET", "data.xml", true);
+
+Â    myXMLHTTPRequest.onload = <strong>xmlLoaded</strong>; 
+
+Â    myXMLHTTPRequest.send(null); 
+Â  } 
+</pre></td></tr></table><br /><p>Table 7 features a list of available methods and properties for 
+Mozilla's <code>XMLHttpRequest</code>.</p><br /><a name="table7"><b>Table 7. XMLHttpRequest methods and properties</b></a><br /><table border="0" cellpadding="0" cellspacing="0" class="ibm-data-table" summary="XMLHttpRequest methods and properties" width="100%"><tr><td><b>Name</b></td><td><b>Description</b></td></tr><tr><td>void abort()</td><td>Stops the request if it is still running. 
+Â </td></tr><tr><td>string getAllResponseHeaders()</td><td>Returns all response headers as one string. 
+Â  </td></tr><tr><td>string getResponseHeader(string headerName)</td><td>Returns the value of the specified header. 
+Â </td></tr><tr><td>functionRef onerror</td><td>If set, the references function will be called whenever an error occurs during the request. 
+Â </td></tr><tr><td>functionRef onload</td><td>If set, the references function will be called when the request 
+completes successfully and the response has been received. Use when an asynchronous request is used. 
+Â </td></tr><tr><td>void open (string HTTP_Method, string URL)<br /><br />
+void open (string HTTP_Method, string URL, boolean async, string 
+userName, string password) 
+Â  </td><td>Initializes the request for the specified URL, using either GET or 
+POST as the HTTP method. To send the request, call the <code>send()</code> method after initialization. 
+If <code>async</code> is false, the request is synchronous, else it defaults to asynchronous. Optionally, you can specify a username and password for the given URL needed. 
+Â </td></tr><tr><td>int readyState</td><td>State of the request. Â Possible values: 
+Â  Â <table border="1" cellpadding="8" class="ibm-data-table" cols="2"><tr><td>0</td><td>UNINITIALIZED - open() has not been called yet.</td></tr><tr><td>1</td><td>LOADING - send() has not been called yet.</td></tr><tr><td>2</td><td>LOADED - send() has been called, headers and status are 
+available.</td></tr><tr><td>3</td><td>INTERACTIVE - Downloading, responseText holds the partial 
+data.</td></tr><tr><td>4</td><td>COMPLETED - Finished with all operations.</td></tr></table> 
+Â </td></tr><tr><td>string responseText</td><td>String containing the response. 
+Â </td></tr><tr><td>DOMDocument responseXML</td><td>DOM Document containing the response. Â  
+Â </td></tr><tr><td>void send(variant body)</td><td>Initiates the request. If <code>body</code> is defined, 
+it issent as the body of the POST request. <code>body</code> can be an XML document or a string serialized 
+XML document. 
+Â </td></tr><tr><td>void setRequestHeader (string headerName, string headerValue)</td><td>Sets an HTTP request header for use in the HTTP request. Has to be 
+called after <code>open()</code> is called. 
+Â </td></tr><tr><td>string status</td><td>The status code of the HTTP response. 
+Â </td></tr></table><p><a name="N10865"><span class="smalltitle">XSLT differences</span></a></p><p>Mozilla supports XSL Transformations (XSLT) 1.0. It also allows 
+JavaScript to perform XSLT transformations and allows running XPATH on a 
+document.</p><p>Mozilla requires that you send the XML and XSLT file holding the 
+stylesheet with an XML mimetype (<code>text/xml</code> or 
+<code>application/xml</code>). This is the most common 
+reason why XSLT won't run in Mozilla but will in Internet Explorer. 
+Mozilla is strict in that way. </p><p>Internet Explorer 5.0 and 5.5 supported XSLT's working draft, which is 
+substantially different than the final 1.0 recommendation. The easiest way 
+to distinguish what version an XSLT file was written against is to look at 
+the namespace. The namespace for the 1.0 recommendation is <code>http://www.w3.org/1999/XSL/Transform</code>, while the 
+working draft's namespace is <code>http://www.w3.org/TR/WD-xsl</code>. Internet Explorer 6 
+supports the working draft for backwards compatibility, but Mozilla does 
+not support the working draft, only the final recommendation.</p><p>If XSLT requires you to distinguish the browser, you can query the 
+"xsl:vendor" system property. Mozilla's XSLT engine will report itself as 
+"Transformiix" and Internet Explorer will return "Microsoft." Â </p><p> 
+
+Â </p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+Â &lt;xsl:if test="system-property('xsl:vendor') = 'Transformiix'"&gt; 
+&lt;!-- Mozilla specific markup --&gt; 
+Â &lt;/xsl:if&gt; 
+Â &lt;xsl:if test="system-property('xsl:vendor') = 'Microsoft'"&gt; 
+Â &lt;!-- Internet Explorer specific markup --&gt; 
+Â &lt;/xsl:if&gt; 
+Â </pre></td></tr></table><br /><p>Mozilla also provides JavaScript interfaces for XSLT, allowing a 
+Web site to complete XSLT transformations in memory. You can do this using 
+the global <code>XSLTProcessor</code> JavaScript object. 
+<code>XSLTProcessor</code> requires you to load the XML and 
+XSLT files, because it needs their DOM documents. The XSLT document, 
+imported by the <code>XSLTProcessor</code>, allows you to 
+manipulate XSLT parameters. <code>XSLTProcessor</code> can 
+generate a standalone document using <code>transformToDocument()</code>, or it can create a document 
+fragment using <code>transformToFragment()</code>, which you 
+can easily append into another DOM document. Below is an example:</p><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode"> 
+var xslStylesheet; 
+var xsltProcessor = new XSLTProcessor(); 
+
+// load the xslt file, example1.xsl 
+var myXMLHTTPRequest = new XMLHttpRequest(); 
+myXMLHTTPRequest.open("GET", "example1.xsl", false); 
+myXMLHTTPRequest.send(null); 
+
+// get the XML document and import it 
+xslStylesheet = myXMLHTTPRequest.responseXML; 
+
+xsltProcessor.importStylesheet(xslStylesheet); 
+
+// load the xml file, example1.xml 
+myXMLHTTPRequest = new XMLHttpRequest(); 
+myXMLHTTPRequest.open("GET", "example1.xml", false); 
+myXMLHTTPRequest.send(null); 
+
+var xmlSource = myXMLHTTPRequest.responseXML; 
+
+var resultDocument = xsltProcessor.transformToDocument(xmlSource); 
+Â </pre></td></tr></table><br /><p>After creating an <code>XSLTProcessor</code>, you load 
+the XSLT file using <code>XMLHttpRequest</code>. The 
+XMLHttpRequest's <code>responseXML</code> member contains 
+the XML document of the XSLT file, which is passed to <code>importStylesheet</code>. You then use the <code>XMLHttpRequest</code> again to load the source XML document 
+that must be transformed; that document is then passed to the <code>transformToDocument</code> method of <code>XSLTProcessor</code>. Table 8 features a list 
+of <code>XSLTProcessor</code> methods. </p><br /><a name="table8"><b>Table 8. XSLTProcessor methods</b></a><br /><table border="0" cellpadding="0" cellspacing="0" class="ibm-data-table" summary="XSLTProcessor methods" width="100%"><tr><td><b>Method</b></td><td><b>Description</b></td></tr><tr><td>void importStylesheet(Node styleSheet)</td><td>Imports the XSLT stylesheet. The <code>styleSheet</code> argument is the root node of an XSLT 
+stylesheet's DOM document.</td></tr><tr><td>DocumentFragment transformToFragment(Node source, Document 
+owner)</td><td>Transforms the Node <code>source</code> by applying the 
+stylesheet imported using the <code>importStylesheet</code> 
+method and generates a DocumentFragment. 
+<code>owner</code> specifies what DOM document the 
+DocumentFragment should belong to, making it appendable to that DOM 
+document. 
+Â  </td></tr><tr><td>Document transformToDocument(Node source)</td><td>Transforms the Node <code>source</code> by applying the stylesheet imported using the <code>importStylesheet</code> method and returns a standalone DOM document. 
+Â </td></tr><tr><td>void setParameter(String namespaceURI, String localName, Variant 
+value)</td><td>Sets a parameter in the imported XSLT stylesheet. 
+Â </td></tr><tr><td>Variant getParameter(String namespaceURI, String localName)</td><td>Gets the value of a parameter in the imported XSLT stylesheet. 
+Â </td></tr><tr><td>void removeParameter(String namespaceURI, String localName)</td><td>Removes all set parameters from the imported XSLT stylesheet and makes them default to the XSLT-defined defaults. 
+Â </td></tr><tr><td>void clearParameters()</td><td>Removes all set parameters and sets them to defaults specified in the XSLT stylesheet. 
+Â </td></tr><tr><td>void reset()</td><td>Removes all parameters and stylesheets. 
+Â </td></tr></table><div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="summary"><span class="atitle">Summary</span></a></p><p>This article covered common issues web application developers face when they try to get their applications to work in Mozilla-based browsers. When you develop web applications, always consider possible browser differences and be informed about them. In <a href="#resources">Resources</a>, you'll find two good references that provide in-depth coverage on cross-browser development.  Following those guidelines not only allow your web applications to work in other browsers, but also on other platforms.</p><!-- CMA ID: 90261 --> <!-- Site ID: 1 --><!--XSLT stylesheet used to transform this file: dw-document-html-6.0.xsl-->
+<br />
+<p><a name="resources"><span class="atitle">Resources</span></a></p><ul><li><i><a href="http://www.amazon.com/exec/obidos/ASIN/0596003161/qid=1121268058/sr=2-1/ref=pd_bbs_b_2_1/104-1133505-5373554">Dynamic HTML: The Definitive Reference (2nd Edition)</a></i> is great book that covers all aspects of cross-browser DHTML development (O'Reilly &amp; Associates. Inc., 2002).<br /><br /></li><li><i><a href="http://www.amazon.com/exec/obidos/tg/detail/-/0596000480/qid=1121268182/sr=1-1/ref=sr_1_1/104-1133505-5373554?v=glance&amp;s=books">JavaScript: The Definitive Guide (4th Edition)</a></i> covers the latest (1.5) version of JavaScript, going into the small differences between browsers (O'Reilly &amp; 
+Associates, Inc., 2002).<br /><br /></li><li><a href="http://web.archive.org/web/20040926065921/http://devedge.netscape.com/ ">Netscape Devedge</a> covers numerous issues that developers encounter when 
+working with Mozilla-based browsers. Sadly, AOL took it offline last year, 
+but it has been archived.<br /><br /></li><li><a href="http://www.mozilla.org/developer/">Web Developer Docs on 
+Mozilla.org</a> contains valuable Mozilla-related information for Web 
+developers. <br /><br /></li><li>The developerWorks <a href="http://www.ibm.com/developerworks/web/">Web Architecture zone</a> specializes in articles covering various Web-based solutions.<br /><br /></li><li>Get involved in the developerWorks community by participating in
+<a href="http://www.ibm.com/developerworks/blogs/">developerWorks
+blogs</a>.<br /><br /></li></ul>
+<p><a name="author"><span class="atitle">About the author</span></a></p><div class="ibm-container ibm-portrait-module ibm-alternate-two"><div class="ibm-container-body"><p><a name="author1"></a>Doron Rosenberg worked previously for Netscape before joining the Browser Development Center at IBM. He has been involved in the Mozilla project for over five years.</p></div></div>
+<!-- MAIN_COLUMN_CONTENT_END -->
+
+<!-- OVERLAYS_START -->
+<!-- Report_Abuse_Start -->
+<div class="ibm-common-overlay ibm-no-print" id="reportabuseoverlay">
+   <div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#">Close [x]</a></p></div>
+   <div class="ibm-body">
+      <div class="ibm-main">
+         <a class="ibm-access" name="reportabuseoverlay">Report abuse help</a>   
+         <div class="ibm-title"><h1>Report abuse</h1></div>
+         <div class="ibm-container ibm-alternate">
+            <p><strong>Thank you.</strong>  This entry has been flagged for moderator attention.</p>
+            <div class="ibm-overlay-rule"><hr /></div>
+            <div class="ibm-buttons-row">
+               <input type="button" onclick="ibmCommon.Overlays.hide('reportabuseoverlay');return false;" class="ibm-btn-cancel-sec dw-btn-cancel-sec" name="ibm-cancel" value="Close" />
+            </div>
+         </div>
+      </div> 
+   </div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Report_Abuse_Error_Start -->
+<div class="ibm-common-overlay ibm-no-print" id="reportabuseoverlayerror">
+   <div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#">Close [x]</a></p></div>
+   <div class="ibm-body">
+      <div class="ibm-main">
+         <a class="ibm-access" name="reportabuseoverlayerror">Report abuse help</a>   
+         <div class="ibm-title"><h1>Report abuse</h1></div>
+         <div class="ibm-container ibm-alternate">
+            <p class="ibm-ind-error"><strong>Report abuse submission failed.  Please try again later.</strong></p>
+            <div class="ibm-overlay-rule"><hr /></div>
+            <div class="ibm-buttons-row">
+               <input type="button" onclick="ibmCommon.Overlays.hide('reportabuseoverlayerror');return false;" class="ibm-btn-cancel-sec dw-btn-cancel-sec" name="ibm-cancel" value="Close" />
+            </div>
+         </div>
+      </div> 
+   </div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Sign in OVERLAY STARTS HERE --> 
+<div id="fdiv"></div>
+<div class="ibm-common-overlay" id="signin_overlay">
+<div class="ibm-head">
+<p><a class="ibm-common-overlay-close" href="#" onclick="clearForm();">Close [x]</a></p>
+</div>
+<div class="ibm-body">
+<div class="ibm-main">
+<div class="ibm-title ibm-subtitle">
+<h1>developerWorks: Sign in</h1>
+<div id="ibm-overlay-error-signin" class="no-display"></div>
+</div>
+
+<div class="ibm-container ibm-alternate ibm-buttons-last">
+<div class="ibm-container-body">
+<p class="ibm-overlay-intro">If you do not have an IBM ID and password, <a href="#" onclick="(function () {window.location='/developerworks/dwwi/DWAuthRouter?m=reg&amp;d='+encodeURIComponent(location.href);})();">register here</a>.</p>
+<form class="ibm-column-form" id="sFormId" action="" method="post" name="sForm" onsubmit="return false;">
+<p><label for="ibmid">IBM ID:</label><span><input name="ibm-id" id="ibmid" size="25" value="" class="required" type="text" onkeypress="handleEP(event,this.form);" /><br /><a class="ibm-forward-link" href="/developerworks/dwwi/jsp/WSHelp.jsp?lang=en_US">Forgot your IBM ID?</a></span>   
+</p> 
+<p><label for="password">Password:</label><span><input name="password" id="password" size="25" value="" class="required" type="password" onkeypress="handleEP(event,this.form);" /><br /><a class="ibm-forward-link" href="#" onclick="(function () {window.location='https://www.ibm.com/account/profile?page=forgot&amp;lang=en_US&amp;appname=ibm&amp;required=null&amp;d='+encodeURIComponent(getAuthUrl())+'%3Fm%3Dloginpage%26lang%3Den_US%26d%3D'+encodeURIComponent(location.href);})();">Forgot your password?</a><br /><a class="ibm-forward-link" href="#" onclick="(function () {window.location='https://www.ibm.com/account/profile?page=chpw&amp;lang=en_US&amp;appname=ibm&amp;required=null&amp;d='+encodeURIComponent(location.href);})();">Change your password?</a></span></p> 
+<p class="no-bottom-padding"> 
+   <label for="AfterSignIn">After sign in:</label> 
+   <span>
+
+      <select name="SignInAction" id="AfterSignIn">
+          <option value="">Stay on the current page</option>
+          <option value="/developerworks/mydeveloperworks/profiles/html/myProfileView.do">Go to My developerWorks profile</option>
+          <option value="/developerworks/mydeveloperworks/homepage/">Go to My developerWorks homepage</option>
+      </select>
+   </span>
+</p>
+<div class="ibm-overlay-rule"><hr /></div>
+<p>By clicking <strong>Submit</strong>, you agree to the developerWorks <a href="/developerworks/mydeveloperworks/terms?lang=en">terms of use</a>.</p>
+<div class="ibm-buttons-row">
+   <p><input class="ibm-btn-arrow-pri" name="ibm-submit" value="Submit" onclick="signin();return false;" type="button" /><span class="ibm-sep">&nbsp;</span>
+<input value="Cancel" type="button" name="ibm-cancel" class="ibm-btn-cancel-sec" onclick="clearForm();ibmCommon.Overlays.hide('signin_overlay');return false;"/></p>
+</div>
+</form>
+<div class="ibm-overlay-rule"><hr /></div>
+<p>The first time you sign into developerWorks, a My developerWorks profile is created for you. This profile includes the first name, last name, and display name contained in the profile you created when you registered with My developerWorks. Selected information in your My developerWorks profile is displayed to the public, but you may edit the information at any time. Your first name, last name (unless you choose to hide them), and display name will accompany the content that you post. </p>
+<div class="dw-overlay-legal"><p>All information submitted is secure.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Sign in OVERLAY ENDS HERE --> 
+ 
+
+<!-- Display name OVERLAY STARTS HERE --> 
+<div class="ibm-common-overlay" id="displayname_overlay">
+<div class="ibm-head">
+<p><a class="ibm-common-overlay-close" href="#" onclick="clearForm();">Close [x]</a></p>
+</div>
+<div class="ibm-body">
+<div class="ibm-main">
+<div class="ibm-title ibm-subtitle">
+<h1>Choose your display name</h1>
+<div id="ibm-overlay-error-dname" class="no-display"></div>
+</div>
+<div class="ibm-container ibm-alternate ibm-buttons-last">
+<div class="ibm-container-body">
+<p class="ibm-overlay-intro">The first time you sign in to developerWorks a profile is created for you, so you need to choose a display name.  Your display name accompanies the content you post on developerWorks.</p>
+
+<form id="dFormId" method="post" action="" name="dForm" onsubmit="return false;" class="ibm-column-form">
+<p><label for="displayname">Display name:</label><span><input name="displayname" id="displayname" size="25" value="" type="text" onkeypress="handleEP(event,this.form);" /></span><span class="ibm-form-note">(Must be between 3 &ndash; 31 characters.)</span>
+</p>
+<p><strong>Note:</strong>  Please choose a display name between 3-31 characters. Your display name must be unique in the developerWorks community and should not be your email for privacy reasons.</p>
+<div class="ibm-overlay-rule"><hr />
+</div>
+<p>By clicking Submit, you agree to the developerWorks <a href="/developerworks/mydeveloperworks/terms?lang=en">terms of use</a>.</p>
+<div class="ibm-buttons-row">
+   <p><input class="ibm-btn-arrow-pri" name="ibm-submit" value="Submit" onclick="signin();return false;" type="button" /><span class="ibm-sep">&nbsp;</span>
+<input value="Cancel" type="button" name="ibm-cancel" class="ibm-btn-cancel-sec" onclick="clearForm();ibmCommon.Overlays.hide('displayname_overlay');return false;" /></p>
+</div>
+</form>
+<div class="ibm-overlay-rule"><hr /></div>
+<div class="dw-overlay-legal"><p>All information submitted is secure.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Display name OVERLAY ENDS HERE -->
+<!-- OVERLAYS_END -->
+
+<!-- RATINGS START -->
+<p class="ibm-no-print"><span class="atitle"><a name="iratings">Rate this article</a></span></p>
+<input id="art-rating" name="ratinga" type="hidden" value="0"/><div id="art-rating-module"></div>
+<script language="JavaScript" type="text/javascript">
+// <![CDATA[
+   // widget div id and article id as args
+   window.artRating.init('art-rating-module','art-rating-summary');
+// ]]>
+</script>
+<!-- RATINGS END -->
+
+<!-- INLINE_COMMENTS_START -->
+<p class="ibm-no-print"><span class="atitle"><a name="icomments">Comments</a></span></p>
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/showcomments.js" type="text/javascript">//</script>
+<div id="threadShow"></div>
+<script language="JavaScript" type="text/javascript">
+// <![CDATA[
+ jQuery('threadShow').showComments('95%',5,'nCmts','icomments');
+// ]]>
+</script>
+<!-- INLINE_COMMENTS_END -->
+
+<p class="ibm-ind-link ibm-back-to-top"><a class="ibm-anchor-up-link" href="#ibm-pcon">Back to top</a></p>
+<p><a href="http://www.ibm.com/developerworks/ibm/trademarks/">Trademarks</a> &nbsp;|&nbsp; <a href="https://www.ibm.com/developerworks/mydeveloperworks/terms/">My developerWorks terms and conditions</a></p>
+
+<!-- Overlays -->
+<!-- Zone/Leaf_Interest_Overlay_Start -->
+<div class="ibm-common-overlay ibm-no-print" id="dwmyinterestadd">
+<div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#close">Close [x]</a></p></div>
+<div class="ibm-body">
+<div class="ibm-main">
+<a class="ibm-access" name="dwmyinterestaddhelp">Help: Update or add to My dW interests</a>   
+<div class="ibm-title"><h1>What's this?</h1></div>
+<div class="ibm-container ibm-alternate">
+<p>This little timesaver lets you update your My developerWorks profile with just one click!  The general subject of this content (AIX and UNIX, Information Management, Lotus, Rational, Tivoli, WebSphere, Java, Linux, Open source, SOA and Web services, Web development, or XML) will be added to the interests section of your profile, if it's not there already.  You only need to be logged in to My developerWorks.</p>
+<p>And what's the point of adding your interests to your profile?  That's how you find other users with the same interests as yours, and see what they're reading and contributing to the community.  Your interests also help us recommend relevant developerWorks content to you.</p>
+<p><a href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/home.do?lang=en">View your My developerWorks profile</a></p>
+<p class="ibm-access"><a href="#interestShow">Return from help</a></p>
+</div> 
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+
+<div class="ibm-common-overlay ibm-no-print" id="dwmyinterestremove">
+<div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#close">Close [x]</a></p></div>
+<div class="ibm-body">
+<div class="ibm-main">
+<a class="ibm-access" name="dwmyinterestremovehelp">Help: Remove from My dW interests</a> 
+<div class="ibm-title"><h1>What's this?</h1></div>
+<div class="ibm-container ibm-alternate">
+<p>Removing this interest does not alter your profile, but rather removes this piece of content from a list of all content for which you've indicated interest.  In a future enhancement to My developerWorks, you'll be able to see a record of that content.</p>
+<p><a href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/home.do?lang=en">View your My developerWorks profile</a></p>
+<p class="ibm-access"><a href="#interestShow">Return from help</a></p>
+</div> 
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Zone/Leaf_Interest_Overlay_End --></div>
+<!-- MAIN_COLUMN_CONTAINER_END -->
+
+<!-- Rating_Meta_BEGIN -->
+<!--Rating_Meta_BEGIN--><div class="metavalue">static.content.url=http://www.ibm.com/developerworks/js/artrating/</div><div class="metavalue">SITE_ID=1</div><div class="metavalue">Zone=Web development, Open source</div><div class="metavalue">ArticleID=90261</div><div class="metavalue">ArticleTitle=Migrate apps from Internet Explorer to Mozilla</div><div class="metavalue">publish-date=07262005</div><div class="metavalue">author1-email=doronr@us.ibm.com</div><div class="metavalue">author1-email-cc=</div><script language="javascript" type="text/javascript">document.write('<div class="metavalue">url='+location.href.replace('<', '%3C')+'</div>');</script><!--Rating_Meta_END-->
+<!-- Rating_Meta_END -->
+
+</div>
+<!-- MAIN_COLUMN_END-->
+
+<!-- RIGHT_COLUMN_BEGIN -->
+<div id="ibm-content-sidebar">
+<div id="ibm-social-tools-sidebar" class="ibm-share-this"></div>
+
+<!-- RIGHT_COLUMN_CONTENT_BEGIN --> 
+<div class="ibm-container"><h2>Table of contents</h2><div class="ibm-container-body"><img alt="" height="1" width="1" src="//www.ibm.com/i/c.gif"/><ul class="ibm-bullet-list"><li><a class="ibm-feature-link" href="#general_xb_coding_tips">General cross-browser coding tips</a></li><li><a class="ibm-feature-link" href="#html_differences">Differences between Mozilla and Internet Explorer</a></li><li><a class="ibm-feature-link" href="#dom_differences">DOM 
+differences</a></li><li><a class="ibm-feature-link" href="#javascript_differences">JavaScript differences</a></li><li><a class="ibm-feature-link" href="#css_differences">CSS 
+differences</a></li><li><a class="ibm-feature-link" href="#html_modes">Quirks versus standards 
+mode</a></li><li><a class="ibm-feature-link" href="#event_differences">Event 
+differences</a></li><li><a class="ibm-feature-link" href="#rte">Rich text editing</a></li><li><a class="ibm-feature-link" href="#xml_differences">XML 
+differences</a></li><li><a class="ibm-feature-link" href="#summary">Summary</a></li><li><a class="ibm-feature-link" href="#resources">Resources</a></li><li><a class="ibm-feature-link" href="#author">About the author</a></li><li><a class="ibm-feature-link" href="#icomments">Comments</a></li></ul></div></div>
+<!--XSLT stylesheet used to transform this content: s-nextsteps.xsl--><div class="ibm-container"><h2>Next steps from IBM</h2><div class="ibm-container-body"><img width="188" height="58" border="0" alt="" src="//www.ibm.com/developerworks/i/spot-nextsteps.jpg"/><p>Spring, JRuby, and Ajax development is easier with WebSphere Application Server - a smart Java 5
+   and J2EE Web services-based application server.</p><div class="ibm-rule"><hr/></div><ul class="ibm-bullet-list"><li><a href="http://www.ibm.com/developerworks/downloads/ws/wasce/index.html" class="ibm-feature-link">Try: The no-charge WebSphere Application Server Community Edition is a pre-integrated, lightweight Java 5
+    application server built on Apache Tomcat and other best-of-breed open source software such as OpenEJB, Apache Axis,
+    and Apache Derby.</a></li><li><a href="http://www.ibm.com/developerworks/websphere/library/techarticles/0810_asplund/0810_asplund.html" class="ibm-feature-link">Article: The article leverage the Spring Framework and the WebSphere Application Server to improve your J2EE project
+      productivity.</a></li><li><a href="http://www.ibm.com/developerworks/edu/x-dw-x-jrorajax.html" class="ibm-feature-link">Tutorial: See how the free WebSphere Application Server and XML can improve the efficiency of your JRuby on Rails and
+      Ajax development.</a></li><li><a href="http://www.ibm.com/software/dre/h2b/buildh2bpage.wss?synkey=G394201N28809H35" class="ibm-feature-link">Buy: WebSphere Application Server - Express</a></li></ul></div></div>
+<!--XSLT stylesheet used to transform this content: s-community.xsl--><div class="ibm-container"><h2>My developerWorks community</h2><div class="ibm-container-body"><p>Interact, share, and communicate with developers worldwide.</p><div class="ibm-rule"><hr/></div><ul class="ibm-bullet-list"><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/homepage/web/getuserpref?ca=dma-" class="ibm-feature-link">My Home</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/home.do?lang=en&amp;ca=dma-" class="ibm-feature-link">Profiles</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/groups/service/html/allcommunities?ca=dma-" class="ibm-feature-link">Groups</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/blogs/?ca=dma-" class="ibm-feature-link">Blogs</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/bookmarks/?ca=dma-" class="ibm-feature-link">Bookmarks</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/activities/service/html/mainpage?ca=dma-" class="ibm-feature-link">Activities</a></li><li><a href="http://www.ibm.com/developerworks/mydeveloperworks/files?ca=dma-" class="ibm-feature-link">Files</a></li><li><a href="http://www.ibm.com/developerworks/mydeveloperworks/wikis?ca=dma-" class="ibm-feature-link">Wikis</a></li><li><a href="http://www.ibm.com/developerworks/forums/?ca=dma-" class="ibm-feature-link">Forums</a></li><li><a href="http://www.ibm.com/developerworks/podcast/?ca=dma-" class="ibm-feature-link">Podcasts</a></li></ul><div class="ibm-rule"><hr/></div><p class="ibm-ind-link"><a href="https://www.ibm.com/developerworks/mydeveloperworks/?ca=dma-" class="ibm-forward-link">My developerWorks overview</a></p></div></div>
+<!-- Tagging_Start -->
+<div id="dw-tag-cloud-container" class="ibm-container dw-hidetag"><h2>Tags</h2>
+<div id="dw-tag-help"><a class="dwauthor" rel="#tagtip" id="dwtagtip"><img alt="Help" height="16" width="16" align="top" src="//dw1.s81c.com/developerworks/i/help_icon.gif"/></a></div>
+<div id="tagtip" class="dwauthor-onload-state ibm-no-print">Use the <strong>search field</strong> to find all types of content in My developerWorks with that tag.<p>Use the <strong>slider bar</strong> to see more or fewer tags.</p><p>For articles in technology zones (such as Java technology, Linux, Open source, XML), <strong>Popular tags</strong> shows the top tags 
+for <em>all technology zones</em>.  For articles in product zones (such as Info Mgmt, Rational, WebSphere), <strong>Popular tags</strong> shows the top tags for <em>just that product zone</em>.</p><p>For articles in technology zones (such as Java technology, Linux, Open source, XML), <strong>My tags</strong> shows your tags for <em>all technology zones</em>.  For articles in product zones (such as Info Mgmt, Rational, WebSphere), <strong>My tags</strong> shows your tags for <em>just that product zone</em>.</p></div>
+<div class="ibm-access">Use the search field to find all types of content in My developerWorks with that tag.  <em>Popular tags</em> shows the top tags for this particular content zone (for example, Java technology, Linux, WebSphere).  <em>My tags</em> shows your tags for this particular content zone (for example, Java technology, Linux, WebSphere).</div>
+<div class="ibm-container-body">
+<div class="dw-tag-search"><form action="//www.ibm.com/developerworks/mydeveloperworks/bookmarks/html?lang=en" method="get" id="actualtagform" onsubmit="popupform(this, 'join')">
+<p><label for="tagfield"><strong>Search all tags</strong></label><input id="tagfield" name="tag" type="text" maxlength="20" size="17" />&nbsp;<input src="//dw1.s81c.com/i/v16/buttons/short-btn.gif" type="image" class="ibm-btn-view" alt="submit search" title="submit search" value="Search" /></p></form></div>
+<div class="ibm-rule"><hr/></div>
+<div id="dw-tag-select">
+<div id="dw-tag-select-popular"><p><strong>Popular article tags</strong>&nbsp;|&nbsp;<br /><a id="a-my" href="javascript:;">My article tags</a><a href="#dw-tag-access" class="ibm-access">Skip to tags list</a></p></div>
+<div id="dw-tag-select-my" class="dw-hidetag"><p><a id="a-popular" href="javascript:;">Popular article tags</a>&nbsp;|&nbsp;<br /><strong>My article tags</strong></p><a href="#dw-tag-access" class="ibm-access">Skip to tags list</a></div>
+<div id="dw-tag-cloud"></div>  
+</div>   
+</div>
+</div>
+<!-- Tagging_End -->
+<!-- Dig_Deeper -->
+<div class="ibm-container"><h2>Dig deeper into Web development on developerWorks</h2><div class="ibm-container-body"><ul class="ibm-link-list"><li class="ibm-first"><a href="http://www.ibm.com/developerworks/web/" class="ibm-forward-link">Overview</a></li><li><a href="http://www.ibm.com/developerworks/web/newto/" class="ibm-forward-link">New to Web development</a></li><li><a href="http://www.ibm.com/developerworks/views/web/downloads.jsp" class="ibm-forward-link">Downloads and products</a></li><li><a href="http://www.ibm.com/developerworks/views/web/projects.jsp" class="ibm-forward-link">Open source projects</a></li><li><a href="http://www.ibm.com/developerworks/views/web/library.jsp" class="ibm-forward-link">Technical library (articles, tutorials, training, and more)</a></li><li><a href="http://www.ibm.com/developerworks/forums/dw_waforums.jsp" class="ibm-forward-link">Forums</a></li><li><a href="http://www.ibm.com/developerworks/views/web/events.jsp" class="ibm-forward-link">Events</a></li><li><a href="http://www.ibm.com/developerworks/newsletter/" class="ibm-forward-link">Newsletter</a></li></ul></div></div>
+<!-- High_Visibility_Offer -->
+<!--XSLT stylesheet used to transform this content: s-highvisibilityoffer.xsl--><div class="ibm-container"><h2>Stay ahead of the latest cloud trends</h2><div class="ibm-container-body"><img width="188" height="70" border="0" alt="Stay ahead of the latest cloud trends" src="//www.ibm.com/developerworks/i/hivis-w-cloudzone.jpg"/><p class="ibm-ind-link"><a href="https://www.ibm.com/developerworks/cloud/index.html?ca=dti-cloudzone" class="ibm-forward-link">Cloud Computing resources from developerWorks</a></p></div></div>
+<!-- Special_Offers -->
+<div class="ibm-container"><h2>Special offers</h2><div class="ibm-container-body"><p class="dw-special-offers"><a href="https://www-304.ibm.com/partnerworld/wps/servlet/ContentHandler/2011_beacon_awards_developerworks.html?ca=dti-dwbeacon"><img src="//www.ibm.com/developerworks/i/tile_v16_beacon2010.gif" width="158" height="50" border="0" alt="Partner Award Most Innovative use of dW" /></a></p><p class="dw-special-offers"><a href="http://www.ibm.com/developerworks/downloads/?ca=dti-rdownload#rational"><img src="//www.ibm.com/developerworks/i/tile_v16_r-download.gif" width="158" height="50" border="0" alt="Download and evaluate Rational software" /></a></p><p class="dw-special-offers"><a href="http://www.ibm.com/developerworks/views/linux/libraryview.jsp?type_by=Tutorials&amp;ca=dti-linuxtutorial"><img src="//www.ibm.com/developerworks/i/tile_v16_learnfast-l.gif" width="158" height="50" border="0" alt="Learn fast with free IBM Linux tutorials" /></a></p><div class="ibm-rule"><hr/></div><p class="ibm-ind-link"><a class="ibm-forward-link" href="http://www.ibm.com/developerworks/downloads/?ca=dti-tilemoreoffers">Trial software offers</a></p></div></div>
+<!-- RIGHT_COLUMN_CONTENT_END -->
+
+</div>
+<!-- RIGHT_COLUMN_END -->
+
+<!-- CONTENT_BODY_END -->
+</div>
+
+</div>
+<!-- CONTENT_END -->
+
+ <!-- END_IBM-PCON -->
+</div>
+
+<!-- FOOTER_BEGIN -->
+<div id="ibm-page-tools">
+<!-- IBM page tools container -->
+</div>
+<div id="ibm-footer">
+<ul>
+<li class="ibm-first"><a href="http://www.ibm.com/ibm/">About IBM</a></li>
+<li><a href="http://www.ibm.com/privacy/">Privacy</a></li>
+<li><a href="http://www.ibm.com/contact/">Contact</a></li>
+<li><a href="http://www.ibm.com/legal/">Terms of use</a></li>
+</ul>
+</div>
+<!-- FOOTER_END -->
+
+ <!-- END_IBM-TOP -->
+</div>
+ 
+ <!-- SCRIPTS_INCLUDE_BEGIN -->
+<!-- JQuery start -->
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.dimensions-1.2.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.hoverIntent.minified.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.cluetip.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/tagging/ui.core-1.7.1.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/tagging/ui.slider-1.7.1.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/tagging/dwjquerytags.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/si/flash-detect.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/si/dwsi.js"></script>
+<script type="text/javascript" language="JavaScript">
+	jQuery.noConflict();     
+	// Put all your code in your document ready area
+	jQuery(document).ready(function(jQuery) {
+	// Do jQuery stuff using jQuery 
+	jQuery('a.dwauthor').cluetip({
+		local: true,
+		showTitle: false,
+		positionBy: 'bottomTop',
+		sticky: true,	
+		mouseOutClose: true,
+		closeText: '<img src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/i/x.gif" alt="Close" />',
+		arrows: false,
+		dropShadow: true,
+		cluetipClass: 'dwbasic'
+		});
+
+		//tagging
+		login="false";
+		userid="";
+		whichTags = "init";
+		pCont = "";
+		mCont = "";
+		signInMCont = "";
+		accessCont = "";
+		pValue = 0;
+		mValue = 0;
+
+		rBHash = null;
+		rBHash = new Object();
+		rBHash['viperLang'] = 'en';
+		rBHash['urlLang'] = 'en';
+		rBHash['tagThisWinTitle'] = 'Tagit';
+		rBHash['pTags1'] = 'Popular tags';
+		rBHash['pTags2'] = 'End of Popular tags';
+		rBHash['mTags1'] = 'My tags';
+		rBHash['mTags2'] = 'End of My tags';
+		rBHash['alt1'] = 'Loading Content';
+		rBHash['noATags'] = 'No active tags';
+		rBHash['signIn1'] = 'Please ';
+		rBHash['signIn2'] = 'sign in';
+		rBHash['signIn3'] = ' to access';
+		rBHash['signIn4'] = 'My Tags';
+		rBHash['signIn5'] = 'To access My Tags, please ';
+		rBHash['signIn6'] = 'sign in';
+		rBHash['signIn7'] = 'Read Popular tags';
+
+		zoneHash = new Object();
+		zoneHash['aix'] = 'AIX and UNIX zone';
+		zoneHash['data'] = 'Information Management zone';
+		zoneHash['lotus'] = 'Lotus zone';
+		zoneHash['rational'] = 'Rational zone';
+		zoneHash['tivoli'] = 'Tivoli zone';
+		zoneHash['websphere'] = 'WebSphere zone';
+		zoneHash['architecture'] = 'Technical library';
+		zoneHash['autonomic'] = 'Technical library';
+		zoneHash['java'] = 'Technical library';
+		zoneHash['cloud'] = 'Technical library';
+		zoneHash['industry'] = 'Technical library';
+		zoneHash['library'] = 'Technical library';
+		zoneHash['linux'] = 'Technical library';
+		zoneHash['opensource'] = 'Technical library';
+		zoneHash['power'] = 'Technical library';
+		zoneHash['webservices'] = 'Technical library';
+		zoneHash['web'] = 'Technical library';
+		zoneHash['xml'] = 'Technical library';
+		zoneHash['wireless'] = 'Technical library';
+		jQuery.checkRB();
+		jQuery.getPopularTags("/developerworks/dwtags/dwjquerytabtags?lang=" + rBHash['viperLang'] + "&base=" + jQuery.getNormalizedZoneUrl(location.href));
+		jQuery.getUserTags();
+		if(jQuery.isTutorial(location.href) == "true") {
+			jQuery.getTagsForContent("/developerworks/tagging/UseCaseServlet?lang=" + rBHash['viperLang'] + "&format=maverick&cType=tutorials&use_case=geturltags&action=gettags&url=" + jQuery.normalizeUrl(location.href));
+		}
+		else {
+			jQuery.getTagsForContent("/developerworks/tagging/UseCaseServlet?lang=" + rBHash['viperLang'] + "&format=maverick&cType=articles&use_case=geturltags&action=gettags&url=" + jQuery.normalizeUrl(location.href));
+
+		}
+		
+		// si
+		initSI();
+	});
+ </script>
+ <!-- JQuery end -->
+ <!-- Overlay js -->
+<script language="JavaScript" src="//dw1.s81c.com/common/js/overlay.js" type="text/javascript"></script>
+<!-- My dW Interest article -->
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/showinterest.js" type="text/javascript">//</script>
+<script language="JavaScript" type="text/javascript">
+        // <![CDATA[
+			var contentId = '';
+			var contentAreas = '';
+			var caArr = [];
+			contentId = '90261';
+			contentAreas = 'web,opensource';
+			if(contentAreas != ''){caArr = contentAreas.split(',');}
+			var loginLink = 'https://www.ibm.com/developerworks/dwwi/DWAuthRouter?m=loginpage&d=' + encodeURIComponent(window.location);jQuery('interestShow').showInterest(contentId,'dw-article',{'int_tops':[16,85,9,2,57,51,100,107],'int_prods':[], 'int_prod_fam':[],'int_cont_area':caArr},
+'<div id="dw-interest-anon"><a id="intAnonBtn" class="ibm-external-link" href="">Update My dW interests</a> (<a class="dw-interest" href="' + loginLink + '">Log in</a> | <a class="dw-interest" href="#overlay" onclick="ibmCommon.Overlays.show(\'dwmyinterestadd\', this);return false;">What\'s this?</a>) <a class="ibm-access" href="#dwmyinterestaddhelp">Skip to help for Update My dW interests</a></div>',
+'<div id="dw-interest-add"><a id="intSelectBtn" class="ibm-external-link" href="">Add to My dW interests</a> (<a class="dw-interest" href="#overlay" onclick="ibmCommon.Overlays.show(\'dwmyinterestadd\', this);return false;">What\'s this?</a>) <a class="ibm-access" href="#dwmyinterestaddhelp">Skip to help for Add to My dW interests</a></div>',
+'<div id="dw-interest-remove">Added to My dW interests (<a class="dw-interest" href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/html/myProfileView.do?lang=en">Edit</a>)</div>'
+);
+// ]]>
+</script><!-- BEGIN: Use this section to set page specific variables for the Unica Page Tag -->
+<script language="JavaScript">var NTPT_PGEXTRA="ibmSkillLevel=2&ibmAdoptPhase=-&ibmRole=-";</script>
+<!--END --><!-- SCRIPTS_INCLUDE_END -->
+
+<div id="ibm-metrics">
+<script src="//dw1.s81c.com/common/stats/stats.js" type="text/javascript">//</script>
+</div>
+
+</body>
+</html>

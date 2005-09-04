@@ -1,0 +1,1200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<head>
+	<title>morgueFile free photos for creatives by creatives</title>
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/> 
+<meta name="Description" content="Morguefile.com free stock photos">
+<meta name="revisit-after" content="1 days">
+<meta name="author" content="free photos">
+<meta name="owner" content="free photos">
+<meta name="Keywords" content="free stock photos, photography, free photo, clip art, digital photography, cameraphones, camera, hobby photography, photo, photos, digital camera, compactflash, smartmedia, cameras, canon, nikon, olympus, fujifilm">
+
+
+
+
+<style type="text/css">
+<!--
+	@import url("/css/public/compiled/main_082410.css");
+	-->
+</style>
+
+</head>
+
+<body>
+
+	<!-- START content -->
+
+<script src="/js/compiled/home_082410.js" type="text/javascript"></script>
+
+
+
+
+<script type="text/javascript">
+
+
+
+	$(document).ready( function() {
+		bind_thumbs();
+	});
+
+var active_color = '#000'; // Colour of user provided text
+var inactive_color = '#a9a9a9'; // Colour of default text
+
+
+
+
+	
+	
+	var _cur_cover 					= '787';
+	var _cur_cover_auth 			= 'Circle';
+	var _cur_cover_title 			= 'mjan78';
+	var _cur_cover_capt 			= '';
+	var _cur_cover_id 				= '201949';
+	var _cur_cover_file 			= '/data/imageData/public/cover/cvr_1292599024.jpg';	
+	
+	
+	var _edit_cover 				= '787';
+	var _edit_cover_auth 			= 'Circle';
+	var _edit_cover_title 			= 'mjan78';
+	var _edit_cover_capt 			= '';
+	var _edit_cover_id 				= '201949';
+	var _edit_cover_file 			= '/data/imageData/public/cover/cvr_1292599024.jpg';		
+	
+	
+	var cvr_showing = 1;
+	
+	
+	
+	
+	function bind_thumbs(){
+		$('.thmb_stge_slds span').each(
+			function( indx ){
+				$( this ).bind ("mouseover",
+					function(){
+						thmbShowRoll(this);
+					}
+				);
+				$( this ).bind ("mouseout",
+					function(){
+						thmbShowRoll();
+					}
+				);
+			}
+		);
+	 }
+
+	
+	var tabs_arr = new Array( 'free', 'port', 'blog');
+	
+	
+	function home_pick_tab(n){
+		var n, tmp;
+		
+		for(var i=0; i<tabs_arr.length; ++i){
+			tmp =  tabs_arr[i];
+			
+			if(tmp!=n){
+				$('#home_outlnk_'+tmp).css('display', 'none');
+				$('#home_content_'+tmp).css('display', 'none');
+
+				
+				$('#home_tb_'+tmp).removeClass('home_tab_act');
+				$('#home_tb_'+tmp).addClass('home_tab_inact');
+			} else {
+				$('#home_outlnk_'+tmp).css('display', 'block');			
+				$('#home_content_'+tmp).css('display', 'block');
+		
+				
+				$('#home_tb_'+tmp).removeClass('home_tab_inact');
+				$('#home_tb_'+tmp).addClass('home_tab_act');
+			}
+		}
+	}
+
+
+
+	var cvr_srch_auth = '';
+	var cvr_srch_date = '';
+	var cvr_srch_all = false;
+	var cvr_srch_page = 1;
+	var cvr_srch_pageCount = 0;
+	var cvr_srch_totl = 0;
+
+
+	function rest_vars(){
+		cvr_srch_auth = '';
+		cvr_srch_date = '';
+		cvr_srch_all = 0;
+		cvr_srch_page = 1;
+		cvr_srch_pageCount = 0;
+		cvr_srch_totl = 0;
+
+	}
+
+
+	function view_by_author(){
+		rest_vars();
+		cvr_srch_auth = $('#cover_srch_auth').val();
+		int_cvr_browser();
+	}
+
+	function view_by_date(){
+		rest_vars();
+		cvr_srch_date = show_cvr_date;
+		int_cvr_browser();
+	}
+
+	function view_all_cvrs(){
+		rest_vars();
+		cvr_srch_all = 1;
+		int_cvr_browser();
+	
+	}
+			
+	function int_cvr_browser(){
+		$('#cvr_brwsr .cvr_itm').remove();
+		$('#cvr_folio_bx').css('display', 'none');
+		$('#cvr_brwsr').css('display', 'none')
+		show_brwsr();	
+		
+		
+		var params = new Object();
+		params = {
+			cvr_srch_auth: cvr_srch_auth,
+			cvr_srch_date: cvr_srch_date,
+			cvr_srch_all: cvr_srch_all,
+			cvr_srch_page: cvr_srch_page
+		}	
+		$.ajax({
+			url:'/js/php/cvr.php',
+			data:params,
+			dataType:"json",
+			success:draw_cvr_stage,
+			error:cvr_err
+		});						
+	}
+
+		
+		
+	function draw_cvr_stage(data){
+		var data, itm;
+		if(data['error'] || data['no_reslts']){
+			$('#cvr_msg_bx').css('display', 'block');
+			$('#cvr_folio_bx').css('display', 'none');
+			$('#cvr_brwsr').css('display', 'none');
+			
+			if(data['no_reslts']){
+				$('#cvr_msg').html('No results, try a different search.<BR><a href="javascript:show_viewCvr()">Go back<\/a>');
+			} else {
+				$('#cvr_msg').html('Error:' + data['error'] + '<BR><a href="javascript:show_viewCvr()">Go back<\/a>');
+			}
+		
+		} else {
+			$('#cvr_msg_bx').css('display', 'none');
+			$('#cvr_folio_bx').css('display', 'block');
+			$('#cvr_brwsr').css('display', 'block');
+				
+			jQuery.each(data['covers'], function() {
+				itm = create_cvrBlck(this);
+				$('#cvr_brwsr').append(itm);
+			});		
+			cvr_srch_page = parseFloat(data['data']['page']);
+			cvr_srch_pageCount = parseFloat(data['data']['page_count']);
+			cvr_srch_totl = parseFloat(data['data']['total']);
+			cvr_srch_page--;
+			
+			$("#cvr_folio").pagination(cvr_srch_totl, {
+				items_per_page:12, 
+				current_page: cvr_srch_page,
+				callback:chngPage
+			});
+		}
+	}
+	
+	function chngPage(pg, elm){
+		var pg, elm;
+	
+		cvr_srch_page = pg+1;
+		int_cvr_browser();
+	}
+
+	function cvr_err(){
+		alert('ERROR finding server');
+	}
+	
+
+
+	function create_cvrBlck(v){
+		var v;
+
+
+		var itm = $('<div><\/div>').addClass('fldr_blck_item');
+		var lft = $('<div><\/div>').addClass('fldr_blk_lft');
+		var rgt = $('<div><\/div>').addClass('fldr_blk_rgt');
+		var ttx = $('<div><\/div>').addClass('fldr_blk_txt');
+		var ttl = $('<span><\/span>').append(v['cover_title']);
+					
+		$(ttx).append(ttl);
+		$(itm).append(lft).append(ttx).append(rgt);
+		$(itm).bind("click", {id: v['cover_id'] }, get_cvr);
+		$(itm).attr('id', v['cover_id']).addClass('cvr_itm');
+				
+		return itm;	
+	}
+
+	function get_cvr(evt){
+		var evt;
+		$('#hero_image').hide();
+		$.ajax({
+			url:'/js/php/ajax_edit.php',
+			data:{cover_id: evt.data.id, action:'get_cover_data'},
+			dataType:"json",
+			success:prv_cvr,
+			error:cvr_err
+		});			
+	}
+
+
+	function prv_cvr(data){
+		var data;
+		
+		cvr_default(2);
+		
+		$('.home_caption_title').html( data['cover_title'] );
+		$('.home_caption_auth').html( '<A HREF="/creative/' + data['cover_author'] + '">' + data['cover_author'] + '<\/a>');
+		$('.home_caption_capt').html( data['cover_caption'] );
+		
+		
+		$('#hero_image').load(function () {
+			$(this).fadeIn();
+		})
+		$('#hero_image').attr({ src:  '/data/imageData/public/cover/' + data['cover_jpg'] }); 
+		
+		
+		_edit_cover 				= data['cover_id'];
+		_edit_cover_auth 			= data['cover_author'];
+		_edit_cover_title 			= data['cover_title'];
+		_edit_cover_capt 			= data['cover_caption'];
+		_edit_cover_id 				= data['cover_file_id'];
+		_edit_cover_file 			= data['cover_jpg'];				
+		
+	}
+
+
+
+
+	function show_brwsr(){
+		set_tools();
+		$('#home_main_hero').css('display', 'none');
+		$('#home_main_slct_cvr').css('display', 'none');
+		$('#home_main_view_cvrs').css('display', 'block');
+		$('#home_main_edit_cvr').css('display', 'none');
+		$('#home_main_add_cvr').css('display', 'none');	
+	}
+
+
+	function cvr_default(v){
+		var v;
+		v = (!v) ? 1 : v;
+		set_tools(v);
+		$('#home_main_hero').css('display', 'block');
+		$('#home_main_slct_cvr').css('display', 'none');
+		$('#home_main_view_cvrs').css('display', 'none');
+		$('#home_main_edit_cvr').css('display', 'none');
+		$('#home_main_add_cvr').css('display', 'none');		
+		
+	}
+
+	function show_viewCvr(){
+		set_tools();
+		$('#home_main_hero').css('display', 'none');		
+		$('#home_main_slct_cvr').css('display', 'block');
+		$('#home_main_view_cvrs').css('display', 'none');		
+		$('#home_main_edit_cvr').css('display', 'none');		
+		$('#home_main_add_cvr').css('display', 'none');	
+
+		/// date picker
+		$("#fltrDate_pckr").datepicker({ 
+			altField: "#altInline",
+			onSelect: doTheDateSlct,
+			dateFormat: "m.d.yy",
+			altFormat: "m.d.yy" 
+		});
+			
+ 		$("#fltrDate_pckr").show();
+
+	}
+
+	function doTheDateSlct(date){
+		var date, tmp_date, tmp_obj;
+		$("#altInline").val(date);
+		date = $.datepicker.parseDate("m.d.yy", date);
+		tmp_obj = new Date(date);
+		show_cvr_date = tmp_obj.getTime()/1000.0;
+
+	}
+
+	function set_tools(n){
+		var n;
+		switch(n){
+			case 1:
+				$('#hm_caption').css('display', 'block');
+				$('#home_tools').css('display', 'block');
+				$('#home_tools_close').css('display', 'none');	
+				$('#home_tools_retrn').css('display', 'none');
+				break;
+			case 2:
+				$('#hm_caption').css('display', 'block');
+				$('#home_tools').css('display', 'none');
+				$('#home_tools_close').css('display', 'none');	
+				$('#home_tools_retrn').css('display', 'block');
+				break;		
+			default:
+				$('#hm_caption').css('display', 'none');
+				$('#home_tools').css('display', 'none');
+				$('#home_tools_close').css('display', 'block');	
+				$('#home_tools_retrn').css('display', 'none');	
+				break;					
+		}
+
+	}
+
+
+
+
+
+
+
+
+	
+		
+
+</script>
+
+<style type="text/css">
+<!--
+
+.hm_wrppr {
+	width: 728px;
+	margin: 0 auto;
+	text-align: left;
+}
+
+.hm_main_mast {
+	width: 728px;
+}
+
+.hm_main_hero, .hm_lft_col {
+	width: 440px;
+	margin-top: 10px;
+	float: left;
+}
+
+.hm_main_hero {
+	height: 420px;
+}
+
+
+
+#hm_caption {
+	padding: 0;
+	margin: 0;
+	margin-top: 4px;
+	float: left;
+	width: 350px;
+}
+
+
+#hm_caption p {
+	text-align: left;
+	padding: 0;
+	margin: 0;
+}
+
+
+.home_caption_title {
+	margin: 0;
+	margin-top:20px;
+	font-size: 15px;
+}
+
+.home_caption_auth {
+	margin: 0;
+	margin-top:4px;
+	font-size: 11px;
+}
+
+
+
+.hm_cntnt_div {
+	width: 728px;
+	float: left;
+}
+
+
+#home_ads {
+	width: 728px;
+	float: left;
+	padding: 0;
+	padding-top: 10px;
+	margin-top: 10px;
+	border-top: 1px dotted #999966;	
+}
+
+
+#home_promo_bar {
+	width: 728px;
+	float: left;
+	margin: 15px 0;
+	padding: 0;
+	padding: 5px 0;
+	border-top: 1px dotted #999966;
+	border-bottom: 1px dotted #999966;	
+	text-align: left;
+}
+
+#home_promo_bar h4 {
+	color: #777;
+	font-size: 16px;
+}
+
+
+.home_pr_sep {
+	border-right: 1px solid #c7c7b9;
+	padding: 0 10px;
+	width: 161px;
+}
+
+.home_pr_sep_1 {
+	border-right: 1px solid #c7c7b9;
+	padding: 0;
+	padding-right: 10px;
+	width: 161px;	
+}
+
+.home_pr_sep_2 {
+	padding: 0;
+	padding-left: 10px;
+	width: 161px;
+}
+
+
+.hm_rgt_col {
+	width: 235px;
+	margin-top: 5px;
+	float: right;
+}
+
+
+.hm_rgt_col p {
+	margin: 0;
+	margin-bottom: 10px;
+	padding: 0;
+	font-size: 12px;
+}
+
+
+.home_right_col_srch {
+	margin: 0;
+	margin-bottom: 20px;
+	width: 235px;
+}
+
+.home_right_col_srch p {
+	margin: 0;
+	padding: 0;
+}
+
+.hm_rgt_sub {
+	margin: 0;
+	padding: 0;
+	font-weight: bold;
+}
+
+
+
+
+.home_right_col_nav {
+	margin: 0;
+	margin-top: 10px;
+	float: left;
+}
+
+
+
+.home_sep {
+	width: 235px;
+	height: 1px;
+	color: #fff;
+	background-color: #fff;	
+	border: none;
+	border-bottom: 1px dotted #999966;
+	margin: 5px 0;
+	_margin: 0;
+}
+
+
+.home_right_col_nav {
+	margin-top: 10px;
+}
+
+
+.home_right_col_nav p {
+	margin: 0;
+	margin-bottom: 4px;
+	padding: 0;
+}
+
+
+
+.top_draw {
+	float: left;
+	width: 100%;
+	padding: 20px 0;
+	margin: 0;
+	background-color: #fff;
+}
+
+
+.btm_draw {
+	float: left;
+	width: 100%;
+	padding: 20px 0;
+	margin: 0;
+	margin-bottom: -20px;
+	background: url('images/btm_bgtile.jpg') repeat-x;
+	background-color: #ebebda;
+}
+
+
+
+
+.btm_lnks_1 {
+	margin-top: 10px;
+	float: left;
+	width: 225px;
+}
+
+.btm_lnks_2 {
+	float: right;
+	width: 200px;
+}
+
+.btm_lnks {
+	text-align: left;
+    margin-left:auto;
+    margin-right:auto;
+	width: 700px;
+}
+
+.home_promo_buckets h4 {
+	margin: 0;
+	margin-bottom: 4px;
+
+}
+
+#home_content_tabs, #hm_pg_contnt {
+	width: 728px;
+	float: left;
+}
+
+
+.home_tab_sep {
+	margin-right: 10px;
+	padding-right: 10px;
+	border-right: 1px solid #c7c7b9;
+}
+
+.home_tab_act {
+	font-weight: bold;
+	color: #aaa;
+}
+
+.home_tab_inact {
+	font-weight: bold;
+	color: #B66107;
+}
+
+.home_tab_inact:hover {
+	text-decoration: underline;
+	color : #3D1604;
+}
+
+.home_tabs_lnk {
+	float: left;
+	width: 350px;
+}
+
+.home_tabs_outlnk {
+	float: right:
+	width: 350px;
+	text-align: right;
+}
+
+.hm_tble_contnt {
+	width: 728px;
+	margin-top: 10px;
+	float: left;
+}
+#home_content_blog ul {
+	list-style:		none;
+	margin: 0;
+	padding: 0;
+}
+
+#home_content_blog li {
+	list-style:		none;
+	margin: 0;
+	padding: 0;
+	padding-top: 10px;
+	margin-top: 10px;
+	border-top: 1px solid #BFBFBF;
+	
+
+}
+
+
+.hme_blg_date {
+	font-size: 9px;
+	font-weight: bold;
+	color: #888;
+	margin-bottom: 10px;
+	
+
+}
+
+
+.hme_blg_title {
+	font-size: 18px;
+	font-weight: bold;
+	
+
+}
+
+
+
+#home_tools, #home_tools_close, #home_tools_retrn {
+	float: right;
+	margin: 4px 0;
+}
+
+
+
+#home_main_hero {
+	width:440px;
+	height:420px;
+	padding: 0;
+	float:left;
+	margin: 0;
+}
+
+
+
+
+
+.covr_box {
+	background-color: #ebebda;
+	padding: 10px;
+	margin: 0;
+	width: 420px;
+	height: 400px;
+	float: left;
+	text-align: left;
+}
+
+.covr_box h2{
+	margin: 0;
+	font-size: 18px;
+	color: #777;
+	margin-left: 5px;
+	margin-bottom: 5px;
+}
+
+
+
+
+
+
+.fldr_blck_item {
+	width: 440px;	
+}
+
+.fldr_blk_txt {
+	width: 434px;
+}
+
+
+.fldr_blck_item span {
+	width:400px;
+	margin-left: 5px;
+
+}
+
+
+
+#cvr_brwsr {
+	width: 440px;
+	height: 360px;
+}
+
+
+
+
+
+
+.pagination {
+            font-size: 80%;
+        }
+        
+.pagination a {
+    text-decoration: none;
+	border: solid 1px #AAE;
+	color: #15B;
+}
+
+.pagination a, .pagination span {
+    display: block;
+    float: left;
+    padding: 0.3em 0.5em;
+    margin-right: 5px;
+	margin-bottom: 5px;
+}
+
+.pagination .current {
+    background: #26B;
+    color: #fff;
+	border: solid 1px #AAE;
+}
+
+.pagination .current.prev, .pagination .current.next{
+	color:#999;
+	border-color:#999;
+	background:#fff;
+}
+
+
+
+
+
+
+
+.home_right_col_srch input[type=text] {
+	width: 205px;
+	margin: 0;
+	font-size: 19px;
+	color: #a9a9a9;
+}
+
+
+
+
+
+.hmeSrchTop {
+	height: 8px; 
+	width: 235px; 
+	background-image: url(/images/homRndCrnTop.gif); 
+	background-repeat:no-repeat; 
+	font-size: 1px; 
+	line-height:1px; 
+	float: left;
+}
+
+.hmeSrchBtm {
+	height: 8px; 
+	width: 235px; 
+	background-image: url(/images/homRndCrnBtm.gif); 
+	background-repeat:no-repeat; 
+	font-size: 1px; 
+	line-height:1px; 
+	float: left; 
+	margin-bottom: 14px;
+}
+
+
+
+
+
+
+-->
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+					
+<div class="contextMenu" id="cvr_menu">
+   <ul>
+	   <li id="edit">Edit</li>
+	   <li id="add">Add</li>
+	   <li id="delete">Delete</li>
+	   
+   </ul>
+</div>
+				
+
+
+
+<div class="top_draw">
+	<div class="hm_wrppr">
+		<div id="hm_main_mast"><img src="images/masthead.gif" border="0"></div>
+	
+	
+		<div class="hm_lft_col">
+		
+			<div id="home_main_hero">
+				<a href="/archive"><img src="/data/imageData/public/cover/cvr_1292599024.jpg" border="0" id="hero_image"></a>
+			</div>
+			
+								
+			
+
+			<div id="home_main_slct_cvr" class="covr_box" style="display: none;">
+
+				<h2>View past covers</h2>
+			
+				<table cellpadding=0 cellspacing=5>
+					<tr>
+						<td valign="top">By author</td>
+						<td valign="top"><input type="text" id="cover_srch_auth" style="width: 300px;" value=""></td>
+					</tr>
+					<tr>
+						<td valign="top"> &nbsp; </td>
+						<td valign="top"><button onclick="view_by_author(); return false;">Search</button></td>
+					</tr>
+			
+					<tr><td clospan=2 style="height: 20px;"> &nbsp; </td></tr>
+	
+					<tr>
+						<td valign="top">By date</td>
+						<td valign="top"><input type="text" id="altInline" style="width: 240px;" /></td>
+					</tr>
+					<tr>
+						<td valign="top"> &nbsp; </td>
+						<td valign="top"><div id="fltrDate_pckr"></div></td>
+					</tr>					
+					
+					<tr>
+						<td valign="top"> &nbsp; </td>
+						<td valign="top"><button onclick="view_by_date(); return false;">View</button> <button onclick="view_all_cvrs(); return false;">View all covers</button></td>
+					</tr>
+				</table>
+
+			</div>				
+			
+						
+
+			<div id="home_main_view_cvrs" style="display: none;">
+			
+				<div id="cvr_folio_bx" class="roundedcornr_box_folio" style="width:440px; margin-bottom: 2px;">
+					<div class="roundedcornr_top_folio"><div></div></div>
+						<div class="roundedcornr_content_folio">						
+				
+								<div id="cvr_folio" class="pagination"></div>
+			
+						</div>
+					<div class="roundedcornr_bottom_folio"><div></div></div>
+				</div>							
+				
+				<div id="cvr_brwsr"></div>
+				
+				
+				
+				<div class="roundedcornr_box_folio" style="width:440px; display:none;" id="cvr_msg_bx">
+					<div class="roundedcornr_top_folio"><div></div></div>
+						<div class="roundedcornr_content_folio">						
+				
+								<div id="cvr_msg"></div>
+			
+						</div>
+					<div class="roundedcornr_bottom_folio"><div></div></div>
+				</div>				
+				
+			</div>			
+			
+			
+		
+			
+			
+			
+			
+			
+			
+			<div id="home_tools">	
+				<a href="#" onclick="show_viewCvr(); return false;">View covers</a>
+			</div>
+			
+			<div id="home_tools_close" style="display: none;">
+				<button onclick="cvr_default(); return false;">Close</button>
+			</div>
+			
+			<div id="home_tools_retrn" style="display: none;">
+				<button onclick="show_brwsr(); return false;">Back</button>
+			</div>			
+			
+			<div id="hm_caption">
+				<p class="home_caption_title">Circle</p>
+				<p class="home_caption_auth"><a href="/creative/mjan78">mjan78</a></p>
+				<p class="home_caption_capt"></p>
+				
+			</div>
+			
+		</div>
+		
+		
+		<div class="hm_rgt_col">
+	
+			<div class="home_right_col_srch">
+				<form method="GET" action="javascript:doSiteSearch('free_photos');" id="search_box_form" name="search_box_form" style="margin: 0; margin-top:5px;">
+			
+				
+						<div class="hmeSrchTop"></div>
+					
+						<div style="background-color: #ccd0b6; width: 215px; float: left; padding: 3px 10px;">
+
+							<p style="margin-bottom: 5px;"><input name="searchBox" id="searchBox" maxlength="250" type="text" value="Free photos" class="default-value" onfocus="if (this.value == 'Free photos') {this.value = '';}" onblur="if (this.value == '') {this.value = 'Free photos';}"></p>
+								
+							<p style="float: left; font-size: 10px; width: 110px;">View the <a href="/tags/">Search log</a></p>
+							
+							<p style="float: right;">
+								<a href="#" onclick="doSiteSearch('free_photos'); return false;" style="margin-right: 6px; height: 26px; line-height: 26px; font-size:26px; float: right;"><img src="/images/srch_btnHome.gif"></a>
+							</p>
+							
+						</div>
+							
+						<div class="hmeSrchBtm"></div>
+					
+				</table>
+				
+				</form>
+			</div>
+			
+			<p><b>Free images</b> for your inspiration, reference and use in your creative work, be it commercial or not!</p>
+			
+			<p>Wondering about the morgueFile license? <a href="/license">Click here</a></p>
+			
+			<p>It's also easy to add your own photos to the morgueFile. So, give back because this archive is for creatives by creatives.</p>
+			
+			<p>Why is it called morgue file? <a href="/docs/What_is_a_morguefile">Click here</a> and find out.</p>
+									
+			
+		
+	
+			<div class="home_right_col_nav">
+			
+				<p class="hm_rgt_sub">Explore the morgueFile</p>
+				
+				<hr class="home_sep">
+				
+				<p><img src="/images/bult_1.gif" style="margin-right: 4px;"><a href="/archive" style="color:#666633">Free photos</a></p>
+				<p><img src="/images/bult_2.gif" style="margin-right: 4px;"><a href="/portfolio" style="color:#000">Portfolios</a></p>
+				<p><img src="/images/bult_3.gif" style="margin-right: 4px;"><a href="/organizer" style="color:#555">Organize</a></p>
+				<p><img src="/images/bult_4.gif" style="margin-right: 4px;"><a href="/docs/Classroom">Classroom</a></p>
+				<p><img src="/images/bult_4.gif" style="margin-right: 4px;"><a href="/community">Community</a></p>			
+			
+			<hr class="home_sep">
+				
+						
+			<p><a href="/login.php?next_url=/">Login</a></p>
+			<p><a href="/community/ucp.php?mode=register">Register</a></p>	
+				
+						
+					
+			</div>
+			
+			<form method="GET" action="" id="search_box_form" name="search_box_form"></form>	
+	
+		</div>
+		
+		<div class="hm_cntnt_div">
+
+			<div id="home_ads">
+			
+<script type="text/javascript"><!--
+google_ad_client = "pub-9923614335664154";
+/* 728x15 homepage, created 6/7/10 */
+google_ad_slot = "0254113781";
+google_ad_width = 728;
+google_ad_height = 15;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+				
+			</div>
+						
+		
+		
+			<div id="home_promo_bar">
+			
+				<table>
+					<tbody><tr>
+						<td class="home_promo_buckets home_pr_sep_1" valign="top">
+							<div class="edit_area" id="buckt1"><h4>Food Photo Fair </h4><a href="http://morguefile.com/lightbox/view/#/?display_type=0&lightbox=395277&sort=date_added&page=1&ttl=40&lmt=24"><img src="http://mrg.bz/Hof2kK" width="160" height="112" border="0" style="margin-bottom: 5px;"><a/></div>
+						</td>	
+						<td class="home_promo_buckets home_pr_sep" valign="top">
+							<div class="edit_area" id="buckt2"><h4>Seasonal Greetings </h4><a href="http://morguefile.com/archive/browse/#/?display_type=1&terms_all=season&sort=last_zip&page=1&ttl=868&lmt=482"><img src="http://mrg.bz/rfS5lW" width="160" height="112" border="0" style="margin-bottom: 5px;"><a/></div>
+						</td>	
+						<td class="home_promo_buckets home_pr_sep" valign="top">
+							<div class="edit_area" id="buckt3"><h4>snow ice winter cold </h4><a href="http://morguefile.com/archive/view/#/?qury=ice,%20snow,%20cold&terms_all=ice,snow,cold"><img src="http://mrg.bz/8s7E7p" width="160" height="112" border="0" style="margin-bottom: 5px;"><a/></div>
+						</td>	
+						<td class="home_promo_buckets home_pr_sep_2" valign="top">
+							<div class="edit_area" id="buckt4"><h4>Fun with Kids </h4><a href="http://morguefile.com/archive/browse/#/?display_type=1&terms_all=kids&fcat=88472&sort=last_zip&page=1&lmt=84"><img src="http://mrg.bz/QM2s6V" width="152" height="112" border="0" style="margin-bottom: 5px;"><a/></div>
+						</td>	
+					</tr>
+				</tbody></table>
+				
+			</div>
+			
+			
+			<div id="home_content_tabs" class="home_content_tab">
+				<div class="home_tabs_lnk">
+					<span id="home_tb_blog" style="color:#777777; font-size:16px; font-weight:bold;">Blog</span>
+				</div>
+				
+				<div class="home_tabs_outlnk">	
+					<div id="home_outlnk_blog" style="display: block;" ><a href="/blog">Click here</a> for the blog</div>
+				</div>	
+			</div>	
+			
+			
+			
+			<div id="hm_pg_contnt">
+			
+					<!-- home page content -->
+
+
+					<div class="hm_tble_contnt" id="home_content_blog" style="display: block;">
+						<ul>
+							<li>									<div class="hme_blg_title"><a href="http://morguefile.com/blog/?p=1584">World Lens</a></div>									<div class="hme_blg_date">2010-12-17 21:22:24 by <a href="http://morguefile.com/creative/mconnors">mconnors</a></div>									<div class="hme_blg_text">Real time translating app. Turn your iphone into a <a href="http://questvisual.com/">dictionary of the future</a>.</div>								</li><li>									<div class="hme_blg_title"><a href="http://morguefile.com/blog/?p=1582">isle of tune</a></div>									<div class="hme_blg_date">2010-12-17 15:21:54 by <a href="http://morguefile.com/creative/mconnors">mconnors</a></div>									<div class="hme_blg_text">Create a music on musical streets on the <a href="http://www.isleoftune.com/">isle of tune</a>.</div>								</li><li>									<div class="hme_blg_title"><a href="http://morguefile.com/blog/?p=1580">Seven Holiday Photography Tips</a></div>									<div class="hme_blg_date">2010-12-17 15:20:32 by <a href="http://morguefile.com/creative/mconnors">mconnors</a></div>									<div class="hme_blg_text"><a href="http://photofocus.com/2010/12/17/seven-holiday-photography-tips/">photofocus</a> has a great article on tips for photographing the holidays.</div>								</li><li>									<div class="hme_blg_title"><a href="http://morguefile.com/blog/?p=1578">delicious shutting down</a></div>									<div class="hme_blg_date">2010-12-16 22:45:06 by <a href="http://morguefile.com/creative/mconnors">mconnors</a></div>									<div class="hme_blg_text"><a href="http://techcrunch.com/2010/12/16/is-yahoo-shutting-down-del-icio-us/">Crap!</a></div>								</li><li>									<div class="hme_blg_title"><a href="http://morguefile.com/blog/?p=1576">scotts sketchbook</a></div>									<div class="hme_blg_date">2010-12-16 17:09:24 by <a href="http://morguefile.com/creative/mconnors">mconnors</a></div>									<div class="hme_blg_text"><a href="http://scottssketchbook.blogspot.com/">Scott Waldell</a> has a great blog with instructions on how to paint like at academic painters.</div>								</li><li>									<div class="hme_blg_title"><a href="http://morguefile.com/blog/?p=1574">Photographing Beautiful Portraits</a></div>									<div class="hme_blg_date">2010-12-16 17:08:03 by <a href="http://morguefile.com/creative/mconnors">mconnors</a></div>									<div class="hme_blg_text"><a href="http://speckyboy.com/2010/12/16/three-unique-methods-for-photographing-beautiful-portraits/">Sufyan bin Uzayr</a> explores some awesome yet simple techniques that can be used to shoot lively portrait photographs.</div>								</li><li>					<div style="float:right;"><a href="/blog/">Next page...</a><div>				</li>
+						</ul>
+					</div>
+		
+
+					<!-- END home page content -->
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript" language="JavaScript">var site="sm8mconnors"</script>
+<script type="text/javascript" language="JavaScript1.2" src="http://sm8.sitemeter.com/js/counter.js?site=sm8mconnors"></script>
+
+
+<div class="btm_draw">
+	<table class="btm_lnks" style="margin-bottom: 10px; width:700px;">
+		<tr>
+			<td>
+	<div class="btm_lnks" style="margin-bottom: 10px; width:350px;">
+		<a href="http://www.twitter.com/morguefile_site"><img src="/images/followtweet.gif" border="0"></a> <a href="http://www.twitter.com/morguefile_site">Follow us on twitter</a>
+	</div>
+			</td>
+			<td>
+		
+	<div class="btm_lnks" style="text-align:right; margin-bottom: 10px; width:350px;">
+		<a href="http://del.icio.us/post?v=2&url=www.morguefile.com"><img src="/images/delicious-24x24.png" border="0"></a>
+		<a href="http://www.stumbleupon.com/submit?url=http://www.morguefile.com"><img src="/images/Stumbleupon-24x24.png" border="0"></a>
+		<a href="http://twitter.com/home?status=morgueFile.com,+stock+photos+for+creatives+by+creatives+http://mrg.bz"><img src="/images/Twitter-24x24.png" border="0"></a>
+		<a href="http://feeds2.feedburner.com/morguefile/blog"><img src="/images/Feed-24x24.png" border="0"></a>
+	</div>
+			</td>
+		</tr>
+	</table>
+	<div class="btm_lnks">
+		<table style="width: 700px;" width="700">
+			<tr>
+				<td valign="top">
+					<p class="btm_lnks_tp_1"><b>For other free photos, check out these sites:</b><br>
+					If you have a link that you would like to include here, <a href="/corporate/contact">let us know</a></p>
+					<div class="btm_lnks_1">
+						<a href="http://www.sxc.hu/" target="_blank">Stock.XCHNG</a><br>
+						<a href="http://www.everystockphoto.com/" target="_blank">everystockphoto</a><br>
+						<a href="http://www.pixelperfectdigital.com/free_stock_photos/" target="_blank">Pixel Perfect Digital</a><br>
+						<a href="http://openphoto.net/" target="_blank">OpenPhoto.Net</a><br>		
+						<a href="http://www.imageafter.com/" target="_blank">Image*After</a><br>
+						<a href="http://www.aboutpixel.de/" target="_blank">aboutpixel.de</a><br>
+						<a href="http://www.freephotosweb.com/freephotosweb" target="_blank">Free Photos Web</a><br>		
+					</div>
+					
+					<div class="btm_lnks_1">
+						<a href="http://www.bigfoto.com/" target="_blank">Big Foto</a><br>
+						<a href="http://www.freephotosbank.com/" target="_blank">FreePhotosBank.com</a><br>
+						<a href="http://www.freejpg.com.ar/" target="_blank">FreeJPG</a><br>
+						<a href="http://www.stockvault.net/" target="_blank">Stockvault.net</a><br>
+						<a href="http://www.freepixels.com/" target="_blank">FreePixels</a><br>
+						<a href="http://www.freerangestock.com/" target="_blank">Freerange Stock</a><br>
+					</div>
+				</td>
+
+				<td valign="top">
+					<div class="btm_lnks_2">
+						<b>Friends and partners</b><br>
+						<a href="http://www.wix.com/?utm_campaign=se_morguefile.com&experiment_id=FFW">Free Flash Website</a><br>					
+						<a href="http://www.dreamstime.com" target="_blank">Dreamstime Stock Photos</a><br>
+						<a href="http://www.made-in-china.com/">China Manufacturers</a><br>		
+						<a href="http://www.dhgate.com/">China Wholesale</a><br>					
+
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+		<!-- END content -->
+	
+	<div class="mrg_footer">
+		<div class="mrg_footer_nstd">
+		
+	
+		
+		
+		
+			<div class="mrg_footer_descr">
+				<b>Morguefile, where photo reference lives.</b><br>
+				This morgue file contains free high resolution digital stock photographs and reference images for either corporate or public use. The purpose of this site is to provide free image reference material for illustrators, comic book artist, designers, teachers and all creative pursuits.		
+			</div>
+			
+			<p class="mrg_footer_links">
+				<a href="/corporate/about/" class="mrg_footer_sep">About morgueFile</a>
+				<a href="/corporate/contact/" class="mrg_footer_sep">Contacts</a>
+				<a href="/corporate/advertise/" class="mrg_footer_sep">Advertise</a>
+				<a href="/corporate/terms/" class="mrg_footer_sep">Terms</a>
+				<a href="/corporate/privacy/">Privacy</a>
+			</p>
+			
+			<p class="mrg_footer_copy">
+			&copy; 2009-2010 MORGUEFILE. All Rights Reserved. 
+			</p>
+		</div>
+	</div>
+	
+			
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		  _gaq.push(['_setAccount', 'UA-76053-1']);
+		  _gaq.push(['_trackPageview']);
+		
+		  (function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+		  })();
+	</script>
+	
+
+
+</body>
+</html>
+
+</div>

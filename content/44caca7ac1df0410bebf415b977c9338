@@ -1,0 +1,354 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="description" content="An article with important tips on Javascript Animation, with examples on color fading, resizing and moving elements" />
+<meta name="keywords" content="Opera, Firefox, IE, script, javascript, standards compliant, cross-browser, DOM, setInterval, setTimeOut, animation, fade, resize, color fade, motion, move" />
+<title>Animating with Javascript - An article to get you started on Javascript animation</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="author" content="Emrah BASKAYA" />
+<link href="resources/css/tutorstyle.css" rel="stylesheet" type="text/css" />
+<link rel="shortcut icon" href="http://www.hesido.com/favicon.ico" type="image/x-icon" />
+<link rel="alternate" type="application/atom+xml" href="/atom.php" />
+<script src="/mint/?js" type="text/javascript"></script>
+<script src="resources/code/mainscripts.js" type="text/javascript"></script><link href="editing.css" rel="stylesheet" type="text/css" />
+<script src="/web/animfunctions.js" type='text/javascript'></script>
+<script src="/web/pagefunctions.js" type='text/javascript'></script>
+<style type="text/css">
+<!--
+h3, h4 {
+clear: both;
+}
+
+.examplediv {
+float: left;
+width: 46%;
+margin: 1%;
+margin-bottom: 1em;
+}
+
+* html examplediv {
+width: 45%;
+}
+
+.examplediv {
+border: 2px dashed #A00;
+padding: 0;
+position: relative;
+}
+
+.examplediv p {
+background-color: rgb(255,204,204);
+padding: 0.4em;
+width: 90%;
+margin: 0.8em auto;
+text-align: center;
+clear: both;
+}
+
+.examplediv span.title {
+float: left;
+margin: -1.2em 1em 0.4em 1em;
+position: relative;
+display:inline;
+background-color: #411;
+background-image: none;
+padding: 0 0.6em;
+border: 4px solid #A22;
+position: relative;
+color: white;
+}
+
+#resizercontainer {
+clear: both;
+}
+
+pre {
+white-space: pre-wrap;
+font-size: 11px;
+}
+
+#resizercontainer p {
+width: 150px;
+text-align: right;
+margin: 0.8em;
+}
+
+#objectmove {
+height: 200px;
+margin-top: 2.5em;
+}
+
+#moveit {
+width: 60px;
+padding: 6px;
+margin: 0 auto;
+clear: both;
+background-color: #88F;
+position: absolute;
+top: 15px;
+left: 15px;
+}
+
+.examplealign {
+padding-left: 2em;
+}
+
+* html .examplealign {
+padding: 0;
+}
+
+ol {
+width: 70%;
+margin: 0 auto;
+}
+
+#mfstep li {
+border: 2px dotted #009;
+border-width: 0 0 2px 0;
+}
+
+-->
+</style>
+</head>
+<body>
+<div id='header'>
+<div id="navwrap">
+<ul id='topnavigation'>
+	<li><span>Photoshop Related</span>
+		<ul>
+			<li><a href="/base.php?page=tutorials&amp;sub=repimagenoise">Reproducing image noise tutorial</a></li>
+			<li><a href="/base.php?page=tutorials&amp;sub=wavingflag">Making a 3d looking wavy flag tutorial</a></li>
+			<li><a href="/base.php?page=tutorials&amp;sub=glassfont">Make a glassy font tutorial</a></li>
+			<li><a href="/base.php?page=tutorials&amp;sub=offsetall">Script to fix texture seams</a></li>
+		</ul>
+	</li>
+	<li><span>3d Related</span>
+		<ul>
+			<li><a href="/base.php?page=tutorials&amp;sub=fakegi">Fake Global Illumination (Lightwave)</a></li>
+		</ul>
+	</li>
+	<li><span>Web Programming</span>
+		<ul>
+		<li><a href="/web.php?page=multipopup">Multipopup UserJavascript For Opera and Firefox</a></li>
+		<li><a href="/web.php?page=customscrollbar">fleXcroll, a Cross-Browser Custom Scroll Bar script for all</a></li>
+		<li><a href="/web.php?page=javascriptanimation" title="Article">An introduction to javascript animation with example code</a></li>
+		<li><a href="/web.php?page=imageswapping">Image Swapping with no HTML markup</a></li>
+		<li><a href="/web.php?page=atomidtimestamp">Atom Feed ID and RFC3339 time stamp generator</a></li>
+		<li><a href="/web.php?page=animatedmenus">Frame / Motion animated menus</a></li>
+		</ul>
+	</li>
+	<li><span>Other</span>
+		<ul>
+			<li><a href="/">Home</a></li>
+			<li><a href="base.php?page=general&amp;sub=contact">Contact Page</a></li>
+		</ul>
+	</li>
+</ul>
+<div style='clear:both'></div>
+</div>
+</div>
+<script type="text/javascript">
+<!--
+writeEarlyDrop();
+applyDropDownF('early','topnavigation','topnavigation_r',true,1,-10,0,'hoveredspan',450,150);
+-->
+</script>
+<div id='contentbody'>
+<div id='contentbefore'></div>
+<div id='content'>
+<h1>An Introduction to Javascript Animation</h1>
+<h2>Animating elements with Javascript using DOM compliant, non-invasive code</h2>
+<h2>Color fading and resizing to notify user for dynamic changes</h2>
+		<p class="note">created on 29.08.2005</p>
+<h3>Introduction</h3>
+<p>
+Javascript animations are seen more and more in our daily web routines. Most can be annoying too,
+if they simply serve the purpose to lamely look cool, while they may actually only distract the user.
+</p>
+<p>
+However, when used properly, they can really add to the user experience, and increase the useability
+of your site. Also, with the advent of the DOM, the more widespread usage of new generation browsers, and the
+adoption of xmlHttpRequest and other technologies which all together are called
+<a href="http://www.adaptivepath.com/publications/essays/archives/000385.php">AJAX</a>,
+the need for notifying user with what is going on with simple animations can become a necessity, such as using
+fading colors and resizing elements. Actually, I am putting such an animation to good use on this very page,
+while step-by-step explaining the main animation function for resizing. The principles are all the same,
+but the color fading was inspired by the <a
+ href="http://www.yourtotalsite.com/archives/javascript/yellowfade_technique_for/Default.aspx">Yellow Fade Technique For Dummies</a>,
+this one is a versatile function that you can fade any color to any color. It is also a very light-weight script that you can modify
+to use for any type of animation, as you see on this page. If you have specific questions for implementing the scripts in your own
+sites, feel free to drop me a mail using the contact page oh hesido.com.
+</p>
+<h3>Samples</h3>
+<div class='examplealign'>
+	<div id="fadercontainer" class="examplediv">
+		<span class="title">Fade, single direction, no memory</span>
+		<p>Hover over me!</p>
+		<p>Hover over me!</p>
+		<p>Hover over me!</p>
+		<p>Hover over me!</p>
+		<p>Hover over me!</p>
+		<p>Hover over me!</p>
+	</div>
+	<div id="fadercontainermem" class="examplediv">
+		<span class="title">Fade, both directions, w / memory</span>
+		<p>Hover over me!</p>
+		<p>Hover over me!</p>
+		<p>Hover over me!</p>
+		<p>Hover over me!</p>
+		<p>Hover over me!</p>
+		<p>Hover over me!</p>
+	</div>
+	<div id="resizercontainer" class="examplediv">
+		<span class="title">Resize, both directions, w / memory</span>
+		<p>Hover over me!</p>
+		<p>Hover over me!</p>
+		<p>Hover over me!</p>
+		<p>Hover over me!</p>
+		<p>Hover over me!</p>
+		<p>Hover over me!</p>
+	</div>
+	<div id="objectmove" class="examplediv">
+		<span class="title">Move objects, w / memory</span>
+		<div id="moveit">Click Me!</div>
+	</div>
+</div>
+<h3>Some details of this technique</h3>
+	<ul style="font-size: 90%;">
+		<li>This technique uses <span class="menudescriptor">window.setInterval</span> for animation.</li>
+		<li>Uses no global variables, and animation can be applied to any number of elements simultaneously</li>
+		<li>The element is passed to animation function as an object and not with its ID. So it does not use ID's for
+		the animated element, which makes it very comfortable to use; even tho the element can indeed be selected by its ID.</li>
+		<li>Thread-safe: The function started with window.setInterval is self inhibiting, it terminates itself once
+		animation is done, and same type of animation does not
+		run with more than 1 instance at a time, so you do not have to worry about un-terminated timeout functions</li>
+		<li>It has a &quot;memory&quot; so the terminated animation can be picked up by a newly initiated animation.</li>
+		<li>It is very easy to implement and use.</li>
+		<li>It sports a simple function to produce ease-in and ease-out motions between any given parameters</li>
+		<li>A tip: Multiple varibles can be animated, the fades are actually using multiple parameters (RGB).
+		It is quite a neat habit to pass those multiple parameters as a single array.</li>
+	</ul>
+<h3>The animation code, explained</h3>
+
+<h4>Doing the resize animation (Main function)</h4>
+<span class='pretitle'>Javascript</span>
+<pre class='titled jspre'>
+<span style=' color: Blue;'>function</span> doWidthChangeMem(elem,startWidth,endWidth,steps,intervals,powr) { 
+<span style=' color: Green;'>//Width changer with Memory by www.hesido.com</span>
+    <span id="mfstep1"><span style=' color: Blue;'>if</span> (elem.widthChangeMemInt)
+	window.clearInterval(elem.widthChangeMemInt);</span>
+    <span id="mfstep2"><span style=' color: Blue;'>var</span> actStep = <span style=' color: Maroon;'>0</span>;</span>
+    <span id="mfstep3">elem.widthChangeMemInt = window.setInterval(
+	<span id="mfstep4"><span style=' color: Blue;'>function</span>() { 
+	  <span id="mfstep5">elem.currentWidth = easeInOut(startWidth,endWidth,steps,actStep,powr);</span>
+	  <span id="mfstep6">elem.style.width = elem.currentWidth + <span style=' color: Maroon;'>"px"</span>;</span> 
+	  <span id="mfstep7">actStep++;</span>
+	  <span id="mfstep8"><span style=' color: Blue;'>if</span> (actStep &gt; steps) window.clearInterval(elem.widthChangeMemInt);</span>
+	}</span> 
+	,intervals)</span>
+}
+</pre>
+<p>Here is a step by step explanation of the function, please hover for highlighting the step:</p>
+<ol id="mfstep">
+<li>Terminate, if there is any, ongoing animation</li>
+<li>Reset animation step to 0</li>
+<li>Assign interval function with interval id passed to element</li>
+<li>Anonymous function declared within our function, so we can safely use variables from our parent function, even though it is an interval function
+that runs in the window scope.</li>
+<li>Get a value using <span class="menudescriptor">easeInOut</span>, embedding onto the element.</li>
+<li>Use that value to set the object's width</li>
+<li>Increase step number</li>
+<li>If step number is bigger, self-terminate.</li>
+</ol>
+<p>Here's a brief explanation of variables used:</p>
+<pre>
+elem: element that we're going to animate
+startWidth: starting width of animation
+endWidth: target width of animation
+steps: total steps of animation
+intervals: intervals the animation will be done in miliseconds
+powr: value used for determining ease-in and out.
+----
+elem.widthChangeMemInt: The interval animation value for self inhibition.
+elem.currenWidth: The objects 'memory' of its last set width.
+actstep: actual step of the animation, increased 1 per every execution.
+</pre>
+
+
+<h4>Initiating animation (with memory)</h4>
+<p><span class="menudescriptor">Memory</span> here refers to the fact that the animation will be able to handle from a previously terminated
+or finished animation, and that for each step, <span class="menudescriptor">Memory</span> will be embedded to the object. Same type of animations
+in your project should sport same type of <span class="menudescriptor">Memory</span> variables, so animation can be picked up from where it was left,
+and different type of animations with different <span class="menudescriptor">Memory</span> variables should not interfere with eachother.
+</p>
+<p>There can be many events that may fire up the animation, here I use mouseover and mouseout events, and we'll be seeing the width sizer animation
+function. I must stress, for the simplicity, I used the .onevent type event attaching, which is the old and destructive method.
+To be able to attach multiple function to a particular type of event, you must use <span class="menudescriptor" title="For Standards Compliant Browsers">addEventListener</span>
+and <span class="menudescriptor" title="For IE">attachEvent</span>. <span class="menudescriptor" title="For IE">attachEvent</span> does not return
+element that we are attached the event to '<span class="menudescriptor">this</span>', but it always returns the'<span class="menudescriptor">window</span>'
+ element with '<span class="menudescriptor">this</span>'. There are ways to get around this but it is not the main issue of this article.
+ (if you are programming a <a href="http://userjs.org">User Javascript</a>, you should always use non destructive methods,
+ <span class="menudescriptor" title="For Standards Compliant Browsers">addEventListener</span> should suffice.)
+
+</p>
+<span class='pretitle'>Javascript</span>
+<pre class='titled jspre'>
+myElement.onmouseover = widthChange; 
+myElement.onmouseout = widthRestore; 
+
+<span style=' color: Blue;'>function</span> widthChange() { 
+    <span style=' color: Blue;'>if</span> (!<span style=' color: Blue;'>this</span>.currentWidth) <span style=' color: Blue;'>this</span>.currentWidth = <span style=' color: Maroon;'>150</span>; 
+	<span style=' color: Green;'>//if no memory is set, set it first;</span> 
+    doWidthChangeMem(<span style=' color: Blue;'>this</span>,<span style=' color: Blue;'>this</span>.currentWidth,<span style=' color: Maroon;'>170</span>,<span style=' color: Maroon;'>10</span>,<span style=' color: Maroon;'>10</span>,<span style=' color: Maroon;'>0</span><span style=' color: Maroon;'>.5</span>); 
+    } 
+<span style=' color: Blue;'>function</span> widthRestore() { 
+    <span style=' color: Blue;'>if</span> (!<span style=' color: Blue;'>this</span>.currentWidth) <span style=' color: Blue;'>return</span>; 
+    doWidthChangeMem(<span style=' color: Blue;'>this</span>,<span style=' color: Blue;'>this</span>.currentWidth,<span style=' color: Maroon;'>150</span>,<span style=' color: Maroon;'>10</span>,<span style=' color: Maroon;'>10</span>,<span style=' color: Maroon;'>0</span><span style=' color: Maroon;'>.5</span>); 
+    }
+</pre>
+<p>Here, I need an animation that will be reversible, as I want my object to return to its initial values after mouseout.
+The animation should be able to terminate early, and that's why I need an animation memory for the object. The reason I set the
+initial value right in javascript, instead of reading it from the style of the object is because there is currently big
+discrepancies between how browsers read active styles, it is much cleaner to set the initial value right in javascript. There
+are quite a number of ways you can read styles from objects if you really want it, so you can have it your way. Those
+numbers will make sense when you see the <span class="menudescriptor">doWidthChangeMem</span> function.</p>
+
+<h4>Producing an animation step value at a given step</h4>
+<span class='pretitle'>Javascript</span>
+<pre class='titled jspre'>
+<span style=' color: Blue;'>function</span> easeInOut(minValue,maxValue,totalSteps,actualStep,powr) { 
+<span style=' color: Green;'>//Generic Animation Step Value Generator By www.hesido.com</span> 
+    <span style=' color: Blue;'>var</span> delta = maxValue - minValue; 
+    <span style=' color: Blue;'>var</span> stepp = minValue+(Math.pow(((<span style=' color: Maroon;'>1</span> / totalSteps) * actualStep), powr) * delta); 
+    <span style=' color: Blue;'>return</span> Math.ceil(stepp) 
+    } 
+</pre>
+<p> This generic animation step value churner is my best friend. We can simply give
+<span class="menudescriptor">minValue</span> / <span class="menudescriptor">maxValue</span>, the <span class="menudescriptor">totalSteps</span>
+of the animation,
+and the actual step we request the value of, with a power (<span class="menudescriptor">powr</span>) so we can decide for ease-in
+and ease-out type values: <span class="menudescriptor">powr</span> &gt; 1 produces ease-in, &lt; 1 produces ease-out, = 1 produces
+linear animations. By increasing the <span class="menudescriptor">actualStep</span> in every animation step, we simply have
+each animation value on request. Choosing between ease-in and ease-out is enough for me, but you can prepare a function that will
+return an ease-in + ease-out values, or you can break the animation into two parts and use this cute(!) little function.
+</p>
+
+
+<h3>Final Words</h3>
+	<p>I hope you like this piece of code. Solutions in the script required serious thinking!</p>
+	<p><span class="names">Prepared by Emrah BASKAYA</span> ( a.k.a. <span class="names">Hesido</span>, a.k.a <span class="names">EmDo</span> ) </p>
+</div>
+
+
+<div id='contentafter'></div>
+</div>
+
+<div id='footer'>
+<div class="copyrightnotice">&copy; 2004-2005 by Emrah BASKAYA</div>
+<div class='validator'><a href="http://validator.w3.org/check/referer"><span class="w3c">W3C</span><span class="spec">XHTML 1.0</span></a></div>
+<div style="clear:both;">
+</div></div>
+
+</body>
+</html>

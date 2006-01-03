@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr" id="developer-mozilla-org">
+<head>
+  <title>Using the Mozilla JavaScript interface to XSL Transformations - MDC Doc Center</title>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="MSSmartTagsPreventParsing" content="true">
+<meta name="ROBOTS" content="ALL">
+<meta name="Copyright" content="Copyright (c) 2005-2010 Mozilla.">
+<meta name="Rating" content="General">
+
+<link rel="home" href="/">
+<link rel="copyright" href="#copyright">
+<meta name="robots" content="index,follow" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="alternate" type="application/rss+xml" title="What's new feed" href="/index.php?title=Special:Recentchanges&amp;feed=rss" />
+<link rel="alternate" type="application/rss+xml" title="Page and subpages changes feed" href="/index.php?title=Special:Article&amp;type=feed&amp;feedtype=subpagechanges&amp;pageid=31777" />
+<link rel="alternate" type="application/rss+xml" title="Page changes feed" href="/index.php?title=Special:Article&amp;type=feed&amp;pageid=31777" />
+<meta name="generator" content="MindTouch  9.12.3" />
+<link rel="search" type="application/opensearchdescription+xml" title="MDC Search" href="/deki/gui/opensearch.php?type=description" />
+<link rel="stylesheet" type="text/css" media="screen" href="/skins/common/css.php" /> <!--[if IE 7]><style type="text/css">@import "/skins/common/_ie7.css";</style><![endif]--><!--[if IE 6]><style type="text/css">@import "/skins/common/_ie.css";</style><![endif]--><link rel="stylesheet" type="text/css" media="print" href="/skins/common/print.css" />
+<link rel="stylesheet" type="text/css" media="screen,projection" href="/skins/mdn/Transitional/css.php">
+<!--[if lte IE 7]><link rel="stylesheet" type="text/css" media="all" href="/skins/mdn/Transitional/ie7.css"><![endif]-->
+<!--[if lte IE 6]><link rel="stylesheet" type="text/css" media="all" href="/skins/mdn/Transitional/ie6.css"><![endif]-->
+<link rel="stylesheet" type="text/css" media="print" href="/skins/mdn/Transitional/print.css">
+
+<script type="text/javascript" src="/skins/common/js.php?perms=LOGIN,BROWSE,READ,SUBSCRIBE"></script><script type="text/javascript">var _starttime = new Date().getTime();</script>
+
+<!--[if IE]>
+<meta http-equiv="imagetoolbar" content="no">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+	<script type="text/javascript">
+
+		Deki.BaseHref = 'https://developer.mozilla.org';
+Deki.PageId = 31777;
+Deki.PageTitle = 'en/Using the Mozilla JavaScript interface to XSL Transformations';
+Deki.PathTpl = '/skins/mdn';
+Deki.PathSkin = '/skins/mdn/Transitional';
+Deki.PathCommon = '/skins/common';
+Deki.UserName = 'Anonymous';
+Deki.Today = '20 Dec 2010';
+Deki.EditorStyles = [];
+Deki.EditorStyles.push('/skins/mdn/_editor.css');
+Deki.EditorStyles.push('/skins/mdn/Transitional/_content.css');
+Deki.EditorStyles.push('/skins/common/custom_css.php');
+
+		window.onbeforeunload = function() {
+			if ( Deki.Editor && Deki.Editor.IsChanged() ) {
+				return "You have made changes to the content without saving your changes. Are you sure you want to exit this page?";
+			}
+		};
+
+		var aLt = new Array();aLt["attach-no-description"] = 'No description'; aLt["cancel"] = 'Cancel'; aLt["close"] = 'Close'; aLt["comment-delete"] = 'Are you sure you want to delete this comment?'; aLt["error"] = 'Error'; aLt["gallery-close"] = 'close'; aLt["gallery-next"] = 'next'; aLt["gallery-prev"] = 'prev'; aLt["internal-error"] = 'Sorry, but there was an internal problem - please try again soon.'; aLt["js-label_cancel"] = 'Cancel'; aLt["js-label_save"] = 'Save'; aLt["js-tooltip_cancel"] = 'Exit Without Saving Changes'; aLt["js-tooltip_save"] = 'Save and Exit (Alt+S)'; aLt["ldap-provide-credentials"] = 'Please provide external service login credentials.'; aLt["loading"] = 'Loading...'; aLt["menu-confirm-delete"] = 'Are you sure you want to delete this file?'; aLt["menu-delete-file"] = 'Delete'; aLt["menu-edit-description"] = 'Edit description'; aLt["menu-move-file"] = 'Move'; aLt["menu-previous-versions"] = 'Previous versions'; aLt["menu-view-original"] = 'View original'; aLt["print-end-notes"] = 'Endnotes'; aLt["ready"] = 'Ready'; aLt["remove-tag"] = 'Remove tag'; aLt["restore-tag"] = 'Restore tag'; aLt["save"] = 'Save'; aLt["submit"] = 'Submit'; aLt["wikibits-attach-another"] = 'Attach another file'; aLt["wikibits-attach-file"] = 'Attach File'; aLt["wikibits-cant-attach-editing"] = 'Sorry, you can\'t attach files while editing a page. Please close the editor first.'; aLt["wikibits-edit-section"] = 'Edit section'; aLt["wikibits-remove-file"] = 'Remove file';  var wfMsg = function (key) { return aLt[key] ? aLt[key] : 'MISSING: ' + key; };
+	//hook in menu clicking events to the document's body
+	YAHOO.util.Event.addListener(document, "click", function () { DWMenu.BodyClick(); });
+	YAHOO.util.Event.onDOMReady(function () { new clientWindow });
+
+			
+
+			YAHOO.util.Event.onDOMReady(function() {
+			tb_init("a.lightbox, area.lightbox, input.lightbox, a[rel='awesomebox']");//pass where to apply thickbox
+			imgLoader = new Image();// preload image
+			imgLoader.src = tb_pathToImage;
+		});
+
+		YAHOO.util.Event.onDOMReady(function() {
+			MTComments.HookBehavior();
+		});
+		</script>
+<link type="text/css" rel="stylesheet" href="https://developer.mozilla.org/deki/scripts/res/syntax/SyntaxHighlighter.css" /><script type="text/javascript" src="https://developer.mozilla.org/deki/scripts/res/syntax/shCore.js"></script><script type="text/javascript" src="https://developer.mozilla.org/deki/scripts/res/syntax/shBrushJScript.js"></script><link href="/skins/common/custom_css.php" rel="stylesheet" type="text/css" /> 
+ 
+</head>
+
+<body id="docs" class="section-docs en yui-skin-sam PageDW-enUsingtheMozillaJavaScriptinterfacetoXSLTransformations" role="document">
+<!--[if lte IE 8]>
+<noscript><div class="global-notice">
+<p><strong>Warning:</strong> The Mozilla Developer Network website employs emerging web standards that may not be fully supported in some versions of MicroSoft Internet Explorer. You can improve your experience of this website by enabling JavaScript.</p>
+</div></noscript>
+<![endif]-->
+<noscript><div class="noscript">This application requires Javascript to be enabled.</div></noscript>
+<nav id="nav-access">
+  <ul role="navigation">
+    <li><a href="#content-main">Skip to the main content</a></li>
+    <li><a href="#q">Skip to the site search</a></li>
+  </ul>
+</nav>
+
+<header id="masthead">
+  <div class="wrap">
+    <div id="branding">
+      <h4 id="logo"><a href="/"><img src="/skins/mdn/Transitional/img/mdn-logo-compact.png" alt="Mozilla Developer Network" title="Mozilla Developer Network" width="135" height="40"></a></h4>
+    </div>
+
+    <div id="utility">
+      <ul class="user-state">
+              <li><a href="/index.php?title=Special:Userlogin&returntotitle=en%2FUsing+the+Mozilla+JavaScript+interface+to+XSL+Transformations" class="user-login">Log in</a></li>
+        <li>	<a href="/index.php?title=Special:Userlogin&amp;register=true" title="Become an MDN member">Become an MDN member</a>
+</li>
+            </ul>
+
+      <form id="site-search" method="get" action="https://www.google.com/search" data-url="/search">
+        <p>
+          <input type="text" role="search" placeholder="Search MDN" id="q" name="q">
+          <button type="submit">Search</button>
+        </p>
+        <input type="hidden" name="sitesearch" value="developer.mozilla.org">
+        <div id="site-search-gg"></div>
+      </form>
+    </div>
+
+    <ul id="nav">
+      <li class="menu"><a href="#nav-main" class="toggle">Explore MDN</a>
+        <ul id="nav-main" class="sub-menu" role="navigation">
+          <li id="nav-main-web"><a href="/web" class="web">Web</a></li>
+          <li id="nav-main-mobile"><a href="/mobile" class="mobile">Mobile</a></li>
+          <li id="nav-main-addons"><a href="/addons" class="addons">Add-ons</a></li>
+          <li id="nav-main-moz"><a href="/mozilla" class="moz">Mozilla</a></li>
+          <li id="nav-extra-docs" class="current"><a href="/docs">Doc Center</a></li>
+          <li id="nav-extra-forums"><a href="/forums">Forums</a></li>      
+        </ul>
+      </li>
+    </ul>
+  </div>
+</header>
+
+
+<section id="nav-toolbar">
+<div class="wrap">
+
+<nav id="tool-menus">
+  <ul id="tools">
+    <li class="menu">
+      <a href="#site-tools" class="toggle">Site tools</a>
+      <ul id="site-tools" class="sub-menu" role="navigation">
+         
+        <li class="site-recent">	<a href="/Special:Recentchanges" title="Recent changes">Recent changes</a>
+</li>
+        <li class="site-rss">	<a href="/Special:ListRss" title="RSS feeds">RSS feeds</a>
+</li>
+      	<li class="siteListusers"><a href="/User:" title="Users">Users</a></li>
+              <li class="site-templates">	<a href="/Template:" title="Templates">Templates</a>
+</li>
+              <li class="site-map">	<a href="/Special:Sitemap" title="Sitemap">Sitemap</a>
+</li>
+        <li class="site-popular">	<a href="/Special:Popularpages" title="Popular pages">Popular pages</a>
+</li>
+      	<li class="siteAbout"><a href="/Special:About" title="About MDN">About MDN</a></li>
+      </ul>
+    </li>
+    <li class="menu">
+      <a href="#page-tools" class="toggle">This page</a>
+      <ul id="page-tools" class="sub-menu" role="navigation">
+                                      <li class="page-history"><a href="/index.php?title=en/Using_the_Mozilla_JavaScript_interface_to_XSL_Transformations&action=history" title="Page history">History</a></li>
+                    <li class="page-talk">	<a href="/Talk:en/Using_the_Mozilla_JavaScript_interface_to_XSL_Transformations" title="Talk page">Talk page</a>
+</li>
+                                                        <li class="page-print">	<a href="/index.php?title=en/Using_the_Mozilla_JavaScript_interface_to_XSL_Transformations&action=print" onclick="return Print.open('/index.php?title=en/Using_the_Mozilla_JavaScript_interface_to_XSL_Transformations&amp;action=print');"  title="Print page">Print page</a>
+</li>
+            <li class="page-backlinks"><a href="/index.php?title=Special:Article&type=backlinks&pageid=31777">Pages that link here</a></li>      </ul>
+    </li>
+      <li class="menu">
+      <a href="#" class="toggle">Languages</a>
+      <ul><li><a rel="internal" href="https://developer.mozilla.org/fr/Utilisation_de_l'interface_JavaScript_de_Mozilla_pour_les_transformations_XSL">Fran&ccedil;ais</a></li><li><a rel="internal" href="https://developer.mozilla.org/ko/Using_the_Mozilla_JavaScript_interface_to_XSL_Transformations">한국어</a></li><li><a rel="internal" href="https://developer.mozilla.org/ja/Using_the_Mozilla_JavaScript_interface_to_XSL_Transformations">日本語</a></li></ul>    </li>
+    </ul>
+</nav>
+
+  <nav class="crumbs" role="navigation">
+    <ol>
+      <li class="crumb-one"><a href="/">MDC</a></li>
+      <li class="crumb-two"><a href="/docs">Doc Center</a></li>
+    <li class="first"><a href="https://developer.mozilla.org/" class="deki-ns">MDC</a></li>
+<li class="second"><a href="https://developer.mozilla.org/en" class="deki-ns">MDN</a></li>
+<li class="last"><a href="https://developer.mozilla.org/en/Using_the_Mozilla_JavaScript_interface_to_XSL_Transformations" class="deki-ns current">Using the Mozilla JavaScript interface to XSL Transformations</a></li> 
+    </ol>
+  </nav>
+
+</div>
+</section>
+
+<section id="content">
+<div class="wrap">
+  <div id="content-main" class="full">
+
+    
+        
+    <article class="article PageDW-enUsingtheMozillaJavaScriptinterfacetoXSLTransformations" role="main">
+            
+            <div class="page-title hideforedit">
+            
+              <h1 class="first" id="title">Using the Mozilla JavaScript interface to XSL Transformations</h1>      
+              <ul id="page-buttons">
+          <li class="page-edit"><a href="/index.php?title=Special:Userlogin&returntotitle=en%2FUsing+the+Mozilla+JavaScript+interface+to+XSL+Transformations" class="disabled" title="Log in or sign up to edit this page">Edit</a></li>
+          <li class="page-watch"><a href="/index.php?title=Special:Userlogin&returntotitle=en%2FUsing+the+Mozilla+JavaScript+interface+to+XSL+Transformations" class="disabled" title="Log in or sign up to add this page to your watch list">Watch</a></li>
+        </ul> 
+            </div>
+      
+    <div class="page-content boxed">
+
+     
+      <div id="article-nav" class="hideforedit">      
+              <div class="page-toc">
+          <h2>Table of contents</h2>
+          <ol style="list-style-type:none; margin-left:0px; padding-left:0px;"><li><span>1.</span> <a href="#Creating_an_XSLTProcessor" rel="internal">Creating an XSLTProcessor</a></li><li><span>2.</span> <a href="#Specifying_the_stylesheet" rel="internal">Specifying the stylesheet</a></li><li><span>3.</span> <a href="#Transforming_the_document" rel="internal">Transforming the document</a><ol style="list-style-type:none; margin-left:0px; padding-left:15px;"><li><span>3.1.</span> <a href="#transformToDocument" rel="internal">transformToDocument</a></li><li><span>3.2.</span> <a href="#transformToFragment" rel="internal">transformToFragment</a></li><li><span>3.3.</span> <a href="#transforming_HTML" rel="internal">transforming HTML</a></li></ol></li><li><span>4.</span> <a href="#Setting_parameters" rel="internal">Setting parameters</a></li><li><span>5.</span> <a href="#Resetting" rel="internal">Resetting</a></li><li><span>6.</span> <a href="#Resources" rel="internal">Resources</a></li><li><span>7.</span> <a href="#Using_XSLTProcessor_from_XPCOM_components" rel="internal">Using XSLTProcessor from XPCOM components</a></li><li><span>8.</span> <a href="#See_also" rel="internal">See also</a></li><li><span>9.</span> <a href="#Original_Document_Information" rel="internal">Original Document Information</a></li></ol>        </div>
+      
+        <ul class="page-anchors">
+          <li class="anchor-tags"><a href="#page-tags" title="Jump to tags for this article">Tags</a></li>
+          <li class="anchor-files"><a href="#page-files" title="Jump to files for this article">Files</a></li>
+        </ul>
+
+              <div id="deki-page-alerts" class="disabled">
+				<div class="toggle">
+					<a href="/index.php?title=Special:PageAlerts&id=31777" class="off">
+						<span>Page Notifications</span>
+						<span class="status">Off</span>
+					</a>
+				</div></div>      
+      
+      </div>
+    
+            
+      <div id="page-top"><div id="pageToc"><div class="pageToc"><h5>Table of contents</h5><ol style="list-style-type:none; margin-left:0px; padding-left:0px;"><li><span>1.</span> <a href="#Creating_an_XSLTProcessor" rel="internal">Creating an XSLTProcessor</a></li><li><span>2.</span> <a href="#Specifying_the_stylesheet" rel="internal">Specifying the stylesheet</a></li><li><span>3.</span> <a href="#Transforming_the_document" rel="internal">Transforming the document</a><ol style="list-style-type:none; margin-left:0px; padding-left:15px;"><li><span>3.1.</span> <a href="#transformToDocument" rel="internal">transformToDocument</a></li><li><span>3.2.</span> <a href="#transformToFragment" rel="internal">transformToFragment</a></li><li><span>3.3.</span> <a href="#transforming_HTML" rel="internal">transforming HTML</a></li></ol></li><li><span>4.</span> <a href="#Setting_parameters" rel="internal">Setting parameters</a></li><li><span>5.</span> <a href="#Resetting" rel="internal">Resetting</a></li><li><span>6.</span> <a href="#Resources" rel="internal">Resources</a></li><li><span>7.</span> <a href="#Using_XSLTProcessor_from_XPCOM_components" rel="internal">Using XSLTProcessor from XPCOM components</a></li><li><span>8.</span> <a href="#See_also" rel="internal">See also</a></li><li><span>9.</span> <a href="#Original_Document_Information" rel="internal">Original Document Information</a></li></ol></div></div><div class="pageText" id="pageText">
+<p>This document describes the JavaScript interface in Mozilla 1.2 and up to the XSLT Processing Engine (TransforMiiX).</p>
+<div id="section_1"><span id="Creating_an_XSLTProcessor"></span><h3 class="editable">Creating an XSLTProcessor</h3>
+<p>To start, you need to create an <a rel="internal" href="https://developer.mozilla.org/en/XSLTProcessor">XSLTProcessor</a> object:</p>
+
+          <pre name="code" class="js">var processor = new XSLTProcessor();</pre>
+        
+</div><div id="section_2"><span id="Specifying_the_stylesheet"></span><h3 class="editable">Specifying the stylesheet</h3>
+<p>Before you can use it, you must import a stylesheet with the <code>importStylesheet()</code> function. It has a single parameter, which is the DOM Node of the XSLT stylesheet to import.</p>
+<p><span class="lang lang-en">
+<div class="note"><strong>Note:</strong> The import is live, meaning that if you alter the stylesheet DOM after importing it, this will be reflected in the processing. Rather than modifying the DOM it is recommended to use stylesheet parameters which are usually easier and can give better performance.</div>
+</span> </p>
+
+          <pre name="code" class="js">var testTransform = document.implementation.createDocument(&quot;&quot;, &quot;test&quot;, null);
+// just an example to get a transform into a script as a DOM
+// XMLDocument.load is asynchronous, so all processing happens in the 
+// onload handler
+testTransform.addEventListener(&quot;load&quot;, onload, false);
+testTransform.load(&quot;test-transform.xml&quot;);
+function onload() {
+  processor.importStylesheet(testTransform);
+}</pre>
+        
+<p><code>importStylesheet</code> requires one argument, a DOM Node. If that node is a document node, you can pass in a full XSL Transform or a <a class="external" rel="external nofollow" href="http://www.w3.org/TR/xslt#result-element-stylesheet" title="http://www.w3.org/TR/xslt#result-element-stylesheet" target="_blank">literal result element transform</a>, otherwise it must be an <code>xsl:stylesheet</code> or <code>xsl:transform</code> element.</p>
+</div><div id="section_3"><span id="Transforming_the_document"></span><h3 class="editable">Transforming the document</h3>
+<p>You can use the <a href="#transformToDocument"><code>transformToDocument()</code></a> or <a href="#transformToFragment"><code>transformToFragment()</code></a> methods to transform a document using the imported XSLT stylesheet.</p>
+<div id="section_4"><span id="transformToDocument"></span><h4 class="editable">transformToDocument</h4>
+<p><code>transformToDocument()</code> takes one argument, the source node to transform, and returns a new DOM <code>Document</code> with the results of the transformation:</p>
+
+          <pre name="code" class="js">var newDocument = processor.transformToDocument(domToBeTransformed);</pre>
+        
+<p>The resultant object depends on the <a class="external" rel="external nofollow" href="http://www.w3.org/TR/xslt#output" title="http://www.w3.org/TR/xslt#output" target="_blank">output method</a> of the stylesheet:</p>
+<ul> <li><strong>html</strong> - <code>HTMLDocument</code></li> <li><strong>xml</strong> -&nbsp;<code>XMLDocument</code></li> <li><strong>text</strong><code> -</code> <code>XMLDocument</code> with a single root element <code>&lt;transformiix:result&gt;</code> with the text as a child</li>
+</ul>
+</div><div id="section_5"><span id="transformToFragment"></span><h4 class="editable">transformToFragment</h4>
+<p>You can also use <code>transformToFragment()</code> which will return a DOM <code>DocumentFragment</code> node. This is handy because appending a fragment to another node transparently appends all the children of that fragment, and the fragment itself is not merged. Fragments are therefore useful for moving nodes around and storing them without the overhead of a full document object.</p>
+<p><code>transformToFragment()</code> takes two arguments: the source document to be transformed (as above) and the <code>Document</code> object that will own the fragment (all fragments must be owned by a document).</p>
+
+          <pre name="code" class="js">var ownerDocument = document.implementation.createDocument(&quot;&quot;, &quot;test&quot;, null);
+var newFragment = processor.transformToFragment(domToBeTransformed, ownerDocument);</pre>
+        
+<p><code>transformToFragment</code> will only produce HTML DOM objects if the owner document is itself an <code>HTMLDocument</code>, or if the output method of the stylesheet is HTML. It will <strong>not</strong> produce an HTML DOM objects if only the toplevel element of the result is <code>&lt;html&gt;</code> as <code>transformToFragment</code> is rarely used to create this element. If you want to override this, you can set the output method normally in the standard way.</p>
+</div><div id="section_6"><span id="transforming_HTML"></span><h4 class="editable">transforming HTML</h4>
+<p>Unfortunately it is currently not supported to transform HTML nodes using XSLT. Some things work if you use lower case node-names in patterns and expressions, and treat the nodes as if they are in the null namespace, however this is not very well tested so it might not work in all situations. It is also possible that this will change in a future release.</p>
+<p>Transforming XHTML should work as expected though.</p>
+</div></div><div id="section_7"><span id="Setting_parameters"></span><h3 class="editable">Setting parameters</h3>
+<p>You can control <a class="external" rel="external nofollow" href="http://www.w3.org/TR/xslt#variables" title="http://www.w3.org/TR/xslt#variables" target="_blank">parameters for the stylesheet</a> using the <code>setParameter</code>, <code>getParameter</code>, and <code>removeParameter</code> methods. These all take a namespace URI and a local name as the first two parameters, with <code>setParameter</code> taking a third - the value of the parameter to be set. See <a class="external" title="http://developer.mozilla.org/en/The_XSLT/JavaScript_Interface_in_Gecko:Setting_Parameters" rel="external nofollow" href="http://developer.mozilla.org/en/The_XSLT/JavaScript_Interface_in_Gecko:Setting_Parameters" target="_blank">The XSLT/JavaScript Interface in Gecko</a> for an example.</p>
+</div><div id="section_8"><span id="Resetting"></span><h3 class="editable">Resetting</h3>
+<p>The <code>XSLTProcessor</code> object also implements a <code>reset()</code> method, which can be used to remove all stylesheets and parameters then put the processor back into its initial state. This method is implemented in <a rel="internal" href="https://developer.mozilla.org/en/Gecko">Mozilla</a> 1.3 and later.</p>
+</div><div id="section_9"><span id="Resources"></span><h3 class="editable">Resources</h3>
+<ul> <li>
+
+<a rel="custom" href="http://mxr.mozilla.org/mozilla-central/source/content/xslt/public/nsIXSLTProcessor.idl">nsIXSLTProcessor.idl</a> will always reflect the actual interface of the <code>XSLTProcessor</code> object</li> <li>
+
+<a rel="custom" href="http://mxr.mozilla.org/mozilla-central/source/content/xslt/public/nsIXSLTProcessorObsolete.idl">nsIXSLTProcessorObsolete.idl</a> <span class="lang lang-en"> <span class="obsoleteInlineTemplate" style="border: 1px solid rgb(255, 153, 153); background-color: rgb(255, 219, 219); font-size: x-small; white-space: nowrap; padding: 2px;">Obsolete</span> </span>      : the JS interface in Mozilla versions prior to 1.2.</li>
+</ul>
+</div><div id="section_10"><span id="Using_XSLTProcessor_from_XPCOM_components"></span><h3 class="editable">Using XSLTProcessor from XPCOM components</h3>
+<p>Instantiating an <code>XSLTProcessor</code> from an XPCOM component requires a different syntax as the constructor is not defined inside components.</p>
+<p>Instead of this:</p>
+
+          <pre name="code" class="js">var processor = new XSLTProcessor();</pre>
+        
+<p>Do this:</p>
+
+          <pre name="code" class="js">var processor = Components.classes[&quot;@mozilla.org/document-transformer;1?type=xslt&quot;]
+                          .createInstance(Components.interfaces.nsIXSLTProcessor);</pre>
+        
+</div><div id="section_11"><span id="See_also"></span><h3 class="editable">See also</h3>
+<ul> <li><a rel="internal" href="https://developer.mozilla.org/en/The_XSLT%2f%2fJavaScript_Interface_in_Gecko">The XSLT&nbsp;JavaScript Interface in Gecko</a></li> <li><a rel="internal" href="https://developer.mozilla.org/en/DOM/document.load">document.load()</a> regarding the loading of XML documents (as used above)</li>
+</ul>
+<div class="originaldocinfo">
+<div id="section_12"><span id="Original_Document_Information"></span><h3 class="editable">Original Document Information</h3>
+<ul> <li>Author(s): <a class="link-mailto" rel="external nofollow" href="mailto:mike@theoretic.com" title="mailto:mike@theoretic.com" target="_blank">Mike Hearn</a></li> <li>Last Updated Date: December 21, 2005</li> <li>Copyright Information: Copyright (C) Mike Hearn</li>
+</ul>
+</div></div>
+<p></p></div></div></div><div class="printfooter" id="printfooter"><hr />
+<p>Retrieved from "<a href="https://developer.mozilla.org/en/Using_the_Mozilla_JavaScript_interface_to_XSL_Transformations">https://developer.mozilla.org/en/Using_the_Mozilla_JavaScript_interface_to_XSL_Transformations</a>"</p>
+</div>
+
+            <section class="page-meta">
+                  <section id="page-tags">
+            <h2>Tags <span class="sub">(1)</span></h2>
+          <div id="deki-page-tags"><div class="pageTagList"><div class="item taglist"><a href="https://developer.mozilla.org/Special:Tags?tag=XSLT" title="XSLT">XSLT</a></div><div><a href="/index.php?title=Special:Tags&pageId=31777"class="disabled" onclick="return false;"" id="deki-page-tags-toggleview">Edit tags</a></div></div></div>          </section>
+        
+                  <section id="page-files">
+            <h2>Attachments <span class="sub">(0)</span></h2>
+            <div id="pageFiles"><div class="nofiles">&nbsp;</div></div>            <div id="deki-image-gallery-lite"><table class="table empty" width="100%" cellspacing="0" cellpadding="0" border="0"><colgroup><col width="33%"></col><col width="33%"></col><col width="33%"></col></colgroup><tbody><tr class="bg1"><th class="col1" colspan="3">Images 0</th></tr><tr class="bg2"><td class="col1 empty" colspan="3">No images to display in the gallery.</td></tr></tbody></table></div>            <p class="add"><a title="Attach file" class="disabled ">Attach file</a></p>
+          </section>
+        
+                        
+        </section>
+        </div>
+
+    </article>
+
+    <p class="last-mod hideforedit">
+      Page last modified <a href="/index.php?title=en/Using_the_Mozilla_JavaScript_interface_to_XSL_Transformations&action=history" title="01:32, 8 Mar 2010">01:32, 8 Mar 2010</a> by <a href="/User:trevorh" class="link-user" rel="internal">trevorh</a>    </p>
+
+  </div><!-- /#content-main -->
+
+</div><!-- /.wrap -->
+</section><!-- /#content -->
+
+
+
+<footer id="site-info" role="contentinfo">
+<div class="wrap">
+  <div id="legal">
+    <img src="/skins/mdn/Transitional/img/mdn-logo-tiny.png" alt="" width="42" height="48">
+    <p id="copyright">&copy; 2010 Mozilla Developer Network</p>
+    <p>Content is available under <a href="/Project:Copyrights">these licenses</a> &bull; <a href="/Project:en/About">About MDN</a> &bull; <a href="/forums/viewtopic.php?f=3&t=5">Help</a></p>
+  </div>
+  <p class="user-state">
+          <a href="/index.php?title=Special:Userlogin&returntotitle=en%2FUsing+the+Mozilla+JavaScript+interface+to+XSL+Transformations" class="user-login">Log in</a> | 	<a href="/index.php?title=Special:Userlogin&amp;register=true" title="Become an MDN member">Become an MDN member</a>
+      
+  </p>
+</div>
+</footer>
+
+
+			
+<div class="ui-msg-wrap" id="MTMessage" style="display: none;">
+	<div class="ui-msg ui-errormsg" id="MTMessageStyle">
+		<div class="ui-msg-opt">
+			<ul>
+				<li><a href="#" class="dismiss" onclick="return MTMessage.Hide();">dismiss message</a></li>
+				<li><a href="#" class="details" id="MTMessageDetailsLink" onclick="return MTMessage.ShowDetails(this);">view details</a></li>
+			</ul>
+			<div class="ui-msg-autoclose">
+				<span id="MTMessageUnpaused" style="display: inline;">Message will close by itself in <span id="MTMessageTimer"></span> seconds</span>
+				<span id="MTMessagePaused" style="display: none;">Message timer has been stopped</span>
+			</div>
+		</div>
+		<div class="ui-msg-header" id="MTMessageHeader"></div>
+		<div class="ui-msg-desc" id="MTMessageDesc"></div>
+		<div class="ui-msg-desc" id="MTMessageDetails" style="display: none;">
+			<p>Viewing Details:</p>
+		</div>
+	</div>
+</div>
+<!-- Served by pm-dekiwiki01.mozilla.org in 0.26 secs. -->
+<!--
+	Verb      Path                                              Time(ms)       API Stats
+	GET       /deki/site/settings                                   6.84       request-time-ms=4; mysql-queries=2; mysql-time-ms=2; cache-ratio=0.00; cache-hit=0; cache-miss=1; cache-del=0; cache-ins=1;
+	GET       /deki/users/=Anonymous                               21.20       request-time-ms=18; mysql-queries=7; mysql-time-ms=15; cache-ratio=0.30; cache-hit=3; cache-miss=7; cache-del=0; cache-ins=6;
+	GET       /deki/pages/31777/contents                           93.93       request-time-ms=91; mysql-queries=31; mysql-time-ms=41; cache-ratio=0.75; cache-hit=107; cache-miss=35; cache-del=0; cache-ins=35;
+	GET       /deki/pages/31777                                    31.68       request-time-ms=28; mysql-queries=16; mysql-time-ms=18; cache-ratio=0.52; cache-hit=15; cache-miss=14; cache-del=0; cache-ins=14;
+	GET       /deki/pagesubservice/subscriptions                   13.88       
+	GET       /deki/pages/31777/info                                8.88       request-time-ms=5; mysql-queries=4; mysql-time-ms=3; cache-ratio=0.25; cache-hit=2; cache-miss=6; cache-del=0; cache-ins=6;
+	GET       /deki/pages/31777/tags                                8.61       request-time-ms=6; mysql-queries=6; mysql-time-ms=4; cache-ratio=0.25; cache-hit=2; cache-miss=6; cache-del=0; cache-ins=6;
+	GET       /deki/site/properties                                13.45       request-time-ms=10; mysql-queries=4; mysql-time-ms=7; cache-ratio=0.17; cache-hit=1; cache-miss=5; cache-del=0; cache-ins=5;
+	GET       /deki/license                                         8.14       request-time-ms=3; mysql-queries=2; mysql-time-ms=1; cache-ratio=0.25; cache-hit=1; cache-miss=3; cache-del=0; cache-ins=3;
+	GET       /deki/license                                         8.49       request-time-ms=3; mysql-queries=2; mysql-time-ms=1; cache-ratio=0.25; cache-hit=1; cache-miss=3; cache-del=0; cache-ins=3;
+	                                                             =======
+	                                                     Total:   215.09      
+	                                                     Ideal:   206.60      
+-->
+ 
+<div id="popupMessage"></div> <div id="popupMask"></div>
+<div id="menuFiller"></div>
+<div id="bodyHeight"></div>
+
+<script src="//www.google.com/jsapi"></script>
+<script src="/skins/mdn/Transitional/js/jquery.hoverIntent.minified.js"></script>
+<script src="/skins/mdn/Transitional/js/superfish.js"></script>
+<script src="/skins/mdn/Transitional/js/javascript.js"></script>
+<script src="/skins/mdn/Transitional/js/gsearch.js"></script>
+
+<!-- START OF SmartSource Data Collector TAG -->
+<!-- Copyright (c) 1996-2010 WebTrends Inc.  All rights reserved. -->
+<!-- Version: 8.6.2 -->
+<!-- Tag Builder Version: 3.0  -->
+<!-- Created: 4/23/2010 9:11:39 PM -->
+<script src="/skins/mdn/Transitional/js/webtrends.js"></script>
+<!-- ----------------------------------------------------------------------------------- -->
+<!-- Warning: The two script blocks below must remain inline. Moving them to an external -->
+<!-- JavaScript include file can cause serious problems with cross-domain tracking.      -->
+<!-- ----------------------------------------------------------------------------------- -->
+<script type="text/javascript">
+//<![CDATA[
+var _tag=new WebTrends();
+_tag.dcsGetId();
+// Add custom parameters here.
+//_tag.DCSext.param_name=param_value;
+_tag.dcsCollect();
+//]]>>
+</script>
+<noscript>
+<div><img alt="DCSIMG" id="DCSIMG" width="1" height="1" src="https://statse.webtrendslive.com/dcs8yrjuavz5bdaun34r2o8bi_8o8x/njs.gif?dcsuri=/nojavascript&amp;WT.js=No&amp;WT.tv=8.6.2"/></div>
+</noscript>
+<!-- END OF SmartSource Data Collector TAG -->
+
+<script type="text/javascript">/*<![CDATA[*/$(function(){dp.SyntaxHighlighter.HighlightAll('code');});/*]]>*/</script> 
+</body>
+</html>

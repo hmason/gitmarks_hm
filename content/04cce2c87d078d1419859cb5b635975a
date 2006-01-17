@@ -1,0 +1,366 @@
+<html>
+  <head>
+        <title> - </title>
+    <LINK REL="stylesheet" HREF="regex.css" TYPE="text/css">
+  </head>
+  <script language="javascript">
+    var hexchars = "0123456789ABCDEF";
+    var okURIchars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
+    var loading_element = "";
+    var current_page = "start";
+    var right_element = "";
+    var http_request = false;
+    var right_request = false;
+    var mini_request = false;
+    var key_timer = 0;
+    var handled = true;
+    var interv = 0;
+    var modifiers = "";
+var regex_titles = new Array('', '');var split_titles = new Array('', '');var matches_open = '<pre class="matches" id="matches" name="matches">';var groups_open = '<pre class="groups" id="groups" name="groups">';
+    function leftRequest(url, element, parameters) {
+      http_request = false;
+      var browser = "";
+      if (window.XMLHttpRequest) { // Mozilla, Safari, Opera
+        browser = "mo"
+        http_request = new XMLHttpRequest();
+        if (http_request.overrideMimeType)
+          http_request.overrideMimeType('text/xml');
+      }
+      else
+        if (window.ActiveXObject) { // IE
+          browser = "ie";
+          try {
+            http_request = new ActiveXObject("Msxml2.XMLHTTP");
+          } catch (e) {
+            try {
+              http_request = new ActiveXObject("Microsoft.XMLHTTP");
+            } catch (e) {}
+          }
+        }
+      if (!http_request) {
+        if (browser == "mo")
+          alert('Mozilla 1.0+ or Safari 1.2+ requred.');
+        else
+          alert('Internet Explorer 5+, Opera 7.6+ required.');
+        return false;
+      }
+
+      loading_element = element;
+      http_request.onreadystatechange = getContents;
+      http_request.open('POST', url, true);
+      http_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded;");
+      http_request.setRequestHeader("Content-length", parameters.length);
+      http_request.setRequestHeader("Connection", "close");
+      http_request.send(parameters);
+    }
+
+    function rightRequest(url, element, parameters) {
+      right_request = false;
+      var browser = "";
+      if (window.XMLHttpRequest) { // Mozilla, Safari, Opera
+        browser = "mo"
+        right_request = new XMLHttpRequest();
+        if (right_request.overrideMimeType)
+          right_request.overrideMimeType('text/xml');
+      }
+      else
+        if (window.ActiveXObject) { // IE
+          browser = "ie";
+          try {
+            right_request = new ActiveXObject("Msxml2.XMLHTTP");
+          } catch (e) {
+            try {
+              right_request = new ActiveXObject("Microsoft.XMLHTTP");
+            } catch (e) {}
+          }
+        }
+      if (!right_request) {
+        if (browser == "mo")
+          alert('Mozilla 1.0+ or Safari 1.2+ requred.');
+        else
+          alert('Internet Explorer 5+, Opera 7.6+ required.');
+        return false;
+      }
+
+      right_element = element;
+      right_request.onreadystatechange = getRightContents;
+      right_request.open('POST', url, true);
+      right_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded;");
+      right_request.setRequestHeader("Content-length", parameters.length);
+      right_request.setRequestHeader("Connection", "close");
+      right_request.send(parameters);
+    }
+
+    function miniRequest(url, parameters) {
+      mini_request = false;
+      var browser = "";
+      if (window.XMLHttpRequest) { // Mozilla, Safari, Opera
+        browser = "mo"
+        mini_request = new XMLHttpRequest();
+        if (mini_request.overrideMimeType)
+          mini_request.overrideMimeType('text/xml');
+      }
+      else
+        if (window.ActiveXObject) { // IE
+          browser = "ie";
+          try {
+            mini_request = new ActiveXObject("Msxml2.XMLHTTP");
+          } catch (e) {
+            try {
+              mini_request = new ActiveXObject("Microsoft.XMLHTTP");
+            } catch (e) {}
+          }
+        }
+      if (!mini_request) {
+        if (browser == "mo")
+          alert('Mozilla 1.0+ or Safari 1.2+ requred.');
+        else
+          alert('Internet Explorer 5+, Opera 7.6+ required.');
+        return false;
+      }
+
+      mini_request.open('POST', url, true);
+      mini_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded;");
+      mini_request.setRequestHeader("Content-length", parameters.length);
+      mini_request.setRequestHeader("Connection", "close");
+      mini_request.send(parameters);
+    }
+
+    function getContents() {
+      switch (http_request.readyState) {
+      case 4:
+        if (http_request.status == 200)
+          if ((loading_element == "groups") && document.all)
+            document.getElementById("groups").outerHTML = groups_open+http_request.responseText+"</pre>";
+          else
+            document.getElementById(loading_element).innerHTML = http_request.responseText;
+        else
+          document.getElementById(loading_element).innerHTML = '<b class=inerr>No response from the server.</b>';
+        break;
+      }
+    }
+
+    function getRightContents() {
+      switch (right_request.readyState) {
+      case 4:
+        if (right_request.status == 200) {
+          if (right_element != "") {
+            if ((right_element == "matches") && document.all)
+              document.getElementById("matches").outerHTML = matches_open+right_request.responseText+"</pre>";
+            else
+              document.getElementById(right_element).innerHTML = right_request.responseText;
+          }
+          else
+            evaluateRegex(right_request.responseText);
+        } else
+          document.getElementById(right_element).innerHTML = '<b class=inerr>No response from the server.</b>';
+        break;
+      }
+    }
+
+    function evaluateRegex(modifiers) {
+      if (document.all && !document.fireEvent && !window.opera)
+        if (modifiers.indexOf("m") != -1)
+          modifiers = modifiers.replace("m", ""); // Internet Explorer 5 doesn't handle the multiline modifier
+      var regex = eval("/"+document.getElementById("regex").value+"/"+modifiers);
+      if (document.getElementById("replace").value != "") {
+        var rr = document.getElementById("replace").value;
+        rr = rr.replace( /\\n/g, "\u000D" );
+        rr = rr.replace( /\\r/g, "\u000A" );
+        rr = rr.replace( /\\t/g, "\u0009" );
+        var replacement = "<b class=inerr>"+rr+"</b>";
+        var replaced_text = document.getElementById("target").value.replace(regex, replacement);
+      } else {
+        if (!document.getElementById("split").checked) {
+          var replacement = "<b class=inerr>$1</b>";
+          var replaced_text = document.getElementById("target").value.replace(new RegExp("("+document.getElementById("regex").value+")", modifiers), replacement);
+        } else {
+          var replaced_text = document.getElementById("target").value.split(regex);
+        }
+      }
+      if (replaced_text) {
+        if (document.getElementById("split").checked && (document.getElementById("replace").value == "")) {
+          var bff = "";
+          for (var i = 0; i < replaced_text.length; i++)
+            bff += "["+i+"]: "+replaced_text[i]+"<br>";
+          if (document.all)
+            document.getElementById("matches").outerHTML = matches_open+bff+"</pre>";
+          else
+            document.getElementById("matches").innerHTML = bff;
+        }
+        else {
+          if (document.all)
+            document.getElementById("matches").outerHTML = matches_open+replaced_text+"</pre>";
+          else
+            document.getElementById("matches").innerHTML = replaced_text;
+        }
+      }
+      var matches = document.getElementById("target").value.match(new RegExp(document.getElementById("regex").value, modifiers));
+      if (matches) {
+        var str = "";
+        if (matches.length > 0)
+          str += "<span class=\"line\">0: ("+matches[0]+") /$0 can't be used in JS replace/<br /></span>";
+        for (i = 1; i < matches.length; i++)
+          str += "<span class=\"line\">"+i+": ("+matches[i]+")<br /></span>";
+        if (document.all)
+          document.getElementById("groups").outerHTML = groups_open+str+"</pre>";
+        else
+          document.getElementById("groups").innerHTML = str;
+      } else document.getElementById("groups").innerHTML = "";
+    }
+
+    function regexKey()
+    {
+      key_timer = (new Date()).getTime();
+      handled = false;
+    }
+
+    function chkInterval()
+    {
+      if (((new Date()).getTime() - key_timer) > 300)
+        if (!handled) {
+          handled = true;
+          if ((document.getElementById("regex").value != "") && (document.getElementById("target").value != "")) {
+            key_timer = (new Date()).getTime();
+            runUpdate();
+          }
+          else {
+            document.getElementById("matches").innerHTML = ""
+            document.getElementById("groups").innerHTML = ""
+          }
+        }
+    }
+
+    function runUpdate()
+    {
+      var parameters = "&regex="+buildURL( document.getElementById("regex").value )+
+                       "&target="+buildURL( document.getElementById("target").value );
+      if (document.getElementById("replace").value != "")
+        parameters += "&replace="+buildURL( unescape(document.getElementById("replace").value) );
+      switch (current_page) {
+        case 'pcre_details':
+          rightRequest("search.php", "matches", "request=pcrmatches"+parameters);
+          leftRequest("search.php", "groups", "request=pcrgroups"+parameters);
+          break;
+        case 'posix_details':
+          rightRequest("search.php", "matches", "request=posimatches"+parameters);
+          leftRequest("search.php", "groups", "request=posigroups"+parameters);
+          break;
+        case 'javascript_details':
+          rightRequest("search.php", "", "request=jvsmdf"+parameters);
+          break;
+      }
+    }
+
+    function init()
+    {
+      interv = window.setInterval("chkInterval()", 1000);
+      leftRequest( 'search.php', 'leftcontent', 'request=pcre&releft=true' );
+      rightRequest( 'search.php', 'rightcontent', 'request=start&reright=true' );
+    }
+
+    function utf8(wide)
+    {
+      var c, s;
+      var enc = "";
+      var i = 0;
+      while(i<wide.length) {
+        c= wide.charCodeAt(i++);
+        if (c>=0xDC00 && c<0xE000) continue;
+        if (c>=0xD800 && c<0xDC00) {
+          if (i>=wide.length) continue;
+          s= wide.charCodeAt(i++);
+          if (s<0xDC00 || c>=0xDE00) continue;
+          c= ((c-0xD800)<<10)+(s-0xDC00)+0x10000;
+        }
+        if (c<0x80) enc += String.fromCharCode(c);
+        else if (c<0x800) enc += String.fromCharCode(0xC0+(c>>6),0x80+(c&0x3F));
+        else if (c<0x10000) enc += String.fromCharCode(0xE0+(c>>12),0x80+(c>>6&0x3F),0x80+(c&0x3F));
+        else enc += String.fromCharCode(0xF0+(c>>18),0x80+(c>>12&0x3F),0x80+(c>>6&0x3F),0x80+(c&0x3F));
+      }
+      return enc;
+    }
+
+    function toHex(n) {
+      return hexchars.charAt(n>>4)+hexchars.charAt(n & 0xF);
+    }
+
+    function encodeURIComponentNew(s)
+    {
+      var ss = utf8(s);
+      var c;
+      var enc = "";
+      for (var i= 0; i<ss.length; i++) {
+        if (okURIchars.indexOf(ss.charAt(i))==-1)
+          enc += "%"+toHex(ss.charCodeAt(i));
+        else
+          enc += ss.charAt(i);
+      }
+      return enc;
+    }
+
+    function buildURL(fld)
+    {
+	    if (fld == "") return false;
+	    var encodedField = "";
+	    var s = fld;
+	    if (typeof encodeURIComponent == "function")
+	    {
+		    encodedField = encodeURIComponent(s);
+	    } else {
+		    encodedField = encodeURIComponentNew(s);
+	    }
+	    return encodedField;
+    }
+
+    function click_send()
+    {
+      if (document.getElementById('ccname').value == '') {
+        alert(name_error);
+        return;
+      }
+      if (!(/[\w\d_\.]{2,}@[\w\d_]{2,}(\.[\w\d_]{2,})+/.test(document.getElementById('cmail').value)) && (document.getElementById('cmail').value != "")) {
+        alert(mail_error);
+        return;
+      }
+      if (document.getElementById('ccomment').value == '') {
+        alert(comment_error);
+        return;
+      }
+      rightRequest( 'search.php', 'messages', 'request=send_comment&ccname='+document.getElementById('ccname').value+'&cmail='+
+                    document.getElementById('cmail').value+'&ccomment='+document.getElementById('ccomment').value );
+    }
+
+    function click_update()
+    {
+      handled = false;
+    }
+
+    function click_split()
+    {
+      if (!document.getElementById("split").checked) {
+        document.getElementById("regexlabel").innerHTML = regex_titles[0];
+        document.getElementById("matcheslabel").innerHTML = regex_titles[1];
+      } else {
+        document.getElementById("regexlabel").innerHTML = split_titles[0];
+        document.getElementById("matcheslabel").innerHTML = split_titles[1];
+      }
+    }
+
+  </script>
+  <body onload="init()">
+    <div id="header">
+      <img id="hlogo" src="i/logo.gif">
+      <span><a href="index.php?lang=en">English</a><a href="index.php?lang=bg">Bulgarian</a></span>
+      <form id="fastsearch" method="POST" enctype="multipart/form-data" class="fastsearch" action="search.php">
+        <input id="fsedit" type="text" name="fsedit" class="fsedit" value="">
+        <input id="fssend" type="submit" class="fssend" value="">
+      </form>
+    </div><div id="leftcontent"></div><div id="rightcontent"></div>    </div>
+    <script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      _uacct = "UA-1656151-2";
+      urchinTracker();
+    </script>
+  </body>
+</html>

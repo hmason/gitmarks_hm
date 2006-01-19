@@ -1,0 +1,4074 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<title>Using prototype.js v1.5.0</title>
+		<meta content="tutorial, reference, documentation, prototype.js, prototype, ajax, JavaScript, web 2.0, using protoype.js, prototype-1.5.0.js, developer notes" name="KEYWORDS" />
+ 		<meta name="description" content="Prototype.js documentation" />
+ 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<link rel="stylesheet" href="prot_ref.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="recommendations.css" type="text/css" media="all" />
+		
+		<script type="text/javascript">
+			//<![CDATA[
+			function sp(link)
+			{
+				var em =  'serg' + 'io_p' + 'ereira@';
+				em += 'ms' + 'n.c' + 'om';
+				document.write('<a href="mai' + 'lto:' + em + '">' + link + '</a>');
+			}
+
+			function navigateToVersion(list)
+			{
+				var url = list.options[list.selectedIndex].value;
+				if(url != '')
+					document.location = url;
+			}
+			//	]]>
+		</script>
+	</head>
+
+	<body>
+		<div id="mainContent">			
+			<h1>Developer Notes for <a href="http://prototype.conio.net">prototype.js</a></h1>
+			<h2>covers version 1.5.0</h2>
+			
+			<div class="author">by <script type="text/javascript">sp('Sergio Pereira')</script></div>
+			<div class="author">last update: August 18<sup>th</sup> 2007</div>
+			<!-- 
+			Translators: check out the file prot-changeLogs.html in this same directory
+			for the diff files.
+			-->
+			<p id='versions'>
+				<select id='otherVersions' onchange="navigateToVersion(this)">
+					<option value="" selected="selected">Other versions</option>
+					<option value="http://www.oreilly.com/catalog/prototypeqr/cover.html">PDF from O'Reilly</option>
+					<option value="http://openframework.or.kr/framework_reference/prototype_js/1.5.0/prototype.js.html">Korean (v1.5.0)</option>
+					<option value="http://vnruby.org/repos/prototype.js.vi/prototype.js.vi.html">Vietnamese (v1.5.0)</option>
+					<option value="http://www.bouwkamp.com/ajax/prototype.js.html">Dutch (v1.5.0)</option>
+					<option value="http://www.imgsrc.co.jp/~kuriyama/prototype/prototype.js.html">Japanese (v1.5.0)</option>
+					<option value="DeveloperNotes-Prototype-JS.pdf">PDF (v1.4.0)</option>
+					<option value="http://dcabasson.developpez.com/articles/javascript/ajax/documentation-prototype-1.4.0/">French (v1.4.0)</option>
+					<option value="http://www.bilisim-kulubu.com/help/prototype.js.html">Turkish (v1.4.0)</option>
+					<option value="http://openframework.or.kr/framework_reference/prototype_js/1.4.0/prototype.js.html">Korean (v1.4.0)</option>
+					<option value="http://www.fabryprog.it/from_sergiopereira/prototype.js.html">Italian (v1.4.0)</option>
+					<option value="prototype140.js.ptBR.html">Portuguese (v1.4.0)</option>
+					<option value="http://thinhunan.cnblogs.com/archive/2006/04/01/DeveloperNotesForPrototype.html">Chinese (v1.4.0)</option>
+					<option value="https://compdoc2cn.dev.java.net/prototype/html/prototype.js.cn.html">Chinese (v1.4.0)</option>	
+					<option value="http://prototype.rajmi.hu/prototype.js.hu.html">Hungarian (v1.4.0)</option>
+					<option value="http://www.bouwkamp.com/ajax/prototype140.js.html">Dutch (v1.4.0)</option>
+					<option value="http://blog.elksoft.pl/wp-content/prototype.js.pl.html">Polish (v1.4.0)</option>
+					<option value="prototype140.js.html">English (v1.4.0)</option>
+					<option value="prototype131.js.html">English (v1.3.1)</option>
+					<option value="http://www.electrolinux.com/traductions/prototype.js.html">French (v1.3.1)</option>	
+					<option value="prototype.js.ro.html">Romanian (v1.3.1)</option>
+					<option value="http://kropp.spb.ru/docs/prototype/">Russian (v1.3.1)</option>
+					<option value="">Other versions (volunteers needed)</option>
+				</select>
+			</p>
+<!-- ************************************************************************************************************************************* -->
+			
+
+			<h3 id="toc">Table of Contents</h3>
+			<div>
+				<ul>
+					<li><a href="#Whatsthat">What is that?</a></li>
+					<li><a href="#RelatedArticle">Related article</a></li>
+					<li><a href="#UtilityFunctions">The utility functions</a></li>
+					<li><a href="#DollarFunction">Using the <span class="functionName">$()</span> function</a></li>
+					<li><a href="#Dollar_Dollar_Function">Using the <span class="functionName">$$()</span> function</a></li>
+					<li><a href="#Dollar_F_Function">Using the <span class="functionName">$F()</span> function</a></li>
+					<li><a href="#Dollar_A_Function">Using the <span class="functionName">$A()</span> function</a></li>
+					<li><a href="#Dollar_H_Function">Using the <span class="functionName">$H()</span> function</a></li>
+					<li><a href="#Dollar_R_Function">Using the <span class="functionName">$R()</span> function</a></li>
+					<li><a href="#TryThese">Using the <span class="functionName">Try.these()</span> function</a></li>
+					<li><a href="#Strings">Tricked out strings</a></li>
+					<li><a href="#Strings.gsub">String substitutions</a></li>
+					<li><a href="#Strings.templates">String templates</a></li>
+					<li><a href="#UsingAjax">The <span class="objectClass">Ajax</span> object</a></li>
+					<li><a href="#UsingAjaxRequest">Using the <span class="objectClass">Ajax.Request</span> class</a></li>
+					<li><a href="#UsingAjaxUpdater">Using the <span class="objectClass">Ajax.Updater</span> class</a></li>
+					<li><a href="#Encoding">What are all those "?" and squares?</a></li>
+					<li><a href="#Enumerating">Enumerating... Wow! Damn! Wahoo!</a></li>
+					<li><a href="#Loops">Loops, Ruby-style</a></li>
+					<li><a href="#EnumeratingArrays">Your arrays on steroids</a></li>
+					<li><a href="#Books">Books I strongly recommend</a></li>
+					<li><a href="#Reference">Reference for prototype.js</a></li>
+					<li><a href="#Reference.Extensions">Extensions to the JavaScript classes</a></li>
+					<li><a href="#Reference.Extensions.Object">Extensions for the <span class="code">Object</span> class</a></li>
+					<li><a href="#Reference.Extensions.Number">Extensions for the <span class="code">Number</span> class</a></li>
+					<li><a href="#Reference.Extensions.Function">Extensions for the <span class="code">Function</span> class</a></li>
+					<li><a href="#Reference.Extensions.String">Extensions for the <span class="code">String</span> class</a></li>
+					<li><a href="#Reference.Array">Extensions for the <span class="code">Array</span> class</a></li>
+					<li><a href="#Reference.Extensions.DOM">Extensions for the <span class="code">document</span> DOM object</a></li>
+					<li><a href="#Reference.Extensions.Event">Extensions for the <span class="code">Event</span> object</a></li>
+					<li><a href="#Reference.NewObjects">New objects and classes defined by prototype.js</a></li>
+					<li><a href="#Reference.PeriodicalExecuter">The <span class="objectClass">PeriodicalExecuter</span> object</a></li>
+					<li><a href="#Reference.Prototype">The <span class="objectClass">Prototype</span> object</a></li>
+					<li><a href="#Reference.Enumerable">The <span class="objectClass">Enumerable</span> object</a></li>
+					<li><a href="#Reference.Hash">The <span class="objectClass">Hash</span> object</a></li>
+					<li><a href="#Reference.ObjectRange">The <span class="objectClass">ObjectRange</span> class</a></li>
+					<li><a href="#Reference.Class">The <span class="objectClass">Class</span> object</a></li>
+					<li><a href="#Reference.Ajax">The <span class="objectClass">Ajax</span> object</a></li>
+					<li><a href="#Ajax.Responders">The <span class="objectClass">Ajax.Responders</span> object</a></li>
+					<li><a href="#Ajax.Base">The <span class="objectClass">Ajax.Base</span> class</a></li>
+					<li><a href="#Ajax.Request">The <span class="objectClass">Ajax.Request</span> class</a></li>
+					<li><a href="#Ajax.options">The <span class="objectClass">options</span> argument object</a></li>
+					<li><a href="#Ajax.Updater">The <span class="objectClass">Ajax.Updater</span> class</a></li>
+					<li><a href="#Ajax.PeriodicalUpdater">The <span class="objectClass">Ajax.PeriodicalUpdater</span> class</a></li>
+					<li><a href="#Element">The <span class="objectClass">Element</span> object</a></li>
+					<li><a href="#Element.Methods">The <span class="objectClass">Element.Methods</span> object</a></li>
+					<li><a href="#Element.ClassNames">The <span class="objectClass">Element.ClassNames</span> class</a></li>
+					<li><a href="#Abstract">The <span class="objectClass">Abstract</span> object</a></li>
+					<li><a href="#Abstract.Insertion">The <span class="objectClass">Abstract.Insertion</span> class</a></li>
+					<li><a href="#Insertion">The <span class="objectClass">Insertion</span> object</a></li>
+					<li><a href="#Insertion.Before">The <span class="objectClass">Insertion.Before</span> class</a></li>
+					<li><a href="#Insertion.Top">The <span class="objectClass">Insertion.Top</span> class</a></li>
+					<li><a href="#Insertion.Bottom">The <span class="objectClass">Insertion.Bottom</span> class</a></li>
+					<li><a href="#Insertion.After">The <span class="objectClass">Insertion.After</span> class</a></li>
+					<li><a href="#Field">The <span class="objectClass">Field</span> object</a></li>
+					<li><a href="#Form">The <span class="objectClass">Form</span> object</a></li>
+					<li><a href="#Form.Methods">The <span class="objectClass">Form.Methods</span> object</a></li>
+					<li><a href="#Form.Element">The <span class="objectClass">Form.Element</span> object</a></li>
+					<li><a href="#Form.Element.Methods">The <span class="objectClass">Form.Element.Methods</span> object</a></li>
+					<li><a href="#Form.Element.Serializers">The <span class="objectClass">Form.Element.Serializers</span> object</a></li>
+					<li><a href="#Abstract.TimedObserver">The <span class="objectClass">Abstract.TimedObserver</span> class</a></li>
+					<li><a href="#Form.Element.Observer">The <span class="objectClass">Form.Element.Observer</span> class</a></li>
+					<li><a href="#Form.Observer">The <span class="objectClass">Form.Observer</span> class</a></li>
+					<li><a href="#Abstract.EventObserver">The <span class="objectClass">Abstract.EventObserver</span> class</a></li>
+					<li><a href="#Form.Element.EventObserver">The <span class="objectClass">Form.Element.EventObserver</span> class</a></li>
+					<li><a href="#Form.EventObserver">The <span class="objectClass">Form.EventObserver</span> class</a></li>
+					<li><a href="#Position">The <span class="objectClass">Position</span> object</a></li>
+				</ul>
+			</div>
+<!-- ************************************************************************************************************************************* -->
+
+			<h3 id="Whatsthat">What is that?</h3>
+			<p>
+				In case you haven't already used it, <a href="http://prototypejs.org">prototype.js</a> is a 
+				JavaScript library initially written by <a href="http://www.conio.net">Sam Stephenson</a>. 
+				This amazingly well thought and well written piece of <strong>standards-compliant</strong> code takes a lot of
+				the burden associated with creating rich, highly interactive web pages that characterize the Web 2.0 off 
+				your back.
+			</p>
+			<p>
+				When I first started trying to use this library, a few years ago, I noticed that the documentation
+				was definitely not one of its strongest points. As many other developers before me, I got my head 
+				around prototype.js by
+				reading the source code and experimenting with it. I thought it would be nice to take notes while
+				I learned and share with everybody else.
+			</p>
+			<p>
+				I'm also offering an <a href="#Reference">un-official reference</a> for the objects, classes, functions, 
+				and extensions provided by this library.
+			</p>
+			<p>
+				As you read the examples and the reference, developers familiar with the Ruby
+				programming language will notice an intentional similarity between Ruby's 
+				built-in classes and many of the extensions implemented by this library. That's
+				not surprising since prototype.js is a spinoff and is directly influenced by the 
+				requirements of the <a href="http://www.rubyonrails.org">Ruby on Rails</a> framework.
+			</p>
+			<p>
+				As far as browser support goes, prototype.js tries to support Internet Explorer (Windows) 6.0+,
+				Mozilla Firefox 1.5+, Apple Safari 1.0+, and Opera 9+. Supporting these browsers also cause some other
+				browsers that share their rendering engines to be supported as well, like Camino, Konqueror, IceWeasel,
+				Netscape 6+, SeaMonkey, etc.
+			</p>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+
+			<h3 id="RelatedArticle">Related article</h3>
+			<p>
+				Advanced <a href="http://www.sergiopereira.com/articles/advjs.html">JavaScript guide</a>.
+			</p>
+			<p class="backToc"><a href="#toc">toc</a></p>
+			
+<!-- ************************************************************************************************************************************* -->
+
+			<h3 id="UtilityFunctions">The utility functions</h3>
+			<p>
+				The library comes with many predefined objects and utility functions. The obvious goal of
+				these functions is to save you a lot of repeated typing and idioms.
+			</p>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="DollarFunction">Using the <span class="functionName">$()</span> function</h4>
+			<p>
+				The <span class="code">$()</span> function is a handy shortcut to the all-too-frequent <span class="code">document.getElementById()</span> function
+				of the DOM. Like the DOM function, this one returns the element that has the id passed as an argument.
+			</p>
+			<p>
+				Unlike the DOM function, though, this one goes further. The returned element object will be
+				augmented with some extra methods. These extra methods simplify many tasks, like hiding/showing the
+				element, getting its size, scrolling to the element, etc. You can get a 
+				\list of the methods that are added to the returned element object in the reference for the 
+				<a href="#Element.Methods" class="objectClass">Element.Methods</a> object. Furthermore, if the
+				element is a <span class="code">form</span> it will also receive copies of the utility
+				methods from <a href="#Form.Methods" class="objectClass">Form.Methods</a> and if the element is a 
+				form field (<span class="code">input</span>, <span class="code">select</span>, 
+				or <span class="code">textarea</span>) it will additionally receive copies of the utility
+				methods from <a class="objectClass" href="#Form.Element.Methods" class="code">Form.Element.Methods</a>.
+			</p>
+			<pre class="code"><code>&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt; Test Page &lt;/title&gt;
+<strong class="highlite">&lt;script src="prototype.js"&gt;&lt;/script&gt;</strong>
+
+&lt;script&gt;
+	function test(){
+		<strong class="highlite">var d = $('myDiv');</strong>
+		alert(d.innerHTML);
+		d.<strong class="highlite">hide</strong>();
+		d.<strong class="highlite">show</strong>();
+		d.<strong class="highlite">addClassName</strong>('active');
+	}
+&lt;/script&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+	&lt;div id="myDiv"&gt;
+		&lt;p&gt;This is a paragraph&lt;/p&gt;
+	&lt;/div&gt;
+	&lt;div id="myOtherDiv"&gt;
+		&lt;p&gt;This is another paragraph&lt;/p&gt;
+	&lt;/div&gt;
+
+	&lt;input type="button" value="Test $()" onclick="test();"/&gt;&lt;br/&gt; 
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>			
+			<p>
+				Because many of the new methods added to the element return the element itself, you can 
+				chain the method calls to make more compact code:
+			</p>
+			<pre class="code"><code>
+//change the text, the CSS class, and make the element visible			
+$('messageDiv').<strong class="highlite">update</strong>('Your order was accepted.').<strong class="highlite">addClassName</strong>('operationOK').<strong class="highlite">show</strong>();
+			</code></pre>
+			<p>
+				Another nice thing about this function is that you can pass either the id string or the element object itself,
+				which makes this function very useful when creating other functions that can also take either form of argument.
+			</p>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->			
+
+			<h4 id="Dollar_Dollar_Function">Using the <span class="functionName">$$()</span> function</h4>
+			<p>
+				The <span class="code">$$()</span> function will help you a lot if you consistently separate
+				CSS from the content wireframe. It parses one or more CSS filtering expressions, analogous to the ones used to define
+				CSS rules, and returns the elements that match these filters.
+			</p>
+			<p>
+				It's so easy to use it's ridiculous. Check this out.
+			</p>
+			<pre class="code"><code>&lt;script&gt;
+function test$$(){
+	/*
+	  in case CSS is not your forte, the expression below says
+	  'find all the INPUT elements that are inside 
+	  elements with class=field that are inside a DIV
+	  with id equal to loginForm.'
+	*/
+	var f = $$('div#loginForm .field input');
+	var s = '';
+	for(var i=0; i&lt;f.length; i++){
+		s += f[i].value + '/';
+	}
+	alert(s); // shows: "joedoe1/secret/"
+	
+	//now passing more than one expression
+	f = $$('div#loginForm .field input', 'div#loginForm .fieldName');
+	s = '';
+	for(var i=0; i&lt;f.length; i++){
+		s += ( f[i].value ? f[i].value : f[i].innerHTML ) + '/';
+	}
+	alert(s); //shows: "joedoe1/secret/User name:/Password:/"
+}
+
+
+&lt;/script&gt;
+
+&lt;div id='loginForm'&gt;
+	&lt;div class='field'&gt;
+		&lt;span class='fieldName'&gt;User name:&lt;/span&gt;
+		&lt;input type='text' id='txtName' value='joedoe1'/&gt;
+	&lt;/div&gt;
+	&lt;div class='field'&gt;
+		&lt;span class='fieldName'&gt;Password:&lt;/span&gt;
+		&lt;input type='password' id='txtPass' value='secret' /&gt;
+	&lt;/div&gt;
+	&lt;input type='submit' value='login' /&gt;
+&lt;/div&gt; 
+&lt;input type=button value='test $$()' onclick='test$$();' /&gt;
+			</code></pre>
+
+			<p>
+				A quick note on performance. The current implementation of the $$() function in prototype.js
+				is not regarded as particularly efficient. If you plan on traversing deep and complex HTML
+				documents using this function frequently, you may want to consider other 
+				freely available implementations, possibly simply substituting the $$() function itself.	
+			</p>
+			
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->			
+
+			<h4 id="Dollar_F_Function">Using the <span class="functionName">$F()</span> function</h4>
+			<p>
+				The <span class="code">$F()</span> function is another welcome shortcut. It returns the value of any field input control, 
+				like text boxes or drop-down lists. The function can take as argument either the element id or the element object itself.
+			</p>
+			<pre class="code"><code>&lt;script&gt;
+	function test3()
+	{
+		alert(  <strong class="highlite">$F('userName')</strong>  );
+	}
+&lt;/script&gt;
+
+&lt;input type="text" id="userName" value="Joe Doe"&gt;&lt;br/&gt; 
+&lt;input type="button" value="Test3" onclick="test3();"&gt;&lt;br/&gt; 
+			</code></pre>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->			
+
+			<h4 id="Dollar_A_Function">Using the <span class="functionName">$A()</span> function</h4>
+			<p>
+				The <span class="code">$A()</span> function converts the single argument it receives
+				into an <span class="code">Array</span> object.
+			</p>
+			<p>
+				This function, combined with the <a href="#Reference.Array">extensions for the Array class</a>, 
+				makes it easier to convert or copy any enumerable list into an 
+				<span class="code">Array</span> object. One suggested use is to convert DOM 
+				<span class="code">NodeLists</span> into regular arrays, which can be traversed
+				more efficiently. See example below.
+			</p>
+			<pre class="code"><code>&lt;script&gt;
+
+	function showOptions(){
+		var someNodeList = $('lstEmployees').getElementsByTagName('option');
+		var nodes = $A(someNodeList);
+
+		nodes.each(function(node){
+				alert(node.nodeName + ': ' + node.innerHTML);
+			});
+	}
+&lt;/script&gt;
+
+&lt;select id="lstEmployees" size="10" &gt;
+	&lt;option value="5"&gt;Buchanan, Steven&lt;/option&gt;
+	&lt;option value="8"&gt;Callahan, Laura&lt;/option&gt;
+	&lt;option value="1"&gt;Davolio, Nancy&lt;/option&gt;
+&lt;/select&gt;
+
+&lt;input type="button" value="Show the options" onclick="showOptions();" &gt; 
+			</code></pre>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->			
+			
+			<h4 id="Dollar_H_Function">Using the <span class="functionName">$H()</span> function</h4>
+			<p>
+				The <span class="code">$H()</span> function converts  
+				objects into enumerable <a class="objectClass" href="#Reference.Hash">Hash</a> objects that 
+				resemble associative arrays.
+			</p>
+			<pre class="code"><code>&lt;script&gt;
+	function testHash()
+	{
+		//let's create the object
+		var a = {
+			first: 10,
+			second: 20,
+			third: 30
+			};
+
+		//now transform it into a hash
+		var h = <strong class="highlite">$H(a)</strong>;
+		alert(h.toQueryString()); //displays: first=10&amp;second=20&amp;third=30
+	}
+
+&lt;/script&gt;
+			</code></pre>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->			
+			
+			<h4 id="Dollar_R_Function">Using the <span class="functionName">$R()</span> function</h4>
+			<p>
+				The <span class="code">$R()</span> function is simply a short hand to
+				writing <span class="code">new ObjectRange(lowerBound, upperBound, excludeBounds)</span>.
+			</p>
+			<p>
+				Jump to the <a class="objectClass" href="#Reference.ObjectRange">ObjectRange</a> class documentation 
+				for a complete explanation of this class. In the meantime, let's take a look at
+				a simple example that also shows the usage of iterators through the
+				<span class="code">each</span> method. More on that method will be found
+				in the <a class="objectClass" href="#Reference.Enumerable">Enumerable</a> object documentation.
+			</p>
+			<pre class="code"><code>&lt;script&gt;
+	function demoDollar_R(){
+		var range = <strong class="highlite">$R(10, 20, false)</strong>;
+		range.each(function(value, index){
+			alert(value);
+		});
+	}
+
+&lt;/script&gt;
+
+&lt;input type="button" value="Sample Count" onclick="demoDollar_R();" /&gt; 
+			</code></pre>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->			
+			
+			<h4 id="TryThese">Using the <span class="functionName">Try.these()</span> function</h4>
+			<p>
+				The <span class="code">Try.these()</span> function makes it easy when you want to, ahem, try
+				different function calls until one of them works. It takes a number of functions as arguments
+				and calls them one by one, in sequence, until one of them works, returning the result of that 
+				successful function call.
+			</p>
+			<p>
+				In the example below, the function <span class="code">xmlNode.text</span> works in some browsers,
+				and <span class="code">xmlNode.textContent</span> works in the other browsers. Using the 
+				<span class="code">Try.these()</span> function we can return the one that works.
+			</p>
+			<pre class="code"><code>&lt;script&gt;
+function getXmlNodeValue(xmlNode){
+	return <strong class="highlite">Try.these</strong>(
+		function() {return xmlNode.text;},
+		function() {return xmlNode.textContent;}
+		);
+}
+&lt;/script&gt;
+			</code></pre>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ************************************************************************************************************************************* -->
+			<h3 id="Strings">Tricked out strings</h3>
+			<p>
+				Strings are powerful objects. Prototype.js takes that power and elevates it
+				by another level of magnitude.
+			</p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->			
+			
+			<h4 id="Strings.gsub">String substitutions</h4>
+			<p>
+				When it comes string substitutions JavaScript already has the methods like
+				<span class="code">String.Replace</span>, which even works with regular 
+				expressions, but it's still not as flexible as the alternative introduced 
+				by prototype.js.
+			</p>
+			<p>
+				Meet the new <span class="code">String.gsub</span> method. With this method
+				you can not only find and replace a fixed string or a regular expression
+				pattern, but you also have much more control over the replacement process.
+				You can, for example, use a string template to instruct the method on how
+				you would like the found elements to be transformed (rather than simply replaced.)
+			</p>
+			<p>
+				The example below searches for words containing 't' and replaces the portion
+				that comes after the 't' with 'tizzle', in a lame shot at being funny.
+				In case the example is not very clear, the regular expression we chose
+				has a capture group declaration: the <strong>\w+</strong> enclosed in parenthesis. 
+				We can get the value captured by this group using <strong>#{1}</strong> in the 
+				replacement template string.
+			</p>
+			<p>
+				In our example we are capturing what comes before the 't' and appending 'tizzle'
+				to it. If we had more capture groups in the regular expression, we would
+				get the values with <strong>#{2}</strong>, <strong>#{3}</strong>, and so on.
+			</p>
+			<pre class="code"><code>&lt;script&gt;
+function talkLikeYouKnowSomething(){
+	var s = 'prototype string extensions can help you';
+	var snoopdogfy = /\b(\w+)t\w+\b/;
+	var snooptalk = s.<strong class="highlite">gsub</strong>(snoopdogfy, '#{1}tizzle' );
+	alert(snooptalk); // shows: "prototizzle stizzle extizzle can help you"				
+}
+&lt;/script&gt;
+			</code></pre>
+			<p>
+				Let's not stop there. The substitution we have just made is not all that
+				powerful because we are limited to pattern matching and substitutions.
+				What if we could operate on the matches with custom logic to produce the 
+				desired substitution vaues? We can do that if we pass a function as the
+				second argument to <span class="code">gsub</span>. The function will 
+				receive an array with the matched text (index 0) and any capture group 
+				values (index 1 to N.)
+			</p>
+			
+			<pre class="code"><code>&lt;script&gt;
+function scamCustomers(){
+	var prices = 'book1 $12.5, magazine $5.50, pencil $1.20';
+	var priceFinder = /\$([0-9\.]+)/;
+	var r = prices.gsub(priceFinder, <strong class="highlite">jackUp</strong>);
+	alert(r);//shows: "book1 $13.75, magazine $6.05, pencil $1.32"
+}
+<strong class="highlite">	
+function jackUp(matches){
+	//increases the prices by 10%
+	var price = parseFloat(matches[1]);
+   	return '$' + Math.round(110 * price)/100;
+}</strong>
+&lt;/script&gt;
+			</code></pre>
+			
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->			
+			<h4 id="Strings.templates">String templates</h4>
+			<p>
+				As you increase the amount of JavaScript code in your applications, 
+				increasingly you'll find yourself with collections of objects of 
+				the same type and that you need to list or present in a formatted way.
+			</p>
+			<p>
+				It's not rare to find code in your applications that loops through
+				a list of objects, building a string based on the object properties and
+				some fixed formatting elements. 
+				Prototype.js comes with the 
+				<a class="objectClass" href="#Reference.Template">Template</a> class, which aims at helping
+				you with exactly this type of scenarios.
+			</p>
+			<p>
+				The example below shows how to format a list of items in a shopping cart
+				in multiple HTML lines.
+			</p>
+			<pre class="code"><code>&lt;script&gt;
+function printCart(){
+	//creating a sample cart
+	var cart = new Object();
+	cart.items = [ ];
+	//putting some sample items in the cart
+	cart.items.push({product: 'Book 123', price: 24.50, quantity: 1});
+	cart.items.push({product: 'Set of Pens', price: 5.44, quantity: 3});
+	cart.items.push({product: 'Gift Card', price: 10.00, quantity: 4});
+	
+	//here we create our template for formatting each item
+	var itemFormat = <strong class="highlite">new Template(
+			'You are ordering #{quantity} units ' + 
+			'of #{product} at $#{price} each'
+			);</strong>
+	var formatted = '';
+	
+	for(var i=0; i&lt;cart.items.length; i++){
+		var cartItem = cart.items[i];
+		formatted += itemFormat.<strong class="highlite">evaluate</strong>(cartItem) + '&lt;br/&gt;\n';
+	}
+	
+	alert(formatted);
+	/* SHOWS:
+	You are ordering 1 units of Book 123 at $24.5 each&lt;br/&gt;
+	You are ordering 3 units of Set of Pens at $5.44 each&lt;br/&gt;
+	You are ordering 4 units of Gift Card at $10 each&lt;br/&gt;
+	*/
+}
+&lt;/script&gt;
+			</code></pre>
+			
+			<p>
+				For a more complete list of new methods, see the <a href="#Reference.Extensions.String">String extensions</a> 
+				reference.
+			</p>
+			
+			<p class="backToc"><a href="#toc">toc</a></p>
+		
+			
+<!-- ************************************************************************************************************************************* -->
+			
+			<h3 id="UsingAjax">The <span class="objectClass">Ajax</span> object</h3>
+			<p>
+				The utility functions mentioned above are nice but, let's face it, they are not the most advanced type of thing, now are they? 
+				You could probably have done it yourself and you may even have similar functions in your own scripts. But those
+				functions are just the tip of the iceberg.
+			</p>
+			<p>
+				I'm sure that your interest in prototype.js is driven mostly by its 
+				<a href="http://en.wikipedia.org/wiki/Ajax_%28programming%29">AJAX</a> capabilities. So let's explain how the library
+				makes your life easier when you need to perform AJAX logic.
+			</p>
+			<p>
+				The <span class="code">Ajax</span> object is a pre-defined object, created by the library to wrap and simplify
+				the tricky code that is involved when writing AJAX functionality. This object contains a number of classes 
+				that provide encapsulated AJAX logic. Let's take a look at some of them.
+			</p>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->			
+
+			<h4 id="UsingAjaxRequest">Using the <span class="objectClass">Ajax.Request</span> class</h4>
+			<p>
+				If you are not using any helper library, you are probably writing a whole lot of code to create a 
+				<span class="code">XMLHttpRequest</span> object and then track its progress asynchronously, then
+				extract the response and process it. And consider yourself lucky if you do not have to support more than one
+				type of browser.
+			</p>
+			
+			<p>
+				To assist with AJAX functionality, the library defines the  <span class="code">Ajax.Request</span>
+				class.
+			</p>
+			<p>
+				Let's say you have an application that can communicate with the server via the url <em>http://yourserver/app/get_sales?empID=1234&amp;year=1998</em>, 
+				which returns an XML response like the following.
+			</p>
+			
+			<pre class="code"><code>&lt;?xml version="1.0" encoding="utf-8" ?&gt; 
+&lt;ajax-response&gt;
+	&lt;response type="object" id="productDetails"&gt;
+		&lt;monthly-sales&gt;
+			&lt;employee-sales&gt;
+				&lt;employee-id&gt;1234&lt;/employee-id&gt; 
+				&lt;year-month&gt;1998-01&lt;/year-month&gt; 
+				&lt;sales&gt;$8,115.36&lt;/sales&gt; 
+			&lt;/employee-sales&gt;
+			&lt;employee-sales&gt;
+				&lt;employee-id&gt;1234&lt;/employee-id&gt; 
+				&lt;year-month&gt;1998-02&lt;/year-month&gt; 
+				&lt;sales&gt;$11,147.51&lt;/sales&gt; 
+			&lt;/employee-sales&gt;
+		&lt;/monthly-sales&gt;
+	&lt;/response&gt;
+&lt;/ajax-response&gt;			
+			</code></pre>
+			
+			<p>
+				Talking to the server to retrieve this XML is pretty simple using an 
+				<span class="code">Ajax.Request</span> object. The sample below shows
+				how it can be done.
+			</p>
+			
+			<pre class="code"><code>&lt;script&gt;
+	function searchSales()
+	{
+		var empID = $F('lstEmployees');
+		var y = $F('lstYears');
+		var url = 'http://yourserver/app/get_sales';
+		var pars = 'empID=' + empID + '&amp;year=' + y;
+		<strong class="highlite">
+		var myAjax = new Ajax.Request(
+			url, 
+			{
+				method: 'get', 
+				parameters: pars, 
+				onComplete: showResponse
+			});
+		</strong>
+	}
+
+	function showResponse(originalRequest)
+	{
+		//put returned XML in the textarea
+		$('result').value = originalRequest.responseText;
+	}
+&lt;/script&gt;
+
+&lt;select id="lstEmployees" size="10" onchange="searchSales()"&gt;
+	&lt;option value="5"&gt;Buchanan, Steven&lt;/option&gt;
+	&lt;option value="8"&gt;Callahan, Laura&lt;/option&gt;
+	&lt;option value="1"&gt;Davolio, Nancy&lt;/option&gt;
+&lt;/select&gt;
+&lt;select id="lstYears" size="3" onchange="searchSales()"&gt;
+	&lt;option selected="selected" value="1996"&gt;1996&lt;/option&gt;
+	&lt;option value="1997"&gt;1997&lt;/option&gt;
+	&lt;option value="1998"&gt;1998&lt;/option&gt;
+&lt;/select&gt;
+&lt;br/&gt;&lt;textarea id="result" cols=60 rows=10 &gt;&lt;/textarea&gt;
+			</code></pre>
+		
+			<p>
+				Can you see the second parameter passed to the constructor of the <span class="code">Ajax.Request</span> object? 
+				The parameter <span class= "code">{method: 'get', parameters: pars, onComplete: showResponse}</span> 
+				represents an anonymous object in literal notation (a.k.a. JSON). What it means is that we are passing an object that has 
+				a property named <span class="code">method</span> that contains the string <span class="code">'get'</span>, another property 
+				named <span class="code">parameters</span> that contains the querystring of the HTTP request, 
+				and an <span class="code">onComplete</span> property/method containing the function <span class="code">showResponse</span>. 
+			</p>
+			<p>
+				There are a few other properties that you can define and populate in this object, like  <span class="code">asynchronous</span>, 
+				which can be <span class="code">true</span> or <span class="code">false</span> and determines 
+				if the AJAX call to the server will be made asynchronously (the default value is <span class="code">true</span>.)
+			</p>
+			<p>
+				This parameter defines the options for the AJAX call. In our sample, we are calling the url in the first argument via
+				a HTTP GET command, passing the querystring contained in the variable <span class="code">pars</span>, and the 
+				<span class="code">Ajax.Request</span> object will call the <span class="code">showResponse</span> function when it finishes
+				retrieving the response.
+			</p>
+			<p>
+				As you may know, the <span class="code">XMLHttpRequest</span> reports progress during the HTTP call. This progress
+				can inform four different stages: <em>Loading</em>, <em>Loaded</em>, <em>Interactive</em>, or <em>Complete</em>. You 
+				can make the <span class="code">Ajax.Request</span> object call a custom function in any of these stages, the <em>Complete</em>
+				being the most common one. To inform the function to the object, simply provide property/methods named 
+				<span class="code">onXXXXX</span> in the request options, just like the <span class="code">onComplete</span>
+				from our example. The function you pass in will be called by the object with two arguments, 
+				the first one will be the  <span class="code">XMLHttpRequest</span> (a.k.a. XHR) object itself 
+				and the second one will be the evaluated X-JSON response HTTP header (if one is present). 
+				You can then use the XHR to get the returned data and maybe check the 
+				<span class="code">status</span> property, which will contain the HTTP result 
+				code of the call. The X-JSON header is useful if you want to return some script or
+				JSON-formatted data.
+			</p>	
+			<p>
+				Two other interesting options can be used to process the results. We can specify the 
+				<span class="code">onSuccess</span> option as a function to be called when the AJAX call executes without errors 
+				and, conversely, the <span class="code">onFailure</span> option can be a function to be called when a server error
+				happens. Just like the <span class="code">onXXXXX</span> option functions, these two will also be called passing the XHR that carried the AJAX call and the evaluated X-JSON header.
+			</p>
+			<p>
+				Our sample did not process the XML response in any interesting way. We just dumped the XML in the textarea. A typical
+				usage of the response would probably find the desired information inside the XML and update some page elements, or maybe
+				even some sort of XSLT transformation to produce HTML in the page.
+			</p>
+			<p>
+				There's also another form of event callback handling available. If you have
+				code that should always be executed for a particular event, regardless of which
+				AJAX call caused it to happen, then you can use the new 
+				<a class="objectClass" href="#Ajax.Responders">Ajax.Responders</a> object. 
+			</p>
+			<p>
+				Let's suppose you want to show some visual indication that an AJAX call is in progress,
+				like a spinning icon or something of that nature. You can use two global event handlers
+				to help you, one to show the icon when the first call starts and another one to hide
+				the icon when the last one finishes. See example below.
+			</p>
+		
+			<pre class="code"><code>&lt;script&gt;
+	var myGlobalHandlers = {
+		onCreate: function(){
+			Element.show('systemWorking');
+		},
+
+		onComplete: function() {
+			if(Ajax.activeRequestCount == 0){
+				Element.hide('systemWorking');
+			}
+		}
+	};
+
+	<strong class="highlite">Ajax.Responders.register(myGlobalHandlers);</strong>
+&lt;/script&gt;
+
+&lt;div id='systemWorking'&gt;&lt;img src='spinner.gif'&gt;Loading...&lt;/div&gt;
+	</code></pre>
+			<p>
+				For more complete explanations, see the <a class="objectClass" href="#Ajax.Request">Ajax.Request</a> reference and the <a class="objectClass" href="#Ajax.options">options </a>reference.
+			</p>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+			
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="UsingAjaxUpdater">Using the <span class="objectClass">Ajax.Updater</span> class</h4>
+			<p>
+				If you have a server endpoint that can return information already formatted in HTML, the library makes life even
+				easier for you with the <span class="code">Ajax.Updater</span> class. With it you just inform which element should
+				be filled with the HTML returned from the AJAX call. An example speaks better than I can write.
+			</p>
+
+		
+			<pre class="code"><code>&lt;script&gt;
+	function getHTML()
+	{
+		var url = 'http://yourserver/app/getSomeHTML';
+		var pars = 'someParameter=ABC';
+		<strong class="highlite">
+		var myAjax = new Ajax.Updater(
+			'placeholder', 
+			url, 
+			{
+				method: 'get', 
+				parameters: pars
+			});
+		</strong>
+	}
+&lt;/script&gt;
+
+&lt;input type="button" value="GetHtml" onclick="getHTML()"/&gt;
+&lt;div id="placeholder"&gt;&lt;/div&gt;
+			</code></pre>
+			
+			<p>
+				As you can see, the code is very similar to the previous example, with the exclusion of the <span class="code">onComplete</span> 
+				function and the element id being passed in the constructor. Let's change the code a little bit to illustrate
+				how it is possible to handle server errors on the client.
+			</p>
+			<p>
+				We will add more options to the call, specifying a function to capture error conditions. This is done
+				using the <span class="code">onFailure</span> option. We will also
+				specify that the <span class="code">placeholder</span> only gets populated in case of a successful operation.
+				To achieve this we will change the first parameter from a simple element id to an object with two properties,
+				<span class="code">success</span> (to be used when everything goes OK) and <span class="code">failure</span> 
+				(to be used when things go bad.) We will not be using the <span class="code">failure</span> property 
+				in our example, just the <span class="code">reportError</span> function in the <span class="code">onFailure</span> option.
+			</p>
+			<pre class="code"><code>&lt;script&gt;
+	function getHTML()
+	{
+		var url = 'http://yourserver/app/getSomeHTML';
+		var pars = 'someParameter=ABC';
+		<strong class="highlite">
+		var myAjax = new Ajax.Updater(
+					{success: 'placeholder'}, 
+					url, 
+					{
+						method: 'get', 
+						parameters: pars, 
+						onFailure: reportError
+					});
+		</strong>
+	}
+
+	function reportError(request)
+	{
+		alert('Sorry. There was an error.');
+	}
+&lt;/script&gt;
+
+&lt;input type="button" value="GetHtml" onclick="getHTML()"/&gt;
+&lt;div id="placeholder"&gt;&lt;/div&gt;
+
+			</code></pre>
+			<p>
+				If your server logic returns JavaScript code along with HTML markup, the <span class="code">Ajax.Updater</span>
+				object can evaluate that JavaScript code. To get the object to treat the response as JavaScript, you simply add
+				<span class="code">evalScripts: true;</span> to the list of properties in the last argument of the object constructor. But there's a caveat. Those script blocks will not be added to the 
+				page's script. As the option name <span class="code">evalScripts</span> suggests, the scripts
+				will be <strong>evaluated</strong>. What's the difference, you may ask? Lets assume
+				the requested URL returns something like this:
+			</p>
+			<pre class="code"><code>&lt;script language="javascript" type="text/javascript"&gt;
+	function sayHi(){
+		alert('Hi');
+	}
+&lt;/script&gt;
+
+&lt;input type="button" value="Click Me" onclick="sayHi()"/&gt;
+			</code></pre>
+			<p>
+				In case you've tried it before, you know it doesn't work. The reason is that the
+				script block will be evaluated, and evaluating a script like the above will not
+				create a function named <span class="code">sayHi</span>. It will do nothing. 
+				To create this function we need
+				to change our script to <strong>create</strong> the function. See below.
+			</p>
+			<pre class="code"><code>&lt;script language="javascript" type="text/javascript"&gt;
+	<strong class="highlite">sayHi = function(){
+		alert('Hi');
+	};</strong>
+&lt;/script&gt;
+
+&lt;input type="button" value="Click Me" onclick="sayHi()"/&gt;
+			</code></pre>
+			<p>
+				Note that in the previous example we did not use the <span class="code">var</span>
+				keyword to declare the variable. Doing so would have created a function object that
+				would be local to the script block (at least in IE). Without the <span class="code">var</span>
+				keyword the function object is scoped to the window, which is our intent.
+			</p>
+			<p>
+				For more complete explanations, see the <a class="objectClass" href="#Ajax.Updater">Ajax.Updater</a> 
+				reference and the <a class="objectClass" href="#Ajax.options">options</a> reference.
+			</p>
+			<p class="backToc"><a href="#toc">toc</a></p>
+			
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h3 id="Encoding">What are all those "?" and squares?</h3>
+			<p>
+				So you went and wrote some quick test scripts to update your pages using the 
+				<span class="code">Ajax.Updater</span> object and it all worked fine. Life was good until 
+				you ran your scripts against real data. All of a sudden the updated text was displayed 
+				with question marks or unprintable character symbols where the non-English characters 
+				should be.
+			</p>
+			<p>
+				Your first suspect is prototype.js, Of course, it seemed too easy to be true. 
+				But don't blame the library just yet. Ask yourself how much you really understand
+				character encoding, code pages, and how the browser deals with it. If you have a 
+				positive answer then I bet you are on your way to fix the problem. If you are 
+				among the other 80% (another useless, imprecise author's estimate) of web developers 
+				that take character encoding for granted, keep reading.
+			</p>
+			<p>
+				I won't pretend to be an authority on the topic, much less give you a complete explanation 
+				of how this is best handled. Instead you go straight to the solution that I use and provide 
+				hints on how this could be fixed in your own scenario.
+			</p>
+			<p>
+				Simply put, the solution revolves around the following statement: Serve what the browser is 
+				expecting you to serve. If we are going to update the page with text that contains Unicode/UTF-8 
+				characters then we better make the browser aware of that. 
+			</p>
+			<p>
+				Let's start with the simple case when you are just updating the page with text from a static HTML 
+				file that resides on your server. When you created that file, depending on which text editor you 
+				employed, it is very possible that the file was saved in ANSI (or better said, non-Unicode) format. 
+				This is the default for many text editors, especially source code editors, because the file size 
+				will be smaller and it's rather unusual to edit source code with Unicode characters in it. 
+			</p>
+			<p>
+				Suppose you have the following file named static-content.html on your server. You saved this file 
+				saved in ANSI format.
+			</p>
+			
+			<pre class="code"><code>&lt;div&gt;
+	Hi there, Jos&eacute;. Yo no hablo espa&ntilde;ol.
+&lt;/div&gt;</code></pre>
+			
+			<p>
+				Your main page updates itself using something like the snippet below.
+			</p>
+
+			<pre class="code"><code>&lt;script&gt;
+	function updateWithFile(){
+		var url = 'static-content.html';
+		var pars = '';
+		var myAjax = new Ajax.Updater(
+				'placeholder', url, 
+				{method: 'get', parameters: pars});
+	}
+&lt;/script&gt;
+&lt;div id="placeholder"&gt;(this will be replaced)&lt;/div&gt;
+&lt;input id="btn" value="Test With Static File" 
+                 onclick="updateWithFile()" type="button"/&gt;
+
+</code></pre>
+
+			<p>
+				When you click the button the static file is retrieved but the non-English characters are 
+				replaced by question marks or some other symbol. The displayed text will look similar to 
+				<i>"Hi there, Jos?. Yo no hablo espa?ol."</i> or <i>"Hi there, Jos?Yo no hablo espa?"</i>, 
+				depending on your browser.
+			</p>
+			<p>
+				In this case, the solution is straightforward, simply save the static file in an appropriate 
+				format. Let's save it in UTF-8 and run the script again (any decent text editor will have an 
+				option in the Save As dialog.) You should now see the correct text (if not, your browser 
+				may have cached the old version, try using a different file name.)
+			</p>
+			<p>
+				If the HTML that you are serving is not static, if it is being dynamically generated by some 
+				application framework (like ASP.NET, PHP, or even Perl,) make sure the code that generates this
+				HTML is producing the text in the appropriate encoding and code page, and include in the HTTP 
+				response headers one header that informs this. Each platform has a different way to achieve 
+				this, but they are very similar.
+			</p>
+			<p>
+				For example, in ASP.NET you can set this globally in your web.config file and the default 
+				configuration is good enough to avoid this problem in the first place. You should already 
+				have the following section in your web.config. 
+			</p>
+
+			<pre class="code"><code>&lt;globalization requestEncoding="utf-8" responseEncoding="utf-8" /&gt;</code></pre>
+
+			<p>
+				In classic ASP 3.0 you can fix this problem using the following code.
+			</p>
+
+			<pre class="code"><code>Response.CodePage = 65001
+Response.CharSet = "utf-8" </code></pre>
+
+			<p>
+				In PHP the syntax to add the response header looks like this.
+			</p>
+
+			<pre class="code"><code>&lt;?php header('Content-Type: text/html; charset=utf-8'); ?&gt;</code></pre>
+
+			<p>
+				In any case, your ultimate goal is to have the following HTTP header sent with your response.
+			</p>
+
+			<pre class="code"><code>Content-Type: text/html; charset=utf-8 </code></pre>
+
+			<p>
+				We used UTF-8 in our examples above, but if you need a different setting you can easily change.
+			</p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h3 id="Enumerating">Enumerating... Wow! Damn! Wahoo!</h3>
+			<p>
+				We are all familiar with for loops. You know, create yourself an array, populate it with
+				elements of the same kind, create a loop control structure (for, foreach, while, repeat, etc,)
+				access each element sequentially, by its numeric index, and do something with the element.
+			</p>
+			<p>
+				When you come to think about it, almost every time you have an array in your code it
+				means that you'll be using that array in a loop sooner or later. Wouldn't it be nice
+				if the array objects had more functionality to deal with these iterations? Yes, it would, 
+				and many programming languages provide such functionality in their arrays or equivalent
+				structures (like collections and lists.)
+			</p>
+			<p>
+				Well, it turns out that prototype.js gives us the <a href="#Reference.Enumerable" class="objectClass">Enumerable</a>
+				object, which implements a plethora of tricks for us to use when dealing with iterable data.
+				The prototype.js library goes one step further and <a href="#Reference.Array">extends the 
+				<span class="code">Array</span> class</a> with all the methods of <span class="code">Enumerable</span>.
+			</p>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+
+			<h4 id="Loops">Loops, Ruby-style</h4>
+			<p>
+				In standard javascript, if you wanted to sequentially display the elements of an array,
+				you could very well write something like this.
+			</p>
+			<pre class="code"><code>&lt;script&gt;
+	function showList(){
+		var simpsons = ['Homer', 'Marge', 'Lisa', 'Bart', 'Maggie'];
+<strong class="highlite">		for(i=0;i&lt;simpsons.length;i++){
+			alert(simpsons[i]);
+		}</strong>
+	}
+
+&lt;/script&gt;
+
+&lt;input type="button" value="Show List" onclick="showList();" /&gt; 
+			</code></pre>
+			<p>
+				With our new best friend, prototype.js, we can rewrite this loop like this.
+			</p>
+			<pre class="code"><code>
+	function showList(){
+		var simpsons = ['Homer', 'Marge', 'Lisa', 'Bart', 'Maggie'];
+<strong class="highlite">		simpsons.each( function(familyMember){
+			alert(familyMember);
+		});</strong>
+	}
+			</code></pre>
+			<p>
+				You are probably thinking "big freaking deal...just a weird syntax for the same old thing."
+				Well, in the above example, yes, there's nothing too earth shattering going on. After all, 
+				there's not much to be changed in such a drop-dead-simple example. But 
+				keep reading, nonetheless.
+			</p>
+			<p>
+				Before we move on. Do you see this function that is being passed as an argument
+				to the <span class="code">each</span> method? Let's start referring to it as an 
+				<strong>iterator</strong> function.
+			</p>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+
+			<h4 id="EnumeratingArrays">Your arrays on steroids</h4>
+			<p>
+				Like we mentioned above, it's very common for all the elements in your array to be of
+				the same kind, with the same properties and methods. Let's see how we can take advantage
+				of iterator functions with our new souped-up arrays.
+			</p>
+			<p>
+				Here's how to find an element according to criteria.
+			</p>
+			<pre class="code"><code>&lt;script&gt;
+	function findEmployeeById(emp_id){
+		var listBox = $('lstEmployees')
+		var options = listBox.getElementsByTagName('option');
+		options = $A(options);
+		var opt = options.<strong class="highlite">find</strong>( <strong>function(employee){
+			return </strong><strong class="highlite">(employee.value == emp_id)</strong><strong>;
+		}</strong>);
+		alert(opt.innerHTML); //displays the employee name
+	}
+&lt;/script&gt;
+
+&lt;select id="lstEmployees" size="10" &gt;
+	&lt;option value="5"&gt;Buchanan, Steven&lt;/option&gt;
+	&lt;option value="8"&gt;Callahan, Laura&lt;/option&gt;
+	&lt;option value="1"&gt;Davolio, Nancy&lt;/option&gt;
+&lt;/select&gt;
+
+&lt;input type="button" value="Find Laura" onclick="findEmployeeById(8);" /&gt; 
+			</code></pre>
+			<p>
+				Now let's kick it up another notch. See how we can filter out
+				items in arrays, and then retrieve just a desired member from each
+				element.
+			</p>
+			<pre class="code"><code>&lt;script&gt;
+	function showLocalLinks(paragraph){
+		paragraph = $(paragraph);
+		var links = $A(paragraph.getElementsByTagName('a'));
+		//find links that do not start with 'http'
+		var localLinks = links.<strong class="highlite">findAll</strong>( function(link){
+			//we'll just assume for now that external links
+			// do not have a '#' in their url
+			return link.href.indexOf('#') >= 0;
+		});
+		//now the link texts
+		var texts = localLinks.<strong class="highlite">pluck('innerHTML')</strong>;
+		//get them in a single string
+		var result = texts.<strong class="highlite">inspect()</strong>;
+		alert(result);
+	}
+
+&lt;/script&gt;
+&lt;p id="someText"&gt;
+	This &lt;a href="http://othersite.com/page.html"&gt;text&lt;/a&gt; has 
+	a &lt;a href="#localAnchor"&gt;lot&lt;/a&gt; of 
+	&lt;a href="#otherAnchor"&gt;links&lt;/a&gt;. Some are 
+	&lt;a href="http://wherever.com/page.html"&gt;external&lt;/a&gt;
+	and some are &lt;a href="#someAnchor"&gt;local&lt;/a&gt;
+&lt;/p&gt;
+&lt;input type="button" value="Find Local Links" onclick="showLocalLinks('someText')"/&gt;
+			</code></pre>
+			<p>
+				It takes just a little bit of practice to get completely addicted to this syntax.
+				Take a look at the <a href="#Reference.Enumerable" class="objectClass">Enumerable</a>
+				and <a href="#Reference.Array" class="objectClass">Array</a> references for all the available functions.
+			</p>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ************************************************************************************************************************************* -->
+			
+
+			<!-- Translators: please ignore and remove this book reference stuff -->
+			<h3 id="Books">Books I strongly recommend</h3>
+			<p>
+				Some books are just too good not to pass the word forward. The following books have
+				helped me a lot learning the new skills required to adequately create AJAX applications
+				and also consolidate the skills I though I already mastered. I think a good book is 
+				money well-spent, that keep paying for itself for a long time.
+			</p>
+
+			<p class="recommendations" id='books'>
+				<a href="http://www.amazon.com/exec/obidos/ASIN/0764579088/sergiopereira-20"><img alt="" src="images/0764579088.01._AA_SCTZZZZZZZ_.jpg"/></a><img alt="" src="http://www.assoc-amazon.com/e/ir?t=sergiopereira-20&amp;l=as2&amp;o=1&amp;a=0764579088" class="tracker" />
+
+				<a href="http://www.amazon.com/exec/obidos/ASIN/1932394613/sergiopereira-20"><img alt="" src="images/1932394613.01._AA_SCTZZZZZZZ_.jpg"/></a><img alt="" src="http://www.assoc-amazon.com/e/ir?t=sergiopereira-20&amp;l=as2&amp;o=1&amp;a=1932394613" class="tracker" />
+
+				<a href="http://www.amazon.com/exec/obidos/ASIN/0321385551/sergiopereira-20"><img alt="" src="images/0321385551.01._SL110_SCTZZZZZZZ_.jpg"/></a><img alt="" src="http://www.assoc-amazon.com/e/ir?t=sergiopereira-20&amp;l=as2&amp;o=1&amp;a=0321385551" class="tracker" />
+
+				<a href="http://www.amazon.com/exec/obidos/ASIN/0321237706/sergiopereira-20"><img alt="" src="images/0321237706.01._SL110_SCTZZZZZZZ_.jpg"/></a><img alt="" src="http://www.assoc-amazon.com/e/ir?t=sergiopereira-20&amp;l=as2&amp;o=1&amp;a=0321237706" class="tracker" />
+
+				<a href="http://www.amazon.com/exec/obidos/ASIN/0974514055/sergiopereira-20"><img alt="" src="images/0974514055.01._AA_SCTZZZZZZZ_.jpg"/></a><img alt="" src="http://www.assoc-amazon.com/e/ir?t=sergiopereira-20&amp;l=as2&amp;o=1&amp;a=0974514055" class="tracker" />
+
+				<script type="text/javascript" src="http://www.assoc-amazon.com/s/link-enhancer?tag=sergiopereira-20"></script>
+			</p>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ************************************************************************************************************************************* -->
+			
+
+			<h3 id="Reference">Reference for prototype.js</h3>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Reference.Extensions">Extensions to the JavaScript classes</h4>
+			<p>
+				One of the ways the prototype.js library adds functionality is by extending the
+				existing JavaScript classes.
+			</p>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Reference.Extensions.Object">Extensions for the <span class="code">Object</span> class</h4>
+				<table class="reference" border="1" cellspacing="0">
+			        <col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Reference.Extensions.Object.extend">
+						<td>extend(destination, source)</td><td>static</td><td>destination: any object, source: any object</td>
+						<td class="refDescription">Provides a way to implement inheritance by 
+						copying all properties and methods from <span class="code">source</span> to <span class="code">destination</span>.</td>
+					</tr>
+					<tr id="Reference.Extensions.Object.inspect">
+						<td>inspect(targetObj)</td><td>static</td><td>targetObj: any object</td>
+						<td class="refDescription">Returns a human-readable string 
+						representation of targetObj. It defaults to the return value of 
+						<span class="code">toString</span> if the given object does not
+						define an <span class="code">inspect</span> instance method.</td>
+					</tr>
+					<tr id="Reference.Extensions.Object.keys">
+						<td>keys(targetObj)</td><td>static</td><td>targetObj: any object</td>
+						<td class="refDescription">Returns an <span class="code">Array</span> 
+						with the names of all the properties and methods of 
+						given object.</td>
+					</tr>
+					<tr id="Reference.Extensions.Object.values">
+						<td>values(targetObj)</td><td>static</td><td>targetObj: any object</td>
+						<td class="refDescription">Returns a <span class="code">Array</span> 
+						with the values of all the properties and methods of 
+						given object.</td>
+					</tr>
+					<tr id="Reference.Extensions.Object.clone">
+						<td>clone(targetObj)</td><td>static</td><td>targetObj: any object</td>
+						<td class="refDescription">Returns a shallow copy of targetObj.</td>
+					</tr>
+
+				</table>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+			
+			<h4 id="Reference.Extensions.Number">Extensions for the <span class="code">Number</span> class</h4>
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Reference.Extensions.Object.toColorPart">
+						<td>toColorPart()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Returns the hexadecimal representation of the number. 
+						Useful when converting the RGB components of a color into its HTML/CSS representation.</td>
+					</tr>
+					<tr id="Reference.Extensions.Object.succ">
+						<td>succ()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Returns the next number. This function is used in
+						scenarios that involve iterations.
+						</td>
+					</tr>
+					<tr id="Reference.Extensions.Object.times">
+						<td>times(iterator)</td><td>instance</td><td>iterator: a function object conforming to Function(index)</td> 
+						<td class="refDescription">Calls the <span class="code">iterator</span> function
+						repeatedly passing the current index in the <span class="code">index</span> argument.
+						</td>
+					</tr>
+				</table>
+			<p>
+				The following sample will display alert message boxes from 0 to 9.
+			</p>
+			<pre class="code"><code>&lt;script&gt;
+	function demoTimes(){
+		var n = 10;
+		n.times(function(index){
+			alert(index);
+		});
+		/***************************
+		 * you could have also used: 
+		 *           (10).times( .... ); 
+		 ***************************/
+	}
+
+&lt;/script&gt;
+
+&lt;input type="button" value="Test Number.times()" onclick="demoTimes()"/&gt;
+			</code></pre>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Reference.Extensions.Function">Extensions for the <span class="code">Function</span> class</h4>
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Reference.Extensions.Function.bind">
+						<td>bind(object [, arg1 [, arg2 [...]]])</td><td>instance</td><td>object: the object that owns the method</td>
+						<td class="refDescription">Returns an instance of the function pre-bound to the function(=method) 
+						owner object. The returned function will use the same arguments as the original one (arg1, arg2, ... etc).</td>
+					</tr>
+					<tr id="Reference.Extensions.Function.bindAsEventListener">
+						<td>bindAsEventListener(object [, arg1 [, arg2 [...]]])</td>
+						<td>instance</td><td>object: the object that owns the method</td>
+						<td class="refDescription">Returns an instance of the function pre-bound to the function(=method) 
+						owner object. The returned function will have the current <span class="code">event</span> object 
+						as its first argument followed optionally any other arguments passed after the object argument.</td>
+					</tr>
+				</table>
+			<p>
+				Let's see one of these extensions in action.
+			</p>
+			<pre class="code"><code>&lt;input type="checkbox" id="myChk" value="1"/&gt; Test?
+&lt;script&gt;
+	//declaring the class
+	var CheckboxWatcher = Class.create();
+
+	//defining the rest of the class implementation
+	CheckboxWatcher.prototype = {
+
+	   initialize: function(chkBox, message) {
+			this.chkBox = $(chkBox);
+			this.message = message;
+			//assigning our method to the event
+			<strong class="highlite">
+			this.chkBox.onclick = 
+			   this.showMessage.bindAsEventListener(this, ' from checkbox');
+			</strong>
+	   },
+
+	   showMessage: function(evt, extraInfo) {
+		  alert(this.message + ' (' + evt.type + ')' + extraInfo);
+	   }
+	};
+
+
+	var watcher = new CheckboxWatcher('myChk', 'Changed');
+&lt;/script&gt;
+
+			</code></pre>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Reference.Extensions.String">Extensions for the <span class="code">String</span> class</h4>
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Reference.Extensions.String.camelize">
+						<td>camelize()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Converts a hyphen-delimited-string 
+						into a camelCaseString. This function is useful when writing
+						code that deals with style properties, for example.</td>
+					</tr>
+					<tr id="Reference.Extensions.String.capitalize">
+						<td>capitalize()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Converts the first character to upper case.</td>
+					</tr>
+					<tr id="Reference.Extensions.String.dasherize">
+						<td>dasherize()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Replaces underscores '_' with dashes '-'.</td>
+					</tr>
+					<tr id="Reference.Extensions.String.escapeHTML">
+						<td>escapeHTML()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Returns the string with any HTML markup characters properly escaped</td>
+					</tr>
+					<tr id="Reference.Extensions.String.evalScripts">
+						<td>evalScripts()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Evaluates each <span class="code">&lt;script /&gt;</span> 
+						block found in the string.</td>
+					</tr>
+					<tr id="Reference.Extensions.String.extractScripts">
+						<td>extractScripts()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Returns an <span class="code">Array</span>
+						object containing all the <span class="code">&lt;script /&gt;</span> blocks found
+						in the string.</td>
+					</tr>
+					<tr id="Reference.Extensions.String.gsub">
+						<td>gsub(pattern, replacement)</td><td>instance</td>
+						<td>
+							pattern: string or regular expression being searched.
+							replacement: simple string, template string, or Function(strings[]) 
+							to produce the replacements.
+						</td>
+						<td class="refDescription">
+							Returns a string that results from finding (or matching) the pattern string
+							(or regular expression) in the current string and replacing it with the
+							replacement string or the result of calling the replacement function
+							passing an array with the strings that matched the pattern, including 
+							eventual regular expression groupings.
+							When the replacement is a string, it can contain special templating
+							tokens like #{n}, where n is the index of a grouping in the regular expession.
+							#{0} will be replaced by the entire match, #{1} the first grouping, 
+							#{2} the second, and so on.
+						</td>
+					</tr>
+					<tr id="Reference.Extensions.String.parseQuery">
+						<td>parseQuery()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Same as <span class="code">toQueryParams()</span>.</td>
+					</tr>
+					<tr id="Reference.Extensions.String.scan">
+						<td>scan(pattern, replacement)</td><td>instance</td>
+						<td>
+							pattern: string or regular expression being searched.
+							replacement: Function(strings[]) to iterate over the matches.
+						</td>
+						<td class="refDescription">
+							Provides a way to iterate over matched patterns in the string and
+							operate on them. The pattern argument can be a string or a RegExp but
+							a RegExp is evidently more useful. Similarly, the replacement argument
+							can be a string or a function but it probably only makes sense to pass
+							in a function to be able to produce anything useful.
+						</td>
+					</tr>					
+					<tr id="Reference.Extensions.String.strip">
+						<td>strip()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Returns the string without any 
+						leading or trailing white spaces.</td>
+					</tr>					
+					<tr id="Reference.Extensions.String.stripScripts">
+						<td>stripScripts()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Returns the string with any 
+						<span class="code">&lt;script /&gt;</span> 
+						blocks removed</td>
+					</tr>
+					<tr id="Reference.Extensions.String.stripTags">
+						<td>stripTags()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Returns the string with any HTML or XML tags removed</td>
+					</tr>
+					<tr id="Reference.Extensions.String.sub">
+						<td>sub(pattern, replacement [, count])</td><td>instance</td>
+						<td>
+							pattern: string or regular expression being searched.
+							replacement: string, or Function(strings[]) to produce the replacements.
+							count: number or replacements to perform - defaults to 1.
+						</td>
+						<td class="refDescription">
+							Very similar to  <a class="code" href="#Reference.Extensions.String.gsub">gsub</a>
+							but only performs a limited number of replacements, specified by the count parameter.
+						</td>
+					</tr>					
+					<tr id="Reference.Extensions.String.toArray">
+						<td>toArray()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Splits the string into an 
+						<span class="code">Array</span> of its characters.</td>
+					</tr>
+					<tr id="Reference.Extensions.String.toQueryParams">
+						<td>toQueryParams()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Splits a querystring into an 
+						associative <span class="code">Array</span> indexed by parameter name
+						(more like a hash).</td>
+					</tr>
+					<tr id="Reference.Extensions.String.truncate">
+						<td>truncate(length [, truncation])</td><td>instance</td>
+						<td>
+							length: maximum length of the resulting string.
+							truncation: string used to replace the last characters of the resulting string - defaults to '...'
+						</td>
+						<td class="refDescription">
+							Used to produce a string of a known maximum length. In case the string needs
+							to be truncated to maintain the maximum length, the text given in the truncation
+							argument is used to replace the last few characters.
+							(e.g.: <span class="code">var s='123456790'; alert(s.truncate(5)); //displays '12...'</span> )
+						</td>
+					</tr>					
+					<tr id="Reference.Extensions.String.underscore">
+						<td>underscore()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">
+							Converts a CamelizedStringValue into a uderscore_formatted_string.
+							(e.g.: <span class="code">var s='Namespace::MyClass123'; alert(s.underscore()); 
+							//displays 'namespace/my_class123'</span> ).
+							This function seems to be directly target at supporting Ruby on Rails functionality.
+						</td>
+					</tr>
+					<tr id="Reference.Extensions.String.unescapeHTML">
+						<td>unescapeHTML()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">The reverse of <span class="code">escapeHTML()</span></td>
+					</tr>
+				</table>
+
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Reference.Array">Extensions for the <span class="code">Array</span> class</h4>
+			<p>
+				To start off, <span class="code">Array</span> extends <span class="code">Enumerable</span>,
+				so all the handy methods defined in the <span class="code">Enumerable</span> object are available.
+				Besides that, the methods listed below are also implemented.
+			</p>
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Reference.Array.clear">
+						<td>clear()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Empties the array and returns itself.</td>
+					</tr>
+					<tr id="Reference.Array.compact">
+						<td>compact()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Returns the array without the elements
+						that are  <span class="code">null</span> or <span class="code">undefined</span>. 
+						This method does not change the array itself</td>
+					</tr>
+					<tr id="Reference.Array.first">
+						<td>first()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Returns the first element of the array.</td>
+					</tr>
+					<tr id="Reference.Array.flatten">
+						<td>flatten()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Returns a flat, one-dimensional 
+						version of the array. This flattening happens by finding
+						each of the array's elements that are also arrays and
+						including their elements in the returned array, 
+						recursively.</td>
+					</tr>
+					<tr id="Reference.Array.indexOf">
+						<td>indexOf(value)</td><td>instance</td>
+						<td>value: what you are looking for.</td>
+						<td class="refDescription">
+							Returns the zero-based position of the given <span class="code">value</span> 
+							if it is found in the array. Returns -1 if 
+							<span class="code">value</span> is not found.
+						</td>
+					</tr>
+					<tr id="Reference.Array.inspect">
+						<td>inspect()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Overridden to return a 
+						nicely formatted string representation of the array
+						with its elements.</td>
+					</tr>
+					<tr id="Reference.Array.last">
+						<td>last()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Returns the last element of the array.</td>
+					</tr>
+					<tr id="Reference.Array.reverse">
+						<td>reverse([applyToSelf])</td><td>instance</td>
+						<td>applyToSelf: indicates if the array itself should also be reversed.</td>
+						<td class="refDescription">
+							Returns the array in reverse sequence. If no argument is given or
+							if the argument is <span class="code">true</span> the array itself
+							will be changed. Otherwise it will remain unchanged.
+						</td>
+					</tr>
+					<tr id="Reference.Array.shift">
+						<td>shift()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Returns the first element 
+						and removes it from the array, reducing the array's length by 1.</td>
+					</tr>
+					<tr id="Reference.Array.without">
+						<td>without(value1 [, value2 [, .. valueN]])</td><td>instance</td>
+						<td>value1 ... valueN: values to be excluded if present in the array.</td>
+						<td class="refDescription">
+							Returns the array excluding the elements that are included in
+							the list of arguments. This method does not change the array itself.
+						</td>
+					</tr>
+				</table>
+			<p>
+				Let's see some of these methods in action.
+			</p>
+			<pre class="code"><code>&lt;script&gt;
+var A = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+alert(A.inspect()); // "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']"
+var B = A.<strong class="highlite">without('e','f')</strong>;
+alert(B.inspect()); // "['a', 'b', 'c', 'd', 'g', 'h']"
+alert(A.inspect()); // did not change A: "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']"
+A.push(null);
+A.push('x');
+A.push(null);
+A.push('y');
+alert(A.inspect()); // "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', null, 'x', null, 'y']"
+A = A.<strong class="highlite">compact()</strong>;
+alert(A.inspect()); // "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'x', 'y']"
+var e = A.<strong class="highlite">shift()</strong>;
+alert(e); // "a" 
+alert(A.inspect()); // "['b', 'c', 'd', 'e', 'f', 'g', 'h', 'x', 'y']"
+alert(A.<strong class="highlite">indexOf('c')</strong>); // 1
+alert(A.<strong class="highlite">first()</strong>); // 'b'
+alert(A.<strong class="highlite">last()</strong>); // 'y'
+A.<strong class="highlite">clear()</strong>;
+alert(A.inspect()); // "[]"
+A = ['a', 'b', 'c'];
+B = A.<strong class="highlite">reverse(false)</strong>;
+alert(B.inspect()); // "['c', 'b', 'a']"
+alert(A.inspect()); // A left untouched: "['a', 'b', 'c']"
+A.<strong class="highlite">reverse(true)</strong>;
+alert(A.inspect()); // "['c', 'b', 'a']"	
+A = ['a', 'b',  ['c1','c2','c3'] , 'd',  ['e1','e2']  ];
+B = A.<strong class="highlite">flatten()</strong>;
+alert(B.inspect()); // "['a','b','c1','c2','c3','d','e1','e2']"		
+alert(A.inspect()); // unchanged: "['a','b',['c1','c2','c3'],'d',['e1','e2']]"		
+&lt;/script&gt;
+			</code></pre>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+			
+			<h4 id="Reference.Extensions.DOM">Extensions for the <span class="code">document</span> DOM object</h4>
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Reference.Array.getElementsByClassName">
+						<td>getElementsByClassName(className [, parentElement])</td><td>instance</td>
+						<td>className: name of a CSS class associated with the elements, 
+						parentElement: object or id of the element that contains the
+						elements being retrieved.</td>
+						<td class="refDescription">
+						Returns all the elements that are associated with the given CSS class name. If no 
+						<span class="code">parentElement</span> id given, the entire document body will be
+						searched.
+						</td>
+					</tr>
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+			
+			<h4 id="Reference.Extensions.Event">Extensions for the <span class="code">Event</span> object</h4>
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Property</th><th>Type</th><th>Description</th>
+					</tr>
+					<tr>
+						<td>KEY_BACKSPACE</td><td>Number</td>
+						<td class="refDescription">8: Constant. Code for the Backspace key.</td>
+					</tr>
+					<tr>
+						<td>KEY_TAB</td><td>Number</td>
+						<td class="refDescription">9: Constant. Code for the Tab key.</td>
+					</tr>
+					<tr>
+						<td>KEY_RETURN</td><td>Number</td>
+						<td class="refDescription">13: Constant. Code for the Return key.</td>
+					</tr>
+					<tr>
+						<td>KEY_ESC</td><td>Number</td>
+						<td class="refDescription">27: Constant. Code for the Esc key.</td>
+					</tr>
+					<tr>
+						<td>KEY_LEFT</td><td>Number</td>
+						<td class="refDescription">37: Constant. Code for the Left arrow key.</td>
+					</tr>
+					<tr>
+						<td>KEY_UP</td><td>Number</td>
+						<td class="refDescription">38: Constant. Code for the Up arrow key.</td>
+					</tr>
+					<tr>
+						<td>KEY_RIGHT</td><td>Number</td>
+						<td class="refDescription">39: Constant. Code for the Right arrow key.</td>
+					</tr>
+					<tr>
+						<td>KEY_DOWN</td><td>Number</td>
+						<td class="refDescription">40: Constant. Code for the Down arrow key.</td>
+					</tr>
+					<tr>
+						<td>KEY_DELETE</td><td>Number</td>
+						<td class="refDescription">46: Constant. Code for the Delete key.</td>
+					</tr>
+					<tr id="Reference.Event.observers" class="privateMember">
+						<td>observers:</td><td>Array</td>
+						<td class="refDescription">List of cached observers. Part of the internal implementation 
+						details of the object.</td>
+					</tr>
+				</table>
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Reference.Event.element">
+						<td>element(event)</td><td>static</td>
+						<td>event: an Event object</td>
+						<td class="refDescription">Returns element that originated the event.</td>
+					</tr>
+					<tr id="Reference.Array.isLeftClick">
+						<td>isLeftClick(event)</td><td>static</td>
+						<td>event: an Event object</td>
+						<td class="refDescription">Returns <span class="code">true</span> if the left mouse button was clicked.</td>
+					</tr>
+					<tr id="Reference.Event.pointerX">
+						<td>pointerX(event)</td><td>static</td>
+						<td>event: an Event object</td>
+						<td class="refDescription">Returns the x coordinate of the mouse pointer on the page.</td>
+					</tr>
+					<tr id="Reference.Event.pointerY">
+						<td>pointerY(event)</td><td>static</td>
+						<td>event: an Event object</td>
+						<td class="refDescription">Returns the y coordinate of the mouse pointer on the page.</td>
+					</tr>
+					<tr id="Reference.Event.stop">
+						<td>stop(event)</td><td>static</td>
+						<td>event: an Event object</td>
+						<td class="refDescription">Use this function to abort the default behavior 
+						of an event and to suspend its propagation.</td>
+					</tr>
+					<tr id="Reference.Event.findElement">
+						<td>findElement(event, tagName)</td><td>static</td>
+						<td>event: an Event object, tagName: name of the desired tag.</td>
+						<td class="refDescription">Traverses the DOM tree upwards, searching for the
+						first element with the given tag name, starting from the element that
+						originated the event.</td>
+					</tr>
+					<tr id="Reference.Event.observe">
+						<td>observe(element, name, observer, useCapture)</td><td>static</td>
+						<td>
+							element: object or id, 
+							name: event name (like 'click', 'load', etc), 
+							observer: function(evt) to handle the event, 
+							useCapture: if <span class="code">true</span>, 
+							handles the event in the <em>capture</em>
+							phase and if <span class="code">false</span> in the <em>bubbling</em> phase.
+						</td>
+						<td class="refDescription">Adds an event handler function to an event.</td>
+					</tr>
+					<tr id="Reference.Event.stopObserving">
+						<td>stopObserving(element, name, observer, useCapture)</td><td>static</td>
+						<td>element: object or id, name: event name (like 'click'), observer: function
+						that is handling the event, useCapture: if true handles the event in the <em>capture</em>
+						phase and if false in the <em>bubbling</em> phase.</td>
+						<td class="refDescription">Removes an event handler from the event.</td>
+					</tr>
+					<tr class="privateMember">
+						<td>_observeAndCache(element, name, observer, useCapture)</td><td>static</td>
+						<td>&nbsp;</td>
+						<td class="refDescription">Private method, do not worry about it.</td>
+					</tr>
+					<tr class="privateMember">
+						<td>unloadCache()</td><td>static</td>
+						<td>(none)</td>
+						<td class="refDescription">Private method, do not worry about it.
+						Clears all cached observers from memory.</td>
+					</tr>
+				</table>
+
+			<p>
+				Let's see how to use this object to add an event handler to the load event 
+				of the <span class="code">window</span> object.
+			</p>
+			<pre class="code"><code>&lt;script&gt;
+	<strong class="highlite">Event.observe(window, 'load', page_loaded, false);</strong>
+
+	function page_loaded(evt) {
+	  <strong class="highlite">Event.observe('parent_node', 'click', item_clicked, false);</strong>
+	}
+	
+	function item_clicked(evt){
+		var child = <strong class="highlite">Event.element(evt)</strong>;
+		alert('The child node with id=' + child.id + ' was clicked');
+		<strong class="highlite">Event.stop(evt)</strong>; //avoid another call related to 'parent_node' itself
+	}
+&lt;/script&gt;	
+...
+&lt;div id="parent_node"&gt;
+	&lt;div id="child1"&gt;First&lt;/div&gt;
+	&lt;div id="child2"&gt;Second&lt;/div&gt;
+	&lt;div id="child3"&gt;Third&lt;/div&gt;
+&lt;/div&gt;		
+			</code></pre>
+
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Reference.NewObjects">New objects and classes defined by prototype.js</h4>
+			<p>
+				Another way the library helps you is by providing many objects that implement both
+				support for object oriented designs and common functionality in general.
+			</p>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Reference.PeriodicalExecuter">The <span class="objectClass">PeriodicalExecuter</span> object</h4>
+			<p>
+				This object provides the logic for
+				calling a given function repeatedly, at a given interval, using a timer.
+			</p>
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Reference.PeriodicalExecuter.ctor">
+						<td>[ctor](callback, interval)</td>
+						<td>constructor</td><td>callback: a function that will be passed the 
+							<span class="code">PeriodcalExecuter</span> object itself as the only argument, 
+							interval: number of seconds</td>
+						<td class="refDescription">Creates one instance of this object that will call the function repeatedly.</td>
+					</tr>
+					<tr id="Reference.PeriodicalExecuter.registerCallback">
+						<td>registerCallback()</td>
+						<td>instance</td><td>(none)</td>
+						<td class="refDescription">Resets the timer.</td>
+					</tr>
+					<tr id="Reference.PeriodicalExecuter.stop">
+						<td>stop()</td>
+						<td>instance</td><td>(none)</td>
+						<td class="refDescription">Cancels the timer, avoiding the execution of the callback.</td>
+					</tr>
+					<tr id="Reference.PeriodicalExecuter.onTimerEvent" class="privateMember">
+						<td>onTimerEvent()</td>
+						<td>instance</td><td>(none)</td>
+						<td class="refDescription">This method is what will be called by the timer. It, in turn,
+						will invoke the callback method passing the object itself.</td>
+					</tr>
+				</table>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Property</th><th>Type</th><th>Description</th>
+					</tr>
+					<tr id="Reference.PeriodicalExecuter.callback">
+						<td>callback</td>
+						<td>Function(objExecuter)</td><td class="refDescription">The function to be called. 
+						objExecuter: the <span class="code">PeriodcalExecuter</span> making the call.</td>
+					</tr>
+					<tr id="Reference.PeriodicalExecuter.timer">
+						<td>timer</td><td>Timer</td>
+						<td class="refDescription">A handle to the underlying timer
+						object responsible for repeatedly invoking the callback method</td>
+					</tr>
+					<tr id="Reference.PeriodicalExecuter.frequency">
+						<td>frequency</td><td>Number</td>
+						<td class="refDescription">This is actually the interval in seconds</td>
+					</tr>
+					<tr id="Reference.PeriodicalExecuter.currentlyExecuting">
+						<td>currentlyExecuting</td>
+						<td>Boolean</td><td class="refDescription">Indicates if the callback is underway.</td>
+					</tr>
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Reference.Prototype">The <span class="objectClass">Prototype</span> object</h4>
+			<p>
+				The <span class="code">Prototype</span> object does not have any important role, other
+				than declaring the version of the library being used.
+			</p>
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Property</th><th>Type</th><th>Description</th>
+					</tr>
+					<tr>
+						<td>Version</td><td>String</td><td class="refDescription">The version of the library</td>
+					</tr>
+					<tr>
+						<td>emptyFunction</td><td>Function()</td><td class="refDescription">An empty function object</td>
+					</tr>
+					<tr>
+						<td>K</td><td>Function(obj)</td>
+						<td class="refDescription">A function object that just echoes back the given parameter.</td>
+					</tr>
+					<tr class="privateMember">
+						<td>ScriptFragment</td><td>String</td>
+						<td class="refDescription">A regular expression to identify scripts</td>
+					</tr>
+
+				</table>
+		
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Reference.Enumerable">The <span class="objectClass">Enumerable</span> object</h4>
+			<p>
+				The <span class="code">Enumerable</span> object allows
+				one to write more elegant code to
+				iterate items in a list-like structure.
+			</p>
+			<p>
+				Many other objects extend the <span class="code">Enumerable</span> 
+				object to leverage its useful interface.
+			</p>
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Reference.Enumerable.each">
+						<td>each(iterator)</td><td>instance</td>
+						<td>iterator: a function object conforming to Function(value, index)</td>
+						<td class="refDescription">Calls the given iterator function passing
+						each element in the list in the first argument and the index of
+						the element in the second argument</td>
+					</tr>
+					<tr id="Reference.Enumerable.all">
+						<td>all([iterator])</td><td>instance</td>
+						<td>iterator: a function object conforming to Function(value, index), optional.</td>
+						<td class="refDescription">
+						This function is a way to test the entire collection of values
+						using a given function. <span class="code">all</span> will return 
+						<span class="code">true</span> only if the iterator function returns 
+						a value that resolves to <span class="code">true</span> 
+						for <strong>all</strong> the elements. It will
+						return <span class="code">false</span> otherwise.
+						If no iterator is given, then the test will be if the element
+						itself resolves to <span class="code">true</span>. 
+						You can simply read it as
+						"check if <strong>all</strong> elements pass the test."
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.any">
+						<td>any([iterator])</td><td>instance</td>
+						<td>iterator: a function object conforming to Function(value, index), optional.</td>
+						<td class="refDescription">
+						This function is a way to test the entire collection of values
+						using a given function. <span class="code">any</span> will return 
+						<span class="code">true</span> if the iterator function returns
+						a value that resolves to <span class="code">true</span> 
+						for at least one of the elements. It will
+						return <span class="code">false</span> otherwise.
+						If no iterator is given, then the test will be if the element
+						itself resolves to <span class="code">true</span>. 
+						You can simply read it as
+						"check if <strong>any</strong> element passes the test."
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.collect">
+						<td>collect(iterator)</td><td>instance</td>
+						<td>iterator: a function object conforming to Function(value, index)</td>
+						<td class="refDescription">
+						Calls the iterator function for each
+						element in the collection and returns each result 
+						in an <span class="code">Array</span>, one result element for each element
+						in the collection, in the same sequence.
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.detect">
+						<td>detect(iterator)</td><td>instance</td>
+						<td>iterator: a function object conforming to Function(value, index)</td>
+						<td class="refDescription">
+						Calls the iterator function for each
+						element in the collection and returns the first element
+						that caused the iterator function to return true 
+						(or, more precisely, not-false.) If no element returns
+						true, then <span class="code">detect</span> returns <span class="code">null</span>.
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.entries">
+						<td>entries()</td><td>instance</td>
+						<td>(none)</td>
+						<td class="refDescription">
+						Same as <span class="code">toArray()</span>.
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.find">
+						<td>find(iterator)</td><td>instance</td>
+						<td>iterator: a function object conforming to Function(value, index)</td>
+						<td class="refDescription">
+						Same as <span class="code">detect()</span>.
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.findAll">
+						<td>findAll(iterator)</td><td>instance</td>
+						<td>iterator: a function object conforming to Function(value, index)</td>
+						<td class="refDescription">
+						Calls the iterator function for each
+						element in the collection and returns an 
+						<span class="code">Array</span> with all the elements
+						that caused the iterator function to return a value
+						that resolves to <span class="code">true</span>.						 
+						This function is the opposite of <span class="code">reject()</span>.
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.grep">
+						<td>grep(pattern [, iterator])</td><td>instance</td>
+						<td>pattern: a RegExp object used to match the elements, iterator: a function object conforming to Function(value, index)</td>
+						<td class="refDescription">
+						Tests the string value of each element
+						in the collection against the <span class="code">pattern</span> regular expression . The function will return an <span class="code">Array</span> 
+						containing all the elements that matched the regular
+						expression. If the iterator function is given, then
+						the <span class="code">Array</span> will contain the 
+						result of calling the iterator with each element that was a match.
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.include">
+						<td>include(obj)</td><td>instance</td>
+						<td>obj: any object</td>
+						<td class="refDescription">
+						Tries to find the given object in the collection. 
+						Returns <span class="code">true</span> if the object is 
+						found, <span class="code">false</span> otherwise.
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.inGroupsOf">
+						<td>inGroupsOf(number, fillWith)</td><td>instance</td>
+						<td>number: number of items per group, fillWith: value used to fill empty spots</td>
+						<td class="refDescription">
+						Returns the collection broken in groups containing 
+						as many items as specified by the first argument.
+						If the quantity of items in the initial collection is not
+						divisible by the number in the first argument, the resulting empty
+						items at the end of the last group will be filled with
+						<span class="code">null</span> or with the value of
+						the second argument, if provided. Quick example:
+						<span class="code">['a','b','c','d'].inGroupsOf(3,'?')</span> 
+						creates <span class="code">[ ['a','b','c'] , ['d','?','?'] ]</span>
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.inject">
+						<td>inject(initialValue, iterator)</td><td>instance</td>
+						<td>initialValue: any object to be used as the initial value, 
+						iterator: a function object conforming to Function(accumulator, value, index)</td>
+						<td class="refDescription">
+						Combines all the elements of the collection using the
+						iterator function. The iterator is called passing
+						the result of the previous iteration in the accumulator
+						argument. The first iteration gets <span class="code">initialValue</span> 
+						in the <span class="code">accumulator</span> argument. 
+						The last result is the final return value.
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.invoke">
+						<td>invoke(methodName [, arg1 [, arg2 [...]]])</td><td>instance</td>
+						<td>methodName: name of the method that will be called in each element, 
+						arg1..argN: arguments that will be passed in the method invocation.</td>
+						<td class="refDescription">
+						Calls the method specified by methodName in each element of
+						the collection, passing any given arguments (arg1 to argN), and returns the results in an <span class="code">Array</span> object.
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.map">
+						<td>map(iterator)</td><td>instance</td>
+						<td>iterator: a function object conforming to Function(value, index)</td>
+						<td class="refDescription">
+						Same as <span class="code">collect()</span>.
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.max">
+						<td>max([iterator])</td><td>instance</td>
+						<td>iterator: a function object conforming to Function(value, index)</td>
+						<td class="refDescription">
+						Returns the element with the greatest value in the collection or
+						the greatest result of calling the iterator for each
+						element in the collection, if an iterator is given.
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.member">
+						<td>member(obj)</td><td>instance</td>
+						<td>obj: any object</td>
+						<td class="refDescription">
+						Same as <span class="code">include()</span>.
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.min">
+						<td>min([iterator])</td><td>instance</td>
+						<td>iterator: a function object conforming to Function(value, index)</td>
+						<td class="refDescription">
+						Returns the element with the lowest value in the collection or
+						the lowest result of calling the iterator for each
+						element in the collection, if an iterator is given.
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.partition">
+						<td>partition([iterator])</td><td>instance</td>
+						<td>iterator: a function object conforming to Function(value, index)</td>
+						<td class="refDescription">
+						Returns an <span class="code">Array</span> containing
+						two other arrays. The first array will contain all the elements
+						that caused the iterator function to return 
+						<span class="code">true</span> and the
+						second array will contain the remaining elements.
+						If the iterator is not given, then the first array will contain
+						the elements that resolve to <span class="code">true</span> 
+						and the other array will contain the remaining elements.
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.pluck">
+						<td>pluck(propertyName)</td><td>instance</td>
+						<td>propertyName name of the property that will be read from each element. This can also contain the index of the element</td>
+						<td class="refDescription">
+						Retrieves the value to the property specified by propertyName in each element of the collection and returns the results in 
+						an <span class="code">Array</span> object.
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.reject">
+						<td>reject(iterator)</td><td>instance</td>
+						<td>iterator: a function object conforming to Function(value, index)</td>
+						<td class="refDescription">
+						Calls the iterator function for each
+						element in the collection and returns an 
+						<span class="code">Array</span> with all the elements
+						that caused the iterator function to return a
+						value that resolves to <span class="code">false</span>. 
+						This function is the opposite of <span class="code">findAll()</span>.
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.select">
+						<td>select(iterator)</td><td>instance</td>
+						<td>iterator: a function object conforming to Function(value, index)</td>
+						<td class="refDescription">
+						Same as <span class="code">findAll()</span>.
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.sortBy">
+						<td>sortBy(iterator)</td><td>instance</td>
+						<td>iterator: a function object conforming to Function(value, index)</td>
+						<td class="refDescription">
+						Returns an 	<span class="code">Array</span> with all the elements
+						sorted according to the result the iterator function call.
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.toArray">
+						<td>toArray()</td><td>instance</td>
+						<td>(none)</td>
+						<td class="refDescription">
+						Returns an 	<span class="code">Array</span> with all the elements
+						of the collection.
+						</td>
+					</tr>
+					<tr id="Reference.Enumerable.zip">
+						<td>zip(collection1[, collection2 [, ... collectionN [,transform]]])</td><td>instance</td>
+						<td>collection1 .. collectionN: enumerations that will be merged, transform: a function object conforming to Function(value, index)</td>
+						<td class="refDescription">
+						Merges each given collection with the current collection. The merge operation returns a new array with the same number of elements as the
+						current collection and each element is an array (let's call 
+						them sub-arrays) of the elements with
+						the same index from each of the merged collections. If the transform
+						function is given, then each sub-array will be transformed by this
+						function before being returned.
+						Quick example: [1,2,3].zip([4,5,6], [7,8,9]).inspect() returns "[ [1,4,7],[2,5,8],[3,6,9] ]"
+						</td>
+					</tr>
+
+				</table>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Reference.Hash">The <span class="objectClass">Hash</span> object</h4>
+			<p>
+				The <span class="code">Hash</span> object implements a
+				hash structure, i.e. a collection of Key:Value pairs.
+			</p>
+			<p>
+				Each item in a <span class="code">Hash</span> object is
+				an array with two elements: first the key then the value. Each
+				item also has two properties: <span class="code">key</span> and 
+				<span class="code">value</span>, which are pretty
+				self-explanatory.
+			</p>
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Reference.Hash.keys">
+						<td>keys()</td><td>instance</td>
+						<td>(none)</td>
+						<td class="refDescription">
+						Returns an 	<span class="code">Array</span> with the 
+						keys of all items.
+						</td>
+					</tr>
+					<tr id="Reference.Hash.values">
+						<td>values()</td><td>instance</td>
+						<td>(none)</td>
+						<td class="refDescription">
+						Returns an 	<span class="code">Array</span> with the 
+						values of all items.
+						</td>
+					</tr>
+					<tr id="Reference.Hash.merge">
+						<td>merge(otherHash)</td><td>instance</td>
+						<td>otherHash: Hash object</td>
+						<td class="refDescription">
+						Combines the hash with the other hash passed in and
+						returns the new resulting hash.
+						</td>
+					</tr>
+					<tr id="Reference.Hash.toQueryString">
+						<td>toQueryString()</td><td>instance</td>
+						<td>(none)</td>
+						<td class="refDescription">
+						Returns all the items of the hash in a string 
+						formatted like a query string, e.g. 
+						<span class="code">'key1=value1&amp;key2=value2&amp;key3=value3'</span>
+						</td>
+					</tr>
+					<tr id="Reference.Hash.inspect">
+						<td>inspect()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Overridden to return a 
+						nicely formatted string representation of the hash
+						with its key:value pairs.</td>
+					</tr>
+				</table>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Reference.ObjectRange">The <span class="objectClass">ObjectRange</span> class</h4>
+			<p><em>Inherits from <a class="objectClass" href="#Reference.Enumerable">Enumerable</a></em></p>
+
+			<p>
+				Represents a range of values, with upper and lower bounds.
+			</p>
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Property</th><th>Type</th><th>Kind</th><th>Description</th>
+					</tr>
+					<tr id="Reference.ObjectRange.start">
+						<td>start</td><td>(any)</td><td>instance</td>
+						<td class="refDescription">The lower bound of the range</td>
+					</tr>
+					<tr id="Reference.ObjectRange.end">
+						<td>end</td><td>(any)</td><td>instance</td>
+						<td class="refDescription">The upper bound of the range</td>
+					</tr>
+					<tr id="Reference.ObjectRange.exclusive">
+						<td>exclusive</td><td>Boolean</td><td>instance</td>
+						<td class="refDescription">Determines if the boundaries themselves
+						are part of the range.</td>
+					</tr>
+				</table>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Reference.ObjectRange.ctor">
+						<td>[ctor](start, end, exclusive)</td><td>constructor</td><td>start: the lower bound, end: the upper bound, exclusive: include the bounds in the range?</td>
+						<td class="refDescription">Creates one range object, spanning from 
+						<span class="code">start</span> to <span class="code">end</span>.
+						It is important to note that <span class="code">start</span> and 
+						<span class="code">end</span> have to be objects of the same type and
+						they must have a <span class="code">succ()</span> method.
+						</td>
+					</tr>
+					<tr id="Reference.ObjectRange.include">
+						<td>include(searchedValue)</td><td>instance</td>
+						<td>searchedValue: value that we are looking for</td>
+						<td class="refDescription">
+						Checks if the given value is part of the range. Returns
+						<span class="code">true</span> or <span class="code">false</span>.
+						</td>
+					</tr>
+				</table>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Reference.Class">The <span class="objectClass">Class</span> object</h4>
+			<p>
+				The <span class="code">Class</span> object is used when declaring the other
+				classes in the library. Using this object when declaring a class causes the 
+				to new class to support an <span class="code">initialize()</span> method, which
+				serves as the constructor. 
+			</p>
+			<p>
+				See the sample below.
+			</p>
+			<pre class="code"><code>//declaring the class
+<strong class="highlite">var MySampleClass = Class.create();</strong>
+
+//defining the rest of the class implementation
+MySampleClass.prototype = {
+
+   initialize: function(message) {
+		this.message = message;
+   },
+
+   showMessage: function(ajaxResponse) {
+      alert(this.message);
+   }
+};	
+
+//now, let's instantiate and use one object
+var myTalker = new MySampleClass('hi there.');
+myTalker.showMessage(); //displays alert
+
+			</code></pre>
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Reference.Class.create">
+						<td>create(*)</td><td>instance</td><td>(any)</td>
+						<td class="refDescription">Defines a constructor for a new class</td>
+					</tr>
+				</table>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Reference.Ajax">The <span class="objectClass">Ajax</span> object</h4>
+			<p>
+				This object serves as the root and namespace for many other 
+				classes that provide AJAX functionality.
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Property</th><th>Type</th><th>Kind</th><th>Description</th>
+					</tr>
+					<tr id="Reference.Ajax.activeRequestCount">
+						<td>activeRequestCount</td><td>Number</td><td>instance</td>
+						<td class="refDescription">The number of AJAX requests in progress.</td>
+					</tr>
+				</table>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Reference.Ajax.getTransport">
+						<td>getTransport()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Returns a new <span class="code">XMLHttpRequest</span> object</td>
+					</tr>
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+			
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Ajax.Responders">The <span class="objectClass">Ajax.Responders</span> object</h4>
+			<p><em>Inherits from <a class="objectClass" href="#Reference.Enumerable">Enumerable</a></em></p>
+			<p>
+				This object maintains a list of objects that will be called when
+				Ajax-related events occur. You can use this object, for example, if you want
+				to hook up a global exception handler for AJAX operations.
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Property</th><th>Type</th><th>Kind</th><th>Description</th>
+					</tr>
+					<tr id="Ajax.Responders.responders">
+						<td>responders</td><td>Array</td><td>instance</td>
+						<td class="refDescription">The list of objects registered
+						for AJAX events notifications.</td>
+					</tr>
+				</table>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Ajax.Responders.register">
+						<td>register(responderToAdd)</td><td>instance</td><td>responderToAdd:
+						object with methods that will be called.</td>
+						<td class="refDescription">
+							The object passed in the <span class="code">responderToAdd</span> 
+							argument should contain methods named like the AJAX events (e.g. 
+							<span class="code">onCreate</span>, <span class="code">onComplete</span>, 
+							<span class="code">onException</span>, etc.) When the corresponding event
+							occurs all the registered objects that contain a method with the
+							appropriate name will have that method called.
+						</td>
+					</tr>
+					<tr id="Ajax.Responders.unregister">
+						<td>unregister(responderToRemove)</td><td>instance</td><td>responderToRemove:
+						object to be removed from the list.</td>
+						<td class="refDescription">
+							The object passed in the <span class="code">responderToRemove</span> 
+							argument will be removed from the list of registered objects.
+						</td>
+					</tr>
+					<tr id="Ajax.Responders.dispatch">
+						<td>dispatch(callback, request, transport, json)</td><td>instance</td>
+						<td>callback: name of the AJAX event being reported, request: the Ajax.Request 
+						object responsible for the event, transport: the XMLHttpRequest object that
+						carried (or is carrying) the AJAX call, json: the X-JSON header of the 
+						response (if present) 
+						</td>
+						<td class="refDescription">
+							Runs through the list of registered objects looking for the ones
+							that have the method determined in the <span class="code">callback</span> 
+							argument. Then each of these methods is called passing the other 3
+							arguments. If the AJAX response contains a <span class="code">X-JSON</span> 
+							HTTP header with some JSON content, then it will be evaluated and passed in the
+							<span class="code">json</span> argument. If the event is <span class="code">onException</span>, the transport argument will have the exception instead and 
+							<span class="code">json</span> will not be passed.
+						</td>
+					</tr>
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Ajax.Base">The <span class="objectClass">Ajax.Base</span> class</h4>
+			<p>
+				This class is used as the base class for most of the other classes defined in the
+				<span class="code">Ajax</span> object.
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Ajax.Base.setOptions">
+						<td>setOptions(options)</td><td>instance</td><td>options: <a href="#Ajax.options">AJAX options</a></td>
+						<td class="refDescription">Sets the desired <a href="#Ajax.options">options</a> for the AJAX operation</td>
+					</tr>
+					<tr id="Ajax.Base.responseIsSuccess">
+						<td>responseIsSuccess()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Returns <span class="code">true</span> if the AJAX operation succeeded, <span class="code">false</span> otherwise</td>
+					</tr>
+					<tr id="Ajax.Base.responseIsFailure">
+						<td>responseIsFailure()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">The opposite of <span class="code">responseIsSuccess()</span>.</td>
+					</tr>
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+			
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Ajax.Request">The <span class="objectClass">Ajax.Request</span> class</h4>
+			<p><em>Inherits from <a class="code" href="#Ajax.Base">Ajax.Base</a></em></p>
+			<p>
+				Encapsulates AJAX operations
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Property</th><th>Type</th><th>Kind</th><th>Description</th>
+					</tr>
+					<tr id="Ajax.Request.Events">
+						<td>Events</td><td>Array</td><td>static</td>
+						<td class="refDescription">List of possible events/statuses reported during an AJAX operation.
+						The list contains: 'Uninitialized', 'Loading', 'Loaded', 'Interactive', and 'Complete.'</td>
+					</tr>
+					<tr id="Ajax.Request.transport">
+						<td>transport</td><td>XMLHttpRequest</td><td>instance</td>
+						<td class="refDescription">The <span class="code">XMLHttpRequest</span> object that
+						carries the AJAX operation</td>
+					</tr>
+					<tr id="Ajax.Request.url">
+						<td>url</td><td>String</td><td>instance</td>
+						<td class="refDescription">The URL targeted by the request.</td>
+					</tr>
+				</table>
+
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Ajax.Request.ctor">
+						<td>[ctor](url, options)</td><td>constructor</td><td>url: the url to be fetched, 
+						options: AJAX options</td>
+						<td class="refDescription">Creates one instance of this object that will call the given 
+						<span class="code">url</span> using the given <span class="code">options</span>.
+						The onCreate event will be raised during the constructor call.
+						<strong>Important:</strong>
+						It is worth noting that the chosen url is subject to the browser's security settings. In many
+						cases the browser will not fetch the url if it is not from the same host (domain) as
+						the current page. You should ideally use only local urls to avoid having to
+						configure or restrict the user's browser. (Thanks Clay).</td>
+					</tr>
+					<tr id="Ajax.Request.evalJSON" class="privateMember">
+						<td>evalJSON()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">This method is typically not called externally. It is 
+						called internally to evaluate the content of an eventual 
+						<span class="code">X-JSON</span> HTTP header 
+						present in the AJAX response.</td>
+					</tr>
+					<tr id="Ajax.Request.evalResponse" class="privateMember">
+						<td>evalResponse()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">This method is typically not called externally. If the
+						AJAX response has a <span class="code">Content-type</span> header of 
+						<span class="code">text/javascript</span> then
+						the response body will be evaluated and this method will be used.</td>
+					</tr>
+					<tr id="Ajax.Request.header">
+						<td>header(name)</td><td>instance</td><td>name: HTTP header name</td>
+						<td class="refDescription">Retrieves the contents of any HTTP header of the AJAX response.
+						Call this only after the AJAX call is completed.</td>
+					</tr>
+					<tr id="Ajax.Request.onStateChange" class="privateMember">
+						<td>onStateChange()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">This method is typically not called externally. It is 
+						called by the object itself when the AJAX call status changes.</td>
+					</tr>
+					<tr id="Ajax.Request.request" class="privateMember">
+						<td>request(url)</td><td>instance</td><td>url: url for the AJAX call</td>
+						<td class="refDescription">This method is typically not called externally. It is 
+						already called during the constructor call.</td>
+					</tr>
+					<tr id="Ajax.Request.respondToReadyState" class="privateMember">
+						<td>respondToReadyState(readyState)</td><td>instance</td><td>readyState: state number (1 to 4)</td>
+						<td class="refDescription">This method is typically not called externally. It is 
+						called by the object itself when the AJAX call status changes.</td>
+					</tr>
+					<tr id="Ajax.Request.setRequestHeaders" class="privateMember">
+						<td>setRequestHeaders()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">This method is typically not called externally. It is 
+						called by the object itself to assemble the HTTP header that will
+						be sent during the HTTP request.</td>
+					</tr>
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+			
+			<h4 id="Ajax.options">The <span class="objectClass">options</span> argument object</h4>
+			<p>
+				An important part of the AJAX operations is the <span class="code">options</span> argument.
+				There's no <span class="code">options</span> class per se. Any object can be passed, as long as it
+				has the expected properties. It is common to create anonymous objects just for the AJAX calls.
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Property</th><th>Type</th><th>Default</th><th>Description</th>
+					</tr>
+					<tr id="Ajax.options.method">
+						<td>method</td><td>String</td><td>'post'</td>
+						<td class="refDescription">Method of the HTTP request</td>
+					</tr>
+					<tr id="Ajax.options.parameters">
+						<td>parameters</td><td>String or Object</td><td>''</td>
+						<td class="refDescription">The url-formatted list of values passed to the request 
+							(for example <span class="code">'employee=john&amp;month=11'</span>) or a hash-like object that represents the
+							parameters (for example <span class="code">{employee:'john', month:11}</span>.) 
+						</td>
+					</tr>
+					<tr id="Ajax.options.asynchronous">
+						<td>asynchronous</td><td>Boolean</td><td>true</td>
+						<td class="refDescription">Indicates if the AJAX call will be made asynchronously</td>
+					</tr>
+					<tr id="Ajax.options.postBody">
+						<td>postBody</td><td>String</td><td>undefined</td>
+						<td class="refDescription">Content passed to in the request's body in case of a HTTP POST</td>
+					</tr>
+					<tr id="Ajax.options.requestHeaders">
+						<td>requestHeaders</td><td>Array</td><td>undefined</td>
+						<td class="refDescription">List of HTTP headers to be passed with the request. This list must have an even
+						number of items, any odd item is the name of a custom header, and the following even item is the 
+						string value of that header. Example:<span class="code">['my-header1', 'this is the value', 'my-other-header', 'another value']</span> </td>
+					</tr>
+					<tr id="Ajax.options.encoding">
+						<td>encoding</td><td>String</td><td>'UTF-8'</td>
+						<td class="refDescription">
+							The character encoding used in the body of a request (especially POST requests.)
+							<span class="code">UTF-8</span> should be enough in most cases, but if you 
+							know what you're doing, you can use a different encoding.
+						</td>
+					</tr>
+					<tr id="Ajax.options.contentType">
+						<td>contentType</td><td>String</td><td>'application/x-www-form-urlencoded'</td>
+						<td class="refDescription">
+							Sets the <span class="code">Content-Type</span> HTTP header of
+							the Ajax request.
+						</td>
+					</tr>
+					<!--
+					<tr id="Ajax.options.username">
+						<td>username</td><td>String</td><td>undefined</td>
+						<td class="refDescription">
+							If the server requires auhentication, here's where you specify the user name.
+						</td>
+					</tr>
+					<tr id="Ajax.options.password">
+						<td>password</td><td>String</td><td>undefined</td>
+						<td class="refDescription">
+							If the server requires auhentication, here's where you specify the user's password.
+						</td>
+					</tr>
+					-->
+					<tr id="Ajax.options.onXXXXXXXX">
+						<td>onXXXXXXXX</td><td>Function(XMLHttpRequest, Object)</td><td>undefined</td>
+						<td class="refDescription">Custom function to be called when the respective event/status is reached
+						during the AJAX call. There are several alternatives for the "XXXXXXXX" in this option,
+						among the alternatives are the statuses in <a class="code" href="#Ajax.Request.Events">Ajax.Request.Events</a>,
+						and the <a href="http://www.w3.org/Protocols/HTTP/HTRESP.html">HTTP status codes</a>.
+						Example <span class="code">var myOpts = {on403: notAllowed, onComplete: showResponse, onLoaded: registerLoaded};</span>.
+						The function used will receive one argument, containing the <span class="code">XMLHttpRequest</span> object that
+						is carrying the AJAX operation and another argument containing the evaluated X-JSON response HTTP header.</td>
+					</tr>
+					<tr id="Ajax.options.onSuccess">
+						<td>onSuccess</td><td>Function(XMLHttpRequest, Object)</td><td>undefined</td>
+						<td class="refDescription">Custom function to be called when the AJAX call completes successfully.
+						The function used will receive one argument, containing the <span class="code">XMLHttpRequest</span> object that
+						is carrying the AJAX operation and another argument containing the evaluated X-JSON response HTTP header.</td>
+					</tr>
+					<tr id="Ajax.options.onFailure">
+						<td>onFailure</td><td>Function(XMLHttpRequest, Object)</td><td>undefined</td>
+						<td class="refDescription">Custom function to be called when the AJAX call completes with error.
+						The function used will receive one argument, containing the <span class="code">XMLHttpRequest</span> object that
+						is carrying the AJAX operation and another argument containing the evaluated X-JSON response HTTP header.</td>
+					</tr>
+					<tr id="Ajax.options.onException">
+						<td>onException</td><td>Function(Ajax.Request, exception)</td><td>undefined</td>
+						<td class="refDescription">Custom function to be called when an exceptional condition
+						happens on the client side of the AJAX call, like an invalid response or invalid arguments.
+						The function used will receive two arguments, containing the <span class="code">Ajax.Request</span> 
+						object that wraps the AJAX operation and the exception object.</td>
+					</tr>
+					<tr id="Ajax.options.insertion">
+						<td>insertion</td><td>an Insertion class</td><td>undefined</td>
+						<td class="refDescription">
+							A class that will determine how the new content will be inserted. 
+							Applies only to <a class="code" href="#Ajax.Updater">Ajax.Updater</a> objects
+							and if nothing is specified, the new content will completely replace
+							the existing content. If an <a href="#Insertion" class="code">Insertion</a>-derived
+							class is given, the content will be added to the existing content.
+							It can be <a href="#Insertion.Before" class="code">Insertion.Before</a>,
+							<a href="#Insertion.Top" class="code">Insertion.Top</a>,
+							<a href="#Insertion.Bottom" class="code">Insertion.Bottom</a>,
+							or <a href="#Insertion.After" class="code">Insertion.After</a>.
+							 
+						</td>
+					</tr>
+					<tr id="Ajax.options.evalScripts">
+						<td>evalScripts</td><td>Boolean</td><td>undefined, false</td>
+						<td class="refDescription">Determines if script blocks will be evaluated when the
+						response arrives. Applies only to <a class="code" href="#Ajax.Updater">Ajax.Updater</a> objects.</td>
+					</tr>
+					<tr id="Ajax.options.decay">
+						<td>decay</td><td>Number</td><td>undefined, 1</td>
+						<td class="refDescription">Determines the progressive slowdown in a
+						<a class="code" href="#Ajax.PeriodicalUpdater">Ajax.PeriodicalUpdater</a> object refresh rate when
+						the received response is the same as the last one. For example, if 
+						you use 2, after one of the refreshes produces the same result as the
+						previous one, the object will wait twice as much time for the next refresh.
+						If it repeats again, the object will wait four times as much, and so on. Leave
+						it undefined or use 1 to avoid the slowdown.</td>
+					</tr>
+					<tr id="Ajax.options.frequency">
+						<td>frequency</td><td>Number</td><td>undefined, 2</td>
+						<td class="refDescription">
+							Interval (not frequency) between refreshes, in seconds.
+							Applies only to <a class="code" href="#Ajax.PeriodicalUpdater">Ajax.PeriodicalUpdater</a> objects.
+						</td>
+					</tr>
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Ajax.Updater">The <span class="objectClass">Ajax.Updater</span> class</h4>
+			<p><em>Inherits from <a class="objectClass" href="#Ajax.Request">Ajax.Request</a></em></p>
+			<p>
+				Used when the requested url returns HTML that you want to
+				inject directly in a specific element of your page. You can 
+				also use this object when the url returns <span class="code">&lt;script&gt;</span> blocks
+				that will be evaluated upon arrival. Use the <span class="code">evalScripts</span> option
+				to work with scripts.
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Property</th><th>Type</th><th>Kind</th><th>Description</th>
+					</tr>
+					<tr id="Ajax.Updater.containers" class="privateMember">
+						<td>containers</td><td>Object</td><td>instance</td>
+						<td class="refDescription">This object contains two properties: 
+						<span class="code">containers.success</span> will be used when the AJAX call 
+						succeeds, and <span class="code">containers.failure</span> will be used otherwise.</td>
+					</tr>
+				</table>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Ajax.Updater.ctor">
+						<td>[ctor](container, url, options)</td><td>constructor</td>
+						<td>container:this can be the id of an element, the element object itself, 
+						or an object with two properties -  <strong>object.success</strong> element (or id) that 
+						will be used when the AJAX call succeeds, and <strong>object.failure</strong> element 
+						(or id) that will be used otherwise.
+						url: the url to be fetched, options: <a class="code" href="#Ajax.options">AJAX options</a></td>
+						<td class="refDescription">Creates one instance of this object that will call the given 
+						<span class="code">url</span> using the given <span class="code">options</span>.</td>
+					</tr>
+					<tr id="Ajax.Updater.updateContent" class="privateMember">
+						<td>updateContent()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">This method is typically not called externally. It is 
+						called by the object itself when the response is received. It will
+						update the appropriate element with the HTML or call the function passed in the
+						<span class="code">insertion</span> option. The function will be called with two arguments,
+						the element to be updated and the response text.
+						</td>
+					</tr>
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Ajax.PeriodicalUpdater">The <span class="objectClass">Ajax.PeriodicalUpdater</span> class</h4>
+			<p><em>Inherits from <a class="objectClass" href="#Ajax.Base">Ajax.Base</a></em></p>
+			<p>
+				This class repeatedly instantiates and uses an <span class="objectClass">Ajax.Updater</span> 
+				object to refresh an element on the page, or to perform any of the other tasks the  
+				<span class="objectClass">Ajax.Updater</span> can perform. Check the 
+				<a class="objectClass" href="#Ajax.Updater">Ajax.Updater</a> reference for more information.
+
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Property</th><th>Type</th><th>Kind</th><th>Description</th>
+					</tr>
+					<tr id="Ajax.PeriodicalUpdater.contaier">
+						<td>container</td><td>Object</td><td>instance</td>
+						<td class="refDescription">This value will be passed straight to the
+						<span class="code">Ajax.Updater</span>'s constructor.</td>
+					</tr>
+					<tr id="Ajax.PeriodicalUpdater.url">
+						<td>url</td><td>String</td><td>instance</td>
+						<td class="refDescription">This value will be passed straight to the
+						<span class="code">Ajax.Updater</span>'s constructor.</td>
+					</tr>
+					<tr id="Ajax.PeriodicalUpdater.frequency">
+						<td>frequency</td><td>Number</td><td>instance</td>
+						<td class="refDescription">Interval (not frequency) between refreshes, in seconds.
+						Defaults to 2 seconds. This number will be multiplied by the current
+						<span class="code">decay</span> when invoking the<span class="code">Ajax.Updater</span> object
+						</td>
+					</tr>
+					<tr id="Ajax.PeriodicalUpdater.decay">
+						<td>decay</td><td>Number</td><td>instance</td>
+						<td class="refDescription">Keeps the current decay level applied when re-executing the task</td>
+					</tr>
+					<tr id="Ajax.PeriodicalUpdater.updater" class="privateMember">
+						<td>updater</td><td><a href="#Ajax.Updater">Ajax.Updater</a></td><td>instance</td>
+						<td class="refDescription">The most recently used <span class="code">Ajax.Updater</span> object</td>
+					</tr>
+					<tr id="Ajax.PeriodicalUpdater.timer" class="privateMember">
+						<td>timer</td><td>Object</td><td>instance</td>
+						<td class="refDescription">The handle to the timer being used to notify the object
+						when it is time for the next refresh.</td>
+					</tr>
+				</table>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Ajax.PeriodicalUpdater.ctor">
+						<td>[ctor](container, url, options)</td><td>constructor</td>
+						<td>container:this can be the id of an element, the element object itself, 
+						or an object with two properties -  <span class="code">object.success</span> element (or id) that 
+						will be used when the AJAX call succeeds, and <span class="code">object.failure</span> element 
+						(or id) that will be used otherwise.
+						url: the url to be fetched, options: <a class="code" href="#Ajax.options">AJAX options</a></td>
+						<td class="refDescription">Creates one instance of this object that will call the given 
+						<span class="code">url</span> using the given <span class="code">options</span>.</td>
+					</tr>
+					<tr id="Ajax.PeriodicalUpdater.start" class="privateMember">
+						<td>start()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">This method is typically not called externally. It is 
+						called by the object itself to start performing its periodical tasks.
+						</td>
+					</tr>
+					<tr id="Ajax.PeriodicalUpdater.stop">
+						<td>stop()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">
+							Causes the object to stop performing its periodical tasks.
+							After stopping, the object will call the callback given in the
+							<span class="code">onComplete</span> option (if any.)
+						</td>
+					</tr>
+					<tr id="Ajax.PeriodicalUpdater.updateComplete" class="privateMember">
+						<td>updateComplete()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">This method is typically not called externally. It is 
+						called by the currently used <span class="code">Ajax.Updater</span> after it
+						completes the request. It is used to schedule the next refresh.
+						</td>
+					</tr>
+					<tr id="Ajax.PeriodicalUpdater.onTimerEvent" class="privateMember">
+						<td>onTimerEvent()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">This method is typically not called externally. It is 
+						called internally when it is time for the next update.
+						</td>
+					</tr>
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Element">The <span class="objectClass">Element</span> object</h4>
+			<p>
+				This object provides some utility functions for manipulating elements in the DOM.
+				
+			</p>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Element.Methods">The <span class="objectClass">Element.Methods</span> object</h4>
+			<p>
+				This object provides some utility functions for manipulating elements in the DOM. You
+				typically do not call these methods directly from the <span class="objectClass">Element.Methods</span>
+				object, but rather from the <span class="objectClass">Element</span> object, which gets copies of
+				all of them.
+			</p>
+			<p>
+				All the methods defined here are automatically added to any element accessed using the 
+				<a class="objectClass" href="#DollarFunction">$()</a> function. When they are added to the elements, the
+				first argument (always <span class="code">element</span>) is removed because it's
+				always the current element itself. So, in short, writing <span class="code">Element.show('myDiv');</span> 
+				is the same as writing <span class="code">$('myDiv').show();</span>
+			</p>
+			
+			
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Element.Methods.addClassName">
+						<td>addClassName(element, className)</td><td>instance</td><td>element: element object or id, 
+						className: name of a CSS class</td>
+						<td class="refDescription">Adds the given class name to the element's class names.</td>
+					</tr>
+					<tr id="Element.Methods.ancestors">
+						<td>ancestors(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Returns an <span class="code">Array</span>
+						with all the ancestors (parent nodes) of the element. The array will
+						start at the first direct parent element and go all the way to
+						the <span class="code">html</span> element.</td>
+					</tr>
+					<tr id="Element.Methods.childOf">
+						<td>childOf(element, ancestor)</td><td>instance</td>
+						<td>element: element object or id, ancestor: ancestor candidate element or id</td>
+						<td class="refDescription">Same as <a class="code" href="#Element.Methods.descendantOf">descendantOf</a>.</td>
+					</tr>
+					<tr id="Element.Methods.classNames">
+						<td>classNames(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Returns an <span class="code">Element.ClassNames</span>
+						object representing the CSS class names associated with the given element.</td>
+					</tr>
+					<tr id="Element.Methods.cleanWhitespace">
+						<td>cleanWhitespace(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Removes any white space text node children of the element</td>
+					</tr>
+					<tr id="Element.Methods.descendantOf">
+						<td>descendantOf(element, ancestor)</td><td>instance</td>
+						<td>element: element object or id, ancestor: ancestor candidate element or id</td>
+						<td class="refDescription">Returns a <span class="code">Boolean</span> value 
+						indicating if the element is a descendant (child, grandchild, etc) of the given ancestor.</td>
+					</tr>
+					<tr id="Element.Methods.descendants">
+						<td>descendants(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Returns an <span class="code">Array</span>
+						with all the descendants (child nodes &mdash; children, grandchildren, etc) of the element.
+						</td>
+					</tr>
+					<tr id="Element.Methods.down">
+						<td>down(element, expression, index)</td><td>instance</td>
+						<td>
+							element: element object or id, 
+							expression: a CSS selection rule,
+							index: index of the returned descendant
+						</td>
+						<td class="refDescription">
+						Checks which of the element's descendants match the given rule and
+						returns the first one or the n<sup>th</sup> one given by the
+						zero-based index argument. Lower index values mean closer to the element.
+						</td>
+					</tr>
+					<tr id="Element.Methods.empty">
+						<td>empty(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Returns a <span class="code">Boolean</span> value 
+						indicating if the element tag is empty (or has only whitespaces)</td>
+					</tr>
+					<tr id="Element.Methods.getDimensions">
+						<td>getDimensions(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">
+							Returns the dimensions of the element. The returned value is an object with
+							two properties: <span class="code">height</span> and <span class="code">width</span>.
+						</td>
+					</tr>
+					<tr id="Element.Methods.getElementsByClassName">
+						<td>getElementsByClassName(element, className)</td><td>instance</td>
+						<td>
+							element: element object or id,
+							className: CSS class name
+						</td>
+						<td class="refDescription">
+							Returns an <span class="code">Array</span> of all the element's children that
+							have the given CSS class name as one of their classes.
+						</td>
+					</tr>
+					<tr id="Element.Methods.getElementsBySelector">
+						<td>getElementsBySelector(element, expression1 [, expression2 [, expression3]])</td><td>instance</td>
+						<td>
+							element: element object or id,
+							expressionN: CSS selection rule
+						</td>
+						<td class="refDescription">
+							Returns an <span class="code">Array</span> of all the element's children that
+							match one of the given CSS selectors.
+						</td>
+					</tr>
+					<tr id="Element.Methods.getHeight">
+						<td>getHeight(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Returns the <span class="code">offsetHeight</span> of the element</td>
+					</tr>
+					<tr id="Element.Methods.getStyle">
+						<td>getStyle(element, cssProperty)</td><td>instance</td><td>element: element object or id, 
+						cssProperty name of a CSS property (either format 'prop-name' or 'propName' works).</td>
+						<td class="refDescription">
+						Returns the value of the CSS property in the given element or <span class="code">null</span> if not present.</td>
+					</tr>
+					<tr id="Element.Methods.hasClassName">
+						<td>hasClassName(element, className)</td><td>instance</td><td>element: element object or id, 
+						className: name of a CSS class</td>
+						<td class="refDescription">Returns <span class="code">true</span> if the element has the given class name as one
+						of its class names.</td>
+					</tr>
+					<tr id="Element.Methods.hide">
+						<td>hide(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Hides the element by setting its <span class="code">style.display</span> 
+						to <span class="code">'none'</span>. </td>
+					</tr>
+					<tr id="Element.Methods.immediateDescendants">
+						<td>immediateDescendants(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Returns an <span class="code">Array</span>
+						with all the direct descendants (1st degree child nodes only) of the element.
+						</td>
+					</tr>
+					<tr id="Element.Methods.inspect">
+						<td>inspect(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">
+						Returns a simplified string representation of the element's tag. It's
+						useful for debugging and only contains the element's id and css class name,
+						like <span class="code">&lt;p id="result" class="hilite numeric"&gt;</span>
+						</td>
+					</tr>
+					<tr id="Element.Methods.makeClipping">
+						<td>makeClipping(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription"></td>
+					</tr>
+					<tr id="Element.Methods.makePositioned">
+						<td>makePositioned(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Changes the element's <span class="code">style.position</span> 
+						to <span class="code">'relative'</span></td>
+					</tr>
+					<tr id="Element.Methods.match">
+						<td>match(element, selector)</td><td>instance</td>
+						<td>element: element object or id, selector: string or Selector object of a CSS rule</td>
+						<td class="refDescription">
+						Verifies if the element is matched by the given CSS selector rule. For example,
+						a paragraph element with an id of 'message' would be matched by the selector
+						'p#message'. This method returns <span class="code">true</span> or 
+						<span class="code">false</span>.
+						</td>
+					</tr>
+					<tr id="Element.Methods.next">
+						<td>next(element, expression, index)</td><td>instance</td>
+						<td>
+							element: element object or id, 
+							expression: a CSS selection rule,
+							index: index of the returned sibilng
+						</td>
+						<td class="refDescription">
+						Checks which of the element's posterior sibilings match the given rule and
+						returns the first one or the n<sup>th</sup> one given by the
+						zero-based index argument. Lower index values mean closer to the element.
+						</td>
+					</tr>
+					<tr id="Element.Methods.nextSiblings">
+						<td>nextSiblings(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Returns an <span class="code">Array</span>
+						with all the siblings that come after the element. The list is built by
+						recursively finding all the other elements  via the <span class="code">nextSibling</span>
+						property.
+						</td>
+					</tr>
+					<tr id="Element.Methods.observe">
+						<td>observe(element, name, observer, useCapture)</td><td>instance</td>
+						<td>
+							element: object or id, 
+							name: event name (like 'click', 'load', etc), 
+							observer: function(evt) to handle the event, 
+							useCapture: if <span class="code">true</span>, 
+							handles the event in the <em>capture</em>
+							phase and if <span class="code">false</span> in the <em>bubbling</em> phase.
+						</td>
+						<td class="refDescription">
+							Shortcut for <a class="code" href="#Event.observe">Event.observe</a>.
+						</td>
+					</tr>
+					<tr id="Element.Methods.previous">
+						<td>previous(element, expression, index)</td><td>instance</td>
+						<td>
+							element: element object or id, 
+							expression: a CSS selection rule,
+							index: index of the returned sibilng
+						</td>
+						<td class="refDescription">
+						Checks which of the element's previous sibilings match the given rule and
+						returns the first one or the n<sup>th</sup> one given by the
+						zero-based index argument. Lower index values mean closer to the element.
+						</td>
+					</tr>
+					<tr id="Element.Methods.previousSiblings">
+						<td>previousSiblings(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Returns an <span class="code">Array</span>
+						with all the siblings that come before the element. The list is built by
+						recursively finding all the other elements  via the <span class="code">previousSibling</span>
+						property.
+						</td>
+					</tr>
+					<tr id="Element.Methods.remove">
+						<td>remove(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Removes the element from the document.</td>
+					</tr>
+					<tr id="Element.Methods.removeClassName">
+						<td>removeClassName(element, className)</td><td>instance</td><td>element: element object or id, 
+						className: name of a CSS class</td>
+						<td class="refDescription">Removes the given class name from the element's class names.</td>
+					</tr>
+					<tr id="Element.Methods.replace">
+						<td>replace(element, html)</td><td>instance</td><td>element: element object or id, html: html content</td>
+						<td class="refDescription">
+							Replaces the entire html of the element with the given html argument. If
+							the given html contains <span class="code">&lt;script&gt;</span> blocks
+							they will not be included but they will be evaluated.
+						</td>
+					</tr>
+					<tr id="Element.Methods.scrollTo">
+						<td>scrollTo(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Scrolls the window to the element position.</td>
+					</tr>
+					<tr id="Element.Methods.setStyle">
+						<td>setStyle(element, cssPropertyHash)</td><td>instance</td><td>element: element object or id, 
+						cssPropertyHash Hash object with the styles to be applied.</td>
+						<td class="refDescription">Sets the value of the CSS properties in the given element, 
+						according to the values in the <span class="code">cssPropertyHash</span> argument.</td>
+					</tr>
+					<tr id="Element.Methods.show">
+						<td>show(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Shows the element by resetting its <span class="code">style.display</span> 
+						to <span class="code">''</span>. </td>
+					</tr>
+					<tr id="Element.Methods.siblings">
+						<td>siblings(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Returns an <span class="code">Array</span>
+						with all the siblings that come before and after the element. 
+						</td>
+					</tr>
+					<tr id="Element.Methods.stopObserving">
+						<td>stopObserving(element, name, observer, useCapture)</td><td>instance</td>
+						<td>
+							element: object or id, 
+							name: event name (like 'click', 'load', etc), 
+							observer: function(evt) to handle the event, 
+							useCapture: if <span class="code">true</span>, 
+							handles the event in the <em>capture</em>
+							phase and if <span class="code">false</span> in the <em>bubbling</em> phase.
+						</td>
+						<td class="refDescription">
+							Shortcut for <a class="code" href="#Event.stopObserving">Event.stopObserving</a>.
+						</td>
+					</tr>
+					<tr id="Element.Methods.toggle">
+						<td>toggle(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Toggles the visibility of the element.</td>
+					</tr>
+					<tr id="Element.Methods.toggleClassName">
+						<td>toggleClassName(element, className)</td><td>instance</td>
+						<td>element: element object or id, className: CSS class</td>
+						<td class="refDescription">Toggles the presence of the given CSS class name in the element.</td>
+					</tr>
+					<tr id="Element.Methods.undoClipping">
+						<td>undoClipping(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription"></td>
+					</tr>
+					<tr id="Element.Methods.undoPositioned">
+						<td>undoPositioned(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Clears the element's <span class="code">style.position</span> 
+						to <span class="code">''</span></td>
+					</tr>
+					<tr id="Element.Methods.up">
+						<td>up(element, expression, index)</td><td>instance</td>
+						<td>
+							element: element object or id, 
+							expression: a CSS selection rule,
+							index: index of the returned ancestor
+						</td>
+						<td class="refDescription">
+						Checks which of the element's ancestors match the given rule and
+						returns the first one or the n<sup>th</sup> one given by the
+						zero-based index argument. Lower index values mean closer to the element.
+						</td>
+					</tr>
+					<tr id="Element.Methods.update">
+						<td>update(element, html)</td><td>instance</td><td>element: element object or id, html: html content</td>
+						<td class="refDescription">
+							Replaces the inner html of the element with the given html argument. If
+							the given html contains <span class="code">&lt;script&gt;</span> blocks
+							they will not be included but they will be evaluated.
+						</td>
+					</tr>
+					<tr id="Element.Methods.visible">
+						<td>visible(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Returns a <span class="code">Boolean</span> 
+						value indicating if the element is visible.</td>
+					</tr>
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+			<p>
+				You can add your own methods to the <span class="code">Element.Methods</span> object
+				and they will also be copied to the elements automatically. You only need to ensure that
+				your methods also take the <span class="code">element</span> as the first argument and (if
+				possible) returns the element object. Here's an example of how to do that. I'll add three new utility
+				methods to the elements.
+			</p>
+			<pre class="code"><code>//first a helper method
+var $CE = function(tagName, attributes, styles){ //short for create element
+      var el = document.createElement(tagName);
+      if (attributes)
+            $H(attributes).each(function(pair){
+                  eval("el." + pair.key + "='" + pair.value + "'");
+            });
+      if (styles)
+            $H(styles).each(function(pair){
+                  el.style[pair.key] = pair.value;
+            });
+
+      return $(el);
+};
+
+//adding he new methods
+<strong class="highlite">Element.addMethods</strong>({
+	//removes any child noes from the element
+	//example: &lt;div id="myDiv"&gt;&lt;b&gt;hello&lt;/b&gt;&lt;/div&gt;
+	//         $('myDiv').clearChildren();
+	//     ==&gt; &lt;div id="myDiv"&gt;&lt;/div&gt;
+	<strong class="highlite">clearChildren</strong>: function(<strong class="highlite">element</strong>) {
+		element = $(element);
+		$A(element.childNodes).each(function(e){
+			  e.parentNode.removeChild(e);
+		});
+		<strong class="highlite">return element;</strong>
+	},
+	//method that creates a new element and appends to the current element
+	// example: &lt;div id="myDiv"&gt;Please&lt;/div&gt;
+	//          $('myDiv').append('A',{href:'otherpage.html', className:'red'}).update('Continue...');
+	//     ==&gt;  &lt;div id="myDiv"&gt;Please&lt;a href="otherpage.html" class="red"&gt;Continue...&lt;/a&gt;&lt;/div&gt;
+	<strong class="highlite">append</strong>: function(<strong class="highlite">element</strong>, tagName, attributes, styles) {
+		element = $(element);
+		var newEl = $CE(tagName, attributes, styles);
+		element.appendChild(newEl);
+		return newEl;//<-- this one returns the new element
+	},
+	//appends a text node to the element
+	// example: &lt;div id="myDiv"&gt;&lt;b&gt;hello&lt;/b&gt;&lt;/div&gt;
+	//          $('myDiv').appendText(', John');
+	//      ==&gt; &lt;div id="myDiv"&gt;&lt;b&gt;hello&lt;/b&gt;, John&lt;/div&gt;
+	<strong class="highlite">appendText</strong>: function(<strong class="highlite">element</strong>, text){
+		element = $(element);
+		var t = document.createTextNode(text);
+		element.appendChild(t);
+		<strong class="highlite">return element;</strong>
+	  }
+});
+			</code></pre>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Element.ClassNames">The <span class="objectClass">Element.ClassNames</span> class</h4>
+			<p><em>Inherits from <a class="objectClass" href="#Reference.Enumerable">Enumerable</a></em></p>
+
+			<p>
+				Represents the collection of CSS class names associated with an element.
+			</p>
+
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Element.Methods.ClassNames.ctor">
+						<td>[ctor](element)</td><td>constructor</td><td>element: any DOM element object or id</td>
+						<td class="refDescription">Creates an <span class="code">Element.ClassNames</span>
+						object representing the CSS class names of the given element.
+						</td>
+					</tr>
+					<tr id="Element.Methods.ClassNames.add">
+						<td>add(className)</td><td>instance</td>
+						<td>className: a CSS class name</td>
+						<td class="refDescription">
+						Includes the given CSS class name in the list of class names
+						associated with the element.
+						</td>
+					</tr>
+					<tr id="Element.Methods.ClassNames.remove">
+						<td>remove(className)</td><td>instance</td>
+						<td>className: a CSS class name</td>
+						<td class="refDescription">
+						Removes the given CSS class name from the list of class names
+						associated with the element.
+						</td>
+					</tr>
+					<tr id="Element.Methods.ClassNames.set">
+						<td>set(className)</td><td>instance</td>
+						<td>className: a CSS class name</td>
+						<td class="refDescription">	
+						Associates the element with the given CSS class name, removing any other
+						class names from the element.
+						</td>
+					</tr>
+				</table>
+
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Abstract">The <span class="objectClass">Abstract</span> object</h4>
+			<p>
+				This object serves as the root for other classes in the library. It does not have any
+				properties or methods. The classes defined in this object are also treated as 
+				traditional abstract classes.
+			</p>
+			<p class="backToc"><a href="#toc">toc</a></p>
+			
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Abstract.Insertion">The <span class="objectClass">Abstract.Insertion</span> class</h4>
+			<p>
+				This class is used as the base class for the other classes that will provide
+				dynamic content insertion. This class is used like an abstract class.
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Abstract.Insertion.ctor">
+						<td>[ctor](element, content)</td><td>constructor</td>
+						<td>element: element object or id, content: HTML to be inserted</td>
+						<td class="refDescription">Creates an object that will help with dynamic content insertion.</td>
+					</tr>
+					<tr id="Abstract.Insertion.contentFromAnonymousTable" class="privateMember">
+						<td>contentFromAnonymousTable()</td><td>instance</td>
+						<td>(none)</td>
+						<td class="refDescription"></td>
+					</tr>
+				</table>
+
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Property</th><th>Type</th><th>Kind</th><th>Description</th>
+					</tr>
+					<tr id="Abstract.Insertion.adjacency" class="privateMember">
+						<td>adjacency</td><td>String</td><td>static, parameter</td>
+						<td class="refDescription">Parameter that specifies where the content will be
+						placed relative to the given element. The possible values are: <span class="code">'beforeBegin'</span>,
+						<span class="code">'afterBegin'</span>, <span class="code">'beforeEnd'</span>, and 
+						<span class="code">'afterEnd'.</span></td>
+					</tr>
+					<tr id="Abstract.Insertion.element">
+						<td>element</td><td>Object</td><td>instance</td>
+						<td class="refDescription">The element object that the insertion will be made relative to.</td>
+					</tr>
+					<tr id="Abstract.Insertion.content">
+						<td>content</td><td>String</td><td>instance</td>
+						<td class="refDescription">The HTML that will be inserted.</td>
+					</tr>
+				</table>
+
+			
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Insertion">The <span class="objectClass">Insertion</span> object</h4>
+			<p>
+				This object serves as the root for other classes in the library. It does not have any
+				properties or methods. The classes defined in this object are also treated as 
+				traditional abstract classes.
+			</p>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Insertion.Before">The <span class="objectClass">Insertion.Before</span> class</h4>
+			<p><em>Inherits from <a class="objectClass" href="#Abstract.Insertion">Abstract.Insertion</a></em></p>
+			<p>
+				Inserts HTML before an element.
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Insertion.Before.ctor">
+						<td>[ctor](element, content)</td><td>constructor</td>
+						<td>element: element object or id, content: HTML to be inserted</td>
+						<td class="refDescription">Inherited from <a class="code" href="#Abstract.Insertion">Abstract.Insertion</a>.
+						Creates an object that will help with dynamic content insertion.</td>
+					</tr>
+				</table>
+
+			<p>
+				The following code
+			</p>
+			<pre class="code"><code>&lt;br/&gt;Hello, &lt;span id="person" style="color:red;"&gt;Wiggum. How's it going?&lt;/span&gt;
+
+&lt;script&gt; <strong class="highlite">new Insertion.Before('person', 'Chief ')</strong>; &lt;/script&gt;
+			</code></pre>
+			<p>
+				Will change the HTML to
+			</p>
+			<pre class="code"><code>
+&lt;br/&gt;Hello, <strong class="highlite">Chief </strong>&lt;span id="person" style="color:red;"&gt;Wiggum. How's it going?&lt;/span&gt;	
+			</code></pre>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Insertion.Top">The <span class="objectClass">Insertion.Top</span> class</h4>
+			<p><em>Inherits from <a class="objectClass" href="#Abstract.Insertion">Abstract.Insertion</a></em></p>
+			<p>
+				Inserts HTML as the first child under an element. The content will be right after the opening
+				tag of the element.
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Insertion.Top.ctor">
+						<td>[ctor](element, content)</td><td>constructor</td>
+						<td>element: element object or id, content: HTML to be inserted</td>
+						<td class="refDescription">Inherited from <a class="code" href="#Abstract.Insertion">Abstract.Insertion</a>.
+						Creates an object that will help with dynamic content insertion.</td>
+					</tr>
+				</table>
+
+			<p>
+				The following code
+			</p>
+			<pre class="code"><code>&lt;br/&gt;Hello, &lt;span id="person" style="color:red;"&gt;Wiggum. How's it going?&lt;/span&gt;
+
+&lt;script&gt; <strong class="highlite">new Insertion.Top('person', 'Mr. ')</strong>; &lt;/script&gt;
+			</code></pre>
+			<p>
+				Will change the HTML to
+			</p>
+			<pre class="code"><code>&lt;br/&gt;Hello, &lt;span id="person" style="color:red;"&gt;<strong class="highlite">Mr. </strong>Wiggum. How's it going?&lt;/span&gt;	
+			</code></pre>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Insertion.Bottom">The <span class="objectClass">Insertion.Bottom</span> class</h4>
+			<p><em>Inherits from <a class="objectClass" href="#Abstract.Insertion">Abstract.Insertion</a></em></p>
+			<p>
+				Inserts HTML as the last child under an element. The content will be right before the element's
+				closing tag.
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Insertion.Bottom.ctor">
+						<td>[ctor](element, content)</td><td>constructor</td>
+						<td>element: element object or id, content: HTML to be inserted</td>
+						<td class="refDescription">Inherited from <a class="code" href="#Abstract.Insertion">Abstract.Insertion</a>.
+						Creates an object that will help with dynamic content insertion.</td>
+					</tr>
+				</table>
+
+			<p>
+				The following code
+			</p>
+			<pre class="code"><code>&lt;br/&gt;Hello, &lt;span id="person" style="color:red;"&gt;Wiggum. How's it going?&lt;/span&gt;
+
+&lt;script&gt; <strong class="highlite">new Insertion.Bottom('person', " What's up?")</strong>; &lt;/script&gt;
+			</code></pre>
+			<p>
+				Will change the HTML to
+			</p>
+			<pre class="code"><code>&lt;br/&gt;Hello, &lt;span id="person" style="color:red;"&gt;Wiggum. How's it going?<strong class="highlite"> What's up?</strong>&lt;/span&gt;	
+			</code></pre>
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Insertion.After">The <span class="objectClass">Insertion.After</span> class</h4>
+			<p><em>Inherits from <a class="objectClass" href="#Abstract.Insertion">Abstract.Insertion</a></em></p>
+			<p>
+				Inserts HTML right after the element's closing tag.
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Insertion.After.ctor">
+						<td>[ctor](element, content)</td><td>constructor</td>
+						<td>element: element object or id, content: HTML to be inserted</td>
+						<td class="refDescription">Inherited from <a class="code" href="#Abstract.Insertion">Abstract.Insertion</a>.
+						Creates an object that will help with dynamic content insertion.</td>
+					</tr>
+				</table>
+
+			<p>
+				The following code
+			</p>
+			<pre class="code"><code>&lt;br/&gt;Hello, &lt;span id="person" style="color:red;"&gt;Wiggum. How's it going?&lt;/span&gt;
+
+&lt;script&gt; <strong class="highlite">new Insertion.After('person', ' Are you there?')</strong>; &lt;/script&gt;
+			</code></pre>
+			<p>
+				Will change the HTML to
+			</p>
+			<pre class="code"><code>&lt;br/&gt;Hello, &lt;span id="person" style="color:red;"&gt;Wiggum. How's it going?&lt;/span&gt;<strong class="highlite"> Are you there?</strong>	
+			</code></pre>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Field">The <span class="objectClass">Field</span> object</h4>
+			<p>
+				This object provides some utility functions for working with input fields in forms.
+				It's simply a shorthand to <a class="objectClass" href="#Form.Element">Form.Element</a>.
+			</p>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Form">The <span class="objectClass">Form</span> object</h4>
+			<p>
+				This object provides some utility functions for working with data entry forms and their input fields.
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Form.serialize">
+						<td>serialize(form)</td><td>instance</td><td>form: form element object or id</td>
+						<td class="refDescription">Returns a url-formatted list of field names and their values, like 
+						<span class="code">'field1=value1&amp;field2=value2&amp;field3=value3'</span></td>
+					</tr>
+					<tr id="Form.findFirstElement">
+						<td>findFirstElement(form)</td><td>instance</td><td>form: form element object or id</td>
+						<td class="refDescription">Returns the first enabled field element in the form.</td>
+					</tr>
+					<tr id="Form.getElements">
+						<td>getElements(form)</td><td>instance</td><td>form: form element object or id</td>
+						<td class="refDescription">Returns an <span class="code">Array</span>
+						containing all the input fields in the form.</td>
+					</tr>
+					<tr id="Form.getInputs">
+						<td>getInputs(form [, typeName [, name]])</td><td>instance</td>
+						<td>form: form element object or id, typeName: the type of the input element,
+						name: the name of the input element.</td>
+						<td class="refDescription">Returns an <span class="code">Array</span>
+						containing all the <span class="code">&lt;input&gt;</span> elements in the form.
+						Optionally, the list can be filtered by the 
+						<span class="code">type</span> or <span class="code">name</span> attributes of the elements.</td>
+					</tr>
+					<tr id="Form.disable">
+						<td>disable(form)</td><td>instance</td><td>form: form element object or id</td>
+						<td class="refDescription">Disables all the input fields in the form.</td>
+					</tr>
+					<tr id="Form.enable">
+						<td>enable(form)</td><td>instance</td><td>form: form element object or id</td>
+						<td class="refDescription">Enables all the input fields in the form.</td>
+					</tr>
+					<tr id="Form.focusFirstElement">
+						<td>focusFirstElement(form)</td><td>instance</td><td>form: form element object or id</td>
+						<td class="refDescription">Activates the first visible, enabled input field in the form.</td>
+					</tr>
+					<tr id="Form.reset">
+						<td>reset(form)</td><td>instance</td><td>form: form element object or id</td>
+						<td class="refDescription">Resets the form. The same as calling the 
+						<span class="code">reset()</span> method of the form object.</td>
+					</tr>
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Form.Element">The <span class="objectClass">Form.Element</span> object</h4>
+			<p>
+				This object provides some utility functions for working with form elements. These
+				functions have native DOM equivalents, but those don't return the element as
+				the result of the function call, preventing the chaining of method calls.
+			</p>
+			<p>
+				The methods below are not the only methods in this object at runtime. All the methods
+				from <a class="objectClass" href="#Form.Element.Methods" class="code">Form.Element.Methods</a> will also 
+				be added to this object.
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Form.Element.serialize">
+						<td>focus(element)</td><td>instance</td><td>element: element object or id of a form field</td>
+						<td class="refDescription">Moves the input focus to the field.</td>
+					</tr>
+					<tr id="Form.Element.getValue">
+						<td>select(element)</td><td>instance</td><td>element: element object or id of a form field</td>
+						<td class="refDescription">Selects the value entered in the element.</td>
+					</tr>
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Form.Element.Methods">The <span class="objectClass">Form.Element.Methods</span> object</h4>
+			<p>
+				This object provides some utility functions for working with form field elements, 
+				that will be copied over to any field element accessed via the functions
+				<a class="objectClass" href="#DollarFunction">$()</a> and 
+				<a class="objectClass" href="#Dollar_Dollar_Function">$$()</a>.
+			</p>
+			<p>
+				Similarly to the <a class="objectClass" href="#Element.Methods">Element.Methods</a> methods, when they are copied, 
+				the first argument is dropped and becomes the element itself. These methods are also copied
+				to the <a class="objectClass" href="#Form.Element" class="code">Form.Element</a> object so you don't typically use the methods 
+				from <span class="code">Form.Element.Methods</span> directly, but rather via
+				the <span class="code">Form.Element</span> object for consistency.
+			</p>
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Form.Element.activate">
+						<td>activate(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Moves the input focus to the field and selects its contents.</td>
+					</tr>
+					<tr id="Form.Element.clear">
+						<td>clear(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Empties the field.</td>
+					</tr>
+					<tr id="Form.Element.disable">
+						<td>disable(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Disables the field or button, so it cannot be changed or clicked.</td>
+					</tr>
+					<tr id="Form.Element.enable">
+						<td>enable(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Enables the field of button for being changed or clicked.</td>
+					</tr>
+					<tr id="Form.Element.getValue">
+						<td>getValue(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Returns the value of the element.</td>
+					</tr>
+					<tr id="Form.Element.present">
+						<td>present(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Returns <span class="code">true</span> if the field is not empty.</td>
+					</tr>
+					<tr id="Form.Element.serialize">
+						<td>serialize(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Returns the element's name=value pair, like 
+						<span class="code">'elementName=elementValue'</span></td>
+					</tr>
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Form.Element.Serializers">The <span class="objectClass">Form.Element.Serializers</span> object</h4>
+			<p>
+				This object provides some utility functions that are used internally in the library to
+				assist extracting the current value of the form elements.
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Form.Element.Serializers.inputSelector">
+						<td>inputSelector(element)</td><td>instance</td><td>element: object or id
+						of a form element that has the <em>checked</em> property,
+						like a radio button or checkbox.</td>
+						<td class="refDescription">Returns an <span class="code">Array</span> with
+						the element's name and value, like 
+						<span class="code">['elementName', 'elementValue']</span></td>
+					</tr>
+					<tr id="Form.Element.Serializers.textarea">
+						<td>textarea(element)</td><td>instance</td><td>element: object or id
+						of a form element that has the <em>value</em> property,
+						like a textbox, button or password field.</td>
+						<td class="refDescription">Returns an <span class="code">Array</span> with
+						the element's name and value, like 
+						<span class="code">['elementName', 'elementValue']</span></td>
+					</tr>
+					<tr id="Form.Element.Serializers.select">
+						<td>select(element)</td><td>instance</td><td>element: object
+						of a &lt;select&gt; element</td>
+						<td class="refDescription">Returns an <span class="code">Array</span> with
+						the element's name and all selected options' values or texts, like 
+						<span class="code">['elementName', 'selOpt1 selOpt4 selOpt9']</span></td>
+					</tr>
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Abstract.TimedObserver">The <span class="objectClass">Abstract.TimedObserver</span> class</h4>
+			<p>
+				This class is used as the base class for the other classes that will monitor
+				one element until its value (or whatever property the derived class defines) changes. 
+				This class is used like an abstract class.
+			</p>
+			<p>
+				Subclasses can be created to monitor things like the input value of an element, or
+				one of the style properties, or number of rows in a table, or whatever else
+				you may be interested in tracking changes to.
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Abstract.TimedObserver.ctor">
+						<td>[ctor](element, frequency, callback)</td><td>constructor</td>
+						<td>element: element object or id, frequency: interval in seconds, callback: function to be called when the element changes</td>
+						<td class="refDescription">Creates an object that will monitor the element.</td>
+					</tr>
+					<tr id="Abstract.TimedObserver.getValue" class="privateMember">
+						<td>getValue()</td><td>instance, abstract</td>
+						<td>(none)</td>
+						<td class="refDescription">Derived classes have to implement this method to
+						determine what is the current value being monitored in the element.</td>
+					</tr>
+					<tr id="Abstract.TimedObserver.registerCallback" class="privateMember">
+						<td>registerCallback()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">This method is typically not called externally. It is 
+						called by the object itself to start monitoring the element.
+						</td>
+					</tr>
+					<tr id="Abstract.TimedObserver.onTimerEvent" class="privateMember">
+						<td>onTimerEvent()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">This method is typically not called externally. It is 
+						called by the object itself periodically to check the element.
+						</td>
+					</tr>
+				</table>
+
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Property</th><th>Type</th><th>Description</th>
+					</tr>
+					<tr id="Abstract.TimedObserver.element">
+						<td>element</td><td>Object</td>
+						<td class="refDescription">The element object that is being monitored.</td>
+					</tr>
+					<tr id="Abstract.TimedObserver.frequency">
+						<td>frequency</td><td>Number</td><td class="refDescription">This is actually the interval in seconds between checks.</td>
+					</tr>
+					<tr id="Abstract.TimedObserver.callback">
+						<td>callback</td><td>Function(Object, String)</td><td class="refDescription">The function to be called 
+						whenever the element changes. It will receive the element object and the new value.</td>
+					</tr>
+					<tr id="Abstract.TimedObserver.lastValue" class="privateMember">
+						<td>lastValue</td><td>String</td><td class="refDescription">The last value verified in the element.</td>
+					</tr>
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Form.Element.Observer">The <span class="objectClass">Form.Element.Observer</span> class</h4>
+			<p><em>Inherits from <a class="objectClass" class="code" href="#Abstract.TimedObserver">Abstract.TimedObserver</a></em></p>
+			<p>
+				Implementation of an <span class="code">Abstract.TimedObserver</span> that monitors the 
+				value of form input elements. Use this class when you want to monitor an element
+				that does not expose an event that reports the value changes. In that case you
+				can use the <a class="objectClass" class="code" href="#Form.Element.EventObserver">Form.Element.EventObserver</a>
+				class instead.
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Form.Element.Observer.ctor">
+						<td>[ctor](element, frequency, callback)</td><td>constructor</td>
+						<td>element: element object or id, frequency: interval in seconds, callback: function to be called when the element changes</td>
+						<td class="refDescription">Inherited from <a class="code" href="#Abstract.TimedObserver">Abstract.TimedObserver</a>.
+						Creates an object that will monitor the element's <span class="code">value</span> property.</td>
+					</tr>
+					<tr id="Form.Element.Observer.getValue" class="privateMember">
+						<td>getValue()</td><td>instance</td>
+						<td>(none)</td>
+						<td class="refDescription">Returns the element's value.</td>
+					</tr>
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Form.Observer">The <span class="objectClass">Form.Observer</span> class</h4>
+			<p><em>Inherits from <a class="objectClass" href="#Abstract.TimedObserver">Abstract.TimedObserver</a></em></p>
+			<p>
+				Implementation of an <span class="code">Abstract.TimedObserver</span> that monitors any
+				changes to any data entry element's value  in a form. Use this class when you want to monitor 
+				a form that contains a elements that do not expose an event that reports the value changes. In 
+				that case you can use the <a class="objectClass" href="#Form.EventObserver">Form.EventObserver</a>
+				class instead.
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Form.Observer.ctor">
+						<td>[ctor](form, frequency, callback)</td><td>constructor</td>
+						<td>form: form object or id, frequency: interval in seconds, callback function to be called when any 
+						data entry element in the form changes</td>
+						<td class="refDescription">Inherited from <a class="code" href="#Abstract.TimedObserver">Abstract.TimedObserver</a>.
+						Creates an object that will monitor the form for changes.</td>
+					</tr>
+					<tr id="Form.Observer.getValue" class="privateMember">
+						<td>getValue()</td><td>instance</td>
+						<td>(none)</td>
+						<td class="refDescription">Returns the serialization of all form's data.</td>
+					</tr>
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Abstract.EventObserver">The <span class="objectClass">Abstract.EventObserver</span> class</h4>
+			<p>
+				This class is used as the base class for the other classes that 
+				execute a callback function whenever a value-changing event
+				happens for an element.
+			</p>
+			<p>
+				Multiple objects of type <span class="code">Abstract.EventObserver</span> can
+				be bound to the same element, without one wiping out the other. The callbacks
+				will be executed in the order they are assigned to the element.
+			</p>
+			<p>
+				The triggering event is <span class="code">onclick</span> for radio buttons
+				and checkboxes, and <span class="code">onchange</span> for textboxes in general and
+				listboxes/dropdowns.
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Abstract.EventObserver.ctor">
+						<td>[ctor](element, callback)</td><td>constructor</td>
+						<td>element: element object or id, callback: function to be called when the event happens</td>
+						<td class="refDescription">Creates an object that will monitor the element.</td>
+					</tr>
+					<tr id="Abstract.EventObserver.getValue" class="privateMember">
+						<td>getValue()</td><td>instance, abstract</td>
+						<td>(none)</td>
+						<td class="refDescription">Derived classes have to implement this method to
+						determine what is the current value being monitored in the element.</td>
+					</tr>
+					<tr id="Abstract.EventObserver.registerCallback" class="privateMember">
+						<td>registerCallback()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">This method is typically not called externally. It is 
+						called by the object to bind itself to the element's event.
+						</td>
+					</tr>
+					<tr id="Abstract.EventObserver.registerForCallbacks" class="privateMember">
+						<td>registerFormCallbacks()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">This method is typically not called externally. It is 
+						called by the object to bind itself to the events of each data entry 
+						element in the form.
+						</td>
+					</tr>
+					<tr id="Abstract.EventObserver.onElementEvent" class="privateMember">
+						<td>onElementEvent()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">This method is typically not called externally. 
+						It will be bound to the element's event.
+						</td>
+					</tr>
+				</table>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Property</th><th>Type</th><th>Description</th>
+					</tr>
+					<tr id="Abstract.EventObserver.element">
+						<td>element</td><td>Object</td>
+						<td class="refDescription">The element object that is being monitored.</td>
+					</tr>
+					<tr id="Abstract.EventObserver.callback">
+						<td>callback</td><td>Function(Object, String)</td><td class="refDescription">The function to be called 
+						whenever the element changes. It will receive the element object and the new value.</td>
+					</tr>
+					<tr id="Abstract.EventObserver.lastValue" class="privateMember">
+						<td>lastValue</td><td>String</td><td class="refDescription">The last value verified in the element.</td>
+					</tr>
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Form.Element.EventObserver">The <span class="objectClass">Form.Element.EventObserver</span> class</h4>
+			<p><em>Inherits from <a class="objectClass" href="#Abstract.EventObserver">Abstract.EventObserver</a></em></p>
+			<p>
+				Implementation of an <span class="code">Abstract.EventObserver</span> that 
+				executes a callback function to the appropriate event of the form data entry element
+				to detect value changes in the element. If the element does not expose any event
+				that reports changes, then you can use the <a class="objectClass" href="#Form.Element.Observer">Form.Element.Observer</a>
+				class instead.
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Form.Element.EventObserver.ctor">
+						<td>[ctor](element, callback)</td><td>constructor</td>
+						<td>element: element object or id, callback: function to be called when the event happens</td>
+						<td class="refDescription">Inherited from <a class="code" href="#Abstract.EventObserver">Abstract.EventObserver</a>.
+						Creates an object that will monitor the element's <span class="code">value</span> property.</td>
+					</tr>
+					<tr id="Form.Element.EventObserver.getValue" class="privateMember">
+						<td>getValue()</td><td>instance</td>
+						<td>(none)</td>
+						<td class="refDescription">Returns the element's value</td>
+					</tr>
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Form.EventObserver">The <span class="objectClass">Form.EventObserver</span> class</h4>
+			<p><em>Inherits from <a class="objectClass" href="#Abstract.EventObserver">Abstract.EventObserver</a></em></p>
+			<p>
+				Implementation of an <span class="code">Abstract.EventObserver</span> that monitors any
+				changes to any data entry element contained in a form, using the elements' events to
+				detect when the value changes. If the form contains elements that do not expose any event
+				that reports changes, then you can use the <a class="objectClass" href="#Form.Observer">Form.Observer</a>
+				class instead.
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Form.EventObserver.ctor">
+						<td>[ctor](form, callback)</td><td>constructor</td>
+						<td>form: form object or id, callback: function to be called when any 
+						data entry element in the form changes</td>
+						<td class="refDescription">Inherited from <a class="code" href="#Abstract.EventObserver">Abstract.EventObserver</a>.
+						Creates an object that will monitor the form for changes.</td>
+					</tr>
+					<tr id="Form.EventObserver.getValue" class="privateMember">
+						<td>getValue()</td><td>instance</td>
+						<td>(none)</td>
+						<td class="refDescription">Returns the serialization of all form's data.</td>
+					</tr>
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+			<h4 id="Position">The <span class="objectClass">Position</span> object</h4>
+			<p>
+				This object provides a host of functions that help when working with 
+				element positioning.
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Method</th><th>Kind</th><th>Arguments</th><th>Description</th>
+					</tr>
+					<tr id="Position.absolutize">
+						<td>absolutize(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Changes the object postioning to <span class="code">absolute</span>
+						but takes care of not altering its current size and location on the page.</td>
+					</tr>
+					<tr id="Position.clone">
+						<td>clone(source, target [, cloneOptions])</td><td>instance</td>
+						<td>source: element object or id, target: element object or id,
+						cloneOptions: allow fine tuning of the operation</td>
+						<td class="refDescription">Resizes and repositions the target element identically to the source element. Note that the target element will only be repositioned if it already has
+						the <span class="code">position</span> style attribute set to <span class="code">absolute</span>
+						, otherwise only the size will change.
+						Check the <a class="objectClass" href="#Position.clone.option">cloneOptions</a> reference below.
+						</td>
+					</tr>
+					<tr id="Position.cumulativeOffset">
+						<td>cumulativeOffset(element)</td><td>instance</td><td>element: object</td>
+						<td class="refDescription">Returns an <span class="code">Array</span> with
+						the total offsets of the element, including any of the element's
+						ancestors offsets. The resulting array is similar to
+						<span class="code">[total_left_offset, total_top_offset]</span></td>
+					</tr>
+					<tr id="Position.offsetParent">
+						<td>offsetParent(element)</td><td>instance</td><td>element: object</td>
+						<td class="refDescription">Returns the first non-statically-positioned
+						ancestor of the element.</td>
+					</tr>
+					<tr id="Position.overlap">
+						<td>overlap(mode, element)</td><td>instance</td><td>mode: 'vertical' or 'horizontal', element: object</td>
+						<td class="refDescription"><span class="code">within()</span> needs to be called right before calling this method.
+						This method will return a decimal number between 0.0 and 1.0 representing the fraction of the coordinate that 
+						overlaps on the element. As an example, if the element is a square DIV with a 100px side and positioned at
+						(300, 300), then <span class="code">within(divSquare, 330, 330); overlap('vertical', divSquare);</span> should return 0.70, meaning that the point is at the 70% (100px - 30px = 70px) mark from the bottom border of the DIV. The easiest way to understand it is to think of the
+						given coordinate pair as the top-left corner of another rectangle, overlapping the first one. The number will be the
+						percentage of the width or height that is overlapped (assuming that the second rectangle is large enough.)
+						</td>
+					</tr>
+					<tr id="Position.page">
+						<td>page(element)</td><td>instance</td><td>element: object</td>
+						<td class="refDescription">Returns an <span class="code">Array</span> with
+						the coordinates of the element relative to the page.
+						The resulting array is similar to <span class="code">[left, top]</span></td>
+					</tr>
+					<tr id="Position.positionedOffset">
+						<td>positionedOffset(element)</td><td>instance</td><td>element: object</td>
+						<td class="refDescription">Returns an <span class="code">Array</span> with
+						the correct offsets of the element relative to its offset parent, in pixels.
+						The resulting array is similar to
+						<span class="code">[left_offset, top_offset]</span></td>
+					</tr>
+					<tr id="Position.prepare">
+						<td>prepare()</td><td>instance</td><td>(none)</td>
+						<td class="refDescription">Adjusts the <span class="code">deltaX</span> and
+						<span class="code">deltaY</span> properties to accommodate changes in
+						the scroll position. Remember to call this method before any calls
+						to <span class="code">withinIncludingScrolloffset</span> after the page scrolls.</td>
+					</tr>
+					<tr id="Position.realOffset">
+						<td>realOffset(element)</td><td>instance</td><td>element: object</td>
+						<td class="refDescription">Returns an <span class="code">Array</span> with
+						the correct scroll offsets of the element, including any scroll offsets that
+						affect the element. The resulting array is similar to
+						<span class="code">[total_scroll_left, total_scroll_top]</span></td>
+					</tr>
+					<tr id="Position.relativize">
+						<td>relativize(element)</td><td>instance</td><td>element: element object or id</td>
+						<td class="refDescription">Changes the object postioning to <span class="code">relative</span>
+						but takes care of not altering its current size and location on the page.
+						Works best with elements that have been absolutized previously.
+					</td>
+					</tr>
+					<tr id="Position.within">
+						<td>within(element, x, y)</td><td>instance</td><td>element: object, x and y: coordinates of a point</td>
+						<td class="refDescription">Tests if the given point coordinates are inside the 
+						bounding rectangle of the given element</td>
+					</tr>
+					<tr id="Position.withinIncludingScrolloffsets">
+						<td>withinIncludingScrolloffsets(element, x, y)</td><td>instance</td><td>element: object, x and y: coordinates of a point</td>
+						<td class="refDescription">&nbsp;</td>
+					</tr>
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+			
+			<h4 id="Position.clone.options">The <span class="objectClass">cloneOptions</span> argument object</h4>
+			<p>
+				The <a class="objectClass" href="#Position.clone">clone()</a> method of the 
+				<a class="objectClass" href="#Position">Position</a> object takes an optional third argument, 
+				used to more detailedly control the cloning operation.
+			</p>
+
+				<table class="reference" border="1" cellspacing="0">
+					<col class="titleCol" />
+					<tr>
+						<th>Property</th><th>Type</th><th>Default</th><th>Description</th>
+					</tr>
+					<tr id="Position.clone.options.offsetLeft">
+						<td>offsetLeft</td><td>Number</td><td>0</td>
+						<td class="refDescription">
+							Number of pixels to offset the target element from the left of the source.
+						</td>
+					</tr>
+					<tr id="Position.clone.options.offsetTop">
+						<td>offsetTop</td><td>Number</td><td>0</td>
+						<td class="refDescription">
+							Number of pixels to offset the target element from the top of the source.
+						</td>
+					</tr>
+					<tr id="Position.clone.options.setHeight">
+						<td>setHeight</td><td>Boolean</td><td>true</td>
+						<td class="refDescription">
+							Causes the height of the source element to be copied over to the target element.
+						</td>
+					</tr>
+					<tr id="Position.clone.options.setLeft">
+						<td>setLeft</td><td>Boolean</td><td>true</td>
+						<td class="refDescription">
+							Causes the left position of the source element to be copied over to the target element.							
+						</td>
+					</tr>
+					<tr id="Position.clone.options.setTop">
+						<td>setTop</td><td>Boolean</td><td>true</td>
+						<td class="refDescription">
+							Causes the top position of the source element to be copied over to the target element.							
+						</td>
+					</tr>
+					<tr id="Position.clone.options.setWidth">
+						<td>setWidth</td><td>Boolean</td><td>true</td>
+						<td class="refDescription">
+							Causes the width of the source element to be copied over to the target element.							
+						</td>
+					</tr>
+
+				</table>
+
+			<p class="backToc"><a href="#toc">toc</a></p>
+
+			<hr/>
+			<p class="footNote">
+				<em>
+					The documentation for v1.5.0 is still in progress. Stay tuned for updates in this document.<br/>
+					If you find errors, inaccurate or incomplete information, or flat-out nonsense, please 
+					<script type="text/javascript">sp('let me know')</script> and I'll try to fix it as soon as possible.
+				</em>
+			</p>
+
+		</div>
+	
+	</body>
+</html>

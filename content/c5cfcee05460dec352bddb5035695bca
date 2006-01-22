@@ -1,0 +1,1115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Mastering Ajax, Part 2: Make asynchronous requests with JavaScript and Ajax</title>
+<meta http-equiv="PICS-Label" content='(PICS-1.1 "http://www.icra.org/ratingsv02.html" l gen true r (cz 1 lz 1 nz 1 oz 1 vz 1) "http://www.rsac.org/ratingsv01.html" l gen true r (n 0 s 0 v 0 l 0) "http://www.classify.org/safesurf/" l gen true r (SS~~000 1))'/>
+<link rel="schema.DC" href="http://purl.org/DC/elements/1.0/"/>
+<link rel="SHORTCUT ICON" href="http://www.ibm.com/favicon.ico"/>
+<meta name="Owner" content="developerWorks Content/Raleigh/IBM"/>
+<meta name="DC.Language" scheme="rfc1766" content="en"/>
+<meta name="IBM.Country" content="ZZ"/>
+<meta name="Security" content="Public"/>
+<meta name="IBM.SpecialPurpose" content="SP001"/>
+<meta name="IBM.PageAttributes" content="sid=1003"/>
+<meta name="Source" content="v16 Template Generator"/>
+<meta name="Robots" content="index,follow"/>
+<meta name="Abstract" content="Most Web applications use a request/response model that gets an entire HTML page from the server. The result is a back-and-forth that usually involves clicking a button, waiting for the server, clicking another button, and then waiting some more. With Ajax and the XMLHttpRequest object, you can use a request/response model that never leaves users waiting for a server to respond. In this article, Brett McLaughlin shows you how to create XMLHttpRequest instances in a cross-browser way, construct and send requests, and respond to the server."/>
+<meta name="Description" content="Most Web applications use a request/response model that gets an entire HTML page from the server. The result is a back-and-forth that usually involves clicking a button, waiting for the server, clicking another button, and then waiting some more. With Ajax and the XMLHttpRequest object, you can use a request/response model that never leaves users waiting for a server to respond. In this article, Brett McLaughlin shows you how to create XMLHttpRequest instances in a cross-browser way, construct and send requests, and respond to the server."/>
+<meta name="Keywords" content="XMLHttp,XHTML,span,div,Brett McLaughlin,Ajax,Asynchronous JavaScript and XML,Asynchronous JavaScript with XML,JavaScript,XML,DOM,span,div,DHTML,dynamic HTML,dom,Document Object Model,XMLHttpRequest, tttwaca, tttxca, tttjca"/>
+<meta name="DC.Date" scheme="iso8601" content="2006-01-17"/>
+<meta name="DC.Type" scheme="IBM_ContentClassTaxonomy" content="CT316"/>
+<meta name="DC.Subject" scheme="IBM_SubjectTaxonomy" content="TTA00"/>
+<meta scheme="IBM_WTMCategory" name="IBM.WTMCategory" content="SOFDCDEVZZ" />
+<meta name="DC.Rights" content="© Copyright IBM Corporation 2006"/>
+<meta name="IBM.Effective" scheme="W3CDTF" content="2006-01-17"/>
+<meta name="title" content="Mastering Ajax, Part 2: Make asynchronous requests with JavaScript and Ajax"/>
+
+<!-- HEADER_SCRIPTS_AND_CSS_INCLUDE -->
+<link href="//dw1.s81c.com/common/v16/css/all.css" media="all" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/screen.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/screen-uas.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/zz/en/screen-fonts.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/handheld.css" media="handheld" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/print.css" media="print" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/overlay.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+
+<!-- dW-specific CSS -->
+<link href="//dw1.s81c.com/developerworks/css/dw-screen.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/developerworks/css/dw-screen-comments-ratings-signin.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.cluetip.css" media="screen,projection" rel="stylesheet"  title="www" type="text/css" />
+
+<script src="//dw1.s81c.com/common/js/ibmcommon.js" type="text/javascript">//</script>
+<script src="//dw1.s81c.com/common/js/dynamicnav.js" type="text/javascript">//</script>
+
+<!-- dW functional JS -->
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/urltactic.js" type="text/javascript"></script>
+<!-- Rating_START -->
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/artrating/showrating.js" type="text/javascript"></script>
+<style type="text/css">
+.metavalue {
+  display: none;
+}
+</style>
+<!-- Rating_END --><!-- RESERVED_HEADER_INCLUDE -->
+<script language="javascript" src="//dw1.s81c.com/developerworks/js/ajax1.js" type="text/javascript"></script>
+<script language="javascript" src="//dw1.s81c.com/developerworks/js/search_counter-maverick.js" type="text/javascript"></script>
+<script language="javascript" src="//dw1.s81c.com/developerworks/js/request_referer_capture-maverick.js" type="text/javascript"></script>
+<script language="JavaScript" type="text/javascript">
+ <!--
+ setDefaultQuery('webart');
+ //-->
+</script>
+<script language="JavaScript" type="text/javascript">
+ <!--
+ function openNewWindow(url,tar,arg){window.open(url,tar,arg);}
+ //-->
+</script>
+<!-- Include file support -->
+<script language="JavaScript" type="text/javascript">
+(function($) {
+	jQuery.extend({
+		getInc: function(u,d){
+			if(u==null)return;
+			jQuery.ajax({
+	    		type: "GET",
+			url: u,
+			dataType: "text",
+	        	success: function(t) {
+				jQuery(d).html(t);
+				ibmCommon.initShowHide(jQuery(d).children()[0]);			
+			},
+			async: true
+			});
+		}
+	});
+})(jQuery);
+</script>
+</head>
+
+<body id="ibm-com">
+<div id="ibm-top" class="ibm-landing-page">
+
+<!-- MASTHEAD_BEGIN -->
+<div class="ibm-access"><a href="#ibm-content">Skip to main content</a></div>
+<div id="ibm-masthead">
+<div id="ibm-logo"><a href="http://www.ibm.com/"><img height="50" src="//dw1.s81c.com/i/v16/t/ibm-logo.gif" width="110" alt="IBM®" /></a></div>
+<ul id="ibm-geo"><li id="ibm-country" class="ibm-first">Country/region</li><li id="ibm-change-country">[ <a href="http://www.ibm.com/developerworks/country/">select</a> ]</li></ul>
+  <form id="ibm-search-form" action="//www.ibm.com/developerworks/search/searchResults.jsp" method="get" name="form1"><input type="hidden" name="searchType" value="1"/><input type="hidden" name="searchSite" value="dW"/><p>
+<span id="ibm-search-scope">
+<label for="sn"><img src="//dw1.s81c.com/i/c.gif" width="1" height="1" alt="Search in:"/></label>
+<select name="searchScope" id="sn">
+<option value="dW" selected="selected">All of dW</option>
+<option value="dW">-----------------</option>
+<option value="aixunix">&nbsp;AIX and UNIX</option>
+<option value="db2">&nbsp;Information Mgmt</option>
+<option value="lotus">&nbsp;Lotus</option>
+<option value="rdd">&nbsp;Rational</option>
+<option value="tivoli">&nbsp;Tivoli</option>  
+<option value="WSDD">&nbsp;WebSphere</option>
+<option value="dW">-----------------</option> 
+<option value="javaZ">&nbsp;Java technology</option> 
+<option value="linuxZ">&nbsp;Linux</option> 
+<option value="opensrcZ">&nbsp;Open source</option>
+<option value="webservZ">&nbsp;SOA/Web services</option>
+<option value="webarchZ">&nbsp;Web development</option>  
+<option value="xmlZ">&nbsp;XML</option>
+<option value="dW">-----------------</option>
+<option value="forums">&nbsp;dW forums</option> 
+<option value="dW">-----------------</option>
+<option value="aI">University</option>
+<option value="dW">-----------------</option>
+<option value="aW">alphaWorks</option>
+<option value="dW">-----------------</option>
+<option value="all">All of IBM</option>
+</select>
+</span>
+
+<label for="q"><img alt="Search for:" height="1" width="1" src="//dw1.s81c.com/i/c.gif" /></label><input type="text" name="query" maxlength="100" id="q"/><input type="submit" id="ibm-search" class="ibm-btn-search" name="Search" value="Search" /></p></form>
+<div id="ibm-site-name">
+<!-- IBM site name container -->
+</div>
+<div id="ibm-universal-nav">
+<ul><li id="ibm-unav-home" class="ibm-first"><a href="http://www.ibm.com/">Home</a></li><li id="ibm-unav-solutions"><a href="http://www.ibm.com/solutions/">Solutions</a></li><li id="ibm-unav-services"><a href="http://www.ibm.com/technologyservices/">Services</a></li><li id="ibm-unav-products"><a href="http://www.ibm.com/products/">Products</a></li><li id="ibm-unav-support"><a href="http://www.ibm.com/support/">Support &amp; downloads</a></li><li id="ibm-unav-myibm"><a href="http://www.ibm.com/account/">My IBM</a></li></ul>
+</div>
+</div>
+<!-- MASTHEAD_END -->
+
+<div id="ibm-pcon">
+
+<!-- CONTENT_BEGIN -->
+<div id="ibm-content">
+
+<!-- Navigation_Trail_BEGIN -->
+<!-- &nbsp; -->
+      <div id="ibm-content-head"><ul id="ibm-navigation-trail"><li class="ibm-first"><a href="http://www.ibm.com/developerworks/">developerWorks</a></li><li><a href="http://www.ibm.com/developerworks/web/">Web development</a></li><li><a href="http://www.ibm.com/developerworks/views/web/library.jsp">Technical library</a></li></ul></div>
+<!-- Navigation_Trail_END -->
+
+<!-- dW_Summary Area_START -->
+<div id="dw-summary-article">
+
+<div class="dw-content-head">
+<h1>Mastering Ajax, Part 2: Make asynchronous requests with JavaScript and Ajax</h1><p><em>Use XMLHttpRequest for Web requests</em></p>
+</div>
+
+<div class="ibm-container-body ibm-two-column">
+
+<div class="ibm-column ibm-first">
+<div class="author"><a class="dwauthor" rel="#authortip1" href="#author1">Brett McLaughlin</a>, Author and Editor, O'Reilly Media Inc.</div><div id="authortip1" class="dwauthor-onload-state ibm-no-print"><div class="position"><img src="http://www.ibm.com/developerworks/i/p-brett.jpg" width="64" height="80" alt="Photo of Brett McLaughlin" /></div>Brett McLaughlin has worked in computers since the Logo days.(Remember the little triangle?) In recent years, he's become one of the most well-known authors and programmers in the Java and XML communities. He's worked for Nextel Communications, implementing complex enterprise systems; at Lutris Technologies, actually writing application servers; and most recently at O'Reilly Media, Inc., where he continues to write and edit books that matter. Brett's upcoming book, <em><a href="http://www.amazon.com/gp/product/0596102259/103-1888163-4853425?v=glance&amp;n=283155&amp;n=507846&amp;s=books&amp;v=glance">Head Rush Ajax</a></em>, brings the award-winning and innovative <a href="http://www.headfirstlabs.com">Head First</a> approach to Ajax, along with bestselling co-authors, Eric and Beth Freeman. His last book, <em><a href="http://www.amazon.com/exec/obidos/tg/detail/-/0596007388/qid=1096295392/sr=1-1/ref=sr_1_1/104-4479879-6183919?v=glance&amp;s=books">Java 1.5 Tiger: A Developer's Notebook</a></em>, was the first book available on the newest version of Java technology and his classic <em><a href="http://www.amazon.com/exec/obidos/tg/detail/-/0596000162/104-4010009-7613561?v=glance">Java and XML</a></em> remains one of the definitive works on using XML technologies in the Java language.</div>
+<p></p>
+<p><b>Summary:</b>&nbsp; Most Web applications use a request/response model that gets an entire HTML page from the server. The result is a back-and-forth that usually involves clicking a button, waiting for the server, clicking another button, and then waiting some more. With Ajax and the XMLHttpRequest object, you can use a request/response model that never leaves users waiting for a server to respond. In this article, Brett McLaughlin shows you how to create XMLHttpRequest instances in a cross-browser way, construct and send requests, and respond to the server.</p>
+<p class="ibm-no-print"><a href="http://www.ibm.com/developerworks/views/web/libraryview.jsp?search_by=Mastering+Ajax">View more content in this series</a></p>
+<div id="dw-tag-content" class="ibm-no-print"></div><div id="dw-moretags-access" class="ibm-access"></div>
+<p class="ibm-no-print"><div id="dw-tag-this" class="ibm-no-print"><a class="ibm-external-link" onclick="jQuery.launchTagThisWindow(); return false;" href="#">Tag this!</a></div><div id="interestShow" class="ibm-no-print"></div></p>
+</div>
+
+<div class="ibm-column ibm-second">
+<p class="leading"><b>Date:</b>&nbsp; 17 Jan 2006
+<br /><b>Level: </b>&nbsp;Intermediate
+<br class="ibm-ind-link"/><b>PDF:</b>&nbsp; <a href="http://public.dhe.ibm.com/software/dw/web/wa-ajaxintro2/wa-ajaxintro2-pdf.pdf">A4 and Letter</a> (270KB | 23 pages)<a class="ibm-external-link" href="http://www.adobe.com/products/acrobat/readstep2.html">Get Adobe&#174; Reader&#174;</a>
+<br /><b>Also available in:&nbsp;</b>
+&nbsp;<a href="http://www.ibm.com/developerworks/cn/xml/wa-ajaxintro2/">Chinese</a>
+&nbsp;<a href="http://www.ibm.com/developerworks/kr/library/wa-ajaxintro2/">Korean</a> 
+&nbsp;<a href="http://www.ibm.com/developerworks/ru/library/wa-ajaxintro2/">Russian</a> 
+&nbsp;<a href="http://www.ibm.com/developerworks/jp/web/library/wa-ajaxintro2/">Japanese</a> 
+
+
+
+<br />
+<br /><b>Activity:</b>&nbsp; 95975 views
+<br /><b>Comments:</b> &nbsp; <span id="nCmts"><img alt="" src="//dw1.s81c.com/developerworks/i/circle-preloader.gif" height="12" width="50" /><img alt="" src="//dw1.s81c.com/i/c.gif" height="14" width="1" /></span>
+<!-- Rating_Area_Begin -->
+<div id="art-rating-summary"></div>
+<!-- Rating_Area_End -->
+</p>
+</div>
+
+</div>
+</div>
+<!-- dW_Summary_Area_END -->
+
+<!-- CONTENT_BODY -->
+<div id="ibm-content-body">
+
+<!-- MAIN_COLUMN_BEGIN -->
+<div id="ibm-content-main">
+
+<!-- Related_Searches_Area -->
+<!-- Related_Searches_Area_Begin -->
+<script type="text/javascript" language="javascript">
+	     capture_referrer();
+</script>
+
+<div id="dw-related-searches-article" style="display:none">
+<div class="ibm-container ibm-alternate-two">
+<div class="ibm-container-body">
+
+<!--  START : HTML FOR ARTICLE SEARCH -->
+  <div id="article_results" style="display:block"></div>
+<!--  END : HTML FOR ARTICLE SEARCH -->
+
+</div>
+</div>
+</div>
+<!-- Related_Searches_Area_End -->
+<!-- MAIN_COLUMN_CONTAINER_BEGIN -->
+<div class="ibm-container">
+
+<!-- MAIN_COLUMN_CONTENT_BEGIN -->
+<p>In the last article of this series (see <a href="#resources">Resources</a> for links), you were introduced to the Ajax applications and looked at some of the basic concepts that drive Ajax applications. At the center of this was a lot of technology that you probably already know about: JavaScript, HTML and XHTML, a bit of dynamic HTML, and even some DOM (the Document Object Model). In this article, I will zoom in from that 10,000-foot view and focus on specific Ajax details.</p>
+
+            <p>In this article, you'll begin with the most fundamental and basic of all Ajax-related objects and programming approaches: The <code>XMLHttpRequest</code> object. This object is really the only common thread across all Ajax applications and -- as you might expect -- you will want to understand it thoroughly to take your programming to the limits of what's possible. In fact, you'll find out that sometimes, to use <code>XMLHttpRequest</code> properly, you explicitly <em>won't</em> use <code>XMLHttpRequest</code>. What in the world is that all about?</p>
+            <p><a name="N10086"><span class="atitle">Web 2.0 at a glance</span></a></p>
+            <p>First, take this last bit of overview before you dive into code -- make sure you're crystal clear on this idea of the Web 2.0. When you hear the term Web 2.0, you should first ask, "What's Web 1.0?" Although you'll rarely hear Web 1.0, it is meant to refer to the traditional Web where you have a very distinct request and response model. For example, go to Amazon.com and click a button or enter a search term. A request is made to a server and then a response comes back to your browser. That request has a lot more than just a list of books and titles, though; it's actually another complete HTML page. As a result, you probably get some flashing or flickering as your Web browser's screen is redrawn with this new HTML page. In fact, you can clearly see the request and response, delineated by each new page you see.</p>
+
+            <p>The Web 2.0 dispenses with this very visible back-and-forth (to a large degree). As an example, visit a site like Google Maps or Flickr (links to both of these Web 2.0, Ajax-powered sites are in <a href="#resources">Resources</a>). On Google Maps, for example, you can drag the map around and zoom in and zoom out with very little redrawing. Of course, requests and responses do go on here, but all <em>behind the scenes</em>. As a user, the experience is much more pleasant and feels a lot like a desktop application. This new feel and paradigm is what you see when someone refers to Web 2.0.</p>
+            <p>What you should care about then is how to make these new interactions possible. Obviously, you've still got to make requests and field responses, but it's the redrawing of the HTML for every request/response interaction that gives the perception of a slow, clunky Web interface. So clearly you need an approach that allows you to make requests and receive responses that include <em>only</em> the data you need, rather than an entire HTML page as well. The only time you want to get a whole new HTML page is when ... well ... when you want the user to <em>see</em> a new page.</p>
+            <p>But most interactions add details or change body text or overlay data on the existing pages. In all of these cases, Ajax and a Web 2.0 approach make it possible to send and receive data <em>without</em> updating an entire HTML page. And to any frequent Web surfer, this ability will make your application feel faster, more responsive, and bring them back over and over again.</p>
+            <div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N100A8"><span class="atitle">Introducing XMLHttpRequest</span></a></p>
+
+            <p>To make all this flash and wonder actually happen, you need to become intimately familiar with a JavaScript object called <code>XMLHttpRequest</code>. This little object -- which has actually been around in several browsers for quite a while -- is the key to Web 2.0, Ajax, and pretty much everything else you learn about in this column for the next several months. To give you a really quick overview, these are just a <em>few</em> of the methods and properties you'll use on this object:</p>
+            <ul>
+                <li>
+                    <code>open()</code>: Sets up a new request to a server.</li>
+                <li>
+                    <code>send()</code>: Sends a request to a server.</li>
+                <li>
+                    <code>abort()</code>: Bails out of the current request.</li>
+                <li>
+                    <code>readyState</code>: Provides the current HTML ready state.</li>
+                <li>
+                    <code>responseText</code>: The text that the server sends back to respond to a request.</li>
+            </ul>
+
+            <p>Don't worry if you don't understand all of this (or <em>any</em> of this for that matter) -- you'll learn about each method and property in the next several articles. What you <em>should</em> get out of this, though, is a good idea of what to do with <code>XMLHttpRequest</code>. Notice that each of these methods and properties relate to sending a request and dealing with a response. In fact, if you saw every method and property of <code>XMLHttpRequest</code>, they would <em>all</em> relate to that very simple request/response model. So clearly, you won't learn about an amazing new GUI object or some sort of super-secret approach to creating user interaction; you will work with simple requests and simple responses. It might not sound exciting, but careful use of this one object can totally change your applications.</p>
+            <p><a name="N100F2"><span class="smalltitle">The simplicity of new</span></a></p>
+
+            <p>First, you need to create a new variable and assign it to an instance of the <code>XMLHttpRequest</code> object. That's pretty simple in JavaScript; you just use the <code>new</code> keyword with the object name, like you see in <a href="#code1">Listing 1</a>.</p>
+            <br /><a name="code1"><b>Listing 1. Create a new XMLHttpRequest object</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+                
+&lt;script language="javascript" type="text/javascript"&gt;
+var request = new XMLHttpRequest();
+&lt;/script&gt;
+</pre></td></tr></table><br />
+
+            <p>That's not too hard, is it? Remember, JavaScript doesn't require typing on its variable, so you don't need anything like you see in <a href="#code2">Listing 2</a> (which might be how you'd create this object in Java).</p>
+            <br /><a name="code2"><b>Listing 2. Java pseudo-code for creating XMLHttpRequest</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+                
+XMLHttpRequest request = new XMLHttpRequest();
+</pre></td></tr></table><br />
+            <p>So you create a variable in JavaScript with <code>var</code>, give it a name (like "request"), and then assign it to a new instance of <code>XMLHttpRequest</code>. At that point, you're ready to use the object in your functions.</p>
+            <p><a name="N1012C"><span class="smalltitle">Error handling</span></a></p>
+
+            <p>In real life, things can go wrong and this code doesn't provide any error-handling. A slightly better approach is to create this object and have it gracefully fail if something goes wrong. For example, many older browsers (believe it or not, people are still using old versions of Netscape Navigator) don't support <code>XMLHttpRequest</code> and you need to let those users know that something has gone wrong. <a href="#code3">Listing 3</a> shows how you might create this object so if something fails, it throws out a JavaScript alert.</p>
+            <br /><a name="code3"><b>Listing 3. Create XMLHttpRequest with some error-handling abilities</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+                
+&lt;script language="javascript" type="text/javascript"&gt;
+<strong>var request = false;
+try {</strong>
+  request = new XMLHttpRequest();
+<strong>} catch (failed) {
+  request = false;
+}
+
+if (!request)
+  alert("Error initializing XMLHttpRequest!");</strong>
+&lt;/script&gt;
+</pre></td></tr></table><br />
+            <p>Make sure you understand each of these steps:</p>
+            <ol>
+                <li>Create a new variable called <code>request</code> and assign it a false value. You'll use false as a condition that means the <code>XMLHttpRequest</code> object hasn't been created yet.</li>
+                <li>Add in a try/catch block:
+  <ol>
+                        <li>Try and create the <code>XMLHttpRequest</code> object.</li>
+                        <li>If that fails (<code>catch (failed)</code>), ensure that <code>request</code> is still set to false.</li>
+                    </ol>
+                </li>
+                <li>Check and see if <code>request</code> is still false (if things are going okay, it won't be).</li>
+                <li>If there was a problem (and <code>request</code> is false), use a JavaScript alert to tell users there was a problem.</li>
+            </ol>
+
+            <p>This is pretty simple; it takes longer to read and write about than it does to actually understand for most JavaScript and Web developers. Now you've got an error-proof piece of code that creates an <code>XMLHttpRequest</code> object and even lets you know if something went wrong.</p>
+            <p><a name="N1018A"><span class="smalltitle">Dealing with Microsoft</span></a></p>
+
+            <p>This all looks pretty good ... at least until you try this code in Internet Explorer. If you do, you're going to get something that looks an awful lot like <a href="#fig1">Figure 1</a>.</p>
+            
+                <br /><a name="fig1"><b>Figure 1. Internet Explorer reporting an error</b></a><br />
+                <img alt="Internet Explorer reporting an error" height="409" src="ie_broken.jpg" width="500"/>
+            <br />
+            <div class="ibm-container ibm-alt-header dw-container-sidebar"><h2>Microsoft playing nice?</h2><div class="ibm-container-body">
+                
+Much has been written about Ajax and Microsoft's increasing interest and presence in that space. In fact, Microsoft's newest version of Internet Explorer -- version 7.0, set to come out late in 2006 -- is supposed to move to supporting <code>XMLHttpRequest</code> directly, allowing you to use the <code>new</code> keyword instead of all the <code>Msxml2.XMLHTTP</code> creation code. Don't get too excited, though; you'll still need to support old browsers, so that cross-browser code isn't going away anytime soon.
+</div></div>
+            <p>Clearly, something isn't working; Internet Explorer is hardly an out-of-date browser and about 70 percent of the world uses Internet Explorer. In other words, you won't do well in the Web world if you don't support Microsoft and Internet Explorer! So, you need a different approach to deal with Microsoft's browsers.</p>
+
+            <p>It turns out that Microsoft supports Ajax, but calls its version of <code>XMLHttpRequest</code> something different. In fact, it calls it <em>several</em> different things. If you're using a newer version of Internet Explorer, you need to use an object called <code>Msxml2.XMLHTTP</code>; some older versions of Internet Explorer use <code>Microsoft.XMLHTTP</code>. You need to support these two object types (without losing the support you already have for non-Microsoft browsers). Check out <a href="#code4">Listing 4</a> which adds Microsoft support to the code you've already seen.</p>
+            <br /><a name="code4"><b>Listing 4. Add support for Microsoft browsers</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+                
+&lt;script language="javascript" type="text/javascript"&gt;
+var request = false;
+try {
+  request = new XMLHttpRequest();
+} <strong>catch (trymicrosoft) {
+  try {
+    request = new ActiveXObject("Msxml2.XMLHTTP");
+  } catch (othermicrosoft) {
+    try {
+      request = new ActiveXObject("Microsoft.XMLHTTP");
+    } catch (failed) {
+      request = false;
+    }
+  }</strong>
+}
+
+if (!request)
+  alert("Error initializing XMLHttpRequest!");
+&lt;/script&gt;
+</pre></td></tr></table><br />
+            <p>It's easy to get lost in the curly braces, so I'll walk you through this one step at a time:</p>
+            <ol>
+                <li>Create a new variable called <code>request</code> and assign it a false value. Use false as a condition that means the <code>XMLHttpRequest</code> object isn't created yet.</li>
+                <li>Add in a try/catch block:
+  <ol>
+                        <li>Try and create the <code>XMLHttpRequest</code> object.</li>
+                        <li>If that fails (<code>catch (trymicrosoft)</code>):
+    <ol>
+
+                                <li>Try and create a Microsoft-compatible object using the newer versions of Microsoft (<code>Msxml2.XMLHTTP</code>).</li>
+                                <li>If that fails (<code>catch (othermicrosoft)</code>), try and create a Microsoft-compatible object using the older versions of Microsoft (<code>Microsoft.XMLHTTP</code>).</li>
+                            </ol>
+                        </li>
+                        <li>If that fails (<code>catch (failed)</code>), ensure that <code>request</code> is still set to false.</li>
+                    </ol>
+                </li>
+                <li>Check and see if <code>request</code> is still false (if things are okay, it won't be).</li>
+                <li>If there was a problem (and <code>request</code> is false), use a JavaScript alert to tell users there was a problem.</li>
+            </ol>
+
+            <p>Make these changes to your code and try things out in Internet Explorer again; you should see the form you created (without an error message). In my case, that results in something like <a href="#fig2">Figure 2</a>.</p>
+            
+                <br /><a name="fig2"><b>Figure 2. Internet Explorer working normally</b></a><br />
+                <img alt="Internet Explorer working normally" height="448" src="ie_fixed.jpg" width="550"/>
+            <br />
+            <p><a name="N1024C"><span class="smalltitle">Static versus dynamic</span></a></p>
+            <p>Take a look back at Listings <a href="#code1">1</a>, <a href="#code3">3</a>, and <a href="#code4">4</a> and notice that all of this code is nested directly within <code>script</code> tags. When JavaScript is coded like that and not put within a method or function body, it's called <em>static JavaScript</em>. This means that the code is run sometime before the page is displayed to the user. (It's not 100 percent clear from the specification <em>precisely</em> when this code runs and browsers do things differently; still, you're guaranteed that the code is run before users can interact with your page.) That's usually how most Ajax programmers create the <code>XMLHttpRequest</code> object.</p>
+
+            <p>That said, you certainly can put this code into a method as shown in <a href="#code5">Listing 5</a>.</p>
+            <br /><a name="code5"><b>Listing 5. Move XMLHttpRequest creation code into a method</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+                
+&lt;script language="javascript" type="text/javascript"&gt;
+
+var request;
+
+<strong>function createRequest() {</strong>
+  try {
+    request = new XMLHttpRequest();
+  } catch (trymicrosoft) {
+    try {
+      request = new ActiveXObject("Msxml2.XMLHTTP");
+    } catch (othermicrosoft) {
+      try {
+        request = new ActiveXObject("Microsoft.XMLHTTP");
+      } catch (failed) {
+        request = false;
+      }
+    }
+  }
+
+  if (!request)
+    alert("Error initializing XMLHttpRequest!");
+<strong>}</strong>
+&lt;/script&gt;
+</pre></td></tr></table><br />
+
+            <p>With code setup like this, you'll need to call this method before you do any Ajax work. So you might have something like <a href="#code6">Listing 6</a>.</p>
+            <br /><a name="code6"><b>Listing 6. Use an XMLHttpRequest creation method</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+                
+&lt;script language="javascript" type="text/javascript"&gt;
+
+var request;
+
+function createRequest() {
+  try {
+    request = new XMLHttpRequest();
+  } catch (trymicrosoft) {
+    try {
+      request = new ActiveXObject("Msxml2.XMLHTTP");
+    } catch (othermicrosoft) {
+      try {
+        request = new ActiveXObject("Microsoft.XMLHTTP");
+      } catch (failed) {
+        request = false;
+      }
+    }
+  }
+
+  if (!request)
+    alert("Error initializing XMLHttpRequest!");
+}
+
+<strong>function getCustomerInfo() {
+  createRequest();
+  // Do something with the request variable
+}</strong>
+&lt;/script&gt;
+</pre></td></tr></table><br />
+
+            <p>The only concern with this code -- and the reason most Ajax programmers don't use this approach -- is that it delays error notification. Suppose you have a complex form with 10 or 15 fields, selection boxes, and the like, and you fire off some Ajax code when the user enters text in field 14 (way down the form). At that point, <code>getCustomerInfo()</code> runs, tries to create an <code>XMLHttpRequest</code> object, and (for this example) fails. Then an alert is spit out to the user, telling them (in so many words) that they can't use this application. But the user has already spent time entering data in the form! That's pretty annoying and annoyance is not something that typically entices users back to your site.</p>
+            <p>In the case where you use static JavaScript, the user is going to get an error as soon as they hit your page. Is that also annoying? Perhaps; it could make users mad that your Web application won't run on their browser. However, it's certainly better than spitting out that same error after they've spent 10 minutes entering information. For that reason alone, I encourage you to set up your code statically and let users know early on about possible problems.</p>
+            <div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N102A8"><span class="atitle">Sending requests with XMLHttpRequest</span></a></p>
+
+            <p>Once you have your request object, you can begin the request/response cycle. Remember, <code>XMLHttpRequest</code>'s only purpose is to allow you to make requests and receive responses. Everything else -- changing the user interface, swapping out images, even interpreting the data that the server sends back -- is the job of JavaScript, CSS, or other code in your pages. With <code>XMLHttpRequest</code> ready for use, now you can make a request to a server.</p>
+            <p><a name="N102B9"><span class="smalltitle">Welcome to the sandbox</span></a></p>
+
+            <p>Ajax has a sandbox security model. As a result, your Ajax code (and specifically, the <code>XMLHttpRequest</code> object) can only make requests to the same domain on which it's running. You'll learn lots more about security and Ajax in an upcoming article, but for now realize that code running on your local machine can only make requests to server-side scripts on your local machine. If you have Ajax code running on www.breakneckpizza.com, it must make requests to scripts that run on www.breakneckpizza.com.</p>
+            <p><a name="N102C5"><span class="smalltitle">Setting the server URL</span></a></p>
+
+            <p>The first thing you need to determine is the URL of the server to connect to. This isn't specific to Ajax -- obviously you should know how to construct a URL by now -- but is still essential to making a connection. In most applications, you'll construct this URL from some set of static data combined with data from the form your users work with. For example, <a href="#code7">Listing 7</a> shows some JavaScript that grabs the value of the phone number field and then constructs a URL using that data.</p>
+            <br /><a name="code7"><b>Listing 7. Build a request URL</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+                
+&lt;script language="javascript" type="text/javascript"&gt;
+   var request = false;
+   try {
+     request = new XMLHttpRequest();
+   } catch (trymicrosoft) {
+     try {
+       request = new ActiveXObject("Msxml2.XMLHTTP");
+     } catch (othermicrosoft) {
+       try {
+         request = new ActiveXObject("Microsoft.XMLHTTP");
+       } catch (failed) {
+         request = false;
+       }  
+     }
+   }
+
+   if (!request)
+     alert("Error initializing XMLHttpRequest!");
+
+   function getCustomerInfo() {
+     <strong>var phone = document.getElementById("phone").value;
+     var url = "/cgi-local/lookupCustomer.php?phone=" + escape(phone);</strong>
+   }
+&lt;/script&gt;
+</pre></td></tr></table><br />
+
+            <p>Nothing here should trip you up. First, the code creates a new variable named <code>phone</code> and assigns the value of the form field with an ID of "phone." <a href="#code8">Listing 8</a> shows the XHTML for this particular form in which you can see the <code>phone</code> field and its <code>id</code> attribute.</p>
+            <br /><a name="code8"><b>Listing 8. The Break Neck Pizza form</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+                
+ &lt;body&gt;
+  &lt;p&gt;&lt;img src="breakneck-logo_4c.gif" alt="Break Neck Pizza" /&gt;&lt;/p&gt;
+  &lt;form action="POST"&gt;
+   &lt;p&gt;Enter your phone number:
+    <strong>&lt;input type="text" size="14" name="phone" id="phone" 
+           onChange="getCustomerInfo();" /&gt;</strong>
+   &lt;/p&gt;
+   &lt;p&gt;Your order will be delivered to:&lt;/p&gt;
+   &lt;div id="address"&gt;&lt;/div&gt;
+   &lt;p&gt;Type your order in here:&lt;/p&gt;
+   &lt;p&gt;&lt;textarea name="order" rows="6" cols="50" id="order"&gt;&lt;/textarea&gt;&lt;/p&gt;
+   &lt;p&gt;&lt;input type="submit" value="Order Pizza" id="submit" /&gt;&lt;/p&gt;
+  &lt;/form&gt;
+ &lt;/body&gt;
+</pre></td></tr></table><br />
+
+            <p>Also notice that when users enter their phone number or change the number, it fires off the <code>getCustomerInfo()</code> method shown in <a href="#code8">Listing 8</a>. That method then grabs the number and uses it to construct a URL string stored in the <code>url</code> variable. Remember: Since Ajax code is sandboxed and can only connect to the same domain, you really shouldn't need a domain name in your URL. In this example, the script name is <code>/cgi-local/lookupCustomer.php</code>. Finally, the phone number is appended to this script as a GET parameter: <code>"phone=" + escape(phone)</code>.</p>
+            <p>If you've never seen the <code>escape()</code> method before, it's used to escape any characters that can't be sent as clear text correctly. For example, any spaces in the phone number are converted to <code>%20</code> characters, making it possible to pass the characters along in the URL.</p>
+
+            <p>You can add as many parameters as you need. For example, if you wanted to add another parameter, just append it onto the URL and separate parameters with the ampersand (<code>&amp;</code>) character [the first parameter is separated from the script name with a question mark (<code>?</code>)].</p>
+            <p><a name="N1032B"><span class="smalltitle">Opening the request</span></a></p>
+            <div class="ibm-container ibm-alt-header dw-container-sidebar"><h2>Does open() open?</h2><div class="ibm-container-body">
+                
+Internet developers disagree about what exactly the <code>open()</code> method does. What it does <em>not</em> do is actually open a request. If you were to monitor the network and data transfer between your XHTML/Ajax page and the script that it connects to, you wouldn't see any traffic when the <code>open()</code> method is called. It's unclear why the name was chosen, but it clearly wasn't a great choice.
+</div></div>
+
+            <p>With a URL to connect to, you can configure the request. You'll accomplish this using the <code>open()</code> method on your <code>XMLHttpRequest</code> object. This method takes as many as five parameters:</p>
+            <ul>
+                <li>
+
+                    <em>request-type</em>: The type of request to send. Typical values are <code>GET</code> or <code>POST</code>, but you can also send <code>HEAD</code> requests.</li>
+                <li>
+                    <em>url</em>: The URL to connect to.</li>
+                <li>
+                    <em>asynch</em>: True if you want the request to be asynchronous and false if it should be a synchronous request. This parameter is optional and defaults to true.</li>
+                <li>
+                    <em>username</em>: If authentication is required, you can specify the username here. This is an optional parameter and has no default value.</li>
+                <li>
+                    <em>password</em>: If authentication is required, you can specify the password here. This is an optional parameter and has no default value.</li>
+            </ul>
+            <p>Typically, you'll use the first three of these. In fact, even when you want an asynchronous request, you should specify "true" as the third parameter. That's the default setting, but it's a nice bit of self-documentation to always indicate if the request is asynchronous or not.</p>
+
+            <p>Put it all together and you usually end up with a line that looks a lot like <a href="#code9">Listing 9</a>.</p>
+            <br /><a name="code9"><b>Listing 9. Open the request</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+                
+   function getCustomerInfo() {
+     var phone = document.getElementById("phone").value;
+     var url = "/cgi-local/lookupCustomer.php?phone=" + escape(phone);
+     <strong>request.open("GET", url, true);</strong>
+   }
+</pre></td></tr></table><br />
+
+            <p>Once you have the URL figured out, then this is pretty trivial. For most requests, using <code>GET</code> is sufficient (you'll see the situations in which you might want to use <code>POST</code> in future articles); that, along with the URL, is all you need to use <code>open()</code>.</p>
+            <p><a name="N103A3"><span class="smalltitle">A teaser on asynchronicity</span></a></p>
+
+            <p>In a later article in this series, I'll spend significant time on writing and using asynchronous code, but you should get an idea of why that last parameter in <code>open()</code> is so important. In a normal request/response model -- think Web 1.0 here -- the client (your browser or the code running on your local machine) makes a request to the server. That request is synchronous; in other words, the client waits for a response from the server. While the client is waiting, you usually get at least one of several forms of notification that you're waiting:</p>
+            <ul>
+                <li>An hourglass (especially on Windows).</li>
+                <li>A spinning beachball (usually on Mac machines).</li>
+                <li>The application essentially freezes and sometimes the cursor changes.</li>
+            </ul>
+            <p>This is what makes Web applications in particular feel clunky or slow -- the lack of real interactivity. When you push a button, your application essentially becomes unusable until the request you just triggered is responded to. If you've made a request that requires extensive server processing, that wait might be significant (at least for today's multi-processor, DSL, no-waiting world).</p>
+            <p>An asynchronous request though, does <em>not</em> wait for the server to respond. You send a request and then your application continues on. Users can still enter data in a Web form, click other buttons, even leave the form. There's no spinning beachball or whirling hourglass and no big application freeze. The server quietly responds to the request and when it's finished, it let's the original requestor know that it's done (in ways you'll see in just a moment). The end result is an application that <em>doesn't</em> feel clunky or slow, but instead is responsive, interactive, and feels faster. This is just one component of Web 2.0, but it's a very important one. All the slick GUI components and Web design paradigms can't overcome a slow, synchronous request/response model.</p>
+            <p><a name="N103C7"><span class="smalltitle">Sending the request</span></a></p>
+            <p>Once you configure the request with <code>open()</code>, you're ready to send the request. Fortunately, the method for sending a request is named more properly than <code>open()</code>; it's simply called <code>send()</code>.</p>
+            <p>
+                <code>send()</code> takes only a single parameter, the content to send. But before you think too much on that, recall that you are already sending data through the URL itself:</p>
+            <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+var url = "/cgi-local/lookupCustomer.php?<strong>phone=" + escape(phone);</strong>
+            </pre></td></tr></table><br />
+            <p>Although you can send data using <code>send()</code>, you can also send data through the URL itself. In fact, in <code>GET</code> requests (which will constitute as much as 80 percent of your typical Ajax usage), it's much easier to send data in the URL. When you start to send secure information or XML, then you want to look at sending content through <code>send()</code> (I'll discuss both secure data and XML messaging in a later article in this series). When you don't need to pass data along through <code>send()</code>, then just pass <code>null</code> as the argument to this method. So, to send a request in the example you've seen throughout this article, that's exactly what is needed (see <a href="#code10">Listing 10</a>).</p>
+            <br /><a name="code10"><b>Listing 10. Send the request</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+                
+   function getCustomerInfo() {
+     var phone = document.getElementById("phone").value;
+     var url = "/cgi-local/lookupCustomer.php?phone=" + escape(phone);
+     request.open("GET", url, true);
+     <strong>request.send(null);</strong>
+   }
+</pre></td></tr></table><br />
+            <p><a name="N10412"><span class="smalltitle">Specifying a callback method</span></a></p>
+
+            <p>At this point, you've done very little that feels new, revolutionary, or asynchronous. Granted, that little keyword "true" in the <code>open()</code> method sets up an asynchronous request. But other than that, this code resembles programming with Java servlets and JSPs, PHP, or Perl. So what's the big secret to Ajax and Web 2.0? The secret revolves around a simple property of <code>XMLHttpRequest</code> called <code>onreadystatechange</code>.</p>
+
+            <p>First, be sure you understand the process that you created in this code (review <a href="#code10">Listing 10</a> if you need to). A request is set up and then made. Additionally, because this is an asynchronous request, the JavaScript method (<code>getCustomerInfo()</code> in the example) will not wait for the server. So the code will continue; in this case, that means that the method will exit and control will return to the form. Users can keep entering information and the application isn't going to wait on the server.</p>
+
+            <p>This creates an interesting question, though: What happens when the server has finished processing the request? The answer, at least as the code stands right now, is nothing! Obviously, that's not good, so the server needs to have some type of instruction on what to do when it's finished processing the request sent to it by <code>XMLHttpRequest</code>.</p>
+            <div class="ibm-container ibm-alt-header dw-container-sidebar"><h2>Referencing a function in JavaScript</h2><div class="ibm-container-body">
+                
+JavaScript is a loosely typed language and you can reference just about anything as a variable. So if you declare a function called <code>updatePage()</code>, JavaScript also treats that function name as a variable. In other words, you can reference the function in your code as a variable named <code>updatePage</code>.
+</div></div>
+            <p>This is where that <code>onreadystatechange</code> property comes into play. This property allows you to specify a <em>callback method</em>. A callback allows the server to (can you guess?) <em>call back</em> into your Web page's code. It gives a degree of control to the server, as well; when the server finishes a request, it looks in the <code>XMLHttpRequest</code> object and specifically at the <code>onreadystatechange</code> property. Whatever method is specified by that property is then invoked. It's a callback because the server initiates calling back into the Web page -- regardless of what is going in the Web page itself. For example, it might call this method while the user is sitting in her chair, not touching the keyboard; however, it might also call the method while the user is typing, moving the mouse, scrolling, clicking a button ... it doesn't matter what the user is doing.</p>
+
+            <p>This is actually where the asynchronicity comes into play: The user operates the form on one level while on another level, the server answers a request and then fires off the callback method indicated by the <code>onreadystatechange</code> property. So you need to specify that method in your code as shown in <a href="#code11">Listing 11</a>.</p>
+            <br /><a name="code11"><b>Listing 11. Set a callback method</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+                
+   function getCustomerInfo() {
+     var phone = document.getElementById("phone").value;
+     var url = "/cgi-local/lookupCustomer.php?phone=" + escape(phone);
+     request.open("GET", url, true);
+     <strong>request.onreadystatechange = updatePage;</strong>
+     request.send(null);
+   }
+</pre></td></tr></table><br />
+            <p>Pay close attention to <em>where</em> in the code this property is set -- it's <em>before </em>
+                <code>send()</code> is called. You must set this property before the request is sent, so the server can look up the property when it finishes answering a request. All that's left now is to code the <code>updatePage()</code> which is the focus of the last section in this article.</p>
+            <div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N10488"><span class="atitle">Handling server responses</span></a></p>
+
+            <p>You made your request, your user is happily working in the Web form (while the server handles the request), and now the server finishes up handling the request. The server looks at the <code>onreadystatechange</code> property and figures out what method to call. Once that occurs, you can think of your application as any other app, asynchronous or not. In other words, you don't have to take any special action writing methods that respond to the server; just change the form, take the user to another URL, or do whatever else you need to in response to the server. In this section, we'll focus on responding to the server and then taking a typical action -- changing on the fly part of the form the user sees.</p>
+            <p><a name="N10495"><span class="smalltitle">Callbacks and Ajax</span></a></p>
+
+            <p>You've already seen how to let the server know what to do when it's finished: Set the <code>onreadystatechange</code> property of the <code>XMLHttpRequest</code> object to the name of the function to run. Then, when the server has processed the request, it will automatically call that function. You also don't need to worry about any parameters to that method. You'll start with a simple method like in <a href="#code12">Listing 12</a>.</p>
+            <br /><a name="code12"><b>Listing 12. Code the callback method</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+                
+&lt;script language="javascript" type="text/javascript"&gt;
+   var request = false;
+   try {
+     request = new XMLHttpRequest();
+   } catch (trymicrosoft) {
+     try {
+       request = new ActiveXObject("Msxml2.XMLHTTP");
+     } catch (othermicrosoft) {
+       try {
+         request = new ActiveXObject("Microsoft.XMLHTTP");
+       } catch (failed) {
+         request = false;
+       }  
+     }
+   }
+
+   if (!request)
+     alert("Error initializing XMLHttpRequest!");
+
+   function getCustomerInfo() {
+     var phone = document.getElementById("phone").value;
+     var url = "/cgi-local/lookupCustomer.php?phone=" + escape(phone);
+     request.open("GET", url, true);
+     request.onreadystatechange = updatePage;
+     request.send(null);
+   }
+
+   <strong>function updatePage() {
+     alert("Server is done!");
+   }</strong>
+&lt;/script&gt;
+</pre></td></tr></table><br />
+
+            <p>This just spits out a handy alert, to tell you when the server is done. Try this code in your own page, save the page, and then pull it up in a browser (if you want the XHTML from this example, refer back to <a href="#code8">Listing 8</a>). When you enter in a phone number and leave the field, you should see the alert pop up (see <a href="#fig3">Figure 3</a>); but click OK and it pops up again ... and again.</p>
+            
+                <br /><a name="fig3"><b>Figure 3. Ajax code popping up an alert</b></a><br />
+                <img alt="Ajax code popping up an alert" height="409" src="alert.jpg" width="450"/>
+            <br />
+            <p>Depending on your browser, you'll get two, three, or even four alerts before the form stops popping up alerts. So what's going on? It turns out that you haven't taken into account the HTTP ready state, an important component of the request/response cycle.</p>
+            <p><a name="N104D4"><span class="smalltitle">HTTP ready states</span></a></p>
+
+            <p>Earlier, I said that the server, once finished with a request, looks up what method to call in the <code>onreadystatechange</code> property of <code>XMLHttpRequest</code>. That's true, but it's not the whole truth. In fact, it calls that method every time the HTTP ready state changes. So what does that mean? Well, you've got to understand HTTP ready states first.</p>
+            <p>An HTTP ready state indicates the state or status of a request. It's used to figure out if a request has been started, if it's being answered, or if the request/response model has completed. It's also helpful in determining whether it's safe to read whatever response text or data that a server might have supplied. You need to know about five ready states in your Ajax applications:</p>
+            <ul>
+                <li>
+
+                    <strong>0</strong>: The request is uninitialized (before you've called <code>open()</code>).</li>
+                <li>
+
+                    <strong>1</strong>: The request is set up, but hasn't been sent (before you've called <code>send()</code>).</li>
+                <li>
+                    <strong>2</strong>: The request was sent and is being processed (you can usually get content headers from the response at this point).</li>
+                <li>
+                    <strong>3</strong>: The request is being processed; often some partial data is available from the response, but the server hasn't finished with its response.</li>
+                <li>
+                    <strong>4</strong>: The response is complete; you can get the server's response and use it.</li>
+            </ul>
+
+            <p>As with almost all cross-browser issues, these ready states are used somewhat inconsistently. You might expect to always see the ready state move from 0 to 1 to 2 to 3 to 4, but in practice, that's rarely the case. Some browsers never report 0 or 1 and jump straight to 2, then 3, and then 4. Other browsers report all states. Still others will report ready state 1 multiple times. As you saw in the last section, the server called <code>updatePage()</code>  several times and each invocation resulted in an alert box popping up -- probably not what you intended!</p>
+
+            <p>For Ajax programming, the only state you need to deal with directly is ready state 4, indicating that a server's response is complete and it's safe to check the response data and use it. To account for this, the first line in your callback method should be as shown in <a href="#code13">Listing 13</a>.</p>
+            <br /><a name="code13"><b>Listing 13. Check the ready state</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+                
+   function updatePage() {
+     <strong>if (request.readyState == 4)</strong>
+       alert("Server is done!");
+   }
+</pre></td></tr></table><br />
+            <p>This change checks to ensure that the server really is finished with the process. Try running this version of the Ajax code and you should only get the alert message one time, which is as it should be.</p>
+            <p><a name="N1052E"><span class="smalltitle">HTTP status codes</span></a></p>
+            <p>Despite the apparent success of the code in <a href="#code13">Listing 13</a>, there's still a problem -- what if the server responds to your request and finishes processing, but reports an error? Remember, your server-side code should care if it's being called by Ajax, a JSP, a regular HTML form, or any other type of code; it only has the traditional Web-specific methods of reporting information. And in the Web world, HTTP codes can deal with the various things that might happen in a request.</p>
+
+            <p>For example, you've certainly entered a request for a URL, typed the URL incorrectly, and received a 404 error code to indicate a page is missing. This is just one of many status codes that HTTP requests can receive as a status (see <a href="#resources">Resources</a> for a link to the complete list of status codes). 403 and 401, both indicating secure or forbidden data being accessed, are also common. In each of these cases, these are codes that result from a <em>completed response</em>. In other words, the server fulfilled the request (meaning the HTTP ready state is 4), but is probably not returning the data expected by the client.</p>
+
+            <p>In addition to the ready state then, you also need to check the HTTP status. You're looking for a status code of 200 which simply means okay. With a ready state of 4 and a status code of 200, you're ready to process the server's data and that data should be what you asked for (and not an error or other problematic piece of information). Add another status check to your callback method as shown in <a href="#code14">Listing 14</a>.</p>
+            <br /><a name="code14"><b>Listing 14. Check the HTTP status code</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+                
+   function updatePage() {
+     if (request.readyState == 4)
+       <strong>if (request.status == 200)</strong>
+         alert("Server is done!");
+   }
+</pre></td></tr></table><br />
+
+            <p>To add more robust error handling -- with minimal complication -- you might add a check or two for other status codes; check out the modified version of <code>updatePage()</code> in <a href="#code15">Listing 15</a>.</p>
+            <br /><a name="code15"><b>Listing 15. Add some light error checking</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+                
+   function updatePage() {
+     if (request.readyState == 4)
+       if (request.status == 200)
+         alert("Server is done!");
+       <strong>else if (request.status == 404)
+         alert("Request URL does not exist");
+       else
+         alert("Error: status code is " + request.status);</strong>
+   }
+</pre></td></tr></table><br />
+            <p>Now change the URL in your <code>getCustomerInfo()</code> to a non-existent URL and see what happens. You should see an alert that tells you the URL you asked for doesn't exist -- perfect! This is hardly going to handle every error condition, but it's a simple change that covers 80 percent of the problems that can occur in a typical Web application.</p>
+            <p><a name="N10577"><span class="smalltitle">Reading the response text</span></a></p>
+
+            <p>Now that you made sure the request was completely processed (through the ready state) and the server gave you a normal, okay response (through the status code), you can finally deal with the data sent back by the server. This is conveniently stored in the <code>responseText</code> property of the <code>XMLHttpRequest</code> object.</p>
+            <p>Details about what the text in <code>responseText</code> looks like, in terms of format or length, is left intentionally vague. This allows the server to set this text to virtually anything. For instance, one script might return comma-separated values, another pipe-separated values (the pipe is the <code>|</code> character), and another may return one long string of text. It's all up to the server.</p>
+
+            <p>In the case of the example used in this article, the server returns a customer's last order and then their address, separated by the pipe symbol. The order and address are both then used to set values of elements on the form; <a href="#code16">Listing 16</a> shows the code that updates the display.</p>
+            <br /><a name="code16"><b>Listing 16. Deal with the server's response</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+                
+   function updatePage() {
+     if (request.readyState == 4) {
+       if (request.status == 200) {
+         <strong>var response = request.responseText.split("|");
+         document.getElementById("order").value = response[0];
+         document.getElementById("address").innerHTML =
+           response[1].replace(/\n/g, "<br />");</strong>
+       } else
+         alert("status is " + request.status);
+     }
+   }
+</pre></td></tr></table><br />
+            <p>First, the <code>responseText</code> is pulled and split on the pipe symbol using the JavaScript <code>split()</code> method. The resulting array of values is dropped into <code>response</code>. The first value -- the customer's last order -- is accessed in the array as <code>response[0]</code> and is set as the value of the field with an ID of "order." The second value in the array, at <code>response[1]</code>, is the customer's address and it takes a little more processing. Since the lines in the address are separated by normal line separators (the "\n" character), the code needs to replace these with XHTML-style line separators, <code>&lt;br /&gt;</code>s. That's accomplished through the use of the <code>replace()</code> function along with a regular expression. Finally, the modified text is set as the inner HTML of a <code>div</code> in the HTML form. The result is that the form suddenly is updated with the customer's information, as you can see in Figure 4.</p>
+            
+                <br /><a name="N105CD"><b>Figure 4. The Break Neck form after it retrieves customer data</b></a><br />
+                <img alt="The Break Neck form after retrieving customer data" height="422" src="info.jpg" width="450"/>
+            <br />
+            <p>Before I wrap up, another important property of <code>XMLHttpRequest</code> is called <code>responseXML</code>. That property contains (can you guess?) an XML response in the event that the server chooses to respond with XML. Dealing with an XML response is quite different than dealing with plain text and involves parsing, the Document Object Model (DOM), and several other considerations. You'll learn more about XML in a future article. Still, because <code>responseXML</code> commonly comes up in discussions surrounding <code>responseText</code>, it's worth mentioning here. For many simple Ajax applications, <code>responseText</code> is all you need, but you'll soon learn about dealing with XML through Ajax applications as well.</p>
+            <div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N105F2"><span class="atitle">In conclusion</span></a></p>
+            <p>You might be a little tired of <code>XMLHttpRequest</code> -- I rarely read an entire article about a single object, especially one that is this simple. However, you will use this object over and over again in each page and application that you write that uses Ajax. Truth be told, there's quite a bit still to be said about <code>XMLHttpRequest</code>. In coming articles, you'll learn to use <code>POST</code> in addition to <code>GET</code> in your requests, set and read content headers in your request as well as the response from the server; you'll understand how to encode your requests and even handle XML in your request/response model.</p>
+            <p>Quite a bit further down the line, you'll also see some of the popular Ajax toolkits that are available. These toolkits actually abstract away most of the details discussed in this article and make Ajax programming easier. You might even wonder why you have to code all this low-level detail when toolkits are so readily available. The answer is, it's awfully hard to figure out what goes wrong in your application if you don't understand <em>what</em> is going on in your application.</p>
+
+            <p>So don't ignore these details or speed through them; when your handy-dandy toolkit creates an error, you won't be stuck scratching your head and sending an email to support. With an understanding of how to use <code>XMLHttpRequest</code> directly, you'll find it easy to debug and fix even the strangest problems. Toolkits are fine unless you count on them to take care of all your problems.</p>
+            <p>So get comfortable with <code>XMLHttpRequest</code>. In fact, if you have Ajax code running that uses a toolkit, try to rewrite it using just the <code>XMLHttpRequest</code> object and its properties and methods. It will be a great exercise and probably help you understand what's going on a lot better.</p>
+
+            <p>In the next article, you'll dig even deeper into this object, exploring some of its tricker properties (like <code>responseXML</code>), as well as how to use <code>POST</code> requests and send data in several different formats. So start coding and check back here in about a month.</p>
+        <!-- CMA ID: 101637 --> <!-- Site ID: 1 --> <!-- XSLT stylesheet used to transform this file: dw-document-html-6.0.xsl -->
+<br />
+<p><a name="resources"><span class="atitle">Resources</span></a></p><p><b>Learn</b></p><ul><li>
+                <a href="http://www.ibm.com/developerworks/web/library/wa-ajaxintro1.html">Mastering Ajax: Introduction to Ajax</a> (developerWorks, December 2005) helps you understanding Ajax, a productive approach to building Web sites. (The resource list in this article is alone is worth a visit!)<br /><br /></li><li>
+"<a href="http://www.ibm.com/developerworks/websphere/library/techarticles/0606_bishop/0606_bishop.html ">Use Ajax with WebSphere Portal</a>" (developerWorks, June 2006) to improve portal performance, create a cleaner portal application architecture, and -- most important -- give your users a much more responsive portal. 
+<br /><br /></li><li>
+                <a href="http://www-128.ibm.com/developerworks/library/j-ajax1/">Building Dynamic Java Applications</a> (developerWorks, September 2005) is a look at Ajax from the server side, using a Java perspective.<br /><br /></li><li>
+                <a href="http://www-128.ibm.com/developerworks/library/j-ajax2/">Java object serialization for Ajax</a> (developerWorks, October 2005) examines how to send objects over the network, and interact with Ajax, from a Java perspective.<br /><br /></li><li>
+                <a href="http://www-128.ibm.com/developerworks/webservices/library/ws-wsajax/">Call SOAP Web services with Ajax</a> (developerWorks, October 2005) is a fairly advanced article on integrating Ajax with existing SOAP-based web services.<br /><br /></li><li>
+                <a href="http://gmail.google.com">Google GMail</a> is a great example of an Ajax-based application changing the way the Web works.<br /><br /></li><li>
+                <a href="http://maps.google.com">Google Maps</a> is yet another Google-based Web 2.0 application.<br /><br /></li><li>
+                <a href="http://www.flickr.com">Flickr</a> is a great example of using Ajax to create a desktop feel for a Web-based application.<br /><br /></li><li>
+                <a href="http://adaptivepath.com/publications/essays/archives/000385.php">Ajax: A New Approach to Web Applications</a> is the article that coined the Ajax moniker and is required reading for all Ajax developers.<br /><br /></li><li>
+                <a href="http://www.ok-cancel.com/archives/article/2005/09/why-ajax-matters-now.html">Why Ajax Matters Now</a> will help you understand, well, why Ajax matters (now).<br /><br /></li><li>If you're using Microsoft's browser, Internet Explorer, you can get the scoop at the <a href="http://msdn.microsoft.com/xml/">Microsoft Developer Network's XML Developer Center</a>.<br /><br /></li><li>Learn more about MSXML, the Microsoft XML parser, in the <a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/xmlsdk/html/b24aafc2-bf1b-4702-bf1c-b7ae3597eb0c.asp">online documentation</a>.<br /><br /></li><li>Check out this entire list of <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">HTTP status codes</a> that a response can contain.<br /><br /></li><li>The developerWorks <a href="http://www.ibm.com/developerworks/web/">Web Architecture zone</a> specializes in articles covering various Web-based solutions.<br /><br /></li></ul><p><b>Get products and technologies</b></p><ul><li>
+                <em>
+                    <a href="http://www.oreilly.com/catalog/headra/index.html">Head Rush Ajax</a>
+                </em> by Elisabeth Freeman, Eric Freeman, and Brett McLaughlin (February 2006, O'Reilly Media, Inc.) takes the ideas in this article and loads them into your brain, Head First style.<br /><br /></li><li>
+                <em>
+                    <a href="http://www.oreilly.com/catalog/javaxml2/">Java and XML</a>
+                </em>, Second Edition by Brett McLaughlin (August 2001, O'Reilly Media, Inc.) includes the author's discussion of XHTML and XML transformations.<br /><br /></li><li>
+                <em>
+                    <a href="http://www.oreilly.com/catalog/jscript4/index.html">JavaScript: The Definitive Guide</a>
+                </em> by David Flanagan (November 2001, O'Reilly Media, Inc.) includes extensive instruction on working with JavaScript, dynamic Web pages, and the upcoming edition adds two chapters on Ajax.<br /><br /></li><li>
+                <em>
+                    <a href="http://www.oreilly.com/catalog/hfhtmlcss/index.html">Head First HTML with CSS &amp; XHTML</a>
+                </em> by Elizabeth and Eric Freeman (December 2005, O'Reilly Media, Inc.) is a complete source for learning XHTML, CSS, and how to pair the two.<br /><br /></li></ul><p><b>Discuss</b></p><ul><li><a href="http://www.ibm.com/developerworks/community/">Participate in the discussion forum</a>.<br /><br /></li><li>
+                <a href="http://www.ibm.com/developerworks/blogs/">developerWorks blogs</a>: Get involved in the developerWorks community.<br /><br /></li></ul>
+<p><a name="author"><span class="atitle">About the author</span></a></p><div class="ibm-container ibm-portrait-module ibm-alternate-two"><div class="ibm-container-body"><img src="http://www.ibm.com/developerworks/i/p-brett.jpg" class="dw-author-img" width="64" height="80" alt="Photo of Brett McLaughlin" /><p><a name="author1"></a>Brett McLaughlin has worked in computers since the Logo days.(Remember the little triangle?) In recent years, he's become one of the most well-known authors and programmers in the Java and XML communities. He's worked for Nextel Communications, implementing complex enterprise systems; at Lutris Technologies, actually writing application servers; and most recently at O'Reilly Media, Inc., where he continues to write and edit books that matter. Brett's upcoming book, <em><a href="http://www.amazon.com/gp/product/0596102259/103-1888163-4853425?v=glance&amp;n=283155&amp;n=507846&amp;s=books&amp;v=glance">Head Rush Ajax</a></em>, brings the award-winning and innovative <a href="http://www.headfirstlabs.com">Head First</a> approach to Ajax, along with bestselling co-authors, Eric and Beth Freeman. His last book, <em><a href="http://www.amazon.com/exec/obidos/tg/detail/-/0596007388/qid=1096295392/sr=1-1/ref=sr_1_1/104-4479879-6183919?v=glance&amp;s=books">Java 1.5 Tiger: A Developer's Notebook</a></em>, was the first book available on the newest version of Java technology and his classic <em><a href="http://www.amazon.com/exec/obidos/tg/detail/-/0596000162/104-4010009-7613561?v=glance">Java and XML</a></em> remains one of the definitive works on using XML technologies in the Java language.</p></div></div>
+<!-- MAIN_COLUMN_CONTENT_END -->
+
+<!-- OVERLAYS_START -->
+<!-- Report_Abuse_Start -->
+<div class="ibm-common-overlay ibm-no-print" id="reportabuseoverlay">
+   <div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#">Close [x]</a></p></div>
+   <div class="ibm-body">
+      <div class="ibm-main">
+         <a class="ibm-access" name="reportabuseoverlay">Report abuse help</a>   
+         <div class="ibm-title"><h1>Report abuse</h1></div>
+         <div class="ibm-container ibm-alternate">
+            <p><strong>Thank you.</strong>  This entry has been flagged for moderator attention.</p>
+            <div class="ibm-overlay-rule"><hr /></div>
+            <div class="ibm-buttons-row">
+               <input type="button" onclick="ibmCommon.Overlays.hide('reportabuseoverlay');return false;" class="ibm-btn-cancel-sec dw-btn-cancel-sec" name="ibm-cancel" value="Close" />
+            </div>
+         </div>
+      </div> 
+   </div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Report_Abuse_Error_Start -->
+<div class="ibm-common-overlay ibm-no-print" id="reportabuseoverlayerror">
+   <div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#">Close [x]</a></p></div>
+   <div class="ibm-body">
+      <div class="ibm-main">
+         <a class="ibm-access" name="reportabuseoverlayerror">Report abuse help</a>   
+         <div class="ibm-title"><h1>Report abuse</h1></div>
+         <div class="ibm-container ibm-alternate">
+            <p class="ibm-ind-error"><strong>Report abuse submission failed.  Please try again later.</strong></p>
+            <div class="ibm-overlay-rule"><hr /></div>
+            <div class="ibm-buttons-row">
+               <input type="button" onclick="ibmCommon.Overlays.hide('reportabuseoverlayerror');return false;" class="ibm-btn-cancel-sec dw-btn-cancel-sec" name="ibm-cancel" value="Close" />
+            </div>
+         </div>
+      </div> 
+   </div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Sign in OVERLAY STARTS HERE --> 
+<div id="fdiv"></div>
+<div class="ibm-common-overlay" id="signin_overlay">
+<div class="ibm-head">
+<p><a class="ibm-common-overlay-close" href="#" onclick="clearForm();">Close [x]</a></p>
+</div>
+<div class="ibm-body">
+<div class="ibm-main">
+<div class="ibm-title ibm-subtitle">
+<h1>developerWorks: Sign in</h1>
+<div id="ibm-overlay-error-signin" class="no-display"></div>
+</div>
+
+<div class="ibm-container ibm-alternate ibm-buttons-last">
+<div class="ibm-container-body">
+<p class="ibm-overlay-intro">If you do not have an IBM ID and password, <a href="#" onclick="(function () {window.location='/developerworks/dwwi/DWAuthRouter?m=reg&amp;d='+encodeURIComponent(location.href);})();">register here</a>.</p>
+<form class="ibm-column-form" id="sFormId" action="" method="post" name="sForm" onsubmit="return false;">
+<p><label for="ibmid">IBM ID:</label><span><input name="ibm-id" id="ibmid" size="25" value="" class="required" type="text" onkeypress="handleEP(event,this.form);" /><br /><a class="ibm-forward-link" href="/developerworks/dwwi/jsp/WSHelp.jsp?lang=en_US">Forgot your IBM ID?</a></span>   
+</p> 
+<p><label for="password">Password:</label><span><input name="password" id="password" size="25" value="" class="required" type="password" onkeypress="handleEP(event,this.form);" /><br /><a class="ibm-forward-link" href="#" onclick="(function () {window.location='https://www.ibm.com/account/profile?page=forgot&amp;lang=en_US&amp;appname=ibm&amp;required=null&amp;d='+encodeURIComponent(getAuthUrl())+'%3Fm%3Dloginpage%26lang%3Den_US%26d%3D'+encodeURIComponent(location.href);})();">Forgot your password?</a><br /><a class="ibm-forward-link" href="#" onclick="(function () {window.location='https://www.ibm.com/account/profile?page=chpw&amp;lang=en_US&amp;appname=ibm&amp;required=null&amp;d='+encodeURIComponent(location.href);})();">Change your password?</a></span></p> 
+<p class="no-bottom-padding"> 
+   <label for="AfterSignIn">After sign in:</label> 
+   <span>
+
+      <select name="SignInAction" id="AfterSignIn">
+          <option value="">Stay on the current page</option>
+          <option value="/developerworks/mydeveloperworks/profiles/html/myProfileView.do">Go to My developerWorks profile</option>
+          <option value="/developerworks/mydeveloperworks/homepage/">Go to My developerWorks homepage</option>
+      </select>
+   </span>
+</p>
+<div class="ibm-overlay-rule"><hr /></div>
+<p>By clicking <strong>Submit</strong>, you agree to the developerWorks <a href="/developerworks/mydeveloperworks/terms?lang=en">terms of use</a>.</p>
+<div class="ibm-buttons-row">
+   <p><input class="ibm-btn-arrow-pri" name="ibm-submit" value="Submit" onclick="signin();return false;" type="button" /><span class="ibm-sep">&nbsp;</span>
+<input value="Cancel" type="button" name="ibm-cancel" class="ibm-btn-cancel-sec" onclick="clearForm();ibmCommon.Overlays.hide('signin_overlay');return false;"/></p>
+</div>
+</form>
+<div class="ibm-overlay-rule"><hr /></div>
+<p>The first time you sign into developerWorks, a My developerWorks profile is created for you. This profile includes the first name, last name, and display name contained in the profile you created when you registered with My developerWorks. Selected information in your My developerWorks profile is displayed to the public, but you may edit the information at any time. Your first name, last name (unless you choose to hide them), and display name will accompany the content that you post. </p>
+<div class="dw-overlay-legal"><p>All information submitted is secure.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Sign in OVERLAY ENDS HERE --> 
+ 
+
+<!-- Display name OVERLAY STARTS HERE --> 
+<div class="ibm-common-overlay" id="displayname_overlay">
+<div class="ibm-head">
+<p><a class="ibm-common-overlay-close" href="#" onclick="clearForm();">Close [x]</a></p>
+</div>
+<div class="ibm-body">
+<div class="ibm-main">
+<div class="ibm-title ibm-subtitle">
+<h1>Choose your display name</h1>
+<div id="ibm-overlay-error-dname" class="no-display"></div>
+</div>
+<div class="ibm-container ibm-alternate ibm-buttons-last">
+<div class="ibm-container-body">
+<p class="ibm-overlay-intro">The first time you sign in to developerWorks a profile is created for you, so you need to choose a display name.  Your display name accompanies the content you post on developerWorks.</p>
+
+<form id="dFormId" method="post" action="" name="dForm" onsubmit="return false;" class="ibm-column-form">
+<p><label for="displayname">Display name:</label><span><input name="displayname" id="displayname" size="25" value="" type="text" onkeypress="handleEP(event,this.form);" /></span><span class="ibm-form-note">(Must be between 3 &ndash; 31 characters.)</span>
+</p>
+<p><strong>Note:</strong>  Please choose a display name between 3-31 characters. Your display name must be unique in the developerWorks community and should not be your email for privacy reasons.</p>
+<div class="ibm-overlay-rule"><hr />
+</div>
+<p>By clicking Submit, you agree to the developerWorks <a href="/developerworks/mydeveloperworks/terms?lang=en">terms of use</a>.</p>
+<div class="ibm-buttons-row">
+   <p><input class="ibm-btn-arrow-pri" name="ibm-submit" value="Submit" onclick="signin();return false;" type="button" /><span class="ibm-sep">&nbsp;</span>
+<input value="Cancel" type="button" name="ibm-cancel" class="ibm-btn-cancel-sec" onclick="clearForm();ibmCommon.Overlays.hide('displayname_overlay');return false;" /></p>
+</div>
+</form>
+<div class="ibm-overlay-rule"><hr /></div>
+<div class="dw-overlay-legal"><p>All information submitted is secure.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Display name OVERLAY ENDS HERE -->
+<!-- OVERLAYS_END -->
+
+<!-- RATINGS START -->
+<p class="ibm-no-print"><span class="atitle"><a name="iratings">Rate this article</a></span></p>
+<input id="art-rating" name="ratinga" type="hidden" value="0"/><div id="art-rating-module"></div>
+<script language="JavaScript" type="text/javascript">
+// <![CDATA[
+   // widget div id and article id as args
+   window.artRating.init('art-rating-module','art-rating-summary');
+// ]]>
+</script>
+<!-- RATINGS END -->
+
+<!-- INLINE_COMMENTS_START -->
+<p class="ibm-no-print"><span class="atitle"><a name="icomments">Comments</a></span></p>
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/showcomments.js" type="text/javascript">//</script>
+<div id="threadShow"></div>
+<script language="JavaScript" type="text/javascript">
+// <![CDATA[
+ jQuery('threadShow').showComments('95%',5,'nCmts','icomments');
+// ]]>
+</script>
+<!-- INLINE_COMMENTS_END -->
+
+<p class="ibm-ind-link ibm-back-to-top"><a class="ibm-anchor-up-link" href="#ibm-pcon">Back to top</a></p>
+<p><a href="http://www.ibm.com/developerworks/ibm/trademarks/">Trademarks</a> &nbsp;|&nbsp; <a href="https://www.ibm.com/developerworks/mydeveloperworks/terms/">My developerWorks terms and conditions</a></p>
+
+<!-- Overlays -->
+<!-- Zone/Leaf_Interest_Overlay_Start -->
+<div class="ibm-common-overlay ibm-no-print" id="dwmyinterestadd">
+<div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#close">Close [x]</a></p></div>
+<div class="ibm-body">
+<div class="ibm-main">
+<a class="ibm-access" name="dwmyinterestaddhelp">Help: Update or add to My dW interests</a>   
+<div class="ibm-title"><h1>What's this?</h1></div>
+<div class="ibm-container ibm-alternate">
+<p>This little timesaver lets you update your My developerWorks profile with just one click!  The general subject of this content (AIX and UNIX, Information Management, Lotus, Rational, Tivoli, WebSphere, Java, Linux, Open source, SOA and Web services, Web development, or XML) will be added to the interests section of your profile, if it's not there already.  You only need to be logged in to My developerWorks.</p>
+<p>And what's the point of adding your interests to your profile?  That's how you find other users with the same interests as yours, and see what they're reading and contributing to the community.  Your interests also help us recommend relevant developerWorks content to you.</p>
+<p><a href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/home.do?lang=en">View your My developerWorks profile</a></p>
+<p class="ibm-access"><a href="#interestShow">Return from help</a></p>
+</div> 
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+
+<div class="ibm-common-overlay ibm-no-print" id="dwmyinterestremove">
+<div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#close">Close [x]</a></p></div>
+<div class="ibm-body">
+<div class="ibm-main">
+<a class="ibm-access" name="dwmyinterestremovehelp">Help: Remove from My dW interests</a> 
+<div class="ibm-title"><h1>What's this?</h1></div>
+<div class="ibm-container ibm-alternate">
+<p>Removing this interest does not alter your profile, but rather removes this piece of content from a list of all content for which you've indicated interest.  In a future enhancement to My developerWorks, you'll be able to see a record of that content.</p>
+<p><a href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/home.do?lang=en">View your My developerWorks profile</a></p>
+<p class="ibm-access"><a href="#interestShow">Return from help</a></p>
+</div> 
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Zone/Leaf_Interest_Overlay_End --></div>
+<!-- MAIN_COLUMN_CONTAINER_END -->
+
+<!-- Rating_Meta_BEGIN -->
+<!--Rating_Meta_BEGIN--><div class="metavalue">static.content.url=http://www.ibm.com/developerworks/js/artrating/</div><div class="metavalue">SITE_ID=1</div><div class="metavalue">Zone=Web development, XML, Java technology</div><div class="metavalue">ArticleID=101637</div><div class="metavalue">ArticleTitle=Mastering Ajax, Part 2: Make asynchronous requests with JavaScript and Ajax</div><div class="metavalue">publish-date=01172006</div><div class="metavalue">author1-email=brett@newInstance.com</div><div class="metavalue">author1-email-cc=</div><script language="javascript" type="text/javascript">document.write('<div class="metavalue">url='+location.href.replace('<', '%3C')+'</div>');</script><!--Rating_Meta_END-->
+<!-- Rating_Meta_END -->
+
+</div>
+<!-- MAIN_COLUMN_END-->
+
+<!-- RIGHT_COLUMN_BEGIN -->
+<div id="ibm-content-sidebar">
+<div id="ibm-social-tools-sidebar" class="ibm-share-this"></div>
+
+<!-- RIGHT_COLUMN_CONTENT_BEGIN --> 
+<div class="ibm-container"><h2>Table of contents</h2><div class="ibm-container-body"><img alt="" height="1" width="1" src="//www.ibm.com/i/c.gif"/><ul class="ibm-bullet-list"><li><a class="ibm-feature-link" href="#N10086">Web 2.0 at a glance</a></li><li><a class="ibm-feature-link" href="#N100A8">Introducing XMLHttpRequest</a></li><li><a class="ibm-feature-link" href="#N102A8">Sending requests with XMLHttpRequest</a></li><li><a class="ibm-feature-link" href="#N10488">Handling server responses</a></li><li><a class="ibm-feature-link" href="#N105F2">In conclusion</a></li><li><a class="ibm-feature-link" href="#resources">Resources</a></li><li><a class="ibm-feature-link" href="#author">About the author</a></li><li><a class="ibm-feature-link" href="#icomments">Comments</a></li></ul></div></div>
+<!--XSLT stylesheet used to transform this content: s-nextsteps.xsl--><div class="ibm-container"><h2>Next steps from IBM</h2><div class="ibm-container-body"><img width="188" height="58" border="0" alt="" src="//www.ibm.com/developerworks/i/spot-nextsteps.jpg"/><p>Create rich Internet applications using WebSphere Portal Express Web 2.0
+   technologies.</p><div class="ibm-rule"><hr/></div><ul class="ibm-bullet-list"><li><a href="http://www.ibm.com/developerworks/downloads/ls/wpe/" class="ibm-feature-link">Try: WebSphere Portal Express</a></li><li><a href="http://www.ibm.com/developerworks/websphere/library/techarticles/0606_bishop/0606_bishop.html" class="ibm-feature-link">Article: Get started using Ajax and WebSphere Portal Express</a></li><li><a href="http://www.ibm.com/developerworks/websphere/library/tutorials/0608_bishop/0608_bishop.html" class="ibm-feature-link">Tutorial: Quickly build a an Ajax-enabled WebSphere Portal Express Web application</a></li><li><a href="http://www.ibm.com/developerworks/offers/lp/demos/summary/ajax.html" class="ibm-feature-link">Demo: Architecture, design, and construction using the IBM Rational Software Delivery Platform: AJAX</a></li><li><a href="http://www.ibm.com/software/genservers/portalexpress/portalexpress-popup.html" class="ibm-feature-link">Buy: WebSphere Portal Express</a></li></ul></div></div>
+<!--XSLT stylesheet used to transform this content: s-community.xsl--><div class="ibm-container"><h2>My developerWorks community</h2><div class="ibm-container-body"><p>Interact, share, and communicate with developers worldwide.</p><div class="ibm-rule"><hr/></div><ul class="ibm-bullet-list"><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/homepage/web/getuserpref?ca=dma-" class="ibm-feature-link">My Home</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/home.do?lang=en&amp;ca=dma-" class="ibm-feature-link">Profiles</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/groups/service/html/allcommunities?ca=dma-" class="ibm-feature-link">Groups</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/blogs/?ca=dma-" class="ibm-feature-link">Blogs</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/bookmarks/?ca=dma-" class="ibm-feature-link">Bookmarks</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/activities/service/html/mainpage?ca=dma-" class="ibm-feature-link">Activities</a></li><li><a href="http://www.ibm.com/developerworks/mydeveloperworks/files?ca=dma-" class="ibm-feature-link">Files</a></li><li><a href="http://www.ibm.com/developerworks/mydeveloperworks/wikis?ca=dma-" class="ibm-feature-link">Wikis</a></li><li><a href="http://www.ibm.com/developerworks/forums/?ca=dma-" class="ibm-feature-link">Forums</a></li><li><a href="http://www.ibm.com/developerworks/podcast/?ca=dma-" class="ibm-feature-link">Podcasts</a></li></ul><div class="ibm-rule"><hr/></div><p class="ibm-ind-link"><a href="https://www.ibm.com/developerworks/mydeveloperworks/?ca=dma-" class="ibm-forward-link">My developerWorks overview</a></p></div></div>
+<!-- Tagging_Start -->
+<div id="dw-tag-cloud-container" class="ibm-container dw-hidetag"><h2>Tags</h2>
+<div id="dw-tag-help"><a class="dwauthor" rel="#tagtip" id="dwtagtip"><img alt="Help" height="16" width="16" align="top" src="//dw1.s81c.com/developerworks/i/help_icon.gif"/></a></div>
+<div id="tagtip" class="dwauthor-onload-state ibm-no-print">Use the <strong>search field</strong> to find all types of content in My developerWorks with that tag.<p>Use the <strong>slider bar</strong> to see more or fewer tags.</p><p>For articles in technology zones (such as Java technology, Linux, Open source, XML), <strong>Popular tags</strong> shows the top tags 
+for <em>all technology zones</em>.  For articles in product zones (such as Info Mgmt, Rational, WebSphere), <strong>Popular tags</strong> shows the top tags for <em>just that product zone</em>.</p><p>For articles in technology zones (such as Java technology, Linux, Open source, XML), <strong>My tags</strong> shows your tags for <em>all technology zones</em>.  For articles in product zones (such as Info Mgmt, Rational, WebSphere), <strong>My tags</strong> shows your tags for <em>just that product zone</em>.</p></div>
+<div class="ibm-access">Use the search field to find all types of content in My developerWorks with that tag.  <em>Popular tags</em> shows the top tags for this particular content zone (for example, Java technology, Linux, WebSphere).  <em>My tags</em> shows your tags for this particular content zone (for example, Java technology, Linux, WebSphere).</div>
+<div class="ibm-container-body">
+<div class="dw-tag-search"><form action="//www.ibm.com/developerworks/mydeveloperworks/bookmarks/html?lang=en" method="get" id="actualtagform" onsubmit="popupform(this, 'join')">
+<p><label for="tagfield"><strong>Search all tags</strong></label><input id="tagfield" name="tag" type="text" maxlength="20" size="17" />&nbsp;<input src="//dw1.s81c.com/i/v16/buttons/short-btn.gif" type="image" class="ibm-btn-view" alt="submit search" title="submit search" value="Search" /></p></form></div>
+<div class="ibm-rule"><hr/></div>
+<div id="dw-tag-select">
+<div id="dw-tag-select-popular"><p><strong>Popular article tags</strong>&nbsp;|&nbsp;<br /><a id="a-my" href="javascript:;">My article tags</a><a href="#dw-tag-access" class="ibm-access">Skip to tags list</a></p></div>
+<div id="dw-tag-select-my" class="dw-hidetag"><p><a id="a-popular" href="javascript:;">Popular article tags</a>&nbsp;|&nbsp;<br /><strong>My article tags</strong></p><a href="#dw-tag-access" class="ibm-access">Skip to tags list</a></div>
+<div id="dw-tag-cloud"></div>  
+</div>   
+</div>
+</div>
+<!-- Tagging_End -->
+<!-- Dig_Deeper -->
+<div class="ibm-container"><h2>Dig deeper into Web development on developerWorks</h2><div class="ibm-container-body"><ul class="ibm-link-list"><li class="ibm-first"><a href="http://www.ibm.com/developerworks/web/" class="ibm-forward-link">Overview</a></li><li><a href="http://www.ibm.com/developerworks/web/newto/" class="ibm-forward-link">New to Web development</a></li><li><a href="http://www.ibm.com/developerworks/views/web/downloads.jsp" class="ibm-forward-link">Downloads and products</a></li><li><a href="http://www.ibm.com/developerworks/views/web/projects.jsp" class="ibm-forward-link">Open source projects</a></li><li><a href="http://www.ibm.com/developerworks/views/web/library.jsp" class="ibm-forward-link">Technical library (articles, tutorials, training, and more)</a></li><li><a href="http://www.ibm.com/developerworks/forums/dw_waforums.jsp" class="ibm-forward-link">Forums</a></li><li><a href="http://www.ibm.com/developerworks/views/web/events.jsp" class="ibm-forward-link">Events</a></li><li><a href="http://www.ibm.com/developerworks/newsletter/" class="ibm-forward-link">Newsletter</a></li></ul></div></div>
+<!-- High_Visibility_Offer -->
+<!--XSLT stylesheet used to transform this content: s-highvisibilityoffer.xsl--><div class="ibm-container"><h2>Stay ahead of the latest cloud trends</h2><div class="ibm-container-body"><img width="188" height="70" border="0" alt="Stay ahead of the latest cloud trends" src="//www.ibm.com/developerworks/i/hivis-w-cloudzone.jpg"/><p class="ibm-ind-link"><a href="https://www.ibm.com/developerworks/cloud/index.html?ca=dti-cloudzone" class="ibm-forward-link">Cloud Computing resources from developerWorks</a></p></div></div>
+<!-- Special_Offers -->
+<div class="ibm-container"><h2>Special offers</h2><div class="ibm-container-body"><p class="dw-special-offers"><a href="https://www-304.ibm.com/partnerworld/wps/servlet/ContentHandler/2011_beacon_awards_developerworks.html?ca=dti-dwbeacon"><img src="//www.ibm.com/developerworks/i/tile_v16_beacon2010.gif" width="158" height="50" border="0" alt="Partner Award Most Innovative use of dW" /></a></p><p class="dw-special-offers"><a href="http://www.ibm.com/developerworks/downloads/?ca=dti-rdownload#rational"><img src="//www.ibm.com/developerworks/i/tile_v16_r-download.gif" width="158" height="50" border="0" alt="Download and evaluate Rational software" /></a></p><p class="dw-special-offers"><a href="http://www.ibm.com/developerworks/views/linux/libraryview.jsp?type_by=Tutorials&amp;ca=dti-linuxtutorial"><img src="//www.ibm.com/developerworks/i/tile_v16_learnfast-l.gif" width="158" height="50" border="0" alt="Learn fast with free IBM Linux tutorials" /></a></p><div class="ibm-rule"><hr/></div><p class="ibm-ind-link"><a class="ibm-forward-link" href="http://www.ibm.com/developerworks/downloads/?ca=dti-tilemoreoffers">Trial software offers</a></p></div></div>
+<!-- RIGHT_COLUMN_CONTENT_END -->
+
+</div>
+<!-- RIGHT_COLUMN_END -->
+
+<!-- CONTENT_BODY_END -->
+</div>
+
+</div>
+<!-- CONTENT_END -->
+
+ <!-- END_IBM-PCON -->
+</div>
+
+<!-- FOOTER_BEGIN -->
+<div id="ibm-page-tools">
+<!-- IBM page tools container -->
+</div>
+<div id="ibm-footer">
+<ul>
+<li class="ibm-first"><a href="http://www.ibm.com/ibm/">About IBM</a></li>
+<li><a href="http://www.ibm.com/privacy/">Privacy</a></li>
+<li><a href="http://www.ibm.com/contact/">Contact</a></li>
+<li><a href="http://www.ibm.com/legal/">Terms of use</a></li>
+</ul>
+</div>
+<!-- FOOTER_END -->
+
+ <!-- END_IBM-TOP -->
+</div>
+ 
+ <!-- SCRIPTS_INCLUDE_BEGIN -->
+<!-- JQuery start -->
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.dimensions-1.2.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.hoverIntent.minified.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.cluetip.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/tagging/ui.core-1.7.1.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/tagging/ui.slider-1.7.1.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/tagging/dwjquerytags.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/si/flash-detect.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/si/dwsi.js"></script>
+<script type="text/javascript" language="JavaScript">
+	jQuery.noConflict();     
+	// Put all your code in your document ready area
+	jQuery(document).ready(function(jQuery) {
+	// Do jQuery stuff using jQuery 
+	jQuery('a.dwauthor').cluetip({
+		local: true,
+		showTitle: false,
+		positionBy: 'bottomTop',
+		sticky: true,	
+		mouseOutClose: true,
+		closeText: '<img src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/i/x.gif" alt="Close" />',
+		arrows: false,
+		dropShadow: true,
+		cluetipClass: 'dwbasic'
+		});
+
+		//tagging
+		login="false";
+		userid="";
+		whichTags = "init";
+		pCont = "";
+		mCont = "";
+		signInMCont = "";
+		accessCont = "";
+		pValue = 0;
+		mValue = 0;
+
+		rBHash = null;
+		rBHash = new Object();
+		rBHash['viperLang'] = 'en';
+		rBHash['urlLang'] = 'en';
+		rBHash['tagThisWinTitle'] = 'Tagit';
+		rBHash['pTags1'] = 'Popular tags';
+		rBHash['pTags2'] = 'End of Popular tags';
+		rBHash['mTags1'] = 'My tags';
+		rBHash['mTags2'] = 'End of My tags';
+		rBHash['alt1'] = 'Loading Content';
+		rBHash['noATags'] = 'No active tags';
+		rBHash['signIn1'] = 'Please ';
+		rBHash['signIn2'] = 'sign in';
+		rBHash['signIn3'] = ' to access';
+		rBHash['signIn4'] = 'My Tags';
+		rBHash['signIn5'] = 'To access My Tags, please ';
+		rBHash['signIn6'] = 'sign in';
+		rBHash['signIn7'] = 'Read Popular tags';
+
+		zoneHash = new Object();
+		zoneHash['aix'] = 'AIX and UNIX zone';
+		zoneHash['data'] = 'Information Management zone';
+		zoneHash['lotus'] = 'Lotus zone';
+		zoneHash['rational'] = 'Rational zone';
+		zoneHash['tivoli'] = 'Tivoli zone';
+		zoneHash['websphere'] = 'WebSphere zone';
+		zoneHash['architecture'] = 'Technical library';
+		zoneHash['autonomic'] = 'Technical library';
+		zoneHash['java'] = 'Technical library';
+		zoneHash['cloud'] = 'Technical library';
+		zoneHash['industry'] = 'Technical library';
+		zoneHash['library'] = 'Technical library';
+		zoneHash['linux'] = 'Technical library';
+		zoneHash['opensource'] = 'Technical library';
+		zoneHash['power'] = 'Technical library';
+		zoneHash['webservices'] = 'Technical library';
+		zoneHash['web'] = 'Technical library';
+		zoneHash['xml'] = 'Technical library';
+		zoneHash['wireless'] = 'Technical library';
+		jQuery.checkRB();
+		jQuery.getPopularTags("/developerworks/dwtags/dwjquerytabtags?lang=" + rBHash['viperLang'] + "&base=" + jQuery.getNormalizedZoneUrl(location.href));
+		jQuery.getUserTags();
+		if(jQuery.isTutorial(location.href) == "true") {
+			jQuery.getTagsForContent("/developerworks/tagging/UseCaseServlet?lang=" + rBHash['viperLang'] + "&format=maverick&cType=tutorials&use_case=geturltags&action=gettags&url=" + jQuery.normalizeUrl(location.href));
+		}
+		else {
+			jQuery.getTagsForContent("/developerworks/tagging/UseCaseServlet?lang=" + rBHash['viperLang'] + "&format=maverick&cType=articles&use_case=geturltags&action=gettags&url=" + jQuery.normalizeUrl(location.href));
+
+		}
+		
+		// si
+		initSI();
+	});
+ </script>
+ <!-- JQuery end -->
+ <!-- Overlay js -->
+<script language="JavaScript" src="//dw1.s81c.com/common/js/overlay.js" type="text/javascript"></script>
+<!-- My dW Interest article -->
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/showinterest.js" type="text/javascript">//</script>
+<script language="JavaScript" type="text/javascript">
+        // <![CDATA[
+			var contentId = '';
+			var contentAreas = '';
+			var caArr = [];
+			contentId = '101637';
+			contentAreas = 'web,xml,java';
+			if(contentAreas != ''){caArr = contentAreas.split(',');}
+			var loginLink = 'https://www.ibm.com/developerworks/dwwi/DWAuthRouter?m=loginpage&d=' + encodeURIComponent(window.location);jQuery('interestShow').showInterest(contentId,'dw-article',{'int_tops':[725,889,2,100,9,107,52,69],'int_prods':[], 'int_prod_fam':[],'int_cont_area':caArr},
+'<div id="dw-interest-anon"><a id="intAnonBtn" class="ibm-external-link" href="">Update My dW interests</a> (<a class="dw-interest" href="' + loginLink + '">Log in</a> | <a class="dw-interest" href="#overlay" onclick="ibmCommon.Overlays.show(\'dwmyinterestadd\', this);return false;">What\'s this?</a>) <a class="ibm-access" href="#dwmyinterestaddhelp">Skip to help for Update My dW interests</a></div>',
+'<div id="dw-interest-add"><a id="intSelectBtn" class="ibm-external-link" href="">Add to My dW interests</a> (<a class="dw-interest" href="#overlay" onclick="ibmCommon.Overlays.show(\'dwmyinterestadd\', this);return false;">What\'s this?</a>) <a class="ibm-access" href="#dwmyinterestaddhelp">Skip to help for Add to My dW interests</a></div>',
+'<div id="dw-interest-remove">Added to My dW interests (<a class="dw-interest" href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/html/myProfileView.do?lang=en">Edit</a>)</div>'
+);
+// ]]>
+</script><!-- BEGIN: Use this section to set page specific variables for the Unica Page Tag -->
+<script language="JavaScript">var NTPT_PGEXTRA="ibmSkillLevel=3&ibmAdoptPhase=648&ibmRole=36";</script>
+<!--END --><!-- SCRIPTS_INCLUDE_END -->
+
+<div id="ibm-metrics">
+<script src="//dw1.s81c.com/common/stats/stats.js" type="text/javascript">//</script>
+</div>
+
+</body>
+</html>

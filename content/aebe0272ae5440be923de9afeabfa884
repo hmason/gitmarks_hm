@@ -1,0 +1,567 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+
+<head>
+	<title>A List Apart: Articles: In Search of the Holy Grail</title>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<link rel="alternate" type="application/rss+xml" title="A List Apart main RSS feed" href="http://www.alistapart.com/site/rss" />
+	<link rel="stylesheet" type="text/css" href="/css/print.css" media="print" /> 
+	<script type="text/javascript">if(top!=self){top.location.replace(self.location.href);}</script>
+	<link rel="stylesheet" href="/css/article.css" type="text/css" media="all" />
+	<style type="text/css">
+		@import url(/css/211.css);
+	</style>
+	
+		
+		
+	</head>
+
+<body class="articles" onload="">
+	
+
+<ul id="navbar">
+  <li id="articles"><a href="http://www.alistapart.com/articles/" title="Articles">Articles</a></li>
+  <li id="topics"><a href="http://www.alistapart.com/topics/" title="Topics">Topics</a></li>
+  <li id="about"><a href="http://www.alistapart.com/about/" title="About">About</a></li>
+  <li id="contact"><a href="http://www.alistapart.com/contact/" title="Contact">Contact</a></li>
+  <li id="contribute"><a href="http://www.alistapart.com/contribute/" title="Contribute">Contribute</a></li>
+  <li id="feed"><a href="http://www.alistapart.com/feed/" title="Feed">Feed</a></li>
+</ul>
+<h1 id="masthead"><a href="http://www.alistapart.com/"><img src="/pix/alalogo.gif" alt="A LIST Apart: For People Who Make Websites" /></a></h1>
+
+
+<div id="ish">
+	<a href="http://www.alistapart.com/issues/211" title="Issue 211">No. <em>211</em></a>
+</div>
+
+
+<div id="main">
+	
+	
+	
+	
+	<div id="content" class="column">
+
+		<div class="ishinfo">January <b>30, 2006</b></div>
+		
+		<h1 class="title"><a href="http://www.alistapart.com/articles/holygrail/">In Search of the Holy&nbsp;Grail</a></h1>
+		<h3 class="byline">
+			by 
+	
+	<a href="http://www.alistapart.com/authors/l/matthewlevine">Matthew Levine</a>
+	
+
+		</h3>
+		
+		<ul id="metastuff">
+						<li>
+				Published in: <a href="http://www.alistapart.com/topics/topic/css/" title="CSS">CSS</a>, <a href="http://www.alistapart.com/topics/topic/htmlxhtml/" title="HTML and XHTML">HTML and XHTML</a>, <a href="http://www.alistapart.com/topics/topic/layout/" title="Layout">Layout</a>, <a href="http://www.alistapart.com/topics/topic/userinterfacedesign/" title="User Interface Design">User Interface Design</a>
+			</li>
+			
+			<li class="discuss">
+								<p><a href="http://www.alistapart.com/comments/holygrail/">Discuss this article &raquo;</a></p> <b>|</b>
+								<a href="#shareLinks">Share this article &raquo;</a>
+			</li>
+		</ul>
+		
+		<div id="articletext">
+			<div class="illustration right half">
+<img src="/d/holygrail/grail.jpg" alt="In Search of the Holy Grail" />
+</div>
+
+<p>I&#8217;m sorry. Really. I didn&#8217;t name it. I don&#8217;t mean to overstate its importance or trivialize the other and rather weightier <a href="http://en.wikipedia.org/wiki/List_of_holy_grails">Holy Grails</a>.</p>
+
+<p>But the name&#8217;s out there, and we all know what it means.</p>
+<p>Three columns. One fixed-width sidebar for your navigation, another for, say, your Google Ads or your Flickr photos&#8212;and, as in a fancy truffle, a liquid center for the real substance. Its wide applicability in this golden age of blogging, along with its considerable difficulty, is what has earned the layout the title of Holy Grail.</p>
+<p>Many articles have been written about the grail, and several good templates exist. However, all the existing solutions involve sacrifices: <a href="http://www.manisheriar.com/holygrail/index.htm">proper source order</a>, <a href="http://glish.com/css/7.asp">full-width footers</a>, and <a href="http://www.alistapart.com/articles/negativemargins/">lean markup</a> are often compromised in the pursuit of this elusive layout.</p>
+<p>A recent project has brought my personal grail quest to an end. The technique I&#8217;ll describe will allow you to deploy the Holy Grail layout without compromising your code or your flexibility. It will:</p>
+
+<ol>
+  <li>have a fluid center with fixed width sidebars,</li>
+  <li>allow the center column to appear first in the source,</li>
+  <li>allow any column to be the tallest,</li>
+  <li>require only a single extra <code>div</code> of markup, and</li>
+  <li>require very simple <abbr title="Cascading Style Sheets"><span class="caps">CSS</span></abbr>, with minimal <del>hacks</del> <ins>patches</ins>.</li>
+
+</ol>    
+
+<h2>On the shoulders of giants</h2>
+<p>The technique presented here is inspired by Alex Robinson&#8217;s brilliant <a href="http://positioniseverything.net/articles/onetruelayout/">One True Layout</a>. Alex even addressed the Holy Grail problem in his article, but his solution requires two wrappers and makes padding difficult without a further layer of <code>div</code>s within each column.</p>
+<p>Another lead came from <a href="http://meyerweb.com/eric/thoughts/2005/11/09/multi-unit-any-order-columns/">Eric Meyer&#8217;s adaptation</a> that uses positioning to mix multiple unit types. His example also yields a three-column layout with fixed sidebars and a liquid center. Unfortunately, it relies on approximate percentages and fills a portion of the viewport that varies widely with different screen resolutions.</p>
+
+<h2>Enough talk&#8212;let&#8217;s see some code</h2>
+<p>The required <abbr title="HyperText Markup Language"><span class="caps">HTML</span></abbr> is intuitive and elegant.</p>
+
+	<p>(For the sake of clarity in demonstrating this technique, we are <em>intentionally</em> using the non-semantic <code>id</code>s &#8220;center,&#8221; &#8220;left,&#8221; and &#8220;right.&#8221; We recommend you use semantic <code>id</code>s in any application of this technique. &#8212;Ed.)</p>
+
+
+<pre>&lt;div id="header"&gt;&lt;/div&gt;
+
+&lt;div id="container"&gt;
+  &lt;div id="center" class="column"&gt;&lt;/div&gt;
+  &lt;div id="left" class="column"&gt;&lt;/div&gt;
+  &lt;div id="right" class="column"&gt;&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;div id="footer"&gt;&lt;/div&gt;</pre>
+
+<p>That&#8217;s it. A single extra <code>div</code> to contain the columns is all that you need; this satisfies even my obsessive compulsive markup habits.</p>
+<p>The stylesheet is almost as simple. Let&#8217;s say you want to have a left column with a fixed width of 200 pixels and a right column with a fixed width of 150 pixels. To simplify the comments, I&#8217;ll abbreviate the left, right, and center columns as <abbr title="Left Column">LC</abbr>, <abbr title="Right Column">RC</abbr>, and <abbr title="Center Column">CC</abbr>, respectively. The essential <abbr title="Cascading Style Sheets"><span class="caps">CSS</span></abbr> is here:</p>
+
+<pre>body {
+  min-width: 550px;      /* 2x LC width + RC width */
+}
+#container {
+  padding-left: 200px;   /* LC width */
+  padding-right: 150px;  /* RC width */
+}
+#container .column {
+  position: relative;
+  float: left;
+}
+#center {
+  width: 100%;
+}
+#left {
+  width: 200px;          /* LC width */
+  right: 200px;          /* LC width */
+  margin-left: -100%;
+}
+#right {
+  width: 150px;          /* RC width */
+  margin-right: -150px;  /* RC width */
+}
+#footer {
+  clear: both;
+}
+/*** IE6 Fix ***/
+* html #left {
+  left: 150px;           /* RC width */
+}</pre>
+
+<p>Simply replace the values with your desired dimensions and the grail is yours. The technique works in all modern browsers: Safari, Opera, Firefox, and (with the single-rule hack at the bottom) <abbr title="Internet Explorer 6"><span class="caps">IE6</span></abbr>. <abbr title="Internet Explorer 5.5"><span class="caps">IE5</span>.5</abbr> support would require at least a box-model hack, which is left as an exercise to the reader.</p>
+
+<p><a href="/d/holygrail/example_1.html">Take a look</a> and marvel at the elegance.</p>
+
+<h2>How it works</h2>
+<p>The strategy is straightforward. The container <code>div</code> will have a liquid center and fixed-width padding on the side. The trick is then to get the left column to line up with the left padding and the right column with the right padding, leaving the center column to fill the liquid width of the container.</p>
+<p>Let&#8217;s build this up step by step.</p>
+
+<h3>Step 1: Create the frame</h3>
+<p>Start with the header, footer, and container.</p>
+
+<pre>&lt;div id="header"&gt;&lt;/div&gt;
+
+&lt;div id="container"&gt;&lt;/div&gt;
+
+&lt;div id="footer"&gt;&lt;/div&gt;</pre>
+
+<p>We pad the container with the width we want our left and right columns to occupy.</p>
+
+<pre>#container {
+  padding-left: 200px;   /* LC width */
+  padding-right: 150px;  /* RC width */
+}</pre>
+
+<p>Our layout now looks like this:</p>
+
+<div class="illustration left full">
+<img src="/d/holygrail/diagram_01.gif" alt="Figure 1: the outline of the header, footer, and container" />
+<p>Step 1: Create the frame</p>
+</div>
+
+<h3>Step 2: Add the columns</h3>
+<p>Now that we have our basic frame, we&#8217;ll stick in the columns.</p>
+
+<pre>&lt;div id="header"&gt;&lt;/div&gt;
+
+&lt;div id="container"&gt;
+  &lt;div id="center" class="column"&gt;&lt;/div&gt;
+  &lt;div id="left" class="column"&gt;&lt;/div&gt;
+  &lt;div id="right" class="column"&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id="footer"&gt;&lt;/div&gt;</pre>
+
+<p>Next we add the appropriate widths and float them to get them in line. We&#8217;ll also need to clear the footer to keep it beneath the floated columns.</p>
+
+<pre>#container .column {
+  float: left;
+}
+#center {
+  width: 100%;
+}
+#left {
+  width: 200px;  /* LC width */
+}
+#right {
+  width: 150px;  /* RC width */
+}
+#footer {
+  clear: both;
+}</pre>
+
+<p>Note that the 100% width on the center column refers to the width of the container div, <em>exclusive of the padding</em>. We&#8217;ll see this 100% width again as the layout comes together, and it will <em>still</em> refer to this central width of the container.</p>
+
+<p>The columns now want to line up in order, but because the center column is taking up 100% of the available space, the left and right columns wrap.</p>
+
+<div class="illustration left full">
+<img src="/d/holygrail/diagram_02.gif" alt="Figure 2: the three columns lined up in source order" />
+<p>Step 2: Add the columns</p>
+</div>
+
+<h3>Step 3: Pull the left column into place</h3>
+<p>The only thing left is to get the colums to line up with the padding on the container. The center column starts exactly where it needs to be, so we&#8217;ll focus on the left column.</p>
+<p>It takes two steps to get the left column in place. First, we&#8217;ll pull it all the way across the center column with a 100% negative margin. Remember that the 100% refers to the central width of the container, which is also exactly the width of the center column.</p>
+
+<pre>#left {
+  width: 200px;        /* LC width */
+  margin-left: -100%;  
+}</pre>
+
+<p>Now the left column is overlapping the center column, sharing its left edge. The right column floats left and nestles against right edge of the center column (but still wraps), leaving us with the following:</p>
+
+<div class="illustration left full">
+<img src="/d/holygrail/diagram_03.gif" alt="Figure 3: the left column pulled 100% to the left" />
+<p>Step 3: Pull the left column into place&#8212;halfway there</p>
+</div>
+
+<p>To push the left column the rest of the way over, we&#8217;ll use relative positioning with an offset that&#8217;s exactly the width of the left column.</p>
+
+<pre>#container .columns {
+  float: left;
+  position: relative;
+}
+#left {
+  width: 200px;        /* LC width */
+  margin-left: -100%;  
+  right: 200px;        /* LC width */
+}</pre>
+
+<p>The <code>right</code> property pushes it 200px <em>away</em> from the right edge; that is, to the left. Now the left column lines up perfectly with the left padding of the container.</p>
+
+<div class="illustration left full">
+<img src="/d/holygrail/diagram_04.gif" alt="Figure 4: the left column offset 200px to the left" />
+<p>Step 3: Left column pulled into place</p>
+
+</div>
+
+<h3>Step 4: Pull the right column into place</h3>
+<p>The only task remaining is to pull the right column into place. To do that, we just need to pull it out of the container and into the container&#8217;s padding. We&#8217;ll again use a negative margin.</p>
+
+<pre>#right {
+  width: 150px;          /* RC width */
+  margin-right: -150px;  /* RC width */
+}
+</pre>
+
+<p>Everything is now in its right place, and the wrapping disappears.</p>
+
+<div class="illustration left full">
+<img src="/d/holygrail/diagram_05.gif" alt="Figure 5: the right column pulled 100% to the right" />
+
+<p>Step 4: Pull the right column into place</p>
+</div>
+
+<h3>Step 5: Design defensively</h3>
+<p>If the browser window is resized so that the center becomes smaller than the left column, the layout breaks in a standards-compliant browser. Setting a <code>min-width</code> on the <code>body</code> keeps your columns in place. With <abbr title="Internet Explorer 6"><span class="caps">IE6</span></abbr> this doesn&#8217;t happen, so the fact that it doesn&#8217;t support <code>min-width</code> isn&#8217;t a problem.</p>
+
+<pre>body {
+  min-width: 550px;  /* 2x LC width + RC width */
+}</pre>
+
+<p>Of course, no layout technique would be complete without requiring some sort of workaround in Internet Explorer. The negative margin pulls the left column too far to the left in <abbr title="Internet Explorer 6"><span class="caps">IE6</span></abbr> (the full width of the browser window). We need to push it back to the right the full width of the right column&#8212;using the star-html hack to mask it from other browsers&#8212;and we&#8217;re ready to go.</p>
+
+<pre>* html #left {
+  left: 150px;  /* RC width */
+}</pre>
+
+<p>The reason we need to use the width of the <em>right</em> column involves a bit of algebra. I won&#8217;t bore you with the details; you can work it out for yourself or just consider it another one of IE&#8217;s many charms.</p>
+
+<h2>Padding, please</h2>
+<p>I&#8217;m no designer, but looking at the layout above offends even my aesthetic sensibilities. The unpadded columns are hard on the eyes and difficult to read. We need whitespace.</p>
+<p>One of the drawbacks of using percentages with the <a href="http://www.positioniseverything.net/articles/onetruelayout/">One True Layout</a> to create liquid columns that it makes padding the columns a bit tricky. Percentage paddings tend to look bad at some screen widths. Fixed paddings can be added, but only by cluttering the markup with a <code>div</code> nested inside each column.</p>
+<p>With this technique, padding isn&#8217;t a problem. Padding can be added directly to the left and right columns; just adjust the width accordingly. To give a 10-pixel padding to the left column in the example above, but keep it&#8217;s full width (padding + width) at 200px, simply change the rule as follows:</p>
+
+<pre>#left {
+  width: 180px;        /* LC fullwidth - padding */
+  padding: 0 10px;
+  right: 200px;        /* LC fullwidth */
+  margin-left: -100%;
+}</pre>
+
+<p>Padding the center requires a little more ingenuity, but no more markup and only a pinch of additional <abbr title="Cascading Style Sheets"><span class="caps">CSS</span></abbr>.</p>
+<p>The padding plus a width of 100% causes the center column to expand beyond the non-padded width of the container. In order to tame it back into place, we need to increase the right margin by the total amount of the padding. This ensures that the center column is only as large as we expect it to be.</p>
+<p>Also, since the center column is now wider, the left column has a larger distance to move in order to get to the correct place. Increasing the offset by the total center padding does the trick.</p>
+<p>To make this concrete, I&#8217;ll modify the example to add a 10-pixel padding to each side column (for a total of 20 pixels), and a 20-pixel padding to each side of the center (for a total of 40 pixels). The new <abbr title="Cascading Style Sheets"><span class="caps">CSS</span></abbr> looks like this:</p>
+
+<pre>body {
+  min-width: 630px;      /* 2x (LC fullwidth +
+                            CC padding) + RC fullwidth */
+}
+#container {
+  padding-left: 200px;   /* LC fullwidth */
+  padding-right: 190px;  /* RC fullwidth + CC padding */
+}
+#container .column {
+  position: relative;
+  float: left;
+}
+#center {
+  padding: 10px 20px;    /* CC padding */
+  width: 100%;
+}
+#left {
+  width: 180px;          /* LC width */
+  padding: 0 10px;       /* LC padding */
+  right: 240px;          /* LC fullwidth + CC padding */
+  margin-left: -100%;
+}
+#right {
+  width: 130px;          /* RC width */
+  padding: 0 10px;       /* RC padding */
+  margin-right: -190px;  /* RC fullwidth + CC padding */
+}
+#footer {
+  clear: both;
+}
+
+/*** IE Fix ***/
+* html #left {
+  left: 150px;           /* RC fullwidth */
+}</pre>
+
+<p>Of course, top and bottom padding can be added without any problems.  See this <a href="/d/holygrail/example_2.html">nicely padded version</a> for the full template.</p>
+<p>This technique works just as well for ems. Unfortunately, you can&#8217;t mix-and-match ems and pixels, so choose, but choose wisely.</p>
+
+<h2>Equal-height columns</h2>
+<p>This technique really comes together when the columns are given equal heights. The method I&#8217;m using is <a href="http://www.positioniseverything.net/articles/onetruelayout/equalheight">adapted wholesale</a> from the One True Layout, so I won&#8217;t go over it in detail. To deploy it, simply add the following <abbr title="Cascading Style Sheets"><span class="caps">CSS</span></abbr>:</p>
+
+<pre>#container {
+  overflow: hidden;
+}
+#container .column {
+  padding-bottom: 20010px;  /* X + padding-bottom */
+  margin-bottom: -20000px;  /* X */
+}
+#footer {
+  position: relative;
+}</pre>
+
+<p>Here, I&#8217;ve given the columns an extra padding of 10px on the bottom.</p>
+<p>The usual caveats apply. Be aware that Opera 8 has a bug with <code>overflow: hidden</code> that leaves all of your columns huge. A workaround is detailed on the One True Layout page; you can use that, or wait for Opera 9 (which fixes the bug) to come out of beta.</p>
+<p>One additional problem unique to this layout is that <abbr title="Internet Explorer">IE</abbr> doesn&#8217;t clip the column backgrounds at the bottom of the container. They spill out over the footer if the page is not as tall as the viewport. This isn&#8217;t a problem if you don&#8217;t have a separate footer, or if your pages are tall enough to ensure that you&#8217;ll always take up the whole viewport.</p>
+
+<p>If you need that footer, though, never fear. This, too, is fixable, but requires one more <code>div</code>. Add a wrapper to the footer, like so:</p>
+
+<pre>&lt;div id="footer-wrapper"&gt;
+  &lt;div id="footer"&gt;&lt;/div&gt;
+&lt;/div&gt;</pre>
+
+<p>Now re-use the same trick with the equal columns to make the footer wrapper extend beyond the page, leaving the footer itself for you to do with as you please.</p>
+
+<pre>* html body {
+  overflow: hidden;
+}
+* html #footer-wrapper {
+  float: left;
+  position: relative;
+  width: 100%;
+  padding-bottom: 10010px;
+  margin-bottom: -10000px;
+  background: #fff;         /* Same as body 
+                               background */
+}</pre>
+
+<p>This solves the problem, and leaves us with the <a href="/d/holygrail/example_3.html">desired result</a> and a minimum of cruft.</p>
+
+<h2>Oh, and there&#8217;s one more thing</h2>
+<p>The extremists out there might be wondering to themselves whether there&#8217;s not an even <em>better</em> way to do this. After all, the method I&#8217;ve illustrated introduces a non-semantic container <code>div</code>. Surely we can&#8217;t have <em>one extra <code>div</code></em> cluttering up our otherwise flawless markup.</p>
+
+<p>If you, like me, have been wondering this very thing, wonder no more. As a special bonus, I present to you the <a href="/d/holygrail/example_4.html">wrapper-free Holy Grail</a>, in all its minimalist glory. One <code>div</code> for each section of the code&#8212;no more, no less. Semantic bliss, almost worthy of the title of &#8220;Holy Grail.&#8221;</p>
+<p>The principle behind the <abbr title="Cascading Style Sheets"><span class="caps">CSS</span></abbr> is the same. The padding has been applied directly to the body, eliminating the need for any containers. Negative margins stretch the header and footer to ensure that they take up the entire space.</p>
+<p>This tiny version works in all the aforementioned browsers, even (almost shockingly) Internet Explorer. Equal-height columns do <em>not</em> work, however, and this layout will break down for very small window widths. Use it with caution.</p>
+
+<h2>So what now?</h2>
+<p>While this particular application of the Holy Grail is rather specific, the technique can be generalized considerably. Why not have two liquid columns? Why not switch up the column orders? These applications are beyond the scope of this article, but achievable with minor modifications. Use the grail wisely, and it can be a particularly handy (and clutter-free) addition to your bag of <abbr title="Cascading Style Sheets"><span class="caps">CSS</span></abbr> tricks. <img src="/pix/eoai.gif" alt="" id="eoai" /></p>
+
+<div id="credits">
+<ul>
+<li>Illustration by <a href="/about/kevincornell">Kevin Cornell</a></li>
+</ul>
+</div>
+		</div>
+		
+		<div id="learnmore">
+		  <h2>Learn More</h2>
+		  <p>Related Topics: <a href="http://www.alistapart.com/topics/topic/css/" title="CSS">CSS</a>, <a href="http://www.alistapart.com/topics/topic/htmlxhtml/" title="HTML and XHTML">HTML and XHTML</a>, <a href="http://www.alistapart.com/topics/topic/layout/" title="Layout">Layout</a>, <a href="http://www.alistapart.com/topics/topic/userinterfacedesign/" title="User Interface Design">User Interface Design</a></p>
+		</div>
+		
+					<div class="discuss">
+			  <h2>Discuss</h2>
+			  <p>Was it good for you, too?  <span><a href="http://www.alistapart.com/comments/holygrail/">Join the discussion &raquo;</a></span></p>
+
+			  <div id="shareLinks">
+
+			  
+			  <h2>Share</h2>
+			  <a href="http://www.facebook.com/sharer.php?u=http://www.alistapart.com/articles/holygrail/&amp;t=In+Search+of+the+Holy+Grail"><img src="/pix/social-icons/facebook.gif" alt="Facebook icon" /></a>
+			  <a href="http://del.icio.us/post?url=http://www.alistapart.com/articles/holygrail/&amp;title=In+Search+of+the+Holy+Grail"><img src="/pix/social-icons/delicious.gif" alt="Delicious icon" /></a>
+			  <a href="http://twitter.com/?status=In+Search+of+the+Holy+Grail:%20http://www.alistapart.com/articles/holygrail/"><img src="/pix/social-icons/twitter.gif" alt="Twitter icon" /></a>
+			  </div>
+
+			</div>
+				
+		<div id="authorbio">
+			
+			<h2>About the Author</h2>
+			
+			
+	
+	<p>
+					<img src="/pix/authors/matthew_levine.jpg" alt="Matthew Levine" />
+		
+		Before working as a full-time web developer, Matthew <a href="http://www.teachforamerica.org">taught elementary school</a> and studied physics and philosophy. When he isn't <a href="http://www.infocraft.com/">streamlining websites</a> he spends his time in the bayous of South Louisiana perfecting his cajun two-step.
+	</p>
+	
+
+		
+		</div>
+		
+	</div>
+	
+	<div id="sidebar" class="column">
+	
+		<div class="first">
+	<form method="post" action="http://www.alistapart.com/"  >
+<div class='hiddenFields'>
+<input type="hidden" name="ACT" value="19" />
+<input type="hidden" name="XID" value="3d1228f7018569bd9ab8192058eb95c5aa28fccd" />
+<input type="hidden" name="RP" value="search/results" />
+<input type="hidden" name="NRP" value="" />
+<input type="hidden" name="RES" value="20" />
+<input type="hidden" name="status" value="" />
+<input type="hidden" name="weblog" value="articles|issues" />
+<input type="hidden" name="search_in" value="entries" />
+<input type="hidden" name="where" value="all" />
+<input type="hidden" name="site_id" value="1" />
+</div>
+
+
+	<h3>Search ALA</h3>
+	<input type="text" name="keywords" id="search" />
+	<input type="image" src="/pix/go.gif" id="submit" value="Search" />
+	<p><input type="checkbox" name="incdisc" id="incdisc" value="comments|entries" onclick="this.form.elements['search_in'].value = (this.checked) ? 'everywhere' : 'entries';" /> include discussions</p>
+	</form>
+</div>
+
+<div id="topiclist">
+	<h3>Topics</h3>
+
+	<ul>
+	
+	<li><a href="/topics/code/" title="Code">Code</a></li>
+	
+	<li><a href="/topics/content/" title="Content">Content</a></li>
+	
+	<li><a href="/topics/culture/" title="Culture">Culture</a></li>
+	
+	<li><a href="/topics/design/" title="Design">Design</a></li>
+	
+	<li><a href="/topics/mobile/" title="Mobile">Mobile</a></li>
+	
+	<li><a href="/topics/process/" title="Process">Process</a></li>
+	
+	<li><a href="/topics/userscience/" title="User Science">User Science</a></li>
+	
+	</ul>
+
+</div>
+
+
+<div id="snapshot">
+  <h3>Snapshot</h3>
+  <p>Many articles have been written on the grail, and several good templates exist. However, all the existing solutions involve sacrifices: proper source order, full-width footers, and lean markup are the usual compromises made in pursuit of this elusive layout.</p>
+</div>
+
+
+<div id="lucre">
+	<script type="text/javascript">
+	//<![CDATA[
+	(function(id) {
+	  document.write('<script type="text/javascript" src="' +
+	    'http://www.northmay.com/deck/deck' + id + '_js.php?' +
+	    (new Date().getTime()) + '"></' + 'script>');
+	})("AL");
+	//]]>
+	</script>
+	<p>
+	<a href="http://www.coudal.com/deck/">Ad via The Deck</a>
+	</p>
+</div>
+
+<div id="jobboard">
+	<h4>Job Board</h4>
+	<script src="http://www.37signals.com/svn/job.fcgi" type="text/javascript"></script>
+	<p class="monitor">More on the <a href="http://jobs.37signals.com/?source=ala">Job Board</a>.</p>
+</div>
+
+<div id="abookapart-side">
+	<h3>A Book Apart</h3>
+	<a href="http://books.alistapart.com/"><img src="/pix/css3forwebdesigners.png" alt="CSS3 for Web Designers by Dan Cederholm" /></a>
+	<p>Dan Cederholm presents real CSS3 for real websites. &#8220;Cogent, concise, comprehensible. Look no further.&#8221; <br />&mdash; Eric Meyer</p> 
+	
+	<p class="order-now"><a href="http://books.alistapart.com/">Order yours today</a></p>
+</div>
+
+<div id="colophon">
+
+	<p class="init">
+	Hosted by
+	<a href="http://mediatemple.net/"><img src="/pix/mediatemple.png" alt="Hosted by Media Temple" /></a>
+	</p>
+
+	<p class="init">
+	Published by
+	<a href="http://happycog.com/"><img src="/pix/happycog.png" title="" alt="Published by Happy Cog" /></a>
+	</p>
+
+	<p>
+	ALA Mobile by
+	<a href="http://mobify.me/"><img src="/pix/mobify-logo.png" title="" alt="ALA Mobile by Mobify" /></a>
+	</p>
+</div>
+		
+	</div>
+	
+	
+
+</div>
+
+<div id="footer">
+<p>
+<span class="issn">ISSN: <b>1534-0295</b></span>
+<span class="copyright"><a href="/copyright/" rel="license">Copyright &copy;</a> <span class="years">1998-2010</span> A List Apart Magazine and the authors.</span>
+</p>
+</div>
+
+<script src="/d/mint/?js" type="text/javascript"></script>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-11757054-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+
+</body>
+</html>

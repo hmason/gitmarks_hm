@@ -1,0 +1,632 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Venkman JavaScript Debugger - Development Page</title>
+    <style>
+
+      th {
+        color: white;
+        background: darkslategrey;
+      }
+
+      .desc:first-letter {
+        padding-left: 1em;
+        font-size: larger;
+        font-weight: bold;
+      }
+
+      .rev:first-line {
+        font-size: larger;
+        font-weight: bold;
+      }
+
+      .rev,
+      .dnld {
+        text-align: center;
+      }
+
+      .desc {
+        border: 1px black solid;
+        background: lightgrey;
+        padding: 5px;
+      }
+    </style>
+    <script>
+      function writeRevs ()
+      {
+        var id;
+
+        for (var i in revs)
+        {
+          id = revs[i].id;
+          document.writeln ("<tr>");
+          document.writeln ("<td class='rev'>vnk" + id + "<br>" + 
+                            revs[i].date + "</td>");
+          document.writeln ("<td class='desc'>Revision " + id + " " + 
+                            revs[i].desc + "</td>");
+          document.writeln ("<td class='dnld'>" +
+                            "<a href='venkman-" + id + ".xpi'>install " + 
+                            id + "</a></td>");
+        }
+      }
+
+      var revs = [
+        {id: "0.9.85", date: "2/28/2005", ci: false,
+         desc: "fixes Venkman on the Mozilla <b>and</b> Firefox trunks.  " +
+	       "That means a single Venkman XPI again works on " + 
+	       "everything from Mozilla 1.0 all the " +
+	       "way up to the latest trunk of Mozilla <b>and</b> " + 
+	       "Firefox.  Thanks to James Ross for his work on " +
+	       "<a href='https://bugzilla.mozilla.org/show_bug.cgi?" +
+	       "id=247507'>bug 247507</a>!"},
+        {id: "0.9.84", date: "11/29/2004", ci: false,
+         desc: "is the <b>FIREFOX ONLY</b> build of Venkman.  It will only " +
+               "work on Firefox.  Other versions of Venkman will probably " +
+                "NOT work on Firefox. If you're not using Firefox, you " +
+		"should install 0.9.83 instead.  Sorry, but this <b>will " +
+		"not</b> work on the current Firefox trunk."},
+        {id: "0.9.83", date: "11/29/2004", ci: true,
+         desc: "Adds ``Copy Qualified Name'' and ``Show Constants'' " +
+	       "commands, fixes some other bugs."},
+        {id: "0.9.79", date: "8/27/2003", ci: false,
+         desc: "fixes the problem where Venkman would strip the trailing " +
+               "quote from inbound evaluation expressions."},
+        {id: "0.9.78", date: "8/18/2003", ci: false,
+         desc: "cleans up some strict mode warnings and hides javascript: " +
+               "files in the Loaded Scripts view.  This revision also " +
+               "changes the hotkey for step-over from F10 to F12."},
+        {id: "0.9.77", date: "6/1/2003", ci: false,
+         desc: "adds the ``clear-session'' command to clear the contents of " +
+               "the Interactive Session view.  It also adds ``Set " +
+               "Breakpoint'' to the context menu of the Loaded Scripts view, " +
+               " and ``Set Breakpoint'' and ``Clear Breakpoint'' to the Call " +
+               "Stack view."},
+        {id: "0.9.76", date: "5/31/2003", ci: false,
+         desc: "fixes the problem where the cursor would be left one " +
+               "character <b>before</b> the end of the line after using the " +
+               "up arrow to recall a previous command."},
+        {id: "0.9.75", date: "5/13/2003", ci: true,
+         desc: "fixes a regression in charset detection for HTML files and " +
+               "adds tooltips to the buttons in the toolbar.  This is the " +
+               "revision that comes with <b>Mozilla 1.4</b>."},
+        {id: "0.9.74", date: "5/08/2003", ci: false,
+         desc: "fixes a bug where splitters would be misplaced if you " +
+               "dragged a view directly from one tab container to another."},
+        {id: "0.9.73", date: "5/07/2003", ci: false,
+         desc: "fixes two places where &lt;view-name&gt; was used in " +
+               "place of &lt;view-id&gt; in the change-container command."},
+        {id: "0.9.72", date: "5/06/2003", ci: false,
+         desc: "fixes a typo in the change-container command and properly " +
+               "deals with exceptions that might be thrown from file " +
+               "chooser dialogs.  This version no longer restores your " +
+               "pretty print state on startup by default.  If you prefer " +
+               "to have the state restored, type " +
+               "``/pref rememberPrettyprint true''."},
+        {id: "0.9.71", date: "5/05/2003", ci: false,
+         desc: "fixes a long standing problem where Venkman could not " +
+               "display source from a file that was <b>actively</b> " +
+               "being loaded by the browser.  If you've ever set a " +
+               "breakpoint in top level script and reloaded your file, only " +
+               "to see Venkman choke on the source after hitting the " +
+               "breakpoint, this is the fix for you."},
+        {id: "0.9.70", date: "5/04/2003", ci: false,
+         desc: "fixes more problems involving breakpoints and URLs with " +
+               "question marks ('?') in them."},
+        {id: "0.9.69", date: "5/03/2003", ci: false,
+         desc: "fixes a bug where future breakpoints weren't being reset for " +
+               "files from URLs with certain characters, and make is so that " +
+               "changing breakpoint properties on a real breakpoint modifies " +
+               "the future breakpoint too."},
+        {id: "0.9.68", date: "5/01/2003", ci: false,
+         desc: "makes it so that literal tab expansion works properly in the " +
+               "source view.  It also fixes a problem where Venkman " +
+               "wouldn't rescan for a character set when a file was " +
+               "reloaded."},
+        {id: "0.9.67", date: "4/29/2003", ci: true,
+         desc: "fixes the ``Enable breakpoint'' option in the Breakpoint " +
+               "properties dialog."},
+        {id: "0.9.66", date: "4/29/2003", ci: true,
+         desc: "makes tabbed views work in Mozilla 1.0.x based browsers, " +
+               "including Netscape 7.x."},
+        {id: "0.9.65", date: "4/28/2003", ci: true,
+         desc: "keeps Venkman from getting into a bad state if you happen to " +
+               "explore an object with a property named ``__proto__''.  You " +
+               "may have come across this while exploring a chain " +
+               "of [[Prototype]]s in the Local Variables view with ``Include " +
+               "ECMA Properties'' enabled."},
+        {id: "0.9.64", date: "4/27/2003", ci: true,
+         desc: "fixes the ``/change-container'' command, so that splitters " +
+               "are properly modified when changing between horizontal and " +
+               "vertical layouts."},
+        {id: "0.9.63", date: "4/27/2003", ci: true,
+         desc: "adds " +
+               "<a href='screenshots/venkman-20030427.gif'>tabbed views</a>. " +
+               "To make a new tabbed view, drag any " +
+               "view over the box icon (<img src='pop-box.png'>) of " +
+               "another view.  When the icon turns to a star, let go of " +
+               "the mouse button.  This release also fixes a bug where " +
+               "double-clicking in a tree item would stop working after the " +
+               "view had been moved.  If you've got an existing view layout " +
+               "saved but want to see the new default layout, tabs and all, " +
+               "type ``/restore-layout factory''."},
+        {id: "0.9.62", date: "4/24/2003", ci: true,
+         desc: "fixes a problem where files (especially HTML files, for " +
+               "some reason) would not completely load in the Source View. " +
+               "This revision also fixes a bug that would ignore double" +
+               "clicks in the Loaded Scripts view for files that had been " +
+               "reloaded.  Files in the Loaded Scripts view now show up " + 
+               "in the correct font after the ``Exclude Browser Files'' " +
+               "option has been cycled, and you can now clear preferences " +
+               "with the /pref command by prefixing the pref name with a " +
+               "minus ('-') character."},
+        {id: "0.9.61", date: "4/23/2003", ci: true,
+         desc: "fixes a problem with ``Find in This File'' on trunk builds."},
+        {id: "0.9.60", date: "4/21/2003", ci: true,
+         desc: "adds a x-jsd:debugger handler that can be used to invoke " +
+               "Venkman from a bookmark, etc. (this can be used to start " +
+               "Venkman in Phoenix/Firebird builds.)  This release also " +
+               "displays disabled scripts in red italics in the Loaded " +
+               "scripts view, removes the little box that showed up in the " +
+               "toolbar in recent builds, adds a selectable url label under " +
+               "source view, fixes a bug where you'd sometimes end up with " + 
+               "two lines highlighted in yellow while stopped, and allows " +
+               "':' characters to be considered part of a URL for " +
+               "linkification in the Interactive Session view."},
+        {id: "0.9.59", date: "4/14/2003", ci: false,
+         desc: "fixes a problem detecting character sets in XML files."},
+        {id: "0.9.58", date: "4/13/2003", ci: false,
+         desc: "makes the regular expression used to select an alternate " +
+               "character set a little " +
+               "<a href='news://news.mozilla.org:119/20030321054358.CD71.TRANSLATOR@skillup.jp'>more relaxed</a>" +
+               ", fixes up the regular expression used to match URLs in " +
+               "the interactive session, and prevents the error you used to " +
+               "get if you tried to reload a source tab when there were " +
+               "no tabs loaded.  This revision also removes the focus border " +
+               "from the tree views until the painting issue is sorted out."},
+        {id: "0.9.57", date: "3/25/2003", ci: false,
+         desc: "updates the attribute used to specify box orientation in XUL."},
+        {id: "0.9.56", date: "3/17/2003", ci: false,
+         desc: "makes it so that unchecking ``Set As Evaluation Object'' " +
+               "reverts to the default evaluation object."},
+        {id: "0.9.55", date: "3/14/2003", ci: false,
+         desc: "makes it possible to use the keyboard to remove watches " +
+               "and breakpoints.  Just select the items to remove and hit "+
+               "the <b>Delete</b> key."},
+        {id: "0.9.54", date: "3/13/2003", ci: false,
+         desc: "adds some features for the keyboardly inclined.  It makes it " +
+               "possible to use the <b>Enter</b> or <b>Space</b> keys " +
+               "in the trees instead of double click, and adds a small " +
+               "black border around the tree with keyboard focus."},
+        {id: "0.9.53", date: "3/12/2003", ci: false,
+         desc: "adds the placeholder tab icon that the " +
+               "<a href='http://themes.mozdev.org/themes/skypilot.html'>Sky Pilot Classic</a> " +
+               "theme depends on."},
+        {id: "0.9.52", date: "3/5/2003", ci: false,
+         desc: "fixes a bug where tab names didn't accurately reflect the " +
+               "file once more than 5 tabs were loaded.  It also fixes a " +
+               "problem restoring settings on some versions of Mozilla, " +
+               "and adds prefs to enable middle-click-close for tabs, and " +
+               "disable the new close buttons.  See " +
+"<a href='news://news.mozilla.org:119/b45vk1$oqq4@ripley.netscape.com'>this post</a> "+
+               "for more information."},
+        {id: "0.9.51", date: "2/28/2003", ci: false,
+         desc: "adds close buttons to the source view tabs, and fixes the " +
+               "problem where the source view could not be moved while " +
+               "it was empty."},
+        {id: "0.9.50", date: "2/27/2003", ci: false,
+         desc: "adds the option to save breakpoint and watch settings on " +
+               "exit, and fixes a potential " +
+               "NS_ERROR_NOT_AVAILABLE error while setting breakpoints. " +
+               "This revision also adds the ``Add Watch Expression...'' " +
+               "command to the " +
+               "Local Variables view, so you can add watches easily, and " +
+               "adds ``Change Value'' commands to both the Local Variables " +
+               "and Watch views.  Also, Venkman will now use a proportional " +
+               "font on the Interactive Session view for any messages that " +
+               "do not contain code.  This should make it a bit easier to " +
+               "read.  See " +
+"<a href='news://news.mozilla.org:119/b3muhc$sp21@ripley.netscape.com'>this post</a> "+
+               "for more details."},
+        {id: "0.9.49", date: "2/26/2003", ci: false,
+         desc: "adds the ability to save and restore your breakpoint and " +
+               "watch settings to an arbitrary .js file.  In addition, " +
+               "this revision makes clicking on the margin " +
+               "of the ``first line'' of a function <b>also</b> set a " +
+               "breakpoint at the first executable line of the function, " +
+               "instead of just setting a breakpoint at the function " +
+               "definition." },
+        {id: "0.9.48", date: "2/19/2003", ci: false,
+         desc: "fixes a problem with the ``Open Web Location'' command, and " +
+               "probably a few other commands that use prompt dialogs. " +
+               "Thanks again to dynamis for catching this one. " + 
+               "This is the revision that comes with <b>Mozilla 1.3</b>."},
+        {id: "0.9.47", date: "2/14/2003", ci: false,
+         desc: "fixes a problem setting future breakpoints in scripts that " +
+               "are not currently loaded.  This revision also adds a " +
+               "``Add Watch Expression...'' item in the Watch View's context " +
+               "menu."},
+        {id: "0.9.46", date: "1/27/2002", ci: false,
+         desc: "fixes alignment of the script search box, and fixes a " +
+               "problem saving view layouts.  It also tightens up security " +
+               "on x-jsd: urls."},
+        {id: "0.9.44", date: "12/14/2002", ci: false,
+         desc: "adds the ability to supply a fallback function to be called " +
+               "when the regexp based function name guess fails."},
+        {id: "0.9.43", date: "12/09/2002", ci: false,
+         desc: "fixes some localization issues pointed out by dynamis in " + 
+               "<a href='news://news.mozilla.org:119/20021209083713.8ED9.TRANSLATOR@skillup.jp'>" +
+               "this post</a> to <b>netscape.public.mozilla.jsdebugger</b>."},
+        {id: "0.9.42", date: "12/06/2002", ci: false,
+         desc: "makes the Exclude Duplicates option do the Right Thing when " +
+               "new scripts are loaded, and when old scripts go away."},
+        {id: "0.9.41", date: "12/05/2002", ci: false,
+         desc: "adds the ability to hide duplicate scripts in the Loaded " +
+               "Scripts view.  Only the most recent version of the script " +
+               "will appear when this option is enabled.  Also new in this " +
+               "revision is the ability to filter the Loaded Scripts view " +
+               "based on a search pattern.  The pref backend has been " +
+               "refactored too, so be on the lookout for regressions."},
+        {id: "0.9.40", date: "11/18/2002", ci: true,
+         desc: "adds view names to the window title for floating views.  This " +
+               "version adds new strings to the .properties file, so if " +
+               "you're using a non en-US localization, you'll need to wait " +
+               "for an updated langpack.  The new strings are " +
+               "``msn.floater.title'' and the 9 starting with ``msg.view.*''"},
+        {id: "0.9.39", date: "10/24/2002", ci: false,
+         desc: "fixes a problem saving profile data on versions of Mozilla " +
+               "from before Sept. 2002, and makes breakpoints set as a result " +
+               "of a ``Scan for Meta Comments'' act as future breakpoints, as " +
+               "well as hard breakpoints, so you don't have to rescan after " +
+               "reloading.  This is the revision that comes with " +
+               "<b>Mozilla 1.2</b> and <b>Mozilla 1.2.1</b>."},
+        {id: "0.9.38", date: "10/1/2002", ci: false,
+         desc: "incorporates fixes pointed out by 'dynamis' from skillup.jp. " +
+               "This revision fixes errors in the default string bundle, " +
+               "prevents a double-click on a scrollbar from being interpreted " +
+               "as a double-click on the currently selected item, and " +
+               "displays the value for Boolean and Number objects in the " +
+               "Local Variables and Watch views."},
+        {id: "0.9.37", date: "9/5/2002", ci: true,
+         desc: "fixes the summary line in profile reports, which had 'min' " +
+               "labeled as 'max', 'max' labeled as 'avg', and omitted 'avg'"},
+        {id: "0.9.36", date: "9/4/2002", ci: true,
+         desc: "hides error messages from the browser, and browser " +
+               "components, if ``Exclude Browser Files'' is enabled.  This " +
+               "release no longer stops in autocomplete.xml on accident, and " +
+               "fixes a few other bugs mentioned " +
+               "in the newsgroup.  Also, the max tab limit has been fixed.  " +
+               "By default, this release shouldn't try to load more than 5 " +
+               "tabs in the source view."},
+        {id: "0.9.35", date: "8/13/2002", ci: false,
+         desc: "properly excludes JavaScript components when ``Exclude " +
+               "Browser Files'' is enabled.  It also adds ``Include ECMA " +
+               "Properties'' and ``Include Functions'' options to the Local " +
+               "Variables and Watch views, and introduced a colorizeLimit " +
+               "pref which disables source code coloring for files larger " +
+               "the specified size."},
+        {id: "0.9.34", date: "8/6/2002", ci: false,
+         desc: "fixes a misplaced call to escape() in the help text generator " +
+               "and makes the Interactive Session view's title a bit shorter " +
+               "so that it doesn't interfere with your ability to resize the " +
+               "view.  This is the revision that comes with <b>Mozilla 1.0.1</b> " +
+               "and <b>Mozilla 1.0.2</b>.  This is <i>also</i> the revision that " +
+               "comes with <b>Mozilla 1.1</b>, except there it <u>mistakenly " +
+               "refers to itself as 0.9.35</u>."},
+        {id: "0.9.33", date: "8/5/2002", ci: false,
+         desc: "moves the profile templates into the locale directory, " +
+               "so they can be properly localized.  Also new in this release " +
+               "is the ``msg.report.charset'' string, which controls how " +
+               "unicode string are encoded before being written to a " +
+               "profile report or generated help file.  Finally, some " +
+               "changes were made to the way filenames are extracted from " +
+               "paths, in an attempt to make the tab labels shorter."},
+        {id: "0.9.32", date: "8/5/2002", ci: false,
+         desc: "contains a fix to set the character set based on the meta " +
+               "http-equiv tag in the original source.  A character set " +
+               "selection will come soon.  For now, you can fake it in your " +
+               "own .js files by placing a meta tag behind a JavaScript " +
+               "comment."},
+        {id: "0.9.31", date: "8/3/2002", ci:false,
+         desc: "displays the current eval object in the title of the " +
+               "Interactive Session view, instead of repeating it for every " +
+               "evaluation.  The ``this-expr'' command was added so that you " +
+               "can set the evaluation object to the result of an arbitrary " +
+               "expression.  File->Exit should now properly display the " +
+               "accelerator key on windows systems."},
+        {id: "0.9.30", date: "8/2/2002", ci:false,
+         desc: "fixes a problem with localizations to non-ASCII encodings " +
+               "(bug 160623.)"},
+        {id: "0.9.29", date: "7/30/2002", ci: false,
+         desc: "changes a few things about the ``eval'' command.  The first " +
+               "and most obvious is that ANY line that doesn't start with a " +
+               "forward-slash character ('/') will be eval'd.  To execute a " +
+               "command, you now have to prefix it with a /, as in " +
+               "``/cont''.  If you really don't like this, you can get back " +
+               "to the old setup by typing ``/pref sessionView.requireSlash " +
+               "false''.  The second thing is that eval NO LONGER REQUIRES " +
+               "THAT YOU ARE STOPPED.  By default, eval works in the context " +
+               "of the debugger itself.  You can eval against another window " +
+               "by locating it in the Open Windows view, and selecting " +
+               "``Set as Evaluation Object'' from the context menu.  If you " +
+               "select this from an object in the Local Variables or Watches " +
+               "view, that object will become |this| for the sake of " +
+               "evaluations.  The Throw and Error hook settings are also now " +
+               "saved between invocations."},
+        {id: "0.9.28", date: "7/29/2002", ci: true,
+         desc: "adds ``Find in File'' and ``Run to Line'' to the new source "+
+               "view's context menu, fixes bug 126779, and makes the new " +
+               "source part of the factory layout."},
+        {id: "0.9.27", date: "7/28/2002", ci: true,
+         desc: "adds the concept of ``meta comments.''  These are special " +
+               "comments that instruct the debugger to perform some action. " +
+               "The meta-comments defined by default are //@JSD_LOG, " +
+               "//@JSD_BREAK, and //@JSD_EVAL. JSD_LOG evaluates whatever " +
+               "script follows it, logging the result to the Interactive " +
+               "Session view. JSD_BREAK inserts a conditional breakpoint a " +
+               "the next executable line. JSD_EVAL evaluates whatever script " +
+               "follows it, without logging or breaking. Users can add " +
+               "additional directives with plug ins.  To scan a particular " +
+               "file for meta comments, locate the file in the Loaded " +
+               "Scripts view and select ``Scan For Meta Comments'' " +
+               "from its context menu."},
+        {id: "0.9.26", date: "7/26/2002", ci: true,
+         desc: "fixes the problem with modifying properties on a ``hard'' " +
+               "breakpoint."},
+        {id: "0.9.25", date: "7/26/2002", ci: true,
+         desc: "adds conditional breakpoints and log messages (hint: try " +
+               "right clicking on a breakpoint and selecting properties.) " +
+               "It also makes hidden views show up in the main window when " +
+               "are first displayed.  It also makes the ``square'' button on " +
+               "the top-left of views toggle between float and " +
+               "docked-in-the-main-window states."},
+        {id: "0.9.24", date: "7/18/2002", ci: true,
+         desc: "is what will ship with Mozilla 1.1-beta.  The ``this.tabs " +
+               "has no properties'' bug is fixed, margin clicking works in " +
+               "new source view, a strict warning is fixed, and a spelling " +
+               "error in the startup-init help text is fixed."},
+        {id: "0.9.23", date: "7/18/2002", ci: true,
+         desc: "resulted from the branch landing.  The old source view " +
+               "is used by default, to avoid the painting bug, and the " +
+               "startup messages are slightly different, but other than that " +
+               "it is the same as 0.9.22."},
+        {id: "0.9.22", date: "7/16/2002", ci: false,
+         desc: "fixes the ``unable to open scope/this when it is a window " +
+               "object'' problem.  It also fixes a number of issues with the " +
+               "online help system, and adds a ``remove-watch'' command, " +
+               "which is included in the watch view's context menu.  Also " +
+               "fixed are javascript: urls, and another ``exclude browser " +
+               "files'' related issue that made it possible to step into " +
+               "Venkman itself, on accident.  Also, source code coloring is " +
+               "off by default, due to speed issues."},
+        {id: "0.9.21", date: "6/28/2002", ci: false,
+         desc: "fixes the ``MSG_WORD_SCOPE is not defined'' error with the " +
+               "scope command."},
+        {id: "0.9.20", date: "6/28/2002", ci: false,
+         desc: "fixes the ``this.tabs has no properties'' error that would " +
+               "show up if you tried to debug with the new source view " +
+               "hidden."},
+        {id: "0.9.19", date: "6/26/2002", ci: false,
+         desc: "fixes the ``Close Tab'' option, and a few small issues with  " +
+               "the margin of the new Source Code view"},
+        {id: "0.9.18", date: "6/26/2002", ci: false,
+         desc: "renames ``hacked source view'' to ``Source View (new)''.  " +
+               "The new source code view should be fully operational, and it " + 
+               "replaces the old source view in the factory layout.  Please " +
+               "test it out and report any bugs.  If you work with large " +
+               "and find that files take too long to show up, try turning off " +
+               "the ``Colorize Source'' option from the View menu, or " +
+               "Source View context menu.  Also fixed in 0.9.18 is script " +
+               "profiling, which has been busted for the last few revisions."},
+        {id: "0.9.17", date: "6/23/2002", ci: false,
+         desc: "has an updated ``hacked source view'', which includes the " +
+               "ability to select text, scroll horizontally, and does " +
+               "source coloring.  It's not quite ready for prime time yet, " +
+               "but feel free to try it anyway.  The old source view is " +
+               "still there, and should continue to function.  Also, this " +
+               "release fixes a few minor annoyances not related to the " +
+               "hacked source view."},
+        {id: "0.9.15", date: "6/11/2002", ci: false,
+         desc: "fixes yet another problem with Exclude Browser Files, and " +
+               "speeds up the process of stepping over new window creation " +
+               "with this option enabled."},
+        {id: "0.9.14", date: "6/10/2002", ci: false,
+         desc: "fixes a problem with the ``Exclude Browser Files'' option " +
+               "that made 0.9.13 a bit unlucky."},
+        {id: "0.9.13", date: "6/10/2002", ci: false,
+         desc: "finally displays properties that come from the prototype in " +
+               "the Watches and Local Variables views.  These properties are " +
+               "displayed in bold grey text, so you can tell from whence they " +
+               "came.  Functions are also displayed in these views, and you " +
+               "can inspect function properties (such as parameters, " +
+               "variables, nested functions, and ad-hoc properties) just like " +
+               "any other object.  Try right clicking on a function and " +
+               "``Find Creator'' to see where the function is declared! " +
+               "And if that isn't enough of a reason to update, the look of " +
+               "the view frames has been updated a bit, and all views now " +
+               "have a close button.  Oh, and the Open Windows view now " +
+               "reacts to the ``Exclude Browser Files'' setting by removing " +
+               "non-navigator windows when it is enabled."},
+        {id: "0.9.12", date: "6/09/2002", ci: false,
+         desc: "fixes the crash on exit, speeds up new window creation a bit, " +
+               "and removes the 'Initialize At Startup' menu item.  The " +
+               "'factory' layout is also less cluttered than it was, and the " +
+               "Call Stack view now has a context menu."},
+        {id: "0.9.11", date: "6/06/2002", ci: false,
+         desc: "adds the ability to disable debugging at the file/function " +
+               "level.  This make it possible for Venkman to debug itself! " +
+               "(probably not a big deal to you, but *I* love it.)  It also " +
+               "makes it possible to change the color scheme of the session " +
+               "view, similar to the way ChatZilla works.  ``View->Hide " +
+               "Browser Files'' is know known as ``Debug->Exclude Browser " +
+               "Files'' and is on by default."},
+        {id: "0.9.10", date: "6/05/2002", ci: false,
+         desc: "indicates where a view will drop by showing a border on " +
+               "the target view."},
+        {id: "0.9.9", date: "6/05/2002", ci: false,
+         desc: "cleans up a few issues with view management, and a problem " +
+               "that caused some files to not show up in the loaded scripts " +
+               "view."},
+        {id: "0.9.8", date: "6/04/2002", ci: false,
+         desc: "makes it possible to drag a view by grabbing anywhere on the " +
+               "titlebar, not just the view icon.  It also restores view " +
+               "width/height properly, and adds menubars to floating windows."},
+        {id: "0.9.7", date: "6/03/2002", ci: false,
+         desc: "makes it easier to put views where you want them, and adds " +
+               "the ability to save the current view arrangement with a name " +
+               "and recall it later.  It makes switching between " +
+               "``debugging'' and ``executing'' arrangements very easy."},
+        {id: "0.9.6", date: "6/03/2002", ci: false,
+         desc: "makes floating windows resizable, and makes it possible " +
+               "relocate views by dragging them around."},
+        {id: "0.9.5", date: "5/24/2002", ci: false,
+         desc: "fixes a problem using eval while the locals and/or watches " +
+               "view was hidden.  It also fixes xml and csv profile reports, " +
+               "and makes it possible for views to register commands " +
+               "defined in an external string bundle."},
+        {id: "0.9.4", date: "5/23/2002", ci: false,
+         desc: "fixes profiling, and more importantly, fixes the startup " +
+               "exception that happened in 0.9.2 and 0.9.3 when Venkman was " +
+               "not the first window open."},
+        {id: "0.9.3", date: "5/18/2002", ci: false,
+         desc: "adds a launch counter so we can esitmate the amount of usage " +
+               "venkman is getting.  It makes the local and watch " +
+               "views refresh after 'eval's, makes it possible to float " +
+               "a view by clicking on the little icon, and adds a title-" +
+               "bar to the source view."},
+        {id: "0.9.2", date: "5/17/2002", ci: false,
+         desc: "re-introduces context menus and fixes breakpoint related " +
+               "console commands.  This is could be good enough to use as a " +
+               "daily debugger.  Please try it out and report on any issues."},
+        {id: "0.9.1", date: "5/14/2002", ci: false,
+         desc: "Fixes problems with function names not showing up correctly " +
+               "in the scripts view."},
+        {id: "0.9.0", date: "5/14/2002", ci: false,
+         desc: "is the first release off the floating-window branch.  " +
+               "Basic debugging should be working, but notable bugs include " +
+               "a complete lack of context menus, and inability to save " +
+               "profile data.  You'll probably only want to use this as " +
+               "a preview of what's to come.  " +
+               "Floating views are here, but there are no UI elements to " +
+               "control them.  Type 'float &lt;view-id&gt;' to float a view, " +
+               "and 'toggle-view &lt;view-id&gt;' to toggle the visibility of "+
+               "a view.  Valid &lt;view-id&gt;s are breaks, locals, scripts, " +
+               "session, stack, source, watches, and windows."},
+        {id: "0.8.5", date: "5/14/2002", ci: true,
+         desc: "is a snapshot of the Mozilla trunk on 5/14/2002.  Useful if " +
+               "you wan't to revert from one of the 0.9.x versions. " +
+               "This is the revision that comes with <b>Mozilla 1.0</b>."}
+      ];
+    </script>
+
+  </head>
+
+  <body>
+    <h1>Venkman Development</h1>
+    <a style="float: right;" href="http://www.hacksrus.com/~ginda/venkman/screenshots/?M=D"><img src="screenshots/desktop-20030501-small.gif"></a>
+    <p>
+      Venkman is the JavaScript debugger for Mozilla based browsers, such
+      as Mozilla 1.x, Netscape 7.x, and Phoenix/Firebird.
+      This page contains the latest Venkman news and development releases.
+      Please see <a href="http://www.mozilla.org/projects/venkman/">the main
+      Venkman page</a> for more information, and
+      <a href="http://www.hacksrus.com/~ginda/venkman/faq/venkman-faq.html">the Venkman FAQ</a>
+      for answers to common questions.
+
+    <h1>News...</h1>
+    <ul>
+      <li><a href="http://www.fatcow.com/">FatCow Web Hosting</a> has provided a <a href="http://www.fatcow.com/edu/venkman-faq-be/">Belorussian translation of the FAQ</a>.
+      <li>James Ross is working on creating a Venkman XPI that once again
+       works on ANY version of Mozilla.  Check out
+       <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=247507">bug #247507</a> and version 0.9.85 below.
+      <li>Venkman is broken on the Firefox and Mozilla trunk, sorry.  There
+       is a regression in the tree code caused by changes to the
+       Mozilla/Firefox tree widget.  See
+       <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=274082">bug 274082</a>
+       for more information.
+      <li>Trying to get Venkman working on Firefox?  If you're using
+       Firefox 1.0, try Venkman 0.9.84.
+      <li><b>Svend Tofte</b> has put together a comprehensive Venkman
+        tutorial called
+        ``<a href="http://www.svendtofte.com/code/learning_venkman/">Learning the JavaScript debugger Venkman</a>.''
+        It leads you step-by-step through nearly all of the features in Venkman,
+        and it's got lots of excellent screenshots to match the text.
+        Plan to take a break and stretch in the middle though, it's a
+        long one :)
+      <li>Check out
+        <a href="http://devedge.netscape.com/">Netscape Devedge</a>'s 
+        new article,
+      <a href="http://devedge.netscape.com/viewsource/2003/venkman/01/">Using Breakpoints in Venkman</a>.
+      <li>Venkman now supports a tabbed view container, read the post titled
+
+        ``<a href="http://article.gmane.org/gmane.comp.mozilla.devel.jsdebugger/242">Venkman gets tabbed views</a>'' for more information.
+      <li>I noticed this <a href="ms-venkman.html">pro-Venkman post</a> on
+        a <b>Microsoft</b>&trade; usenet group the other day.  Funny thing is,
+        it's not on my news server anymore.  Was it cancelled, or is this just
+        a newsfeed hiccup?  The world may never know :)
+      <li>Read about extending Venkman in this
+        <a href="http://news.gmane.org/thread.php?group=gmane.comp.mozilla.devel.jsdebugger">netscape.public.mozilla.jsdebugger</a> post titled
+        ``<a href="http://article.gmane.org/gmane.comp.mozilla.devel.jsdebugger/234">overriding filenames in the loaded scripts view</a>''.
+      <li>Netscape DevEdge has posted an
+        <a href="http://devedge.netscape.com/viewsource/2002/venkman/01/">Introduction to the JavaScript Debugger</a>.
+    </ul>
+    <h1>Current Release...</h1>
+    <p>
+      The Current release of Venkman can be found on
+      <a href="https://addons.mozilla.org/firefox/216/">addons.mozilla.org</a>.
+
+<br><br>
+
+<center>
+<script type="text/javascript"><!--
+google_ad_client = "pub-7685653811018916";
+google_ad_width = 728;
+google_ad_height = 90;
+google_ad_format = "728x90_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+</script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</center>
+    <h1>Older Releases...</h1>
+    <p>
+      Click the one of the links in the <b>install</b> column
+      to install Venkman using XPInstall.  These XPIs <b>WILL</b> work in
+      <a href="http://channels.netscape.com/ns/browsers/7/default.jsp">Netscape 7.x</a>!
+    <p>
+      Note that these installs need to write to your Mozilla install directory,
+      which means <b>you</b> need to have <b>write access</b> to this directory.
+      If you are on a unixish system and installed your browser
+      via your package management system, you'll need to be <b>root</b>.
+    <p>
+      See
+      <a href="http://skillup.jp/venkman/">http://skillup.jp/venkman/</a>
+      for Japanese localizations of Venkman and associated documentation.
+    <p>
+      <table border="0">
+        <tr>
+          <th>revision</th>
+          <th>description</th>
+          <th>install</th>
+        </tr>
+
+        <script>writeRevs();</script>
+        <noscript>
+          <tr><th colspan="3">Sorry, JavaScript is required to view the revision
+              table</th></tr>
+        </noscript>
+      </table>
+
+    <hr>
+    [<a href="http://www.hacksrus.com/~ginda">Up one level</a>]<br>
+    <address><a href="mailto:rginda@netscape.com"></a></address>
+<!-- Created: Sun May 12 14:22:16 PDT 2002 -->
+<!-- hhmts start -->
+Last modified: Thu Aug 28 01:19:02 PDT 2003
+<!-- hhmts end -->
+
+
+  </body>
+</html>

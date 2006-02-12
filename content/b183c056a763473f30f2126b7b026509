@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+<meta name="author" content="Steven G. Chipman" />
+<meta name="description" content="A color swatch generator based on the tutorial located here: http://www.stuffandnonsense.co.uk/archives/creating_colour_palettes.html" />
+<meta name="copyright" content="(c) 2004-2006 S.G. Chipman" />
+<meta name="keywords" content="color, palette, hex, rgb, palette, javascript, dhtml, slayeroffice" />
+<title>slayeroffice | tools | color palette creator v1.6.1</title>
+<link rel="Stylesheet" type="text/css" href="http://slayeroffice.com/tools/color_palette//color_palette.css" />
+<script language="javascript" type="text/javascript" src="http://slayeroffice.com/tools/color_palette/color_palette.js"></script>
+</head>
+<body>
+<script type="text/javascript"><!--
+google_ad_client = "pub-3630357118127212";
+google_ad_width = 728;
+google_ad_height = 90;
+google_ad_format = "728x90_as";
+google_ad_type = "text_image";
+//2006-11-10: Color Palette Creator
+google_ad_channel = "2147043369";
+google_color_border = "A74661";
+google_color_bg = "F7EDF0";
+google_color_link = "542331";
+google_color_text = "000000";
+google_color_url = "542331";
+//--></script>
+<div class="adContainer" style="position:relative;width:728px;margin:10px auto;text-align:center;">
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
+</div>
+<table style="margin:auto;">
+<tr>
+<td><!--<a href="http://www.genopal.com/banners/slayeroffice_left.htm"><img border="0" alt="Advertisement" src="http://www.genopal.com/banners/slayeroffice_left.gif" /></a>--></td>
+<td>
+<div class="textContainer">
+	<span id="hex0"></span>
+	<span id="hex1"></span>
+	<span id="hex2"></span>
+	<span id="hex3"></span>
+
+	<span id="hex4"></span>
+</div>
+<div id="mContainer">
+	<div id="lightLayer"></div>
+	<div id="darkLayer"></div>
+</div>
+<div class="textContainer">
+	<span id="hex5"></span>
+	<span id="hex6"></span>
+	<span id="hex7"></span>
+	<span id="hex8"></span>
+
+	<span id="hex9"></span>
+</div>
+
+<div id="controls">
+<div style="text-align:center;"><a id="perma" href="">Permalink for this palette</a>.</div>
+	<table class="controlsTable">
+	<tr>
+		<td>Blend top row with:</td>
+		<td><input title="The color the top row is blended with." type="text" class="txt" id="newLightBlend" value="FFFFFF" /><input type="button" class="btn" value="change" onclick="changeBlend(0);" /></td>
+
+	</tr>
+	<tr>
+		<td>Blend bottom row with:</td>
+		<td><input title="The color the bottom row is blended with." type="text" class="txt" id="newDarkBlend" value="000000" /><input type="button" class="btn" value="change" onclick="changeBlend(1);" /></td>
+	</tr>
+	<tr>
+		<td>Base Color:</td>
+		<td><input class="txt" title="The color all other colors will derive from." id="newBaseColor" type="text" value="A74661" /><input class="btn" type="button" onclick="createSwatches();" value="ok" /></td>
+
+	</tr>
+	<tr>
+		<td>Base History:</td>
+		<td><select title="A history of your base colors this session." id="bHistory" onchange="d.getElementById('newBaseColor').value=this.value;createSwatches();"></select><input type="button" onclick="clearBaseHistory();" value="clear history" class="btn" /></td>
+	</tr>
+	<tr>
+		<td><input title="Click this button for a randomly generated base color." class="btn" type="button" onclick="randomBaseColor();" value="random base" /></td>
+		<td><input class="btn" type="button" onclick="saveBase();" value="save base" /><input class="btn" type="button" onclick="viewSaved();" value="view saved" /></td>
+
+	</tr>
+	<tr>
+		<td><input class="btn" type="button" onclick="showVals('hex');" value="output hex" /></td>
+		<td><input class="btn" type="button" onclick="showVals('rgb');" value="output rgb" /></td>
+	</tr>
+	</table>
+	<table cellpadding="0" cellspacing="0" class="colorTable">
+		<tr><td id="c0"></td><td id="v0" width="225"></td></tr>
+		<tr><td id="c1"></td><td id="v1"></td></tr>
+
+		<tr><td id="c2"></td><td id="v2"></td></tr>
+		<tr><td id="c3"></td><td id="v3"></td></tr>
+		<tr><td id="c4"></td><td id="v4"></td></tr>
+		<tr><td id="c5"></td><td id="v5"></td></tr>
+		<tr><td id="c6"></td><td id="v6"></td></tr>
+		<tr><td id="c7"></td><td id="v7"></td></tr>
+		<tr><td id="c8"></td><td id="v8"></td></tr>
+		<tr><td id="c9"></td><td id="v9"></td></tr>
+	</table>
+
+<textarea id="txt"></textarea>
+</div>
+</td>
+<td><!--<a href="http://www.genopal.com/banners/slayeroffice_right.htm"><img alt="Advertisement"  border="0" src="http://www.genopal.com/banners/slayeroffice_right.gif" /></a>--></td>
+</tr></table>
+<div id="instructions">
+	<p>
+	This tool was inspired directly by the excellent <a href="http://www.stuffandnonsense.co.uk/archives/creating_colour_palettes.html">Creating Color Palettes</a> article by Andy Clarke.
+	</p>
+	</p>
+	It will create 10 shades of the base color, located top-left, at varying degrees of opacity. The top row emulates opacity over a white background, the bottom over black (or colors of your choosing as of v1.4). The opacity values are 100% opaque, 75%, 50%, 25% and 10% on the top row. The bottom row begins at 85% rather than 100% and continues on as the first.
+	</p>
+
+	<p>
+	<strong>How to use it:</strong>
+	</p>
+	<ul>
+	<li>Type a valid six character hexidecimal value in the text box above and hit the "ok" button.</li>
+	<li>Click the "random base" color to get a randomly generated base color.</li>
+	<li>Click any of the color swatches to set it as the new base color.</li>
+
+	<li>Select any color from the "Base History" drop down to re-set it as the base color.</li>
+	<li>To change the color the base color is blended with, change the hex value for the row and hit the "change" button. Default is white (FFFFFF) and black (000000).</li>
+	</ul>
+	<p>
+	Hit the "output hex" button to have the table below the palette display hexidecimal color values. Hit the "output RGB" button to display comma delimited RGB values.
+	</p>
+	<p>
+	Click the "save base" button to write the current base color to a cookie for safe keeping. You can call up the colors you've saved via the "view saved" button. From there you may set a saved color as the base, delete an individual color or delete all of the colors you've saved. Press the "cancel" button to take no action.
+	</p>
+
+	<p>
+	As of version 1.6, you can export all of your saved palettes to a PNG image by clicking the "create PNG" button in the "saved" window. This is a temporary image and does <em>not</em> exist on the server -- <strong>don't bookmark it and don't link to it. If you want to keep the image you'll have to save it to your hard drive</strong>.
+	</p>
+	<p>
+	<a href="http://slayeroffice.com/?c=/content/tools/color_palette.html">Version History</a><br />
+	<a href="http://slayeroffice.com/tools/color_palette/color_palette.js">Javascript Source</a><br />
+
+	<a href="http://slayeroffice.com/tools/color_palette/color_palette.css">CSS</a><br />
+	</p>
+</div>
+
+<div id="credits">	
+	<a href="http://slayeroffice.com"><img alt="slayeroffice" src="http://slayeroffice.com/gr/office_logo_green.gif" /></a>
+	Color Palette Creator<br />
+	version 1.6.2<br />
+	<!--last revision: 07.31.2004<br />-->
+
+	last revision: 05.18.2009<br />
+	<a href="mailto:steve@slayeroffice.com">steve@slayeroffice.com</a><br />
+	<a href="http://slayeroffice.com">http://slayeroffice.com</a>
+</div>
+</body>
+</html>

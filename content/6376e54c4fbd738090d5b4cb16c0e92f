@@ -1,0 +1,880 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"   "http://www.w3.org/TR/html4/strict.dtd">
+<html dir="ltr" lang="en-US">
+
+<head profile="http://gmpg.org/xfn/11">
+  <meta name="google-site-verification" content="7UIOcPeYAlcY_kvDb9v_RE_Pzf7TfIv7zCSjK3SLT-w" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title> &raquo; Show love to the object literal - Christian Heilmann&#039;s blog &#8211; Wait till I come!</title>
+<script type="text/javascript">google_ad_client = "pub-6730206592365449";google_ad_width = 468;google_ad_height = 60;
+google_ad_format = "468x60_as";google_color_border = "CCCCCC";google_color_bg = "FFFFFF";google_color_link = "000000";
+google_color_url = "666666";google_color_text = "333333";</script>
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.2/build/reset-fonts-grids/reset-fonts-grids.css">
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.2/build/base/base-min.css">
+
+<link rel="stylesheet" href="http://www.wait-till-i.com/wp-content/themes/yuiminimal/style.css" type="text/css" media="screen" />
+
+<link rel="alternate" type="application/rss+xml" title="Christian Heilmann&#039;s blog &#8211; Wait till I come! RSS Feed" href="http://www.wait-till-i.com/feed/" />
+<link rel="pingback" href="http://www.wait-till-i.com/xmlrpc.php" />
+
+<link rel="alternate" type="application/rss+xml" title="Christian Heilmann&#039;s blog - Wait till I come! &raquo; Show love to the object literal Comments Feed" href="http://www.wait-till-i.com/2006/02/16/show-love-to-the-object-literal/feed/" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.wait-till-i.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.wait-till-i.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='Christian Heilmann&#039;s blog &#8211; Wait till I come!' href='http://www.wait-till-i.com/' />
+<link rel='start' title='Blogs away!' href='http://www.wait-till-i.com/2005/01/27/blogs-away/' />
+<link rel='prev' title='More Yahoo goodies' href='http://www.wait-till-i.com/2006/02/14/more-yahoo-goodies/' />
+<link rel='next' title='Chat around the Campfire' href='http://www.wait-till-i.com/2006/02/17/chat-around-the-campfire/' />
+<meta name="generator" content="WordPress 3.0.1" />
+<link rel='canonical' href='http://www.wait-till-i.com/2006/02/16/show-love-to-the-object-literal/' />
+<link rel='shortlink' href='http://www.wait-till-i.com/?p=239' />
+<style>#chris{-moz-position:relative;display:inline}</style>
+</head>
+<body>
+<div id="doc2" class="yui-t6">
+  <div id="bd">
+    <div id="yui-main">
+      <div class="yui-b" id="content"><div id="pad">
+        
+  			
+
+	
+
+		<div class="post" id="post-239">
+			<h1>Show love to the object literal</h1>
+
+			<div class="entry">
+					<p><strong>German Visitors</strong>: <a href="http://www.grochtdreis.de/weblog/index.php?id=P953" title="">Zur deutschen Version gehts hier &#8211; auf dem Blog von Jens Grochtdreis</a></p>
+
+	<p>If you are just getting your teeth into JavaScript, or if you used it in the past and re-discovered it in the wake of the <span class="caps">AJAX</span> craze you might have been baffled by scripts that come in a new syntax.</p>
+
+	<p>While older copy and paste scripts looked like this:</p>
+
+<pre><code>var commonSense=null;
+var standardsCompliance="50%";
+function init(){
+// code
+}
+function doStuff(){
+// code
+}
+function doMoreStuff(){
+// code
+}</code></pre>
+
+	<p>Newer scripts inside tutorials tend to look like this:</p>
+
+<pre><code>awesome={
+commonSense:null,
+standardsCompliance:"50%",
+init:function(){
+// code
+},
+doStuff:function(){
+// code
+},
+doMoreStuff:function(){
+// code
+}
+}</code></pre>
+
+
+	<p>The new syntax is called the object literal and is pretty close to sliced bread. Here is why: <span id="more-239"></span></p>
+
+	<h2>The problem with global functions and variables.</h2>
+
+	<p>One of the biggest obstacles of JavaScripts you find in the wild is that they tend to claim the browser and variable names for themselves exclusively. If you only apply one script to your <span class="caps">HTML</span> document, that is not an issue, but when you use several scripts you might get into trouble.</p>
+
+	<p>If you check some of my older articles you will realise that I tended to use rather generic function names like <code>init() </code> or <code> validate()</code> . You might also have encountered scripts by me or other people that use global variables like <code> selectedItem</code>  or <code> current</code> .</p>
+
+	<p>Global variables are those that are defined outside functions or inside functions without using the <code>var</code> keyword.</p>
+
+	<p>Imagine several developers had the same grand idea and you apply both scripts to your web page:</p>
+
+<pre><code>&lt;script type="text/javascript" src="easyFameAndFortune.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="thirdPartyStuff.js"&gt;&lt;/script&gt;</code></pre>
+
+	<p>My code in <code>easyFameAndFortune.js</code> will not be executed at all, as the functions <code>init()</code> and <code>validate()</code> have been redefined &#239;&#191;&#189; or you could say overwritten &#239;&#191;&#189; by the functions with the same name in <code>thirdPartyStuff.js</code>. If both scripts shared a global variable named <code>current</code> functions in both would overwrite the value needed for the other.</p>
+
+	<p>It is the same phenomenon you might have encountered with several style sheets applied to the same document. You change, hack and debug in the main style sheet and wonder why nothing works until you realise that the bug is actually in a different style sheet where you or someone else applied something to the same selector you try to debug.</p>
+
+	<h2>How to avoid the problem?</h2>
+
+	<p>There are several solutions:</p>
+
+	<ul>
+		<li>Don&#239;&#191;&#189;t use generic names in your scripts (which is a shame as <code>init</code> and <code>validate</code> does what it says on the tin)</li>
+		<li>Add a name to each of the functions like <code>easyFameAndFortune_init</code> and <code>easyFameAndFortune_validate</code></li>
+		<li>Turn the functions into methods and the variables into parameters of an object</li>
+	</ul>
+
+	<p>The latter is what higher programming languages like Java, <span class="caps">PHP</span> or C# do, although that instead of an object, they use classes. There are no classes in JavaScript, so we will have to do with an object.</p>
+
+<pre><code>myscript=new Object();
+myscript.current=1;
+myscript.init=function(){
+// some code
+}
+myscript.validate=function(){
+// some code
+}</code></pre>
+
+	<p>This means that unless both scripts have the same object name (you might want to avoid calling the object <code>init</code>) they won&#239;&#191;&#189;t overwrite each other. This makes the script play nicely with other scripts, but it still feels a bit cumbersome to repeat the object name every time you add a new method or variable. The solution for that is the object literal, a JavaScript syntax that has been around for quite a while but wasn&#239;&#191;&#189;t used much in publicly available scripts. It does the same as the earlier script, but the syntax changes slightly:</p>
+
+<pre><code>myscript={
+current:1,
+init:function(){
+// code
+},
+validate:function(){
+// code
+}
+}</code></pre>
+
+	<p>Instead of = signs you use : to define the parameters and methods, and instead of semicolons, you need to end each definition but the last one with a comma.<br />
+Notice,  that the curly brace ending the method <code>validate</code> has no comma. If you were to add another method, it would need one:</p>
+
+<pre><code>myscript={
+current:1,
+init:function(){
+// code
+},
+validate:function(){
+// code
+
+},
+
+send:function(){
+// code
+}
+}</code></pre>
+
+	<h2>Spread the message</h2>
+
+	<p>Not only does the object literal ensure that your script is self contained and you don&#239;&#191;&#189;t have to repeat the object name &#239;&#191;&#189; it also sends a message that your script is modern and tries to stay as unobtrusive as possible.</p>
+
+	<p>Consider it a secret handshake between <span class="caps">DOM</span> scripters :-)</p>
+ 
+								
+        <div id="adspace"><script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script></div>
+
+<iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.wait-till-i.com%2F2006%2F02%2F16%2Fshow-love-to-the-object-literal%2F&amp;layout=standard&amp;show-faces=true&amp;width=450&amp;action=like&amp;colorscheme=dark" scrolling="no" frameborder="0" allowTransparency="true" style="border:none; overflow:hidden; width:450px; height:30px; padding-top:8px"></iframe>
+
+				<p class="postmetadata alt">
+					<small>
+						This entry was posted
+												on Thursday, February 16th, 2006 at 9:23 pm						and is filed under <a href="http://www.wait-till-i.com/category/common-issues/" title="View all posts in Common Issues" rel="category tag">Common Issues</a>, <a href="http://www.wait-till-i.com/category/general/" title="View all posts in General" rel="category tag">General</a>, <a href="http://www.wait-till-i.com/category/tips-tricks/" title="View all posts in Tips &amp; Tricks" rel="category tag">Tips &#038; Tricks</a>.
+						You can follow any responses to this entry through the <a href='http://www.wait-till-i.com/2006/02/16/show-love-to-the-object-literal/feed/'>RSS 2.0</a> feed.
+
+													Both comments and pings are currently closed.
+
+						
+					</small>
+				</p>
+
+
+
+
+			</div>
+		</div>
+
+
+	
+<div id="disqus_thread">
+					<div id="dsq-content">
+			<ul id="dsq-comments">
+					<li id="dsq-comment-1973">
+					<div id="dsq-comment-header-1973" class="dsq-comment-header">
+						<cite id="dsq-cite-1973">
+	http://intillium.wordpress.com/2006/02/19/show-love-to-the-object-literal/							<span id="dsq-author-user-1973">Intillium Blog  &raquo; Blog Archive   &raquo; Show love to the object literal</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-1973" class="dsq-comment-body">
+						<div id="dsq-comment-message-1973" class="dsq-comment-message"><p>
+<pingback />[...] w syntax is called the object literal and is pretty close to sliced bread. <a target="_blank" href="http://www.wait-till-i.com/index.php?p=239">http://www.wait-till-i.com/index.php?p=239</a>  Explore posts in the same categories: JavaScript [...]</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-1977">
+					<div id="dsq-comment-header-1977" class="dsq-comment-header">
+						<cite id="dsq-cite-1977">
+	http://www.zepan.org/index.php/2006/02/20/links-2-19-2006/							<span id="dsq-author-user-1977">Talking to myself&#8230; &raquo; Links: 2-19-2006</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-1977" class="dsq-comment-body">
+						<div id="dsq-comment-message-1977" class="dsq-comment-message"><p>
+<pingback />[...] ox : Free your music!     (categories:      audio  gadgets  hardware  home  mp3  music )  <a href="http://www.wait-till-i.com/index.php?p=239">Show love to the object literal &#8211; Wait till I come!</a>     (categories:      javascript  webdev )  Xdelt [...]</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-2016">
+					<div id="dsq-comment-header-2016" class="dsq-comment-header">
+						<cite id="dsq-cite-2016">
+	http://www.dustindiaz.com/episode-04/							<span id="dsq-author-user-2016">Episode 04: Paul Boag Interview</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-2016" class="dsq-comment-body">
+						<div id="dsq-comment-message-2016" class="dsq-comment-message"><p>
+<pingback />[...] fore my entry was posted to this site, Chris Heilmann writes some practical advice on even <a href="http://www.wait-till-i.com/index.php?p=239" title="So much love happening!">more love on the object literal</a>. Notables from this Episode  SxSW whic [...]</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-2364">
+					<div id="dsq-comment-header-2364" class="dsq-comment-header">
+						<cite id="dsq-cite-2364">
+	http://www.webstandards.org/2006/02/17/quick-explanation-of-the-object-literal/							<span id="dsq-author-user-2364">Quick Explanation of the Object Literal &#8211; The Web Standards Project</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-2364" class="dsq-comment-body">
+						<div id="dsq-comment-message-2364" class="dsq-comment-message"><p>
+<pingback />[...] &#8216;,   init:function(){   },   doStuff:function(){   } }  It hopefully will help you to read <a href="http://www.wait-till-i.com/index.php?p=239">Show love to the object literal</a>. </p>
+<p>    Your Replies      No comments have been made. [...]</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-2434">
+					<div id="dsq-comment-header-2434" class="dsq-comment-header">
+						<cite id="dsq-cite-2434">
+	http://nothinghappens.net/?p=39							<span id="dsq-author-user-2434">nothing happens</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-2434" class="dsq-comment-body">
+						<div id="dsq-comment-message-2434" class="dsq-comment-message"><p>
+<pingback />[...] lar among JavaScript coders in recent years with the <span class="caps">AJAX</span> craze.  Thus today I came across <a href="http://www.wait-till-i.com/index.php?p=239">this blog post</a> on the subject, which prompted me to think about the object literal, which I&#8217;ve o [...]</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-2386">
+					<div id="dsq-comment-header-2386" class="dsq-comment-header">
+						<cite id="dsq-cite-2386">
+	http://nefariousdesigns.co.uk/archive/2006/05/object-oriented-concepts/							<span id="dsq-author-user-2386">Object-Oriented Concepts &#8211; Nefarious Designs, Web Standards Design and Development, East Grinstead, West Sussex, UK</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-2386" class="dsq-comment-body">
+						<div id="dsq-comment-message-2386" class="dsq-comment-message"><p>
+<pingback />[...] capable web developers. This can be best illustrated by the recent boom of interest in the <a href="http://www.wait-till-i.com/index.php?p=239">Javascript object literal</a>. As Senior Web Developer at Rentokil, I am required to be technical lead wit [...]</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-2426">
+					<div id="dsq-comment-header-2426" class="dsq-comment-header">
+						<cite id="dsq-cite-2426">
+	http://www.centralscrutinizer.it/xml/la-x-di-json-prima-parte/							<span id="dsq-author-user-2426">La X di JSON &#8211; prima parte   |  Central Scrutinizer &#8211; [ il web in 283 comode rate ]</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-2426" class="dsq-comment-body">
+						<div id="dsq-comment-message-2426" class="dsq-comment-message"><p>
+<pingback />[...] che lavorano in cooperazione. (Esempi a proposito sono segnalati nei post di Dustin Diaz e <a href="http://www.wait-till-i.com/index.php?p=239#" title="Show love to the object literal">Chris Heilmann</a> sull&#8217;argomento). Nel 2002 il developer D [...]</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-2419">
+					<div id="dsq-comment-header-2419" class="dsq-comment-header">
+						<cite id="dsq-cite-2419">
+	http://nefariousdesigns.co.uk/archive/2006/05/object-oriented-javascript/							<span id="dsq-author-user-2419">Object-Oriented Javascript &#8211; Nefarious Designs, Web Standards Design and Development, East Grinstead, West Sussex, UK</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-2419" class="dsq-comment-body">
+						<div id="dsq-comment-message-2419" class="dsq-comment-message"><p>
+<pingback />[...] more information on the object literal, I recommend reading Chris Heilmann&#8217;s &#8220;<a href="http://www.wait-till-i.com/index.php?p=239">Show Love to The Object Literal</a>,&#8221; and Dustin Diaz&#8217;s &#8220;JSON for the Masses.&#8221; Fan [...]</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-2510">
+					<div id="dsq-comment-header-2510" class="dsq-comment-header">
+						<cite id="dsq-cite-2510">
+	http://www.webstandards.org/2006/06/12/promoting-the-responsible-use-of-javascript-writing-teaching-and-presenting/							<span id="dsq-author-user-2510">Promoting the responsible use of JavaScript: writing, teaching and presenting &#8211; The Web Standards Project</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-2510" class="dsq-comment-body">
+						<div id="dsq-comment-message-2510" class="dsq-comment-message"><p>
+<pingback />[...] and James Edwards&#8217; &#8220;The JavaScript Anthology&#8221;  Articles  Chris Heilmann: <a href='http://www.wait-till-i.com/index.php?p=239'>Show your love to the object literal</a> Chris Heilmann: From <span class="caps">DHTML</span> to <span class="caps">DOM </span>Scripting Aaron Gustafson: Gett [...]</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-2518">
+					<div id="dsq-comment-header-2518" class="dsq-comment-header">
+						<cite id="dsq-cite-2518">
+	http://www.script-artists.de/2006/06/sinnvolle-nutzung-von-javascript.html							<span id="dsq-author-user-2518">Script Artists  &raquo; Archiv   &raquo; Sinnvolle Nutzung von JavaScript</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-2518" class="dsq-comment-body">
+						<div id="dsq-comment-message-2518" class="dsq-comment-message"><p>
+<pingback />[...] logy&#8221; unter der technischen Leitung von Derek Featherstone  Artikel  Chris Heilmann: <a href="http://www.wait-till-i.com/index.php?p=239">Show your love to the object literal</a> Chris Heilmann: From <span class="caps">DHTML</span> to <span class="caps">DOM </span>Scripting Aaron Gustafson: Gett [...]</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-2807">
+					<div id="dsq-comment-header-2807" class="dsq-comment-header">
+						<cite id="dsq-cite-2807">
+	http://www.ioncannon.net/web-design/86/good-article-on-keeping-javascript-maintainable/							<span id="dsq-author-user-2807">IONCANNON &raquo; Good article on keeping javascript maintainable</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-2807" class="dsq-comment-body">
+						<div id="dsq-comment-message-2807" class="dsq-comment-message"><p>
+<pingback />[...] ble to any code. The important parts of the article cover javascript specific things like: <a href="http://www.wait-till-i.com/index.php?p=239" onclick="javascript:urchinTracker ('/outbound/article/www.wait-till-i.com');">object literals</a>, namespa [...]</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-2804">
+					<div id="dsq-comment-header-2804" class="dsq-comment-header">
+						<cite id="dsq-cite-2804">
+	http://www.thinkvitamin.com/features/dev/the-importance-of-maintainable-javascript							<span id="dsq-author-user-2804">Vitamin Features  &raquo; The Importance of Maintainable JavaScript</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-2804" class="dsq-comment-body">
+						<div id="dsq-comment-message-2804" class="dsq-comment-message"><p>
+<pingback />[...] can keep scripts self-contained by namespacing them or wrapping them in an object via the <a href="http://www.wait-till-i.com/index.php?p=239">object literal</a>. You ensure you don&#8217;t hijack variables by keeping them in scope of your functions [...]</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-2952">
+					<div id="dsq-comment-header-2952" class="dsq-comment-header">
+						<cite id="dsq-cite-2952">
+	http://scriptia.net/2006/06/del-literal-de-objeto.html							<span id="dsq-author-user-2952">&raquo; Del literal de objeto &#8211; Scriptia</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-2952" class="dsq-comment-body">
+						<div id="dsq-comment-message-2952" class="dsq-comment-message"><p>
+<pingback />[...] hashes, permite mantener el c&#195;&#179;digo limpio y bien ordenadito. Chris Heilmann lo explica en <a href="http://www.wait-till-i.com/index.php?p=239" hreflang="en" lang="en" xml:lang="en">Show lov to the object literal</a>.      Etiquetas   objetos,  l [...]</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-2953">
+					<div id="dsq-comment-header-2953" class="dsq-comment-header">
+						<cite id="dsq-cite-2953">
+	http://www.theenglishguy.co.uk/2006/08/12/tactile-braille-signs-online-ordering/							<span id="dsq-author-user-2953">The English Guy   &raquo; Tactile &amp; Braille Signs, Online Ordering</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-2953" class="dsq-comment-body">
+						<div id="dsq-comment-message-2953" class="dsq-comment-message"><p>
+<pingback />[...] ity, baby changing etc., I should mention here that this is a <span class="caps">DOM</span>-compliant page utilising <a href="http://www.wait-till-i.com/index.php?p=239">object literal notation</a> JavaScript code. I wanted to test it out to see if there were any problems, or [...]</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-1960">
+					<div id="dsq-comment-header-1960" class="dsq-comment-header">
+						<cite id="dsq-cite-1960">
+	http://www.bogglethemind.com/							<span id="dsq-author-user-1960">Jeff L</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-1960" class="dsq-comment-body">
+						<div id="dsq-comment-message-1960" class="dsq-comment-message"><p>I&#8217;ve bookmarked this on delicious, as I feel there is some good info here that someday I&#8217;ll be able to understand.  :-)</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-1961">
+					<div id="dsq-comment-header-1961" class="dsq-comment-header">
+						<cite id="dsq-cite-1961">
+								<span id="dsq-author-user-1961">Matthijs</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-1961" class="dsq-comment-body">
+						<div id="dsq-comment-message-1961" class="dsq-comment-message"><p>Good post Christian, thanks! Just yesterday when I was browsing some ajax/ dom /javascript scripts and libraries the question on my mind was: ok, all very nice, but what happens if I combine some of these functions and libraries? This article is bookmarked :)</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-1962">
+					<div id="dsq-comment-header-1962" class="dsq-comment-header">
+						<cite id="dsq-cite-1962">
+	http://www.williamwdoyle.com							<span id="dsq-author-user-1962">William Doyle</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-1962" class="dsq-comment-body">
+						<div id="dsq-comment-message-1962" class="dsq-comment-message"><p>a question about parameters in the object literal notation. can you only have literals as parameters or you also have parameter values be functions like so:<br />
+name = {<br />
+parameter1 : document.getElementById(&#8216;id&#8217;);<br />
+function1 : function() {<br />
+code&#8230;<br />
+}</p>
+<p>}</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-1963">
+					<div id="dsq-comment-header-1963" class="dsq-comment-header">
+						<cite id="dsq-cite-1963">
+	http://icant.co.uk							<span id="dsq-author-user-1963">Chris Heilmann</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-1963" class="dsq-comment-body">
+						<div id="dsq-comment-message-1963" class="dsq-comment-message"><p>No, for the reason that they are not available when the document hasn&#8217;t loaded yet.<br />
+If you tried to use a:</p>
+<pre><code>
+bla=document.body;
+alert(bla);
+</code></pre>
+<p>Outside a function called onload of the window it will also result in an error.<br />
+If you want to assign new parameters of the main object, you can do that in a method:</p>
+<pre><code>
+myStuff={
+init:function(){
+myStuff.myVariable=document.getElementById('bla');
+alert(myStuff.myVariable.innerHTML);
+}
+}
+window.onload=myStuff.init;
+</code></pre>
+<p>Will work, and you&#8217;ll have the <span class="caps">DIV</span> as myStuff.myVariable. However, it is always a good idea to test if the <span class="caps">DIV</span> with the ID really exists before assigning it to a parameter.</p>
+<pre><code>
+myStuff={
+init:function(){
+if(!document.getElementById('bla')){return;}
+myStuff.myVariable=document.getElementById('bla');
+alert(myStuff.myVariable.innerHTML);
+}
+}
+window.onload=myStuff.init;
+</code></pre>
+<p>You can also keep the ID as a parameter, which is the option I normally choose to keep it out of the methods:</p>
+<pre><code>
+myStuff={
+divID:'bla',
+init:function(){
+if(!document.getElementById(myStuff.divID)){return;}
+myStuff.myVariable=document.getElementById(myStuff.divID);
+alert(myStuff.myVariable.innerHTML);
+}
+}
+window.onload=myStuff.init;
+</code></pre>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-1964">
+					<div id="dsq-comment-header-1964" class="dsq-comment-header">
+						<cite id="dsq-cite-1964">
+	http://w3future.com/weblog/							<span id="dsq-author-user-1964">Sjoerd Visscher</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-1964" class="dsq-comment-body">
+						<div id="dsq-comment-message-1964" class="dsq-comment-message"><p>Don&#8217;t forget the arry literal! <code>var arr = [];</code> instead of <code>var arr = new Array();</code></p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-1965">
+					<div id="dsq-comment-header-1965" class="dsq-comment-header">
+						<cite id="dsq-cite-1965">
+	http://www.khanate.co.uk/							<span id="dsq-author-user-1965">Simon</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-1965" class="dsq-comment-body">
+						<div id="dsq-comment-message-1965" class="dsq-comment-message"><p>I hate to rain on the parade. I do love Object literals, and Array literals and all the other lovely things that don&#8217;t work in <span class="caps">IE 5</span>.</p>
+<p>Unfourtunately my boss likes things to work in <span class="caps">IE  5</span> because people complain if they don&#8217;t. So I tend to have to use the x = new Object; x.a = blah; and so on method.</p>
+<p>Of course you can always go with the <span class="caps">IE 5</span> gets nada method (which I&#8217;ve been pushing for for a while)</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-1968">
+					<div id="dsq-comment-header-1968" class="dsq-comment-header">
+						<cite id="dsq-cite-1968">
+	http://loc.abses.com/							<span id="dsq-author-user-1968">Jordi</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-1968" class="dsq-comment-body">
+						<div id="dsq-comment-message-1968" class="dsq-comment-message"><p>
+<blockquote>I do love Object literals, and Array literals and all the other lovely things that don&#8217;t work in <span class="caps">IE 5</span>.</p></blockquote>
+<p>
+&#191;Are you sure? Because I tested some scripts with Object literals on <span class="caps">IE4</span>, and they work beautifully.<br />
+<code><br />
+var obj={<br />
+pr0n:'jdksnjk',<br />
+n0rp:'jsadier'<br />
+}</code></p>
+<p>alert(obj.pr0n);</p>
+<p>It displays what it should!</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-1971">
+					<div id="dsq-comment-header-1971" class="dsq-comment-header">
+						<cite id="dsq-cite-1971">
+								<span id="dsq-author-user-1971">Oliver</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-1971" class="dsq-comment-body">
+						<div id="dsq-comment-message-1971" class="dsq-comment-message"><p>&#8220;I hate to rain on the parade. I do love Object literals, and Array literals and all the other lovely things that don&#8217;t work in <span class="caps">IE 5</span>.&#8221;</p>
+<p>vs</p>
+<p>&#8220;Are you sure? Because I tested some scripts with Object literals on <span class="caps">IE4</span>, and they work beautifully.&#8221;</p>
+<p>Presumably this&#8217;d be <span class="caps">IE5</span> for the Mac &#8211; aptly described as a &#8220;buggy piece of crap&#8221; on Quirksmode.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-1975">
+					<div id="dsq-comment-header-1975" class="dsq-comment-header">
+						<cite id="dsq-cite-1975">
+	http://goessner.net							<span id="dsq-author-user-1975">Stefan Gössner</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-1975" class="dsq-comment-body">
+						<div id="dsq-comment-message-1975" class="dsq-comment-message"><p>Thanks for that Chris. I consider <code>var awsome={ ... };</code> a slightly better coding style.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-1976">
+					<div id="dsq-comment-header-1976" class="dsq-comment-header">
+						<cite id="dsq-cite-1976">
+								<span id="dsq-author-user-1976">Hermann Klinke</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-1976" class="dsq-comment-body">
+						<div id="dsq-comment-message-1976" class="dsq-comment-message"><p>I personally hate object literal notation. The following feels more natural and it&#8217;s possible to add classes, objects and members to existing objects and namespaces:</p>
+<p>instance:</p>
+<p>var awesome = new Object();<br />
+awesome.commonSense=null;<br />
+awesome.standardsCompliance=&#8221;50%&#8221;;<br />
+awesome.init = function (){<br />
+// code<br />
+}</p>
+<p>awesome.doStuff = function(){<br />
+// code<br />
+}</p>
+<p>awesome.doMoreStuff = function(){<br />
+// code<br />
+}</p>
+<p>class definition</p>
+<p>function awesome()<br />
+{</p>
+<p>//constructor<br />
+}</p>
+<p>awesome.prototype.commonSense=null;<br />
+awesome.prototype.standardsCompliance=&#8221;50%&#8221;;<br />
+awesome.prototype.init = function (){<br />
+// code<br />
+}</p>
+<p>awesome.prototype.doStuff = function(){<br />
+// code<br />
+}</p>
+<p>awesome.prototype.doMoreStuff = function(){<br />
+// code<br />
+}</p>
+<p>add object instance or class definition to an existing namespace, class definition or object instance</p>
+<p>namespace.awesome = ....<br />
+classDefinition.awesome = ...<br />
+objectInstance.awesome = ...</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-1991">
+					<div id="dsq-comment-header-1991" class="dsq-comment-header">
+						<cite id="dsq-cite-1991">
+								<span id="dsq-author-user-1991">Irina</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-1991" class="dsq-comment-body">
+						<div id="dsq-comment-message-1991" class="dsq-comment-message"><p>I would rewrite the part below:</p>
+<p>init:function(){<br />
+if(!document.getElementById(&#8216;bla&#8217;)){return;}<br />
+myStuff.myVariable=document.getElementById(&#8216;bla&#8217;);<br />
+alert(myStuff.myVariable.innerHTML);<br />
+}</p>
+<p>like this (no need to search for &#8216;bla&#8217; twice):</p>
+<p>init:function(){<br />
+var oBla = document.getElementById(&#8216;bla&#8217;);<br />
+if (oBla==undefined) {return;}<br />
+myStuff.myVariable=oBla;<br />
+alert(myStuff.myVariable.innerHTML);<br />
+}</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-1998">
+					<div id="dsq-comment-header-1998" class="dsq-comment-header">
+						<cite id="dsq-cite-1998">
+								<span id="dsq-author-user-1998">Lee Kowalkowski</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-1998" class="dsq-comment-body">
+						<div id="dsq-comment-message-1998" class="dsq-comment-message"><p>I like using Object Notation for most applications.  However, in the past, I have favoured the following notation, perhaps due to its &#8220;evil genius&#8221; aura, usually to take advantage of private members.</p>
+<p><code><br />
+var myObject = new function()<br />
+{</code></p>
+<p>var privateVariable = "Hello";<br />
+this.publicVariable = "World!";</p>
+<p>this.getPrivateVariable = function()<br />
+{</p>
+<p>return privateVariable;<br />
+}</p>
+<p>this.setPrivateVariable = function(newPrivateVariable)<br />
+{</p>
+<p>privateVariable = newPrivateVariable;<br />
+}</p>
+<p>}</p>
+<p>alert(myObject.privateVariable + " " + myObject.publicVariable); // undefined World!<br />
+alert(myObject.getPrivateVariable() + " " + myObject.publicVariable); // Hello World!</p>
+<p>myObject.privateVariable = "Goodbye, Cruel";</p>
+<p>alert(myObject.privateVariable + " " + myObject.publicVariable); // Goodbye, Cruel World!<br />
+alert(myObject.getPrivateVariable() + " " + myObject.publicVariable); // Hello World!
+</p>
+<p>This is a nice way of achieving encapsulation, as the example shows.  It&#8217;s not possible to use the private variables directly, the get and set methods must be used.</p>
+<p>I&#8217;ve not seen any equivalent examples using object notation though, can it be done?  I&#8217;d love to become 100% converted!</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-2000">
+					<div id="dsq-comment-header-2000" class="dsq-comment-header">
+						<cite id="dsq-cite-2000">
+	http://www.pixelmech.com							<span id="dsq-author-user-2000">Tom</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-2000" class="dsq-comment-body">
+						<div id="dsq-comment-message-2000" class="dsq-comment-message"><p>Good article Chris. I had noticed the same trend that you did while watching all the Ajax stuff pour in. I had begun using it a little bit (and used it more when you suggested it for my latest problem via thelist &#8211; hat tip to you) and I&#8217;m finding not only is it clean and sensible, but I like reading it better than the old way &#8211; it just seems to make more sense.</p>
+<p>Looks like lots of these new Ajax frameworks and Libs are using it too.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-2265">
+					<div id="dsq-comment-header-2265" class="dsq-comment-header">
+						<cite id="dsq-cite-2265">
+	http://www.bytefarmers.com/log/							<span id="dsq-author-user-2265">Fini Alring</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-2265" class="dsq-comment-body">
+						<div id="dsq-comment-message-2265" class="dsq-comment-message"><p>I tend to use this method to create object with attributes and methods. I&#8217;m not too fond of Object Literal style, since I feel this has a more clean feel, and makes it easy to change underlying methods, without having to cut and paste source all over the place. But my biggest issue with Object Literals is the fact you need that little comma, so ugly! (not to mention har d to spot)</p>
+<p>/* Object constructor */<br />
+function BioQuery( inputQuery ) {</p>
+<p>/* properties */<br />
+this.queryString;<br />
+this.queryXML;</p>
+<p>/* methods */<br />
+this.tokenizer = <em>BioQuery</em>tokenizer;<br />
+this.toTree = <em>BioQuery</em>toTree;<br />
+this.toXML = <em>BioQuery</em>toXML;<br />
+}</p>
+<p>/* implementation of the methods */<br />
+function <em>BioQuery</em>tokenizer() {}<br />
+function <em>BioQuery</em>toTree() {}<br />
+function <em>BioQuery</em>toXML() {}</p>
+<p>/* Init object instance */<br />
+var bq = new BioQuery(&#8216;test&#8217;);</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-2435">
+					<div id="dsq-comment-header-2435" class="dsq-comment-header">
+						<cite id="dsq-cite-2435">
+	http://nothinghappens.net							<span id="dsq-author-user-2435">chuck</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-2435" class="dsq-comment-body">
+						<div id="dsq-comment-message-2435" class="dsq-comment-message"><p>This post really got me thinking.  I work with Flash, and ActionScript is basically the same language as JavaScript, so it, too, has the object literal.  Not to link-whore, but I&#8217;ve written a post myself on how pretty much this exact same use of the object literal would really clear up a lot of code I&#8217;ve seen.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-2450">
+					<div id="dsq-comment-header-2450" class="dsq-comment-header">
+						<cite id="dsq-cite-2450">
+	http://ajile.sf.net/							<span id="dsq-author-user-2450">Michael</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-2450" class="dsq-comment-body">
+						<div id="dsq-comment-message-2450" class="dsq-comment-message"><p>Check out <a href="http://ajile.sf.net/">Ajile</a>. It&#8217;s an excellent approach to namespaces (code organization) in JavaScript.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-2821">
+					<div id="dsq-comment-header-2821" class="dsq-comment-header">
+						<cite id="dsq-cite-2821">
+	http://www.merthurturk.com/							<span id="dsq-author-user-2821">Merth</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-2821" class="dsq-comment-body">
+						<div id="dsq-comment-message-2821" class="dsq-comment-message"><p>Hi Chris, awesome article. But i am having issues with object scope i think.</p>
+<p>MyObject = {<br />
+objectProperty:&#8221;HELLO&#8221;,</p>
+<p>applyAction : function(item) {<br />
+item.onmouseover = this.doOver;<br />
+},</p>
+<p>doOver : function() {<br />
+alert(objectProperty);<br />
+}</p>
+<p>}</p>
+<p>all i get in alert window is &#8220;undefined&#8221;. How can i make javscript to alert objectProperty without assigning objectProperty to a global variable?</p>
+<p>Answer: alert(MyObject.objectProperty);</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-2822">
+					<div id="dsq-comment-header-2822" class="dsq-comment-header">
+						<cite id="dsq-cite-2822">
+	http://www.merthurturk.com/							<span id="dsq-author-user-2822">Merth</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-2822" class="dsq-comment-body">
+						<div id="dsq-comment-message-2822" class="dsq-comment-message"><p>thanks, but what if i have 2 instances of that object at the same time?</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-3369">
+					<div id="dsq-comment-header-3369" class="dsq-comment-header">
+						<cite id="dsq-cite-3369">
+	http://milliamp.org							<span id="dsq-author-user-3369">Alex</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-3369" class="dsq-comment-body">
+						<div id="dsq-comment-message-3369" class="dsq-comment-message"><p>Bit late but in case anyone has the same thing as Merth, the line you&#8217;ll need is:<br />
+<code>Answer: alert(&lt;em&gt;this&lt;/em&gt;.objectProperty);<br />
+</code><br />
+That&#8217;ll reference the current instance of the object in case you&#8217;ve got multiples.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-3473">
+					<div id="dsq-comment-header-3473" class="dsq-comment-header">
+						<cite id="dsq-cite-3473">
+								<span id="dsq-author-user-3473">Michael Prescott</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-3473" class="dsq-comment-body">
+						<div id="dsq-comment-message-3473" class="dsq-comment-message"><p>I recently stumbled upon some usage of Object Literals and found your site while trying to learn why.  I still don&#8217;t understand why object literals are better than using prototype.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-14406">
+					<div id="dsq-comment-header-14406" class="dsq-comment-header">
+						<cite id="dsq-cite-14406">
+	http://twitter.com/delicious50/statuses/5572241227							<span id="dsq-author-user-14406">delicious50 (Delicious Over 50)</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-14406" class="dsq-comment-body">
+						<div id="dsq-comment-message-14406" class="dsq-comment-message"><p><a href="http://twitter.com/delicious50" title="Twitter Comment" rel="nofollow"><br />
+<sprong class="ccimg1" title="delicious50 (Delicious Over 50)" style="float:left;margin-right:10px;padding:0;width:60px;height:60px;"><br />
+<img name="cc_image" title="delicious50 (Delicious Over 50)" style="float:left;margin-right:10px;padding:0;width:50px;height:50px;" src="http://purl.org/net/spiurl/delicious50"/></p>
+<p></sprong></a><br />
+Wait till I come! &#187; Blog Archive &#187; Show love to the object literal [link to post]</p>
+<p> &#8211; <a href="http://chatcatcher.com" target="_blank" rel="nofollow">Posted using Chat Catcher</a></p>
+</div>
+					</div>
+				</li>
+				</ul>
+		</div>
+	</div>
+
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+<script type="text/javascript">
+	var disqus_url = 'http://www.wait-till-i.com/2006/02/16/show-love-to-the-object-literal/ ';
+	var disqus_identifier = '239 http://www.wait-till-i.com/?p=239';
+	var disqus_container_id = 'disqus_thread';
+	var disqus_domain = 'disqus.com';
+	var disqus_shortname = 'christianheilmannsblog';
+	var disqus_title = "Show love to the object literal";
+		var disqus_config = function () {
+	    var config = this; // Access to the config object
+
+	    /* 
+	       All currently supported events:
+	        * preData — fires just before we request for initial data
+	        * preInit - fires after we get initial data but before we load any dependencies
+	        * onInit  - fires when all dependencies are resolved but before dtpl template is rendered
+	        * afterRender - fires when template is rendered but before we show it
+	        * onReady - everything is done
+	     */
+
+		config.callbacks.preData.push(function() {
+			// clear out the container (its filled for SEO/legacy purposes)
+			document.getElementById(disqus_container_id).innerHTML = '';
+		});
+				config.callbacks.onReady.push(function() {
+			// sync comments in the background so we don't block the page
+			DISQUS.request.get('?cf_action=sync_comments&post_id=239');
+		});
+			};
+	var facebookXdReceiverPath = 'http://www.wait-till-i.com/wp-content/plugins/disqus-comment-system/xd_receiver.htm';
+</script>
+
+<script type="text/javascript">
+	var DsqLocal = {
+		'trackbacks': [
+			{
+				'author_name':	"delicious50 (Delicious Over 50)",
+				'author_url':	"http:\/\/twitter.com\/delicious50\/statuses\/5572241227",
+				'date':			"11\/10\/2009 12:18 AM",
+				'excerpt':		"<br \/><br \/><br \/><br \/><br \/>Wait till I come! » Blog Archive » Show love to the object literal [link to post] - Posted using ...",
+				'type':			"trackback"			}
+		],
+		'trackback_url': "http:\/\/www.wait-till-i.com\/2006\/02\/16\/show-love-to-the-object-literal\/trackback\/"	};
+</script>
+
+<script type="text/javascript">
+(function() {
+	var dsq = document.createElement('script'); dsq.type = 'text/javascript';
+	dsq.async = true;
+	dsq.src = 'http://' + disqus_shortname + '.' + disqus_domain + '/embed.js?pname=wordpress&pver=2.50';
+	(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+
+	
+	</div>
+      </div>
+    </div>
+    <div class="yui-b" id="sb">
+      <div id="pageslist">
+        <div id="head">
+        <a href="http://www.wait-till-i.com/">Christian Heilmann&#039;s blog &#8211; Wait till I come!</a>
+        <div class="description">For a better web with more professional jobs &#8211; can talk, will travel</div>
+      </div>
+
+      <form method="get" id="searchform" action="http://www.wait-till-i.com/">
+<div><input type="text" value="" name="s" id="s" />
+<input type="submit" id="searchsubmit" value="Search" />
+</div>
+</form>
+
+      <ul>
+        <li><a href="http://wait-till-i.com">Home</a></li>
+        <li class="page_item page-item-595"><a href="http://www.wait-till-i.com/about-this/" title="About this">About this</a></li>
+<li class="page_item page-item-592"><a href="http://www.wait-till-i.com/archives/" title="Archives">Archives</a></li>
+<li class="page_item page-item-597"><a href="http://www.wait-till-i.com/books/" title="My Books">My Books</a></li>
+<li class="page_item page-item-634"><a href="http://www.wait-till-i.com/talks-and-conference-participation/" title="Talks and Conference Participation">Talks and Conference Participation</a></li>
+<li class="page_item page-item-593"><a href="http://www.wait-till-i.com/want-me-to-talk/" title="Want me to talk?">Want me to talk?</a></li>
+        <li class="ext"><a href="http://slideshare.net/cheilmann">Presentations</a></li>
+        <li class="ext"><a href="http://icant.co.uk">Articles</a></li>
+        <li class="ext"><a href="http://flickr.com/codepo8">Photos</a></li>
+        <li class="ext"><a href="http://del.icio.us/codepo8">Bookmarks</a></li>
+        <li class="ext"><a href="http://www.google.com/reader/shared/07479231772993841072">Reading</a></li>
+        <li class="ext"><a href="http://twitter.com/codepo8">Twitter</a></li>
+      </ul>
+
+  <a href="http://www.wait-till-i.com/feed/"><img src="/fox.png" alt="Subscribe to RSS" style="border:none;display:block;margin:10px auto"></a>
+
+
+<a href="http://350.brighterplanet.com/"><img src="http://350.brighterplanet.com/images/badges/BP_badge_180x201.jpg" alt="Brighter Planet's 350 Challenge" /></a>
+
+<div id="dopplr-blog-badge-for-chrisheilmann"><script type="text/javascript" src="http://www.dopplr.com/blogbadge/script/db67cb2de03d1a6ae524a643c8cb0704?div-id=dopplr-blog-badge-for-chrisheilmann"></script></div>
+
+
+<ul><li> <a href="http://www.medifasthealth.org/">Medifast Health & Weight Loss Program</a> </li>
+<li> <a href="http://www.waspbarcode.com/printers/">Label Barcode Printer</a> </li>
+</ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="ft">
+  <address class="vcard">
+  <a class="url org" href="http://wait-till-i.com/">Christian Heilmann&#039;s blog &#8211; Wait till I come!</a> is the blog of <span class="fn">Christian Heilmann</span> <a class="email" href="mailto:onlinetoolsorg@gmail.com">onlinetoolsorg@gmail.com</a>, a <span class="title">developer evangelist</span> living and working in <span class="adr"><span class="locality">London</span>, <span class="country-name">England</span></span>. <a href="http://feeds.technorati.com/contacts/wait-till-i.com">Download vcard</a>.
+  </address>
+  <p>Feed me, Seymour:  
+  <a href="http://www.wait-till-i.com/feed/">Entries (RSS)</a> and <a href="http://christianheilmannsblog.disqus.com/latest.rss">Comments (RSS)</a>.
+  <!-- 30 queries. 0.802 seconds. -->
+  </p>
+
+</div>
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+<!-- 
+var sc_project=710446; 
+var sc_partition=5; 
+var sc_security="6acf09a2"; 
+var sc_invisible=1; 
+//-->
+</script>
+
+<script type="text/javascript" src="http://www.statcounter.com/counter/counter_xhtml.js"></script><noscript><div class="statcounter"><a class="statcounter" href="http://www.statcounter.com/"><img class="statcounter" src="http://c6.statcounter.com/counter.php?sc_project=710446&amp;java=0&amp;security=6acf09a2&amp;invisible=1" alt="counter" /></a></div></noscript>
+<!-- End of StatCounter Code -->
+</html>
+<!-- Dynamic page generated in 0.751 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2010-10-01 13:38:15 -->
+<!-- super cache -->

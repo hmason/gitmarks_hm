@@ -1,0 +1,500 @@
+        
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+    <head>
+        <title>Creating Sortable Lists With PHP And Ajax -  PHP articles, tutorials and screencasts - PHP 5, MySQL, PostgreSQL, AJAX, Web 2.0</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+                    <meta name="description" content="You might have been in a situation before where you had a list of items in your database that needed to be output in a specific order. These items could be anything perhaps a listing of your favourite movies or your favourite books. For whatever reason, you want them ordered in a custom way that can&#039;t be determined automatically (such as alphabetical). This article covers the implementation of a system that lets you easily define the order of such a list." />
+                                                                    <meta name="keywords" content="Ajax, JavaScript, PHP, Prototype, Scriptaculous" />
+                <meta name="robots" content="INDEX, FOLLOW" />
+        <meta name="X-PhpRiot-Cdn" content="http://phpriot.s3.amazonaws.com/frontend" />
+
+        <link rel="home" title="Home" href="/" />
+                                    <link rel="stylesheet" type="text/css" href="http://phpriot.s3.amazonaws.com/frontend/css/styles.css?20101117" />
+                            <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.ico" />
+
+        <link rel="alternate" type="application/atom+xml" title="PhpRiot Latest Articles" href="http://feeds.feedburner.com/PhpRiotLatestArticles" />
+        <link rel="alternate" type="application/atom+xml" title="PhpRiot Latest News" href="http://feeds.feedburner.com/PhpRiotLatestNews" />
+
+        
+                    <script type="text/javascript" src="http://www.google-analytics.com/ga.js"></script>
+            <script type="text/javascript">
+                var pageTracker = _gat._getTracker("UA-198082-1");
+                pageTracker._initData();
+                pageTracker._trackPageview();
+            </script>
+                    
+        
+                            <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+            <script type="text/javascript" src="http://phpriot.s3.amazonaws.com/frontend/js/phpriot.js"></script>
+                    </head>
+    <body>
+<div class="printonly">
+    <img src="http://phpriot.s3.amazonaws.com/frontend/images/logo.png" alt="PhpRiot" />
+</div>
+
+<table id="header">
+    <tr>
+        <td id="header-logo-container">
+            <a href="/" name="top"><img src="http://phpriot.s3.amazonaws.com/frontend/images/logo-header.png" alt="phpRiot" /></a>
+        </td>
+        <td id="header-nav-container">
+            <form method="get" action="/search">
+                <div id="header-search">
+                    <input type="text" id="header-search-q" name="q" value="" />
+                    <input type="image" src="http://phpriot.s3.amazonaws.com/frontend/images/header-search-submit.png" />
+                </div>
+            </form>
+
+            <div id="header-nav">
+                <ul>
+                    <li class="active"><a href="/articles">Articles</a></li>
+                    <li><a href="/news">News</a></li>
+                    <li><a href="/quiz/index/index">PHP Quiz</a></li>
+                    <li><a href="/manual">Manual</a></li>
+                    <li><a href="/paste">Paste</a></li>
+                    <li><a href="/books">Books</a></li>
+                    <li><a href="/members/index/index">Account</a></li>
+                </ul>
+            </div>
+        </td>
+    </tr>
+</table>        <table id="internal-main">
+            <tr>
+                                                    <td id="internal-main-meta">
+                        <div id="meta-tw">
+                            <a href="http://www.twitter.com/phpriot"><img src="http://phpriot.s3.amazonaws.com/frontend/images/meta-tw.png" alt="Follow phpriot on Twitter"/></a>
+                        </div>
+
+
+                        
+                        
+                                                            <div class="content-box content-box-feature" id="download-article">
+    <div class="content-box-inner">
+                    <div class="box-title">Download Article</div>
+        
+        <div class="content-box-content">
+                    
+                    Download this article in PDF format with all listings and files.
+        
+                
+        <div class="hr"><hr /></div>
+
+                                    <div class="price">
+                    Price: <span class="currency">$5.00 AUD</span>
+                    <br />
+                    (Approx. $4.85 USD)
+                </div>
+
+                <form method="post" action="/store/cart/add">
+                    <div>
+                        <input type="hidden" name="return" value="/store/checkout/index" />
+                        <input type="hidden" name="article" value="sortable-lists-with-php-and-ajax" />
+                        <input type="submit" value="Buy Article" name="submit" />
+                    </div>
+                </form>
+                    
+        <div class="hr"><hr /></div>
+
+        <a href="/articles/sortable-lists-with-php-and-ajax/purchase">More information</a>
+    
+        </div>
+    </div>
+</div><div class="content-box">
+    <div class="content-box-inner">
+                    <div class="box-title">Become Zend Certified</div>
+        
+        <div class="content-box-content">
+                <div class="value">
+        <a href="/cert"><img src="http://phpriot.s3.amazonaws.com/frontend/images/cert-zce-php5.png" /></a>
+    </div>
+    <p>
+        Prepare for the ZCE exam using our quizzes
+        (<a href="/quiz">web</a> or
+        <a href="/ipad">iPad/iPhone</a>).
+        <a href="/cert">More info...</a>
+    </p>
+    <div class="hr"><hr /></div>
+    When you're ready get 7.5% off your exam voucher using
+    voucher <strong>phpriot75off</strong> at the
+    <a href="http://www.jdoqocy.com/click-4104816-10709181">Zend Store</a><img src="http://www.awltovhc.com/image-4104816-10709181" />
+
+        </div>
+    </div>
+</div><div class="content-box ipad-widget">
+    <div class="content-box-inner">
+                    <div class="box-title">Free iPad/iPhone App</div>
+        
+        <div class="content-box-content">
+                <div class="value"><a href="http://itunes.apple.com/us/app/phpriot-com-web-developer/id382340169?mt=8"><img src="http://phpriot.s3.amazonaws.com/frontend/images/ipad/app-store.png" alt="Available on the App Store" /></a></div>
+    <div class="hr"><hr /></div>
+    <ul>
+        <li>PHP manual</li>
+        <li>Zend Framework manual</li>
+        <li>PHP articles</li>
+        <li>PHP training</li>
+    </ul>
+    <div class="hr"><hr /></div>
+    <div>
+        <a href="http://itunes.apple.com/us/app/phpriot-com-web-developer/id382340169?mt=8">Download Free Now</a> | <a href="/ipad">More Info</a>
+    </div>
+
+        </div>
+    </div>
+</div>    
+            <div class="content-box">
+    <div class="content-box-inner">
+                    <div class="box-title">Related Articles</div>
+        
+        <div class="content-box-content">
+                        <ul>
+                                    <li>
+                        <a href="/articles/ajax-with-prototype">Eight Weeks of Prototype: Week 5, Ajax with Prototype</a>
+                        <div>30 April 2008</div>
+                    </li>
+                                    <li>
+                        <a href="/articles/reminding-users-to-submit-forms">Reminding Users to Submit Forms</a>
+                        <div>16 January 2008</div>
+                    </li>
+                                    <li>
+                        <a href="/articles/php-ajax-file-uploads">Monitoring File Uploads using Ajax and PHP</a>
+                        <div>11 January 2008</div>
+                    </li>
+                                    <li>
+                        <a href="/articles/prototype-element-extensions">Eight Weeks of Prototype: Week 2, How Prototype Extends Elements</a>
+                        <div> 8 April 2008</div>
+                    </li>
+                                    <li>
+                        <a href="/articles/complete-prototype-example">Eight Weeks of Prototype: Week 8, A Complete Prototype Example</a>
+                        <div>30 May 2008</div>
+                    </li>
+                                    <li>
+                        <a href="/articles/other-prototype-functionality">Eight Weeks of Prototype: Week 7, Other Prototype Functionality</a>
+                        <div>15 May 2008</div>
+                    </li>
+                                    <li>
+                        <a href="/articles/javascript-classes-with-prototype">Eight Weeks of Prototype: Week 6, Writing JavaScript Classes with Prototype</a>
+                        <div> 7 May 2008</div>
+                    </li>
+                                    <li>
+                        <a href="/articles/google-suggest-ajaxac">Cloning Google Suggest With Ajaxac</a>
+                        <div>14 June 2005</div>
+                    </li>
+                                    <li>
+                        <a href="/articles/event-handling-in-prototype">Eight Weeks of Prototype: Week 4, Event Handling in Prototype</a>
+                        <div>21 April 2008</div>
+                    </li>
+                                    <li>
+                        <a href="/articles/beginning-with-prototype">Eight Weeks of Prototype: Week 1, Beginning with Prototype</a>
+                        <div>31 March 2008</div>
+                    </li>
+                            </ul>
+        
+        </div>
+    </div>
+</div>    
+    <div class="content-box" id="content-box-books">
+    <div class="content-box-inner">
+                    <div class="box-title">Related Books</div>
+        
+        <div class="content-box-content">
+                                                            
+                        
+            <div class="teaser first last">
+            <div class="teaser-image">
+                            <a href="/books/isbn/1933988037"><img src="http://ecx.images-amazon.com/images/I/51u%2B5Y4BSLL._SL75_.jpg" alt="Prototype and Scriptaculous in Action [Ajax]" /></a>
+                    </div>
+        <div class="teaser-content-container">
+        <h3>
+                            <a href="/books/isbn/1933988037">Prototype and Scriptaculous in Action [Ajax]</a>
+                    </h3>
+                    <div class="teaser-byline">
+                                By Dave Crane, Bear Bibeault, Tom Locke            
+            </div>
+                <div class="teaser-content">
+            
+                                    "This book should rightly be considered the bible of Prototype   and Scriptaculous."   --...
+                
+            
+        </div>
+                    <div class="teaser-link">
+                <a href="/books/isbn/1933988037">Read More ...</a>
+            </div>
+            </div>
+</div>
+                        
+        </div>
+    </div>
+</div><div class="content-box" id="tag-summary">
+    <div class="content-box-inner">
+                    <div class="box-title">Browse Articles</div>
+        
+        <div class="content-box-content">
+                
+
+            <a href="/tag/Ajax" class="tag">Ajax <span>6</span></a>
+            <a href="/tag/Amazon" class="tag">Amazon <span>2</span></a>
+            <a href="/tag/APC" class="tag">APC <span>1</span></a>
+            <a href="/tag/Arrays" class="tag">Arrays <span>1</span></a>
+            <a href="/tag/CAPTCHA" class="tag">CAPTCHA <span>1</span></a>
+            <a href="/tag/CSS" class="tag">CSS <span>3</span></a>
+            <a href="/tag/cURL" class="tag">cURL <span>3</span></a>
+            <a href="/tag/Debugging" class="tag">Debugging <span>1</span></a>
+            <a href="/tag/File+Upload" class="tag">File Upload <span>1</span></a>
+            <a href="/tag/Google" class="tag">Google <span>4</span></a>
+            <a href="/tag/Google+Maps" class="tag">Google Maps <span>2</span></a>
+            <a href="/tag/JavaScript" class="tag">JavaScript <span>12</span></a>
+            <a href="/tag/jQuery" class="tag">jQuery <span>1</span></a>
+            <a href="/tag/JSON" class="tag">JSON <span>4</span></a>
+            <a href="/tag/MVC" class="tag">MVC <span>1</span></a>
+            <a href="/tag/MySQL" class="tag">MySQL <span>9</span></a>
+            <a href="/tag/onbeforeunload" class="tag">onbeforeunload <span>1</span></a>
+            <a href="/tag/OOP" class="tag">OOP <span>2</span></a>
+            <a href="/tag/Page+Speed" class="tag">Page Speed <span>1</span></a>
+            <a href="/tag/PHP" class="tag">PHP <span>56</span></a>
+            <a href="/tag/PhpDoc" class="tag">PhpDoc <span>1</span></a>
+            <a href="/tag/PostgreSQL" class="tag">PostgreSQL <span>7</span></a>
+            <a href="/tag/Prototype" class="tag">Prototype <span>11</span></a>
+            <a href="/tag/Reflection" class="tag">Reflection <span>1</span></a>
+            <a href="/tag/RFC+1867" class="tag">RFC 1867 <span>1</span></a>
+            <a href="/tag/Robots" class="tag">Robots <span>1</span></a>
+            <a href="/tag/Scriptaculous" class="tag">Scriptaculous <span>1</span></a>
+            <a href="/tag/SEO" class="tag">SEO <span>1</span></a>
+            <a href="/tag/Sessions" class="tag">Sessions <span>2</span></a>
+            <a href="/tag/SimpleXML" class="tag">SimpleXML <span>1</span></a>
+            <a href="/tag/Smarty" class="tag">Smarty <span>5</span></a>
+            <a href="/tag/SOAP" class="tag">SOAP <span>2</span></a>
+            <a href="/tag/SPL" class="tag">SPL <span>1</span></a>
+            <a href="/tag/Sqlite" class="tag">Sqlite <span>1</span></a>
+            <a href="/tag/Templates" class="tag">Templates <span>2</span></a>
+            <a href="/tag/Twitter" class="tag">Twitter <span>2</span></a>
+            <a href="/tag/W3C" class="tag">W3C <span>1</span></a>
+            <a href="/tag/WebDAV" class="tag">WebDAV <span>1</span></a>
+            <a href="/tag/XHTML" class="tag">XHTML <span>1</span></a>
+            <a href="/tag/YouTube" class="tag">YouTube <span>1</span></a>
+            <a href="/tag/Yslow" class="tag">Yslow <span>1</span></a>
+            <a href="/tag/yuicompressor" class="tag">yuicompressor <span>1</span></a>
+            <a href="/tag/ZCE" class="tag">ZCE <span>6</span></a>
+            <a href="/tag/Zend+Framework" class="tag">Zend Framework <span>11</span></a>
+            <a href="/tag/Zend_Cache" class="tag">Zend_Cache <span>1</span></a>
+            <a href="/tag/Zend_Gdata" class="tag">Zend_Gdata <span>1</span></a>
+            <a href="/tag/Zend_Gdata_YouTube" class="tag">Zend_Gdata_YouTube <span>1</span></a>
+            <a href="/tag/Zend_Loader" class="tag">Zend_Loader <span>1</span></a>
+            <a href="/tag/Zend_Oauth" class="tag">Zend_Oauth <span>1</span></a>
+            <a href="/tag/Zend_Registry" class="tag">Zend_Registry <span>1</span></a>
+            <a href="/tag/Zend_Search_Lucene" class="tag">Zend_Search_Lucene <span>1</span></a>
+    
+    <div class="hr"><hr /></div>
+
+    <div>
+        <a href="/articles"><strong>View all articles</strong></a>
+    </div>
+
+        </div>
+    </div>
+</div>                                            </td>
+                                <td id="internal-main-content">
+                    <div class="content-box">
+                        <div class="content-box-inner">
+                            <div class="box-title">
+                                                                                                <div id="breadcrumbs">
+                                    <a href="/" title="Home">Home</a> &raquo; 
+<a href="/articles" title="Articles">Articles</a> &raquo; 
+Creating Sortable Lists With PHP And Ajax
+                                </div>
+                            </div>
+
+
+                                                            <div class="ad-container top">
+                                    <div class="adsense">
+<script type="text/javascript">
+google_ad_client = "pub-6482748756867654";
+google_ad_slot = "3884201272";
+google_ad_width = 728;
+google_ad_height = 90;
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
+</div>                                </div>
+                            
+                            <table id="content-holder">
+                                <tr>
+                                    <td id="content-container">
+                                        <div id="content">
+                                                                                        
+                                            
+<h1>Creating Sortable Lists With PHP And Ajax</h1>
+
+
+
+<div class="byline">
+    By <a href="/author/Quentin+Zervaas">Quentin Zervaas</a>, 23 February 2006                        <a href="/tag/Ajax" class="tag">Ajax</a>
+                    <a href="/tag/JavaScript" class="tag">JavaScript</a>
+                    <a href="/tag/PHP" class="tag">PHP</a>
+                    <a href="/tag/Prototype" class="tag">Prototype</a>
+                    <a href="/tag/Scriptaculous" class="tag">Scriptaculous</a>
+            
+    
+    <a href="/articles/sortable-lists-with-php-and-ajax/pdf" class="pdftag">Download PDF</a>
+
+                (<a href="/articles/sortable-lists-with-php-and-ajax/comments">18 comments</a>)
+    </div>
+
+                        
+    <!-- google_ad_section_start -->
+
+            <h2>Introduction</h2>
+    
+                        
+    <p>You might have been in a situation before where you had a list of items in your database that needed to be output in a specific order. These items could be anything: perhaps a listing of your favourite movies or your favourite books. For whatever reason, you want them ordered in a custom way that can&rsquo;t be determined automatically (such as alphabetical).</p>
+<p>This article covers the implementation of a system that lets you easily define the order of such a list.</p>
+<p>Traditionally, implementations of such functionality involve you clicking a &ldquo;move up&rdquo;, &ldquo;move down&rdquo;, &ldquo;move to top&rdquo;, or &ldquo;move to bottom&rdquo; button that switches the order the items (one item at a time). Or perhaps each item has a text box with a number in it, that by changing the numbers you can change the order of the list.</p>
+<p>In any case, these methods are much more difficult to use than they should be. In this article, we&rsquo;ll create a drag drop system using JavaScript that will let you drag an item to its new position, and then save the new order as soon as you drop the item.</p>
+<p>To achieve the Ajax effects (that is, the drag/drop effect, and the seamless saving of ordering data), we will be using the Prototype and Scriptaculous libraries.</p>
+<p>Firstly, we will create a database table (compatible with MySQL and PostgreSQL) and populate it with data. Then we will output our list and apply the drag and drop effects to it. Finally, we will deal with the saving of the new ordering data.</p>
+<p>For our example, we will use a list of &ldquo;favourite movies&rdquo;, and implement functionality to change the order of our movies.</p>
+
+    <!-- google_ad_section_end -->
+
+
+    <ul class="article-next">
+        <li>
+            <a href="/articles/sortable-lists-with-php-and-ajax/2"><strong>Next:</strong> Creating Our Database And Populating It</a>
+        </li>
+            </ul>
+
+    <div class="pager">
+                            <div class="pager-next">
+                <a href="/articles/sortable-lists-with-php-and-ajax/2">2. Creating Our Database And...</a>
+            </div>
+        
+        <ul>
+                            <li class="active">
+                    <a href="/articles/sortable-lists-with-php-and-ajax">1</a>
+                </li>
+                            <li>
+                    <a href="/articles/sortable-lists-with-php-and-ajax/2">2</a>
+                </li>
+                            <li>
+                    <a href="/articles/sortable-lists-with-php-and-ajax/3">3</a>
+                </li>
+                            <li>
+                    <a href="/articles/sortable-lists-with-php-and-ajax/4">4</a>
+                </li>
+                            <li>
+                    <a href="/articles/sortable-lists-with-php-and-ajax/5">5</a>
+                </li>
+                            <li>
+                    <a href="/articles/sortable-lists-with-php-and-ajax/6">6</a>
+                </li>
+                            <li>
+                    <a href="/articles/sortable-lists-with-php-and-ajax/7">7</a>
+                </li>
+                    </ul>
+    </div>
+
+
+    <div class="article-options">
+        <ul>
+            <li class="print"><a href="/articles/sortable-lists-with-php-and-ajax/pdf">Download PDF</a></li>
+            <li class="download"><a href="/articles/sortable-lists-with-php-and-ajax/listings">Download listings</a></li>
+            <li class="comments"><a href="/articles/sortable-lists-with-php-and-ajax/comments">View/post comments</a></li>
+            <li class="email"><a href="/articles/sortable-lists-with-php-and-ajax/email">Send to a friend</a></li>
+            <li class="link"><a href="/articles/sortable-lists-with-php-and-ajax/link">Link to this article</a></li>
+        </ul>
+    </div>
+
+                                        </div>
+                                    </td>
+                                                                            <td id="content-meta-container">
+                                                <!-- google_ad_section_start -->
+
+            <h4>In This Article</h4>
+
+        <ul class="article-pages">
+                            <li class="active">
+                    <a href="/articles/sortable-lists-with-php-and-ajax"><em>1</em> Introduction</a>
+                </li>
+                            <li>
+                    <a href="/articles/sortable-lists-with-php-and-ajax/2"><em>2</em> Creating Our Database And Populating It</a>
+                </li>
+                            <li>
+                    <a href="/articles/sortable-lists-with-php-and-ajax/3"><em>3</em> Outputting The Database Data</a>
+                </li>
+                            <li>
+                    <a href="/articles/sortable-lists-with-php-and-ajax/4"><em>4</em> Adding Drag And Drop Functionality To Our List</a>
+                </li>
+                            <li>
+                    <a href="/articles/sortable-lists-with-php-and-ajax/5"><em>5</em> Creating The Order Processing Script</a>
+                </li>
+                            <li>
+                    <a href="/articles/sortable-lists-with-php-and-ajax/6"><em>6</em> Adding The Javascript Sorting Callback</a>
+                </li>
+                            <li>
+                    <a href="/articles/sortable-lists-with-php-and-ajax/7"><em>7</em> Summary</a>
+                </li>
+                    </ul>
+    
+                <div class="hr"><hr /></div>
+        <div>
+                            <a href="/tag/Ajax" rel="tag" class="tag">Ajax</a>
+                            <a href="/tag/JavaScript" rel="tag" class="tag">JavaScript</a>
+                            <a href="/tag/PHP" rel="tag" class="tag">PHP</a>
+                            <a href="/tag/Prototype" rel="tag" class="tag">Prototype</a>
+                            <a href="/tag/Scriptaculous" rel="tag" class="tag">Scriptaculous</a>
+                    </div>
+    
+    <!-- google_ad_section_end -->
+
+        
+        
+        <div class="article-options">
+        <ul>
+            <li class="print"><a href="/articles/sortable-lists-with-php-and-ajax/pdf">Download PDF</a></li>
+            <li class="download"><a href="/articles/sortable-lists-with-php-and-ajax/listings">Download listings</a></li>
+            <li class="comments"><a href="/articles/sortable-lists-with-php-and-ajax/comments">View/post comments</a></li>
+            <li class="email"><a href="/articles/sortable-lists-with-php-and-ajax/email">Send to a friend</a></li>
+            <li class="link"><a href="/articles/sortable-lists-with-php-and-ajax/link">Link to this article</a></li>
+        </ul>
+    </div>
+
+    
+    
+                                            </td>
+                                                                    </tr>
+
+                            </table>
+
+                                                            <div class="ad-container bottom">
+                                    <div class="adsense">
+<script type="text/javascript">
+google_ad_client = "pub-6482748756867654";
+google_ad_slot = "7822487211";
+google_ad_width = 728;
+google_ad_height = 90;
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
+</div>                                </div>
+                                                    </div>
+                    </div>
+                </td>
+                            </tr>
+        </table>
+
+
+        <div id="footer">
+            <div id="footer-links">
+                <a href="/">Home</a> |
+                <a href="/sitemap/index">Site Map</a> |
+                <a href="/feeds/index/index" class="feed">Web Feeds</a> |
+                <a href="/contact/index">Contact Us</a> |
+                <a href="/index/authors">Write For Us</a> |
+                <a href="http://www.recitecms.com">PHP Content Management System</a> |
+                <a href="#top" class="to-top">Top</a>
+            </div>
+            <div id="footer-copyright">
+                &copy; 2004-2010 <a href="http://www.zervaas.com.au">Zervaas Enterprises</a>
+            </div>
+        </div>
+    </body>
+</html>

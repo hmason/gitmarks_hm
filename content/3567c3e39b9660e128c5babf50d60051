@@ -1,0 +1,638 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="description" content="Search engine for free stock photos and clip art for the stock photography community including images of creative commons and public domain and other free licenses" />
+<meta name="keywords" content="search engine free photos microstock creative commons public domain clipart photography images" />
+<meta name="verify-v1" content="cPu30PupdTR7bR8lBrU+8qetkIHQJTECHXhHPO6xCak=" />
+
+<link rel="stylesheet" type="text/css" href="/min/?g=css" media="screen" />
+<script type="text/javascript" src="/min/?g=js"></script>
+
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" href="/min/?g=cssIE" media="screen" />
+<![endif]-->
+
+<link rel="stylesheet" type="text/css" href="/css/empty.css" media="screen" id="coll-open" />
+
+
+<script type="text/javascript">
+    var ajaxSignature = "d44aef9cbfbc4ccdb313007943975cd9";    var defaultCollectionName = "click to edit collection name";    var activeCollectionId = 0;
+    var initShowCollections = 0;
+        var authUserId = 0;
+    var currentlyDragging = "";
+    var currentlyDraggingId = "";
+    var currentlyDraggedFrom = "";
+    var sendToFriendDefaultHeader = "Send to a Friend";
+    var editMyTagsDefaultHeader = "Edit My Tags";
+    var addToCollectionDefaultHeader = "Add To a Collection";
+    var adminBlacklistDefaultHeader = "Admin: Blacklist";
+</script><link rel="alternate" type="application/rss+xml" title="Photo Blog" href="/blog.php?blogId=2&amp;rss=true">
+<link rel="alternate" type="application/rss+xml" title="everystockphoto.com news" href="/blog.php?blogId=1&amp;rss=true">
+<title>everystockphoto - searching free photos</title>
+
+<script type="text/javascript">
+var splashLoopIndex = 1;
+var splashIntervalId = 0;
+var splashTimeoutId = 0;
+var splashFadeSpeed = 1500;
+var splashIntervalSpeed = 6000;
+var splashTimeoutSpeed = 3000;
+
+function changeSlide()
+{
+	var elements = $("#slideshow").children("div");
+
+	$('#slideshow div.splash-image').fadeOut(splashFadeSpeed);
+	$('#slideshow div.splash-image:nth-child(' + splashLoopIndex + ')').fadeIn(splashFadeSpeed);
+
+	if ( splashLoopIndex >= $("#slideshow div.splash-image").size() )
+	{
+		splashLoopIndex = 1;
+		window.clearInterval(splashIntervalId);
+		splashIntervalId = window.setInterval("changeSlide()", splashIntervalSpeed);
+	} else {
+		splashLoopIndex++;
+	}
+}
+
+function startSlides()
+{
+	$('#slideshow div.splash-image').fadeOut(splashFadeSpeed);
+	$('#slideshow div.splash-image:nth-child(' + splashLoopIndex + ')').fadeIn(splashFadeSpeed);
+
+	if ( splashLoopIndex == $("#slideshow div.splash-image").size() )
+	{
+		splashLoopIndex = 1;
+	} else {
+		splashLoopIndex++;
+	}
+
+	window.clearInterval(splashIntervalId);
+	splashIntervalId = window.setInterval("changeSlide()", splashIntervalSpeed);
+}
+
+$(document).ready(function(){
+	//PAGE-SPECIFIC SCRIPTS GO HERE
+    function resetMousePointer() {
+        $("a").css("cursor", "default");
+        $("a").mouseover(function(){
+            $("a").css("cursor", "pointer");
+        });
+    }
+
+    $('#searchUserName').focus();
+
+	$(".searchLink").attr("href", '#');
+	$(".searchLink").click(function () {
+		var sField = $(this).text();
+		$("#sField").val(sField);
+        $("#tagMode").attr("checked", false);
+		document.getElementById("frmAdvancedSearch").submit();
+	});
+    
+	$(".tagSearchLink").attr("href", '#');
+	$(".tagSearchLink").click(function () {
+		var sField = $(this).text();
+		$("#sField").val(sField);
+        $("#tagMode").attr("checked", true);
+		document.getElementById("frmAdvancedSearch").submit();
+	});
+
+	$.get(
+		"/ajax/_getIndexFeaturedSearch.php",
+		{ ajaxSignature: "d44aef9cbfbc4ccdb313007943975cd9" },
+		function ( data ) {
+			$('#featured-search').html(data);
+
+			$('.draggable').draggable({
+				zIndex: 5000,
+				helper: 'clone',
+				opacity: 0.30,
+				appendTo: 'body',
+				start: function(e, ui) {
+					parentObj = this.parentNode;
+					currentlyDraggedFrom = parentObj.id;
+                    currentlyDragging = this.src;
+                    currentlyDraggingId = this.id;
+					//alert('started dragging::currentlyDraggedFrom = ' + currentlyDraggedFrom);
+				},
+                stop: function(e, ui) {
+                    resetMousePointer();
+                }
+			});
+
+		}
+	);
+
+	setTimeout(function(){
+	$.get(
+		"/ajax/_getIndexSlideShow.php",
+		{ ajaxSignature: "d44aef9cbfbc4ccdb313007943975cd9" },
+		function ( data ) {
+			$('#slideshow').html(data);
+
+			
+			startSlides();
+
+			$("#slideshow div.splash-image").hover(
+				function() {
+					$(this).find('.overlaybar').show();
+					window.clearInterval(splashIntervalId);
+					window.clearTimeout(splashTimeoutId);
+				},
+				function() {
+					$(this).find('.overlaybar').hide();
+					splashTimeoutId = window.setTimeout('startSlides()', splashTimeoutSpeed);
+				}
+			);
+			
+
+			$('.draggable').draggable({
+				zIndex: 5000,
+				helper: 'clone',
+				opacity: 0.30,
+				appendTo: 'body',
+				start: function(e, ui) {
+					parentObj = this.parentNode;
+					currentlyDraggedFrom = parentObj.id;
+                    currentlyDragging = this.src;
+                    currentlyDraggingId = this.id;
+					//alert('started dragging::currentlyDraggedFrom = ' + currentlyDraggedFrom);
+				},
+                stop: function(e, ui) {
+                    resetMousePointer();
+                }
+			});
+
+		}
+	)},
+	2000);
+});
+</script>
+
+</head>
+<body>
+<div id="top-section">
+
+<div id="header">
+<div class="container">
+<a href="/"><img id="logo" src="/media/logo.png" height="44" width="244" title="everystockphoto" alt="everystockphoto logo" /></a>
+<p id="primary-nav">
+<a href="/forum/index.php">forum</a> &nbsp;&nbsp;/&nbsp;&nbsp;
+<a href="/help.php">help</a> &nbsp;&nbsp;/&nbsp;&nbsp;
+<a href="/about.php">about</a> &nbsp;&nbsp;/&nbsp;&nbsp;
+<a href="/blog.php">blog</a></p>
+
+<p id="login">
+<a href="/login.php">login</a> &nbsp;&nbsp;/&nbsp;&nbsp;
+<a href="/signup.php">sign up</a>
+</p>
+
+</div>
+</div><!-- END HEADER -->
+
+    <div id="search">
+
+    <div class="container">
+
+        <form name="frmAdvancedSearch" id="frmAdvancedSearch" action="/search.php" method="get">
+		<input type="hidden" name="initialSearch" value="true" />
+
+        
+        <h2 class="first">Search</h2>
+
+        
+        <input class="bigsearch" type="text" name="sField" id="sField" value="" />
+        <input class="button" type="image" src="/media/search-button.png" value="GO" />
+        <a id="advanced-toggle" class="down" href="#">advanced search</a>
+
+        <div id="advanced" class="hide">
+        	<hr id="advanced_top_line"/>
+        	<ol id="advanced_options_list">
+        		<li id="boolean_advanced">
+					<fieldset class="advanced_options">
+						<legend>Search</legend>
+	                		                    <input type="radio" name="sBool" id="sBool['and']" checked="checked" value="and" /> <label for="">all words</label><br />
+	                    <input type="radio" name="sBool" id="sBool['or']" value="any" /> <label for="">any words</label><br />
+	                    <input type="radio" name="sBool" id="sBool['exact']" value="exact" /> <label for="">exact phrase</label><br />
+	                    <input type="radio" name="sBool" id="sBool['begins']" value="begins" /> <label for="">begins with</label><br/>
+	                    
+					</fieldset>
+				</li>
+				
+				<li id="source_advanced">
+					<fieldset class="advanced_options">
+						<legend>Source</legend>
+		
+						<div id="source_options">
+							<p>License:</p>
+							<select name="sLicense" id="sLicense">
+	                            <option value="">all</option>
+	                            	                            <option value="4">Attribution License</option>
+	                            	                            <option value="6">Attribution-NoDerivs License</option>
+	                            	                            <option value="2">Attribution-NonCommercial License</option>
+	                            	                            <option value="3">Attribution-NonCommercial-NoDerivs License</option>
+	                            	                            <option value="1">Attribution-NonCommercial-ShareAlike License</option>
+	                            	                            <option value="5">Attribution-ShareAlike License</option>
+	                            	                            <option value="11">freerangestock</option>
+	                            	                            <option value="13">GNU Free Documentation License</option>
+	                            	                            <option value="10">imageafter</option>
+	                            	                            <option value="8">MorgueFile License</option>
+	                            	                            <option value="12">NASA</option>
+	                            	                            <option value="14">photoXpress License</option>
+	                            	                            <option value="7">Public Domain</option>
+	                            	                            <option value="9">sxu license</option>
+	                            	                        </select>
+	                        
+							<p>Search sources that:</p>
+							<input class="source_restriction" checked="checked" type="checkbox" name="restrict[]" value="none" /><label for="no_account">do not require accounts</label><br/>
+							<input class="source_restriction" checked="checked" type="checkbox" name="restrict[]" value="account"/><label for="require_account">require accounts</label><br/>
+							<input class="source_restriction" checked="checked" type="checkbox" name="restrict[]" value="restrict" /><label for="require_and_restrict">require accounts & restrict downloads</label><br/>
+						</div>
+						
+						<ul id="search_sources">
+														<li><input id="search_source_1" checked="checked" class="search_source none" type="checkbox" name="sSource[]" value="1"><label for="source[1]">Flickr</label></li>
+														<li><input id="search_source_5" checked="checked" class="search_source account" type="checkbox" name="sSource[]" value="5"><label for="source[5]">freerangestock</label></li>
+														<li><input id="search_source_4" checked="checked" class="search_source none" type="checkbox" name="sSource[]" value="4"><label for="source[4]">imageafter</label></li>
+														<li><input id="search_source_2" checked="checked" class="search_source none" type="checkbox" name="sSource[]" value="2"><label for="source[2]">morgueFile</label></li>
+														<li><input id="search_source_8" checked="checked" class="search_source none" type="checkbox" name="sSource[]" value="8"><label for="source[8]">NASA</label></li>
+														<li><input id="search_source_9" checked="checked" class="search_source restrict" type="checkbox" name="sSource[]" value="9"><label for="source[9]">photoXpress</label></li>
+														<li><input id="search_source_3" checked="checked" class="search_source account" type="checkbox" name="sSource[]" value="3"><label for="source[3]">stock.xchng</label></li>
+														<li><input id="search_source_7" checked="checked" class="search_source none" type="checkbox" name="sSource[]" value="7"><label for="source[7]">Wikimedia Commons</label></li>
+														<li><input id="search_source_6" checked="checked" class="search_source none" type="checkbox" name="sSource[]" value="6"><label for="source[6]">Wikipedia</label></li>
+														<li id="all_sources_check"><span id="uncheck_all_sources">Uncheck All</span> / <span id="check_all_sources">Check All</span></li>
+						</ul>
+					</fieldset>
+				</li>
+				
+				<li id="photo_advanced">
+					<fieldset class="advanced_options">
+						<legend id="photo_legend">Photo</legend>
+						<input type="checkbox" checked="checked" name="safeSearch" id="safeSearch" value="1" /> <label for="safeSearch">safe search</label>
+						<input type="checkbox" name="tagMode" id="tagMode" value="true" /> <label for="tagMode">only search tags</label>
+		                <p id="photo_shape">
+		                    shape
+		                    		                    		                    <input type="checkbox" checked="checked" name="sPortrait" id="sPortrait" value="on" /><label for=""><img src="/media/portrait.png" height="18" width="18" title="portrait" alt="portrait" /></label>&nbsp;
+		                    <input type="checkbox" checked="checked" name="sLandscape" id="sLandscape" value="on" /><label for=""><img src="/media/landscape.png" height="18" width="18" title="landscape" alt="landscape" /></label>&nbsp;
+		                    <input type="checkbox" checked="checked" name="sSquare" id="sSquare" value="on" /><label for=""><img src="/media/square.png" height="18" width="18" title="square" alt="square" /></label>
+		                </p>
+		                
+		                <p>
+		                    <label for="sMinW">min width</label> <input class="text" type="text" name="sMinW" id="sMinW" size="5" value="" />&nbsp;&nbsp;
+		                    <label for="sMinH">min height</label> <input class="text" type="text" name="sMinH" id="sMinH" size="5" value="" /><br />
+		                </p>
+					</fieldset>
+				</li>
+				
+				<li id="display_advanced" class="last_li">
+					<fieldset class="advanced_options">
+						<legend>Display</legend>
+						<ol id="display_list_options">
+							<li>
+			                    <input type="checkbox" checked="checked" name="sDispRes" id="sDispRes" value="on" /> <label for="sDispRes">resolution</label>
+			                </li>
+			                
+			                <li>
+	                    		<input type="checkbox" checked="checked" name="sDispLic" id="sDispLic" value="on" /> <label for="sDispLic">license</label>
+	                    	</li>
+	                    	
+	                    	<li>
+			                    <input type="checkbox" checked="checked" name="sDispSrc" id="sDispSrc" value="on" /> <label for="sDispSrc">source</label>
+			                </li>
+			                
+			                <li>
+			                    <input type="checkbox" checked="checked" name="sDispRtg" id="sDispRtg" value="on" /> <label for="sDispRtg">rating</label>
+			                </li>
+			        	</ol>
+					</fieldset>
+				</li>
+			</ol>
+        </div>
+        </form>
+        
+        <div style="clear:both;">&nbsp;</div>
+
+    </div>
+
+    <div class="bottom">&nbsp;</div>
+
+</div><!-- END SEARCH -->
+<div id="content">
+<div class="container clearfix">
+
+
+
+<div id="main">
+
+<div id="welcome" class="clearfix">
+    <div id="slideshow" style="width: 400px; height: 240px; overflow: hidden;"></div>
+    <div id="intro">
+        <h1>welcome to everystockphoto.com</h1>
+        <p>We are a search engine for free photos. These come from many sources and are license-specific. You can view a photo's license by clicking on the license icon, below and left of photos. Membership is free, without advertising, and allows you to rate, tag, collect and comment on photos. </p>
+<p  class="center">
+
+
+<b><a href="/signup.php">Sign Up </a></b>&nbsp&nbsp&nbsp&nbsp&nbsp
+<b><a href="/about.php">Learn more</a></b>
+
+
+</p>
+        <p class="center">Now searching: <strong>6,142,561 free photos</strong></p>
+    </div>
+</div><!-- WELCOME -->
+
+<script type="text/javascript"><!--
+google_ad_client = "pub-2565649543591487";
+/* 728x15, created 2/18/09 */
+google_ad_slot = "4588801244";
+google_ad_width = 728;
+google_ad_height = 15;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+<div id="blogs" class="clearfix">
+
+<div id="photo-blog">
+
+        <h2 class="first"><a class="preserveh2" href="/blog.php?blogId=2">photo blog</a> <a class="roll" href="/blog.php?blogId=2&amp;rss=true" title="Subscribe"><img src="/media/rss.png" height="10" width="10" alt="RSS icon" /></a></h2>
+
+                                <div class="entry clearfix">
+    <div class="thumb">
+    <a class="img" id="2544590_479" href="/photo.php?imageId=2544590&entryId=479">
+        <img class="draggable" id="photoBlogImage_2544590" style="top:11px;" src="http://s3.amazonaws.com/estock_dev/fspid11/60/94/05/spider-orbweaver-macro-609405-tn.jpg" title="Barn Spider-suspended" alt="&lt;a href=&quot;http://en.wikipedia.org/wiki/Orb_weaver&quot;&gt;Araneidae (Orb weaver)&lt;/a&gt; probably of the species &lt;a href=&quot;http://en.wikipedia.org/wiki/Araneus_cavaticus&quot;&gt;Araneus cavaticus (Barn spider)&lt;/a&gt;.  Same sp..." />
+    </a>
+    </div>
+    <div class="blog-content">
+    <h3 style="margin-top:1px ! important;"><a href="/photo.php?imageId=2544590&entryId=479"></a></h3>
+    <p><span class="dead">12.13.10&nbsp;</span> </p>
+    </div>
+    </div><!-- end entry -->
+                                <div class="entry clearfix">
+    <div class="thumb">
+    <a class="img" id="6416899_478" href="/photo.php?imageId=6416899&entryId=478">
+        <img class="draggable" id="photoBlogImage_6416899" style="top:20px;" src="http://s3.amazonaws.com/everystockphoto/fspid20/86/25/88/chinohills-whiteflower-insect-862588-tn.jpg" title="Chino Hills flower insect pollen" alt="Love this pic.  Download the largest version and look at the insect inside.  Notice the pollen all over it." />
+    </a>
+    </div>
+    <div class="blog-content">
+    <h3 style="margin-top:1px ! important;"><a href="/photo.php?imageId=6416899&entryId=478"></a></h3>
+    <p><span class="dead">12.13.10&nbsp;</span> </p>
+    </div>
+    </div><!-- end entry -->
+                                <div class="entry clearfix">
+    <div class="thumb">
+    <a class="img" id="5898907_477" href="/photo.php?imageId=5898907&entryId=477">
+        <img class="draggable" id="photoBlogImage_5898907" style="top:19px;" src="http://s3.amazonaws.com/everystockphoto/fspid20/31/78/35/japan-nikon-d300-317835-tn.jpg" title="Shonan surfin_06" alt="" />
+    </a>
+    </div>
+    <div class="blog-content">
+    <h3 style="margin-top:1px ! important;"><a href="/photo.php?imageId=5898907&entryId=477"></a></h3>
+    <p><span class="dead">12.07.10&nbsp;</span> </p>
+    </div>
+    </div><!-- end entry -->
+                                <div class="entry clearfix">
+    <div class="thumb">
+    <a class="img" id="3456809_476" href="/photo.php?imageId=3456809&entryId=476">
+        <img class="draggable" id="photoBlogImage_3456809" style="top:14px;" src="http://s3.amazonaws.com/estock/fspid10/15/77/01/8/paris-parigi-eiffelturm-1577018-tn.jpg" title="Tour Eiffel - HDR" alt="Eiffel Tower, Paris  -  HDR" />
+    </a>
+    </div>
+    <div class="blog-content">
+    <h3 style="margin-top:1px ! important;"><a href="/photo.php?imageId=3456809&entryId=476"></a></h3>
+    <p><span class="dead">12.07.10&nbsp;</span> </p>
+    </div>
+    </div><!-- end entry -->
+                                <div class="entry clearfix">
+    <div class="thumb">
+    <a class="img" id="5810144_475" href="/photo.php?imageId=5810144&entryId=475">
+        <img class="draggable" id="photoBlogImage_5810144" style="top:14px;" src="http://s3.amazonaws.com/everystockphoto/fspid20/22/66/10/kandahar-afghanistan-226610-tn.jpg" title="Insurgents Driven Out of Shah Wali Kot" alt="An Australian Special Operations Task Group soldier observing the valley during the Shah Wali Kot Offensive.
+Afghan National Security Forces (ANSF) partnered with Australian Special Forces from the Special Operations Task Group conducted a deliber..." />
+    </a>
+    </div>
+    <div class="blog-content">
+    <h3 style="margin-top:1px ! important;"><a href="/photo.php?imageId=5810144&entryId=475"></a></h3>
+    <p><span class="dead">11.29.10&nbsp;</span> </p>
+    </div>
+    </div><!-- end entry -->
+    
+        <p style="float:right;">
+        <a href="/blog.php?blogId=2">more</a>
+    </p>
+    
+    
+</div><!-- END PHOTO BLOG -->
+
+<div id="news-blog">
+
+    <h2 class="first">featured website</h2>
+
+    <div>
+        <a href="http://www.vibrant-software.com/" target="_blank" onClick="trackEvent(this, 'Outbound Links', 'vibrant-software', 'featured website');return false;"><img src="/media/vibrant.jpg" width="314" height="171" alt="" style="border: 0;" /></a>
+    </div>
+    
+    <div class="clear">&nbsp;</div>
+
+    <br />
+
+    <h2 class="first">sponsors</h2>
+
+<script type="text/javascript"><!--
+google_ad_client = "pub-2565649543591487";
+/* index side_300x250, created 2/18/09 */
+google_ad_slot = "5430099582";
+google_ad_width = 300;
+google_ad_height = 250;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+
+        <h2><a class="preserveh2" href="/blog.php?blogId=1">everystockphoto.com news</a> <a class="roll" href="/blog.php?blogId=1&rss=true" title="Subscribe"><img src="/media/rss.png" height="10" width="10" alt="RSS icon" /></a></h2>
+
+        <div class="entry">
+    <h3><a href="/blog/view.php?entryId=427">Major Feature Release</a></h3>
+    <p><span class="dead">11.09.09&nbsp;</span> We are happy to announce a major release today which will fix some existing bugs as well as offering a bunch of new advanced search features, including granular control of what sites you are searching. This release has also combined all of our CSS into a single file, so please do report any problems you have (along with your browser and OS combination).  We hope these changes make the site more useful!</p>
+    </div>
+        <div class="entry">
+    <h3><a href="/blog/view.php?entryId=426">Morguefile Re-indexed</a></h3>
+    <p><span class="dead">11.09.09&nbsp;</span> Morguefile has been re-indexed, including cleaning up all the old photos and adding all of their new photos. This should make it easier to search their fantastic library!</p>
+    </div>
+        <div class="entry">
+    <h3><a href="/blog/view.php?entryId=418">Freerange Stock</a></h3>
+    <p><span class="dead">08.25.09&nbsp;</span> We have finished re-indexing Freerange stock, and these images are streaming into our production database presently, and should be up-to-date in a couple days. Freerange now has over 8000 quality free images!</p>
+    </div>
+        <div class="entry">
+    <h3><a href="/blog/view.php?entryId=404">Photoxpress Photos!</a></h3>
+    <p><span class="dead">07.21.09&nbsp;</span> At long last, our indexing efforts are up and running again, with high quality free photos from photoxpress streaming into the site. This will be complete in the next few days. Don't forget you can use the source filter to choose a particular site to search exclusively. Next up, we turn to a morguefile re-indexing!</p>
+    </div>
+        <div class="entry">
+    <h3><a href="/blog/view.php?entryId=403">Safe Search, We Shall Double Our Efforts</a></h3>
+    <p><span class="dead">07.17.09&nbsp;</span> Our default sorting algorithm favors popularity heavily. As a result, over the last year, salacious photos, across all searches, have been floating up. Obviously popular with some, they are offensive to others!
+
+To combat this, we introduced a "safe search" mode, which filtered out photos marked as NSFW. This was off by default. Due to increasing feedback from users, we are changing safe search to default to ON. you can turn it OFF via the advanced search, or in your user search preferences.
+
+We are also making sure that safe search mode applies across all the website features. 
+
+The remaining challenge is that flagging photos as NSFW is a manual thing. We need your help! Please use the report tab to flag photos, and we will process these asap. We are also doing our best to go through some of the more popular searches. Hopefully all these efforts will lead to some improvement and make the site more friendly for everyone. Thanks!</p>
+    </div>
+    
+        <p style="float:right;">
+        <a href="/blog.php?blogId=1">more</a>
+    </p>
+    
+    
+    <div class="clear">&nbsp;</div>
+
+</div><!-- END NEWS BLOG -->
+
+</div><!-- END BLOGS -->
+
+</div><!-- END MAIN -->
+
+<div id="sidebar">
+<h2 class="first">popular searches</h2>
+<p class="first">
+    <a href="/latest.php"><b>latest photos</b></a><br />
+    <a href="/search.php?mode=top1000&sSort=5&oSort=desc&safeSearch=1&sDispLic=on&sDispSrc=on&sDispRtg=on&sDispRes=on"><b>top 1000 photos</b></a><br />
+    <a href="/top_photographers.php"><b>top 1000 photographers</b></a>
+</p>
+<p id="popularSearches">
+	<span class="cloud1"><a class="searchLink" href="/search.php?search=animals&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">animals</a></span>	<span class="cloud3"><a class="searchLink" href="/search.php?search=architecture&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">architecture</a></span>	<span class="cloud4"><a class="searchLink" href="/search.php?search=blackandwhite&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">blackandwhite</a></span>	<span class="cloud1"><a class="searchLink" href="/search.php?search=computer&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">computer</a></span>	<span class="cloud4"><a class="searchLink" href="/search.php?search=food&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">food</a></span>	<span class="cloud2"><a class="searchLink" href="/search.php?search=fractal&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">fractal</a></span>	<span class="cloud3"><a class="searchLink" href="/search.php?search=girl&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">girl</a></span>	<span class="cloud4"><a class="searchLink" href="/search.php?search=nature&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">nature</a></span>	<span class="cloud3"><a class="searchLink" href="/search.php?search=paris&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">paris</a></span>	<span class="cloud4"><a class="searchLink" href="/search.php?search=people&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">people</a></span>	<span class="cloud1"><a class="searchLink" href="/search.php?search=square&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">square</a></span>	<span class="cloud2"><a class="searchLink" href="/search.php?search=textures&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">textures</a></span>	<span class="cloud3"><a class="searchLink" href="/search.php?search=water&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">water</a></span>	<span class="cloud4"><a class="searchLink" href="/search.php?search=woman&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">woman</a></span></p>
+<hr />
+<h2 class="first">popular tags</h2>
+<p id="popularTags">
+	<span class="cloud4"><a class="tagSearchLink" href="/search.php?tagMode=true&amp;tag=2500&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">2005</a></span>	<span class="cloud3"><a class="tagSearchLink" href="/search.php?tagMode=true&amp;tag=3289&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">2006</a></span>	<span class="cloud2"><a class="tagSearchLink" href="/search.php?tagMode=true&amp;tag=204&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">art</a></span>	<span class="cloud2"><a class="tagSearchLink" href="/search.php?tagMode=true&amp;tag=863&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">australia</a></span>	<span class="cloud2"><a class="tagSearchLink" href="/search.php?tagMode=true&amp;tag=72&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">beach</a></span>	<span class="cloud2"><a class="tagSearchLink" href="/search.php?tagMode=true&amp;tag=35&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">blue</a></span>	<span class="cloud2"><a class="tagSearchLink" href="/search.php?tagMode=true&amp;tag=231&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">california</a></span>	<span class="cloud1"><a class="tagSearchLink" href="/search.php?tagMode=true&amp;tag=2578&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">cool</a></span>	<span class="cloud2"><a class="tagSearchLink" href="/search.php?tagMode=true&amp;tag=49&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">flower</a></span>	<span class="cloud2"><a class="tagSearchLink" href="/search.php?tagMode=true&amp;tag=41&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">green</a></span>	<span class="cloud2"><a class="tagSearchLink" href="/search.php?tagMode=true&amp;tag=18&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">japan</a></span>	<span class="cloud1"><a class="tagSearchLink" href="/search.php?tagMode=true&amp;tag=108929&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">libraryofcongress</a></span>	<span class="cloud2"><a class="tagSearchLink" href="/search.php?tagMode=true&amp;tag=389&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">music</a></span>	<span class="cloud2"><a class="tagSearchLink" href="/search.php?tagMode=true&amp;tag=46&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">nature</a></span>	<span class="cloud2"><a class="tagSearchLink" href="/search.php?tagMode=true&amp;tag=337&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">nyc</a></span>	<span class="cloud1"><a class="tagSearchLink" href="/search.php?tagMode=true&amp;tag=458&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">purple</a></span>	<span class="cloud2"><a class="tagSearchLink" href="/search.php?tagMode=true&amp;tag=66&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">red</a></span>	<span class="cloud2"><a class="tagSearchLink" href="/search.php?tagMode=true&amp;tag=39&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">sky</a></span>	<span class="cloud2"><a class="tagSearchLink" href="/search.php?tagMode=true&amp;tag=290&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">USA</a></span>	<span class="cloud1"><a class="tagSearchLink" href="/search.php?tagMode=true&amp;tag=48&amp;sDispRes=on&amp;sDispLic=on&amp;sDispSrc=on&amp;sDispRtg=on">yellow</a></span></p>
+<hr />
+<div id="featured-search"></div>
+</div><!-- END SIDEBAR -->
+
+</div>
+</div><!-- END CONTENT -->
+
+</div><!-- END TOP SECTION -->
+
+<div id="collections">
+            <div class="container" style="height:100%; padding-top:2px;">
+        <div style="float:left; height:100%; width:250px; ">
+            <div style="height:42px; width:100%; overflow:hidden;">
+				<h1 id="collectionTitle" style="margin: 0px; padding-top: 2px; font-size: 14px; position: relative; top:0; left: 0;">current collection</h1>
+				<h2 id="collectionName" class="edit" style="height:22px;width:100%; margin: 0px;">click to edit collection name</h2>
+			</div>
+            <h1 style="margin: 0px; margin-top: 6px; font-size: 14px; position: relative; top:0; left: 0;">my collections</h1>
+            <div id="collectionsList" style="padding:5px; overflow:auto; width:94%; height:115px; ">
+                                            </div>
+        </div>
+        <div style="float:left; height:100%; width:440px; overflow:hidden; ">
+            <ul id="collectionContainer" class="collection">
+                                                <li id="collection_1">&nbsp;</li>
+                                <li id="collection_2">&nbsp;</li>
+                                <li id="collection_3">&nbsp;</li>
+                                <li id="collection_4">&nbsp;</li>
+                                <li id="collection_5">&nbsp;</li>
+                                <li id="collection_6">&nbsp;</li>
+                                <li id="collection_7">&nbsp;</li>
+                                <li id="collection_8">&nbsp;</li>
+                                <li id="collection_9">&nbsp;</li>
+                                <li id="collection_10">&nbsp;</li>
+                                <li id="collection_11">&nbsp;</li>
+                                <li id="collection_12">&nbsp;</li>
+                                <li id="collection_13">&nbsp;</li>
+                                <li id="collection_14">&nbsp;</li>
+                                <li id="collection_15">&nbsp;</li>
+                                <li id="collection_16">&nbsp;</li>
+                                <li id="collection_17">&nbsp;</li>
+                                <li id="collection_18">&nbsp;</li>
+                                <li id="collection_19">&nbsp;</li>
+                                <li id="collection_20">&nbsp;</li>
+                                <li id="collection_21">&nbsp;</li>
+                                <li id="collection_22">&nbsp;</li>
+                                <li id="collection_23">&nbsp;</li>
+                                <li id="collection_24">&nbsp;</li>
+                                <li id="collection_25">&nbsp;</li>
+                                <li id="collection_26">&nbsp;</li>
+                                <li id="collection_27">&nbsp;</li>
+                                <li id="collection_28">&nbsp;</li>
+                                <li id="collection_29">&nbsp;</li>
+                                <li id="collection_30">&nbsp;</li>
+                                <li id="collection_31">&nbsp;</li>
+                                <li id="collection_32">&nbsp;</li>
+                                <li id="collection_33">&nbsp;</li>
+                                <li id="collection_34">&nbsp;</li>
+                                <li id="collection_35">&nbsp;</li>
+                                <li id="collection_36">&nbsp;</li>
+                                <li id="collection_37">&nbsp;</li>
+                                <li id="collection_38">&nbsp;</li>
+                                <li id="collection_39">&nbsp;</li>
+                                <li id="collection_40">&nbsp;</li>
+                                <li id="collection_41">&nbsp;</li>
+                                <li id="collection_42">&nbsp;</li>
+                                <li id="collection_43">&nbsp;</li>
+                                <li id="collection_44">&nbsp;</li>
+                                <li id="collection_45">&nbsp;</li>
+                                <li id="collection_46">&nbsp;</li>
+                                <li id="collection_47">&nbsp;</li>
+                                <li id="collection_48">&nbsp;</li>
+                                <li id="collection_49">&nbsp;</li>
+                                <li id="collection_50">&nbsp;</li>
+                            </ul>
+        </div>
+        <div style="float:left; height:100%; ">
+            <ul>
+            <li id="collectionImage-del" class="del" style="list-style:none; width:31px; height:31px; padding:0px; border:1px solid #AAA; position:relative; top:-5px; left:-30px; ">
+                <img id="collectionImage-trash-icon" src="/media/trash_off.png" width="31" height="31" alt="Remove images from your collection by dragging into here." />
+            </li>
+            </ul>
+            <div style="position:relative; top:-48px; left:48px; ">
+            <a id="collections-toggle" class="up" href="#">show collection</a><br />
+                        Please <a href="/login.php">login</a> to save your collection.
+                        </div>
+        </div>
+    </div>
+    <div id="dragHelper"></div>    </div><!-- END COLLECTIONS --><div id="footer">
+<div class="container">
+<p id="footer-nav">
+<a href="/termsofuse.php">terms of use</a> &nbsp;&nbsp;/&nbsp;&nbsp;
+<a href="/privacy.php">privacy policy</a> &nbsp;&nbsp;/&nbsp;&nbsp;
+<a href="/tags.php">tags</a> &nbsp;&nbsp;/&nbsp;&nbsp;
+<a href="/contact.php">contact</a> &nbsp;&nbsp;/&nbsp;&nbsp;
+<a href="/advertisers.php">advertisers</a></p>
+<p id="copyright">&copy; 2006-2010 everystockphoto</p>
+</div>
+</div><!-- END FOOTER -->
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-263687-1");
+pageTracker._trackPageview();
+</script>
+
+
+<script type="text/javascript">
+//event tracking
+function openInNewWindow(href) {
+    var newWindow = window.open(href, '_blank');
+    newWindow.focus();
+    return false;
+}
+function trackEvent(link, category, action, opt_label, opt_value) {
+    try {
+        var pageTracker=_gat._getTracker("UA-263687-1");
+        pageTracker._trackEvent(category, action, opt_label, opt_value);
+        setTimeout('openInNewWindow("'+link.href+'")', 100);
+    }catch(err){}
+}
+</script>
+
+
+<link rel="search" type="application/opensearchdescription+xml" title="everystockphoto.com" href="http://www.everystockphoto.com/search.xml">
+<!-- six -->
+</body>
+</html>

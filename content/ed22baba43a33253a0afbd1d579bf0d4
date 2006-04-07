@@ -1,0 +1,491 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/Tutorial_SL_Template.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Newest Second Life Tutorial - © Robin Wood 2009</title>
+<!-- InstanceEndEditable -->
+<link href="../../../_css/tutorial.css" rel="stylesheet" type="text/css" media="screen, projection"/>
+<link href="../../../_css/navThingTutorial.css" rel="stylesheet" type="text/css"  media="screen, projection"/>
+<link href="../../../_css/tutorialPrint.css" rel="stylesheet" type="text/css" media="print" />
+
+<!-- InstanceBeginEditable name="head" -->
+
+<!-- InstanceEndEditable -->
+
+
+</head>
+
+<body>
+<!-- START of freefind onpage results html -->
+<!-- position these div's right after your body tag -->
+
+<!--  FreeFind on-page results divs  -->
+<div id="ffresult_win"   style=" z-index:1; padding: 20px 0 16px 0; margin:0px; width:538px; height:728px; border:none; display:none; position:absolute; top:0px; left:0px;">
+	<div  id="ffresult_bar" onmousedown="ffresults.drag(event,false)"  style="cursor: move; z-index:5; position:absolute; top:0px; left:0px; background-color:maroon; padding:0; text-align: right; width:100%; height:20px; display:block;  border:solid; border-width: 1px; border-bottom: 0px; border-color:maroon;">
+	<a  id="ffrclose" style="z-index:6; font-family: arial, verdana, sans-serif; font-size:8pt; color:white; " href="javascript:ffresults.hide()">Close window [X]</a>&nbsp;&nbsp;&nbsp;
+	</div>
+	<div  id="ffresult_2" style="z-index:7; position: relative; height: 100%; background-color:white;  display:block;">
+	<div  id="ffresult_cvr" style="z-index:0; position:absolute; top:0px; left:0px; display:block; width:100%; height:100%;">
+	</div>
+	<iframe  id="ffresult_ifr" name="ffresult_frame"  style="z-index:1; position:absolute; top:0px; left:0px; border:solid; border-width: 0px 1px 0px 1px; border-color:gray;" src="" width="100%" height="100%" scrolling="auto" frameborder="0">
+	</iframe>
+	</div>
+	<div  id="ffresult_btm" style=" position:absolute; bottom:-1; left:0px; border:solid; border-color:gray; border-width: 1px; border-top: 0px; display: block; z-index:18; background-color:#d0d0d0; width:100%; height:16px; " >
+		<div  id="ffresult_sbx" onmousedown="ffresults.drag(event,true);" style="cursor: se-resize; float:right; border:none; border-color:gray; border-width: 0px; width:16px; height:16px; "><img  style="" id="ffresult_szimg" height=16 width=16 border=0 src="" alt="" /></div>
+	</div>
+</div>
+
+
+<!--  FreeFind on-page results handler  -->
+
+<script type="text/javascript">
+<!--
+var ffresults = {
+
+	// copyright 2008 FreeFind.com - authorized for use with the FreeFind service only
+
+	// Start of config settings
+
+    autoPos : true,			// automatic initial window position / size. 
+
+	// if autoPos if false, the following four numbers are used as initial window position and size
+
+	initialX : 78,			// left position (pixels)
+	initialY : 66,			// right position (pixels)
+	initialH : 395,			// height of window
+	initialW : 622,			// width of window
+
+	// choose a number for z-index that is high enough so the results window appears above other windows on your page
+
+	initialZ : 10000000,    // initial z-index of the results window
+	
+	// the following value controls the color of the window's drag bar (top area of window)
+	
+	barColor : 'navy',
+
+	// end of config settings
+
+	element : undefined,
+	cover : undefined,
+	mouseDownX : 0,
+	mouseDownY : 0,
+	objectX : 0,
+	objectY : 0,
+	objectH : 0,
+	objectW : 0,
+    ipos : false,
+	resize : false,
+	
+	sizeImageUrl : 'http://search.freefind.com/img/rsize.gif',
+
+	selectFunc : undefined,
+	selectState : undefined,
+	mozSelect : undefined,
+
+	noSelect : function()
+	{
+	    var obj = document.body;
+
+        ffresults.selectFunc = obj.onselectstart;
+		ffresults.selectState = obj.unselectable;
+		ffresults.mozSelect = obj.style.MozUserSelect;
+
+		obj.onselectstart = function(){ return false; };
+		obj.unselectable = 'on';
+		obj.style.MozUserSelect = 'none';
+	},
+
+	restoreSelect : function()
+	{
+	    var obj = document.body;
+
+		obj.onselectstart = ffresults.selectFunc;
+		obj.unselectable = ffresults.selectState;
+		obj.style.MozUserSelect = ffresults.mozSelect;
+	},
+
+
+	drag : function (e,size)
+	{
+		if(!document.getElementById) return;
+		
+		if(!e) e = window.event;
+		var targ = e.target || e.srcElement;
+	    ffresults.resize = size;
+
+		if(targ.id != 'ffresult_bar' && targ.id != 'ffresult_szimg') return true;
+		ffresults.noSelect();
+
+		ffresults.element = document.getElementById('ffresult_win');
+		ffresults.objectX = parseInt(ffresults.element.style.left,10);
+		ffresults.objectY = parseInt(ffresults.element.style.top,10);
+		ffresults.objectH = parseInt(ffresults.element.style.height,10);
+		ffresults.objectW = parseInt(ffresults.element.style.width,10);
+
+		ffresults.cover = document.getElementById('ffresult_cvr');
+		ffresults.cover.style.zIndex = '40';
+		ffresults.mouseDownX = e.clientX;
+		ffresults.mouseDownY = e.clientY;
+		if(e.preventDefault) e.preventDefault();
+		e.returnValue = false;
+		e.cancelBubble = true;
+		ffresults.attach(document,"mouseup",ffresults.drop);
+		ffresults.attach(document,"mousemove",ffresults.move);
+	},
+
+
+
+
+	attach : function(to,eventname,func)
+	{
+		if(to.addEventListener) 
+			to.addEventListener(eventname,func,false);
+		else
+			to.attachEvent("on" + eventname,func);
+	},
+
+	detach : function(to,eventname,func)
+	{
+		if(to.removeEventListener) 
+			to.removeEventListener(eventname,func,false);
+		else
+			to.detachEvent("on" + eventname,func);
+	},
+
+	drop : function(e)
+	{
+		ffresults.detach(document,"mouseup",ffresults.drop);
+		ffresults.detach(document,"mousemove",ffresults.move);
+		ffresults.cover.style.zIndex = 0;	
+		ffresults.element = null;
+		ffresults.restoreSelect();
+	},
+
+	move: function(e)
+	{
+	   if(!e) e = window.event;
+
+	   e.returnValue = false;
+	   e.cancelBubble = true;
+	   if(e.preventDefault) e.preventDefault();
+
+		var x = e.clientX;
+		var y = e.clientY; 
+
+		if(ffresults.resize)
+		{
+			var winW = ffresults.objectW + x - ffresults.mouseDownX;
+			var winH = ffresults.objectH + y - ffresults.mouseDownY;
+			
+			if(winH < 128) winH = 128;
+			if(winW < 128) winW = 128;
+
+			ffresults.element.style.width = winW + "px";
+			ffresults.element.style.height = winH + "px";
+		}
+		else
+		{
+			var left = ffresults.objectX + x - ffresults.mouseDownX;
+			var top = ffresults.objectY + y - ffresults.mouseDownY;
+
+			ffresults.element.style.left = left + "px";
+			ffresults.element.style.top = top + "px";
+		}
+		
+
+	},
+
+	hide : function()
+	{
+		var rStyle = document.getElementById('ffresult_win').style;
+		rStyle.display = "none";
+		rStyle.zIndex = 0;
+		var ifr = document.getElementById('ffresult_ifr');
+		if(ifr) ifr.src="";
+		var szImg = document.getElementById('ffresult_szimg');
+		if(szImg) szImg.src = "";
+
+	},
+
+
+	show : function(num)
+	{
+		if(!document.getElementById) return;
+
+		var searchForm = document.getElementById('ffresult_sbox'+num);
+		var idxLink = document.getElementById('ffresult_idx'+num);
+		var smpLink = document.getElementById('ffresult_smp'+num);
+		var advLink = document.getElementById('ffresult_adv'+num);
+
+		if(searchForm) searchForm.target = 'ffresult_frame';
+		if(idxLink) idxLink.target = 'ffresult_frame';
+		if(smpLink) smpLink.target = 'ffresult_frame';
+		if(advLink) advLink.target = 'ffresult_frame';
+
+		var rDiv = document.getElementById('ffresult_win');
+
+		if(!ffresults.ipos)
+		{
+		    if(ffresults.autoPos)
+			{
+			    ffresults.computePos(rDiv); 
+			}
+			else
+			{
+				rDiv.style.top = ffresults.initialY + 'px';
+				rDiv.style.left = ffresults.initialX + 'px';
+				rDiv.style.width = ffresults.initialW + 'px';
+				rDiv.style.height = (ffresults.initialH - 36) + 'px';	
+			}
+			ffresults.ipos = true;
+		}
+
+		var szImg = document.getElementById('ffresult_szimg');
+		if(szImg) szImg.src = ffresults.sizeImageUrl;
+
+		var dragBar = document.getElementById('ffresult_bar');
+		if(dragBar) 
+		{
+			dragBar.style.backgroundColor = ffresults.barColor;
+			dragBar.style.borderColor = ffresults.barColor;
+		}
+
+		rDiv.style.zIndex = ffresults.initialZ;
+		rDiv.style.display = "block";
+	},
+
+
+
+	computePos : function(rDiv)
+	{
+
+		var view = ffresults.viewSize();
+		var w = parseInt(view.width * 0.75,10);
+		var h = parseInt(view.height * 0.75,10);
+		if(w < 220) w = 220;
+		if(h < 220) h = 220;
+
+
+		var left = parseInt((view.width - w ) / 2,10);
+		var top = parseInt((view.height - (h + 36)) / 2,10);
+
+
+		if(left < 0) left = 0;
+		if(top < 0) top = 0;
+
+		rDiv.style.top = (top + view.scrollY) + 'px';
+		rDiv.style.left =  (left + view.scrollX) + 'px';
+		rDiv.style.width =  w + 'px';
+		rDiv.style.height =  h + 'px';
+
+	},
+	
+	viewSize : function()
+	{   
+		var w = 0;
+		var h = 0;
+		var sx = 0;
+		var sy = 0;
+
+	    if(window.innerWidth)	
+		{  // non-ie
+		   w = window.innerWidth;
+		   h = window.innerHeight;
+		   sx = window.pageXOffset;
+		   sy = window.pageYOffset;
+		}
+		else
+		{
+		    var elem;
+			if(document.documentElement && document.documentElement.clientWidth != 0)
+			{   // ie strict
+				elem = document.documentElement;
+			}
+			else
+			{	// ie quirks
+				elem = document.body;
+			}
+			w = elem.clientWidth;
+			h = elem.clientHeight;
+			sx = elem.scrollLeft;
+			sy = elem.scrollTop;
+			
+		}
+		  
+		
+		return {width: w,height: h, scrollX: sx, scrollY: sy};
+		
+	}
+
+
+};
+
+//-->
+</script>
+<!-- END of freefind onpage results html -->
+
+<div id="wrapper">
+<div id="header">
+<div id="mainNav">
+  <ul>
+    <li class="skipTitles"><a href="#titles">Skip to Essay Titles</a></li>
+    <li class="skipMain"><a href="#mainContent">Skip to Main Content</a></li>
+    <li class="One"><a href="../../../index.html">Home</a></li>
+    <li class="Two"><a href="../../FreeStuff/FreeGate.html">Freebies</a></li>
+    <li class="Three"><a href="../../StoreGate.html">Prints</a></li>
+    <li class="Four"><a href="../../../Livingtree.html">Livingtree Grove</a></li>
+    <li class="Five"><a href="../../../Democracy/essayList.html">Essays</a></li>
+    <li class="Six"><a href="../../ArtLinks/LinkSet.html">Links</a></li>
+    <li class="subOne"><a href="../LightwaveTuts/LWTutSet.html">LightWave Tutorials</a></li>
+    <li class="subTwo"><a href="../modoTuts/newestModo.html">Modo Tutorials</a></li>
+    <li class="subThree"><a href="../BryceTuts/BryceTutSet.html">Bruce Tutorials</a></li>
+    <li class="subFour"><a href="SLTutSet.html">Second Life Tutorials</a></li>
+    <li class="subFive"><a href="../PhotoshopTuts/PhotoTutPages/NewestPSTut.html">Photoshop Tutorials</a></li>
+    <li class="subSix"><a href="../Gen3DTuts/Gen3DSet.html">General 3D Tutorials</a></li>
+  </ul>
+  <ul class="button">
+    <li class="bMain"><a href="../TutorialGate.html">Tutorials Available</a></li>
+    <li class="b1"><a href="../../../index.html">Home Button</a></li>
+    <li class="b2"><a href="../../FreeStuff/FreeGate.html">Freebie Button</a></li>
+    <li class="b3"><a href="../TutorialGate.html">Tutorials Button</a></li>
+    <li class="b4"><a href="../../StoreGate.html">Prints Button</a></li>
+    <li class="b5"><a href="../../../Livingtree.html">Grove Button</a></li>
+    <li class="b6"><a href="../../ArtLinks/LinkSet.html">Links Button</a></li>
+    </ul></div>
+<!-- InstanceBeginEditable name="breadcrumbs" -->
+<div id="breadcrumbs">
+  <p><a href="../../../index.html">Home</a> &gt; <a href="../TutorialGate.html">Tutorials</a> &gt; Second Life
+  <!--end #breadcrumbs div-->
+  </p>
+</div>
+<!-- InstanceEndEditable -->
+  <div id="searchBox">
+    <!-- start of freefind search box html -->
+<table cellpadding=0 cellspacing=0 border=0 >
+<tr>
+	<td  style="font-family: Arial, Helvetica, sans-serif; font-size: 7.5pt;">
+		<form  id="ffresult_sbox1" style="margin:0px; margin-top:4px;" action="http://search.freefind.com/find.html" method="get" accept-charset="utf-8" onsubmit="ffresults.show(1);">
+		<input type="hidden" name="si" value="7860121" />
+		<input type="hidden" name="pid" value="r" />
+		<input type="hidden" name="n" value="0" />
+		<input type="hidden" name="_charset_" value="" />
+		<input type="hidden" name="bcd" value="&#247;" />
+		<input type="hidden" name="sbv" value="j1" />
+		<input type="text" name="query" size="15" /> 
+		<input type="submit" value="search" />
+		<select name="s">
+		<option value="" selected>Site</option>
+		<OPTION VALUE="prints">Prints</OPTION><OPTION VALUE="books">Books</OPTION><OPTION VALUE="tutorials">Tutorials</OPTION><OPTION VALUE="essays">Essays</OPTION><OPTION VALUE="grove">Grove</OPTION><OPTION VALUE="freebies">Freebies</OPTION>
+		</select>
+		</form>
+	</td>
+</tr>
+<tr>
+	<td style="text-align:left; font-family: Arial, Helvetica, sans-serif;	font-size: 7.5pt; padding-top:4px;">
+		<a style="text-decoration:none; color:gray;" href="http://www.freefind.com"  
+		onmouseover="this.style.textDecoration='underline'" 
+		onmouseout="this.style.textDecoration='none'" >site search by
+		<span style="color: #606060;">freefind</span></a>
+	</td>
+</tr>
+</table>
+<!-- end of freefind search box html --></div>
+<!--end #header--></div>
+
+<div id="titles">
+  <form action="https://www.paypal.com/cgi-bin/webscr" target="_blank" method="post">
+    <input type="hidden" name="cmd" value="_s-xclick" />
+    <input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-but04.gif" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!" />
+    <input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+" />
+  </form>
+  <h2>New</h2>
+  <ul>
+    <li><a href="SLPages/AlphaSL2Desk.html">Alpha: SL to Desktop</a></li>
+  </ul>
+  <h2>Alpha Channels</h2>
+    <ul>
+      <li><a href="SLPages/AlphaSL2Desk.html">Alpha: SL to Desktop</a></li>
+      <li><a href="SLPages/EasyAlphas.html">Easy Alpha Channels</a></li>
+      <li><a href="SLPages/ChannelDiscovery.html">Channels?</a>
+        <ul>
+          <li><a href="SLPages/AChannelDiscover2.html">Page 2</a></li>
+          <li><a href="SLPages/AChannelDiscover3.html">Page 3</a></li>
+          <li><a href="SLPages/AChannelDiscoverA.html">Supplemental</a></li>
+        </ul>
+      </li>
+      <li><a href="SLPages/WhiteHalo.html">White Halo</a>
+        <ul>
+          <li><a href="SLPages/WhiteHalo2.html">Page 2</a></li>
+        </ul>
+      </li>
+      <li><a href="SLPages/LaceTranspSL.html">Lace Textures</a></li>
+    </ul>
+  <h2>Texturing</h2>
+    <ul>
+     <li><a href="SLPages/AVUVTemplates.html">Avatar UV Templates</a></li>
+     <li><a href="SLPages/RSW-TShirt.html">T-Shirt Template</a>
+       <ul>
+        <li><a href="SLPages/RSWTShirtLong2.html">Page 2</a></li>
+       </ul>
+     </li>
+     <li><a href="SLPages/TextureTuts.html">In-World Texture Tuts</a></li>
+     <li><a href="SLPages/TextureLibrary.html">In-World Texture Library</a></li>
+     <li><a href="SLPages/modoAVPaint.html">Paint the AV in modo</a></li>
+    </ul>
+   <h2>PS Specific</h2>
+   <ul>
+      <li>CS4+ Extended</li>
+        <ul>
+          <li><a href="../PhotoshopTuts/PhotoTutPages/CS4-3D-1_Open.html">Opening a 3D .obj file</a></li>
+          <li><a href="../PhotoshopTuts/PhotoTutPages/CS4-3D-2_Lights.html">Using Lights on a 3D Layer</a></li>
+          <li><a href="../PhotoshopTuts/PhotoTutPages/CS4-3D-3_Move.html">Movement on a 3D Layer</a></li>
+          <li><a href="../PhotoshopTuts/PhotoTutPages/CS4-3D-4_Paint.html">Painting on a Model</a></li>
+        </ul>
+      <li><a href="../PhotoshopTuts/PhotoTutPages/PenToolPS.html">Pen Tool</a></li>
+      <li><a href="../PhotoshopTuts/PhotoTutPages/TueTipsWoodGrain.html">Faux Wood Grain</a></li>
+      <li><a href="../PhotoshopTuts/PhotoTutPages/TueTipsMisc2.html">Easy Symmetry on UV Maps - Flipping Tricks</a></li>
+      <li><a href="../PhotoshopTuts/PhotoTutPages/NewestPSTut.html">Many more PS Tuts</a></li>
+     </ul>
+  
+  <div id="affliate">
+    <p>Tutorials for Photoshop, <br />
+      Paint Shop Pro, Blender, and More!</p>
+    <p><a href="http://www.lynda.com/home/otl.aspx?utm_medium=affiliate&amp;utm_source=ldc_affiliate&amp;utm_content=26&amp;utm_campaign=CD417&amp;bid=26&amp;aid=CD417&amp;opt="><img src="http://affiliates.lynda.com/42/417/26/" alt="lynda.com" border="0" /></a></p>
+  </div>
+<!--end #titles div--></div>
+
+<!-- InstanceBeginEditable name="mainContent" -->
+<div id="mainContent">
+  <noscript>
+    <p class="noScript">I notice you have Javascript turned off. Unless you did that to print, the page is more fun if you turn it on. Thanks! </p>
+    </noscript>
+  <h1>Newest Second Life Tutorial</h1>
+  <p>Welcome to my Second Life Tutorials! The newest tutorial is shown below. Just click on the name, to be taken to the whole thing. Or, if you want to just watch the movie, go ahead and do that!</p>
+  <h1><a href="SLPages/AlphaSL2Desk.html">Alpha Channels - From SL™ to your Desktop</a></h1>
+  <p>A lot of people find that when they save an image from Second Life® and open it in their graphic program, the Transparency seems to be missing. The image is totally opaque.</p>
+  <p>Yes, it is; but the transparency information is still there, intact. It's just in the Alpha Channel. Watch this 2 minute video to find out how easy it is to put it back in the image!</p>
+  <p>
+    <object width="640" height="385">
+      <param name="movie" value="http://www.youtube.com/v/Aq--X3G8Kh0?fs=1&amp;hl=en_US" />
+      </param>
+      <param name="allowFullScreen" value="true" />
+      </param>
+      <param name="allowscriptaccess" value="always" />
+      </param>
+      <embed src="http://www.youtube.com/v/Aq--X3G8Kh0?fs=1&amp;hl=en_US" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="640" height="385"></embed>
+    </object>
+  </p>
+<p>To learn more, click on the link above, or click the tutorial name in the Menu on the left side of the page.</p>
+  <!--end #mainContent div--></div>
+
+<!-- InstanceEndEditable --><br class="clearfloat" />
+<div id="footer">
+  <p>All content on this page is © Robin Wood, unless otherwise noted. All rights reserved.<br />
+    Please do not use it without permission. <br />
+    To get permission, write to "chat at robinwood.com", and explain what you intend to use it for.</p>
+  <!--end #footer div--></div>
+<!--end #wrapper div--></div>
+</body>
+<!-- InstanceEnd --></html>

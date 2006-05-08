@@ -1,0 +1,1378 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Devise Web 2.0 applications with PHP and DHTML, Part 1: Cook up your own with these recipes</title>
+<meta http-equiv="PICS-Label" content='(PICS-1.1 "http://www.icra.org/ratingsv02.html" l gen true r (cz 1 lz 1 nz 1 oz 1 vz 1) "http://www.rsac.org/ratingsv01.html" l gen true r (n 0 s 0 v 0 l 0) "http://www.classify.org/safesurf/" l gen true r (SS~~000 1))'/>
+<link rel="schema.DC" href="http://purl.org/DC/elements/1.0/"/>
+<link rel="SHORTCUT ICON" href="http://www.ibm.com/favicon.ico"/>
+<meta name="Owner" content="developerWorks Content/Raleigh/IBM"/>
+<meta name="DC.Language" scheme="rfc1766" content="en"/>
+<meta name="IBM.Country" content="ZZ"/>
+<meta name="Security" content="Public"/>
+<meta name="IBM.SpecialPurpose" content="SP001"/>
+<meta name="IBM.PageAttributes" content="sid=1003"/>
+<meta name="Source" content="v16 Template Generator"/>
+<meta name="Robots" content="index,follow"/>
+<meta name="Abstract" content="The buzzword of 2006 is Web 2.0. What that means is hotly debated, but it appears to refer to cool dynamic Web applications. Those Web applications -- often developed in PHP -- use dynamic HTML (DHTML) to create pages that move and change without having to go back to the server for a refresh. Author Jack Herrington explains how to get started in this 'Devise Web 2.0 applications with PHP and DHTML' series."/>
+<meta name="Description" content="The buzzword of 2006 is Web 2.0. What that means is hotly debated, but it appears to refer to cool dynamic Web applications. Those Web applications -- often developed in PHP -- use dynamic HTML (DHTML) to create pages that move and change without having to go back to the server for a refresh. Author Jack Herrington explains how to get started in this 'Devise Web 2.0 applications with PHP and DHTML' series."/>
+<meta name="Keywords" content="PHP, DHTML, Web 2.0, open source, JavaScript, Jack Herrington, tttosca, tttwaca, tttarca"/>
+<meta name="DC.Date" scheme="iso8601" content="2006-05-02"/>
+<meta name="DC.Type" scheme="IBM_ContentClassTaxonomy" content="CT316"/>
+<meta name="DC.Subject" scheme="IBM_SubjectTaxonomy" content="TT400"/>
+<meta scheme="IBM_WTMCategory" name="IBM.WTMCategory" content="SOFDCOSRZZ" />
+<meta name="DC.Rights" content="© Copyright IBM Corporation 2006"/>
+<meta name="IBM.Effective" scheme="W3CDTF" content="2006-05-02"/>
+<meta name="title" content="Devise Web 2.0 applications with PHP and DHTML, Part 1: Cook up your own with these recipes"/>
+
+<!-- HEADER_SCRIPTS_AND_CSS_INCLUDE -->
+<link href="//dw1.s81c.com/common/v16/css/all.css" media="all" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/screen.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/screen-uas.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/zz/en/screen-fonts.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/handheld.css" media="handheld" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/print.css" media="print" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/overlay.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+
+<!-- dW-specific CSS -->
+<link href="//dw1.s81c.com/developerworks/css/dw-screen.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/developerworks/css/dw-screen-comments-ratings-signin.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.cluetip.css" media="screen,projection" rel="stylesheet"  title="www" type="text/css" />
+
+<script src="//dw1.s81c.com/common/js/ibmcommon.js" type="text/javascript">//</script>
+<script src="//dw1.s81c.com/common/js/dynamicnav.js" type="text/javascript">//</script>
+
+<!-- dW functional JS -->
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/urltactic.js" type="text/javascript"></script>
+<!-- Rating_START -->
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/artrating/showrating.js" type="text/javascript"></script>
+<style type="text/css">
+.metavalue {
+  display: none;
+}
+</style>
+<!-- Rating_END --><!-- RESERVED_HEADER_INCLUDE -->
+<script language="javascript" src="//dw1.s81c.com/developerworks/js/ajax1.js" type="text/javascript"></script>
+<script language="javascript" src="//dw1.s81c.com/developerworks/js/search_counter-maverick.js" type="text/javascript"></script>
+<script language="javascript" src="//dw1.s81c.com/developerworks/js/request_referer_capture-maverick.js" type="text/javascript"></script>
+<script language="JavaScript" type="text/javascript">
+ <!--
+ setDefaultQuery('');
+ //-->
+</script>
+<script language="JavaScript" type="text/javascript">
+ <!--
+ function openNewWindow(url,tar,arg){window.open(url,tar,arg);}
+ //-->
+</script>
+<!-- Include file support -->
+<script language="JavaScript" type="text/javascript">
+(function($) {
+	jQuery.extend({
+		getInc: function(u,d){
+			if(u==null)return;
+			jQuery.ajax({
+	    		type: "GET",
+			url: u,
+			dataType: "text",
+	        	success: function(t) {
+				jQuery(d).html(t);
+				ibmCommon.initShowHide(jQuery(d).children()[0]);			
+			},
+			async: true
+			});
+		}
+	});
+})(jQuery);
+</script>
+</head>
+
+<body id="ibm-com">
+<div id="ibm-top" class="ibm-landing-page">
+
+<!-- MASTHEAD_BEGIN -->
+<div class="ibm-access"><a href="#ibm-content">Skip to main content</a></div>
+<div id="ibm-masthead">
+<div id="ibm-logo"><a href="http://www.ibm.com/"><img height="50" src="//dw1.s81c.com/i/v16/t/ibm-logo.gif" width="110" alt="IBM®" /></a></div>
+<ul id="ibm-geo"><li id="ibm-country" class="ibm-first">Country/region</li><li id="ibm-change-country">[ <a href="http://www.ibm.com/developerworks/country/">select</a> ]</li></ul>
+  <form id="ibm-search-form" action="//www.ibm.com/developerworks/search/searchResults.jsp" method="get" name="form1"><input type="hidden" name="searchType" value="1"/><input type="hidden" name="searchSite" value="dW"/><p>
+<span id="ibm-search-scope">
+<label for="sn"><img src="//dw1.s81c.com/i/c.gif" width="1" height="1" alt="Search in:"/></label>
+<select name="searchScope" id="sn">
+<option value="dW" selected="selected">All of dW</option>
+<option value="dW">-----------------</option>
+<option value="aixunix">&nbsp;AIX and UNIX</option>
+<option value="db2">&nbsp;Information Mgmt</option>
+<option value="lotus">&nbsp;Lotus</option>
+<option value="rdd">&nbsp;Rational</option>
+<option value="tivoli">&nbsp;Tivoli</option>  
+<option value="WSDD">&nbsp;WebSphere</option>
+<option value="dW">-----------------</option> 
+<option value="javaZ">&nbsp;Java technology</option> 
+<option value="linuxZ">&nbsp;Linux</option> 
+<option value="opensrcZ">&nbsp;Open source</option>
+<option value="webservZ">&nbsp;SOA/Web services</option>
+<option value="webarchZ">&nbsp;Web development</option>  
+<option value="xmlZ">&nbsp;XML</option>
+<option value="dW">-----------------</option>
+<option value="forums">&nbsp;dW forums</option> 
+<option value="dW">-----------------</option>
+<option value="aI">University</option>
+<option value="dW">-----------------</option>
+<option value="aW">alphaWorks</option>
+<option value="dW">-----------------</option>
+<option value="all">All of IBM</option>
+</select>
+</span>
+
+<label for="q"><img alt="Search for:" height="1" width="1" src="//dw1.s81c.com/i/c.gif" /></label><input type="text" name="query" maxlength="100" id="q"/><input type="submit" id="ibm-search" class="ibm-btn-search" name="Search" value="Search" /></p></form>
+<div id="ibm-site-name">
+<!-- IBM site name container -->
+</div>
+<div id="ibm-universal-nav">
+<ul><li id="ibm-unav-home" class="ibm-first"><a href="http://www.ibm.com/">Home</a></li><li id="ibm-unav-solutions"><a href="http://www.ibm.com/solutions/">Solutions</a></li><li id="ibm-unav-services"><a href="http://www.ibm.com/technologyservices/">Services</a></li><li id="ibm-unav-products"><a href="http://www.ibm.com/products/">Products</a></li><li id="ibm-unav-support"><a href="http://www.ibm.com/support/">Support &amp; downloads</a></li><li id="ibm-unav-myibm"><a href="http://www.ibm.com/account/">My IBM</a></li></ul>
+</div>
+</div>
+<!-- MASTHEAD_END -->
+
+<div id="ibm-pcon">
+
+<!-- CONTENT_BEGIN -->
+<div id="ibm-content">
+
+<!-- Navigation_Trail_BEGIN -->
+<!-- &nbsp; -->
+      <div id="ibm-content-head"><ul id="ibm-navigation-trail"><li class="ibm-first"><a href="http://www.ibm.com/developerworks/">developerWorks</a></li><li><a href="http://www.ibm.com/developerworks/opensource/">Open source</a></li><li><a href="http://www.ibm.com/developerworks/views/opensource/library.jsp">Technical library</a></li></ul></div>
+<!-- Navigation_Trail_END -->
+
+<!-- dW_Summary Area_START -->
+<div id="dw-summary-article">
+
+<div class="dw-content-head">
+<h1>Devise Web 2.0 applications with PHP and DHTML, Part 1: Cook up your own with these recipes</h1><p/>
+</div>
+
+<div class="ibm-container-body ibm-two-column">
+
+<div class="ibm-column ibm-first">
+<div class="author"><a class="dwauthor" rel="#authortip1" href="#author1">Jack Herrington</a> (<a href="mailto:jherr@pobox.com?subject=Cook up your own with these recipes">jherr@pobox.com</a>), Senior Software Engineer, Studio B</div><div id="authortip1" class="dwauthor-onload-state ibm-no-print">Jack D. Herrington is a senior software engineer with more than 20 years of experience. He's the author of three books: <i>Code Generation in Action, Podcasting Hacks,</i> and <i>PHP Hacks</i>. He has also written more than 30 articles.</div>
+<p></p>
+<p><b>Summary:</b>&nbsp; The buzzword of 2006 is <i>Web 2.0</i>. What that means is hotly debated, but it appears to refer to cool dynamic Web applications. Those Web applications -- often developed in PHP -- use dynamic HTML (DHTML) to create pages that move and change without having to go back to the server for a refresh. Author Jack Herrington explains how to get started in this "<a href="http://www.ibm.com/developerworks/views/opensource/libraryview.jsp?search_by=devise+web+2.0+applications+php+dhtml">Devise Web 2.0 applications with PHP and DHTML</a>" series.</p>
+<p class="ibm-no-print"><a href="http://www.ibm.com/developerworks/views/opensource/libraryview.jsp?search_by=devise+web+2.0+applications+php+dhtml">View more content in this series</a></p>
+<div id="dw-tag-content" class="ibm-no-print"></div><div id="dw-moretags-access" class="ibm-access"></div>
+<p class="ibm-no-print"><div id="dw-tag-this" class="ibm-no-print"><a class="ibm-external-link" onclick="jQuery.launchTagThisWindow(); return false;" href="#">Tag this!</a></div><div id="interestShow" class="ibm-no-print"></div></p>
+</div>
+
+<div class="ibm-column ibm-second">
+<p class="leading"><b>Date:</b>&nbsp; 02 May  2006
+<br /><b>Level: </b>&nbsp;Intermediate
+
+<br /><b>Also available in:&nbsp;</b>
+
+
+&nbsp;<a href="http://www.ibm.com/developerworks/ru/library/os-php-dhtml1/">Russian</a> 
+&nbsp;<a href="http://www.ibm.com/developerworks/jp/opensource/library/os-php-dhtml1/">Japanese</a> 
+
+
+
+<br />
+<br /><b>Activity:</b>&nbsp; 9994 views
+<br /><b>Comments:</b> &nbsp; <span id="nCmts"><img alt="" src="//dw1.s81c.com/developerworks/i/circle-preloader.gif" height="12" width="50" /><img alt="" src="//dw1.s81c.com/i/c.gif" height="14" width="1" /></span>
+<!-- Rating_Area_Begin -->
+<div id="art-rating-summary"></div>
+<!-- Rating_Area_End -->
+</p>
+</div>
+
+</div>
+</div>
+<!-- dW_Summary_Area_END -->
+
+<!-- CONTENT_BODY -->
+<div id="ibm-content-body">
+
+<!-- MAIN_COLUMN_BEGIN -->
+<div id="ibm-content-main">
+
+<!-- Related_Searches_Area -->
+<!-- Related_Searches_Area_Begin -->
+<script type="text/javascript" language="javascript">
+	     capture_referrer();
+</script>
+
+<div id="dw-related-searches-article" style="display:none">
+<div class="ibm-container ibm-alternate-two">
+<div class="ibm-container-body">
+
+<!--  START : HTML FOR ARTICLE SEARCH -->
+  <div id="article_results" style="display:block"></div>
+<!--  END : HTML FOR ARTICLE SEARCH -->
+
+</div>
+</div>
+</div>
+<!-- Related_Searches_Area_End -->
+<!-- MAIN_COLUMN_CONTAINER_BEGIN -->
+<div class="ibm-container">
+
+<!-- MAIN_COLUMN_CONTENT_BEGIN -->
+<p>DHTML is HTML that includes JavaScript code that changes the content or layout of the page in the browser without going back to the server. When you write an HTML page, you're actually writing an object tree. All the tags -- the little <code>&lt;table&gt;</code>s and <code>&lt;p&gt;</code>s -- become objects in the JavaScript space. Using JavaScript, you can change their content, Cascading Style Sheets (CSS) styling, and location -- all without ever going back to the server. DHTML is the intersection of HTML, CSS, and JavaScript.</p>
+
+<p>The technology to use DHTML has been around since the addition of JavaScript code to the browser, but support for it has been spotty. Microsoft&#174; Internet Explorer did an excellent job early on, but during the same period, Netscape V4 lacked support. Recently, Mozilla and Firefox have stepped up with solid DHTML support, and some believe the pendulum has swung so far that Internet Explorer is now behind the curve.</p>
+  
+<p><a name="N10066"><span class="atitle">DHTML pros and cons</span></a></p>
+  
+<p>Incorporating JavaScript into your page makes the page dynamic and creates a more compelling user experience. Users can get more data more quickly, look at information from different aspects, and seamlessly navigate the site -- and the site doesn't have to go back to the server for lots of pages.</p>
+
+<p>However, there's also a reason to avoid using JavaScript: browser compatibility. In the early days of flat HTML, Internet Explorer rendered pages differently from Netscape. Those problems were fixed, but when support for CSS was added, new compatibility issues arose. Now most of the CSS issues have been solved, but JavaScript compatibility issues have cropped up.</p>
+
+<p>These compatibility problems have no easy solution. You need to weigh the benefit of what the JavaScript is doing against the number of browsers you'll need to test against and support. </p>
+
+<p>Here are some recommendations:</p>
+
+<ul>
+  <li>Keep the JavaScript as simple as you can.</li>
+  <li>When you find a compatibility problem, check the Web to determine the best fix. You'll often find well-researched answers.</li>
+  <li>Have a plain HTML fallback for browsers you don't support.</li>
+  <li>Keep a list of the browsers (and their version numbers) you support.</li>
+  <li>Check Internet Explorer on Mac and Microsoft Windows&#174;.</li>
+</ul>
+  
+<p>The examples here are as simple and clear as possible. However, they've only been tested on Firefox, so some compatibility issues arise. The article alerts you to compatibility problems so you can learn from the experience.</p>
+
+<p>The easiest way to implement DHTML is to first write it in a plain HTML page, without PHP or any server-side language, then use that code as a template for the PHP code to generate the DHTML. That way, you can check the basics of the solution and separate problems on the server from problems on the client. In each example, this article begins by showing the HTML, then shows this code used with PHP.</p>
+
+<div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N10092"><span class="atitle">Ad boxes</span></a></p>
+  
+<p>The first example is simple and compatible: a floating ad box. Figure 1 shows an ad box with a close button, sitting on top of a page.</p>
+  
+
+<br /><a name="N1009D"><b>Figure 1. The floating ad box</b></a><br />
+<img alt="The floating ad box" height="218" src="adbox1_400_218.gif" width="400"/>
+<br />
+<br />
+<p>The user can click the Close button to dismiss the ad box, as shown in Figure 2.</p>
+  
+
+<br /><a name="N100B2"><b>Figure 2. The page after the ad box is dismissed</b></a><br />
+<img alt="The page after the ad box is dismissed" height="216" src="adbox2_400_216.gif" width="400"/>
+<br />
+  <br />
+<p>Listing 1 shows the code for the page.</p>
+  
+<br /><a name="N100C8"><b>Listing 1. The ad box code</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Ad box demonstration&lt;/title&gt;
+&lt;style&gt;
+body {
+  width: 800px;
+}
+.ad-box {
+  background: #eee;
+  border: 1px solid black;
+  padding: 5px;
+  position: absolute;
+  left: 50px;
+  top: 50px;
+  width: 600px;
+}
+.ad-box-title {
+  background: #ccc;
+  padding: 5px;
+  font-weight: bold;
+  font-size: large;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+&lt;/style&gt;
+&lt;script&gt;
+function closead()
+{
+  var obj = document.getElementById( "ad" );
+  obj.style.visibility = "hidden";
+}
+&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class="ad-box" id="ad"&gt;
+&lt;div class="ad-box-title"&gt;
+Special offer
+&lt;/div&gt;
+&lt;p&gt;
+You have been selected for our special offer. Can you imagine? What
+are the odds? Just buy five hundred or more of our product and we
+will give you a 1% discount on additional orders. Only the Department
+of Defense gets deals like that!
+&lt;/p&gt;
+&lt;p style="text-align: right;"&gt;
+&lt;a href="javascript:closead();"&gt;close&lt;/a&gt;
+&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;This is our home page. Welcome to it. Here we talk about all of
+our great products.&lt;/p&gt;
+&lt;h1&gt;Products&lt;/h1&gt;
+&lt;p&gt;This is a list of our products:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The amazing all in one toothpix holder and axe grinder.&lt;/li&gt;
+&lt;li&gt;The complete Jean Claude Van Damme DVD collection.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre></td></tr></table><br />
+  
+<p>Most of the work in this example is done using CSS. Using the <code>position</code> CSS attribute, the box is above the page text. The <code>left</code> and <code>top</code> attributes position the element with respect to the upper-left corner of the page.</p>
+
+<p>To make the box disappear, you put some JavaScript code behind the <code>close</code> anchor tag. Instead of using an <code>http</code> protocol, you use the <code>javascript</code> protocol and invoke the <code>closead</code> function. The <code>closead</code> JavaScript function gets the object reference to the <code>ad &lt;div&gt;</code> and sets the CSS style <code>visibility</code> from <code>visible</code> to <code>hidden</code>, and voila: The ad box vanishes.</p>
+
+<p>This example shows a few fundamentals of DHTML. The first is the use of <code>id</code> attributes. To reference an item dynamically, give it a unique ID via the <code>id</code> attribute. In this case, you give the ad box the ID <code>ad</code>. Then you use the <code>document.getElementById</code> method to get a reference to the <code>&lt;div&gt;</code> object for the ad.</p>
+
+<p>This example also demonstrates the <code>javascript</code> pseudo-URL you can use in anchor tags. Using this, you can invoke JavaScript anywhere you put a link.</p>
+
+<p>These techniques are compatible with other browsers. All modern browsers support JavaScript, CSS, absolute positioning, and the setting of dynamic elements like the <code>visibility</code> attribute at runtime.</p>
+      
+<div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N1012B"><span class="atitle">Ad boxes in PHP</span></a></p>
+  
+<p>Now that you have the ad box code in DHTML, you can see how to implement it in PHP (see Listing 2). The only choice with the ad box is whether it should be shown. The PHP code writes out the ad box with a single function call, which the page can call or not call depending on the circumstances.</p>
+  
+<br /><a name="N10137"><b>Listing 2. The ad box in PHP</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+
+&lt;?php
+function place_ad( $title )
+{
+?&gt;
+&lt;div class="ad-box" id="ad"&gt;
+&lt;div class="ad-box-title"&gt;
+&lt;?php echo( $title ); ?&gt;
+&lt;/div&gt;
+&lt;p&gt;
+You have been selected for our special offer. Can you imagine? What
+are the odds? Just buy five hundred or more of our product and we
+will give you a 1% discount on additional orders. Only the Dept.
+of Defense gets deals like that!
+&lt;/p&gt;
+&lt;p style="text-align: right;"&gt;
+&lt;a href="javascript:closead();"&gt;close&lt;/a&gt;
+&lt;/p&gt;
+&lt;/div&gt;
+&lt;?php
+}
+?&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Ad box demonstration&lt;/title&gt;
+&lt;style&gt;
+body {
+  width: 800px;
+}
+.ad-box {
+  background: #eee;
+  border: 1px solid black;
+  padding: 5px;
+  position: absolute;
+  left: 50px;
+  top: 50px;
+  width: 600px;
+}
+.ad-box-title {
+  background: #ccc;
+  padding: 5px;
+  font-weight: bold;
+  font-size: large;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+&lt;/style&gt;
+&lt;script&gt;
+function closead()
+{
+  var obj = document.getElementById( "ad" );
+  obj.style.visibility = "hidden";
+}
+&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;?php place_ad( "Today's Special Offer!" ); ?&gt;
+&lt;p&gt;This is our home page. Welcome to it. Here we talk about all of
+our great products.&lt;/p&gt;
+&lt;h1&gt;Products&lt;/h1&gt;
+&lt;p&gt;This is a list of our products:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The amazing all in one toothpix holder and axe grinder.&lt;/li&gt;
+&lt;li&gt;The complete Jean Claude Van Damme DVD collection.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre></td></tr></table><br />
+  
+<p>The new <code>place_ad</code> PHP function puts the ad onto the page with a flexible title string. To be able to put ads on multiple pages, you can take out this function and put it in a separate file you include when you need to insert an ad on the page.</p>
+  
+<div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N10146"><span class="atitle">Pop-ups</span></a></p>
+  
+<p>Another variant on the floating box theme is the pop-up. You can use a pop-up to bring up additional information when the user requests it. Consider the text shown in Figure 3.</p>
+  
+
+<br /><a name="N10151"><b>Figure 3. A plain text page about animals</b></a><br />
+<img alt="A plain text page about animals" height="300" src="popup1_400_300.gif" width="400"/>
+<br />
+  <br />
+<p>Wouldn't it be great if the user could see more information about a giraffe? The text includes a handy link: If you click it, you see the pop-up shown in Figure 4.</p>
+  
+
+<br /><a name="N10166"><b>Figure 4. More information about giraffes</b></a><br />
+<img alt="More information about giraffes" height="304" src="popup2_400_304.gif" width="400"/>
+<br />
+  <br />
+<p>In this case, you bring up the box on request and position it relative to text in the document. The code is shown in Listing 3.</p>
+  
+<br /><a name="N1017C"><b>Listing 3. The pop-up box HTML</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Pop up Example&lt;/title&gt;
+&lt;style type="text/css"&gt;
+body { font-family: arial, verdana, sans serif; }
+#popup {
+  position: absolute;
+  padding: 5px;
+  border: 1px solid black;
+  background: #eee;
+  left: 0px;
+  top: 0px;
+  visibility: hidden;
+}
+&lt;/style&gt;
+&lt;script&gt;
+function popup( id )
+{
+  var obj = document.getElementById( id );
+  var popup = document.getElementById( 'popup' );
+  if ( popup.style.visibility == 'visible' )
+  {
+    popup.style.visibility = 'hidden';
+  }
+  else
+  {
+    popup.style.left = obj.offsetLeft + "px";
+    popup.style.top = ( obj.offsetTop + 20 ) + "px";
+    popup.style.visibility = 'visible';
+  }
+}
+&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id="popup"&gt;
+An animal with a very long neck.
+&lt;/div&gt;
+&lt;h2&gt;Animals&lt;/h2&gt;
+A &lt;a href="javascript:popup('word')" id="word"&gt;giraffe&lt;/a&gt;
+is a very interesting animal.
+&lt;/body&gt;
+&lt;/html&gt;
+</pre></td></tr></table><br />
+  
+<p>In this example, the <code>popup &lt;div&gt;</code> that contains the pop-up information begins defined as <code>hidden</code> and absolutely positioned at top left on the page. Then the anchor tag around the word <i>giraffe</i> calls the JavaScript to bring up the pop-up.</p>
+
+<p>The <code>popup</code> JavaScript method finds the text of <i>giraffe</i> using the <code>word</code> ID. Next, it uses the <code>offsetLeft</code> and <code>offsetTop</code> values to position the pop-up just below the text. If the pop-up is already visible, it's hidden.</p>
+
+<p>You can set the contents of the pop-up before making it visible by setting the <code>innerHTML</code> member on the <code>popup &lt;div&gt;</code> object.</p>
+
+<p>This code is fairly compatible. However, issues may occur due to differences in the values of <code>offsetLeft</code> and <code>offsetTop</code> from browser to browser, particularly in pages with complex nested content. To get a more accurate position reading in a complex page, you may need to recursively add the <code>offsetLeft</code> and <code>offsetTop</code> values, using the <code>offsetParent</code> object to get each object's parent as you move up the HTML object tree.</p>
+  
+<div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N101CA"><span class="atitle">Pop-ups in PHP</span></a></p>
+  
+<p>With the DHTML code in hand, you can now make it easier to use pop-ups in PHP applications. The PHP code is shown in Listing 4.</p>
+  
+<br /><a name="N101D6"><b>Listing 4. The pop-up box PHP code</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+
+&lt;?php
+function popup_header()
+{
+?&gt;
+&lt;style type="text/css"&gt;
+body { font-family: arial, verdana, sans serif; }
+#popup {
+  position: absolute;
+  padding: 5px;
+  border: 1px solid black;
+  background: #eee;
+  left: 0px;
+  top: 0px;
+  visibility: hidden;
+}
+&lt;/style&gt;
+&lt;script&gt;
+function popup( id, info )
+{
+  var obj = document.getElementById( id );
+  var popup = document.getElementById( 'popup' );
+  if ( popup.style.visibility == 'visible' )
+  {
+    popup.style.visibility = 'hidden';
+  }
+  else
+  {
+    popup.innerHTML = info;
+    popup.style.left = obj.offsetLeft + "px";
+    popup.style.top = ( obj.offsetTop + 20 ) + "px";
+    popup.style.visibility = 'visible';
+  }
+}
+&lt;/script&gt;
+&lt;?php
+}
+
+function popup( $id, $text, $info )
+{
+?&gt;
+&lt;a href="javascript:popup('&lt;?php echo($id) ?&gt;','&lt;?php echo($info) ?&gt;')"
+  id="&lt;?php echo($id) ?&gt;"&gt;&lt;?php echo($text) ?&gt;&lt;/a&gt;
+&lt;?php
+}
+?&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Pop up Example&lt;/title&gt;
+&lt;?php popup_header(); ?&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id="popup"&gt;
+&lt;/div&gt;
+&lt;h2&gt;Animals&lt;/h2&gt;
+A
+&lt;?php popup( 'word', 'giraffe',
+   'An animal with a very long neck.' ) ?&gt;
+is a very interesting animal.
+&lt;/body&gt;
+&lt;/html&gt;
+ tml&gt;
+</pre></td></tr></table><br />
+  
+<p>In this case, you separate the generation of the header and the placement of each pop-up. A page must call <code>popup_header</code> inside the <code>head</code> tag, then add a <code>&lt;div&gt;</code> tag with the <code>id</code> value <code>popup</code>. Then, the page calls the PHP <code>popup</code> function wherever a pop-up is required.</p>
+
+<p>This PHP <code>popup</code> function takes three parameters: the pop-up's ID, the plain-text version, and the text to pop up when the item is clicked. The function then renders an anchor tag that looks almost exactly like the original DHTML version.</p>
+
+<p>Because multiple pop-ups will probably appear on a single page, the third parameter is added to provide the text that appears in the pop-up. Implement this by adding an additional parameter to the <code>popup</code> JavaScript function. The <code>innerHTML</code> of the <code>&lt;div&gt;</code> tag is then set to the contents of this new parameter.</p>
+  
+<div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N1020F"><span class="atitle">Spinners</span></a></p>
+  
+<p>Another option for hiding and showing data on a page is the spinner. In this model, the page is broken into sections that can be hidden or shown individually via the use of a spinner. Figure 5 shows a page with two spinner sections; each section is initially closed.</p>
+  
+
+<br /><a name="N1021A"><b>Figure 5. The sections of the page with the spinners closed</b></a><br />
+<img alt="The sections of the page with the spinners closed" height="211" src="spinner1_400_211.gif" width="400"/>
+<br />
+  <br />
+<p>Clicking the Open link in the Level One section displays the content in that section, as shown in Figure 6.</p>
+  
+
+<br /><a name="N1022F"><b>Figure 6. The page with the first spinner open</b></a><br />
+<img alt="The page with the first spinner open" height="218" src="spinner2_400_218.gif" width="400"/>
+<br />
+  <br />
+<p>You can use graphics instead of the words <i>open</i> and <i>closed</i>. By convention, these graphics are usually triangles that point to the right for <i>closed</i> or down for <i>open</i>; or plus and minus signs, where plus means <i>closed</i> and minus means <i>open</i>. (Opinions about which approach is better come down to the Mac vs. Windows debate. The spinners on the two platforms correspond to the two different options.)</p>
+ 
+<p>The code in Listing 5 shows how these spinners work:</p>
+   
+<br /><a name="N1025A"><b>Listing 5. The spinner HTML</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Spinner Example&lt;/title&gt;
+
+&lt;style type="text/css"&gt;
+body { font-family: arial, verdana, sans serif; width: 800px; }
+.item-header a { font-size: small; }
+.item-header {
+  font-weight: bold; border-bottom: 1px solid black;
+  font-size: x-large;
+}
+.item-body {
+  margin: 0px; font-size: small;
+  visibility: hidden; height: 0px;
+}
+&lt;/style&gt;
+
+&lt;script&gt;
+function spin( obj )
+{
+  var spinner = document.getElementById( obj );
+  var spinner_content = document.getElementById( obj+"_body" );
+  if ( spinner_content.style.visibility == 'visible' )
+  {
+    spinner.innerHTML = 'open';
+    spinner_content.style.visibility = 'hidden';
+    spinner_content.style.height = '0px';
+    spinner_content.style.margin = '0px';
+  }
+  else
+  {
+    spinner.innerHTML = 'close';
+    spinner_content.style.visibility = 'visible';
+    spinner_content.style.height = 'auto';
+    spinner_content.style.margin = '20px 0px 20px 50px';
+  }
+}
+&lt;/script&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;div class="item-header"&gt;
+&lt;a href="javascript:spin('lev1')" id="lev1"&gt;open&lt;/a&gt; Level One
+&lt;/div&gt;
+
+&lt;div class="item-body" id="lev1_body"&gt;
+This is the content of level one.
+&lt;/div&gt;
+
+&lt;div class="item-header"&gt;
+&lt;a href="javascript:spin('lev2')" id="lev2"&gt;open&lt;/a&gt; Level Two
+&lt;/div&gt;
+
+&lt;div class="item-body" id="lev2_body"&gt;
+This is the content of level two.
+&lt;/div&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+</pre></td></tr></table><br />
+  
+<p>Two groups of <code>&lt;div&gt;</code>s define each section and its content. By convention, the header is given the ID <code>lev</code>, plus a number (for example, <code>lev2</code>), and the body is given the same ID with postfix <code>_body</code>. <code>lev2</code> is the link for the spinner, and <code>lev2_body</code> is the body of that item.</p>
+
+<p>The brains of the spinner are implemented in the <code>spin</code> function, which looks at the visibility of the body of the spinner and inverts it, changing visible to hidden, and hidden to visible.</p>
+
+<p>You set the <code>height</code> attribute to <code>0px</code> when the item is invisible and <code>auto</code> when it's visible. With Internet Explorer, when an item is invisible, the space around it collapses. But with Firefox, when content is invisible, the space remains as a placeholder. You need to set <code>height</code> to <code>0px</code> to make the space collapse properly.</p>
+
+<p>To use graphics instead of text to express the open and closed states, alter the code that changes the <code>innerHTML</code> value of the spinner object to specify an image tag instead of text.</p>
+
+<div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N102A2"><span class="atitle">Spinners in PHP</span></a></p>
+  
+<p>To implement spinners in PHP, you follow a standard pattern for server-side creation of DHTML code, bracketing segments of HTML in start and end functions. The PHP code is shown in Listing 6.</p>
+
+<br /><a name="N102AE"><b>Listing 6. The spinner PHP</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+
+&lt;?php
+function start_spinner( $id, $title )
+{
+?&gt;
+&lt;div class="item-header"&gt;
+&lt;a href="javascript:spin('&lt;?php echo( $id ); ?&gt;')"
+  id="&lt;?php echo( $id ); ?&gt;"&gt;open&lt;/a&gt; &lt;?php echo( $title ); ?&gt;
+&lt;/div&gt;
+
+&lt;div class="item-body" id="&lt;?php echo( $id ); ?&gt;_body"&gt;
+&lt;?php
+}
+
+function end_spinner()
+{
+?&gt;
+&lt;/div&gt;
+&lt;?php
+}
+?&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Spinner Example&lt;/title&gt;
+
+&lt;style type="text/css"&gt;
+body { font-family: arial, verdana, sans serif; width: 800px; }
+.item-header a { font-size: small; }
+.item-header {
+  font-weight: bold; border-bottom: 1px solid black;
+  font-size: x-large;
+}
+.item-body {
+  margin: 0px; font-size: small;
+  visibility: hidden; height: 0px;
+}
+&lt;/style&gt;
+
+&lt;script&gt;
+function spin( obj )
+{
+  var spinner = document.getElementById( obj );
+  var spinner_content = document.getElementById( obj+"_body" );
+  if ( spinner_content.style.visibility == 'visible' )
+  {
+    spinner.innerHTML = 'open';
+    spinner_content.style.visibility = 'hidden';
+    spinner_content.style.height = '0px';
+    spinner_content.style.margin = '0px';
+  }
+  else
+  {
+    spinner.innerHTML = 'close';
+    spinner_content.style.visibility = 'visible';
+    spinner_content.style.height = 'auto';
+    spinner_content.style.margin = '20px 0px 20px 50px';
+  }
+}
+&lt;/script&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;?php start_spinner( 'lev1', "Level One" ); ?&gt;
+This is the content of level one.
+&lt;?php end_spinner( ); ?&gt;
+
+&lt;?php start_spinner( 'lev2', "Level Two" ); ?&gt;
+This is the content of level two.
+&lt;?php end_spinner( ); ?&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+</pre></td></tr></table><br />
+  
+<p>Each section of content is bracketed with calls to <code>start_spinner</code> and <code>end_spinner</code>. The <code>start_spinner</code> function takes two arguments: the ID of the spinner and its title. The <code>end_spinner</code> call finishes the <code>&lt;div&gt;</code> tag opened in <code>start_spinner</code> to hold the content of the spinner.</p>
+
+<p>You could put the content of the spinner as a third argument. But often, these sections of content are involved and the interface would be painful to use if you wrote it that way. This pattern of bracketing dynamic sections in start and end functions means that the PHP in between can be as complex as you like. </p>
+  
+<div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N102D4"><span class="atitle">Tabs</span></a></p>
+  
+<p>Tabs are another common way to view different portions of content. A lightweight version of tabs appears on the MetaCritic site (see <a href="#resources">Resources</a>), which uses tabs to switch between viewing a list of games based on the name or based on the reviewed score, without going back to the server. Figure 7 shows a simplified example of this game list.</p>
+  
+
+<br /><a name="N102E3"><b>Figure 7. The games sorted by name</b></a><br />
+<img alt="The games sorted by name" height="269" src="tabs1_400_269.gif" width="400"/>
+<br />
+  <br />
+<p>To see the games sorted by review score, click the By Score link. The list changes, as shown in Figure 8.</p>
+  
+
+<br /><a name="N102F8"><b>Figure 8. The games sorted by score</b></a><br />
+<img alt="The games sorted by core" height="267" src="tabs2_400_267.gif" width="400"/>
+<br />
+  <br />
+<p>Instead of doing sophisticated sorting on the client side, the MetaCritic site uses the equivalent of flash cards: One card has the list sorted by name, the other by score. Clicking the links hides one card and shows another. The code is shown in Listing 7. </p>
+
+<br /><a name="N1030E"><b>Listing 7. The tabs HTML</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Tabs Example&lt;/title&gt;
+&lt;style type="text/css"&gt;
+body { font-family: arial,verdana,sans serif; }
+.button-on, .button-off { padding: 3px; border: 1px solid black; }
+.button-on { background: #333; color: white; font-weight: bold; }
+.game-list { position: absolute; top: 0px; left: 0px; }
+.container { padding: 5px; border: 1px solid black; margin: 5px;
+  position: relative; height: 400px; width: 200px; }
+&lt;/style&gt;
+&lt;script&gt;
+function show( divid )
+{
+  var tos = [ "names", "score" ];
+  for( var t in tos )
+  {
+    var to = document.getElementById( tos[t] );
+    to.style.visibility = "hidden";
+    to.style.height = "0px";
+
+    var bo = document.getElementById( tos[t]+"-button" );
+    bo.className = "button-off"
+  }
+
+  var to = document.getElementById( divid );
+  to.style.visibility = "visible";
+  to.style.height = "auto";
+
+  var bo = document.getElementById( divid + "-button" );
+  bo.className = "button-on";
+}
+&lt;/script&gt;
+&lt;/head&gt;
+&lt;body onload="show('names')"&gt;
+Sort by:
+&lt;a href="javascript:show('names')" id="names-button"
+  class="button-on"&gt;By Name&lt;/a&gt;
+&lt;a href="javascript:show('score')" id="score-button"
+  class="button-off"&gt;By Score&lt;/a&gt;&lt;br/&gt;
+&lt;div class="container"&gt;
+&lt;div id="names" class="game-list"&gt;
+&lt;table width="100%"&gt;
+&lt;tr&gt;&lt;td&gt;Crank Shaft&lt;/td&gt;&lt;td&gt;22&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Driver&lt;/td&gt;&lt;td&gt;42&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Football 2006&lt;/td&gt;&lt;td&gt;72&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Soccer 2006&lt;/td&gt;&lt;td&gt;99&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Xevious&lt;/td&gt;&lt;td&gt;32&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id="score" class="game-list"&gt;
+&lt;table width="100%"&gt;
+&lt;tr&gt;&lt;td&gt;Crank Shaft&lt;/td&gt;&lt;td&gt;22&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Xevious&lt;/td&gt;&lt;td&gt;32&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Driver&lt;/td&gt;&lt;td&gt;42&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Football 2006&lt;/td&gt;&lt;td&gt;72&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Soccer 2006&lt;/td&gt;&lt;td&gt;99&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre></td></tr></table><br />
+  
+<p>The two lists are in two <code>&lt;div&gt;</code> tags: <code>names</code> and <code>score</code>. The <code>names &lt;div&gt;</code> has the list of games sorted by name, and <code>score</code> has them sorted by score. The <code>show</code> function connected to the By Name and By Score links first makes all the lists invisible, then makes the selected list visible.</p>
+
+<p>Some other interesting things are going on. First, you change the CSS class of the links dynamically using the <code>className</code> attribute. That's how the Selected button changes from white to black.</p>
+
+<p>Second, look at the CSS for <code>names</code> and <code>score</code>. Both <code>&lt;div&gt;</code>s are absolutely positioned at upper left, but they aren't in the upper-left corner of the page. That's because they're in the <code>&lt;div&gt;</code> with the ID value <code>container</code>, which is given a position of <code>relative</code>. That <code>container &lt;div&gt;</code> effectively resets the origin points of the items contained within it. The tables are positioned relative to the container, not to the page.</p>
+
+<p>This type of DHTML, in addition to being reasonably complex and interesting, is compatible with almost every modern browser.</p>
+      
+<div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N1035A"><span class="atitle">Tabs in PHP</span></a></p>
+  
+<p>Another tool in developing DHTML in PHP is the use of <i>output buffering</i>. Output buffering stores the text, tags, and echo material from the page and returns it as a string for later use. To implement the tabs, you use output buffering to store the content of the tab as a string before rendering into the page (see Listing 8).</p>
+
+<br /><a name="N10369"><b>Listing 8. The tabs PHP</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+
+&lt;?php
+$tabs = array();
+$current_tab = null;
+
+function start_tab( $id, $title )
+{
+  global $tabs, $current_tab;
+
+  ob_start();
+  $current_tab = $id;
+  $tabs[ $id ] = array( 'title' =&gt; $title, 'html' =&gt; "" );
+}
+
+function end_tab()
+{
+  global $tabs, $current_tab;
+
+  $tabs[ $current_tab ][ 'html' ] = ob_get_contents();
+  ob_end_clean();
+}
+
+function get_tab_ids()
+{
+  global $tabs;
+
+  $ids = array();
+  foreach( $tabs as $tabid =&gt; $tab ) {
+    $ids []= "'".$tabid."'";
+  }
+  return $ids;
+}
+
+function get_first_tab()
+{
+  $tabs = get_tab_ids();
+  return $tabs[0];
+}
+
+function place_tab_buttons()
+{
+  global $tabs;
+
+  foreach( $tabs as $tabid =&gt; $tab ) {
+?&gt;
+&lt;a href="javascript:show('&lt;?php echo($tabid); ?&gt;')"
+  id="&lt;?php echo($tabid); ?&gt;-button"
+  class="button-off"&gt;&lt;?php echo( $tab['title'] ); ?&gt;&lt;/a&gt;
+&lt;?php
+  }
+}
+
+function place_tab_content()
+{
+  global $tabs;
+
+  foreach( $tabs as $tabid =&gt; $tab ) {
+?&gt;
+&lt;div id="&lt;?php echo($tabid); ?&gt;" class="game-list"&gt;
+&lt;?php echo( $tab['html'] ); ?&gt;
+&lt;/div&gt;
+&lt;?php
+  }
+}
+?&gt;
+&lt;?php start_tab( 'names', "By Name" ); ?&gt;
+&lt;table width="100%"&gt;
+&lt;tr&gt;&lt;td&gt;Crank Shaft&lt;/td&gt;&lt;td&gt;22&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Driver&lt;/td&gt;&lt;td&gt;42&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Football 2006&lt;/td&gt;&lt;td&gt;72&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Soccer 2006&lt;/td&gt;&lt;td&gt;99&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Xevious&lt;/td&gt;&lt;td&gt;32&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;?php end_tab( ); ?&gt;
+&lt;?php start_tab( 'scores', "By Score" ); ?&gt;
+&lt;table width="100%"&gt;
+&lt;tr&gt;&lt;td&gt;Crank Shaft&lt;/td&gt;&lt;td&gt;22&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Xevious&lt;/td&gt;&lt;td&gt;32&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Driver&lt;/td&gt;&lt;td&gt;42&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Football 2006&lt;/td&gt;&lt;td&gt;72&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Soccer 2006&lt;/td&gt;&lt;td&gt;99&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;?php end_tab( ); ?&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Tabs Example&lt;/title&gt;
+&lt;style type="text/css"&gt;
+body { font-family: arial,verdana,sans serif; }
+.button-on, .button-off { padding: 3px; border: 1px solid black; }
+.button-on { background: #333; color: white; font-weight: bold; }
+.game-list { position: absolute; top: 0px; left: 0px; }
+.container { padding: 5px; border: 1px solid black; margin: 5px;
+  position: relative; height: 400px; width: 200px; }
+&lt;/style&gt;
+&lt;script&gt;
+function show( divid )
+{
+  var tos = [ &lt;?php echo( join( ",", get_tab_ids() ) ); ?&gt; ];
+  for( var t in tos )
+  {
+    var to = document.getElementById( tos[t] );
+    to.style.visibility = "hidden";
+    to.style.height = "0px";
+
+    var bo = document.getElementById( tos[t]+"-button" );
+    bo.className = "button-off"
+  }
+
+  var to = document.getElementById( divid );
+  to.style.visibility = "visible";
+  to.style.height = "auto";
+
+  var bo = document.getElementById( divid + "-button" );
+  bo.className = "button-on";
+}
+&lt;/script&gt;
+&lt;/head&gt;
+&lt;body onload="show(&lt;?php echo( get_first_tab() ); ?&gt;)"&gt;
+Sort by:
+&lt;?php place_tab_buttons() ?&gt;
+&lt;div class="container"&gt;
+&lt;?php place_tab_content() ?&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre></td></tr></table><br />
+  
+<p>The PHP code starts by defining two variables: <code>tabs</code> and <code>current_tab</code>. The <code>tabs</code> array holds the <code>id</code>, <code>title</code>, and <code>html</code> values of each tab. <code>current_tab</code> points to the tab being created between the calls to <code>start_tab</code> and <code>end_tab</code>. The <code>start_tab</code> function takes two parameters: the <code>id</code> value of the tab and the <code>title</code> value. It then begins the output buffering.</p>
+
+<p>The <code>end_tab</code> function stops the output buffering and stores the resulting HTML in the <code>html</code> value in the <code>current_tab</code> of the <code>tabs</code> array.</p>
+
+<p>Looking down the page, the calls to <code>start_tab</code> and <code>end_tab</code> are visible around the tab content to be rendered onto the tab.</p>
+
+<p>The important functions for rendering the tabs onto the page are <code>place_tab_buttons</code> and <code>place_tab_content</code>. The <code>place_tab_buttons</code> function creates anchor tags that have the name of the tab and that switch tabs when clicked. The <code>place_tab_content</code> function creates the <code>&lt;div&gt;</code> tags with the content of each tab stored by output buffering.</p>
+
+<p><code>get_tab_ids</code> and <code>get_first_tab</code> are helper functions used in creating the JavaScript. They return the complete list of tab IDs and the ID of the first tab, respectively.</p>
+
+<div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N103E3"><span class="atitle">Coming next</span></a></p>
+    
+<p>The next article in this "<a href="http://www.ibm.com/developerworks/views/opensource/libraryview.jsp?search_by=devise+web+2.0+applications+php+dhtml">Devise Web 2.0 applications with PHP and DHTML</a>" series covers generating dynamic graphs with JavaScript. It will teach how to create new HTML elements on the fly and position them around the pages presented by your PHP application.</p>
+    
+   
+<!-- CMA ID: 109385 --> <!-- Site ID: 1 --><!--XSLT stylesheet used to transform this file: dw-document-html-6.0.xsl-->
+<br />
+<p><a name="resources"><span class="atitle">Resources</span></a></p><p><b>Learn</b></p><ul><li>
+<a href="http://php.net/">PHP.net</a> is the starting point for all things PHP.<br /><br /></li><li>
+The <a href="http://Ajaxian.com/">Ajaxian</a> blog is a great place to go when looking for client-side coding tips.<br /><br /></li><li>
+<a href="http://ajaxfreaks.com/">Ajax Freaks</a> is another good client-side site.<br /><br /></li><li>
+<a href="http://webreference.com/">WebReference.com</a> has good articles and reference materials on browser compatibility issues.<br /><br /></li><li>
+O'Reilly's <i><a href="http://www.oreilly.com/catalog/dhtmlref2/">Dynamic HTML: The Definitive Reference</a></i> is the best book on Dynamic HTML.<br /><br /></li><li>
+To see an example of the sample tabs discussed in this article, visit <a href="http://metacritic.com/">Metacritic.com</a>.<br /><br /></li><li>
+Read the developerWorks article "<a href="http://www.ibm.com/developerworks/web/library/wa-cbdh/">A cross-browser DHTML table</a>" to learn how to create a cross-browser table with DHTML and JavaScript, which does most of the things that a table component written in Java might do.<br /><br /></li><li>
+Read "<a href="http://www.ibm.com/developerworks/edu/wa-dw-wa-ajax-i.html">Build apps using Asynchronous JavaScript with XML (AJAX)</a>" to learn how to build AJAX-based Web applications, complete with real-time validation and without page refreshes, by following the construction of a sample book order application.<br /><br /></li><li>
+Visit IBM developerWorks' <a href="http://www.ibm.com/developerworks/opensource/top-projects/php.html">PHP project resources</a> to learn more about PHP.<br /><br /></li><li>
+Stay current with <a href="http://www.ibm.com/developerworks/offers/techbriefings/?S_TACT=105AGX03&amp;S_CMP=art">developerWorks technical events and webcasts</a>.<br /><br /></li><li>
+Visit the developerWorks <a href="http://www.ibm.com/developerworks/opensource">Open source zone</a> for extensive how-to information, tools, and project updates to help you develop with open source technologies and use them with IBM's products.<br /><br /></li></ul><p><b>Get products and technologies</b></p><ul><li>
+Innovate your next open source development project with <a href="http://www.ibm.com/developerworks/downloads/?S_TACT=105AGX44">IBM trial software</a>, available for download or on DVD.<br /><br /></li></ul><p><b>Discuss</b></p><ul><li>
+Get involved in the developerWorks community by participating in <a href="http://www.ibm.com/developerworks/blogs/">developerWorks blogs</a>.<br /><br /></li></ul>
+<p><a name="author"><span class="atitle">About the author</span></a></p><div class="ibm-container ibm-portrait-module ibm-alternate-two"><div class="ibm-container-body"><p><a name="author1"></a>Jack D. Herrington is a senior software engineer with more than 20 years of experience. He's the author of three books: <i>Code Generation in Action, Podcasting Hacks,</i> and <i>PHP Hacks</i>. He has also written more than 30 articles.</p></div></div>
+<!-- MAIN_COLUMN_CONTENT_END -->
+
+<!-- OVERLAYS_START -->
+<!-- Report_Abuse_Start -->
+<div class="ibm-common-overlay ibm-no-print" id="reportabuseoverlay">
+   <div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#">Close [x]</a></p></div>
+   <div class="ibm-body">
+      <div class="ibm-main">
+         <a class="ibm-access" name="reportabuseoverlay">Report abuse help</a>   
+         <div class="ibm-title"><h1>Report abuse</h1></div>
+         <div class="ibm-container ibm-alternate">
+            <p><strong>Thank you.</strong>  This entry has been flagged for moderator attention.</p>
+            <div class="ibm-overlay-rule"><hr /></div>
+            <div class="ibm-buttons-row">
+               <input type="button" onclick="ibmCommon.Overlays.hide('reportabuseoverlay');return false;" class="ibm-btn-cancel-sec dw-btn-cancel-sec" name="ibm-cancel" value="Close" />
+            </div>
+         </div>
+      </div> 
+   </div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Report_Abuse_Error_Start -->
+<div class="ibm-common-overlay ibm-no-print" id="reportabuseoverlayerror">
+   <div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#">Close [x]</a></p></div>
+   <div class="ibm-body">
+      <div class="ibm-main">
+         <a class="ibm-access" name="reportabuseoverlayerror">Report abuse help</a>   
+         <div class="ibm-title"><h1>Report abuse</h1></div>
+         <div class="ibm-container ibm-alternate">
+            <p class="ibm-ind-error"><strong>Report abuse submission failed.  Please try again later.</strong></p>
+            <div class="ibm-overlay-rule"><hr /></div>
+            <div class="ibm-buttons-row">
+               <input type="button" onclick="ibmCommon.Overlays.hide('reportabuseoverlayerror');return false;" class="ibm-btn-cancel-sec dw-btn-cancel-sec" name="ibm-cancel" value="Close" />
+            </div>
+         </div>
+      </div> 
+   </div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Sign in OVERLAY STARTS HERE --> 
+<div id="fdiv"></div>
+<div class="ibm-common-overlay" id="signin_overlay">
+<div class="ibm-head">
+<p><a class="ibm-common-overlay-close" href="#" onclick="clearForm();">Close [x]</a></p>
+</div>
+<div class="ibm-body">
+<div class="ibm-main">
+<div class="ibm-title ibm-subtitle">
+<h1>developerWorks: Sign in</h1>
+<div id="ibm-overlay-error-signin" class="no-display"></div>
+</div>
+
+<div class="ibm-container ibm-alternate ibm-buttons-last">
+<div class="ibm-container-body">
+<p class="ibm-overlay-intro">If you do not have an IBM ID and password, <a href="#" onclick="(function () {window.location='/developerworks/dwwi/DWAuthRouter?m=reg&amp;d='+encodeURIComponent(location.href);})();">register here</a>.</p>
+<form class="ibm-column-form" id="sFormId" action="" method="post" name="sForm" onsubmit="return false;">
+<p><label for="ibmid">IBM ID:</label><span><input name="ibm-id" id="ibmid" size="25" value="" class="required" type="text" onkeypress="handleEP(event,this.form);" /><br /><a class="ibm-forward-link" href="/developerworks/dwwi/jsp/WSHelp.jsp?lang=en_US">Forgot your IBM ID?</a></span>   
+</p> 
+<p><label for="password">Password:</label><span><input name="password" id="password" size="25" value="" class="required" type="password" onkeypress="handleEP(event,this.form);" /><br /><a class="ibm-forward-link" href="#" onclick="(function () {window.location='https://www.ibm.com/account/profile?page=forgot&amp;lang=en_US&amp;appname=ibm&amp;required=null&amp;d='+encodeURIComponent(getAuthUrl())+'%3Fm%3Dloginpage%26lang%3Den_US%26d%3D'+encodeURIComponent(location.href);})();">Forgot your password?</a><br /><a class="ibm-forward-link" href="#" onclick="(function () {window.location='https://www.ibm.com/account/profile?page=chpw&amp;lang=en_US&amp;appname=ibm&amp;required=null&amp;d='+encodeURIComponent(location.href);})();">Change your password?</a></span></p> 
+<p class="no-bottom-padding"> 
+   <label for="AfterSignIn">After sign in:</label> 
+   <span>
+
+      <select name="SignInAction" id="AfterSignIn">
+          <option value="">Stay on the current page</option>
+          <option value="/developerworks/mydeveloperworks/profiles/html/myProfileView.do">Go to My developerWorks profile</option>
+          <option value="/developerworks/mydeveloperworks/homepage/">Go to My developerWorks homepage</option>
+      </select>
+   </span>
+</p>
+<div class="ibm-overlay-rule"><hr /></div>
+<p>By clicking <strong>Submit</strong>, you agree to the developerWorks <a href="/developerworks/mydeveloperworks/terms?lang=en">terms of use</a>.</p>
+<div class="ibm-buttons-row">
+   <p><input class="ibm-btn-arrow-pri" name="ibm-submit" value="Submit" onclick="signin();return false;" type="button" /><span class="ibm-sep">&nbsp;</span>
+<input value="Cancel" type="button" name="ibm-cancel" class="ibm-btn-cancel-sec" onclick="clearForm();ibmCommon.Overlays.hide('signin_overlay');return false;"/></p>
+</div>
+</form>
+<div class="ibm-overlay-rule"><hr /></div>
+<p>The first time you sign into developerWorks, a My developerWorks profile is created for you. This profile includes the first name, last name, and display name contained in the profile you created when you registered with My developerWorks. Selected information in your My developerWorks profile is displayed to the public, but you may edit the information at any time. Your first name, last name (unless you choose to hide them), and display name will accompany the content that you post. </p>
+<div class="dw-overlay-legal"><p>All information submitted is secure.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Sign in OVERLAY ENDS HERE --> 
+ 
+
+<!-- Display name OVERLAY STARTS HERE --> 
+<div class="ibm-common-overlay" id="displayname_overlay">
+<div class="ibm-head">
+<p><a class="ibm-common-overlay-close" href="#" onclick="clearForm();">Close [x]</a></p>
+</div>
+<div class="ibm-body">
+<div class="ibm-main">
+<div class="ibm-title ibm-subtitle">
+<h1>Choose your display name</h1>
+<div id="ibm-overlay-error-dname" class="no-display"></div>
+</div>
+<div class="ibm-container ibm-alternate ibm-buttons-last">
+<div class="ibm-container-body">
+<p class="ibm-overlay-intro">The first time you sign in to developerWorks a profile is created for you, so you need to choose a display name.  Your display name accompanies the content you post on developerWorks.</p>
+
+<form id="dFormId" method="post" action="" name="dForm" onsubmit="return false;" class="ibm-column-form">
+<p><label for="displayname">Display name:</label><span><input name="displayname" id="displayname" size="25" value="" type="text" onkeypress="handleEP(event,this.form);" /></span><span class="ibm-form-note">(Must be between 3 &ndash; 31 characters.)</span>
+</p>
+<p><strong>Note:</strong>  Please choose a display name between 3-31 characters. Your display name must be unique in the developerWorks community and should not be your email for privacy reasons.</p>
+<div class="ibm-overlay-rule"><hr />
+</div>
+<p>By clicking Submit, you agree to the developerWorks <a href="/developerworks/mydeveloperworks/terms?lang=en">terms of use</a>.</p>
+<div class="ibm-buttons-row">
+   <p><input class="ibm-btn-arrow-pri" name="ibm-submit" value="Submit" onclick="signin();return false;" type="button" /><span class="ibm-sep">&nbsp;</span>
+<input value="Cancel" type="button" name="ibm-cancel" class="ibm-btn-cancel-sec" onclick="clearForm();ibmCommon.Overlays.hide('displayname_overlay');return false;" /></p>
+</div>
+</form>
+<div class="ibm-overlay-rule"><hr /></div>
+<div class="dw-overlay-legal"><p>All information submitted is secure.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Display name OVERLAY ENDS HERE -->
+<!-- OVERLAYS_END -->
+
+<!-- RATINGS START -->
+<p class="ibm-no-print"><span class="atitle"><a name="iratings">Rate this article</a></span></p>
+<input id="art-rating" name="ratinga" type="hidden" value="0"/><div id="art-rating-module"></div>
+<script language="JavaScript" type="text/javascript">
+// <![CDATA[
+   // widget div id and article id as args
+   window.artRating.init('art-rating-module','art-rating-summary');
+// ]]>
+</script>
+<!-- RATINGS END -->
+
+<!-- INLINE_COMMENTS_START -->
+<p class="ibm-no-print"><span class="atitle"><a name="icomments">Comments</a></span></p>
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/showcomments.js" type="text/javascript">//</script>
+<div id="threadShow"></div>
+<script language="JavaScript" type="text/javascript">
+// <![CDATA[
+ jQuery('threadShow').showComments('95%',5,'nCmts','icomments');
+// ]]>
+</script>
+<!-- INLINE_COMMENTS_END -->
+
+<p class="ibm-ind-link ibm-back-to-top"><a class="ibm-anchor-up-link" href="#ibm-pcon">Back to top</a></p>
+<p><a href="http://www.ibm.com/developerworks/ibm/trademarks/">Trademarks</a> &nbsp;|&nbsp; <a href="https://www.ibm.com/developerworks/mydeveloperworks/terms/">My developerWorks terms and conditions</a></p>
+
+<!-- Overlays -->
+<!-- Zone/Leaf_Interest_Overlay_Start -->
+<div class="ibm-common-overlay ibm-no-print" id="dwmyinterestadd">
+<div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#close">Close [x]</a></p></div>
+<div class="ibm-body">
+<div class="ibm-main">
+<a class="ibm-access" name="dwmyinterestaddhelp">Help: Update or add to My dW interests</a>   
+<div class="ibm-title"><h1>What's this?</h1></div>
+<div class="ibm-container ibm-alternate">
+<p>This little timesaver lets you update your My developerWorks profile with just one click!  The general subject of this content (AIX and UNIX, Information Management, Lotus, Rational, Tivoli, WebSphere, Java, Linux, Open source, SOA and Web services, Web development, or XML) will be added to the interests section of your profile, if it's not there already.  You only need to be logged in to My developerWorks.</p>
+<p>And what's the point of adding your interests to your profile?  That's how you find other users with the same interests as yours, and see what they're reading and contributing to the community.  Your interests also help us recommend relevant developerWorks content to you.</p>
+<p><a href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/home.do?lang=en">View your My developerWorks profile</a></p>
+<p class="ibm-access"><a href="#interestShow">Return from help</a></p>
+</div> 
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+
+<div class="ibm-common-overlay ibm-no-print" id="dwmyinterestremove">
+<div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#close">Close [x]</a></p></div>
+<div class="ibm-body">
+<div class="ibm-main">
+<a class="ibm-access" name="dwmyinterestremovehelp">Help: Remove from My dW interests</a> 
+<div class="ibm-title"><h1>What's this?</h1></div>
+<div class="ibm-container ibm-alternate">
+<p>Removing this interest does not alter your profile, but rather removes this piece of content from a list of all content for which you've indicated interest.  In a future enhancement to My developerWorks, you'll be able to see a record of that content.</p>
+<p><a href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/home.do?lang=en">View your My developerWorks profile</a></p>
+<p class="ibm-access"><a href="#interestShow">Return from help</a></p>
+</div> 
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Zone/Leaf_Interest_Overlay_End --></div>
+<!-- MAIN_COLUMN_CONTAINER_END -->
+
+<!-- Rating_Meta_BEGIN -->
+<!--Rating_Meta_BEGIN--><div class="metavalue">static.content.url=http://www.ibm.com/developerworks/js/artrating/</div><div class="metavalue">SITE_ID=1</div><div class="metavalue">Zone=Open source, Web development, Architecture</div><div class="metavalue">ArticleID=109385</div><div class="metavalue">ArticleTitle=Devise Web 2.0 applications with PHP and DHTML, Part 1: Cook up your own with these recipes</div><div class="metavalue">publish-date=05022006</div><div class="metavalue">author1-email=jherr@pobox.com</div><div class="metavalue">author1-email-cc=</div><script language="javascript" type="text/javascript">document.write('<div class="metavalue">url='+location.href.replace('<', '%3C')+'</div>');</script><!--Rating_Meta_END-->
+<!-- Rating_Meta_END -->
+
+</div>
+<!-- MAIN_COLUMN_END-->
+
+<!-- RIGHT_COLUMN_BEGIN -->
+<div id="ibm-content-sidebar">
+<div id="ibm-social-tools-sidebar" class="ibm-share-this"></div>
+
+<!-- RIGHT_COLUMN_CONTENT_BEGIN --> 
+<div class="ibm-container"><h2>Table of contents</h2><div class="ibm-container-body"><img alt="" height="1" width="1" src="//www.ibm.com/i/c.gif"/><ul class="ibm-bullet-list"><li><a class="ibm-feature-link" href="#N10066">DHTML pros and cons</a></li><li><a class="ibm-feature-link" href="#N10092">Ad boxes</a></li><li><a class="ibm-feature-link" href="#N1012B">Ad boxes in PHP</a></li><li><a class="ibm-feature-link" href="#N10146">Pop-ups</a></li><li><a class="ibm-feature-link" href="#N101CA">Pop-ups in PHP</a></li><li><a class="ibm-feature-link" href="#N1020F">Spinners</a></li><li><a class="ibm-feature-link" href="#N102A2">Spinners in PHP</a></li><li><a class="ibm-feature-link" href="#N102D4">Tabs</a></li><li><a class="ibm-feature-link" href="#N1035A">Tabs in PHP</a></li><li><a class="ibm-feature-link" href="#N103E3">Coming next</a></li><li><a class="ibm-feature-link" href="#resources">Resources</a></li><li><a class="ibm-feature-link" href="#author">About the author</a></li><li><a class="ibm-feature-link" href="#icomments">Comments</a></li></ul></div></div>
+<!--XSLT stylesheet used to transform this content: s-nextsteps.xsl--><div class="ibm-container"><h2>Next steps from IBM</h2><div class="ibm-container-body"><img width="188" height="58" border="0" alt="" src="//www.ibm.com/developerworks/i/spot-nextsteps.jpg"/><p>Spring, JRuby, and Ajax development is easier with WebSphere Application Server - a smart Java 5
+   and J2EE Web services-based application server.</p><div class="ibm-rule"><hr/></div><ul class="ibm-bullet-list"><li><a href="http://www.ibm.com/developerworks/downloads/ws/wasce/index.html" class="ibm-feature-link">Try: The no-charge WebSphere Application Server Community Edition is a pre-integrated, lightweight Java 5
+    application server built on Apache Tomcat and other best-of-breed open source software such as OpenEJB, Apache Axis,
+    and Apache Derby.</a></li><li><a href="http://www.ibm.com/developerworks/websphere/library/techarticles/0810_asplund/0810_asplund.html" class="ibm-feature-link">Article: The article leverage the Spring Framework and the WebSphere Application Server to improve your J2EE project
+      productivity.</a></li><li><a href="http://www.ibm.com/developerworks/edu/x-dw-x-jrorajax.html" class="ibm-feature-link">Tutorial: See how the free WebSphere Application Server and XML can improve the efficiency of your JRuby on Rails and
+      Ajax development.</a></li><li><a href="http://www.ibm.com/software/dre/h2b/buildh2bpage.wss?synkey=G394201N28809H35" class="ibm-feature-link">Buy: WebSphere Application Server - Express</a></li></ul></div></div>
+<!--XSLT stylesheet used to transform this content: s-community.xsl--><div class="ibm-container"><h2>My developerWorks community</h2><div class="ibm-container-body"><p>Interact, share, and communicate with developers worldwide.</p><div class="ibm-rule"><hr/></div><ul class="ibm-bullet-list"><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/homepage/web/getuserpref?ca=dma-" class="ibm-feature-link">My Home</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/home.do?lang=en&amp;ca=dma-" class="ibm-feature-link">Profiles</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/groups/service/html/allcommunities?ca=dma-" class="ibm-feature-link">Groups</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/blogs/?ca=dma-" class="ibm-feature-link">Blogs</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/bookmarks/?ca=dma-" class="ibm-feature-link">Bookmarks</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/activities/service/html/mainpage?ca=dma-" class="ibm-feature-link">Activities</a></li><li><a href="http://www.ibm.com/developerworks/mydeveloperworks/files?ca=dma-" class="ibm-feature-link">Files</a></li><li><a href="http://www.ibm.com/developerworks/mydeveloperworks/wikis?ca=dma-" class="ibm-feature-link">Wikis</a></li><li><a href="http://www.ibm.com/developerworks/forums/?ca=dma-" class="ibm-feature-link">Forums</a></li><li><a href="http://www.ibm.com/developerworks/podcast/?ca=dma-" class="ibm-feature-link">Podcasts</a></li></ul><div class="ibm-rule"><hr/></div><p class="ibm-ind-link"><a href="https://www.ibm.com/developerworks/mydeveloperworks/?ca=dma-" class="ibm-forward-link">My developerWorks overview</a></p></div></div>
+<!-- Tagging_Start -->
+<div id="dw-tag-cloud-container" class="ibm-container dw-hidetag"><h2>Tags</h2>
+<div id="dw-tag-help"><a class="dwauthor" rel="#tagtip" id="dwtagtip"><img alt="Help" height="16" width="16" align="top" src="//dw1.s81c.com/developerworks/i/help_icon.gif"/></a></div>
+<div id="tagtip" class="dwauthor-onload-state ibm-no-print">Use the <strong>search field</strong> to find all types of content in My developerWorks with that tag.<p>Use the <strong>slider bar</strong> to see more or fewer tags.</p><p>For articles in technology zones (such as Java technology, Linux, Open source, XML), <strong>Popular tags</strong> shows the top tags 
+for <em>all technology zones</em>.  For articles in product zones (such as Info Mgmt, Rational, WebSphere), <strong>Popular tags</strong> shows the top tags for <em>just that product zone</em>.</p><p>For articles in technology zones (such as Java technology, Linux, Open source, XML), <strong>My tags</strong> shows your tags for <em>all technology zones</em>.  For articles in product zones (such as Info Mgmt, Rational, WebSphere), <strong>My tags</strong> shows your tags for <em>just that product zone</em>.</p></div>
+<div class="ibm-access">Use the search field to find all types of content in My developerWorks with that tag.  <em>Popular tags</em> shows the top tags for this particular content zone (for example, Java technology, Linux, WebSphere).  <em>My tags</em> shows your tags for this particular content zone (for example, Java technology, Linux, WebSphere).</div>
+<div class="ibm-container-body">
+<div class="dw-tag-search"><form action="//www.ibm.com/developerworks/mydeveloperworks/bookmarks/html?lang=en" method="get" id="actualtagform" onsubmit="popupform(this, 'join')">
+<p><label for="tagfield"><strong>Search all tags</strong></label><input id="tagfield" name="tag" type="text" maxlength="20" size="17" />&nbsp;<input src="//dw1.s81c.com/i/v16/buttons/short-btn.gif" type="image" class="ibm-btn-view" alt="submit search" title="submit search" value="Search" /></p></form></div>
+<div class="ibm-rule"><hr/></div>
+<div id="dw-tag-select">
+<div id="dw-tag-select-popular"><p><strong>Popular article tags</strong>&nbsp;|&nbsp;<br /><a id="a-my" href="javascript:;">My article tags</a><a href="#dw-tag-access" class="ibm-access">Skip to tags list</a></p></div>
+<div id="dw-tag-select-my" class="dw-hidetag"><p><a id="a-popular" href="javascript:;">Popular article tags</a>&nbsp;|&nbsp;<br /><strong>My article tags</strong></p><a href="#dw-tag-access" class="ibm-access">Skip to tags list</a></div>
+<div id="dw-tag-cloud"></div>  
+</div>   
+</div>
+</div>
+<!-- Tagging_End -->
+<!-- Dig_Deeper -->
+<div class="ibm-container"><h2>Dig deeper into Open source on developerWorks</h2><div class="ibm-container-body"><ul class="ibm-link-list"><li class="ibm-first"><a href="http://www.ibm.com/developerworks/opensource/" class="ibm-forward-link">Overview</a></li><li><a href="http://www.ibm.com/developerworks/opensource/newto/" class="ibm-forward-link">New to Open source</a></li><li><a href="http://www.ibm.com/developerworks/views/opensource/projects.jsp" class="ibm-forward-link">Projects</a></li><li><a href="http://www.ibm.com/developerworks/views/opensource/library.jsp" class="ibm-forward-link">Technical library (articles, tutorials, and more)</a></li><li><a href="http://www.ibm.com/developerworks/opensource/training/" class="ibm-forward-link">Training</a></li><li><a href="http://www.ibm.com/developerworks/forums/dw_osforums.jsp" class="ibm-forward-link">Forums</a></li><li><a href="http://www.ibm.com/developerworks/views/opensource/events.jsp" class="ibm-forward-link">Events</a></li><li><a href="http://www.ibm.com/developerworks/newsletter/" class="ibm-forward-link">Newsletter</a></li></ul></div></div>
+<!-- High_Visibility_Offer -->
+<!--XSLT stylesheet used to transform this content: s-highvisibilityoffer.xsl--><div class="ibm-container"><h2>Stay ahead of the latest cloud trends</h2><div class="ibm-container-body"><img width="188" height="70" border="0" alt="Stay ahead of the latest cloud trends" src="//www.ibm.com/developerworks/i/hivis-w-cloudzone.jpg"/><p class="ibm-ind-link"><a href="https://www.ibm.com/developerworks/cloud/index.html?ca=dti-cloudzone" class="ibm-forward-link">Cloud Computing resources from developerWorks</a></p></div></div>
+<!-- Special_Offers -->
+<div class="ibm-container"><h2>Special offers</h2><div class="ibm-container-body"><p class="dw-special-offers"><a href="http://www.ibm.com/developerworks/downloads/soasandbox/connect/?ca=dti-soasandboxconnect"><img src="//www.ibm.com/developerworks/i/tile_v16_soasandboxconn.gif" width="158" height="50" border="0" alt="Try the dynamic connectivity demo in the SOA Sandbox " /></a></p><p class="dw-special-offers"><a href="http://www.ibm.com/developerworks/downloads/im/cognosbi/learn.html?ca=dti-imcognosBItrial"><img src="//www.ibm.com/developerworks/i/tile_v16_cognos8bi.gif" width="158" height="50" border="0" alt="Try Cognos 8 Business Intelligence" /></a></p><p class="dw-special-offers"><a href="http://www.ibm.com/developerworks/downloads/r/rtcexpressc/learn.html?ca=dti-rattcexpc"><img src="//www.ibm.com/developerworks/i/tile_v16_etcec.gif" width="158" height="50" border="0" alt="Free Rational Team Concert for agile developers" /></a></p><div class="ibm-rule"><hr/></div><p class="ibm-ind-link"><a class="ibm-forward-link" href="http://www.ibm.com/developerworks/downloads/?ca=dti-tilemoreoffers">Trial software offers</a></p></div></div>
+<!-- RIGHT_COLUMN_CONTENT_END -->
+
+</div>
+<!-- RIGHT_COLUMN_END -->
+
+<!-- CONTENT_BODY_END -->
+</div>
+
+</div>
+<!-- CONTENT_END -->
+
+ <!-- END_IBM-PCON -->
+</div>
+
+<!-- FOOTER_BEGIN -->
+<div id="ibm-page-tools">
+<!-- IBM page tools container -->
+</div>
+<div id="ibm-footer">
+<ul>
+<li class="ibm-first"><a href="http://www.ibm.com/ibm/">About IBM</a></li>
+<li><a href="http://www.ibm.com/privacy/">Privacy</a></li>
+<li><a href="http://www.ibm.com/contact/">Contact</a></li>
+<li><a href="http://www.ibm.com/legal/">Terms of use</a></li>
+</ul>
+</div>
+<!-- FOOTER_END -->
+
+ <!-- END_IBM-TOP -->
+</div>
+ 
+ <!-- SCRIPTS_INCLUDE_BEGIN -->
+<!-- JQuery start -->
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.dimensions-1.2.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.hoverIntent.minified.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.cluetip.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/tagging/ui.core-1.7.1.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/tagging/ui.slider-1.7.1.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/tagging/dwjquerytags.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/si/flash-detect.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/si/dwsi.js"></script>
+<script type="text/javascript" language="JavaScript">
+	jQuery.noConflict();     
+	// Put all your code in your document ready area
+	jQuery(document).ready(function(jQuery) {
+	// Do jQuery stuff using jQuery 
+	jQuery('a.dwauthor').cluetip({
+		local: true,
+		showTitle: false,
+		positionBy: 'bottomTop',
+		sticky: true,	
+		mouseOutClose: true,
+		closeText: '<img src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/i/x.gif" alt="Close" />',
+		arrows: false,
+		dropShadow: true,
+		cluetipClass: 'dwbasic'
+		});
+
+		//tagging
+		login="false";
+		userid="";
+		whichTags = "init";
+		pCont = "";
+		mCont = "";
+		signInMCont = "";
+		accessCont = "";
+		pValue = 0;
+		mValue = 0;
+
+		rBHash = null;
+		rBHash = new Object();
+		rBHash['viperLang'] = 'en';
+		rBHash['urlLang'] = 'en';
+		rBHash['tagThisWinTitle'] = 'Tagit';
+		rBHash['pTags1'] = 'Popular tags';
+		rBHash['pTags2'] = 'End of Popular tags';
+		rBHash['mTags1'] = 'My tags';
+		rBHash['mTags2'] = 'End of My tags';
+		rBHash['alt1'] = 'Loading Content';
+		rBHash['noATags'] = 'No active tags';
+		rBHash['signIn1'] = 'Please ';
+		rBHash['signIn2'] = 'sign in';
+		rBHash['signIn3'] = ' to access';
+		rBHash['signIn4'] = 'My Tags';
+		rBHash['signIn5'] = 'To access My Tags, please ';
+		rBHash['signIn6'] = 'sign in';
+		rBHash['signIn7'] = 'Read Popular tags';
+
+		zoneHash = new Object();
+		zoneHash['aix'] = 'AIX and UNIX zone';
+		zoneHash['data'] = 'Information Management zone';
+		zoneHash['lotus'] = 'Lotus zone';
+		zoneHash['rational'] = 'Rational zone';
+		zoneHash['tivoli'] = 'Tivoli zone';
+		zoneHash['websphere'] = 'WebSphere zone';
+		zoneHash['architecture'] = 'Technical library';
+		zoneHash['autonomic'] = 'Technical library';
+		zoneHash['java'] = 'Technical library';
+		zoneHash['cloud'] = 'Technical library';
+		zoneHash['industry'] = 'Technical library';
+		zoneHash['library'] = 'Technical library';
+		zoneHash['linux'] = 'Technical library';
+		zoneHash['opensource'] = 'Technical library';
+		zoneHash['power'] = 'Technical library';
+		zoneHash['webservices'] = 'Technical library';
+		zoneHash['web'] = 'Technical library';
+		zoneHash['xml'] = 'Technical library';
+		zoneHash['wireless'] = 'Technical library';
+		jQuery.checkRB();
+		jQuery.getPopularTags("/developerworks/dwtags/dwjquerytabtags?lang=" + rBHash['viperLang'] + "&base=" + jQuery.getNormalizedZoneUrl(location.href));
+		jQuery.getUserTags();
+		if(jQuery.isTutorial(location.href) == "true") {
+			jQuery.getTagsForContent("/developerworks/tagging/UseCaseServlet?lang=" + rBHash['viperLang'] + "&format=maverick&cType=tutorials&use_case=geturltags&action=gettags&url=" + jQuery.normalizeUrl(location.href));
+		}
+		else {
+			jQuery.getTagsForContent("/developerworks/tagging/UseCaseServlet?lang=" + rBHash['viperLang'] + "&format=maverick&cType=articles&use_case=geturltags&action=gettags&url=" + jQuery.normalizeUrl(location.href));
+
+		}
+		
+		// si
+		initSI();
+	});
+ </script>
+ <!-- JQuery end -->
+ <!-- Overlay js -->
+<script language="JavaScript" src="//dw1.s81c.com/common/js/overlay.js" type="text/javascript"></script>
+<!-- My dW Interest article -->
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/showinterest.js" type="text/javascript">//</script>
+<script language="JavaScript" type="text/javascript">
+        // <![CDATA[
+			var contentId = '';
+			var contentAreas = '';
+			var caArr = [];
+			contentId = '109385';
+			contentAreas = 'opensource,web,architecture';
+			if(contentAreas != ''){caArr = contentAreas.split(',');}
+			var loginLink = 'https://www.ibm.com/developerworks/dwwi/DWAuthRouter?m=loginpage&d=' + encodeURIComponent(window.location);jQuery('interestShow').showInterest(contentId,'dw-article',{'int_tops':[61,214,54,889,725],'int_prods':[], 'int_prod_fam':[],'int_cont_area':caArr},
+'<div id="dw-interest-anon"><a id="intAnonBtn" class="ibm-external-link" href="">Update My dW interests</a> (<a class="dw-interest" href="' + loginLink + '">Log in</a> | <a class="dw-interest" href="#overlay" onclick="ibmCommon.Overlays.show(\'dwmyinterestadd\', this);return false;">What\'s this?</a>) <a class="ibm-access" href="#dwmyinterestaddhelp">Skip to help for Update My dW interests</a></div>',
+'<div id="dw-interest-add"><a id="intSelectBtn" class="ibm-external-link" href="">Add to My dW interests</a> (<a class="dw-interest" href="#overlay" onclick="ibmCommon.Overlays.show(\'dwmyinterestadd\', this);return false;">What\'s this?</a>) <a class="ibm-access" href="#dwmyinterestaddhelp">Skip to help for Add to My dW interests</a></div>',
+'<div id="dw-interest-remove">Added to My dW interests (<a class="dw-interest" href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/html/myProfileView.do?lang=en">Edit</a>)</div>'
+);
+// ]]>
+</script><!-- BEGIN: Use this section to set page specific variables for the Unica Page Tag -->
+<script language="JavaScript">var NTPT_PGEXTRA="ibmSkillLevel=3&ibmAdoptPhase=-&ibmRole=-";</script>
+<!--END --><!-- SCRIPTS_INCLUDE_END -->
+
+<div id="ibm-metrics">
+<script src="//dw1.s81c.com/common/stats/stats.js" type="text/javascript">//</script>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1344 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+	<title>Buttonator</title>
+	<link href="/stylesheets/scaffold.css?1205196734" media="screen" rel="Stylesheet" type="text/css" />
+	<link href="/stylesheets/js_color_picker_v2.css?1205196734" media="screen" rel="Stylesheet" type="text/css" />
+	
+	<script type="text/javascript" src="/javascripts/prototype.js?1205196734"></script>
+	<script type="text/javascript" src="/javascripts/effects.js?1205196734"></script>
+	<script type="text/javascript" src="/javascripts/dragdrop.js?1205196734"></script>
+	<script type="text/javascript" src="/javascripts/controls.js?1205196734"></script>
+	<script type="text/javascript" src="/javascripts/color_functions.js?1205196734"></script>
+	<script type="text/javascript" src="/javascripts/js_color_picker_v2.js?1205196734"></script>
+	<script type="text/javascript" src="/javascripts/application.js?1205199799"></script>
+	
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	
+	<script type="text/javascript">
+<!--
+			
+		function rolloverchange(el) {
+
+			if(el.checked) {
+				$("preview2").style.display="";
+				$("properties2").style.display="";
+				$("color2").style.display="";
+				btor.set_rollover_mode(true);
+				btor.fix_disabled_layers();
+				new Ajax.Request('/home/set_rollover', {asynchronous:true, evalScripts:true});
+			} else {
+				btor.set_rollover_mode(false);
+				$("preview2").style.display="none";
+				$("properties2").style.display="none";
+				$("color2").style.display="none";
+				new Ajax.Request('/home/remove_rollover', {asynchronous:true, evalScripts:true});
+				btor.fix_disabled_layers();
+				window.setTimeout( function() {
+					btor.fix_disabled_layers();
+				}, 100);
+			}
+		}	
+		
+		
+		function show_logintop() {
+			if($("welcomeguest").style.display=="none") {
+				$("welcomeguest").style.display="";
+				$("logintop").style.display="none";
+				
+			} else {
+				$("logintop").style.display="";
+				$("welcomeguest").style.display="none";
+			}
+		}
+		
+
+		function buttons_click() {
+			if($("buttonstab").className =="tabon") {				
+				
+			} else {
+				$("buttonsdisplay").style.display="";
+				$("iconsdisplay").style.display="none";
+				$("buttonstab").className='tabon';
+				$("iconstab").className='taboff';
+				if($("favstab")!=null) {
+					$("favsdisplay").style.display="none";
+					$("favstab").className='taboff';
+				}
+			}
+		}
+		
+		function icons_click() {
+			if($("iconstab").className =="tabon") {				
+				
+			} else {
+				$("iconsdisplay").style.display="";
+				$("buttonsdisplay").style.display="none";
+				$("iconstab").className='tabon';
+				$("buttonstab").className='taboff';
+				if($("favstab")!=null) {
+					$("favsdisplay").style.display="none";
+					$("favstab").className='taboff';
+				}
+				
+			}
+		}
+		
+		function favorites_click() {
+			if($("favstab").className =="tabon") {				
+				
+			} else {
+				$("favsdisplay").style.display="";
+				$("iconsdisplay").style.display="none";
+				$("buttonsdisplay").style.display="none";
+				$("favstab").className='tabon';
+				$("iconstab").className='taboff';
+				$("buttonstab").className='taboff';
+				
+			}
+		}
+		
+		function update_url(el) {
+			if(el.value == "") {
+				$('code_area').value = $('code_no_link').value;
+			} else {
+				$('code_area').value = "<a href=\"" + el.value + "\">" + $('code_no_link').value + "</a>";
+			}
+		}
+//-->
+</script>
+
+
+</head>
+<body>
+
+<div id="maincontainer">
+  <div id="header">
+    <span style="float:left"><img src="/images/buttonator_header.gif" alt="header" width="340" height="64"></span> 
+      <span style="float:right;margin-right:20px;font-size:12px;">
+	  
+	  
+	  <div  id="welcomeguest" class="login" style="margin-top:15px;color:white;" >Welcome guest!<br />
+	  <a href="#" onclick="show_logintop(); return false;">login</a> or <a href="/user/signup">Signup Free</a>
+	  </div>
+	  <div style="display:none" id="logintop" class="login">
+	  <form action="/user/login" method="post">
+	  <table><tr><td style="color:white">username</td>
+        <td colspan="2">
+			<input name="user[login]" type="text" size="20"></td></tr>
+	  <tr><td style="color:white">password:</td><td><input name="user[password]" type="password" size="20"></td>
+	 
+        <td><input type="submit" name="Submit" value="Login"> <a href="#" onclick="show_logintop(); return false;">cancel</a></td>
+      </tr></table></form>
+	  </div>
+	  
+	  
+	  </span>
+
+  </div>
+  <div id="navigation" ><a href="/">Home</a><a href="/user/signup">Signup Free</a><a href="/user/login">Login</a><a href="/home/faqs">FAQ's</a></div>
+
+
+
+<script>
+	btor = new Buttonator(0,"/home/get_image",'','');
+	btor2 = new Buttonator(0,"/home/get_rollover_image",'2','');
+</script>
+
+  <div id="content">  
+
+	  <div id="leftcontent">
+	  
+	  	<div id="form">
+			<input type="hidden" id="t_id" name="t_id" value="72"/>
+			<input type="hidden" id="i_id" name="i_id" value="0"/>
+			
+			
+			<!-- preview pane -->
+			<div style="margin-left:10px;margin-right:5px;margin-top:20px;">	 
+			  <table width="340" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+				  <td class="paneltopstart"><img src="/images/panel_top_left.gif" width="29" height="13" alt="design image"></td> 
+				  <td class="paneltoptext"><img src="/images/button_preview.gif" alt="Button preview"></td>  
+				  <td class="paneltopend"><img src="/images/panel_top_right.gif" alt="design image" ></td>
+				</tr>
+				<tr>
+				  <td colspan="3" class="panelcontent">
+					  <div style="margin-top:10px;margin-bottom:30px;margin-left:30px;margin-right:30px;text-align:center;">
+						<div id="styleDrop">
+							<img src="/images/spacer.gif" height="40" width="1" alt="design image"><img id="img_view" alt="design image" src="/images/loading.gif" onload="btor.image_loaded();" style="display:none;"/><img id="img_view_loading" src="/images/loading.gif" alt="design image" style="display:none;"/><br/>
+						</div>
+						<div  style="margin-top:5px;">
+						<textarea class="btext" id="text" rows="2" cols="30" name="text" style="margin-top:5px;" onchange="$('text2').value=this.value;btor.update_image(false); if($('rollover').checked) btor2.update_image(false); ">Text Here</textarea>
+						<a href="#"><img src="/images/update.gif" border="0" alt="update"></a>
+						</div>
+					  </div>
+					  <div style="text-align:right"><a href="/home/get_image?download=1"><img src="/images/downlaod.gif" alt="download" border="0"></a><a href="#" onclick="btor.show_batch(); return false;"><img src="/images/batch_download.gif"  alt="batch download" border="0"></a><a href="#" onclick="btor.show_code(); return false;"><img src="/images/show_code.gif"  alt="show code" border="0"></a></div>
+				  </td>
+				</tr>
+			  </table>
+			</div>
+	
+			<!-- properties pane -->
+			<div id="properties" style="margin-left:10px;margin-right:5px;margin-top:30px;">
+			
+	  <table width="340" border="0" cellspacing="0" cellpadding="0">
+		<tr>
+		  <td class="paneltopstart"><img src="/images/panel_top_left.gif" width="29" height="13"></td> 
+					<td class="paneltoptext"><img src="/images/properties.gif" height="17"></td>  
+		  <td class="paneltopend"><img src="/images/panel_top_right.gif" ></td>
+		</tr>
+		<tr>
+          <td colspan="3" class="panelcontent">
+		  	<div style="margin-top:15px;margin-bottom:10px;padding-left:30px;"> 
+                <table border="0" cellpadding="0" class="fontproperties">
+                  <tr> 
+                    <td colspan="6" style="text-align:left; padding-bottom:7px;" >
+                       <span> Font 
+						   <select name="font" id="font" onchange="btor.font_change('default');">
+								
+								<option value="7-Aldine" >Aldine</option>
+								
+								<option value="7-Arial"  selected="true">Arial</option>
+								
+								<option value="7-Arial Narrow" >Arial Narrow</option>
+								
+								<option value="7-Baubod" >Baubod</option>
+								
+								<option value="7-Book Antiqua" >Book Antiqua</option>
+								
+								<option value="7-Bookman Old Style" >Bookman Old Style</option>
+								
+								<option value="7-Century Gothic" >Century Gothic</option>
+								
+								<option value="7-Compacta" >Compacta</option>
+								
+								<option value="7-Courier New" >Courier New</option>
+								
+								<option value="7-Dutch" >Dutch</option>
+								
+								<option value="0-Japanese (sans-serif)" >Japanese (sans-serif)</option>
+								
+								<option value="0-Japanese (serif)" >Japanese (serif)</option>
+								
+								<option value="0-Simplified Arabic" >Simplified Arabic</option>
+								
+								<option value="0-Simplified Arabic (fixed)" >Simplified Arabic (fixed)</option>
+								
+								<option value="0-Simplified Chinese (sans-serif)" >Simplified Chinese (sans-serif)</option>
+								
+								<option value="7-Times New Roman" >Times New Roman</option>
+								
+								<option value="7-Verdana" >Verdana</option>
+								
+						   </select>
+						</span>
+						<span style="padding-left:0px;">
+						size <input type="text" name="font_size" onchange="btor.update_image();" value="" size="1"/> px</span>
+                      </td>
+
+                  </tr>
+                  <tr> 
+                    <td style="font-weight:bold">Bold</td>
+                    <td style="font-style: italic;">Italics</td>
+					<td>Underline</td>
+                    <td style="text-align:left; padding-left:4px;">Width</td>
+                    <td style="text-align:left; padding-left:4px;">Height</td>
+                    <td>Aliased</td>
+                  </tr>
+                  <tr>
+                    <td><input type="checkbox" id="bold" name="bold" onclick="btor.update_image(true);"  value="true" style="border:0px"/></td>
+                    <td><input type="checkbox" id="italics" name="italics" onclick="btor.update_image(true);"  value="true" style="border:0px" ></td>
+					<td><input type="checkbox" id="underline" name="underline" onclick="btor.update_image(true);"  value="true" style="border:0px" ></td>
+                    <td><input type="text" name="width" id="width" value="100" onchange="btor.update_image();" size="2"> px</td>
+                    <td><input type="text" name="height" id="height" value="" onchange="btor.update_image();" size="2"> px</td>
+                    <td><input type="checkbox" id="antialias" name="antialias" onclick="btor.update_image();"  checked="true" value="true" style="border:0px"></td>
+                  </tr>
+                </table>
+              </div>		  
+		      <div style="text-align:right" id="propertiessimple"><a href="#" onclick="btor.show_subproperties(); return false;"><img src="/images/advanced.gif" width="83" height="19" border="0"></a></div>
+			  
+			  <div id="propertiesadvanced" style="display:none;padding-left:30px;">
+  <div style="border-top:1px solid #3B639F;margin-right:30px;padding-top:10px;" id="propertiesadvanced_height_cludge">
+  	 <!-- stroke/rollover options -->
+	 <div style="padding-bottom:2px">
+	 	<table>
+			
+				<tr><td style="width:80px" >Rollover <input type="checkbox" name="rollover" id="rollover" value="1" style="border:0px" onclick="rolloverchange(this);"></td><td> </td></tr>
+			
+			<tr>
+				<td style="width:80px" >Stroke <input type="checkbox" name="stroke_effect" id="stroke_effect" value="stroke" style="border:0px" onclick="btor.update_strokeffect(this,true);"></td>
+				<td><div id="stroke_width_container" style="display:none;">width <input name="stroke_width" type="text" size="1" onchange="btor.update_image();"></div></td>
+			</tr>
+		</table>
+	</div>
+	
+	<!-- effects -->
+	
+	  <div style="padding-bottom:2px">
+	  	<table><tr>
+			<td style="width:80px" id="font_effect_heading">Text Effect</td>
+			<td>
+				<select name="font_effect" id="font_effect" onchange="btor.update_effect(this);">
+					<option value="none"  selected="true">None</option>
+					<option value="drop_shadow" >Drop Shadow</option>
+					<option value="back_glow" >Outer Glow</option>
+				</select>
+			</td>
+		</tr></table>
+	 </div>
+	 
+<div id="font_effect_params_container" style="display:none">
+
+<div class="advancedproperties" id="font_effect_dropshadow_params_container" style="display:none">
+	<div>
+		
+		<span style="width:45px;">Direction</span><span style="padding-right:10px">
+			<select name="font_dropshadow_direction" onchange="btor.update_image();" id="font_effect_ds_dir">
+				<option value="ne"  selected="true">North East</option>
+				<option value="n" >North</option>
+				<option value="nw" >North West</option>
+				<option value="e" >East</option>
+				<option value="w" >West</option>
+				<option value="se" >South East</option>
+				<option value="s" >South</option>
+				<option value="sw" >South West</option>
+			</select>
+		</span>
+		<span style="width:45px;">Distance</span>
+		<span style="padding-right:15px">
+			<input type="text" name="font_dropshadow_offset" value="4" size="3" onchange="btor.update_image();"/> px
+		</span>
+		<span style="width:45px;">Blur</span>
+		<span>
+			<select name="font_dropshadow_sharpness" onchange="btor.update_image();" id="font_effect_ds_blur">
+				<option value="0" >0 - No Bluriness</option>
+				<option value="2" >1</option>
+				<option value="3" >2</option>
+				<option value="4" >3</option>
+				<option value="5"  selected="true">4 - Default</option>
+				<option value="6" >5</option>
+				<option value="7" >6</option>
+				<option value="8" >7 - Very Blury</option>
+			</select>
+		</span>
+	</div>
+</div>
+
+<div class="advancedproperties" id="font_effect_backglow_params_container" style="display:none">
+
+	<div>
+		<span style="width:45px;">Size</span>
+		<span style="padding-right:15px">
+			<input type="text" name="font_backglow_size" value="7" size="3" onchange="btor.update_image();"/> px
+		</span>				
+	</div>
+</div>
+
+</div>
+		 
+
+	 
+	 <div style="padding-bottom:2px">
+	  	<table><tr>
+			<td style="width:80px" id="button_effect_heading">Button Effect</td>
+			<td>
+				<select name="button_effect" id="button_effect" onchange="btor.update_effect(this);">
+					<option value="none"  selected="true">None</option>
+					<option value="drop_shadow" >Drop Shadow</option>
+					<option value="back_glow" >Outer Glow</option>
+				</select>
+			</td>
+		</tr></table>
+	 </div>
+	 
+<div id="button_effect_params_container" style="display:none">
+
+<div class="advancedproperties" id="button_effect_dropshadow_params_container" style="display:none">
+	<div>
+		
+		<span style="width:45px;">Direction</span><span style="padding-right:10px">
+			<select name="button_dropshadow_direction" onchange="btor.update_image();" id="button_effect_ds_dir">
+				<option value="ne"  selected="true">North East</option>
+				<option value="n" >North</option>
+				<option value="nw" >North West</option>
+				<option value="e" >East</option>
+				<option value="w" >West</option>
+				<option value="se" >South East</option>
+				<option value="s" >South</option>
+				<option value="sw" >South West</option>
+			</select>
+		</span>
+		<span style="width:45px;">Distance</span>
+		<span style="padding-right:15px">
+			<input type="text" name="button_dropshadow_offset" value="4" size="3" onchange="btor.update_image();"/> px
+		</span>
+		<span style="width:45px;">Blur</span>
+		<span>
+			<select name="button_dropshadow_sharpness" onchange="btor.update_image();" id="button_effect_ds_blur">
+				<option value="0" >0 - No Bluriness</option>
+				<option value="2" >1</option>
+				<option value="3" >2</option>
+				<option value="4" >3</option>
+				<option value="5"  selected="true">4 - Default</option>
+				<option value="6" >5</option>
+				<option value="7" >6</option>
+				<option value="8" >7 - Very Blury</option>
+			</select>
+		</span>
+	</div>
+</div>
+
+<div class="advancedproperties" id="button_effect_backglow_params_container" style="display:none">
+
+	<div>
+		<span style="width:45px;">Size</span>
+		<span style="padding-right:15px">
+			<input type="text" name="button_backglow_size" value="7" size="3" onchange="btor.update_image();"/> px
+		</span>				
+	</div>
+</div>
+
+</div>
+		 
+
+	 
+	 <div id="icon_effect_properties_container" style="display: none;">
+		 <div style="padding-bottom:2px">
+			<table><tr>
+				<td style="width:80px" id="icon_effect_heading">Icon Effect</td>
+				<td>
+					<select name="icon_effect" id="icon_effect" onchange="btor.update_effect(this);">
+						<option value="none"  selected="true">None</option>
+						<option value="drop_shadow" >Drop Shadow</option>
+						<option value="back_glow" >Outer Glow</option>
+					</select>
+					<a href="#" onclick="new Ajax.Request('/home/set_icon?s=', {asynchronous:true, evalScripts:true}); return false;">Remove Icon</a>
+				</td>
+			</tr></table>
+		 </div>
+		 
+<div id="icon_effect_params_container" style="display:none">
+
+<div class="advancedproperties" id="icon_effect_dropshadow_params_container" style="display:none">
+	<div>
+		
+		<span style="width:45px;">Direction</span><span style="padding-right:10px">
+			<select name="icon_dropshadow_direction" onchange="btor.update_image();" id="icon_effect_ds_dir">
+				<option value="ne"  selected="true">North East</option>
+				<option value="n" >North</option>
+				<option value="nw" >North West</option>
+				<option value="e" >East</option>
+				<option value="w" >West</option>
+				<option value="se" >South East</option>
+				<option value="s" >South</option>
+				<option value="sw" >South West</option>
+			</select>
+		</span>
+		<span style="width:45px;">Distance</span>
+		<span style="padding-right:15px">
+			<input type="text" name="icon_dropshadow_offset" value="4" size="3" onchange="btor.update_image();"/> px
+		</span>
+		<span style="width:45px;">Blur</span>
+		<span>
+			<select name="icon_dropshadow_sharpness" onchange="btor.update_image();" id="icon_effect_ds_blur">
+				<option value="0" >0 - No Bluriness</option>
+				<option value="2" >1</option>
+				<option value="3" >2</option>
+				<option value="4" >3</option>
+				<option value="5"  selected="true">4 - Default</option>
+				<option value="6" >5</option>
+				<option value="7" >6</option>
+				<option value="8" >7 - Very Blury</option>
+			</select>
+		</span>
+	</div>
+</div>
+
+<div class="advancedproperties" id="icon_effect_backglow_params_container" style="display:none">
+
+	<div>
+		<span style="width:45px;">Size</span>
+		<span style="padding-right:15px">
+			<input type="text" name="icon_backglow_size" value="7" size="3" onchange="btor.update_image();"/> px
+		</span>				
+	</div>
+</div>
+
+</div>
+		 
+
+		 
+		 <div>
+		 	<table>					
+				<tr>
+					<td style="width:80px" id="icon_position_heading">Icon Position</td>
+					<td><select name="set_icon_postion" id="select_icon_pos_" onchange="btor.update_icon_position(this);" >
+						<option  selected="true" value="0">Default</option>
+						<option  value="1">Set</option>
+					  </select>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div class="advancedproperties" id="iconposition" style="display:none; margin-right:30px;">
+			<div>
+				<table>
+					<tr>
+						<td style="text-align:right">x</td>
+						<td><input name="icon_x" type="text" size="2" value="" onchange="btor.update_image();"/></td>
+						
+						<td style="text-align:right">y</td>
+						<td><input name="icon_y" type="text" size="2" value="" onchange="btor.update_image();"/></td>
+					</tr>
+					<tr>
+						<td>height</td>
+						<td><input name="icon_height" type="text" size="2" value="" onchange="btor.update_image();"/></td>
+						
+						<td>width</td>
+						<td><input name="icon_width" type="text" size="2" value="" onchange="btor.update_image();"/></td>
+					</tr>
+				</table>					
+			</div>				  
+		</div>  
+	 </div>
+</div>
+<div style="text-align:right;">
+	<a href="#" onclick="btor.show_subproperties(); return false;"><img id="propertiesadvanced_bottom" src="/images/simple.gif"  alt="simple" border="0" style="z-index: 991;position: relative;"Y:\buttonator2\app\views\home\_advanced_properties.rhtml></a></div>	
+</div>
+<div id="propertiesadvanced_disabled" class="Disable_Layer" style="display:none;">
+	<div style="background-color: white; margin-top: 20px; margin-left: 40px; margin-right: 40px; padding: 2px; border: medium solid rgb(155,155,155);" align="center">
+		This feature is only available on the first button. <br/>Paying members have full access to all the features and buttons.<br/> Click <a href="https://payments.golden-orb.com/buttonator/user/signup">here</a> to signup.
+	</div>
+</div>
+
+
+			  
+			  
+          </td>
+		</tr>
+	</table>
+
+
+			</div>
+	
+			<!-- color pane -->
+			<div id="color" style="margin-left:10px;margin-right:5px;margin-top:20px;">
+			
+		<table width="340" border="0" cellspacing="0" cellpadding="0">
+		<tr>
+		  <td class="paneltopstart"><img src="/images/panel_top_left.gif" width="29" height="13" alt="design image"></td> 
+		  <td class="paneltoptext"><img src="/images/colour.gif" height="17" alt="color"></td>  
+		  <td class="paneltopend"><img src="/images/panel_top_right.gif" alt="design image"></td>
+		</tr>
+		<tr>
+          <td colspan="3" class="panelcontent">
+		       <div id="colorsimple-container" style="padding-right:30px;margin-top:15px;margin-bottom:10px;padding-left:30px;">
+				   <table cellpadding="5" cellspacing="0">
+				   <tr>
+					   <td>
+						   <div style="border: 1px solid black">
+						   <div id="font_color_display" 
+								style="border: 2px solid #CCCCCC; cursor: pointer;" 
+								onclick="btor.set_color('font_color');">
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									<input type="hidden" id="font_color" name="font_color" value=""/>
+							</div></div>
+					   </td>
+					   <td style="font-weight:bold">Text Color</td>
+				   </tr>
+				   <tr>
+					   <td>
+					   		<div style="border: 1px solid black">
+							<div id="bg_color_display" 
+								style="border: 2px solid #CCCCCC; cursor: pointer;" 
+								onclick="btor.set_color('bg_color');">
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									<input type="hidden" id="bg_color" name="bg_color" value=""/>
+							</div></div>
+					   </td>
+				   <td style="font-weight:bold">Behind Button Color</td>
+				   </tr>
+				   </tr></table>
+			   </div>
+		      <div style="text-align:right" id="colorsimple"><a href="#" onclick="btor.show_subcolor(); return false;"><img src="/images/advanced.gif" alt="advanced" width="83" height="19" border="0"></a></div>
+			  
+			  <!-- Advanced color options -->
+			  <div id="coloradvanced" style="display:none;padding-left:30px;">
+			  	<div style="padding-right:30px;margin-top:15px;margin-bottom:10px;" id="coloradvanced_height_cludge">
+					<div id="advanced_button_colors">
+
+<table cellpadding="5" cellspacing="0">
+	<tr>
+		<td colspan="2"style="font-weight:bold">Button Colors</td>			  
+	</tr>
+	
+	<tr>
+		<td>
+			<div style="border: 1px solid black">
+			<div id="Main Piece_color_display" 
+				style="border: 2px solid #CCCCCC; cursor: pointer; background: #9ACD32;" 
+				onclick="btor.set_color('Main Piece_color');">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<input type="hidden" id="Main Piece_color" name="Main Piece_color" value="#9ACD32"/>
+			</div></div>
+		</td>
+		<td >Main Piece</td>
+	</tr>
+	
+	<tr>
+		<td>
+			<div style="border: 1px solid black">
+			<div id="Left Piece_color_display" 
+				style="border: 2px solid #CCCCCC; cursor: pointer; background: #99FF33;" 
+				onclick="btor.set_color('Left Piece_color');">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<input type="hidden" id="Left Piece_color" name="Left Piece_color" value="#99FF33"/>
+			</div></div>
+		</td>
+		<td >Left Piece</td>
+	</tr>
+	
+</table>
+
+</div>
+
+					<div id="advanced_icon_colors">
+
+</div>
+
+					
+					<div id="effect_colors" style="display:none;">
+					
+						<table cellpadding="5" cellspacing="0">
+							<tr>
+								<td colspan="2"style="font-weight:bold">Effect Colors</td>			  
+							</tr>
+							
+							<tr id="font_effect_color_div" style="display: none;">
+								<td>
+									<div style="border: 1px solid black">
+									<div id="font_effect_color_display" 
+										style="border: 2px solid #CCCCCC; cursor: pointer;" 
+										onclick="btor.set_color('font_effect_color');">
+											&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+											<input type="hidden" id="font_effect_color" name="font_effect_color" value=""/>
+									</div></div>
+								</td>
+								<td >Text <span id="font_effect_color_caption">Dropshadow</span></td>
+							</tr>
+							
+							<tr id="button_effect_color_div" style="display: none;">
+								<td>
+									<div style="border: 1px solid black">
+									<div id="button_effect_color_display" 
+										style="border: 2px solid #CCCCCC; cursor: pointer;" 
+										onclick="btor.set_color('button_effect_color');">
+											&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+											<input type="hidden" id="button_effect_color" name="button_effect_color" value=""/>
+									</div></div>
+								</td>
+								<td>Button <span id="button_effect_color_caption">Dropshadow</span></td>
+							</tr>
+							
+							<tr id="icon_effect_color_div" style="display: none;">
+								<td>
+									<div style="border: 1px solid black">
+									<div id="icon_effect_color_display" 
+										style="border: 2px solid #CCCCCC; cursor: pointer;" 
+										onclick="btor.set_color('icon_effect_color');">
+											&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+											<input type="hidden" id="icon_effect_color" name="icon_effect_color" value=""/>
+									</div></div>
+								</td>
+								<td>Icon <span id="icon_effect_color_caption">Dropshadow</span></td>
+							</tr>
+							
+							<tr id="stroke_effect_color_div" style="display: none;">
+								<td>
+									<div style="border: 1px solid black">
+									<div id="stroke_effect_color_display" 
+										style="border: 2px solid #CCCCCC; cursor: pointer;" 
+										onclick="btor.set_color('stroke_effect_color');">
+											&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+											<input type="hidden" id="stroke_effect_color" name="stroke_effect_color" value=""/>
+									</div></div>
+								</td>
+								<td>Stroke</td>
+							</tr>
+						</table>
+					</div>
+			   </div>		  
+			  <div style="text-align:right">
+			  <a href="#" onclick="btor.show_subcolor(); return false;"><img id="coloradvanced_bottom" src="/images/simple.gif" alt="advanced color" border="0" style="z-index: 991;position: relative;"></a></div>	
+		  </div>
+		  		<div id="coloradvanced_disabled" class="Disable_Layer" style="display:none;">
+					<div style="background-color: white; margin-top: 20px; margin-left: 40px; margin-right: 40px; padding: 2px; border: medium solid rgb(155,155,155);" align="center">
+						This feature is only available on the first button. <br/>Paying members have full access to all the features and buttons.<br/> Click <a href="https://payments.golden-orb.com/buttonator/user/signup">here</a> to signup.
+					</div>
+
+				</div>
+          </td>
+</tr>
+</table>
+
+
+			</div>
+		</div>
+	</div>
+	  
+	<div id="rightcontent">
+		<div id="form2">
+			<input type="hidden" id="t_id2" name="t_id" value=""/>
+			<input type="hidden" id="i_id2" name="i_id" value=""/>
+			<input type="hidden" id="text2" name="text" value="Click Me"/>
+			
+			<!-- rollover image preview pane -->
+			<div id="preview2" style="margin-left:10px;margin-right:5px;margin-top:20px;display:none">	 
+			   <table width="340" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+				  <td class="paneltopstart"><img src="/images/panel_top_left.gif" width="29" height="13"></td> 
+							<td class="paneltoptext"><img src="/images/rollover_preview.gif" width="168" height="17"></td>  
+				  <td class="paneltopend"><img src="/images/panel_top_right.gif" ></td>
+				</tr>
+				<tr>
+					<td colspan="3" class="panelcontent">
+						 <div style="margin-top:30px;margin-bottom:30px;margin-left:30px;margin-right:30px;text-align:center;">
+							<div id="styleDrop2">
+								<img src="/images/spacer.gif" height="40" width="1"><img id="img_view2" src="/images/loading.gif" onload="btor2.image_loaded();" style="display:none;"/><img id="img_view_loading2" src="/images/loading.gif" style="display:none;"/><br/>
+							</div>
+						 </div>
+						 <div style="text-align:right"><a href="/home/get_rollover_image?download=1"><img src="/images/downlaod.gif" width="83" border="0" height="18"></a></div>
+					 </td>
+				</tr>
+			  </table>
+			</div>
+	
+			<!-- rollover properties pane -->
+			<div id="properties2" style="margin-left:10px;margin-right:5px;margin-top:30px;display:none;">
+			
+
+			</div>
+			
+			<!-- rollover color pane -->
+			<div id="color2" style="margin-left:10px;margin-right:5px;margin-top:20px;display:none;">
+			
+
+			</div>
+		</div>
+		
+		
+		<!-- style/icon/favorites panel -->
+		<div style="margin-left:10px;margin-right:5px;margin-top:20px;">	 
+			<table width="340" border="0" cellspacing="0" cellpadding="0">
+			<tr>
+			  <td class="paneltopstart"><img src="/images/panel_top_left.gif" width="29" height="13"></td> 
+						<td class="paneltoptext"><img src="/images/style.gif" width="55" height="17"></td>  
+			  <td class="paneltopend"><img src="/images/panel_top_right.gif" ></td>
+			</tr>
+			<tr>
+				<td colspan="3" class="panelcontent">
+					<table cellspacing="0" style="padding:0px"><tr>
+					  <td height="28" class="tabsspace">&nbsp;</td>
+					  <td class="tabon" id="buttonstab"><a href="#" onclick="buttons_click(); return false;">buttons</a></td>
+					  <td class="space">&nbsp;</td>
+					  <td class="taboff" id="iconstab"><a href="#" onclick="icons_click(); return false;">icons</a></td>
+					  <td class="space">&nbsp;</td>
+					  
+					</tr></table>
+					<div id="buttonsdisplay" style="margin-top:15px;margin-bottom:10px;margin-left: auto; margin-right: auto;text-align:center; "> 
+						Category <select name="button_category" onchange="btor.update_button_category(this);">
+		
+			<option value="4"  selected="true">Old Buttons</option>
+		
+			<option value="10" >Large</option>
+		
+			<option value="8" >One Round Corner</option>
+		
+			<option value="5" >Rounded</option>
+		
+			<option value="9" >Special</option>
+		
+			<option value="7" >Square</option>
+		
+			<option value="6" >tabs</option>
+		
+			<option value="1" >Web 2.0</option>
+		
+	  </select>
+	  <br /><br />
+	  
+	  
+	  <div id="buttons">
+	  
+	  <table cellpadding="5" align="center">
+		     
+			 <tr>
+			 <td>
+				<span id="style72" style="z-index:989;"  onclick = "if(!dragging) {if(!cancel_next_click) {btor.change_button_template(this);} else {cancel_next_click=false;} } else {dragging = false;}" >
+					<img src="/home/get_default_image?t_id=72"/>
+					<input type="hidden" id="style72id" value="72" />
+					<input type="hidden" id="style72t_type" value="1" />
+				</span>
+			</td>
+			
+			 <script type="text/javascript">
+//<![CDATA[
+new Draggable("style72", {change:function(element) {dragging = true; }, revert:true, zindex:9999})
+//]]>
+</script>
+			
+		    
+			 
+			 <td>
+				<span id="style65" style="z-index:989;"  onclick = "if(!dragging) {if(!cancel_next_click) {btor.change_button_template(this);} else {cancel_next_click=false;} } else {dragging = false;}" >
+					<img src="/home/get_default_image?t_id=65"/>
+					<input type="hidden" id="style65id" value="65" />
+					<input type="hidden" id="style65t_type" value="1" />
+				</span>
+			</td>
+			
+			 <script type="text/javascript">
+//<![CDATA[
+new Draggable("style65", {change:function(element) {dragging = true; }, revert:true, zindex:9999})
+//]]>
+</script>
+			
+		    
+			 </tr><tr>
+			 <td>
+				<span id="style66" style="z-index:989;"  onclick = "if(!dragging) {if(!cancel_next_click) {btor.change_button_template(this);} else {cancel_next_click=false;} } else {dragging = false;}" >
+					<img src="/home/get_default_image?t_id=66"/>
+					<input type="hidden" id="style66id" value="66" />
+					<input type="hidden" id="style66t_type" value="1" />
+				</span>
+			</td>
+			
+			 <script type="text/javascript">
+//<![CDATA[
+new Draggable("style66", {change:function(element) {dragging = true; }, revert:true, zindex:9999})
+//]]>
+</script>
+			
+		    
+			 
+			 <td>
+				<span id="style67" style="z-index:989;"  onclick = "if(!dragging) {if(!cancel_next_click) {btor.change_button_template(this);} else {cancel_next_click=false;} } else {dragging = false;}" >
+					<img src="/home/get_default_image?t_id=67"/>
+					<input type="hidden" id="style67id" value="67" />
+					<input type="hidden" id="style67t_type" value="1" />
+				</span>
+			</td>
+			
+			 <script type="text/javascript">
+//<![CDATA[
+new Draggable("style67", {change:function(element) {dragging = true; }, revert:true, zindex:9999})
+//]]>
+</script>
+			
+		    
+			 </tr><tr>
+			 <td>
+				<span id="style68" style="z-index:989;"  onclick = "if(!dragging) {if(!cancel_next_click) {btor.change_button_template(this);} else {cancel_next_click=false;} } else {dragging = false;}" >
+					<img src="/home/get_default_image?t_id=68"/>
+					<input type="hidden" id="style68id" value="68" />
+					<input type="hidden" id="style68t_type" value="1" />
+				</span>
+			</td>
+			
+			 <script type="text/javascript">
+//<![CDATA[
+new Draggable("style68", {change:function(element) {dragging = true; }, revert:true, zindex:9999})
+//]]>
+</script>
+			
+		    
+			 
+			 <td>
+				<span id="style69" style="z-index:989;"  onclick = "if(!dragging) {if(!cancel_next_click) {btor.change_button_template(this);} else {cancel_next_click=false;} } else {dragging = false;}" >
+					<img src="/home/get_default_image?t_id=69"/>
+					<input type="hidden" id="style69id" value="69" />
+					<input type="hidden" id="style69t_type" value="1" />
+				</span>
+			</td>
+			
+			 <script type="text/javascript">
+//<![CDATA[
+new Draggable("style69", {change:function(element) {dragging = true; }, revert:true, zindex:9999})
+//]]>
+</script>
+			
+		    
+			 </tr><tr>
+			 <td>
+				<span id="style70" style="z-index:989;"  onclick = "if(!dragging) {if(!cancel_next_click) {btor.change_button_template(this);} else {cancel_next_click=false;} } else {dragging = false;}" >
+					<img src="/home/get_default_image?t_id=70"/>
+					<input type="hidden" id="style70id" value="70" />
+					<input type="hidden" id="style70t_type" value="1" />
+				</span>
+			</td>
+			
+			 <script type="text/javascript">
+//<![CDATA[
+new Draggable("style70", {change:function(element) {dragging = true; }, revert:true, zindex:9999})
+//]]>
+</script>
+			
+		    
+			 
+			 <td>
+				<span id="style71" style="z-index:989;"  onclick = "if(!dragging) {if(!cancel_next_click) {btor.change_button_template(this);} else {cancel_next_click=false;} } else {dragging = false;}" >
+					<img src="/home/get_default_image?t_id=71"/>
+					<input type="hidden" id="style71id" value="71" />
+					<input type="hidden" id="style71t_type" value="1" />
+				</span>
+			</td>
+			
+			 <script type="text/javascript">
+//<![CDATA[
+new Draggable("style71", {change:function(element) {dragging = true; }, revert:true, zindex:9999})
+//]]>
+</script>
+			
+		    
+			 </tr><tr>
+			 <td>
+				<span id="style73" style="z-index:989;"  onclick = "if(!dragging) {if(!cancel_next_click) {btor.change_button_template(this);} else {cancel_next_click=false;} } else {dragging = false;}" >
+					<img src="/home/get_default_image?t_id=73"/>
+					<input type="hidden" id="style73id" value="73" />
+					<input type="hidden" id="style73t_type" value="1" />
+				</span>
+			</td>
+			
+			 <script type="text/javascript">
+//<![CDATA[
+new Draggable("style73", {change:function(element) {dragging = true; }, revert:true, zindex:9999})
+//]]>
+</script>
+			
+		    
+			 
+			 <td>
+				<span id="style74" style="z-index:989;"  onclick = "if(!dragging) {if(!cancel_next_click) {btor.change_button_template(this);} else {cancel_next_click=false;} } else {dragging = false;}" >
+					<img src="/home/get_default_image?t_id=74"/>
+					<input type="hidden" id="style74id" value="74" />
+					<input type="hidden" id="style74t_type" value="1" />
+				</span>
+			</td>
+			
+			 <script type="text/javascript">
+//<![CDATA[
+new Draggable("style74", {change:function(element) {dragging = true; }, revert:true, zindex:9999})
+//]]>
+</script>
+			
+		
+		
+	 </table>
+	 	<div id="buttons_height_cludge"></div>
+		<div style="text-align:right">
+		  <img id="buttons_bottom" src="/images/blank.gif" height="20" width="83" border="0" style="z-index: 991;position: relative;">
+		</div>
+		<div id="buttons_disabled" class="Disable_Layer" style="display:none;">
+			<div style="background-color: white; margin-top: 20px; margin-left: 40px; margin-right: 40px; padding: 2px; border: medium solid rgb(155,155,155);" align="center">
+				Paying members have full access to all the features and buttons.<br/> Click <a href="https://payments.golden-orb.com/buttonator/user/signup">here</a> to signup.
+			</div>
+		 </div>
+	 </div>
+	 
+	 
+	 <br />
+	 
+	 Pages
+	
+		
+		 	1 
+		
+	
+		
+			<a href="#" onclick="new Ajax.Updater('buttonsdisplay', '/home/getbuttons?bcid=4&amp;page=2', {asynchronous:true, evalScripts:true, method:'get'}); return false;">2</a>
+		
+	
+	
+
+					</div>
+					<div id="iconsdisplay" style="display:none; margin-top:15px;margin-bottom:10px;margin-left: auto; margin-right: auto;text-align:center;">
+						Category
+	  <select name="icon_category" onchange="btor.update_icon_category(this);">
+		
+			<option value="14"  selected="true">Arrows</option>
+		
+			<option value="4" >Blog</option>
+		
+			<option value="6" >Books</option>
+		
+			<option value="15" >Bullets</option>
+		
+			<option value="7" >Documents</option>
+		
+			<option value="17" >Ecommerce</option>
+		
+			<option value="8" >Email</option>
+		
+			<option value="9" >Folders</option>
+		
+			<option value="20" >Modern Toolbar Set</option>
+		
+			<option value="18" >Round Set</option>
+		
+			<option value="16" >Search</option>
+		
+			<option value="10" >Simple Toolbar</option>
+		
+			<option value="11" >Trash</option>
+		
+			<option value="12" >User</option>
+		
+			<option value="21" >Weather</option>
+		
+			<option value="2" >Windows</option>
+		
+	  </select>
+	  <br /><br />
+	  
+	  <table cellpadding="5" align="center">
+		     
+		  	<tr>
+			<td>
+				<span id="icon109" style="z-index:9998;" onclick = "if(!dragging) {if(!cancel_next_click) {btor.change_icon_template(this);} else {cancel_next_click=false;} } else {dragging = false;}">
+					<img src="/home/get_default_icon?i_id=109"/>
+					<input type="hidden" id="icon109id" value="109" />
+					<input type="hidden" id="icon109t_type" value="3" />
+				</span>
+			</td>
+			
+			<script type="text/javascript">
+//<![CDATA[
+new Draggable("icon109", {change:function(element) {dragging = true; }, revert:true, zindex:9999})
+//]]>
+</script>
+		    
+		  	
+			<td>
+				<span id="icon110" style="z-index:9998;" onclick = "if(!dragging) {if(!cancel_next_click) {btor.change_icon_template(this);} else {cancel_next_click=false;} } else {dragging = false;}">
+					<img src="/home/get_default_icon?i_id=110"/>
+					<input type="hidden" id="icon110id" value="110" />
+					<input type="hidden" id="icon110t_type" value="3" />
+				</span>
+			</td>
+			
+			<script type="text/javascript">
+//<![CDATA[
+new Draggable("icon110", {change:function(element) {dragging = true; }, revert:true, zindex:9999})
+//]]>
+</script>
+		    
+		  	</tr><tr>
+			<td>
+				<span id="icon111" style="z-index:9998;" onclick = "if(!dragging) {if(!cancel_next_click) {btor.change_icon_template(this);} else {cancel_next_click=false;} } else {dragging = false;}">
+					<img src="/home/get_default_icon?i_id=111"/>
+					<input type="hidden" id="icon111id" value="111" />
+					<input type="hidden" id="icon111t_type" value="3" />
+				</span>
+			</td>
+			
+			<script type="text/javascript">
+//<![CDATA[
+new Draggable("icon111", {change:function(element) {dragging = true; }, revert:true, zindex:9999})
+//]]>
+</script>
+		    
+		  	
+			<td>
+				<span id="icon112" style="z-index:9998;" onclick = "if(!dragging) {if(!cancel_next_click) {btor.change_icon_template(this);} else {cancel_next_click=false;} } else {dragging = false;}">
+					<img src="/home/get_default_icon?i_id=112"/>
+					<input type="hidden" id="icon112id" value="112" />
+					<input type="hidden" id="icon112t_type" value="3" />
+				</span>
+			</td>
+			
+			<script type="text/javascript">
+//<![CDATA[
+new Draggable("icon112", {change:function(element) {dragging = true; }, revert:true, zindex:9999})
+//]]>
+</script>
+		    
+		  	</tr><tr>
+			<td>
+				<span id="icon113" style="z-index:9998;" onclick = "if(!dragging) {if(!cancel_next_click) {btor.change_icon_template(this);} else {cancel_next_click=false;} } else {dragging = false;}">
+					<img src="/home/get_default_icon?i_id=113"/>
+					<input type="hidden" id="icon113id" value="113" />
+					<input type="hidden" id="icon113t_type" value="3" />
+				</span>
+			</td>
+			
+			<script type="text/javascript">
+//<![CDATA[
+new Draggable("icon113", {change:function(element) {dragging = true; }, revert:true, zindex:9999})
+//]]>
+</script>
+		    
+		  	
+			<td>
+				<span id="icon114" style="z-index:9998;" onclick = "if(!dragging) {if(!cancel_next_click) {btor.change_icon_template(this);} else {cancel_next_click=false;} } else {dragging = false;}">
+					<img src="/home/get_default_icon?i_id=114"/>
+					<input type="hidden" id="icon114id" value="114" />
+					<input type="hidden" id="icon114t_type" value="3" />
+				</span>
+			</td>
+			
+			<script type="text/javascript">
+//<![CDATA[
+new Draggable("icon114", {change:function(element) {dragging = true; }, revert:true, zindex:9999})
+//]]>
+</script>
+		    
+		  	</tr><tr>
+			<td>
+				<span id="icon115" style="z-index:9998;" onclick = "if(!dragging) {if(!cancel_next_click) {btor.change_icon_template(this);} else {cancel_next_click=false;} } else {dragging = false;}">
+					<img src="/home/get_default_icon?i_id=115"/>
+					<input type="hidden" id="icon115id" value="115" />
+					<input type="hidden" id="icon115t_type" value="3" />
+				</span>
+			</td>
+			
+			<script type="text/javascript">
+//<![CDATA[
+new Draggable("icon115", {change:function(element) {dragging = true; }, revert:true, zindex:9999})
+//]]>
+</script>
+		    
+		  	
+			<td>
+				<span id="icon116" style="z-index:9998;" onclick = "if(!dragging) {if(!cancel_next_click) {btor.change_icon_template(this);} else {cancel_next_click=false;} } else {dragging = false;}">
+					<img src="/home/get_default_icon?i_id=116"/>
+					<input type="hidden" id="icon116id" value="116" />
+					<input type="hidden" id="icon116t_type" value="3" />
+				</span>
+			</td>
+			
+			<script type="text/javascript">
+//<![CDATA[
+new Draggable("icon116", {change:function(element) {dragging = true; }, revert:true, zindex:9999})
+//]]>
+</script>
+		    
+		  	</tr><tr>
+			<td>
+				<span id="icon117" style="z-index:9998;" onclick = "if(!dragging) {if(!cancel_next_click) {btor.change_icon_template(this);} else {cancel_next_click=false;} } else {dragging = false;}">
+					<img src="/home/get_default_icon?i_id=117"/>
+					<input type="hidden" id="icon117id" value="117" />
+					<input type="hidden" id="icon117t_type" value="3" />
+				</span>
+			</td>
+			
+			<script type="text/javascript">
+//<![CDATA[
+new Draggable("icon117", {change:function(element) {dragging = true; }, revert:true, zindex:9999})
+//]]>
+</script>
+		    
+		  	
+			<td>
+				<span id="icon118" style="z-index:9998;" onclick = "if(!dragging) {if(!cancel_next_click) {btor.change_icon_template(this);} else {cancel_next_click=false;} } else {dragging = false;}">
+					<img src="/home/get_default_icon?i_id=118"/>
+					<input type="hidden" id="icon118id" value="118" />
+					<input type="hidden" id="icon118t_type" value="3" />
+				</span>
+			</td>
+			
+			<script type="text/javascript">
+//<![CDATA[
+new Draggable("icon118", {change:function(element) {dragging = true; }, revert:true, zindex:9999})
+//]]>
+</script>
+		
+		</tr>
+	 </table>
+	 <br />
+	 
+	 Pages
+	
+		
+		 	1 
+		
+	
+		
+			<a href="#" onclick="new Ajax.Updater('iconsdisplay', '/home/geticons?icid=14&amp;page=2', {asynchronous:true, evalScripts:true}); return false;">2</a>
+		
+	
+		
+			<a href="#" onclick="new Ajax.Updater('iconsdisplay', '/home/geticons?icid=14&amp;page=3', {asynchronous:true, evalScripts:true}); return false;">3</a>
+		
+	
+		
+			<a href="#" onclick="new Ajax.Updater('iconsdisplay', '/home/geticons?icid=14&amp;page=4', {asynchronous:true, evalScripts:true}); return false;">4</a>
+		
+	
+	
+
+
+					</div>
+					
+				</td>
+			</tr>
+			</table>
+		</div>
+
+		<!-- feedback pane -->
+		<div style="margin-left:10px;margin-right:5px;margin-top:20px;">	 
+			<table width="340" border="0" cellspacing="0" cellpadding="0">
+			<tr>
+			  <td class="paneltopstart"><img src="/images/panel_top_left.gif" alt="design image" width="29" height="13"></td> 
+						<td class="paneltoptext"><img src="/images/feedback.gif" alt="feedback" width="103" height="17"></td>  
+			  <td class="paneltopend"><img src="/images/panel_top_right.gif" alt="design image"></td>
+			</tr>
+			<tr>
+				<td colspan="3" class="panelcontent">
+				<table cellspacing="0" style="padding:0px"><tr>
+					  <td height="28" class="tabsspace">&nbsp;</td>
+					  <td class="tabon" id="subscribe"><a href="#" onclick="$('subcribedisplay').style.display='';$('subscribe').className='tabon';$('feedbackdisplay').style.display='none';$('feedback').className='taboff'; return false;">Subscribe</a></td>
+					  <td class="space">&nbsp;</td>
+					  <td class="taboff" id="feedback"><a href="#" onclick="$('subcribedisplay').style.display='none';$('subscribe').className='taboff';$('feedbackdisplay').style.display='';$('feedback').className='tabon'; return false;">Feedback</a></td>
+					  <td class="space">&nbsp;</td>
+					 
+					</tr></table>
+				 <div style="margin-top:15px;margin-bottom:10px;margin-left:30px;margin-right:30px;" id="subcribedisplay"> 
+					Subscribe to our product updates!
+					<table><tr>
+					<td>email</td>
+							<td><input type="text" name="email" id="subscribe_email"></td><td><img style="cursor:pointer;" src="/images/subscribe.gif" onclick="new Ajax.Request('/home/subscribe', {asynchronous:true, evalScripts:true, parameters:Form.serialize('subcribedisplay')});" alt="unsubscribe"/></td>
+					</tr>
+					
+					</table>
+				 </div>
+				 <div style="margin-top:15px;margin-bottom:10px;margin-left:30px;margin-right:30px;display:none;" id="feedbackdisplay"> 
+					Sugestions and feedback are welcomed.
+					<table><tr>
+					<td>name</td>
+							<td><input type="text" name="name" id="feedback_name"></td>
+					</tr>
+					<tr>
+					<td>email</td>
+							<td><input type="text" name="email" id="feedback_email"></td>			
+					</tr>
+					<tr>
+					<td>message</td>
+							<td><textarea name="message" id="feedback_message"></textarea></td>			
+					</tr>
+					<tr>
+					<td>subscribe</td>
+							<td><input type="checkbox" name="subscribe"/></td>			
+					</tr>
+					<tr>
+					<td><img style="cursor:pointer;" src="/images/feedback_button.gif" onclick="new Ajax.Request('/home/feedback', {asynchronous:true, evalScripts:true, parameters:Form.serialize('feedbackdisplay')});" alt="fedback"/></td><td></td>			
+					</tr>
+					</table>
+				 </div>
+				</td>
+			</tr>
+			</table>
+		</div>
+		
+		
+      <div style="margin-left:10px;margin-right:5px;margin-top:10px;"> </div>
+      <div style="margin-left:10px;margin-right:5px;margin-top:10px;"> </div>
+		
+	</div>
+		
+  </div>
+
+  <div id="showcode" style="display:none; border:5px solid #c9c9c9; background-color:white; width:500px; position:absolute;top:50px;left:100px; z-index:1001;">
+  	<input type="hidden" id="code_no_link" value=""/>
+  	<table style="width:500px" cellpadding="0" cellspacing="0">
+		<tr>
+			<td style="height:35px;background-color:#5c5c5c;padding-left:20px;color:white;padding-top:10px;">Copy the code below and paste onto your page</td>
+		</tr>
+		<tr>
+			<td style="height:35px;background-color:#5c5c5c;padding-left:20px;color:white;padding-top:10px;">Link to a page: <input type="text" id="link" onkeyup="update_url(this);" size="30" /></td>
+		</tr>
+		<tr>
+			<td style="padding-top:10px;padding-left:20px;padding-bottom:10px;">
+				<textarea name="code_area" id="code_area" cols="100" rows="7" style="width:450px"></textarea>
+				<br>
+				<br>
+				<span class="popuplink"><a href="#" onclick="$('showcode').style.display='none'; return false;">Close</a></span> 
+			</td>
+		</tr>
+		<tr id="not_logged_in" style="display: none;">
+			<td style="padding-top:10px;padding-left:20px;padding-bottom:10px;">
+				If you had an account you can host your buttons from buttonor.com. Since you do not have an account, you will need to download your images, upload them to your hosting provider, then use the provided
+				html to make them work. If this is to much hassle, <a href="/user/signup">create an account</a> and start doing it the easy way.
+			</td>
+		</tr>
+		<tr id="not_a_favorite" style="display: none;">
+			<td style="padding-top:10px;padding-left:20px;padding-bottom:10px;">
+				Only favorites can be hosted from buttonator. Since this is not a favorite, you will need to download your images, upload them to your hosting provider, then use the provided
+				html to make them work. Click <a id="add_to_fav" href="#" onclick="btor.add_favorite(true); return false;">here to add a favorite</a>.
+			</td>
+		</tr>
+		<tr id="is_a_favorite" style="display: none;">
+			<td style="padding-top:10px;padding-left:20px;padding-bottom:10px;">
+				You can only link to this button from up to 3 pages.
+				<div id="fav_refs"></div>
+			</td>
+		</tr>
+	</table>
+  </div>
+
+
+  <div id="showbatch" style="display:none; border:5px solid #c9c9c9; background-color:white; width:500px; position:absolute;top:50px;left:100px; z-index:1001;">
+  	<table style="width:500px" cellpadding="0" cellspacing="0">
+		<tr>
+			<td colspan="2" style="height:35px;background-color:#5c5c5c;padding-left:20px;color:white;padding-top:10px;">Batch Download</td>
+		</tr>
+		<tr>
+			<td colspan="2" style="padding-top:10px;padding-left:20px;padding-bottom:10px;">
+				<textarea name="text_lines" id="text_lines" cols="100" rows="15" style="width:450px"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td id="batch_user" colspan="2" style="padding-top:10px;padding-left:20px;padding-right:20px;padding-bottom:10px;display: none;">
+				You can specify up to 10 buttons at once and download them in a zip file. If you want to use multiline buttons, end each button with a <span style="font-size: 14px; border: 1px solid #000000;">&nbsp;&nbsp;;&nbsp;&nbsp;</span>, otherwise each line will be a button.
+			</td>
+			<td id="batch_non_user" colspan="2" style="padding-top:10px;padding-left:20px;padding-right:20px;padding-bottom:10px;display: none;">
+				You can specify up to 3 buttons at once and download them in a zip file. If you want to use multiline buttons, end each button with a <span style="font-size: 14px; border: 1px solid #000000;">&nbsp;&nbsp;;&nbsp;&nbsp;</span>, otherwise each line will be a button.<br/>
+				Members can download up to 10 buttons at once. Click here <a href="/user/signup">create an account</a>!
+			</td>
+		</tr>
+		<tr>
+			<td style="padding-top:10px;padding-left:20px;padding-bottom:10px;text-align: left;">
+				<span class="popuplink"><a href="#" onclick="$('showbatch').style.display='none'; return false;">Close</a></span>
+			</td>
+			<td style="padding-top:10px;padding-right:20px;padding-bottom:10px;text-align: right;">
+				<span class="popuplink"><a href="#" onclick="btor.batch_download(); return false;">Download</a></span>
+			</td>
+		</tr>
+		
+	</table>
+  </div>
+
+<script>
+	
+	
+	btor.init($('t_id'),$('i_id'),'72');
+	btor.update_containers();
+	btor.update_image();
+	
+	
+	btor2.init($('t_id2'),$('i_id2'),'');
+	btor2.set_rollover_mode(true);
+	
+	Droppables.add("styleDrop", {onDrop:function(element) {dragging = false; cancel_next_click = true; btor.template_dropped(element);}})
+	Droppables.add("styleDrop2", {onDrop:function(element) {dragging = false; cancel_next_click = true; btor2.template_dropped(element);}})
+	
+</script>
+
+
+ <div id="footer"><a href="http://www.pikistore.com" target="_blank" border="0"><img src="/images/banner_button.gif" border="0" alt="create a tshirt store"></a></div>
+
+</div>
+
+</body>
+</html>

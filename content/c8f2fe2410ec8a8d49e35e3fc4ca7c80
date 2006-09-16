@@ -1,0 +1,1344 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<!--Main:  contents/new_chart.vm -->
+	<!--Controller:  ChartController -->
+	<!--Controller Method:  showChart -->
+    <html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">
+	<head>
+		<title>Viral Video Chart - Powered by Unruly Media</title>
+		<meta name="description" content="Top 20 Viral Videos" />
+		<meta name="verify-v1" content="PNVQ/9eVr1A6eZp5axR4oQ6j9M136dcJYg31Rm83GP4=" >
+		<meta name="keywords" content="viral, video, chart, funny" />
+		<meta http-equiv="Content-Script-Type" content="text/javascript"/>
+		<meta name="alexaVerifyID" content="uV3_CemaRTysL-94lZwo7vTe00U" />
+					<link rel="alternate" type="application/atom+xml" title="viralvideochart.com" target="_blank" href="http://feeds.feedburner.com/viralvideochart" />
+		
+		  <link href="/resource/styles/stylesheets/screen.css?25" media="screen, projection" rel="stylesheet" type="text/css" />
+          <link href="/resource/styles/stylesheets/print.css?9" media="print" rel="stylesheet" type="text/css" />
+		  <link href="/resource/styles/stylesheets/ellipsis.css?9" rel="stylesheet" type="text/css" />
+		  <link href="/resource/styles/stylesheets/jquery.tools.tabs.css?9" rel="stylesheet" type="text/css" />
+          <!--[if lt IE 8]>
+              <link href="/resource/styles/stylesheets/ie.css?9" media="screen, projection" rel="stylesheet" type="text/css" />
+          <![endif]-->
+
+		<link rel="icon" href="/resource/favicon.ico" type="image/x-icon" />
+		<link rel="shortcut icon" href="/resource/favicon.ico" type="image/x-icon" />
+		<link rel="search" type="application/opensearchdescription+xml" title="ViralVideoChart" href="/resource/search.xml" />
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.3/jquery-ui.min.js"></script>
+		<script src="http://cdn.jquerytools.org/1.1.2/jquery.tools.min.js"></script>
+        <script type="text/javascript">
+            jQuery.noConflict();
+            var $j = jQuery;
+        </script>
+		<script type="text/javascript" src="http://video.unrulymedia.com/jquery.qtip-1.0.0-rc3.min.js"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.0.3/prototype.js"></script>
+        <script type="text/javascript" src="/resource/js/effects.js"></script>
+		<script type="text/javascript" src="/resource/js/commands.js?2"></script>
+		<script type="text/javascript">
+            $j(document).ready(function(){
+				$j(function() {
+					$j("ul.tabs").tabs("div.panes > div");
+				});
+				
+				function getFrameWidth() {
+					if ($j(window).height() > 800) {
+						return 890;
+					} else {
+						return 750;
+					}
+				}
+				
+				function getFrameHeight() {
+					if ($j(window).height() > 800) {
+						return 575;
+					} else {
+						return $j(window).height() - 100;
+					}
+				}
+				
+				function getVideoWidth() {
+					if ($j(window).height() > 800) {
+						return 854;
+					} else {
+						return 715;
+					}
+				}
+				
+				function getVideoHeight() {
+					if ($j(window).height() > 800) {
+						return 505;
+					} else {
+						return getFrameHeight() - 65
+					}
+				}
+				
+			
+				$j('a.lightbox_link').each(function(){
+					var iframe = '<iframe frameborder="0" src="'+$j(this).attr("alt")+'&width=' + getVideoWidth() + '&height=' + getVideoHeight() + '" width="' + (getFrameWidth() - 30) + '" height="' + (getFrameHeight() + 10) + '" style="border:none;overflow:hidden;"/>';
+					$j(this).qtip({
+						content: {
+							title: {
+                                text: "<h2>"+$j(this).closest("div.chart_entry").find("div.full_title").text()+"</h2>",
+								button: 'Close X'
+ 							}
+                      	},
+                      	position: {
+                         	target: $j(document.body), // Position it via the document body...
+                         	corner: 'center' // ...at the center of the viewport
+                      	},
+                      	show: {
+                         	when: 'click', // Show it on click
+                         	solo: true // And hide all other tooltips
+                      	},
+                      	hide: { when: { event: 'unfocus' } },
+                    	style: {
+                			width: getFrameWidth(),
+                			height: getFrameHeight(),
+                         	padding: '10px 10px',
+                        	border: {
+                                width: 9,
+                                radius: 9,
+                                color: '#666666'
+                            },
+    						title: {
+    							background:'#ffffff'
+    						},
+                            name: 'light'
+	            		},
+						api: {
+                        	beforeShow: function(){
+                            	// Fade in the modal "blanket" using the defined show speed
+                            	$j('#qtip-blanket').fadeIn(this.options.show.effect.length);
+                				this.elements.content.html(iframe);
+                         	},
+                         	beforeHide: function(){
+                            	// Fade out the modal "blanket" using the defined hide speed
+                            	$j('#qtip-blanket').fadeOut(this.options.hide.effect.length);
+                				this.elements.content.html("<div/>");
+                         	}
+                      	}
+					});
+			   });
+            
+               // Create the modal backdrop on document load so all modal tooltips can use it
+               $j('<div id="qtip-blanket">')
+                  .css({
+                     position: 'absolute',
+                     top: $j(document).scrollTop(), // Use document scrollTop so it's on-screen even if the window is scrolled
+                     left: 0,
+                     height: $j(document).height(), // Span the full document height...
+                     width: '100%', // ...and full width
+            
+                     opacity: 0.7, // Make it slightly transparent
+                     backgroundColor: 'black',
+                     zIndex: 5000  // Make sure the zIndex is below 6000 to keep it below tooltips!
+                  })
+                  .appendTo(document.body) // Append to the document body
+                  .hide(); // Hide it initially
+            });
+	</script>
+	
+	<style type="text/css">
+</style>	
+	</head>
+	<body class="two-col">
+		<div id="container">
+			<div id="header">
+				<div class="logo">
+					<a href="/"><img src="/resource/img/VVC_Logo_2010.05.png"/></a>
+                </div>
+				
+				<div class="search">
+    									
+										<form action="/video_search">
+						<div>
+							<input name="q" type="text" size="25" value=""/>
+							<input type="submit" value="Search" />
+						</div>
+					</form>
+									</div>
+            </div>
+			<div id="wrapper">
+                <div class="spacer">&nbsp;</div>
+    			<div id="content">
+    				<div id="charts_filter">
+	<div class="filters">
+    	<ul>
+        	<li><a class="filter active" href="/">All</a></li>
+			<li><a class="filter " href="/chart_keyword/Most_Contagious">Global Viral Ads</a></li>
+        	<li><a class="filter " href="/chart_keyword/UK_Viral_Ads">UK Viral Ads</a></li>
+        	<li><a class="filter" href="/chart_keyword/Publicit%C3%A9s_Virales">FR Viral Ads</a></li>
+        	<li><a class="filter " href="/chart_keyword/movies">Movie Trailers</a></li>
+        	<li><a class="filter " href="/chart/more">Memes</a></li>
+        	<li><a class="filter" href="http://mememachine.viralvideochart.com" target="_blank">Blog</a></li>
+    	</ul>
+    </div>
+</div>
+
+<div class="title_line">
+    <div class="page_title">
+    	<h1>
+							Top 20 Viral Videos
+					</h1>
+    </div>
+    
+    <div id="size_filter">
+    	<div class="filters">
+        	<ul>
+            	<li><a class="filter active" href="?items=20">Top 20</a></li>
+            	<li><a class="filter " href="?items=100" >Top 100</a></li>
+        	</ul>
+        </div>
+    </div>
+</div>
+
+<div class="filter_line">
+    <div id="referrer_filter">
+    	<div class="filters">
+        	<ul>
+				            	<li><a class="filter " href="?platform=all">All</a></li>
+            	<li><a class="filter " href="?platform=facebook" >Facebook</a></li>
+            	<li><a class="filter active" href="?platform=twitter" >Twitter</a></li>
+            	<li><a class="filter " href="?platform=other" >Blogs</a></li>
+        	</ul>
+        </div>
+    </div>
+    
+    <div id="period_filter">
+        <div class="filters">
+        	<ul>
+            	<li><a class="filter active" href="?interval=day">24 hours</a></li>
+            	<li><a class="filter " href="?interval=week" >7 days</a></li>
+            	<li><a class="filter " href="?interval=month" >30 days</a></li>
+            	<li><a class="filter " href="?interval=year" >365 days</a></li>
+            	<li><a class="filter " href="?interval=all_time" >All time</a></li>
+        	</ul>
+        </div>
+    </div>
+</div>
+
+<hr>
+	
+
+					
+				<div class="chart_entry">
+    <div class="thumb">
+		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/I_Just_Had_Sex_%28feat._Akon%29?id=lQlIhraqL7o&mode=iframe&v3" rel="modal" href="http://viralvideochart.unrulymedia.com/youtube/I_Just_Had_Sex_%28feat._Akon%29?id=lQlIhraqL7o">
+            <span>
+				<div class="play_overlay">
+					&nbsp;
+                </div>
+            	<div class="overlay">
+                    <div class="chart_entry_number">1</div>
+            	</div>
+				<div class="overlay_num">
+                    <div class="chart_entry_number">1</div>
+            	</div>
+            	<img src="http://i.ytimg.com/vi/lQlIhraqL7o/hqdefault.jpg">
+            </span>
+		</a>
+	</div>
+    
+	<div class="details">
+            	<div class="title">
+    		<div class="full_title">I Just Had Sex (feat. Akon)</div>
+    		<h2><a class="lightbox_link ellipsis" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/I_Just_Had_Sex_%28feat._Akon%29?id=lQlIhraqL7o&mode=iframe&v3" rel="modal" href="#">I Just Had Sex (feat. Akon)</a></h2>
+    	</div>
+                
+    	<div class="share_data">
+        	        		<img src="/chart/spark?site_id=youtube&amp;video_ref=lQlIhraqL7o&amp;days=10" alt="Popularity over last day" title="Popularity over last 24 hours" />
+        	        	
+        	        	
+        
+        	        		<h3>4,417	shares in last 24 hours</h3>
+        	    	</div>
+		
+    	
+    	        	<div class="info">
+        		<span class="trending">Trending</span>
+        	</div>
+    	    
+            	
+    	<div class="links">
+    		<a href="http://viralvideochart.unrulymedia.com/youtube/I_Just_Had_Sex_%28feat._Akon%29?id=lQlIhraqL7o">Get stats</a>
+    		<span class="pipe">|</span>
+    		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/I_Just_Had_Sex_%28feat._Akon%29?id=lQlIhraqL7o&mode=iframe&v3" rel="modal" href="#">Watch video</a>
+    		<span class="pipe">|</span>
+    		<a target="_blank" href="http://www.youtube.com/watch?v=lQlIhraqL7o">See original</a>
+    	</div>
+	</div>
+</div>					
+				<div class="chart_entry">
+    <div class="thumb">
+		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/THE_DIGITAL_STORY_OF_THE_NATIVITY?id=GkHNNPM7pJA&mode=iframe&v3" rel="modal" href="http://viralvideochart.unrulymedia.com/youtube/THE_DIGITAL_STORY_OF_THE_NATIVITY?id=GkHNNPM7pJA">
+            <span>
+				<div class="play_overlay">
+					&nbsp;
+                </div>
+            	<div class="overlay">
+                    <div class="chart_entry_number">2</div>
+            	</div>
+				<div class="overlay_num">
+                    <div class="chart_entry_number">2</div>
+            	</div>
+            	<img src="http://i.ytimg.com/vi/GkHNNPM7pJA/hqdefault.jpg">
+            </span>
+		</a>
+	</div>
+    
+	<div class="details">
+            	<div class="title">
+    		<div class="full_title">THE DIGITAL STORY OF THE NATIVITY</div>
+    		<h2><a class="lightbox_link ellipsis" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/THE_DIGITAL_STORY_OF_THE_NATIVITY?id=GkHNNPM7pJA&mode=iframe&v3" rel="modal" href="#">THE DIGITAL STORY OF THE NATIVITY</a></h2>
+    	</div>
+                
+    	<div class="share_data">
+        	        		<img src="/chart/spark?site_id=youtube&amp;video_ref=GkHNNPM7pJA&amp;days=10" alt="Popularity over last day" title="Popularity over last 24 hours" />
+        	        	
+        	        	
+        
+        	        		<h3>2,247	shares in last 24 hours</h3>
+        	    	</div>
+		
+    	
+    	    
+            	
+    	<div class="links">
+    		<a href="http://viralvideochart.unrulymedia.com/youtube/THE_DIGITAL_STORY_OF_THE_NATIVITY?id=GkHNNPM7pJA">Get stats</a>
+    		<span class="pipe">|</span>
+    		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/THE_DIGITAL_STORY_OF_THE_NATIVITY?id=GkHNNPM7pJA&mode=iframe&v3" rel="modal" href="#">Watch video</a>
+    		<span class="pipe">|</span>
+    		<a target="_blank" href="http://www.youtube.com/watch?v=GkHNNPM7pJA">See original</a>
+    	</div>
+	</div>
+</div>					
+				<div class="chart_entry">
+    <div class="thumb">
+		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Rap_News_6_-_Wikileaks%27_Cablegate%3A_the_truth_is_out_there?id=hl4NlA97GeQ&mode=iframe&v3" rel="modal" href="http://viralvideochart.unrulymedia.com/youtube/Rap_News_6_-_Wikileaks%27_Cablegate%3A_the_truth_is_out_there?id=hl4NlA97GeQ">
+            <span>
+				<div class="play_overlay">
+					&nbsp;
+                </div>
+            	<div class="overlay">
+                    <div class="chart_entry_number">3</div>
+            	</div>
+				<div class="overlay_num">
+                    <div class="chart_entry_number">3</div>
+            	</div>
+            	<img src="http://i.ytimg.com/vi/hl4NlA97GeQ/hqdefault.jpg">
+            </span>
+		</a>
+	</div>
+    
+	<div class="details">
+            	<div class="title">
+    		<div class="full_title">Rap News 6 - Wikileaks' Cablegate: the truth is out there</div>
+    		<h2><a class="lightbox_link ellipsis" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Rap_News_6_-_Wikileaks%27_Cablegate%3A_the_truth_is_out_there?id=hl4NlA97GeQ&mode=iframe&v3" rel="modal" href="#">Rap News 6 - Wikileaks' Cablegate: the truth is out there</a></h2>
+    	</div>
+                
+    	<div class="share_data">
+        	        		<img src="/chart/spark?site_id=youtube&amp;video_ref=hl4NlA97GeQ&amp;days=10" alt="Popularity over last day" title="Popularity over last 24 hours" />
+        	        	
+        	        	
+        
+        	        		<h3>1,116	shares in last 24 hours</h3>
+        	    	</div>
+		
+    	
+    	        	<div class="info">
+        		<span class="trending">Trending</span>
+        	</div>
+    	    
+            	
+    	<div class="links">
+    		<a href="http://viralvideochart.unrulymedia.com/youtube/Rap_News_6_-_Wikileaks%27_Cablegate%3A_the_truth_is_out_there?id=hl4NlA97GeQ">Get stats</a>
+    		<span class="pipe">|</span>
+    		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Rap_News_6_-_Wikileaks%27_Cablegate%3A_the_truth_is_out_there?id=hl4NlA97GeQ&mode=iframe&v3" rel="modal" href="#">Watch video</a>
+    		<span class="pipe">|</span>
+    		<a target="_blank" href="http://www.youtube.com/watch?v=hl4NlA97GeQ">See original</a>
+    	</div>
+	</div>
+</div>						<div class="chart_entry sponsored">
+    <div class="thumb">
+		<a href="http://www.youtube.com/watch?v=VNGoPa1d54g">
+            <span>
+				<div class="play_overlay">
+					&nbsp;
+                </div>
+				<div class="overlay">
+					<div class="chart_entry_number">
+						4
+					</div>
+            	</div>
+				<div class="overlay_img">
+					<img src="/resource/img/featured.png"/>
+				</div>
+            	<img src="http://cloud.video.unrulymedia.com/aCTMT-1290620750896_t_v1.jpg">
+            </span>
+		</a>
+	</div>
+    
+	<div class="details">
+    	<div class="title">
+    		<h2><a href="http://www.youtube.com/watch?v=VNGoPa1d54g">I Spy - Letter 'K' - The Natural Confectionary Co.</a></h2>
+    	</div>
+		    	<div class="links">
+    		<a href="http://www.youtube.com/watch?v=VNGoPa1d54g">Sponsored by TNCC</a>
+    	</div>
+	</div>
+	
+</div>
+				
+				<div class="chart_entry">
+    <div class="thumb">
+		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Introducing_Word_Lens?id=h2OfQdYrHRs&mode=iframe&v3" rel="modal" href="http://viralvideochart.unrulymedia.com/youtube/Introducing_Word_Lens?id=h2OfQdYrHRs">
+            <span>
+				<div class="play_overlay">
+					&nbsp;
+                </div>
+            	<div class="overlay">
+                    <div class="chart_entry_number">4</div>
+            	</div>
+				<div class="overlay_num">
+                    <div class="chart_entry_number">4</div>
+            	</div>
+            	<img src="http://i.ytimg.com/vi/h2OfQdYrHRs/hqdefault.jpg">
+            </span>
+		</a>
+	</div>
+    
+	<div class="details">
+            	<div class="title">
+    		<div class="full_title">Introducing Word Lens</div>
+    		<h2><a class="lightbox_link ellipsis" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Introducing_Word_Lens?id=h2OfQdYrHRs&mode=iframe&v3" rel="modal" href="#">Introducing Word Lens</a></h2>
+    	</div>
+                
+    	<div class="share_data">
+        	        		<img src="/chart/spark?site_id=youtube&amp;video_ref=h2OfQdYrHRs&amp;days=10" alt="Popularity over last day" title="Popularity over last 24 hours" />
+        	        	
+        	        	
+        
+        	        		<h3>628	shares in last 24 hours</h3>
+        	    	</div>
+		
+    	
+    	    
+            	
+    	<div class="links">
+    		<a href="http://viralvideochart.unrulymedia.com/youtube/Introducing_Word_Lens?id=h2OfQdYrHRs">Get stats</a>
+    		<span class="pipe">|</span>
+    		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Introducing_Word_Lens?id=h2OfQdYrHRs&mode=iframe&v3" rel="modal" href="#">Watch video</a>
+    		<span class="pipe">|</span>
+    		<a target="_blank" href="http://www.youtube.com/watch?v=h2OfQdYrHRs">See original</a>
+    	</div>
+	</div>
+</div>					
+				<div class="chart_entry">
+    <div class="thumb">
+		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Hans_Rosling%27s_200_Countries%2C_200_Years%2C_4_Minutes_-_The_Joy_of_Stats_-_BBC_Four?id=jbkSRLYSojo&mode=iframe&v3" rel="modal" href="http://viralvideochart.unrulymedia.com/youtube/Hans_Rosling%27s_200_Countries%2C_200_Years%2C_4_Minutes_-_The_Joy_of_Stats_-_BBC_Four?id=jbkSRLYSojo">
+            <span>
+				<div class="play_overlay">
+					&nbsp;
+                </div>
+            	<div class="overlay">
+                    <div class="chart_entry_number">5</div>
+            	</div>
+				<div class="overlay_num">
+                    <div class="chart_entry_number">5</div>
+            	</div>
+            	<img src="http://i.ytimg.com/vi/jbkSRLYSojo/hqdefault.jpg">
+            </span>
+		</a>
+	</div>
+    
+	<div class="details">
+            	<div class="title">
+    		<div class="full_title">Hans Rosling's 200 Countries, 200 Years, 4 Minutes - The Joy of Stats - BBC Four</div>
+    		<h2><a class="lightbox_link ellipsis" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Hans_Rosling%27s_200_Countries%2C_200_Years%2C_4_Minutes_-_The_Joy_of_Stats_-_BBC_Four?id=jbkSRLYSojo&mode=iframe&v3" rel="modal" href="#">Hans Rosling's 200 Countries, 200 Years, 4 Minutes - The Joy of Stats - BBC Four</a></h2>
+    	</div>
+                
+    	<div class="share_data">
+        	        		<img src="/chart/spark?site_id=youtube&amp;video_ref=jbkSRLYSojo&amp;days=10" alt="Popularity over last day" title="Popularity over last 24 hours" />
+        	        	
+        	        	
+        
+        	        		<h3>455	shares in last 24 hours</h3>
+        	    	</div>
+		
+    	
+    	    
+            	
+    	<div class="links">
+    		<a href="http://viralvideochart.unrulymedia.com/youtube/Hans_Rosling%27s_200_Countries%2C_200_Years%2C_4_Minutes_-_The_Joy_of_Stats_-_BBC_Four?id=jbkSRLYSojo">Get stats</a>
+    		<span class="pipe">|</span>
+    		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Hans_Rosling%27s_200_Countries%2C_200_Years%2C_4_Minutes_-_The_Joy_of_Stats_-_BBC_Four?id=jbkSRLYSojo&mode=iframe&v3" rel="modal" href="#">Watch video</a>
+    		<span class="pipe">|</span>
+    		<a target="_blank" href="http://www.youtube.com/watch?v=jbkSRLYSojo">See original</a>
+    	</div>
+	</div>
+</div>					
+				<div class="chart_entry">
+    <div class="thumb">
+		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/HIST%26Oacute%3BRIA_DO_NATAL_DIGITAL?id=tgtnNc1Zplc&mode=iframe&v3" rel="modal" href="http://viralvideochart.unrulymedia.com/youtube/HIST%26Oacute%3BRIA_DO_NATAL_DIGITAL?id=tgtnNc1Zplc">
+            <span>
+				<div class="play_overlay">
+					&nbsp;
+                </div>
+            	<div class="overlay">
+                    <div class="chart_entry_number">6</div>
+            	</div>
+				<div class="overlay_num">
+                    <div class="chart_entry_number">6</div>
+            	</div>
+            	<img src="http://i.ytimg.com/vi/tgtnNc1Zplc/hqdefault.jpg">
+            </span>
+		</a>
+	</div>
+    
+	<div class="details">
+            	<div class="title">
+    		<div class="full_title">HIST&Oacute;RIA DO NATAL DIGITAL</div>
+    		<h2><a class="lightbox_link ellipsis" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/HIST%26Oacute%3BRIA_DO_NATAL_DIGITAL?id=tgtnNc1Zplc&mode=iframe&v3" rel="modal" href="#">HIST&Oacute;RIA DO NATAL DIGITAL</a></h2>
+    	</div>
+                
+    	<div class="share_data">
+        	        		<img src="/chart/spark?site_id=youtube&amp;video_ref=tgtnNc1Zplc&amp;days=10" alt="Popularity over last day" title="Popularity over last 24 hours" />
+        	        	
+        	        	
+        
+        	        		<h3>421	shares in last 24 hours</h3>
+        	    	</div>
+		
+    	
+    	    
+            	
+    	<div class="links">
+    		<a href="http://viralvideochart.unrulymedia.com/youtube/HIST%26Oacute%3BRIA_DO_NATAL_DIGITAL?id=tgtnNc1Zplc">Get stats</a>
+    		<span class="pipe">|</span>
+    		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/HIST%26Oacute%3BRIA_DO_NATAL_DIGITAL?id=tgtnNc1Zplc&mode=iframe&v3" rel="modal" href="#">Watch video</a>
+    		<span class="pipe">|</span>
+    		<a target="_blank" href="http://www.youtube.com/watch?v=tgtnNc1Zplc">See original</a>
+    	</div>
+	</div>
+</div>					
+				<div class="chart_entry">
+    <div class="thumb">
+		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/MikuMikuDance_with_OpenNI%28Kinect%29_test_2?id=bQREhd9iT38&mode=iframe&v3" rel="modal" href="http://viralvideochart.unrulymedia.com/youtube/MikuMikuDance_with_OpenNI%28Kinect%29_test_2?id=bQREhd9iT38">
+            <span>
+				<div class="play_overlay">
+					&nbsp;
+                </div>
+            	<div class="overlay">
+                    <div class="chart_entry_number">7</div>
+            	</div>
+				<div class="overlay_num">
+                    <div class="chart_entry_number">7</div>
+            	</div>
+            	<img src="http://i.ytimg.com/vi/bQREhd9iT38/hqdefault.jpg">
+            </span>
+		</a>
+	</div>
+    
+	<div class="details">
+            	<div class="title">
+    		<div class="full_title">MikuMikuDance with OpenNI(Kinect) test 2</div>
+    		<h2><a class="lightbox_link ellipsis" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/MikuMikuDance_with_OpenNI%28Kinect%29_test_2?id=bQREhd9iT38&mode=iframe&v3" rel="modal" href="#">MikuMikuDance with OpenNI(Kinect) test 2</a></h2>
+    	</div>
+                
+    	<div class="share_data">
+        	        		<img src="/chart/spark?site_id=youtube&amp;video_ref=bQREhd9iT38&amp;days=10" alt="Popularity over last day" title="Popularity over last 24 hours" />
+        	        	
+        	        	
+        
+        	        		<h3>339	shares in last 24 hours</h3>
+        	    	</div>
+		
+    	
+    	        	<div class="info">
+        		<span class="trending">Trending</span>
+        	</div>
+    	    
+            	
+    	<div class="links">
+    		<a href="http://viralvideochart.unrulymedia.com/youtube/MikuMikuDance_with_OpenNI%28Kinect%29_test_2?id=bQREhd9iT38">Get stats</a>
+    		<span class="pipe">|</span>
+    		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/MikuMikuDance_with_OpenNI%28Kinect%29_test_2?id=bQREhd9iT38&mode=iframe&v3" rel="modal" href="#">Watch video</a>
+    		<span class="pipe">|</span>
+    		<a target="_blank" href="http://www.youtube.com/watch?v=bQREhd9iT38">See original</a>
+    	</div>
+	</div>
+</div>					
+				<div class="chart_entry">
+    <div class="thumb">
+		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Christmas_Food_Court_Flash_Mob%2C_Hallelujah_Chorus_-_Must_See%21?id=SXh7JR9oKVE&mode=iframe&v3" rel="modal" href="http://viralvideochart.unrulymedia.com/youtube/Christmas_Food_Court_Flash_Mob%2C_Hallelujah_Chorus_-_Must_See%21?id=SXh7JR9oKVE">
+            <span>
+				<div class="play_overlay">
+					&nbsp;
+                </div>
+            	<div class="overlay">
+                    <div class="chart_entry_number">8</div>
+            	</div>
+				<div class="overlay_num">
+                    <div class="chart_entry_number">8</div>
+            	</div>
+            	<img src="http://i.ytimg.com/vi/SXh7JR9oKVE/hqdefault.jpg">
+            </span>
+		</a>
+	</div>
+    
+	<div class="details">
+            	<div class="title">
+    		<div class="full_title">Christmas Food Court Flash Mob, Hallelujah Chorus - Must See!</div>
+    		<h2><a class="lightbox_link ellipsis" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Christmas_Food_Court_Flash_Mob%2C_Hallelujah_Chorus_-_Must_See%21?id=SXh7JR9oKVE&mode=iframe&v3" rel="modal" href="#">Christmas Food Court Flash Mob, Hallelujah Chorus - Must See!</a></h2>
+    	</div>
+                
+    	<div class="share_data">
+        	        		<img src="/chart/spark?site_id=youtube&amp;video_ref=SXh7JR9oKVE&amp;days=10" alt="Popularity over last day" title="Popularity over last 24 hours" />
+        	        	
+        	        	
+        
+        	        		<h3>330	shares in last 24 hours</h3>
+        	    	</div>
+		
+    	
+    	    
+            	
+    	<div class="links">
+    		<a href="http://viralvideochart.unrulymedia.com/youtube/Christmas_Food_Court_Flash_Mob%2C_Hallelujah_Chorus_-_Must_See%21?id=SXh7JR9oKVE">Get stats</a>
+    		<span class="pipe">|</span>
+    		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Christmas_Food_Court_Flash_Mob%2C_Hallelujah_Chorus_-_Must_See%21?id=SXh7JR9oKVE&mode=iframe&v3" rel="modal" href="#">Watch video</a>
+    		<span class="pipe">|</span>
+    		<a target="_blank" href="http://www.youtube.com/watch?v=SXh7JR9oKVE">See original</a>
+    	</div>
+	</div>
+</div>					
+				<div class="chart_entry">
+    <div class="thumb">
+		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Google_Demo_Slam%3A_Epic_Docs_Animation?id=bt9F7tKcZcU&mode=iframe&v3" rel="modal" href="http://viralvideochart.unrulymedia.com/youtube/Google_Demo_Slam%3A_Epic_Docs_Animation?id=bt9F7tKcZcU">
+            <span>
+				<div class="play_overlay">
+					&nbsp;
+                </div>
+            	<div class="overlay">
+                    <div class="chart_entry_number">9</div>
+            	</div>
+				<div class="overlay_num">
+                    <div class="chart_entry_number">9</div>
+            	</div>
+            	<img src="http://i.ytimg.com/vi/bt9F7tKcZcU/hqdefault.jpg">
+            </span>
+		</a>
+	</div>
+    
+	<div class="details">
+            	<div class="title">
+    		<div class="full_title">Google Demo Slam: Epic Docs Animation</div>
+    		<h2><a class="lightbox_link ellipsis" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Google_Demo_Slam%3A_Epic_Docs_Animation?id=bt9F7tKcZcU&mode=iframe&v3" rel="modal" href="#">Google Demo Slam: Epic Docs Animation</a></h2>
+    	</div>
+                
+    	<div class="share_data">
+        	        		<img src="/chart/spark?site_id=youtube&amp;video_ref=bt9F7tKcZcU&amp;days=10" alt="Popularity over last day" title="Popularity over last 24 hours" />
+        	        	
+        	        	
+        
+        	        		<h3>319	shares in last 24 hours</h3>
+        	    	</div>
+		
+    	
+    	    
+            	
+    	<div class="links">
+    		<a href="http://viralvideochart.unrulymedia.com/youtube/Google_Demo_Slam%3A_Epic_Docs_Animation?id=bt9F7tKcZcU">Get stats</a>
+    		<span class="pipe">|</span>
+    		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Google_Demo_Slam%3A_Epic_Docs_Animation?id=bt9F7tKcZcU&mode=iframe&v3" rel="modal" href="#">Watch video</a>
+    		<span class="pipe">|</span>
+    		<a target="_blank" href="http://www.youtube.com/watch?v=bt9F7tKcZcU">See original</a>
+    	</div>
+	</div>
+</div>					
+				<div class="chart_entry">
+    <div class="thumb">
+		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Katy_Perry_-_Firework?id=QGJuMBdaqIw&mode=iframe&v3" rel="modal" href="http://viralvideochart.unrulymedia.com/youtube/Katy_Perry_-_Firework?id=QGJuMBdaqIw">
+            <span>
+				<div class="play_overlay">
+					&nbsp;
+                </div>
+            	<div class="overlay">
+                    <div class="chart_entry_number">10</div>
+            	</div>
+				<div class="overlay_num">
+                    <div class="chart_entry_number">10</div>
+            	</div>
+            	<img src="http://i.ytimg.com/vi/QGJuMBdaqIw/hqdefault.jpg">
+            </span>
+		</a>
+	</div>
+    
+	<div class="details">
+            	<div class="title">
+    		<div class="full_title">Katy Perry - Firework</div>
+    		<h2><a class="lightbox_link ellipsis" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Katy_Perry_-_Firework?id=QGJuMBdaqIw&mode=iframe&v3" rel="modal" href="#">Katy Perry - Firework</a></h2>
+    	</div>
+                
+    	<div class="share_data">
+        	        		<img src="/chart/spark?site_id=youtube&amp;video_ref=QGJuMBdaqIw&amp;days=10" alt="Popularity over last day" title="Popularity over last 24 hours" />
+        	        	
+        	        	
+        
+        	        		<h3>314	shares in last 24 hours</h3>
+        	    	</div>
+		
+    	
+    	    
+            	
+    	<div class="links">
+    		<a href="http://viralvideochart.unrulymedia.com/youtube/Katy_Perry_-_Firework?id=QGJuMBdaqIw">Get stats</a>
+    		<span class="pipe">|</span>
+    		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Katy_Perry_-_Firework?id=QGJuMBdaqIw&mode=iframe&v3" rel="modal" href="#">Watch video</a>
+    		<span class="pipe">|</span>
+    		<a target="_blank" href="http://www.youtube.com/watch?v=QGJuMBdaqIw">See original</a>
+    	</div>
+	</div>
+</div>					
+				<div class="chart_entry">
+    <div class="thumb">
+		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/New_Mario_Bros._Movie_Trailer_%7C_The_Game_Station_Exclusive%21?id=Kk9oa_PiXAk&mode=iframe&v3" rel="modal" href="http://viralvideochart.unrulymedia.com/youtube/New_Mario_Bros._Movie_Trailer_%7C_The_Game_Station_Exclusive%21?id=Kk9oa_PiXAk">
+            <span>
+				<div class="play_overlay">
+					&nbsp;
+                </div>
+            	<div class="overlay">
+                    <div class="chart_entry_number">11</div>
+            	</div>
+				<div class="overlay_num">
+                    <div class="chart_entry_number">11</div>
+            	</div>
+            	<img src="http://i.ytimg.com/vi/Kk9oa_PiXAk/hqdefault.jpg">
+            </span>
+		</a>
+	</div>
+    
+	<div class="details">
+            	<div class="title">
+    		<div class="full_title">New Mario Bros. Movie Trailer | The Game Station Exclusive!</div>
+    		<h2><a class="lightbox_link ellipsis" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/New_Mario_Bros._Movie_Trailer_%7C_The_Game_Station_Exclusive%21?id=Kk9oa_PiXAk&mode=iframe&v3" rel="modal" href="#">New Mario Bros. Movie Trailer | The Game Station Exclusive!</a></h2>
+    	</div>
+                
+    	<div class="share_data">
+        	        		<img src="/chart/spark?site_id=youtube&amp;video_ref=Kk9oa_PiXAk&amp;days=10" alt="Popularity over last day" title="Popularity over last 24 hours" />
+        	        	
+        	        	
+        
+        	        		<h3>275	shares in last 24 hours</h3>
+        	    	</div>
+		
+    	
+    	    
+            	
+    	<div class="links">
+    		<a href="http://viralvideochart.unrulymedia.com/youtube/New_Mario_Bros._Movie_Trailer_%7C_The_Game_Station_Exclusive%21?id=Kk9oa_PiXAk">Get stats</a>
+    		<span class="pipe">|</span>
+    		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/New_Mario_Bros._Movie_Trailer_%7C_The_Game_Station_Exclusive%21?id=Kk9oa_PiXAk&mode=iframe&v3" rel="modal" href="#">Watch video</a>
+    		<span class="pipe">|</span>
+    		<a target="_blank" href="http://www.youtube.com/watch?v=Kk9oa_PiXAk">See original</a>
+    	</div>
+	</div>
+</div>					
+				<div class="chart_entry">
+    <div class="thumb">
+		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Filmography_2010?id=I4dEWOB6THE&mode=iframe&v3" rel="modal" href="http://viralvideochart.unrulymedia.com/youtube/Filmography_2010?id=I4dEWOB6THE">
+            <span>
+				<div class="play_overlay">
+					&nbsp;
+                </div>
+            	<div class="overlay">
+                    <div class="chart_entry_number">12</div>
+            	</div>
+				<div class="overlay_num">
+                    <div class="chart_entry_number">12</div>
+            	</div>
+            	<img src="http://i.ytimg.com/vi/I4dEWOB6THE/hqdefault.jpg">
+            </span>
+		</a>
+	</div>
+    
+	<div class="details">
+            	<div class="title">
+    		<div class="full_title">Filmography 2010</div>
+    		<h2><a class="lightbox_link ellipsis" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Filmography_2010?id=I4dEWOB6THE&mode=iframe&v3" rel="modal" href="#">Filmography 2010</a></h2>
+    	</div>
+                
+    	<div class="share_data">
+        	        		<img src="/chart/spark?site_id=youtube&amp;video_ref=I4dEWOB6THE&amp;days=10" alt="Popularity over last day" title="Popularity over last 24 hours" />
+        	        	
+        	        	
+        
+        	        		<h3>225	shares in last 24 hours</h3>
+        	    	</div>
+		
+    	
+    	    
+            	
+    	<div class="links">
+    		<a href="http://viralvideochart.unrulymedia.com/youtube/Filmography_2010?id=I4dEWOB6THE">Get stats</a>
+    		<span class="pipe">|</span>
+    		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Filmography_2010?id=I4dEWOB6THE&mode=iframe&v3" rel="modal" href="#">Watch video</a>
+    		<span class="pipe">|</span>
+    		<a target="_blank" href="http://www.youtube.com/watch?v=I4dEWOB6THE">See original</a>
+    	</div>
+	</div>
+</div>					
+				<div class="chart_entry">
+    <div class="thumb">
+		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/%5BORIGINAL%5D_Parrot_Sings_Let_the_Bodies_Hit_the_Floor?id=uguXNL93fWg&mode=iframe&v3" rel="modal" href="http://viralvideochart.unrulymedia.com/youtube/%5BORIGINAL%5D_Parrot_Sings_Let_the_Bodies_Hit_the_Floor?id=uguXNL93fWg">
+            <span>
+				<div class="play_overlay">
+					&nbsp;
+                </div>
+            	<div class="overlay">
+                    <div class="chart_entry_number">13</div>
+            	</div>
+				<div class="overlay_num">
+                    <div class="chart_entry_number">13</div>
+            	</div>
+            	<img src="http://i.ytimg.com/vi/uguXNL93fWg/hqdefault.jpg">
+            </span>
+		</a>
+	</div>
+    
+	<div class="details">
+            	<div class="title">
+    		<div class="full_title">[ORIGINAL] Parrot Sings Let the Bodies Hit the Floor</div>
+    		<h2><a class="lightbox_link ellipsis" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/%5BORIGINAL%5D_Parrot_Sings_Let_the_Bodies_Hit_the_Floor?id=uguXNL93fWg&mode=iframe&v3" rel="modal" href="#">[ORIGINAL] Parrot Sings Let the Bodies Hit the Floor</a></h2>
+    	</div>
+                
+    	<div class="share_data">
+        	        		<img src="/chart/spark?site_id=youtube&amp;video_ref=uguXNL93fWg&amp;days=10" alt="Popularity over last day" title="Popularity over last 24 hours" />
+        	        	
+        	        	
+        
+        	        		<h3>206	shares in last 24 hours</h3>
+        	    	</div>
+		
+    	
+    	    
+            	
+    	<div class="links">
+    		<a href="http://viralvideochart.unrulymedia.com/youtube/%5BORIGINAL%5D_Parrot_Sings_Let_the_Bodies_Hit_the_Floor?id=uguXNL93fWg">Get stats</a>
+    		<span class="pipe">|</span>
+    		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/%5BORIGINAL%5D_Parrot_Sings_Let_the_Bodies_Hit_the_Floor?id=uguXNL93fWg&mode=iframe&v3" rel="modal" href="#">Watch video</a>
+    		<span class="pipe">|</span>
+    		<a target="_blank" href="http://www.youtube.com/watch?v=uguXNL93fWg">See original</a>
+    	</div>
+	</div>
+</div>					
+				<div class="chart_entry">
+    <div class="thumb">
+		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Michael_Jackson_Duet_with_Akon_-_Hold_My_Hand?id=-oCCnxBos10&mode=iframe&v3" rel="modal" href="http://viralvideochart.unrulymedia.com/youtube/Michael_Jackson_Duet_with_Akon_-_Hold_My_Hand?id=-oCCnxBos10">
+            <span>
+				<div class="play_overlay">
+					&nbsp;
+                </div>
+            	<div class="overlay">
+                    <div class="chart_entry_number">14</div>
+            	</div>
+				<div class="overlay_num">
+                    <div class="chart_entry_number">14</div>
+            	</div>
+            	<img src="http://i.ytimg.com/vi/-oCCnxBos10/hqdefault.jpg">
+            </span>
+		</a>
+	</div>
+    
+	<div class="details">
+            	<div class="title">
+    		<div class="full_title">Michael Jackson Duet with Akon - Hold My Hand</div>
+    		<h2><a class="lightbox_link ellipsis" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Michael_Jackson_Duet_with_Akon_-_Hold_My_Hand?id=-oCCnxBos10&mode=iframe&v3" rel="modal" href="#">Michael Jackson Duet with Akon - Hold My Hand</a></h2>
+    	</div>
+                
+    	<div class="share_data">
+        	        		<img src="/chart/spark?site_id=youtube&amp;video_ref=-oCCnxBos10&amp;days=10" alt="Popularity over last day" title="Popularity over last 24 hours" />
+        	        	
+        	        	
+        
+        	        		<h3>195	shares in last 24 hours</h3>
+        	    	</div>
+		
+    	
+    	    
+            	
+    	<div class="links">
+    		<a href="http://viralvideochart.unrulymedia.com/youtube/Michael_Jackson_Duet_with_Akon_-_Hold_My_Hand?id=-oCCnxBos10">Get stats</a>
+    		<span class="pipe">|</span>
+    		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Michael_Jackson_Duet_with_Akon_-_Hold_My_Hand?id=-oCCnxBos10&mode=iframe&v3" rel="modal" href="#">Watch video</a>
+    		<span class="pipe">|</span>
+    		<a target="_blank" href="http://www.youtube.com/watch?v=-oCCnxBos10">See original</a>
+    	</div>
+	</div>
+</div>					
+				<div class="chart_entry">
+    <div class="thumb">
+		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Animals_of_YouTube_sing_%26quot%3BJingle_Bells%26quot%3B?id=uRzhd3eUyO8&mode=iframe&v3" rel="modal" href="http://viralvideochart.unrulymedia.com/youtube/Animals_of_YouTube_sing_%26quot%3BJingle_Bells%26quot%3B?id=uRzhd3eUyO8">
+            <span>
+				<div class="play_overlay">
+					&nbsp;
+                </div>
+            	<div class="overlay">
+                    <div class="chart_entry_number">15</div>
+            	</div>
+				<div class="overlay_num">
+                    <div class="chart_entry_number">15</div>
+            	</div>
+            	<img src="http://i.ytimg.com/vi/uRzhd3eUyO8/hqdefault.jpg">
+            </span>
+		</a>
+	</div>
+    
+	<div class="details">
+            	<div class="title">
+    		<div class="full_title">Animals of YouTube sing &quot;Jingle Bells&quot;</div>
+    		<h2><a class="lightbox_link ellipsis" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Animals_of_YouTube_sing_%26quot%3BJingle_Bells%26quot%3B?id=uRzhd3eUyO8&mode=iframe&v3" rel="modal" href="#">Animals of YouTube sing &quot;Jingle Bells&quot;</a></h2>
+    	</div>
+                
+    	<div class="share_data">
+        	        		<img src="/chart/spark?site_id=youtube&amp;video_ref=uRzhd3eUyO8&amp;days=10" alt="Popularity over last day" title="Popularity over last 24 hours" />
+        	        	
+        	        	
+        
+        	        		<h3>191	shares in last 24 hours</h3>
+        	    	</div>
+		
+    	
+    	        	<div class="info">
+        		<span class="trending">Trending</span>
+        	</div>
+    	    
+            	
+    	<div class="links">
+    		<a href="http://viralvideochart.unrulymedia.com/youtube/Animals_of_YouTube_sing_%26quot%3BJingle_Bells%26quot%3B?id=uRzhd3eUyO8">Get stats</a>
+    		<span class="pipe">|</span>
+    		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Animals_of_YouTube_sing_%26quot%3BJingle_Bells%26quot%3B?id=uRzhd3eUyO8&mode=iframe&v3" rel="modal" href="#">Watch video</a>
+    		<span class="pipe">|</span>
+    		<a target="_blank" href="http://www.youtube.com/watch?v=uRzhd3eUyO8">See original</a>
+    	</div>
+	</div>
+</div>					
+				<div class="chart_entry">
+    <div class="thumb">
+		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Bruno_Mars_-_Grenade_%5BOfficial_Music_Video%5D?id=SR6iYWJxHqs&mode=iframe&v3" rel="modal" href="http://viralvideochart.unrulymedia.com/youtube/Bruno_Mars_-_Grenade_%5BOfficial_Music_Video%5D?id=SR6iYWJxHqs">
+            <span>
+				<div class="play_overlay">
+					&nbsp;
+                </div>
+            	<div class="overlay">
+                    <div class="chart_entry_number">16</div>
+            	</div>
+				<div class="overlay_num">
+                    <div class="chart_entry_number">16</div>
+            	</div>
+            	<img src="http://i.ytimg.com/vi/SR6iYWJxHqs/hqdefault.jpg">
+            </span>
+		</a>
+	</div>
+    
+	<div class="details">
+            	<div class="title">
+    		<div class="full_title">Bruno Mars - Grenade [Official Music Video]</div>
+    		<h2><a class="lightbox_link ellipsis" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Bruno_Mars_-_Grenade_%5BOfficial_Music_Video%5D?id=SR6iYWJxHqs&mode=iframe&v3" rel="modal" href="#">Bruno Mars - Grenade [Official Music Video]</a></h2>
+    	</div>
+                
+    	<div class="share_data">
+        	        		<img src="/chart/spark?site_id=youtube&amp;video_ref=SR6iYWJxHqs&amp;days=10" alt="Popularity over last day" title="Popularity over last 24 hours" />
+        	        	
+        	        	
+        
+        	        		<h3>181	shares in last 24 hours</h3>
+        	    	</div>
+		
+    	
+    	    
+            	
+    	<div class="links">
+    		<a href="http://viralvideochart.unrulymedia.com/youtube/Bruno_Mars_-_Grenade_%5BOfficial_Music_Video%5D?id=SR6iYWJxHqs">Get stats</a>
+    		<span class="pipe">|</span>
+    		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Bruno_Mars_-_Grenade_%5BOfficial_Music_Video%5D?id=SR6iYWJxHqs&mode=iframe&v3" rel="modal" href="#">Watch video</a>
+    		<span class="pipe">|</span>
+    		<a target="_blank" href="http://www.youtube.com/watch?v=SR6iYWJxHqs">See original</a>
+    	</div>
+	</div>
+</div>					
+				<div class="chart_entry">
+    <div class="thumb">
+		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Black_Eyed_Peas_-_The_Time_%28Dirty_Bit%29?id=JwQZQygg3Lk&mode=iframe&v3" rel="modal" href="http://viralvideochart.unrulymedia.com/youtube/Black_Eyed_Peas_-_The_Time_%28Dirty_Bit%29?id=JwQZQygg3Lk">
+            <span>
+				<div class="play_overlay">
+					&nbsp;
+                </div>
+            	<div class="overlay">
+                    <div class="chart_entry_number">17</div>
+            	</div>
+				<div class="overlay_num">
+                    <div class="chart_entry_number">17</div>
+            	</div>
+            	<img src="http://i.ytimg.com/vi/JwQZQygg3Lk/hqdefault.jpg">
+            </span>
+		</a>
+	</div>
+    
+	<div class="details">
+            	<div class="title">
+    		<div class="full_title">Black Eyed Peas - The Time (Dirty Bit)</div>
+    		<h2><a class="lightbox_link ellipsis" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Black_Eyed_Peas_-_The_Time_%28Dirty_Bit%29?id=JwQZQygg3Lk&mode=iframe&v3" rel="modal" href="#">Black Eyed Peas - The Time (Dirty Bit)</a></h2>
+    	</div>
+                
+    	<div class="share_data">
+        	        		<img src="/chart/spark?site_id=youtube&amp;video_ref=JwQZQygg3Lk&amp;days=10" alt="Popularity over last day" title="Popularity over last 24 hours" />
+        	        	
+        	        	
+        
+        	        		<h3>168	shares in last 24 hours</h3>
+        	    	</div>
+		
+    	
+    	    
+            	
+    	<div class="links">
+    		<a href="http://viralvideochart.unrulymedia.com/youtube/Black_Eyed_Peas_-_The_Time_%28Dirty_Bit%29?id=JwQZQygg3Lk">Get stats</a>
+    		<span class="pipe">|</span>
+    		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Black_Eyed_Peas_-_The_Time_%28Dirty_Bit%29?id=JwQZQygg3Lk&mode=iframe&v3" rel="modal" href="#">Watch video</a>
+    		<span class="pipe">|</span>
+    		<a target="_blank" href="http://www.youtube.com/watch?v=JwQZQygg3Lk">See original</a>
+    	</div>
+	</div>
+</div>					
+				<div class="chart_entry">
+    <div class="thumb">
+		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Bruno_Mars_-_Just_The_Way_You_Are_%5BOfficial_Video%5D?id=LjhCEhWiKXk&mode=iframe&v3" rel="modal" href="http://viralvideochart.unrulymedia.com/youtube/Bruno_Mars_-_Just_The_Way_You_Are_%5BOfficial_Video%5D?id=LjhCEhWiKXk">
+            <span>
+				<div class="play_overlay">
+					&nbsp;
+                </div>
+            	<div class="overlay">
+                    <div class="chart_entry_number">18</div>
+            	</div>
+				<div class="overlay_num">
+                    <div class="chart_entry_number">18</div>
+            	</div>
+            	<img src="http://i.ytimg.com/vi/LjhCEhWiKXk/hqdefault.jpg">
+            </span>
+		</a>
+	</div>
+    
+	<div class="details">
+            	<div class="title">
+    		<div class="full_title">Bruno Mars - Just The Way You Are [Official Video]</div>
+    		<h2><a class="lightbox_link ellipsis" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Bruno_Mars_-_Just_The_Way_You_Are_%5BOfficial_Video%5D?id=LjhCEhWiKXk&mode=iframe&v3" rel="modal" href="#">Bruno Mars - Just The Way You Are [Official Video]</a></h2>
+    	</div>
+                
+    	<div class="share_data">
+        	        		<img src="/chart/spark?site_id=youtube&amp;video_ref=LjhCEhWiKXk&amp;days=10" alt="Popularity over last day" title="Popularity over last 24 hours" />
+        	        	
+        	        	
+        
+        	        		<h3>142	shares in last 24 hours</h3>
+        	    	</div>
+		
+    	
+    	    
+            	
+    	<div class="links">
+    		<a href="http://viralvideochart.unrulymedia.com/youtube/Bruno_Mars_-_Just_The_Way_You_Are_%5BOfficial_Video%5D?id=LjhCEhWiKXk">Get stats</a>
+    		<span class="pipe">|</span>
+    		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Bruno_Mars_-_Just_The_Way_You_Are_%5BOfficial_Video%5D?id=LjhCEhWiKXk&mode=iframe&v3" rel="modal" href="#">Watch video</a>
+    		<span class="pipe">|</span>
+    		<a target="_blank" href="http://www.youtube.com/watch?v=LjhCEhWiKXk">See original</a>
+    	</div>
+	</div>
+</div>					
+				<div class="chart_entry">
+    <div class="thumb">
+		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Rihanna_-_What%27s_My_Name%3F_ft._Drake?id=U0CGsw6h60k&mode=iframe&v3" rel="modal" href="http://viralvideochart.unrulymedia.com/youtube/Rihanna_-_What%27s_My_Name%3F_ft._Drake?id=U0CGsw6h60k">
+            <span>
+				<div class="play_overlay">
+					&nbsp;
+                </div>
+            	<div class="overlay">
+                    <div class="chart_entry_number">19</div>
+            	</div>
+				<div class="overlay_num">
+                    <div class="chart_entry_number">19</div>
+            	</div>
+            	<img src="http://i.ytimg.com/vi/U0CGsw6h60k/hqdefault.jpg">
+            </span>
+		</a>
+	</div>
+    
+	<div class="details">
+            	<div class="title">
+    		<div class="full_title">Rihanna - What's My Name? ft. Drake</div>
+    		<h2><a class="lightbox_link ellipsis" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Rihanna_-_What%27s_My_Name%3F_ft._Drake?id=U0CGsw6h60k&mode=iframe&v3" rel="modal" href="#">Rihanna - What's My Name? ft. Drake</a></h2>
+    	</div>
+                
+    	<div class="share_data">
+        	        		<img src="/chart/spark?site_id=youtube&amp;video_ref=U0CGsw6h60k&amp;days=10" alt="Popularity over last day" title="Popularity over last 24 hours" />
+        	        	
+        	        	
+        
+        	        		<h3>135	shares in last 24 hours</h3>
+        	    	</div>
+		
+    	
+    	    
+            	
+    	<div class="links">
+    		<a href="http://viralvideochart.unrulymedia.com/youtube/Rihanna_-_What%27s_My_Name%3F_ft._Drake?id=U0CGsw6h60k">Get stats</a>
+    		<span class="pipe">|</span>
+    		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/Rihanna_-_What%27s_My_Name%3F_ft._Drake?id=U0CGsw6h60k&mode=iframe&v3" rel="modal" href="#">Watch video</a>
+    		<span class="pipe">|</span>
+    		<a target="_blank" href="http://www.youtube.com/watch?v=U0CGsw6h60k">See original</a>
+    	</div>
+	</div>
+</div>					
+				<div class="chart_entry">
+    <div class="thumb">
+		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/The_Italian_Man_Who_went_to_Malta.?id=m1TnzCiUSI0&mode=iframe&v3" rel="modal" href="http://viralvideochart.unrulymedia.com/youtube/The_Italian_Man_Who_went_to_Malta.?id=m1TnzCiUSI0">
+            <span>
+				<div class="play_overlay">
+					&nbsp;
+                </div>
+            	<div class="overlay">
+                    <div class="chart_entry_number">20</div>
+            	</div>
+				<div class="overlay_num">
+                    <div class="chart_entry_number">20</div>
+            	</div>
+            	<img src="http://i.ytimg.com/vi/m1TnzCiUSI0/hqdefault.jpg">
+            </span>
+		</a>
+	</div>
+    
+	<div class="details">
+            	<div class="title">
+    		<div class="full_title">The Italian Man Who went to Malta.</div>
+    		<h2><a class="lightbox_link ellipsis" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/The_Italian_Man_Who_went_to_Malta.?id=m1TnzCiUSI0&mode=iframe&v3" rel="modal" href="#">The Italian Man Who went to Malta.</a></h2>
+    	</div>
+                
+    	<div class="share_data">
+        	        		<img src="/chart/spark?site_id=youtube&amp;video_ref=m1TnzCiUSI0&amp;days=10" alt="Popularity over last day" title="Popularity over last 24 hours" />
+        	        	
+        	        	
+        
+        	        		<h3>122	shares in last 24 hours</h3>
+        	    	</div>
+		
+    	
+    	    
+            	
+    	<div class="links">
+    		<a href="http://viralvideochart.unrulymedia.com/youtube/The_Italian_Man_Who_went_to_Malta.?id=m1TnzCiUSI0">Get stats</a>
+    		<span class="pipe">|</span>
+    		<a class="lightbox_link" onclick="return false" alt="http://viralvideochart.unrulymedia.com/youtube/The_Italian_Man_Who_went_to_Malta.?id=m1TnzCiUSI0&mode=iframe&v3" rel="modal" href="#">Watch video</a>
+    		<span class="pipe">|</span>
+    		<a target="_blank" href="http://www.youtube.com/watch?v=m1TnzCiUSI0">See original</a>
+    	</div>
+	</div>
+</div>	                </div>
+    			<div id="sidebar">
+    				
+    <h3>Featured charts</h3>
+    <div class="featured_charts">
+		<div class="chart">
+    		<a href="/chart_keyword/Most%20Contagious?interval=week">
+            	<img src="http://video.unrulymedia.com/contagious.gif"/>
+            </a>
+        	<a href="/chart_keyword/Most%20Contagious?interval=week">
+            	>> Most Contagious Branded Content
+        	</a>
+		</div>
+		<div class="chart">
+    		<a href="http://www.guardian.co.uk/media/pda+series/viralvideochart">
+            	<img src="http://video.unrulymedia.com/guardian.png"/>
+            </a>
+        	<a href="http://www.guardian.co.uk/media/pda+series/viralvideochart">
+            	>> Guardian Viral Video Chart
+        	</a>
+		</div>
+		<div class="chart">
+    		<a href="/chart_keyword/UK_Viral_Ads">
+            	<img src="http://video.unrulymedia.com/iabLogo_small.png"  style="height:53px;"/ />
+            </a>
+        	<a href="/chart_keyword/UK_Viral_Ads">
+            	>> UK Viral Ads
+        	</a>
+		</div>
+		<div class="chart">
+    		<a href="/chart_keyword/Football_FanCast_Virals?interval=week">
+            	<img src="http://video.unrulymedia.com/footballFanCast_logo2.jpg" style="height:53px; width:253px"/>
+            </a>
+        	<a href="/chart_keyword/Football_FanCast_Virals?interval=week">
+            	>> Football FanCast Virals
+        	</a>
+		</div>
+    </div>
+    
+    <hr/>
+    
+    <script type="text/javascript" src="http://video.unrulymedia.com/wildfire_1681733.js?vn=sCFeR-1206446595614"></script>
+    
+	<hr />
+
+	<!-- start feedwind code -->
+    <script type="text/javascript">
+    <!--
+	rssmikle_url="http://feeds.feedburner.com/viralvideochart/mememachine";
+    rssmikle_frame_width="297";
+    rssmikle_frame_height="380";
+    rssmikle_target="_blank";
+    rssmikle_font_size="12";
+    rssmikle_border="on";
+    rssmikle_css_url="";
+    rssmikle_title="on";
+    rssmikle_title_bgcolor="#2D91CE";
+    rssmikle_title_color="#FFFFFF";
+    rssmikle_title_bgimage="http://";
+    rssmikle_item_bgcolor="";
+    rssmikle_item_bgimage="http://";
+    rssmikle_item_title_length="37";
+    rssmikle_item_title_color="#0070B5";
+    rssmikle_item_border_bottom="on";
+    rssmikle_item_description="on";
+    rssmikle_item_description_length="77";
+    rssmikle_item_description_color="#666666";
+    rssmikle_item_description_tag="off";
+    rssmikle_item_podcast="player";
+    //-->
+    </script>
+    <script type="text/javascript" src="/resource/js/rssmikle_mememachine.js"></script>
+    <div style="font-size:10px; text-align:right;">
+    <a href="http://feed.mikle.com/en/" target="_blank" style="color:#CCCCCC;">FeedWind</a>
+    <!--Please display the above link in your web page according to Terms of Service.-->
+    </div>
+    <!-- end feedwind code -->
+	
+	
+    <hr/>
+    	
+	<iframe id="fbiframe" name="fbiframe" src="http://www.facebook.com/plugins/likebox.php?id=17053070909&amp;width=300&amp;connections=10&amp;stream=false&amp;header=true&amp;height=287" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:300px; height:287px;" allowTransparency="true"></iframe>
+    
+    <hr/>
+	
+    <!-- start feedwind code -->
+    <script type="text/javascript">
+    <!--
+    rssmikle_url="http://feeds.feedburner.com/viral_campaigns";
+    rssmikle_frame_width="297";
+    rssmikle_frame_height="380";
+    rssmikle_target="_blank";
+    rssmikle_font_size="12";
+    rssmikle_border="on";
+    rssmikle_css_url="";
+    rssmikle_title="on";
+    rssmikle_title_bgcolor="#2D91CE";
+    rssmikle_title_color="#FFFFFF";
+    rssmikle_title_bgimage="http://";
+    rssmikle_item_bgcolor="";
+    rssmikle_item_bgimage="http://";
+    rssmikle_item_title_length="37";
+    rssmikle_item_title_color="#0070B5";
+    rssmikle_item_border_bottom="on";
+    rssmikle_item_description="on";
+    rssmikle_item_description_length="77";
+    rssmikle_item_description_color="#666666";
+    rssmikle_item_description_tag="off";
+    rssmikle_item_podcast="player";
+    //-->
+    </script>
+    <script type="text/javascript" src="/resource/js/rssmikle_latest_video_campaigns.js"></script>
+    <div style="font-size:10px; text-align:right;">
+    <a href="http://feed.mikle.com/en/" target="_blank" style="color:#CCCCCC;">FeedWind</a>
+    <!--Please display the above link in your web page according to Terms of Service.-->
+    </div>
+    <!-- end feedwind code -->
+
+                </div>
+	            <div class="spacer">&nbsp;</div>
+			</div>
+			<div id="footer">
+				<div id="footer_content">
+    				<div id="footer_about">
+    					<h2>About</h2>
+    					<ul>
+    						<li><a target="_blank" href="http://www.unrulymedia.com/about/" target="_blank">About Us</a></li>
+    						<li><a target="_blank" href="http://www.unrulymedia.com/blog/" target="_blank">Our Blog</a></li>
+    						<li><a href="/privacy">Privacy Policy</a></li>
+    						<li><a href="http://www.unrulymedia.com/contact-us">Contact Us</a></li>
+    					</ul>
+    				</div>
+    				<div id="footer_subscribe">
+    					<h2>Follow</h2>
+    					<ul>
+    						<li><a target="_blank" href="http://www.youtube.com/profile?user=viralvideochart">YouTube</a></li>
+    						<li><a target="_blank" href="http://www.facebook.com/viralvideochart">Facebook</a></li>
+    						<li><a target="_blank" href="http://twitter.com/videochart">Twitter</a></li>
+    						<li><a target="_blank" href="http://feeds.feedburner.com/ViralVideoChart">RSS</a></li>
+    					</ul>
+    				</div>
+    				<div id="footer_republish">
+    					<h2>Republish</h2>
+    					<ul>
+    						<li><a target="_blank" href="/widget">Widget</a></li>
+    						<li><a target="_blank" href="http://www.viralvideochart.com/?format=atomB">Developer API</a></li>
+    					</ul>
+    				</div>
+    				<div id="footer_advertise">
+    					<h2>Advertise</h2>
+    					<ul>
+    						<li><a target="_blank" href="http://www.unrulymedia.com/advertisers/">Video Seeding</a></li>
+    					</ul>
+    				</div>
+    				<hr/>
+    				<div id="footer_end">
+    					<div id="copyright">
+    						Copyright &copy; <script type="text/javascript">document.write(new Date().getFullYear())</script> Unruly Media
+    					</div>
+    					<div id="contact">
+							<div>
+        						Say hello! 
+        						&nbsp;&nbsp;
+        						+44 (0)20 7247 4088
+        						&nbsp;&nbsp; 
+        						<a href="mailto:hello@unrulymedia.com">hello@unrulymedia.com</a>
+        						&nbsp;&nbsp;
+        						<a target="_blank" href="http://www.unrulymedia.com">www.unrulymedia.com</a>
+							</div>
+    					</div>
+    				</div>
+				</div>
+            </div>
+		</div>
+		<div class="spacer">&nbsp;</div>
+		<div class="spacer">&nbsp;</div>
+		<div class="spacer">&nbsp;</div>
+		
+				
+			<script src="https://ssl.google-analytics.com/urchin.js" type="text/javascript">
+	</script>
+	<script type="text/javascript">
+		_uacct = "UA-341315-2";
+		urchinTracker();
+	</script>
+	
+<!-- Start Quantcast tag -->
+<script type="text/javascript">
+_qoptions={
+qacct:"p-5enBZ6cMdOXt2"
+};
+</script>
+<script type="text/javascript" src="http://edge.quantserve.com/quant.js"></script>
+<noscript>
+<img src="http://pixel.quantserve.com/pixel/p-5enBZ6cMdOXt2.gif" style="display: none;" border="0" height="1" width="1" alt="Quantcast"/>
+</noscript>
+<!-- End Quantcast tag -->
+	</body>
+</html>

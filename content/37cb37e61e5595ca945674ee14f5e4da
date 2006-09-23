@@ -1,0 +1,681 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="imagetoolbar" content="no" />
+<meta name="description" content="Looking for help or wondering how to get started in Second Life? Visit our Support section." />
+<meta name="keywords" content="virtual world, virtual worlds, avatar, avatars, 3D chat, second life, online meetings" />
+<meta name="mat" content="PG_NOT" />
+
+
+<title>Support | Second Life</title>
+
+
+	<link rel="stylesheet" type="text/css" href="/min/?g=global-head-css-min" media="all" />
+	<!--[if IE]>
+		<link rel="stylesheet" href="http://common.web.secondlife.com.s3.amazonaws.com/_css/blueprint/ie.css" type="text/css" media="all" />
+	<![endif]-->
+	<!--[if IE 8]>
+	    <link rel="stylesheet" type="text/css" href="http://secondlife.com/525/_css/sl/second-life-ie.css" media="all" />
+	<![endif]-->
+
+
+    <!-- Global -->
+	<script type="text/javascript" src="/min/?g=global-head-js-min" charset="utf-8"></script>
+	<!--[if IE 6]>
+		<script type="text/javascript" src="http://common.web.secondlife.com.s3.amazonaws.com/_js/global-ie6-min.js" charset="utf-8"></script>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				DD_belatedPNG.fix('#global-nav li a.nav-item:hover,#global-nav li:hover a.nav-item,a#language-drop,a#language-drop span,#global-search a,#global-search-form form div,#global-search-form form div button,#sl-logo a,ul#sidebar-nav li.nav-item a,li#footer-download a,.qp_next,.qp_prev,#widgetFriendsOnlinePagination a,.highlight-item span a,.profile_link,.green_sm,.green_lg,.button-left,.button-right,#global-footer,#global-search-form button,#downloadbox,#submit-ticket-btn,#contact-support,a.global-buttons,.at300bs,#main-cta');
+			});
+		</script>
+
+	<![endif]-->
+
+    <link rel="stylesheet" href="/layout/css/nav.css" type="text/css" media="screen, projection" />
+    <script src="/layout/js/nav.js" type="text/javascript" charset="utf-8"></script>
+
+		<!--[if IE 6]>
+			<link rel="stylesheet" href="/layout/css/ie6.css" type="text/css" media="all" />
+			<script src="/layout/js/jquery/plugins/jquery.bgiframe.min.js" type="text/javascript" charset="utf-8"></script>
+			
+			<script type="text/javascript">
+				$(document).ready(function() {
+					$('#global-nav li div.sub-nav').bgiframe();
+				});
+			</script>
+		<![endif]-->
+	<link rel="stylesheet" type="text/css" href="/layout/css/support.css" media="all" />
+	<link rel="stylesheet" type="text/css" href="support.css" media="all" /><script type="text/javascript">
+	$(document).ready(function() {
+
+	//clear the content in the div for the next feed.
+	$("#status-feed").empty();
+
+	var fetch_url = '';
+	var error_msg = '<p>We\'re experiencing some problems displaying our Grid Status Feed. Please check back with us in a bit.</p>';
+	var wiki_error_msg = '<p>We\'re experiencing some problems displaying our Wiki Highlights Feed. Please check back with us in a bit.</p>';
+	var video_error_msg = '<p>We\'re experiencing some problems displaying our Video Tips and Tricks Feed. Please check back with us in a bit.</p>';
+
+	$.ajax({
+		url: '/layout/_inc/support/grid_status_proxy.php',
+	    type: 'GET',
+	    dataType: 'xml',
+	    timeout: 10000,
+	    error: function(xhr, status, error){
+			$('#ajax-loader').css({ display:"none" });
+			$('#status-feed').append(error_msg);
+	    },
+	    success: function(xml){
+			$(xml).find('item').each(function(i){
+				// name the current found item this for this particular loop run
+				if( i < 3 ){
+					var item = $(this);
+					// grab the post title
+					var title = item.find('title').text();
+					// grab the post's URL
+					var link = item.find('link').text();
+					var date = item.find('pubDate').text();
+
+					// now create a var 'html' to store the markup we're using to output the feed to the browser window
+					var html = "<p class=\"status\"><a href=\"" + link + "\" target=\"_blank\">" + title + "<\/a><br/><span class=\"date\">"+date+"</span></p><hr class=\"separator\" />";
+
+					$('#ajax-loader').css({ display:"none" });
+
+					//put that feed content on the screen!
+					$('#status-feed').append($(html));
+				}
+			});
+	    }
+	});
+	
+	$.ajax({
+		url: '/layout/_inc/support/wiki_proxy.php?v=1',
+	    type: 'GET',
+	    dataType: 'xml',
+	    timeout: 10000,
+	    error: function(xhr, status, error){
+			$('#wiki-loader').css({ display:"none" });
+			$('#wiki-links').append('<p>'+wiki_error_msg+'</p>');
+	    },
+	    success: function(xml){
+			var countryCode = 'en';
+			var content = $(xml).find(countryCode);
+			if (content.length == 0) { content = $(xml).find('en'); }
+		
+			content.find('link').each(function(i){				
+				//add the starting of the list	
+				if(i == 0){ $('#wiki-links').append('<ul class="menu_sidebar">'); }
+				
+				// name the current found item this for this particular loop run
+				var item = $(this);
+				
+				// grab the item information
+				var url = item.find('url').text();
+				var title = item.find('title').text();
+
+				// now create a var 'html' to store the markup we're using to output the feed to the browser window
+				//var html = "<p class=\"status\"><a href=\"" + link + "\" target=\"_blank\">" + title + "<\/a><br/><span class=\"date\">"+date+"</span></p><hr class=\"separator\" />";
+				
+				var html = '<li class="clearfix"><a href="'+url+'">'+title+'</a> <img src="/525/_img/buttons/arrow_green_d.gif" class="arw_green" alt=""></li>'
+
+				$('#wiki-loader').css({ display:"none" });
+
+				//put that feed content on the screen!
+				$('#wiki-links .menu_sidebar').append($(html));
+
+				//add the end of the list	
+				if(i == (content.length-1)){ $('#wiki-links').append('</ul>'); }
+			});
+	    }
+	});
+	
+	$.ajax({
+		url: '/layout/_inc/support/video_proxy.php?v=1',
+	    type: 'GET',
+	    dataType: 'xml',
+	    timeout: 10000,
+	    error: function(xhr, status, error){
+			$('#video-loader').css({ display:"none" });
+			$('#video-links').append('<p>'+video_error_msg+'</p>');
+	    },
+	    success: function(xml){
+			var countryCode = 'en';
+			var content = $(xml).find(countryCode);
+			if (content.length == 0) { content = $(xml).find('en'); }
+		
+			content.find('link').each(function(i){				
+				//add the starting of the list	
+				if(i == 0){ $('#video-links').append('<ul class="menu_sidebar">'); }
+				
+				// name the current found item this for this particular loop run
+				var item = $(this);
+				
+				// grab the item information
+				var url = item.find('url').text();
+				var title = item.find('title').text();
+
+				// now create a var 'html' to store the markup we're using to output the feed to the browser window
+				var html = '<li class="clearfix"><a href="'+url+'">'+title+'</a> <img src="/525/_img/buttons/arrow_green_d.gif" class="arw_green" alt=""></li>'
+
+				$('#video-loader').css({ display:"none" });
+
+				//put that feed content on the screen!
+				$('#video-links .menu_sidebar').append($(html));
+
+				//add the end of the list	
+				if(i == (content.length-1)){ $('#video-links').append('</ul>'); }
+			});
+	    }
+	});
+});
+</script>
+</head>
+
+
+<body class="test" id="support">
+
+<!--googleoff: snippet-->
+
+	<div id="container-shadow-main">
+	<div id="container-shadow-top">
+
+  <div id="popupDiv" style="display:none; background: #fff; border: 1px solid black; padding: 0; margin: 0;"></div>
+
+	 
+
+	<div class="nav-container">
+		<div id="masthead" class="clear span-24 english">
+
+						
+			<div id="sl-toolbar" class="span-24">
+				<div class="span-12">
+                                 
+					<div id="language">
+						<a rel="nofollow" id="language-drop" href="https://secondlife.com/my/account/?lang=en-US"><span>Language</span></a>
+						<ul>
+							<li><a href="http://secondlife.com/support/?id=068&amp;lang=en-US">English</a></li>
+							<li><a href="http://secondlife.com/support/?id=068&amp;lang=ja-JP" lang="ja" hreflang="ja">日本語</a></li>
+							<li><a href="http://secondlife.com/support/?id=068&amp;lang=de-DE">Deutsch</a></li>
+							<li><a href="http://secondlife.com/support/?id=068&amp;lang=fr-FR">Français</a></li>
+							<li><a href="http://secondlife.com/support/?id=068&amp;lang=es-ES">Español</a></li>
+							<li><a href="http://secondlife.com/support/?id=068&amp;lang=pt-BR">Português</a></li>
+							<li><a href="http://secondlife.com/support/?id=068&amp;lang=it-IT">Italiano</a></li>
+						</ul>
+					</div>
+                					
+										<a id="launch-sl" href="secondlife://">Launch Second Life &raquo;</a>
+				</div>
+			
+				
+				<div class="span-12 last">
+					<div id="global-search">
+						<a rel="nofollow" id="search-drop" href="http://search.secondlife.com?lang=en-US">Search</a>
+						<div id="global-search-form">
+							<form method="get" action="http://search.secondlife.com/web/search/" onsubmit="return removeDefault('#q');">
+								<div><span>
+									<input type="text" name="q" id="q" size="30" maxlength="255" value="Search Secondlife.com" onfocus="this.select(); this.value='';" />
+									<input type="hidden" name="s" value="secondlife_com" />
+									<input type="hidden" name="m" value="N" />
+                                    <input type="hidden" name="lang" value="en-US" />
+									<button type="submit">GO</button>
+								</span></div>
+							</form>
+						</div>
+					</div>
+					
+					<div id="authentication">
+						<span><a href="https://secondlife.com/my/account/login.php"><strong>Login</strong></a></span>
+					</div>
+				</div>
+			</div>
+      
+			<div id="sl-logo">
+				<span><a href="http://secondlife.com?lang=en-US">Second Life</a></span>
+			</div>
+			
+			
+
+<ul id="global-nav" class="non-logged">
+	<li id="whatis">
+		<a class="nav-item" href="http://secondlife.com/whatis?lang=en-US"><span class="left-border"><span class="right-border">What&nbsp;Is&nbsp;Second&nbsp;Life?</span></span></a>
+
+		<div class="sub-nav">
+			<ul class="span-4">
+				<li><a href="http://secondlife.com/whatis/create?lang=en-US">Create</a></li>
+				<li><a href="http://secondlife.com/destinations?lang=en-US">Destination Guide</a></li>
+				<li><a href="http://secondlife.com/whatis/avatar?lang=en-US">Avatar</a></li>
+			</ul>
+
+			<div class="sub-nav-highlights span-7 last">
+				<div class="highlight-item">
+					<h6>Quick Start Guide</h6>
+					<a class="nav-highlights-photo nav-hlts-quickstart" href="http://secondlife.com/support/quickstart?lang=en-US">Quickstart Guide &raquo;</a>
+					<p>View this guide for a complete walkthrough on getting started in Second Life.<span><a class="go" href="http://secondlife.com/support/quickstart?lang=en-US">Go</a></span></p>
+				</div>
+			</div>
+		</div>
+	</li>
+
+
+	<li id="maps">
+		<a class="nav-item" href="http://maps.secondlife.com"><span class="left-border"><span class="right-border">World&nbsp;Map</span></span></a>
+	</li>
+
+
+	<li id="shop">
+		<a class="nav-item" href="http://secondlife.com/shop?lang=en-US"><span class="left-border"><span class="right-border">Shopping</span></span></a>
+
+		<div class="sub-nav">
+			<ul class="span-4">
+				<li><a href="https://marketplace.secondlife.com/?lang=en-US">Marketplace</a></li>
+				<li><a href="https://marketplace.secondlife.com?lang=en-US">Land Classifieds</a></li>
+				<li><a href="http://blogs.secondlife.com/community/commerce">Shopping Forums</a></li>
+				<li class="section-marker">
+					<h5>Personal Resources</h5>
+					<ul class="sub-nav-section">
+						<li><a href="https://marketplace.secondlife.com/?name=Marketplace&amp;file=index&amp;Favorites=1&amp;lang=en-US" class="externalSite">Favorites</a></li>
+						<li><a href="https://marketplace.secondlife.com/orders?lang=en-US" class="externalSite">Purchases</a></li>
+					</ul>
+				</li>
+				<li class="section-marker">
+					<h5>Merchant Tools</h5>
+					<ul class="sub-nav-section">
+						<li><a href="https://marketplace.secondlife.com/orders?lang=en-US">My Subscriptions</a></li>
+						<li><a href="https://marketplace.secondlife.com/orders?lang=en-US">My Marketplace Items</a></li>
+						<li><a href="https://marketplace.secondlife.com/orders?lang=en-US">My Marketplace Inventory</a></li>
+					</ul>
+				</li>
+				<li class="section-marker">
+	        <h5>Shopping Funds</h5>
+	        <ul class="sub-nav-section">
+	            <li><a href="https://www.xstreetsl.com/?name=Currency&amp;lang=en_US">Xstreet Exchange</a></li>
+	        </ul>
+        </li>
+			</ul>
+
+			<div class="sub-nav-highlights span-7 last">
+				<div class="highlight-item">
+					<h6>Today's Popular Items</h6>
+					<a class="nav-highlights-photo nav-hlts-popitem" href="https://marketplace.secondlife.com/products/search?search[sort]=sales_rank_asc&amp;lang=en-US">Popular Items &raquo;</a>
+					<p>What are the hottest sellers in Second Life?<span><a class="go" href="https://marketplace.secondlife.com/products/search?search[sort]=sales_rank_asc&amp;lang=en-US">Go</a></span></p>
+				</div>
+
+				<div class="highlight-item">
+					<h6>Featured Items</h6>
+					<a class="nav-highlights-photo nav-hlts-featitem" href="https://marketplace.secondlife.com/?lang=en-US">Featured Items &raquo;</a>
+					<p>See a daily sample of highlighted items from Xstreet SL.<span><a class="go" href="https://marketplace.secondlife.com/?lang=en-US">Go</a></span></p>
+				</div>
+
+				<div class="highlight-item">
+					<h6>Classifieds</h6>
+					<a class="nav-highlights-photo nav-hlts-cls" href="http://secondlife.com/community/classifieds?lang=en-US">Classifieds &raquo;</a>
+					<p>Browse through thousands of listings.<span><a class="go" href="http://secondlife.com/community/classifieds?lang=en-US">Go</a></span></p>
+				</div>
+			</div>
+		</div>
+	</li>
+
+
+
+	<li id="land">
+		<a class="nav-item" href="http://secondlife.com/land?lang=en-US"><span class="left-border"><span class="right-border">Buy Land</span></span></a>
+
+		<div class="sub-nav">
+			<ul class="span-4">
+				<li><a href="https://land.secondlife.com/en-US/developed-property.php">Developed Property</a></li>
+				<li><a href="https://land.secondlife.com/en-US/undeveloped-land.php">Undeveloped Land</a></li>
+				<li class="section-marker">
+					<h5>Personal Resources</h5>
+					<ul class="sub-nav-section">
+						<li><a href="https://secondlife.com/my/account/groupland.php?lang=en-US">Group Land</a></li>
+						<li><a href="https://secondlife.com/my/account/landfees.php?lang=en-US">Land Use Fees</a></li>
+						<li><a href="https://secondlife.com/my/account/land.php?lang=en-US">My Mainland</a></li>
+						<li><a href="https://land.secondlife.com/en-US/estates.php" class="externalSite">My Regions</a></li>
+						<li class="section-marker"><a href="http://usd.auctions.secondlife.com">Auctions</a></li>
+						<li><a href="https://land.secondlife.com/en-US/">About Land</a></li>
+						<li><a href="http://secondlife.com/land/rentals.php?lang=en-US">Land Rentals</a></li>
+						<li><a href="http://secondlife.com/land/privatepricing.php?lang=en-US">Private Region Pricing</a></li>
+					</ul>
+				</li>
+			</ul>
+
+			<div class="sub-nav-highlights span-7 last">
+				<div class="highlight-item">
+					<h6>Developed Property</h6>
+					<a class="nav-highlights-photo nav-hlts-devland" href="https://land.secondlife.com/en-US/developed-property.php">Developed Property &raquo;</a>
+					<p>Live in a fully developed building with neighbors, or live privately with our new Themed Private Islands.<span><a class="go" href="https://land.secondlife.com/en-US/developed-property.php">Go</a></span></p>
+				</div>
+
+				<div class="highlight-item">
+					<h6>Undeveloped Land</h6>
+					<a class="nav-highlights-photo nav-hlts-undevland" href="https://land.secondlife.com/en-US/undeveloped-land.php">Undeveloped Land &raquo;</a>
+					<p>Just like an empty lot, Undeveloped Land is the blank canvas you can use to create your space in the virtual world.<span><a class="go" href="https://land.secondlife.com/en-US/undeveloped-land.php">Go</a></span></p>
+				</div>
+			</div>
+		</div>
+	</li>
+
+
+	<li id="community">
+		<a class="nav-item" href="http://secondlife.com/community?lang=en-US"><span class="left-border"><span class="right-border">Community</span></span></a>
+        		<div class="sub-nav">
+			<ul class="span-4">
+				<li><a href="http://blogs.secondlife.com" class="externalSite">Blogs</a></li>
+				<li><a href="http://forums.secondlife.com" class="externalSite">Forums</a></li>
+				<li><a href="http://secondlife.com/community/events?lang=en-US">Events</a></li>
+				<li><a href="http://secondlife.com/community/groups?lang=en-US">Groups</a></li>
+				<li><a href="http://secondlife.com/community/classifieds?lang=en-US">Classifieds</a></li>
+				<li class="section-marker">
+					<h5>Blog Channels</h5>
+					<ul class="sub-nav-section">
+						<li><a href="http://blogs.secondlife.com/community/features" class="externalSite">Features</a></li>
+						<li><a href="http://blogs.secondlife.com/community/community" class="externalSite">Community</a></li>
+						<li><a href="http://blogs.secondlife.com/community/workinginworld" class="externalSite">Working Inworld</a></li>
+						<li><a href="http://blogs.secondlife.com/community/technology" class="externalSite">Technology</a></li>
+						<li><a href="http://blogs.secondlife.com/community/land" class="externalSite">Land and Sea</a></li>
+						<li><a href="http://blogs.secondlife.com/community/press" class="externalSite">Press</a></li>
+					</ul>
+				</li>
+				<li class="section-marker">
+					<h5>Guides</h5>
+					<ul class="sub-nav-section">
+						<li><a href="http://secondlife.com/support/quickstart?lang=en-US">Quick Start Guide</a></li>
+					</ul>
+				</li>
+			</ul>
+
+			<div class="sub-nav-highlights span-7 last">
+				<div class="highlight-item">
+					<h6>Eureka Blog</h6>
+					<a class="nav-highlights-photo nav-hlts-eureka" href="http://blogs.secondlife.com/community/community/eureka">Eureka Blog &raquo;</a>
+					<p>Get an insider's peek at some of the hottest spots within Second Life in this exclusive blog.<span><a class="go" href="http://blogs.secondlife.com/community/community/eureka">Go</a></span></p>
+				</div>
+
+				<div class="highlight-item">
+					<h6>Live Events</h6>
+					<a class="nav-highlights-photo nav-hlts-events" href="http://secondlife.com/community/events?lang=en-US">Live Events &raquo;</a>
+					<p>What's happening in Second Life right now? Find out in our Events directory.<span><a class="go" href="http://secondlife.com/community/events?lang=en-US">Go</a></span></p>
+				</div>
+			</div>
+		</div>
+	</li>
+
+
+	<li id="help">
+		<a class="nav-item" href="http://secondlife.com/support?lang=en-US"><span class="left-border"><span class="right-border">Help</span></span></a>
+
+		<div class="sub-nav">
+			<ul class="span-4">
+				<li><a href="http://secondlife.com/support/downloads/?lang=en-US">Downloads</a></li>
+				<li><a href="http://secondlife.com/support/system-requirements/?lang=en-US">System Requirements</a></li>
+				<li><a href="https://secondlife.com/my/account/request.php?lang=en-US">Password Reset</a></li>
+				        <li><a href='https://wiki.secondlife.com/wiki/Knowledge_Base' class='externalSite'>Knowledge Base</a></li>
+        <li><a href='https://wiki.secondlife.com/wiki/Issue_tracker' class='externalSite'>Issue Tracker</a></li>
+				<li class="section-marker">
+					<h5>Additional Resources</h5>
+					<ul class="sub-nav-section">
+												<li><a href='http://blogs.secondlife.com/community/answers' class='externalSite'>Second Life Answers</a></li>
+						<li><a class="externalSite" href="https://secondlife.com/my/support/index.php?new_ticket=true&amp;lang=en-US" onclick="window.open('https://secondlife.com/my/support/index.php?new_ticket=true&amp;lang=en-US'); return false;">Submit a Ticket</a></li>
+						<li><a class="externalSite" href="https://secondlife.com/my/support/index.php?ticket_history=true&amp;lang=en-US" onclick="window.open('https://secondlife.com/my/support/index.php?ticket_history=true&amp;lang=en-US'); return false;">Ticket History</a></li>
+					</ul>
+				</li>
+				<li class="section-marker">
+					<h5>Guides</h5>
+					<ul class="sub-nav-section">
+						<li><a href="http://secondlife.com/support/quickstart?lang=en-US">Quick Start Guide</a></li>
+					</ul>
+				</li>
+			</ul>
+
+			<div class="sub-nav-highlights span-7 last">
+				<div class="highlight-item">
+					<h6>Resources For New Users</h6>
+					<a class="nav-highlights-photo nav-hlts-newuser" href="http://secondlife.com/support?lang=en-US">Resources &raquo;</a>
+					<p>Check out these resources to get you started in Second Life.<span><a href="http://secondlife.com/support?lang=en-US" class="go">Go</a></span></p>
+				</div>
+
+				<div class="highlight-item">
+					<h6>System Requirements</h6>
+					<a class="nav-highlights-photo nav-hlts-systemreq" href="http://secondlife.com/support/system-requirements?lang=en-US">System Requirements &raquo;</a>
+					<p>Not sure if your computer can handle Second Life? Visit our System Requirements page.<span><a class="go" href="http://secondlife.com/support/system-requirements?lang=en-US">Go</a></span></p>
+				</div>
+			</div>
+		</div>
+	</li>
+</ul>
+			
+			<div id="join-now">
+				<a href="https://join.secondlife.com?lang=en-US" onclick="javascript: var registrationBaseUrl = 'https://join.secondlife.com'.replace(/https?:\/\//, ''); pageTracker._trackPageview('/outgoing/' + registrationBaseUrl);">Join Now &raquo; <span>It's fast, free, and easy!</span></a>
+			</div>
+			
+			
+		</div>
+	</div>
+
+
+
+<!--googleon: snippet-->
+
+	<div id="content" class="container clear">
+
+<!--[if lt IE 8]>
+<style>
+#support-bar .span-6 { width: 240px; }
+#support-bar .span-6,
+#support-bar .span-6.last { border: none; }
+</style>
+<![endif]-->
+
+
+<div id="hero" class="container" style="background: url(/525/_img/page/support/support-hero.jpg) top left no-repeat; height: 337px;" ?>
+	<div class="background"></div>
+	<div class="inner">
+		<div class="tag">Introducing</div>
+		<h2 class="light bold">Second Life<br/>Help & Support</h2>
+		<h3 class="grey">Helpful Support Resources for your Virtual World Experience</h3>
+		
+		<div class="login-now">
+			<p style="margin-bottom: 5px;">
+			    <a class="HIGHLANDER_button_hot primary btn_md" href="https://secondlife.com/my/support">Login Now</a>
+			</p>
+			<p class="grey" style="margin: 0;">For expanded support, please login.</p>		
+		</div>
+	</div>
+</div>
+
+
+<div id="downloadbox">
+	<img src="/525/_img/page/support/download-box-lrg.png" alt="Download SecondLife" />
+</div>
+<div id="support-bar" class="span-24">
+	<div class="span-6">
+		<div class="support-bar-quarter">
+		<h1><a href="https://blogs.secondlife.com/community/answers">SL Answers</a></h1>
+		<p>Got questions? Get answers fast from<br/>community experts</p>
+		</div>
+	</div>
+	<div class="span-6">
+		<div class="support-bar-quarter">
+		<h1><a href="http://wiki.secondlife.com/wiki/Knowledge_Base">Knowledge Base</a></h1>
+		<p>Explore hundreds of Help articles<br/>and tutorial videos</p>
+		</div>
+	</div>
+	<div class="span-6">
+		<div class="support-bar-quarter">
+			<h1><a href="quickstart/">Quick Start Guide</a></h1>
+			<p>Download this handy guide</p>
+		</div>
+	</div>
+	<div class="span-6 last">
+		<div class="support-bar-quarter">
+			<h1><a href="downloads/">Download</a></h1>
+			<p>Get Second Life now!</p>
+		</div>
+	</div>
+</div>
+<!--END Support Bar-->
+
+<div class="span-16">	
+	<div class="content-box" style="margin-top: 10px;">	
+		<div class="dark_header dark_bg rounded" style=" border: 1px solid transparent;">
+		    <h2 class="s bold header light">Wiki Highlights</h2>
+			<p id="explore"><a href="http://wiki.secondlife.com/wiki/Knowledge_Base/en">Explore <!-- More Topics --></a> <img src="/525/_img/buttons/arrow_green_d.gif" class="arw_green" alt=""></p>
+
+			<div id="wiki-links"></div>
+			<div id="wiki-loader">Loading...</div>
+		    <div class="padded-box-short"></div>
+		</div>
+	</div>
+	<div class="content-box" style="margin-top: 10px;">	
+		<div class="dark_header dark_bg rounded" style=" border: 1px solid transparent;">
+		    <h2 class="s bold header light">Video Tips and Tricks</h2>
+			<p id="explore"><a href="http://www.youtube.com/user/Secondlife#grid/user/D237D0E11AC1F341" target="_blank">Explore <!-- More Topics --></a> <img src="/525/_img/buttons/arrow_green_d.gif" class="arw_green" alt=""></p>
+
+			<div id="video-links"></div>
+			<div id="video-loader">Loading...</div>
+		    <div class="padded-box-short"></div>
+		</div>
+	</div>
+</div>
+
+<div id="sl-support-sidebar" class="span-8 last">
+	<div class="content-box">
+		
+		<div class="graybox rounded">
+			<div class="content">
+				<h3 id="blurb_callout_1_title" class="s dark bold">
+				<a class="regular" href="https://secondlife.com/my/account/request.php?lang=en-US">Reset Your Password <img alt="&gt;&gt;" class="arw_green" src="/525/_img/buttons/circle-arrow.png"></a>
+				</h3>
+			
+				Forget your password? Reset it here.			</div>
+		</div>
+
+		<div class="graybox rounded">
+			<div class="content">
+				<h3 id="blurb_callout_1_title" class="s dark bold">
+				<a class="regular" href="https://support.secondlife.com/create-case/?lang=en-US">Trouble Logging In? <img alt="&gt;&gt;" class="arw_green" src="/525/_img/buttons/circle-arrow.png"></a>
+				</h3>
+
+				If you are unable to log into your account and wish to contact Support, file a Case with your email address.			</div>
+		</div>
+		
+		<div id="sl-status" class="graybox rounded">
+			<h2 class="s bold header dark">Second Life Status</h2>
+			
+			<div class="content">
+				<div id="ajax-loader">
+					<p class="status">Loading...</p>
+					<hr class="separator" />
+				</div>
+
+				<div id="status-feed"></div>
+				<div class="right">
+					<a class="regular" href="http://status.secondlifegrid.net">status.secondlifegrid.net <img alt="&gt;&gt;" class="arw_green" src="/525/_img/buttons/circle-arrow.png"></a>
+				</div>
+			</div>
+		</div>
+		
+		<div id="sl-status" class="graybox rounded">
+			<h2 class="s bold header dark">Contact Support</h2>
+			<div class="content">
+				<h3 id="blurb_callout_1_title" class="s dark bold">
+				<a class="regular" href="https://support.secondlife.com/create-case/?lang=en-US">New Ticket Submission <img alt="&gt;&gt;" class="arw_green" src="/525/_img/buttons/circle-arrow.png"></a>
+				</h3>
+				<p>Use only for issues not covered in the Knowledge Base</p>
+				
+				<h3 id="blurb_callout_1_title" class="s dark bold">
+				<a class="regular" href="#" onclick="$('#billing-info').toggle(); return false;">Billing Support <img alt="&gt;&gt;" class="arw_green" src="/525/_img/buttons/circle-arrow.png"></a>
+				</h3>
+				<div id="billing-info" style="display: none;">
+					<p>If you have a non-technical issue with your account you can also call our Billing team at:</p>
+					<div id="contact-column">
+						<p><strong>Toll-Free</strong> (US/Canada)</p>
+						<h4>800.294.1067</h4>
+
+						<p><strong>Long-Distance</strong></p>
+						<h4>703.286.6277</h4>
+
+						<p>Our Billing team is available 24 hours a day, seven days a week.</p>
+					</div>
+		
+					
+					<h3 id="blurb_callout_1_title" class="s dark bold">
+						International Billing Support					</h3>
+					<ul>
+						<li class="clearfix"></li>
+			            		                	<li><strong>France:</strong> 0805.101.490</li>
+		              			                	<li><strong>Germany:</strong> 0800.664.5510</li>
+		              			                	<li><strong>Japan:</strong> 0066.33.132.830</li>
+		              			                	<li><strong>Portugal:</strong> 800.814.450</li>
+		              			                	<li><strong>Spain:</strong> 800.300.560</li>
+		              			                	<li><strong>UK:</strong> 0800.048.4646</li>
+		              							
+					</ul>
+					<p class="support-number"><em>Support is in English Only</em></p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+		
+         </div> <!-- #content -->
+
+         
+
+
+<div id="global-footer" class="clear nav-container">
+    <div class="clear span-24 fade-background">
+			<div id="footer-links" class=" english">
+				<ul>
+					<li id="footer-affiliate"><a href="http://secondlife.com/corporate/affiliate/?lang=en-US">Affiliate <br/>Program</a></li>
+					<li id="footer-marketplace"><a href="https://marketplace.secondlife.com?lang=en-US">Second Life <br/>Markeplace</a></li>
+					<li id="footer-blogs"><a href="http://blogs.secondlife.com/?lang=en-US">Second Life <br/>Blogs</a></li>
+					<li id="footer-sl-develop"><a href="https://wiki.secondlife.com/wiki/Second_Life_Develop?lang=en-US">Second Life <br/>Developers</a></li>
+					<li id="footer-dg"><a href="http://secondlife.com/destinations?lang=en-US">Destination Guide</a></li>
+					<li id="footer-download"><a href="http://secondlife.com/support/downloads?lang=en-US">Download <br/>Second Life</a></li>
+					<li id="footer-followus"><strong>Follow Us</strong><a href="http://www.facebook.com/secondlife"><img id="nav_facebook" src="/layout/img/facebook.png" /></a><a href="http://twitter.com/SecondLife"><img id="nav_twitter" src="/layout/img/twitter.png" /></a></li>
+				</ul>
+			    <br class="clear" />
+			</div>
+			<div id="footer-tos" class=" english">
+				<ul>
+					<li id="footer-policy"><a href="http://secondlife.com/policy/?lang=en-US">Terms of Service</a></li>
+					<li id="footer-privacy"><a href="http://secondlife.com/corporate/privacy.php?lang=en-US">Privacy</a></li>
+					<li id="footer-linden"><a href="http://lindenlab.com" style="display: block; clear: left;">&copy; Linden Research, Inc.</a></li>
+				</ul>
+			    <br class="clear" />
+			</div>
+		</div>
+</div>
+<div class="clear"></div>
+
+      </div>
+   </div>
+
+   <script type="text/javascript">
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<script type="text/javascript">
+    try {
+            var pageTracker = _gat._getTracker("UA-16553629-1");
+            pageTracker._setAllowHash(false);
+            pageTracker._setDomainName(".secondlife.com");
+            pageTracker._setAllowLinker(true);
+            pageTracker._trackPageview();
+
+            var rollupTracker = _gat._getTracker("UA-16364614-2");
+            rollupTracker._setAllowHash(false);
+            rollupTracker._setDomainName(".secondlife.com");
+            rollupTracker._setAllowLinker(true);
+            rollupTracker._trackPageview();
+    } catch(err){}
+</script>
+
+</body>
+</html>

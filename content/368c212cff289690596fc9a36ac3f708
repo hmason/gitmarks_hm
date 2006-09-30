@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="resource-type" content="Document" />
+	<title>Digital Web Magazine	 - Architecting CSS	</title>
+	
+	<meta name="description" content="Digital Web Magazine - Architecting CSS" />
+	<meta name="keywords" content="Architecting CSS, Architecting, CSS, maintenance, planning, cascading style sheets, organization, multiple files, planning, Garrett Dimon, View Source, Garrett, Dimon" />
+	<meta name="distribution" content="local" />
+	<meta name="copyright" content="Copyright 0 Digital Web Magazine" />
+	<meta name="type" content="index" />
+	<meta name="pubdate" content="20050718" />
+	<link rel="shortcut icon" type="image/ico" href="/favicon.ico" />
+
+	<link rel="bookmark" href="#masthead" title="Top of the Page" />
+	<link rel="bookmark" href="#globalNav" title="Navigation" />
+	<link rel="search" href="/search/" title="Search Digital Web Magazine" />
+	<link rel="bookmark" href="#content" title="Content" />
+	<link rel="copyright" href="javascript:alert('Copyright 0 Digital Web Magazine')" />
+	
+<link rel="stylesheet" type="text/css" href="/css/article.css" media="screen" title="Digital Web Magazine Style" /><link rel="alternate stylesheet" type="text/css" href="/css/print.css" media="screen" title="Print Preview" />
+<link rel="stylesheet" type="text/css" href="/css/print.css" media="print" />
+<script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=searchbox_012534339689088502956%3A645mphn3x04"></script>
+<script type="text/javascript" src="/js/api.js"></script>
+<script src="/mint/?js" type="text/javascript"></script>
+<script type="text/javascript">var _sf_startpt=(new Date()).getTime()</script>
+</head>
+<body id="article">
+	
+	<!-- AdPacks.com Ad Code -->
+	<script type="text/javascript">
+	(function(){
+	  var bsa = document.createElement('script');
+	     bsa.type = 'text/javascript';
+	     bsa.async = true;
+	     bsa.src = '//s3.buysellads.com/ac/bsa.js';
+	  (document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(bsa);
+	})();
+	</script>
+	<!-- End AdPacks.com Ad Code -->
+
+	
+
+<h1 id="masthead"><a href="/"><img src="/images/dw_logo_big.gif" width="316" height="77" alt="Digital Web Magazine" /></a></h1>
+<p id="slogan">The web professional's online magazine of choice.</p>
+
+<div id="content" class="column">
+	
+		<h1>Architecting CSS</h1>
+
+	<div id="comment_invite_top">
+		<strong>Got something to say?</strong>
+		<p><a href="/articles/architecting_css/comments/">Share your comments</a> on this topic with other web professionals</p>
+	</div>
+
+	<p class="location">In: Columns &gt; <a href="/types/view_source/" >View Source</a></p>
+				<p class="author">By <a href="/about/contributors/garrett_dimon" >Garrett Dimon</a></p>
+		<p class="date">Published on July 18, 2005</p>
+
+	<p>With nearly ubiquitous standards support among modern browsers, we&#8217;re turning to <acronym title="Cascading Style Sheets">CSS</acronym> to handle presentational heavy lifting more than ever. The more we rely upon CSS, the larger and more complex CSS files become. These files bring with them a few maintenance and organizational challenges.</p>
+<p>Gone are the days of creating a single CSS file and dropping in rules as needed. As we build new sites, it is necessary to spend time planning how to organize and structure CSS.</p>
+<h2>File Organization</h2>
+<p>The first step in architecting our CSS is to devise a plan for organizing our files. A good organizational scheme for CSS is as important as a planned directory structure for a site. No solution is perfect for every situation, so we&#8217;ll take a look at the basic choices for organization and their respective advantages and disadvantages.</p>
+<h3>The Main CSS File</h3>
+<p>You will usually start with a default CSS file that contains the rules used on every page. This file establishes defaults like fonts, anchor colors and behavior, headers, and any other properties that all pages will share. With a default file in place, let&#8217;s examine high-level organizational strategies.</p>
+<h3>Method 1: Archetype-Based</h3>
+<p>The most basic strategy is to segment files based on archetype pages. For example, a site with different designs for the home page, sub pages, and portfolio pages could take advantage of an archetype system. Each page imports its own CSS file.</p>
+<p>This method is straightforward and works well for a small number of distinct archetypes. However, it begins to fall apart if presentational elements do not fall easily into the predetermined buckets for each archetype. If there are elements that are shared by subpages and portfolio pages but not the home page, we have the following choices:</p>
+<ol><li><p><strong>Put the shared elements in the main CSS file.</strong> While this is not the purest solution, it is appropriate in some instances. However, if you are working with a large site, the main CSS file can quickly balloon, defeating the purpose of separating the files, which is to avoid importing unnecessarily large files.</p></li>
+<li><p><strong>Create duplicate versions of the CSS</strong> in both the portfolio CSS file and the subpage CSS file. We clearly don&#8217;t want to go this route because it would mean maintaining  redundant code.</p></li>
+<li><p><strong>Create a new file that can be shared between the two pages.</strong> This sounds like a good solution unless we only have 10 lines of shared code. In that case we&#8217;ve created a whole file for just 10 lines of code. It&#8217;s pure, but it becomes unwieldy if you have a large site and many pairs of pages that share a small set of unique elements.</p></li>
+<li><p><strong>Create a distinct CSS file to encompass all of these small cases.</strong> This might be easy, but depending on the size of your site and the number of these occurrences, you could be including a large CSS file in a situation where a page only uses a small percentage of the rules in that file. Once again, this defeats the purpose of organizing your CSS to avoid importing unnecessarily large files.</p></li>
+</ol>
+<p>This is what I have begun to call the <em>Overlap Dilemma</em>. Subsets of pages overlap in their own unique way, and there isn&#8217;t a clear-cut solution to cleanly organize these few small CSS rules.</p>
+<h3>Method 2: Page Element/Section-Based</h3>
+<p>This method works nicely if you use server-side includes on your site. For instance, if you use an include for your header, it would have its own corresponding CSS file. You could do the same with the footer or any other include. Then you need only include the CSS file when you reference that include from within a page. This is clean and simple, but may end up creating many small CSS files.</p>
+<p>For example, your footer may only require 20 lines of CSS for its styling. Creating a unique file for that might be overkill. Additionally, this method could lead to including a large number of files on each page. If a page has five includes, it will need five additional CSS files.</p>
+<h3>Method 3: Tag-Based</h3>
+<p>This is straightforward and practical solution, similar to the previous one. If we have a site with 30 pages, 10 of which have forms, we could create a file that handles all of the styles for our forms and only import it on the 10 pages that use forms. Similarly, if 10 other pages use tables to display data, we could create a file to handle our table styles.</p>
+<h3>Additional Organization Tips</h3>
+<p>Along with the subjective ways of organizing files, we&#8217;ll also need to consider files for varied media types such as <code>print</code>, <code>handheld</code> and <code>screen</code>. This is more clearly defined but still a factor that we should consider when we create our file structure. When supporting different media types is a requirement, you may also want to rethink some of the rules included in your main CSS file.</p>
+<p>Co-branding is yet another important factor that might apply to your project. If co-branding is relevant, you should determine which elements might be changed to support a different brand and separate those elements into their own unique file.</p>
+<p>Another oft-overlooked possibility is using nested <code>@import</code> statements. You can create a CSS file that only contains a series of <code>@import</code> statements or use <code>@import</code> to include files in one of your custom style sheets along with a series of other rules. This lets you  create your main CSS files that correspond to certain sections of the site. If you find that you are importing four or five different CSS files on each page, you should definitely consider taking advantage of this tip.</p>
+<h2>Rules &amp; Selector Organization</h2>
+<p>Now that we have our file organization in order, let&#8217;s discuss how to organize everything inside of those files. Naturally, we want to navigate within the files without any problems and quickly find the selectors or rules we want to edit.</p>
+<h3>Redundancy vs. Dependency</h3>
+<p>As Dave Shea discusses in his article &#8220;<a href="http://www.mezzoblue.com/archives/2005/01/20/redundancy_v/">Redundancy vs. Dependency</a>,&#8221; you need to be constantly aware of the cascade. You will have to decide whether you want to group selectors, which introduces dependencies, or separate the selectors, which introduces redundant code. Grouping selectors lets us to keep our code short and sweet, but it also creates a dependency that might lead to maintenance nightmares down the road. However, if we don&#8217;t group those selectors and their common attributes, we increase the file size, and make it challenging to keep similar selectors consistent. You need to be aware of this trade-off so you can make the correct decision in each instance.</p>
+<h3>Group by Relationship &amp; Context</h3>
+<p>While file organization can be subjective, it is clear that the best way to group rules and selectors is by their relationship to each other and the rest of the page. For example, if you have a container, header and footer that drive your layout, group them together.</p>
+<p>This seems simple, but when you add in your navigation, which is contained in the header, do you group it with its parent elements or in its own new group? In this situation, consider the context of the rule within the page. Generally, your header container is related to the layout of the page, and it should be grouped with other layout elements. Your navigation, on the other hand, is one piece of the header and should probably be grouped with the other pieces of the header but not necessarily next to the header container itself.</p>
+<h3>Use Comments</h3>
+<p>As with most code, the key to good organization is commenting. Clearly label each section of your CSS according to what it controls. It&#8217;s best to make sure that these comments stand out visually so that you can quickly identify them when scrolling through the file.</p>
+<p>Doug Bowman has taken commenting to the next level in his article on CSS comments, &#8220;<a href="http://www.stopdesign.com/log/2005/05/03/css-tip-flags.html">CSS Organization Tip #1: Flags</a>.&#8221; He explains how he precedes section names with an equal sign so that he can use his text editor&#8217;s find feature to quickly jump to a section.</p>
+<h3>Don&#8217;t Forget</h3>
+<p>Make sure you&#8217;re up to speed on the finer points of <a href="http://www.w3.org/TR/CSS21/cascade.html">specificity, the cascade and inheritance</a>, and use them to your advantage. Each of these can be your worst enemy&#8212;or, just as easily, your best friend. <span class="pullquote">When building a large site, understanding the subtleties of these pieces of the puzzle can be the difference between successfully organizing your CSS and creating a house of cards that could collapse at any moment.</span></p>
+<h2>Attribute Organization</h2>
+<p>We now have options for our file organization and know how to organize rules inside those files, but there&#8217;s still one more level of organization. Attributes are much simpler than the other concepts presented in this article, but there are still some definite best practices for keeping your rules clean.</p>
+<h3>Alphabetizing</h3>
+<p>When it comes to attributes, if you only follow one of these guidelines, let it be this one: alphabetize. Alphabetize. Alphabetize. This doesn&#8217;t help navigate your attributes, but it does help prevent you from duplicating an attribute and accidentally overriding a previous setting.</p>
+<p>For instance, I can&#8217;t count the number of times that I&#8217;ve specified my margin as the first attribute for a particular selector and unwittingly added a second margin attribute either before or after my original values. Naturally, the second value in the list gets used. If you don&#8217;t realize the second attribute is there, you might go to adjust the first value and not see a change upon refreshing your browser. If, however, your attributes are all alphabetized, you&#8217;ll see that you have specified your margins twice because both attributes would be next to each other and avoid the problem completely.</p>
+<h3>Important</h3>
+<p>When building complex sites with numerous CSS files, you can create a large number of dependencies. When encountering a problem getting a specific attribute to apply itself to an element, the <code>!important</code> option can look tempting. While this might solve the problem in the short term, it&#8217;s better for the long term to determine what other attribute is causing the problem. Trace the cascade back up the tree and find out if using <code>!important</code> is really the right answer.</p>
+<p>If you are familiar with specificity, the cascade and inheritance as mentioned above, you don&#8217;t need to rely upon <code>!important</code>. There will be times where you need it, but you should be very aware of those instances before creating the rule. Never use <code>!important</code> as a quick fix or as an afterthought because you don&#8217;t know where the true source of the problem lies.</p>
+<h2>Summary</h2>
+<p>As we come to rely on CSS and the complexity of our style sheets grows accordingly, we need proper planning to avoid mistakes and ensure we write maintainable code. While there isn&#8217;t always a perfect solution for every scenario, understanding how CSS works and our different options for organizing files, selectors and attributes can help us write code to stand the test of time.</p>
+	<div id="comment_invite_bottom">
+		<strong>Got something to say?</strong>
+				<p><a href="/articles/architecting_css/comments/" >Share&nbsp;your&nbsp;comments&nbsp;&nbsp;with&nbsp;other&nbsp;professionals</a>&nbsp;(21&nbsp;comments)</p>
+	</div>
+	
+	<ul id="bookmarks">
+		<li class="magnolia"><a href="http://ma.gnolia.com/bookmarklet/add?url=http://www.digital-web.com/articles/architecting_css&amp;description=Architecting+CSS">Add to Magnolia</a></li><li class="myyahoo"><a href="http://myweb2.search.yahoo.com/myresults/bookmarklet?u=http://www.digital-web.com/articles/architecting_css&amp;t=Architecting+CSS">Add to My Yahoo!</a></li><li class="newsvine"><a href="http://www.newsvine.com/_tools/seed&amp;save?u=http://www.digital-web.com/articles/architecting_css&amp;h=Architecting+CSS">Add to Newsvine</a></li><li class="digg"><a href="http://digg.com/submit?phase=2&amp;url=http%3A//www.digital-web.com/articles/architecting_css&amp;title=Architecting+CSS">Digg this story</a></li><li class="delicious"><a href="http://del.icio.us/post?url=http://www.digital-web.com/articles/architecting_css&amp;title=Architecting+CSS" onclick="window.open('http://del.icio.us/post?v=4&amp;noui&amp;jump=close&amp;url=http://www.digital-web.com/articles/architecting_css&amp;title=Architecting CSS', 'delicious','toolbar=no,width=700,height=400'); return false;">Add to Del.icio.us</a></li>	</ul>
+
+	<p id="topics" style="margin-top: 0.75em;">
+		<strong>Related Topics</strong>: 
+		<a href="/topics/css" >CSS</a>, <a href="/topics/web_maintenance" >Web Maintenance</a>, <a href="/topics/planning" >Planning</a>	</p>
+	<div id="bio">
+					<div class="clearhak">&nbsp;</div>
+			<img src="/images/profiles/garrett_dimon.jpg" width="100" />
+			<p><a href="http://www.digital-web.com/about/contributors/garrett_dimon" title="Garrett Dimon's profile">Garrett Dimon</a> is a freelance designer and developer on a mission to make the Web a better place.  He believes that a holistic approach to front-end development, design, and user experience is the way to make it happen and shares those thoughts on his <a href="http://garrettdimon.com">personal blog</a> as well. When he's not obsessed with the web, he can usually be found playing basketball or enjoying the outdoors. 			</p>
+			</div>
+</div>
+
+
+<div id="footer">
+		<p class="banner ad"></p>
+	<p>Copyright &#169; 1994-2010 <a href="/about/copyright/">Digital Web Magazine</a>. All Rights Reserved.</p>
+</div>
+
+<ul id="globalNav">
+	<li id="articlesLink"><a href="/">Home</a></li><li id="contactLink"><a href="/contact/">Contact</a></li><li id="aboutLink"><a href="/about/">About</a></li><li id="eventsLink"><a href="/events/">Events</a></li></ul>
+
+<p style="position:absolute; right:23px; top:25px; z-index:100;"><a href="/about/site/"><img src="/images/hostedby.gif" alt="Media Temple" width="117" height="14" border="0" /></a></p>
+
+<ul id="sortNav">
+	<li id="topicLink"><a href="/topics/">Articles by topic</a></li><li id="dateLink"><a href="/dates/">Articles by date</a></li><li id="authorLink"><a href="/authors/">Articles by author</a></li><li id="titleLink"><a href="/titles/">Articles by title</a></li><li id="typeLink"><a href="/types/">Articles by type</a></li>	<li class="search">
+		<!-- Google CSE Search Box Begins -->
+		  <form id="searchbox_012534339689088502956:645mphn3x04" action="/search/">
+		  	<label for="searchTerms">Search</label>
+			<input name="q" type="text" id="searchTerms" />
+			<input type="hidden" name="cx" value="012534339689088502956:645mphn3x04" />
+			<input type="hidden" name="cof" value="FORID:9" />
+			<input type="image" src="/images/go.gif" alt="GO!" id="searchSubmit" />
+		  </form>
+		<!-- Google CSE Search Box Ends -->
+	</li>
+</ul>
+
+<div id="sideAds">
+	<!-- AdPacks.com Zone Code -->
+	<div id="bsap_1253161" class="bsarocks bsap_842608e642eb3567cae5b25f74c41b60"></div>
+	<a href="http://adpacks.com" id="bsap_aplink">via Ad Packs</a>
+	<!-- End AdPacks.com Zone Code -->
+	
+	<div id="sbgoog">
+	</div>
+</div>
+	<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	_uacct = "UA-104641-1";
+	urchinTracker();
+	</script>
+	<script type="text/javascript">
+	var _sf_async_config={uid:1489,domain:"digital-web.com"};
+	(function(){
+	  function loadChartbeat() {
+	    window._sf_endpt=(new Date()).getTime();
+	    var e = document.createElement('script');
+	    e.setAttribute('language', 'javascript');
+	    e.setAttribute('type', 'text/javascript');
+	    e.setAttribute('src',
+	       (("https:" == document.location.protocol) ? "https://s3.amazonaws.com/" : "http://") +
+	       "static.chartbeat.com/js/chartbeat.js");
+	    document.body.appendChild(e);
+	  }
+	  var oldonload = window.onload;
+	  window.onload = (typeof window.onload != 'function') ?
+	     loadChartbeat : function() { oldonload(); loadChartbeat(); };
+	})();
+
+	</script>
+</body>
+</html>

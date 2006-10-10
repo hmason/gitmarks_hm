@@ -1,0 +1,886 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>XML in Firefox 1.5, Part 3: JavaScript meets XML in Firefox</title>
+<meta http-equiv="PICS-Label" content='(PICS-1.1 "http://www.icra.org/ratingsv02.html" l gen true r (cz 1 lz 1 nz 1 oz 1 vz 1) "http://www.rsac.org/ratingsv01.html" l gen true r (n 0 s 0 v 0 l 0) "http://www.classify.org/safesurf/" l gen true r (SS~~000 1))'/>
+<link rel="schema.DC" href="http://purl.org/DC/elements/1.0/"/>
+<link rel="SHORTCUT ICON" href="http://www.ibm.com/favicon.ico"/>
+<meta name="Owner" content="developerWorks Content/Raleigh/IBM"/>
+<meta name="DC.Language" scheme="rfc1766" content="en"/>
+<meta name="IBM.Country" content="ZZ"/>
+<meta name="Security" content="Public"/>
+<meta name="IBM.SpecialPurpose" content="SP001"/>
+<meta name="IBM.PageAttributes" content="sid=1003"/>
+<meta name="Source" content="v16 Template Generator"/>
+<meta name="Robots" content="index,follow"/>
+<meta name="Abstract" content="In this third article of the XML in Firefox 1.5 series, you learn to manipulate XML with the JavaScript implementation in Mozilla Firefox. In the first two articles, you learned about the different XML-related facilities in Firefox, and the basics of XML parsing, Cascading Style Sheets (CSS), and XSLT stylesheet invocation."/>
+<meta name="Description" content="In this third article of the XML in Firefox 1.5 series, you learn to manipulate XML with the JavaScript implementation in Mozilla Firefox. In the first two articles, you learned about the different XML-related facilities in Firefox, and the basics of XML parsing, Cascading Style Sheets (CSS), and XSLT stylesheet invocation."/>
+<meta name="Keywords" content="XML, Firefox 1.5, Firefox, Mozilla, Uche Ogbuji, Ogbuji, features, Web, browser, XML processing, JavaScript, Cascading Style Sheets, CSS, XSLT, tttxca, tttwaca"/>
+<meta name="DC.Date" scheme="iso8601" content="2006-08-01"/>
+<meta name="DC.Type" scheme="IBM_ContentClassTaxonomy" content="CT316"/>
+<meta name="DC.Subject" scheme="IBM_SubjectTaxonomy" content="TTC00"/>
+<meta scheme="IBM_WTMCategory" name="IBM.WTMCategory" content="SOFDCXMLZZ" />
+<meta name="DC.Rights" content="© Copyright IBM Corporation 2006"/>
+<meta name="IBM.Effective" scheme="W3CDTF" content="2006-08-01"/>
+<meta name="title" content="XML in Firefox 1.5, Part 3: JavaScript meets XML in Firefox"/>
+
+<!-- HEADER_SCRIPTS_AND_CSS_INCLUDE -->
+<link href="//dw1.s81c.com/common/v16/css/all.css" media="all" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/screen.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/screen-uas.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/zz/en/screen-fonts.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/handheld.css" media="handheld" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/print.css" media="print" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/overlay.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+
+<!-- dW-specific CSS -->
+<link href="//dw1.s81c.com/developerworks/css/dw-screen.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/developerworks/css/dw-screen-comments-ratings-signin.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.cluetip.css" media="screen,projection" rel="stylesheet"  title="www" type="text/css" />
+
+<script src="//dw1.s81c.com/common/js/ibmcommon.js" type="text/javascript">//</script>
+<script src="//dw1.s81c.com/common/js/dynamicnav.js" type="text/javascript">//</script>
+
+<!-- dW functional JS -->
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/urltactic.js" type="text/javascript"></script>
+<!-- Rating_START -->
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/artrating/showrating.js" type="text/javascript"></script>
+<style type="text/css">
+.metavalue {
+  display: none;
+}
+</style>
+<!-- Rating_END --><!-- RESERVED_HEADER_INCLUDE -->
+<script language="javascript" src="//dw1.s81c.com/developerworks/js/ajax1.js" type="text/javascript"></script>
+<script language="javascript" src="//dw1.s81c.com/developerworks/js/search_counter-maverick.js" type="text/javascript"></script>
+<script language="javascript" src="//dw1.s81c.com/developerworks/js/request_referer_capture-maverick.js" type="text/javascript"></script>
+<script language="JavaScript" type="text/javascript">
+ <!--
+ setDefaultQuery('');
+ //-->
+</script>
+<script language="JavaScript" type="text/javascript">
+ <!--
+ function openNewWindow(url,tar,arg){window.open(url,tar,arg);}
+ //-->
+</script>
+<!-- Include file support -->
+<script language="JavaScript" type="text/javascript">
+(function($) {
+	jQuery.extend({
+		getInc: function(u,d){
+			if(u==null)return;
+			jQuery.ajax({
+	    		type: "GET",
+			url: u,
+			dataType: "text",
+	        	success: function(t) {
+				jQuery(d).html(t);
+				ibmCommon.initShowHide(jQuery(d).children()[0]);			
+			},
+			async: true
+			});
+		}
+	});
+})(jQuery);
+</script>
+</head>
+
+<body id="ibm-com">
+<div id="ibm-top" class="ibm-landing-page">
+
+<!-- MASTHEAD_BEGIN -->
+<div class="ibm-access"><a href="#ibm-content">Skip to main content</a></div>
+<div id="ibm-masthead">
+<div id="ibm-logo"><a href="http://www.ibm.com/"><img height="50" src="//dw1.s81c.com/i/v16/t/ibm-logo.gif" width="110" alt="IBM®" /></a></div>
+<ul id="ibm-geo"><li id="ibm-country" class="ibm-first">Country/region</li><li id="ibm-change-country">[ <a href="http://www.ibm.com/developerworks/country/">select</a> ]</li></ul>
+  <form id="ibm-search-form" action="//www.ibm.com/developerworks/search/searchResults.jsp" method="get" name="form1"><input type="hidden" name="searchType" value="1"/><input type="hidden" name="searchSite" value="dW"/><p>
+<span id="ibm-search-scope">
+<label for="sn"><img src="//dw1.s81c.com/i/c.gif" width="1" height="1" alt="Search in:"/></label>
+<select name="searchScope" id="sn">
+<option value="dW" selected="selected">All of dW</option>
+<option value="dW">-----------------</option>
+<option value="aixunix">&nbsp;AIX and UNIX</option>
+<option value="db2">&nbsp;Information Mgmt</option>
+<option value="lotus">&nbsp;Lotus</option>
+<option value="rdd">&nbsp;Rational</option>
+<option value="tivoli">&nbsp;Tivoli</option>  
+<option value="WSDD">&nbsp;WebSphere</option>
+<option value="dW">-----------------</option> 
+<option value="javaZ">&nbsp;Java technology</option> 
+<option value="linuxZ">&nbsp;Linux</option> 
+<option value="opensrcZ">&nbsp;Open source</option>
+<option value="webservZ">&nbsp;SOA/Web services</option>
+<option value="webarchZ">&nbsp;Web development</option>  
+<option value="xmlZ">&nbsp;XML</option>
+<option value="dW">-----------------</option>
+<option value="forums">&nbsp;dW forums</option> 
+<option value="dW">-----------------</option>
+<option value="aI">University</option>
+<option value="dW">-----------------</option>
+<option value="aW">alphaWorks</option>
+<option value="dW">-----------------</option>
+<option value="all">All of IBM</option>
+</select>
+</span>
+
+<label for="q"><img alt="Search for:" height="1" width="1" src="//dw1.s81c.com/i/c.gif" /></label><input type="text" name="query" maxlength="100" id="q"/><input type="submit" id="ibm-search" class="ibm-btn-search" name="Search" value="Search" /></p></form>
+<div id="ibm-site-name">
+<!-- IBM site name container -->
+</div>
+<div id="ibm-universal-nav">
+<ul><li id="ibm-unav-home" class="ibm-first"><a href="http://www.ibm.com/">Home</a></li><li id="ibm-unav-solutions"><a href="http://www.ibm.com/solutions/">Solutions</a></li><li id="ibm-unav-services"><a href="http://www.ibm.com/technologyservices/">Services</a></li><li id="ibm-unav-products"><a href="http://www.ibm.com/products/">Products</a></li><li id="ibm-unav-support"><a href="http://www.ibm.com/support/">Support &amp; downloads</a></li><li id="ibm-unav-myibm"><a href="http://www.ibm.com/account/">My IBM</a></li></ul>
+</div>
+</div>
+<!-- MASTHEAD_END -->
+
+<div id="ibm-pcon">
+
+<!-- CONTENT_BEGIN -->
+<div id="ibm-content">
+
+<!-- Navigation_Trail_BEGIN -->
+<!-- &nbsp; -->
+      <div id="ibm-content-head"><ul id="ibm-navigation-trail"><li class="ibm-first"><a href="http://www.ibm.com/developerworks/">developerWorks</a></li><li><a href="http://www.ibm.com/developerworks/xml/">XML</a></li><li><a href="http://www.ibm.com/developerworks/views/xml/library.jsp">Technical library</a></li></ul></div>
+<!-- Navigation_Trail_END -->
+
+<!-- dW_Summary Area_START -->
+<div id="dw-summary-article">
+
+<div class="dw-content-head">
+<h1>XML in Firefox 1.5, Part 3: JavaScript meets XML in Firefox</h1><p><em>Learn how to manipulate XML in the Firefox browser using JavaScript features</em></p>
+</div>
+
+<div class="ibm-container-body ibm-two-column">
+
+<div class="ibm-column ibm-first">
+<div class="author"><a class="dwauthor" rel="#authortip1" href="#author1">Uche Ogbuji</a> (<a href="mailto:uche@ogbuji.net?subject=JavaScript meets XML in Firefox&amp;cc=dwxed@us.ibm.com">uche@ogbuji.net</a>), Principal Consultant, Fourthought Inc.</div><div id="authortip1" class="dwauthor-onload-state ibm-no-print"><div class="position"><img src="http://www-128.ibm.com/developerworks/i/p-uche.jpg" width="64" height="80" alt="Photo of Uche Ogbuji" /></div>Uche Ogbuji is a consultant and co-founder of <a href="http://Fourthought.com">Fourthought Inc.</a>, a software vendor and consultancy specializing in XML solutions for enterprise knowledge management. Fourthought develops <a href="http://4Suite.org">4Suite</a>, an open source platform for XML, RDF, and knowledge-management applications.  Mr. Ogbuji is also a lead developer of the <a href="http://uche.ogbuji.net/tech/rdf/versa/">Versa</a> RDF query language. He is a computer engineer and writer born in Nigeria, living and working in Boulder, Colorado, USA.  You can find more about Mr. Ogbuji at his Weblog <a href="http://copia.ogbuji.net/blog/">Copia</a> or contact him at <a href="mailto:uche@ogbuji.net?Subject=Thinking XML&amp;cc=dwxed@us.ibm.com">uche@ogbuji.net</a>.</div>
+<p></p>
+<p><b>Summary:</b>&nbsp; In this third article of the <i>XML in Firefox 1.5</i> series, you learn to manipulate XML with the JavaScript implementation in Mozilla Firefox. In the first two articles, <a href="http://www.ibm.com/developerworks/xml/library/x-ffox15.html">XML in Firefox 1.5, Part 1: Overview of XML features</a> and <a href="http://www.ibm.com/developerworks/xml/library/x-ffox2/index.html">XML in Firefox 1.5, Part 2: Basic XML processing</a>, you learned about the different XML-related facilities in Mozilla Firefox, and the basics of XML parsing, Cascading Style Sheets (CSS), and XSLT stylesheet invocation.</p>
+<p class="ibm-no-print"><a href="http://www.ibm.com/developerworks/views/xml/libraryview.jsp?search_by=XML+in+Firefox+1.5">View more content in this series</a></p>
+<div id="dw-tag-content" class="ibm-no-print"></div><div id="dw-moretags-access" class="ibm-access"></div>
+<p class="ibm-no-print"><div id="dw-tag-this" class="ibm-no-print"><a class="ibm-external-link" onclick="jQuery.launchTagThisWindow(); return false;" href="#">Tag this!</a></div><div id="interestShow" class="ibm-no-print"></div></p>
+</div>
+
+<div class="ibm-column ibm-second">
+<p class="leading"><b>Date:</b>&nbsp; 01 Aug  2006
+<br /><b>Level: </b>&nbsp;Introductory
+
+<br /><b>Also available in:&nbsp;</b>
+&nbsp;<a href="http://www.ibm.com/developerworks/cn/xml/x-ffox3/">Chinese</a>
+
+
+
+
+
+
+<br />
+<br /><b>Activity:</b>&nbsp; 33718 views
+<br /><b>Comments:</b> &nbsp; <span id="nCmts"><img alt="" src="//dw1.s81c.com/developerworks/i/circle-preloader.gif" height="12" width="50" /><img alt="" src="//dw1.s81c.com/i/c.gif" height="14" width="1" /></span>
+<!-- Rating_Area_Begin -->
+<div id="art-rating-summary"></div>
+<!-- Rating_Area_End -->
+</p>
+</div>
+
+</div>
+</div>
+<!-- dW_Summary_Area_END -->
+
+<!-- CONTENT_BODY -->
+<div id="ibm-content-body">
+
+<!-- MAIN_COLUMN_BEGIN -->
+<div id="ibm-content-main">
+
+<!-- Related_Searches_Area -->
+<!-- Related_Searches_Area_Begin -->
+<script type="text/javascript" language="javascript">
+	     capture_referrer();
+</script>
+
+<div id="dw-related-searches-article" style="display:none">
+<div class="ibm-container ibm-alternate-two">
+<div class="ibm-container-body">
+
+<!--  START : HTML FOR ARTICLE SEARCH -->
+  <div id="article_results" style="display:block"></div>
+<!--  END : HTML FOR ARTICLE SEARCH -->
+
+</div>
+</div>
+</div>
+<!-- Related_Searches_Area_End -->
+<!-- MAIN_COLUMN_CONTAINER_BEGIN -->
+<div class="ibm-container">
+
+<!-- MAIN_COLUMN_CONTENT_BEGIN -->
+<p>Once you've learned about basic XML viewing and styling in the Firefox browser, the next capability you're likely to care about is scripting. In this article, I show the basics of how you can manipulate XML with JavaScript code. I include code examples and screenshots, all of which I created and tested using Firefox 1.5.0.4 on Ubuntu Linux&#174; with a fresh profile (that is, with no extensions and with the default options as installed). If you want to write cross-browser code for XML processing, you might have to use additional browser-sniffing techniques, but I don't cover those in this article.</p>
+
+  <p><a name="N10075"><span class="atitle">Loading an XML file</span></a></p>
+  <p>You can load an XML document from JavaScript code embedded in a Web page. I'll start with an example of an HTML Web page that loads a simple XML mailing list format for dynamic update. The XML to be loaded is
+shown in <a href="#listing1">Listing 1</a> (labels.xml).</p>
+
+<br /><a name="listing1"><b>Listing 1. (labels.xml) Address label XML</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+&lt;?xml version="1.0" encoding="iso-8859-1"?&gt;
+&lt;labels&gt;
+  &lt;label id='ep' added="2003-06-10"&gt;
+    &lt;name&gt;Ezra Pound&lt;/name&gt;
+    &lt;address&gt;
+      &lt;street&gt;45 Usura Place&lt;/street&gt;
+      &lt;city&gt;Hailey&lt;/city&gt;
+      &lt;province&gt;ID&lt;/province&gt;
+    &lt;/address&gt;
+  &lt;/label&gt;
+  &lt;label id='tse' added="2003-06-20"&gt;
+    &lt;name&gt;Thomas Eliot&lt;/name&gt;
+    &lt;address&gt;
+      &lt;street&gt;3 Prufrock Lane&lt;/street&gt;
+      &lt;city&gt;Stamford&lt;/city&gt;
+      &lt;province&gt;CT&lt;/province&gt;
+    &lt;/address&gt;
+  &lt;/label&gt;
+  &lt;label id="lh" added="2004-11-01"&gt;
+    &lt;name&gt;Langston Hughes&lt;/name&gt;
+    &lt;address&gt;
+      &lt;street&gt;10 Bridge Tunnel&lt;/street&gt;
+      &lt;city&gt;Harlem&lt;/city&gt;
+      &lt;province&gt;NY&lt;/province&gt;
+    &lt;/address&gt;
+  &lt;/label&gt;
+  &lt;label id="co" added="2004-11-15"&gt;
+    &lt;name&gt;Christopher Okigbo&lt;/name&gt;
+    &lt;address&gt;
+      &lt;street&gt;7 Heaven's Gate&lt;/street&gt;
+      &lt;city&gt;Idoto&lt;/city&gt;
+      &lt;province&gt;Anambra&lt;/province&gt;
+    &lt;/address&gt;
+  &lt;/label&gt;
+&lt;/labels&gt;
+
+</pre></td></tr></table><br />
+
+  <p><a href="#listing2">Listing 2</a> is an HTML page that starts out as nothing more than a link that says, "Click here to load addresses." When you click the link, information from the address labels is added to the page.</p>
+
+<br /><a name="listing2"><b>Listing 2. HTML with JavaScript to load XML for dynamic update</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+  "http://www.w3.org/TR/html4/strict.dtd"&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type"&gt;
+    &lt;title&gt;Address book&lt;/title&gt;
+    &lt;script type="application/javascript"&gt;
+var ELEMENT_NODE = 1
+//TEXT_NODE
+
+function loadAddresses()
+{
+  xmlDoc = document.implementation.createDocument("", "", null);
+  xmlDoc.onload = writeList;
+  xmlDoc.load("labels.xml");
+}
+
+function writeList()
+{
+  var labels = xmlDoc.getElementsByTagName('label');
+  var ol = document.createElement('OL');
+
+  for (i=0; i &lt; labels.length; i++)
+  {
+    var li = document.createElement('LI');
+    for (j=0; j &lt; labels[i].childNodes.length; j++)
+    {
+      if (labels[i].childNodes[j].nodeType != ELEMENT_NODE) continue;
+      var cdata = document.createTextNode(
+        labels[i].childNodes[j].firstChild.nodeValue);
+      li.appendChild(cdata);
+    }
+    var labelId = document.createTextNode('(' +
+      labels[i].getAttribute('id') + ')');
+    li.appendChild(labelId);
+    ol.appendChild(li);
+  }
+  document.getElementById('updateTarget').appendChild(ol);
+}
+    &lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body id='updateTarget'&gt;
+    &lt;p&gt;
+      &lt;a href="javascript:loadAddresses()"&gt;Click here to load addresses&lt;/a&gt;
+    &lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+
+</pre></td></tr></table><br />
+
+  <p>The dynamic features are in the <code>script</code> element, defining a JavaScript function 
+<code>loadAddresses</code>, which the link in the HTML invokes. This function creates an empty document instance and then reads in <a href="#listing1">Listing 1</a> (labels.xml) using the 
+<code>load</code> function. The <code>load</code> function executes asynchronously so that the script moves on to the next line while the XML is being read, making it necessary for you to use a trigger function to run as soon as the XML loads. This is why I set the 
+<code>onload</code> property to a separate function
+<code>writeList</code>. This function iterates over the labels using the handy Document Object Model (DOM) method
+<code>getElementsByTagName</code>. If your XML document uses namespaces, you might need to use the <code>getElementsByTagNameNS</code> form instead and specify the namespace as the first parameter. You'll see an example of this in the next section. In <a href="#listing2">Listing 2</a>, I only use the base level of DOM for XML processing, called DOM Level 1. For namespace-aware applications, you need DOM Level 2, which brings along namespace-aware versions of many Level 1 methods. <a href="#listing2">Listing 2</a> creates a subtree representing an ordered list, using the main HTML document as a factory for creating nodes. This makes the resulting subtree suitable for insertion into the main HTML document. <a href="#listing2">Listing 2</a> follows a general pattern of reading the source XML tree and then adding corresponding nodes to the output HTML subtree.
+  </p>
+
+  <p>By looping over <code>labels[i].childNodes</code> for each <code>label</code> element, you can find the <code>name</code> and <code>address</code> children. To avoid the text node children, use a 
+<code>nodeType</code> test. You obtain the child text of the 
+<code>name</code> element from the 
+<code>firstChild.nodeValue</code> access. In the case of
+<code>address</code>, the first child is white space. You don't access any of the text of the children of 
+<code>address</code>. You access the ID by using the 
+<code>getAttribute</code> method. You add all the text you've gathered to the list item. Once you compiled all the list item elements, you use the 
+<code>appendChild</code> method to update the HTML document with the subtree. You can use the 
+<code>updateTarget</code> ID to mark the element (<code>body</code>) to which you want to add this subtree. When you first load this HTML in Firefox, all you see is the link, as shown in <a href="#fig1">Figure 1</a>.</p>
+
+
+<br /><a name="fig1"><b>Figure 1. Browser display upon loading Listing 2</b></a><br />
+<img alt="Initial browser display of Listing 2" height="513" src="figure1.jpg" width="417"/>
+<br />
+
+  <p>Once you click on the link, you get the updated display instantly, as shown in <a href="#fig2">Figure 2</a>.</p>
+
+
+<br /><a name="fig2"><b>Figure 2. Browser display upon loading Listing 2 and clicking the link</b></a><br />
+<img alt="Updated browser display of Listing 2" height="513" src="figure2.jpg" width="417"/>
+<br />
+
+  <p><a name="N10130"><span class="atitle">Using script with an XML main document</span></a></p>
+  <p>In Part 1 of this series, I covered how to browse XML files in Firefox. To use JavaScript in such cases, embed a reference to a script file. <a href="#listing3">Listing 3</a> (designers.xml) is an example of an XML file, a list of designers. The XML references a separate CSS file in order to display the XML, and a separate JavaScript file in order to create link elements.</p>
+
+<br /><a name="listing3"><b>Listing 3. (designers.xml) XML format representing links to fashion designers </b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+&lt;?xml version='1.0' encoding='utf-8'?&gt;
+&lt;?xml-stylesheet type="text/css" href="designers.css"?&gt;
+&lt;designers&gt;
+  &lt;blurb&gt;
+    &lt;designer  homepage="http://doria.co.uk"&gt;Doria Ltd.&lt;/designer&gt;
+    of London
+  &lt;/blurb&gt;
+  &lt;blurb&gt;
+    &lt;designer homepage="http://samsara.biz"&gt;Samsara Saris&lt;/designer&gt;
+    of Mumbai
+  &lt;/blurb&gt;
+  &lt;blurb&gt;
+    &lt;designer homepage="http://pcp.co.uk"&gt;Pikeman Camouflage, Plc.&lt;/designer&gt;
+    of London
+  &lt;/blurb&gt;
+  &lt;blurb&gt;
+    &lt;designer homepage="http://mandalay.co.jp"&gt;Mandalay&lt;/designer&gt;
+    of Tokyo
+  &lt;/blurb&gt;
+  &lt;xhtml:script xmlns:xhtml="http://www.w3.org/1999/xhtml"
+                src="designers.js"
+                type="application/javascript"/&gt;
+&lt;/designers&gt;
+
+</pre></td></tr></table><br />
+
+  <p>The stylesheet processing instruction provides basic instructions for displaying the XML. <a href="#listing4">Listing 4</a> (designers.css) features the CSS.
+  </p>
+
+<br /><a name="listing4"><b>Listing 4. (designers.css) CSS for basic display of the XML format in
+Listing 3</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+* { display: inherit; }
+
+designers { display: block; }
+
+blurb {
+  margin: 1em;
+  width: 20em;
+}
+
+a {
+  display: inline;
+  text-decoration: none;
+  color: green;
+  border: thin blue solid;
+}
+
+script { display: none; }
+
+
+</pre></td></tr></table><br />
+
+  <p>The stylesheet instructs the browser to treat <code>designers</code> and <code>blurb</code> as block regions and to ignore <code>script</code> elements for display purposes. It also handles links (<code>a</code> elements) by displaying them inline with visual cues to make the links easier to spot. You'll notice that no <code>a</code> elements exist in the XML source. This is where the scripting comes in. The JavaScript code replaces the <code>designer</code> elements with XHTML link elements. It is provided in an XHTML script element, which you can embed in any arbitrary XML, as far as Firefox is concerned (you might run into separate problems with schema compliance, of course). Firefox runs scripts as it encounters them in the loaded document, which is why you place it after all the elements that need to be manipulated. <a href="#listing5">Listing 5</a> contains the JavaScript code, designers.js.
+  </p>
+
+<br /><a name="listing5"><b>Listing 5. (designers.js) Script for turning XML elements from Listing
+3 into XHTML links</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+//Save the XHTML namespace for when you need it
+var xhtmlns = "http://www.w3.org/1999/xhtml";
+//get all elements named "blurb" in the document
+//The first "" indicates no namespace for the element we're seeking
+var blurbs = document.getElementsByTagNameNS("", "blurb");
+//Loop over each element we found
+for (var i=0; i &lt; blurbs.length; i++)
+{
+    //retrieve the blurb element from the collection
+    var blurb = blurbs[i];
+    //Get the designer element within the blurb
+    //Assumes only one designer element per blurb
+    var designer = blurb.getElementsByTagNameNS("", "designer").item(0);
+    //In DOM the text in designer is actually a text node object child
+    //of blurb. The link title is the value of this text node
+    //Assumes the text node is normalized
+    var link_title = designer.firstChild.nodeValue;
+    //Link URL is the homepage attribute of designer, in no namespace
+    var link_url = designer.getAttributeNS("", "homepage");
+    //Create a new XHTML namespace link element
+    var xhtml_link = document.createElementNS(xhtmlns, "a");
+    //Create a new text node with the link title
+    var new_text_node = document.createTextNode(link_title);
+    //Set the href attribute to the link URL
+    xhtml_link.setAttributeNS("", "href", link_url);
+    //Attach the text node with the link title to the XHTML link
+    xhtml_link.appendChild(new_text_node);
+    //Replace the designer element with the new XHTML link element
+    blurb.replaceChild(xhtml_link, designer);
+}
+
+</pre></td></tr></table><br />
+
+  <p>Because this script in <a href="#listing5">Listing 5</a> involves namespace awareness (specifically for the XHTML namespace that's being displayed), I use namespace-aware DOM methods. <a href="#fig3">Figure 3</a> shows the results of viewing <a href="#listing3">Listing 3</a>. As you can see, the browser applies the CSS and script immediately.</p>
+
+
+<br /><a name="fig3"><b>Figure 3. Browser display upon loading Listing 3</b></a><br />
+<img alt="Browser display upon loading Listing 3" height="513" src="figure3.jpg" width="417"/>
+<br />
+
+  <div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N1019F"><span class="atitle">Invoking XSLT</span></a></p>
+  <p>You have access to most browser facilities from JavaScript, including the XSLT engine. <a href="#listing6">Listing 6</a> is a snippet of a script that executes an XSLT transform.</p>
+
+<br /><a name="listing6"><b>Listing 6. JavaScript code to load an XML document and an XSLT
+transform and to execute the transform</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+
+//Create an XSLT processor instance
+var processor = new XSLTProcessor();
+//Create an empty XML document for the XSLT transform
+var transform = document.implementation.createDocument("", "", null);
+//Load the XSLT
+transform.onload = loadTransform;
+transform.load("display.xslt");
+
+//Triggered once the XSLT document is loaded
+function loadTransform(){
+  //Attach the transform to the processor
+  processor.importStylesheet(transform);
+  source = document.implementation.createDocument("", "", null);
+  source.load("source.xml");
+  source.onload = runTransform;
+}
+
+//Triggered once the source document is loaded
+function runTransform(){
+  //Run the transform, creating a fragment output subtree that
+  //can be inserted back into the main page document object (given
+  //in the second argument)
+  var frag = processor.transformToFragment(source, document);
+  //insert the result subtree into the document, using the target element ID
+  document.getElementById('updateTarget').appendChild(frag);
+}
+
+</pre></td></tr></table><br />
+
+  <p>If you want to create a full output document rather than a subtree for insertion into another document, use the <code>transformToDocument</code> method rather than 
+<code>transformToFragment</code>.
+  </p>
+
+  <div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N101C1"><span class="atitle">There's more to the world than Mozilla</span></a></p>
+  <p>An important disclaimer is in order: Web scripting of XML hasn't been fully standardized yet. Much of what I present here is not standardized across browsers. Since this is a Firefox-specific series, I haven't covered cross-browser modifications, but you would do well to learn how to accommodate the widest variety of user interfaces. Cross-browser libraries are available for JavaScript manipulation of XML and even XSLT. Use these if you aren't developing exclusively for Mozilla-based browsers. As always when working with Web scripts, keep accessibility considerations in mind. Also be mindful of the separation of content, processing, and presentation, and avoid embedding references to script until the last moment. You also should store and manage XML without such references, and insert them only at the last moment before sending to the browser.</p>
+
+  <p>You've now learned how to load and process a separate XML file from a Web script, how to invoke a script from an XML main document, and how to call the XSLT processor from a script. You can do much more XML processing from JavaScript, because all the browser's features are available to you. You can apply many of the scripting techniques you might have learned as Dynamic HTML (DHTML) to XML processing as well. ECMAScript for XML (E4X) is a set of language enhancements to JavaScript (technically ECMAScript) that makes XML processing with JavaScript even easier. This new standard adds specialized idioms for XML processing. Firefox 1.5 supports E4X, and I'll cover it in a future article. Modest and well-designed scripts are a great way to maintain the pizzazz of modern Web applications without sacrificing the powerful structural features of XML.</p>
+<!-- CMA ID: 150536 --> <!-- Site ID: 1 --><!--XSLT stylesheet used to transform this file: dw-document-html-6.0.xsl-->
+<br />
+<p><a name="resources"><span class="atitle">Resources</span></a></p><p><b>Learn</b></p><ul><li><a href="http://www.ibm.com/developerworks/xml/library/x-ffox15.html">XML in Firefox 1.5, Part 1: Overview of XML features</a> (September 2005) and <a href="http://www.ibm.com/developerworks/xml/library/x-ffox2/index.html">XML in Firefox 1.5, Part 2: Basic XML processing</a> (March 2006): Review the first two articles in this developerWorks series.<br /><br /></li><li>Get the basics of CSS and CSS with XML. See these tutorials:
+<ul>
+<li><a href="http://www.ibm.com/developerworks/edu/x-dw-x-xmlcss-i.html?S_TACT=105AGX06&amp;S_CMP=art">Display XML with Cascading Stylesheets: Use Cascading Stylesheets to display XML, Part 1: Basic techniques to present XML in Web browsers</a> (November 2004).</li>
+<li>Continue with <a href="http://www.ibm.com/developerworks/edu/x-dw-x-xmlcss2-i.html?S_TACT=105AGX06&amp;S_CMP=art">Display XML with Cascading Stylesheets: Use Cascading Stylesheets to
+display XML, Part 2: Advanced techniques to present XML in Web browsers</a> (February 2005), which covers advanced topics for the use of CSS to style XML in browsers and includes a discussion of scripting techniques.</li>
+<li>If you're familiar with XSLT, consider going through <a href="http://www.ibm.com/developerworks/edu/x-dw-x-xmlcss3-i.html?S_TACT=105AGX06&amp;S_CMP=art">Display XML with Cascading Stylesheets: Use Cascading Stylesheets to display XML, Part 3: Combine XSLT and CSS to process XML</a> (June 2005), which discusses applying XSLT to XML source, including XSLT techniques for working with CSS for HTML or XML output.</li></ul>
+<br /></li><li><a href="http://developer.mozilla.org/en/docs/JavaScript">JavaScript</a> and <a href="http://developer.mozilla.org/en/docs/DOM">DOM</a>: Bookmark these handy Mozilla references.<br /><br /></li><li><a href="http://annevankesteren.nl/2005/02/javascript-mime-type">Javascript MIME type</a>: Learn how tricky it can be to choose JavaScript media types in this article by Anne van Kesteren.<br /><br /></li><li><a href="http://www.ibm.com/certify/certs/xmsdreltop.shtml">IBM XML 1.1 certification</a>: Find out how you can become an IBM Certified Developer in XML 1.1 and related technologies.<br /><br /></li><li><a href="http://www.ibm.com/developerworks/views/xml/library.jsp">XML</a>: See developerWorks XML Zone for a wide range of technical articles and tips, tutorials, standards, and IBM Redbooks.<br /><br /></li><li><a href="http://www.ibm.com/developerworks/offers/techbriefings/?S_TACT=105AGX06&amp;S_CMP=art">developerWorks technical events and webcasts</a>: Stay current with technology in these sessions.<br /><br /></li></ul><p><b>Get products and technologies</b></p><ul><li><a href="http://www.mozilla.org/products/firefox/">Firefox</a>: Get the Mozilla-based Web browser that offers standards compliance, performance, security, and solid XML features. The current version is 1.5.0.4.<br /><br /></li></ul><p><b>Discuss</b></p><ul><li><a href="http://www.ibm.com/developerworks/forums/dw_xforums.jsp">XML zone discussion forums</a>: Participate in any of several XML-centered forums.<br /><br /></li></ul>
+<p><a name="author"><span class="atitle">About the author</span></a></p><div class="ibm-container ibm-portrait-module ibm-alternate-two"><div class="ibm-container-body"><img src="http://www-128.ibm.com/developerworks/i/p-uche.jpg" width="64" height="80" alt="Photo of Uche Ogbuji" /><p><a name="author1"></a>Uche Ogbuji is a consultant and co-founder of <a href="http://Fourthought.com">Fourthought Inc.</a>, a software vendor and consultancy specializing in XML solutions for enterprise knowledge management. Fourthought develops <a href="http://4Suite.org">4Suite</a>, an open source platform for XML, RDF, and knowledge-management applications.  Mr. Ogbuji is also a lead developer of the <a href="http://uche.ogbuji.net/tech/rdf/versa/">Versa</a> RDF query language. He is a computer engineer and writer born in Nigeria, living and working in Boulder, Colorado, USA.  You can find more about Mr. Ogbuji at his Weblog <a href="http://copia.ogbuji.net/blog/">Copia</a> or contact him at <a href="mailto:uche@ogbuji.net?Subject=Thinking XML&amp;cc=dwxed@us.ibm.com">uche@ogbuji.net</a>.</p></div></div>
+<!-- MAIN_COLUMN_CONTENT_END -->
+
+<!-- OVERLAYS_START -->
+<!-- Report_Abuse_Start -->
+<div class="ibm-common-overlay ibm-no-print" id="reportabuseoverlay">
+   <div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#">Close [x]</a></p></div>
+   <div class="ibm-body">
+      <div class="ibm-main">
+         <a class="ibm-access" name="reportabuseoverlay">Report abuse help</a>   
+         <div class="ibm-title"><h1>Report abuse</h1></div>
+         <div class="ibm-container ibm-alternate">
+            <p><strong>Thank you.</strong>  This entry has been flagged for moderator attention.</p>
+            <div class="ibm-overlay-rule"><hr /></div>
+            <div class="ibm-buttons-row">
+               <input type="button" onclick="ibmCommon.Overlays.hide('reportabuseoverlay');return false;" class="ibm-btn-cancel-sec dw-btn-cancel-sec" name="ibm-cancel" value="Close" />
+            </div>
+         </div>
+      </div> 
+   </div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Report_Abuse_Error_Start -->
+<div class="ibm-common-overlay ibm-no-print" id="reportabuseoverlayerror">
+   <div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#">Close [x]</a></p></div>
+   <div class="ibm-body">
+      <div class="ibm-main">
+         <a class="ibm-access" name="reportabuseoverlayerror">Report abuse help</a>   
+         <div class="ibm-title"><h1>Report abuse</h1></div>
+         <div class="ibm-container ibm-alternate">
+            <p class="ibm-ind-error"><strong>Report abuse submission failed.  Please try again later.</strong></p>
+            <div class="ibm-overlay-rule"><hr /></div>
+            <div class="ibm-buttons-row">
+               <input type="button" onclick="ibmCommon.Overlays.hide('reportabuseoverlayerror');return false;" class="ibm-btn-cancel-sec dw-btn-cancel-sec" name="ibm-cancel" value="Close" />
+            </div>
+         </div>
+      </div> 
+   </div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Sign in OVERLAY STARTS HERE --> 
+<div id="fdiv"></div>
+<div class="ibm-common-overlay" id="signin_overlay">
+<div class="ibm-head">
+<p><a class="ibm-common-overlay-close" href="#" onclick="clearForm();">Close [x]</a></p>
+</div>
+<div class="ibm-body">
+<div class="ibm-main">
+<div class="ibm-title ibm-subtitle">
+<h1>developerWorks: Sign in</h1>
+<div id="ibm-overlay-error-signin" class="no-display"></div>
+</div>
+
+<div class="ibm-container ibm-alternate ibm-buttons-last">
+<div class="ibm-container-body">
+<p class="ibm-overlay-intro">If you do not have an IBM ID and password, <a href="#" onclick="(function () {window.location='/developerworks/dwwi/DWAuthRouter?m=reg&amp;d='+encodeURIComponent(location.href);})();">register here</a>.</p>
+<form class="ibm-column-form" id="sFormId" action="" method="post" name="sForm" onsubmit="return false;">
+<p><label for="ibmid">IBM ID:</label><span><input name="ibm-id" id="ibmid" size="25" value="" class="required" type="text" onkeypress="handleEP(event,this.form);" /><br /><a class="ibm-forward-link" href="/developerworks/dwwi/jsp/WSHelp.jsp?lang=en_US">Forgot your IBM ID?</a></span>   
+</p> 
+<p><label for="password">Password:</label><span><input name="password" id="password" size="25" value="" class="required" type="password" onkeypress="handleEP(event,this.form);" /><br /><a class="ibm-forward-link" href="#" onclick="(function () {window.location='https://www.ibm.com/account/profile?page=forgot&amp;lang=en_US&amp;appname=ibm&amp;required=null&amp;d='+encodeURIComponent(getAuthUrl())+'%3Fm%3Dloginpage%26lang%3Den_US%26d%3D'+encodeURIComponent(location.href);})();">Forgot your password?</a><br /><a class="ibm-forward-link" href="#" onclick="(function () {window.location='https://www.ibm.com/account/profile?page=chpw&amp;lang=en_US&amp;appname=ibm&amp;required=null&amp;d='+encodeURIComponent(location.href);})();">Change your password?</a></span></p> 
+<p class="no-bottom-padding"> 
+   <label for="AfterSignIn">After sign in:</label> 
+   <span>
+
+      <select name="SignInAction" id="AfterSignIn">
+          <option value="">Stay on the current page</option>
+          <option value="/developerworks/mydeveloperworks/profiles/html/myProfileView.do">Go to My developerWorks profile</option>
+          <option value="/developerworks/mydeveloperworks/homepage/">Go to My developerWorks homepage</option>
+      </select>
+   </span>
+</p>
+<div class="ibm-overlay-rule"><hr /></div>
+<p>By clicking <strong>Submit</strong>, you agree to the developerWorks <a href="/developerworks/mydeveloperworks/terms?lang=en">terms of use</a>.</p>
+<div class="ibm-buttons-row">
+   <p><input class="ibm-btn-arrow-pri" name="ibm-submit" value="Submit" onclick="signin();return false;" type="button" /><span class="ibm-sep">&nbsp;</span>
+<input value="Cancel" type="button" name="ibm-cancel" class="ibm-btn-cancel-sec" onclick="clearForm();ibmCommon.Overlays.hide('signin_overlay');return false;"/></p>
+</div>
+</form>
+<div class="ibm-overlay-rule"><hr /></div>
+<p>The first time you sign into developerWorks, a My developerWorks profile is created for you. This profile includes the first name, last name, and display name contained in the profile you created when you registered with My developerWorks. Selected information in your My developerWorks profile is displayed to the public, but you may edit the information at any time. Your first name, last name (unless you choose to hide them), and display name will accompany the content that you post. </p>
+<div class="dw-overlay-legal"><p>All information submitted is secure.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Sign in OVERLAY ENDS HERE --> 
+ 
+
+<!-- Display name OVERLAY STARTS HERE --> 
+<div class="ibm-common-overlay" id="displayname_overlay">
+<div class="ibm-head">
+<p><a class="ibm-common-overlay-close" href="#" onclick="clearForm();">Close [x]</a></p>
+</div>
+<div class="ibm-body">
+<div class="ibm-main">
+<div class="ibm-title ibm-subtitle">
+<h1>Choose your display name</h1>
+<div id="ibm-overlay-error-dname" class="no-display"></div>
+</div>
+<div class="ibm-container ibm-alternate ibm-buttons-last">
+<div class="ibm-container-body">
+<p class="ibm-overlay-intro">The first time you sign in to developerWorks a profile is created for you, so you need to choose a display name.  Your display name accompanies the content you post on developerWorks.</p>
+
+<form id="dFormId" method="post" action="" name="dForm" onsubmit="return false;" class="ibm-column-form">
+<p><label for="displayname">Display name:</label><span><input name="displayname" id="displayname" size="25" value="" type="text" onkeypress="handleEP(event,this.form);" /></span><span class="ibm-form-note">(Must be between 3 &ndash; 31 characters.)</span>
+</p>
+<p><strong>Note:</strong>  Please choose a display name between 3-31 characters. Your display name must be unique in the developerWorks community and should not be your email for privacy reasons.</p>
+<div class="ibm-overlay-rule"><hr />
+</div>
+<p>By clicking Submit, you agree to the developerWorks <a href="/developerworks/mydeveloperworks/terms?lang=en">terms of use</a>.</p>
+<div class="ibm-buttons-row">
+   <p><input class="ibm-btn-arrow-pri" name="ibm-submit" value="Submit" onclick="signin();return false;" type="button" /><span class="ibm-sep">&nbsp;</span>
+<input value="Cancel" type="button" name="ibm-cancel" class="ibm-btn-cancel-sec" onclick="clearForm();ibmCommon.Overlays.hide('displayname_overlay');return false;" /></p>
+</div>
+</form>
+<div class="ibm-overlay-rule"><hr /></div>
+<div class="dw-overlay-legal"><p>All information submitted is secure.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Display name OVERLAY ENDS HERE -->
+<!-- OVERLAYS_END -->
+
+<!-- RATINGS START -->
+<p class="ibm-no-print"><span class="atitle"><a name="iratings">Rate this article</a></span></p>
+<input id="art-rating" name="ratinga" type="hidden" value="0"/><div id="art-rating-module"></div>
+<script language="JavaScript" type="text/javascript">
+// <![CDATA[
+   // widget div id and article id as args
+   window.artRating.init('art-rating-module','art-rating-summary');
+// ]]>
+</script>
+<!-- RATINGS END -->
+
+<!-- INLINE_COMMENTS_START -->
+<p class="ibm-no-print"><span class="atitle"><a name="icomments">Comments</a></span></p>
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/showcomments.js" type="text/javascript">//</script>
+<div id="threadShow"></div>
+<script language="JavaScript" type="text/javascript">
+// <![CDATA[
+ jQuery('threadShow').showComments('95%',5,'nCmts','icomments');
+// ]]>
+</script>
+<!-- INLINE_COMMENTS_END -->
+
+<p class="ibm-ind-link ibm-back-to-top"><a class="ibm-anchor-up-link" href="#ibm-pcon">Back to top</a></p>
+<p><a href="http://www.ibm.com/developerworks/ibm/trademarks/">Trademarks</a> &nbsp;|&nbsp; <a href="https://www.ibm.com/developerworks/mydeveloperworks/terms/">My developerWorks terms and conditions</a></p>
+
+<!-- Overlays -->
+<!-- Zone/Leaf_Interest_Overlay_Start -->
+<div class="ibm-common-overlay ibm-no-print" id="dwmyinterestadd">
+<div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#close">Close [x]</a></p></div>
+<div class="ibm-body">
+<div class="ibm-main">
+<a class="ibm-access" name="dwmyinterestaddhelp">Help: Update or add to My dW interests</a>   
+<div class="ibm-title"><h1>What's this?</h1></div>
+<div class="ibm-container ibm-alternate">
+<p>This little timesaver lets you update your My developerWorks profile with just one click!  The general subject of this content (AIX and UNIX, Information Management, Lotus, Rational, Tivoli, WebSphere, Java, Linux, Open source, SOA and Web services, Web development, or XML) will be added to the interests section of your profile, if it's not there already.  You only need to be logged in to My developerWorks.</p>
+<p>And what's the point of adding your interests to your profile?  That's how you find other users with the same interests as yours, and see what they're reading and contributing to the community.  Your interests also help us recommend relevant developerWorks content to you.</p>
+<p><a href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/home.do?lang=en">View your My developerWorks profile</a></p>
+<p class="ibm-access"><a href="#interestShow">Return from help</a></p>
+</div> 
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+
+<div class="ibm-common-overlay ibm-no-print" id="dwmyinterestremove">
+<div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#close">Close [x]</a></p></div>
+<div class="ibm-body">
+<div class="ibm-main">
+<a class="ibm-access" name="dwmyinterestremovehelp">Help: Remove from My dW interests</a> 
+<div class="ibm-title"><h1>What's this?</h1></div>
+<div class="ibm-container ibm-alternate">
+<p>Removing this interest does not alter your profile, but rather removes this piece of content from a list of all content for which you've indicated interest.  In a future enhancement to My developerWorks, you'll be able to see a record of that content.</p>
+<p><a href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/home.do?lang=en">View your My developerWorks profile</a></p>
+<p class="ibm-access"><a href="#interestShow">Return from help</a></p>
+</div> 
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Zone/Leaf_Interest_Overlay_End --></div>
+<!-- MAIN_COLUMN_CONTAINER_END -->
+
+<!-- Rating_Meta_BEGIN -->
+<!--Rating_Meta_BEGIN--><div class="metavalue">static.content.url=http://www.ibm.com/developerworks/js/artrating/</div><div class="metavalue">SITE_ID=1</div><div class="metavalue">Zone=XML, Web development</div><div class="metavalue">ArticleID=150536</div><div class="metavalue">ArticleTitle=XML in Firefox 1.5, Part 3: JavaScript meets XML in Firefox</div><div class="metavalue">publish-date=08012006</div><div class="metavalue">author1-email=uche@ogbuji.net</div><div class="metavalue">author1-email-cc=dwxed@us.ibm.com</div><script language="javascript" type="text/javascript">document.write('<div class="metavalue">url='+location.href.replace('<', '%3C')+'</div>');</script><!--Rating_Meta_END-->
+<!-- Rating_Meta_END -->
+
+</div>
+<!-- MAIN_COLUMN_END-->
+
+<!-- RIGHT_COLUMN_BEGIN -->
+<div id="ibm-content-sidebar">
+<div id="ibm-social-tools-sidebar" class="ibm-share-this"></div>
+
+<!-- RIGHT_COLUMN_CONTENT_BEGIN --> 
+<div class="ibm-container"><h2>Table of contents</h2><div class="ibm-container-body"><img alt="" height="1" width="1" src="//www.ibm.com/i/c.gif"/><ul class="ibm-bullet-list"><li><a class="ibm-feature-link" href="#N10075">Loading an XML file</a></li><li><a class="ibm-feature-link" href="#N10130">Using script with an XML main document</a></li><li><a class="ibm-feature-link" href="#N1019F">Invoking XSLT</a></li><li><a class="ibm-feature-link" href="#N101C1">There's more to the world than Mozilla</a></li><li><a class="ibm-feature-link" href="#resources">Resources</a></li><li><a class="ibm-feature-link" href="#author">About the author</a></li><li><a class="ibm-feature-link" href="#icomments">Comments</a></li></ul></div></div>
+<!--XSLT stylesheet used to transform this content: s-nextsteps.xsl--><div class="ibm-container"><h2>Next steps from IBM</h2><div class="ibm-container-body"><img width="188" height="58" border="0" alt="" src="//www.ibm.com/developerworks/i/spot-nextsteps.jpg"/><p>Identify system and application bottlenecks with Rational Performance Tester. With Rational
+   Functional Tester get enhanced support for Adobe Flex 3.0, Java 1.6, and the Dojo Toolkit.</p><div class="ibm-rule"><hr/></div><ul class="ibm-bullet-list"><li><a href="http://www.ibm.com/developerworks/downloads/r/rft/" class="ibm-feature-link">Try: Download a free trial version of Rational Functional Tester for regression testing and Rational Performance
+    Tester to identify system and application performance problems.</a></li><li><a href="http://www.ibm.com/developerworks/rational/library/06/1219_kelly/" class="ibm-feature-link">Article: See how easy it is to function test Web applications in Mozilla Firefox with Rational Functional
+      Tester.</a></li><li><a href="http://www.ibm.com/developerworks/edu/r-dw-r-termbased.html" class="ibm-feature-link">Tutorial: Learn how Rational Functional Tester captures your interactions with an application into a Javascript and how
+      to test application user interfaces.</a></li><li><a href="http://www.ibm.com/developerworks/offers/lp/demos/summary/changereqs7.html" class="ibm-feature-link">Demo: In this demo you can see how to create a performance test script using Rational Performance Tester.</a></li><li><a href="http://www.ibm.com/software/products/(BuildHTBPage)?OpenAgent&amp;DocID=SDSD-69NU9R" class="ibm-feature-link">Buy: Rational Functional Tester</a></li></ul></div></div>
+<!--XSLT stylesheet used to transform this content: s-community.xsl--><div class="ibm-container"><h2>My developerWorks community</h2><div class="ibm-container-body"><p>Interact, share, and communicate with developers worldwide.</p><div class="ibm-rule"><hr/></div><ul class="ibm-bullet-list"><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/homepage/web/getuserpref?ca=dma-" class="ibm-feature-link">My Home</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/home.do?lang=en&amp;ca=dma-" class="ibm-feature-link">Profiles</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/groups/service/html/allcommunities?ca=dma-" class="ibm-feature-link">Groups</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/blogs/?ca=dma-" class="ibm-feature-link">Blogs</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/bookmarks/?ca=dma-" class="ibm-feature-link">Bookmarks</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/activities/service/html/mainpage?ca=dma-" class="ibm-feature-link">Activities</a></li><li><a href="http://www.ibm.com/developerworks/mydeveloperworks/files?ca=dma-" class="ibm-feature-link">Files</a></li><li><a href="http://www.ibm.com/developerworks/mydeveloperworks/wikis?ca=dma-" class="ibm-feature-link">Wikis</a></li><li><a href="http://www.ibm.com/developerworks/forums/?ca=dma-" class="ibm-feature-link">Forums</a></li><li><a href="http://www.ibm.com/developerworks/podcast/?ca=dma-" class="ibm-feature-link">Podcasts</a></li></ul><div class="ibm-rule"><hr/></div><p class="ibm-ind-link"><a href="https://www.ibm.com/developerworks/mydeveloperworks/?ca=dma-" class="ibm-forward-link">My developerWorks overview</a></p></div></div>
+<!-- Tagging_Start -->
+<div id="dw-tag-cloud-container" class="ibm-container dw-hidetag"><h2>Tags</h2>
+<div id="dw-tag-help"><a class="dwauthor" rel="#tagtip" id="dwtagtip"><img alt="Help" height="16" width="16" align="top" src="//dw1.s81c.com/developerworks/i/help_icon.gif"/></a></div>
+<div id="tagtip" class="dwauthor-onload-state ibm-no-print">Use the <strong>search field</strong> to find all types of content in My developerWorks with that tag.<p>Use the <strong>slider bar</strong> to see more or fewer tags.</p><p>For articles in technology zones (such as Java technology, Linux, Open source, XML), <strong>Popular tags</strong> shows the top tags 
+for <em>all technology zones</em>.  For articles in product zones (such as Info Mgmt, Rational, WebSphere), <strong>Popular tags</strong> shows the top tags for <em>just that product zone</em>.</p><p>For articles in technology zones (such as Java technology, Linux, Open source, XML), <strong>My tags</strong> shows your tags for <em>all technology zones</em>.  For articles in product zones (such as Info Mgmt, Rational, WebSphere), <strong>My tags</strong> shows your tags for <em>just that product zone</em>.</p></div>
+<div class="ibm-access">Use the search field to find all types of content in My developerWorks with that tag.  <em>Popular tags</em> shows the top tags for this particular content zone (for example, Java technology, Linux, WebSphere).  <em>My tags</em> shows your tags for this particular content zone (for example, Java technology, Linux, WebSphere).</div>
+<div class="ibm-container-body">
+<div class="dw-tag-search"><form action="//www.ibm.com/developerworks/mydeveloperworks/bookmarks/html?lang=en" method="get" id="actualtagform" onsubmit="popupform(this, 'join')">
+<p><label for="tagfield"><strong>Search all tags</strong></label><input id="tagfield" name="tag" type="text" maxlength="20" size="17" />&nbsp;<input src="//dw1.s81c.com/i/v16/buttons/short-btn.gif" type="image" class="ibm-btn-view" alt="submit search" title="submit search" value="Search" /></p></form></div>
+<div class="ibm-rule"><hr/></div>
+<div id="dw-tag-select">
+<div id="dw-tag-select-popular"><p><strong>Popular article tags</strong>&nbsp;|&nbsp;<br /><a id="a-my" href="javascript:;">My article tags</a><a href="#dw-tag-access" class="ibm-access">Skip to tags list</a></p></div>
+<div id="dw-tag-select-my" class="dw-hidetag"><p><a id="a-popular" href="javascript:;">Popular article tags</a>&nbsp;|&nbsp;<br /><strong>My article tags</strong></p><a href="#dw-tag-access" class="ibm-access">Skip to tags list</a></div>
+<div id="dw-tag-cloud"></div>  
+</div>   
+</div>
+</div>
+<!-- Tagging_End -->
+<!-- Dig_Deeper -->
+<div class="ibm-container"><h2>Dig deeper into XML on developerWorks</h2><div class="ibm-container-body"><ul class="ibm-link-list"><li class="ibm-first"><a href="http://www.ibm.com/developerworks/xml/" class="ibm-forward-link">Overview</a></li><li><a href="http://www.ibm.com/developerworks/xml/newto/" class="ibm-forward-link">New to XML</a></li><li><a href="http://www.ibm.com/developerworks/views/xml/downloads.jsp" class="ibm-forward-link">Downloads and products</a></li><li><a href="http://www.ibm.com/developerworks/views/xml/projects.jsp" class="ibm-forward-link">Open source projects</a></li><li><a href="http://www.ibm.com/developerworks/xml/standards/" class="ibm-forward-link">Standards</a></li><li><a href="http://www.ibm.com/developerworks/views/xml/library.jsp" class="ibm-forward-link">Technical library (articles, tutorials, and more)</a></li><li><a href="http://www.ibm.com/developerworks/xml/training/" class="ibm-forward-link">Training</a></li><li><a href="http://www.ibm.com/developerworks/forums/dw_xforums.jsp" class="ibm-forward-link">Forums</a></li><li><a href="http://www.ibm.com/developerworks/views/xml/events.jsp" class="ibm-forward-link">Events</a></li><li><a href="http://www.ibm.com/developerworks/newsletter/" class="ibm-forward-link">Newsletter</a></li></ul></div></div>
+<!-- High_Visibility_Offer -->
+<!--XSLT stylesheet used to transform this content: s-highvisibilityoffer.xsl--><div class="ibm-container"><h2>Stay ahead of the latest cloud trends</h2><div class="ibm-container-body"><img width="188" height="70" border="0" alt="Stay ahead of the latest cloud trends" src="//www.ibm.com/developerworks/i/hivis-w-cloudzone.jpg"/><p class="ibm-ind-link"><a href="https://www.ibm.com/developerworks/cloud/index.html?ca=dti-cloudzone" class="ibm-forward-link">Cloud Computing resources from developerWorks</a></p></div></div>
+<!-- Special_Offers -->
+<div class="ibm-container"><h2>Special offers</h2><div class="ibm-container-body"><p class="dw-special-offers"><a href="http://www.ibm.com/developerworks/downloads/soasandbox/connect/?ca=dti-soasandboxconnect"><img src="//www.ibm.com/developerworks/i/tile_v16_soasandboxconn.gif" width="158" height="50" border="0" alt="Try the dynamic connectivity demo in the SOA Sandbox " /></a></p><p class="dw-special-offers"><a href="http://www.ibm.com/developerworks/downloads/im/cognosbi/learn.html?ca=dti-imcognosBItrial"><img src="//www.ibm.com/developerworks/i/tile_v16_cognos8bi.gif" width="158" height="50" border="0" alt="Try Cognos 8 Business Intelligence" /></a></p><p class="dw-special-offers"><a href="http://www.ibm.com/developerworks/downloads/r/rtcexpressc/learn.html?ca=dti-rattcexpc"><img src="//www.ibm.com/developerworks/i/tile_v16_etcec.gif" width="158" height="50" border="0" alt="Free Rational Team Concert for agile developers" /></a></p><div class="ibm-rule"><hr/></div><p class="ibm-ind-link"><a class="ibm-forward-link" href="http://www.ibm.com/developerworks/downloads/?ca=dti-tilemoreoffers">Trial software offers</a></p></div></div>
+<!-- RIGHT_COLUMN_CONTENT_END -->
+
+</div>
+<!-- RIGHT_COLUMN_END -->
+
+<!-- CONTENT_BODY_END -->
+</div>
+
+</div>
+<!-- CONTENT_END -->
+
+ <!-- END_IBM-PCON -->
+</div>
+
+<!-- FOOTER_BEGIN -->
+<div id="ibm-page-tools">
+<!-- IBM page tools container -->
+</div>
+<div id="ibm-footer">
+<ul>
+<li class="ibm-first"><a href="http://www.ibm.com/ibm/">About IBM</a></li>
+<li><a href="http://www.ibm.com/privacy/">Privacy</a></li>
+<li><a href="http://www.ibm.com/contact/">Contact</a></li>
+<li><a href="http://www.ibm.com/legal/">Terms of use</a></li>
+</ul>
+</div>
+<!-- FOOTER_END -->
+
+ <!-- END_IBM-TOP -->
+</div>
+ 
+ <!-- SCRIPTS_INCLUDE_BEGIN -->
+<!-- JQuery start -->
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.dimensions-1.2.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.hoverIntent.minified.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.cluetip.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/tagging/ui.core-1.7.1.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/tagging/ui.slider-1.7.1.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/tagging/dwjquerytags.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/si/flash-detect.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/si/dwsi.js"></script>
+<script type="text/javascript" language="JavaScript">
+	jQuery.noConflict();     
+	// Put all your code in your document ready area
+	jQuery(document).ready(function(jQuery) {
+	// Do jQuery stuff using jQuery 
+	jQuery('a.dwauthor').cluetip({
+		local: true,
+		showTitle: false,
+		positionBy: 'bottomTop',
+		sticky: true,	
+		mouseOutClose: true,
+		closeText: '<img src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/i/x.gif" alt="Close" />',
+		arrows: false,
+		dropShadow: true,
+		cluetipClass: 'dwbasic'
+		});
+
+		//tagging
+		login="false";
+		userid="";
+		whichTags = "init";
+		pCont = "";
+		mCont = "";
+		signInMCont = "";
+		accessCont = "";
+		pValue = 0;
+		mValue = 0;
+
+		rBHash = null;
+		rBHash = new Object();
+		rBHash['viperLang'] = 'en';
+		rBHash['urlLang'] = 'en';
+		rBHash['tagThisWinTitle'] = 'Tagit';
+		rBHash['pTags1'] = 'Popular tags';
+		rBHash['pTags2'] = 'End of Popular tags';
+		rBHash['mTags1'] = 'My tags';
+		rBHash['mTags2'] = 'End of My tags';
+		rBHash['alt1'] = 'Loading Content';
+		rBHash['noATags'] = 'No active tags';
+		rBHash['signIn1'] = 'Please ';
+		rBHash['signIn2'] = 'sign in';
+		rBHash['signIn3'] = ' to access';
+		rBHash['signIn4'] = 'My Tags';
+		rBHash['signIn5'] = 'To access My Tags, please ';
+		rBHash['signIn6'] = 'sign in';
+		rBHash['signIn7'] = 'Read Popular tags';
+
+		zoneHash = new Object();
+		zoneHash['aix'] = 'AIX and UNIX zone';
+		zoneHash['data'] = 'Information Management zone';
+		zoneHash['lotus'] = 'Lotus zone';
+		zoneHash['rational'] = 'Rational zone';
+		zoneHash['tivoli'] = 'Tivoli zone';
+		zoneHash['websphere'] = 'WebSphere zone';
+		zoneHash['architecture'] = 'Technical library';
+		zoneHash['autonomic'] = 'Technical library';
+		zoneHash['java'] = 'Technical library';
+		zoneHash['cloud'] = 'Technical library';
+		zoneHash['industry'] = 'Technical library';
+		zoneHash['library'] = 'Technical library';
+		zoneHash['linux'] = 'Technical library';
+		zoneHash['opensource'] = 'Technical library';
+		zoneHash['power'] = 'Technical library';
+		zoneHash['webservices'] = 'Technical library';
+		zoneHash['web'] = 'Technical library';
+		zoneHash['xml'] = 'Technical library';
+		zoneHash['wireless'] = 'Technical library';
+		jQuery.checkRB();
+		jQuery.getPopularTags("/developerworks/dwtags/dwjquerytabtags?lang=" + rBHash['viperLang'] + "&base=" + jQuery.getNormalizedZoneUrl(location.href));
+		jQuery.getUserTags();
+		if(jQuery.isTutorial(location.href) == "true") {
+			jQuery.getTagsForContent("/developerworks/tagging/UseCaseServlet?lang=" + rBHash['viperLang'] + "&format=maverick&cType=tutorials&use_case=geturltags&action=gettags&url=" + jQuery.normalizeUrl(location.href));
+		}
+		else {
+			jQuery.getTagsForContent("/developerworks/tagging/UseCaseServlet?lang=" + rBHash['viperLang'] + "&format=maverick&cType=articles&use_case=geturltags&action=gettags&url=" + jQuery.normalizeUrl(location.href));
+
+		}
+		
+		// si
+		initSI();
+	});
+ </script>
+ <!-- JQuery end -->
+ <!-- Overlay js -->
+<script language="JavaScript" src="//dw1.s81c.com/common/js/overlay.js" type="text/javascript"></script>
+<!-- My dW Interest article -->
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/showinterest.js" type="text/javascript">//</script>
+<script language="JavaScript" type="text/javascript">
+        // <![CDATA[
+			var contentId = '';
+			var contentAreas = '';
+			var caArr = [];
+			contentId = '150536';
+			contentAreas = 'xml,web';
+			if(contentAreas != ''){caArr = contentAreas.split(',');}
+			var loginLink = 'https://www.ibm.com/developerworks/dwwi/DWAuthRouter?m=loginpage&d=' + encodeURIComponent(window.location);jQuery('interestShow').showInterest(contentId,'dw-article',{'int_tops':[69,9,107,121,57],'int_prods':[], 'int_prod_fam':[],'int_cont_area':caArr},
+'<div id="dw-interest-anon"><a id="intAnonBtn" class="ibm-external-link" href="">Update My dW interests</a> (<a class="dw-interest" href="' + loginLink + '">Log in</a> | <a class="dw-interest" href="#overlay" onclick="ibmCommon.Overlays.show(\'dwmyinterestadd\', this);return false;">What\'s this?</a>) <a class="ibm-access" href="#dwmyinterestaddhelp">Skip to help for Update My dW interests</a></div>',
+'<div id="dw-interest-add"><a id="intSelectBtn" class="ibm-external-link" href="">Add to My dW interests</a> (<a class="dw-interest" href="#overlay" onclick="ibmCommon.Overlays.show(\'dwmyinterestadd\', this);return false;">What\'s this?</a>) <a class="ibm-access" href="#dwmyinterestaddhelp">Skip to help for Add to My dW interests</a></div>',
+'<div id="dw-interest-remove">Added to My dW interests (<a class="dw-interest" href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/html/myProfileView.do?lang=en">Edit</a>)</div>'
+);
+// ]]>
+</script><!-- BEGIN: Use this section to set page specific variables for the Unica Page Tag -->
+<script language="JavaScript">var NTPT_PGEXTRA="ibmSkillLevel=2&ibmAdoptPhase=-&ibmRole=-";</script>
+<!--END --><!-- SCRIPTS_INCLUDE_END -->
+
+<div id="ibm-metrics">
+<script src="//dw1.s81c.com/common/stats/stats.js" type="text/javascript">//</script>
+</div>
+
+</body>
+</html>

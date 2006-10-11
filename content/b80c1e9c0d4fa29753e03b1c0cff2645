@@ -1,0 +1,340 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="resource-type" content="Document" />
+	<title>Digital Web Magazine	 - Objectifying JavaScript	</title>
+	
+	<meta name="description" content="Digital Web Magazine - Objectifying JavaScript" />
+	<meta name="keywords" content="Objectifying JavaScript, JavaScript, JS, script, scripting, AnimationManager, Animation, prototype, Behind the Curtain, Jonathan Snook, Jonathan, Snook" />
+	<meta name="distribution" content="local" />
+	<meta name="copyright" content="Copyright 0 Digital Web Magazine" />
+	<meta name="type" content="index" />
+	<meta name="pubdate" content="20060918" />
+	<link rel="shortcut icon" type="image/ico" href="/favicon.ico" />
+
+	<link rel="bookmark" href="#masthead" title="Top of the Page" />
+	<link rel="bookmark" href="#globalNav" title="Navigation" />
+	<link rel="search" href="/search/" title="Search Digital Web Magazine" />
+	<link rel="bookmark" href="#content" title="Content" />
+	<link rel="copyright" href="javascript:alert('Copyright 0 Digital Web Magazine')" />
+	
+<link rel="stylesheet" type="text/css" href="/css/article.css" media="screen" title="Digital Web Magazine Style" /><link rel="alternate stylesheet" type="text/css" href="/css/print.css" media="screen" title="Print Preview" />
+<link rel="stylesheet" type="text/css" href="/css/print.css" media="print" />
+<script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=searchbox_012534339689088502956%3A645mphn3x04"></script>
+<script type="text/javascript" src="/js/api.js"></script>
+<script src="/mint/?js" type="text/javascript"></script>
+<script type="text/javascript">var _sf_startpt=(new Date()).getTime()</script>
+</head>
+<body id="article">
+	
+	<!-- AdPacks.com Ad Code -->
+	<script type="text/javascript">
+	(function(){
+	  var bsa = document.createElement('script');
+	     bsa.type = 'text/javascript';
+	     bsa.async = true;
+	     bsa.src = '//s3.buysellads.com/ac/bsa.js';
+	  (document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(bsa);
+	})();
+	</script>
+	<!-- End AdPacks.com Ad Code -->
+
+	
+
+<h1 id="masthead"><a href="/"><img src="/images/dw_logo_big.gif" width="316" height="77" alt="Digital Web Magazine" /></a></h1>
+<p id="slogan">The web professional's online magazine of choice.</p>
+
+<div id="content" class="column">
+	
+		<h1>Objectifying JavaScript</h1>
+
+	<div id="comment_invite_top">
+		<strong>Got something to say?</strong>
+		<p><a href="/articles/objectifying_javascript/comments/">Share your comments</a> on this topic with other web professionals</p>
+	</div>
+
+	<p class="location">In: Columns &gt; <a href="/types/behind_the_curtain/" >Behind the Curtain</a></p>
+				<p class="author">By <a href="/about/contributors/jonathan_snook" >Jonathan Snook</a></p>
+		<p class="date">Published on September 18, 2006</p>
+
+	<p>When I first began programming with JavaScript, I created my variables and then encapsulated any functionality I needed to reuse into a function. As my tasks got more complicated and as I started learning object-oriented programming in other languages, I began to see the benefits of applying that to JavaScript.</p>
+<p>As scripts get larger, functions become more interrelated. Suddenly, you&#8217;ve got ten functions on a page, six of them calling each other to accomplish one task, and another four working towards something else entirely.  For someone taking a first look at this code, it certainly wouldn&#8217;t be immediately clear which were meant to work together and which weren&#8217;t.  This is where objects come in.</p>
+<p>In a true object-oriented sense, an object represents a <em>thing</em>. It might be an image, a user, the document; anything referred to as a noun. An object consists of properties that describe the thing and methods that describe the actions the thing can perform (or that can be performed on it).  For example, an <code>array</code> in JavaScript is an object.  It has properties, such as <code>length</code>, that store information about the object; and methods, such as <code>push</code>, that do something with the object.</p>
+<p>The important idea here is simply that <em>objects encapsulate related functionality</em>.</p>
+<p>In JavaScript, we often perform a series of tasks on existing objects. Form validation, for example: &#8220;When this form is submitted, verify that the user has entered a valid e-mail address, phone number, etc.&#8221;  Instead of writing a function to deal with each form on the page, why not bundle these related tasks into a <code>FormValidator&trade;</code> object that you can easily re-use on other pages and other sites?  Even tasks like setting <code>onclick</code> events on a bunch of links may be better off contained within an object.  Moreover, objects allow us to handle <a href="http://digital-web.com/articles/scope_in_javascript/">variable scope</a> in a contained way, and simply keeps our code cleaner.  Do you keep your cereal boxes all out on the counter?  Or do you group them (alphabetically?  by box size?) nicely on the same shelf in the cupboard?</p>
+<p>We&#8217;ve established that objects are good and useful, but how do we go about creating them? JavaScript, a very flexible language, provides two basic methods for object creation, each with a number of implications and variations.  The two basic methods we&#8217;ll discuss here are are:</p>
+<ul>
+<li>using the object literal</li>
+<li>using the <code>new</code> keyword with a function</li>
+</ul>
+<p>Let&#8217;s shed some light on these options, and the advantages and disadvantages of each.</p>
+<h2>Using the Object Literal</h2>
+<p>Creating a new object using the object literal syntax is very straightforward. The object literal is encapsulated by curly brackets with zero or more property and value pairs, separated by commas. Each property and value is separated by a colon. Property names can be identifiers, strings, or numbers.  Values can be strings, numbers,  functions, or other objects.  Property names get converted to strings, meaning that the string &#8220;25&#8221; and the integer 25 boil down to the same thing: Whichever gets declared last overwrites the other.</p>
+<p>Example:</p>
+<p><code>&nbsp;{
+<br />&nbsp;&nbsp;property: value,
+<br />&nbsp;&nbsp;property: value
+<br />&nbsp;}</code></p>
+<h3>Creating Objects</h3>
+<p>To demonstrate, let&#8217;s create a new object that has three properties; two store numeric values, while the other is an anonymous function (a function with no name):</p>
+<p><code>&nbsp;var AnimationManager = {
+<br />&nbsp;&nbsp; framesPerSecond:    30,
+<br />&nbsp;&nbsp; totalLength:        15,
+<br />&nbsp;&nbsp; startAnimation:     function(){ /* code goes here */ }
+<br />&nbsp;}</code></p>
+<p>It&#8217;s important to note that the object literal is really just a shortcut to creating objects using JavaScript&#8217;s built-in <code>Object</code> type.  We&#8217;ll explore the code in more detail later, but for now just remember that we could also create the <code>AnimationManager</code> object with the following:</p>
+<p><code>&nbsp;var AnimationManager = new Object();
+<br />&nbsp;AnimationManager.framesPerSecond    = 30;
+<br />&nbsp;AnimationManager.totalLength        = 15;
+<br />&nbsp;AnimationManager.startAnimation     = function () { /* code goes here */ };</code></p>
+<h3>Accessing Object Properties</h3>
+<p>We&#8217;ve assigned the object literal to <code>AnimationManager</code>, and can now access the object&#8217;s properties using either dot notation or brackets.  The following lines of code have exactly the same result:</p>
+<p><code>&nbsp;alert(AnimationManager.framesPerSecond);    // object.property
+<br />&nbsp;alert(AnimationManager['framesPerSecond']); // object['property']</code></p>
+<p>We&#8217;ll likely use dot notation most of the time, but the option to treat the object like a <a href="http://en.wikipedia.org/wiki/Hash_table">hash</a> is handy when we want to offer the flexibility to access similar properties in the same way.  For example, if we needed a function to set either the <code>framesPerSecond</code> or <code>totalLength</code> property, we could either write:</p>
+<p><code>&nbsp;function changeValue(property, value) {
+<br />&nbsp;&nbsp; if (property == "framesPerSecond") {
+<br />&nbsp;&nbsp;&nbsp; AnimationManager.framesPerSecond    = value;
+<br />&nbsp;&nbsp; } else {
+<br />&nbsp;&nbsp;&nbsp; AnimationManager.totalLength        = value;
+<br />&nbsp;&nbsp; }
+<br />&nbsp;}</code></p>
+<p>Or we could exploit the ability to access properties via brackets to shorten the logic:</p>
+<p><code>&nbsp;function changeValue(property, value) {
+<br />&nbsp;&nbsp; AnimationManager[property] = value;
+<br />&nbsp;}</code></p>
+<p>Just like that, we&#8217;re able to reduce a complex series of <code>if</code> statements down to a single line.</p>
+<h3>Adding Properties or Methods</h3>
+<p>With our object now assigned to a variable, we can attach new properties or methods onto it at any time.  Simply create a new property by using dot or bracket notation, just like you&#8217;d do to access an existing property:</p>
+<p><code>&nbsp;AnimationManager.stopAnimation  = function(){ }
+<br />&nbsp;AnimationManager.defaultTween   = "sinoidal";</code></p>
+<p>You&#8217;ll recall that is exactly what we did earlier when we discussed the alternate <code>new Object()</code> syntax for the object literal.</p>
+<h2>Using a Function</h2>
+<p><span class="pullquote">In JavaScript, a function is an object; creating a function creates an object. Function objects can be a little more useful than the object literals we just discussed, though, in that they can be used as a template for new objects.</span></p>
+<p>For those unfamiliar with object-oriented programming, this object template is also known as a class. Instead of starting with a blank slate each time, objects built from a class are pre-populated with methods and properties.  By defining a new function object, we are, in effect, defining a blueprint for new objects that we can use over and over again.</p>
+<p>For example, we created an <code>AnimationManager</code> in the previous section using an object literal. We really only want one manager, so we don&#8217;t need to provide a mechanism for creating more; the object literal is a fine choice for this object. Let&#8217;s extend the example a bit, and assume that the <code>AnimationManager</code> controls multiple <code>Animation</code> objects.  If we define <code>Animation</code> using an object literal, we&#8217;ll have to write the same code over and over again as we animate more elements in order to ensure that each new object has the proper methods and properties.  Creating each animation object from a base template provides a solution for this problem.</p>
+<h3>Using a Template</h3>
+<p>To use our template to create a new object, we use the <code>new</code> keyword and call the template function, passing in arguments as usual:</p>
+<p><code>&nbsp;function Animation(element) {
+<br />&nbsp;&nbsp; this.animationLength    = 30;
+<br />&nbsp;&nbsp; this.element            = element;
+<br />&nbsp;}
+<br />&nbsp;
+<br />&nbsp;var obj             = document.getElementById('login');
+<br />&nbsp;var animateLogin    = new Animation(obj);</code></p>
+<p>When <code>new Animation(obj)</code> is executed, a blank object is created in the background, and the <code>Animation</code> function is evaluated, referencing the new object as its <code>this</code> keyword.  We can attach properties to the <code>this</code> keyword, and at the end of the function&#8217;s execution, the newly created object (along with all it&#8217;s properties) is returned.   That means that the new object has two properties set, <code>animationLength</code>, and <code>element</code>, and gets assigned to the <code>animateLogin</code> variable for our later use.</p>
+<p>We can also create methods in our templates, simply by assigning functions to properties of the <code>this</code> keyword, just like properties:</p>
+<p><code>&nbsp;function Animation(element) {
+<br />&nbsp;&nbsp; this.animationLength    = 30;
+<br />&nbsp;&nbsp; this.element            = element;
+<br />&nbsp;&nbsp; this.onStart            = function () {
+<br />&nbsp;&nbsp;&nbsp; alert("The animation is starting!");
+<br />&nbsp;&nbsp; };
+<br />&nbsp;&nbsp; this.onEnd              = function () {
+<br />&nbsp;&nbsp;&nbsp; alert("The animation is ending!");
+<br />&nbsp;&nbsp; };
+<br />&nbsp;}
+<br />&nbsp;
+<br />&nbsp;var obj             = document.getElementById('login');
+<br />&nbsp;var animateLogin    = new Animation(obj);</code></p>
+<p>It&#8217;s important to note that we <em>can</em> add properties onto the <code>Animation</code> function itself, just like the object literal:</p>
+<p><code>&nbsp;function Animation() { }
+<br />&nbsp;Animation.animationLength = 30;
+<br />&nbsp;Animation.element = element;</code></p>
+<p>The difference here is that these additional properties aren&#8217;t part of the template.  If we executed <code>new Animation()</code> from the code above, we&#8217;d get back a blank object, not an object with two properties.  For example:</p>
+<p><code>&nbsp;var animateLogin = new Animation(loginform);
+<br />&nbsp;
+<br />&nbsp;Animation.animationLength = 30;
+<br />&nbsp;
+<br />&nbsp;alert(animateLogin.element);            // the 'loginform' element
+<br />&nbsp;alert(animateLogin.animationLength);    // undefined!</code></p>
+<h2>Prototype</h2>
+<p>The approach outlined above works wonderfully, but is a little wasteful.  In particular, creating a thousand <code>Animation</code> objects would create a thousand copies of each method and property, taking up valuable memory we could be using for other things (and creating the potential for <a href="http://www.quirksmode.org/blog/archives/2005/02/javascript_memo.html">memory leaks</a>). Luckily for us, there&#8217;s a way to create object templates that generate objects that all reference <em>the same</em> methods and properties: We attach properties to the template&#8217;s <strong><code>prototype</code></strong>.  Doing so, any objects instantiated from the original template will be able to use the methods and properties from the template&#8217;s <code>prototype</code> instead of creating their own copies.  In short, a call to a property of an object first checks the object itself for the property; if it doesn&#8217;t exist, it&#8217;ll check it&#8217;s template&#8217;s <code>prototype</code>; we&#8217;ll only have one version of the property stored in memory, no matter how many objects we create.</p>
+<p>The syntax looks a lot like simply adding properties to the <code>Animation</code> object itself.  Instead of <code>Animation.onStart</code>, we add properties to the function object&#8217;s <code>prototype</code> property, like so: <code>Animation.prototype.onStart</code>.  Let&#8217;s rewrite the <code>Animation</code> object from above to make sure that it&#8217;s methods are referenced, not copied:</p>
+<p><code>&nbsp;function Animation(element){
+<br />&nbsp;&nbsp; this.animationLength    = 30;
+<br />&nbsp;&nbsp; Animation.element         = element;
+<br />&nbsp;}
+<br />&nbsp;Animation.prototype.onStart = function() { 
+<br />&nbsp;&nbsp; alert("The animation is beginning!");
+<br />&nbsp;};
+<br />&nbsp;Animation.prototype.onEnd   = function() {
+<br />&nbsp;&nbsp; alert("The animation is ending!");
+<br />&nbsp;};
+<br />&nbsp;var animateLogin = new Animation(loginform);
+<br />&nbsp;animateLogin.onStart(); </code></p>
+<p>We can add to the template&#8217;s <code>prototype</code> at any time, and the new properties will automatically be available, even on object&#8217;s we&#8217;ve already created.  Let&#8217;s rearrange the last example to demonstrate:</p>
+<p><code>&nbsp;function Animation(element){
+<br />&nbsp;&nbsp; this.animationLength    = 30;
+<br />&nbsp;&nbsp; Animation.element         = element;
+<br />&nbsp;}
+<br />&nbsp;var animateLogin = new Animation(loginform);
+<br />&nbsp;
+<br />&nbsp;Animation.prototype.onStart = function() { 
+<br />&nbsp;&nbsp; alert("The animation is beginning!");
+<br />&nbsp;};
+<br />&nbsp;Animation.prototype.onEnd   = function() {
+<br />&nbsp;&nbsp; alert("The animation is ending!");
+<br />&nbsp;};
+<br />&nbsp;
+<br />&nbsp;animateLogin.onStart();</code></p>
+<p>Even though we create the new <code>Animation</code> <em>before</em> we define the <code>onStart</code> and <code>onEnd</code> methods, we can still use them!  This is a huge advantage of the <code>prototype</code>-based approach.</p>
+<h2>Returning an Object in the Constructor</h2>
+<p>As you are probably aware, functions can return values.  What&#8217;s interesting is if you return an object as a result of a constructor (a function called with the <code>new</code> keyword), that object will get used as the new object <em>instead of</em> the blank object that <code>new</code> created and assigned to <code>this</code>.  Any of the properties you&#8217;ve defined in or outside of the function will not be available. An example can probably demonstrate this better:</p>
+<p><code>&nbsp;function Animation(element){
+<br />&nbsp;&nbsp; this.animationLength = 30;
+<br />&nbsp;&nbsp; return {
+<br />&nbsp;&nbsp;&nbsp; hello:  "Hello, world!" 
+<br />&nbsp;&nbsp; }; // empty object. 
+<br />&nbsp;}
+<br />&nbsp;Animation.prototype.onStart = function() { };
+<br />&nbsp;Animation.prototype.onEnd = function() { };
+<br />&nbsp;
+<br />&nbsp;var animateLogin = new Animation(loginform);
+<br />&nbsp;
+<br />&nbsp;animateLogin.onStart();         // undefined!
+<br />&nbsp;animateLogin.animationLength;   // undefined!
+<br />&nbsp;alert(animateLogin.hello);      // "Hello, world!" </code></p>
+<p>&#8220;What&#8217;s the point of that,&#8221; you ask?  In a nutshell, this lets us set up <strong>private variables</strong> that are accessible <em>inside</em> our object, but not from the outside once it&#8217;s been created.  Let&#8217;s take a look at an example using the <code>new</code> keyword on a function to see:</p>
+<p><code>&nbsp;function Animation(element){
+<br />&nbsp;&nbsp; var looped  = 0;
+<br />&nbsp;&nbsp; var e       = element;
+<br />&nbsp;
+<br />&nbsp;&nbsp; function construct() {
+<br />&nbsp;&nbsp;&nbsp; this.loopCount = function() {
+<br />&nbsp;&nbsp;&nbsp;&nbsp;     return looped;
+<br />&nbsp;&nbsp;&nbsp; }
+<br />&nbsp;&nbsp;&nbsp; this.loop      = function() {
+<br />&nbsp;&nbsp;&nbsp;&nbsp;     looped++;
+<br />&nbsp;&nbsp;&nbsp; }
+<br />&nbsp;&nbsp; }
+<br />&nbsp;&nbsp; return new construct();
+<br />&nbsp;}
+<br />&nbsp;
+<br />&nbsp;var animateLogin = new Animation();
+<br />&nbsp;
+<br />&nbsp;animateLogin.loop();
+<br />&nbsp;
+<br />&nbsp;alert(animateLogin.loopCount()); // it's 1
+<br />&nbsp;alert(animateLogin.looped); // undefined!</code></p>
+<p>We created a new function called <code>construct</code> within our <code>Animation</code> function. Anytime we create a new <code>Animation</code> object, we end up returning a new <code>construct</code> object instead.  This means that the methods <code>loopCount</code> and <code>loop</code> will be the only ones we have access to.  However, through the power of <a href="http://blog.morrisjohns.com/javascript_closures_for_dummies">closures</a>, <code>looped</code> is still available <em>inside</em> those functions.  We&#8217;ve hidden away the internal mechanisms of the loop counter, ensuring that it can <em>only</em> be accessed in the ways we specify.</p>
+<h2>Singletons with Functions</h2>
+<p>There are times when we have one central object, and don&#8217;t really want or need to provide a mechanism for creating new versions of it.  The <a href="http://en.wikipedia.org/wiki/Singleton_pattern">singleton</a> design pattern solves this problem.  In the <code>Animation</code> object example we&#8217;ve been using, the <code>AnimationManager</code> is a central object that should control when animations start or stop.  We only need one of these, as opposed to the individual animations that require separate <code>Animation</code> objects with unique values.  We created the <code>AnimationManager</code> with an object literal, but you&#8217;ll often see singletons implemented with functions, let&#8217;s explore how:</p>
+<p><code>&nbsp;var AnimationManager = new function(){
+<br />&nbsp;this.framesPerSecond = 30;
+<br />&nbsp;this.startAnimation = function(){ /* code goes here*/ }
+<br />&nbsp;}</code></p>
+<p>We simply call <code>new</code> on an anonymous function, and use the <code>this</code> keyword to set up properties and methods.  Creating a new object in this way removes the potential of using the object as a template.  Voila, a singleton!  If we want to be extra cautious about access to the object&#8217;s properties, we can even create private variables for our singleton using the same technique as the previous section.</p>
+<p><code>&nbsp;var AnimationManager = new function(){
+<br />&nbsp;var framesPerSecond = 30;
+<br />&nbsp;
+<br />&nbsp;function construct(){
+<br />&nbsp;  this.startAnimation = function() {}
+<br />&nbsp;  this.getFPS = function() { return framesPerSecond; }
+<br />&nbsp;  this.setFPS = function(fps) { framesPerSecond = fps; }
+<br />&nbsp;}
+<br />&nbsp;
+<br />&nbsp;return new construct();
+<br />&nbsp;}</code></p>
+<p>The advantage to this technique over the object literal is the ability to perform tasks when the singleton is being instantiated.  None of the functions is evaluated at the time of instantiation when using the object literal. This requires an extra step to create an initialization function and run it immediately after it has been created.</p>
+<h2>The Object Factory</h2>
+<p>Another advanced pattern that you might see from time to time is a <a href="http://en.wikipedia.org/wiki/Factory_method_pattern">factory</a> pattern.  Without going into too much detail, we can use a function to create objects for us, which can be handy for handling object properties.  Let&#8217;s take a quick look at an example:</p>
+<p><code>&nbsp;function objectMaker()
+<br />&nbsp;{
+<br />&nbsp;return {value:5}
+<br />&nbsp;}
+<br />&nbsp;var object1 = objectMaker();
+<br />&nbsp;var object2 = objectMaker();</code></p>
+<p>It&#8217;s handy because we can selectively overwrite values by mapping the values of one literal onto another. <a href="http://prototype.conio.net/">The Prototype JavaScript Framework</a> (not to be confused with the <code>prototype</code> property) does exactly this with it&#8217;s  <code>Object.extend</code> method.</p>
+<h2>Building Blocks</h2>
+<p>With JavaScript seeing a resurgence in popularity these days, knowing different approaches to object creation can make your code easier to read, understand and extend. Objects are a building block of maintainable JavaScript and a great asset to any JavaScript developer.</p>
+<h2>Resources</h2>
+<ul>
+<li><a href="http://dean.edwards.name/weblog/2006/03/base/">Dean Edwards&#8217; Base</a> goes into more detail about how to create base classes and handle inheritance in JavaScript.</li>
+<li><a href="http://blog.morrisjohns.com/javascript_closures_for_dummies">Closures</a></li>
+<li><a href="http://prototype.conio.net/">Prototype Library</a> </li>
+<li><a href="http://javascript.crockford.com/prototypal.html">Prototypal Inheritance</a></li>
+<li><a href="http://javascript.crockford.com/private.html">Private Members in JavaScript</a></li>
+</ul>
+
+	<div id="comment_invite_bottom">
+		<strong>Got something to say?</strong>
+				<p><a href="/articles/objectifying_javascript/comments/" >Share&nbsp;your&nbsp;comments&nbsp;&nbsp;with&nbsp;other&nbsp;professionals</a>&nbsp;(0&nbsp;comments)</p>
+	</div>
+	
+	<ul id="bookmarks">
+		<li class="magnolia"><a href="http://ma.gnolia.com/bookmarklet/add?url=http://www.digital-web.com/articles/objectifying_javascript&amp;description=Objectifying+JavaScript">Add to Magnolia</a></li><li class="myyahoo"><a href="http://myweb2.search.yahoo.com/myresults/bookmarklet?u=http://www.digital-web.com/articles/objectifying_javascript&amp;t=Objectifying+JavaScript">Add to My Yahoo!</a></li><li class="newsvine"><a href="http://www.newsvine.com/_tools/seed&amp;save?u=http://www.digital-web.com/articles/objectifying_javascript&amp;h=Objectifying+JavaScript">Add to Newsvine</a></li><li class="digg"><a href="http://digg.com/submit?phase=2&amp;url=http%3A//www.digital-web.com/articles/objectifying_javascript&amp;title=Objectifying+JavaScript">Digg this story</a></li><li class="delicious"><a href="http://del.icio.us/post?url=http://www.digital-web.com/articles/objectifying_javascript&amp;title=Objectifying+JavaScript" onclick="window.open('http://del.icio.us/post?v=4&amp;noui&amp;jump=close&amp;url=http://www.digital-web.com/articles/objectifying_javascript&amp;title=Objectifying JavaScript', 'delicious','toolbar=no,width=700,height=400'); return false;">Add to Del.icio.us</a></li>	</ul>
+
+	<p id="topics" style="margin-top: 0.75em;">
+		<strong>Related Topics</strong>: 
+		<a href="/topics/scripting" >Scripting</a>, <a href="/topics/programming" >Programming</a>, <a href="/topics/dom" >DOM</a>	</p>
+	<div id="bio">
+					<div class="clearhak">&nbsp;</div>
+			<img src="/images/profiles/jonathan_snook.jpg" width="100" />
+			<p><a href="/about/staff/jonathan_snook/">Jonathan Snook</a> is a freelance web developer and consultant. When not working on one project or another, this proud father can be found spending time with
+his son and wife in beautiful Ottawa, Ontario, Canada.			</p>
+			</div>
+</div>
+
+
+<div id="footer">
+		<p class="banner ad"></p>
+	<p>Copyright &#169; 1994-2010 <a href="/about/copyright/">Digital Web Magazine</a>. All Rights Reserved.</p>
+</div>
+
+<ul id="globalNav">
+	<li id="articlesLink"><a href="/">Home</a></li><li id="contactLink"><a href="/contact/">Contact</a></li><li id="aboutLink"><a href="/about/">About</a></li><li id="eventsLink"><a href="/events/">Events</a></li></ul>
+
+<p style="position:absolute; right:23px; top:25px; z-index:100;"><a href="/about/site/"><img src="/images/hostedby.gif" alt="Media Temple" width="117" height="14" border="0" /></a></p>
+
+<ul id="sortNav">
+	<li id="topicLink"><a href="/topics/">Articles by topic</a></li><li id="dateLink"><a href="/dates/">Articles by date</a></li><li id="authorLink"><a href="/authors/">Articles by author</a></li><li id="titleLink"><a href="/titles/">Articles by title</a></li><li id="typeLink"><a href="/types/">Articles by type</a></li>	<li class="search">
+		<!-- Google CSE Search Box Begins -->
+		  <form id="searchbox_012534339689088502956:645mphn3x04" action="/search/">
+		  	<label for="searchTerms">Search</label>
+			<input name="q" type="text" id="searchTerms" />
+			<input type="hidden" name="cx" value="012534339689088502956:645mphn3x04" />
+			<input type="hidden" name="cof" value="FORID:9" />
+			<input type="image" src="/images/go.gif" alt="GO!" id="searchSubmit" />
+		  </form>
+		<!-- Google CSE Search Box Ends -->
+	</li>
+</ul>
+
+<div id="sideAds">
+	<!-- AdPacks.com Zone Code -->
+	<div id="bsap_1253161" class="bsarocks bsap_842608e642eb3567cae5b25f74c41b60"></div>
+	<a href="http://adpacks.com" id="bsap_aplink">via Ad Packs</a>
+	<!-- End AdPacks.com Zone Code -->
+	
+	<div id="sbgoog">
+	</div>
+</div>
+	<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	_uacct = "UA-104641-1";
+	urchinTracker();
+	</script>
+	<script type="text/javascript">
+	var _sf_async_config={uid:1489,domain:"digital-web.com"};
+	(function(){
+	  function loadChartbeat() {
+	    window._sf_endpt=(new Date()).getTime();
+	    var e = document.createElement('script');
+	    e.setAttribute('language', 'javascript');
+	    e.setAttribute('type', 'text/javascript');
+	    e.setAttribute('src',
+	       (("https:" == document.location.protocol) ? "https://s3.amazonaws.com/" : "http://") +
+	       "static.chartbeat.com/js/chartbeat.js");
+	    document.body.appendChild(e);
+	  }
+	  var oldonload = window.onload;
+	  window.onload = (typeof window.onload != 'function') ?
+	     loadChartbeat : function() { oldonload(); loadChartbeat(); };
+	})();
+
+	</script>
+</body>
+</html>

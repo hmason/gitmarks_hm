@@ -1,0 +1,838 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta name="generator" content="HTML Tidy for Mac OS X (vers 1 September 2005), see www.w3.org" />
+
+    <title>On having layout — the concept of hasLayout in IE/Win</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="description" content="A lot of Internet Explorer's rendering inconsistencies can be fixed by giving an element 'layout'. This leads to a question of why 'hasLayout' can change the rendering of, and the relationships between elements. In this article, the authors focus on some aspects of this complicated matter." />
+    <meta name="keywords" content="haslayout, Internet Explorer and CSS, IE for Windows bugs" />
+    <meta name="author" content="Ingo Chao" />
+    <link rel="stylesheet" href="../style/layoutBlack.css" type="text/css" media="screen, projection" title="white, black" />
+    <link rel="alternate stylesheet" href="../style/layoutGrey.css" type="text/css" media="screen, projection" title="gray, orange" />
+    <link rel="stylesheet" href="../style/layout_print.css" type="text/css" media="print" />
+</head>
+
+<body>
+    <h1>On having <span class="large">layout</span></h1>
+
+    <div class="wrapper">
+        <dl id="version" class="c3">
+            <dt>A work in progress.</dt>
+
+            <dd>This version: <a href="http://www.satzansatz.de/cssd/onhavinglayoutrev08-20081116.html">Rev. 8 2008–11–16</a></dd>
+
+            <dd><a href="http://www.satzansatz.de/cssd/layoutchangelog.html">Changelog</a></dd>
+
+            <dd><a href="#translation">Translations</a></dd>
+
+            <dd><a href="#toc">Table of contents</a></dd>
+        </dl>
+
+        <h2 id="intro">Introduction</h2>
+
+        <p>A lot of Internet Explorer's rendering inconsistencies can be fixed by giving an element “layout.” John Gallant and Holly Bergevin classified these inconsistencies as “dimensional bugs,” meaning that they can often be solved by applying a width or height. This leads to a question of why “layout” can change the rendering of and the relationships between elements. The question, albeit a good one, is hard to answer. In this article, the authors focus on some aspects of this complicated matter. For more thorough discussions and examples, please refer to the links provided.</p>
+
+        <h2 id="def">hasLayout — A Definition</h2>
+
+        <p>“Layout” is an IE/Win proprietary concept that determines how elements draw and bound their content, interact with and relate to other elements, and react on and transmit application/user events.</p>
+
+        <p>This quality can be irreversibly triggered by some CSS properties. Some HTML elements have “layout” by default.</p>
+
+        <p>Microsoft developers decided that elements should be able to acquire a “property” (in an object-oriented programming sense) they referred to as <code>hasLayout</code>, which is set to <code>true</code> when this rendering concept takes effect.</p>
+
+        <div class="alpha">
+            <h3 id="nom">Nomenclature</h3>
+
+            <p>We speak of an element “gaining layout” or say that an element “has layout” when the Microsoft-proprietary property <a href="http://msdn.microsoft.com/en-us/library/ms533776.aspx" title="See the MSDN property description"><code>hasLayout</code></a> is set to <code>true</code> for it. A “layout element” can be any element which has layout by default or has gained layout by setting some appropriate CSS property.</p>
+
+            <p>In “non-layout” elements, <code>hasLayout</code> is not triggered, i.e. a pure div without a dimension can be a “non-layout ancestor”.</p>
+
+            <p>Giving or applying “layout” to an element that does not have it by default involves setting a CSS property that triggers <code>hasLayout = true</code> for the element in question. See <a href="onhavinglayout.html#elem">Default Layout Elements</a> and <a href="onhavinglayout.html#prop">Properties</a> for these listings. There is no way to set <code>hasLayout = false</code> other than to remove or reset the CSS property that caused <code>hasLayout = true</code> in the first place.</p>
+        </div><!--/alpha-->
+
+        <h2 id="begin">The Hand We've Been Dealt</h2>
+
+        <p>The <code>hasLayout</code> problem affects designers (and coders) at all experience levels. Layout has unusual and hard to predict effects on the display of boxes, as well as implications for their descendant elements.</p>
+
+        <p>Consequences of an element having, or not having “layout” can include:</p>
+
+        <ul>
+            <li>Many common IE float bugs.</li>
+
+            <li>Boxes themselves treating basic properties differently.</li>
+
+            <li>Margin collapsing between a container and its descendants.</li>
+
+            <li>Various problems with the construction of lists.</li>
+
+            <li>Differences in the positioning of background images.</li>
+
+            <li>Differences between browsers when using scripting.</li>
+        </ul>
+
+        <p>The above list is brief and incomplete. This article attempts to more thoroughly describe issues encountered by the application of “layout” or the lack of it.</p>
+
+        <h2 id="wherefrom">Where Layout Comes From</h2>
+
+        <p>Unlike standard properties, or even proprietary CSS properties available in different browsers, layout is <em>not directly assigned via CSS declarations</em>. In other words, there is no “layout property.” Certain elements automatically “have layout” and it is quietly added when various CSS declarations are made.</p>
+
+        <div class="alpha">
+            <h3 id="elem">Default layout elements</h3>
+
+            <p>The following elements appear to have layout by default.</p>
+
+            <ul>
+                <li><code class="c2">&lt;html&gt;, &lt;body&gt;</code></li>
+
+                <li><code class="c2">&lt;table&gt;, &lt;tr&gt;, &lt;th&gt;, &lt;td&gt;</code></li>
+
+                <li><code class="c2">&lt;img&gt;</code></li>
+
+                <li><code class="c2">&lt;hr&gt;</code></li>
+
+                <li><code class="c2">&lt;input&gt;, &lt;button&gt;, &lt;select&gt;, &lt;textarea&gt;, &lt;fieldset&gt;, &lt;legend&gt;</code></li>
+
+                <li><code class="c2">&lt;iframe&gt;, &lt;embed&gt;, &lt;object&gt;, &lt;applet&gt;</code></li>
+
+                <li><code class="c2">&lt;marquee&gt;</code></li>
+            </ul>
+
+            <h3 id="prop">Properties</h3>
+
+            <p>The following CSS property/value pairs will, if applied, allow an element to gain layout.</p>
+
+            <dl>
+                <dt><code class="c2">position: absolute</code></dt>
+
+                <dd>Refers to its containing block, and that's where some problems begin.</dd>
+
+                <dt><code class="c2">float: left|right</code></dt>
+
+                <dd>The float model has a lot of quirks due to some aspects of a layout element.</dd>
+
+                <dt><code class="c2">display: inline-block</code></dt>
+
+                <dd>Sometimes a cure when the element is at inline level and needs layout. Applying layout is probably the only real effect of this property. The “inline-block behaviour” itself can be achieved in IE, but quite independently: <a href="http://www.brunildo.org/test/InlineBlockLayout.html" title="see Bruno Fassino's article">IE/Win: inline-block and hasLayout</a>.</dd>
+
+                <dt><code class="c2">width: any value other than 'auto'</code></dt>
+
+                <dd>This is often an implicit fix, more often the trigger when hasLayout does things wrong.</dd>
+
+                <dt><code class="c2">height: any value other than 'auto'</code></dt>
+
+                <dd>height: 1% is used in the Holly Hack.</dd>
+
+                <dt><code class="c2">zoom: any value other than 'normal'</code> (<a href="http://msdn.microsoft.com/en-us/library/ms531189.aspx" title="See the MSDN property description">MSDN</a>)</dt>
+
+                <dd>MS proprietary, does not validate. <code>zoom: 1</code> can be used for debugging.</dd>
+
+                <dt><code class="c2">writing-mode: tb-rl</code> (<a href="http://msdn.microsoft.com/en-us/library/ms531187.aspx" title="See the MSDN property description">MSDN</a>)</dt>
+
+                <dd>MS proprietary, does not validate.</dd>
+            </dl>
+
+            <p>As of IE7, overflow became a layout-trigger.</p>
+
+            <dl>
+                <dt><code class="c2">overflow: hidden|scroll|auto</code></dt>
+
+                <dd>This property did not apply in prior versions, unless “layout” was added to the box by other triggers.</dd>
+
+                <dt><code class="c2">overflow-x|-y: hidden|scroll|auto</code></dt>
+
+                <dd>As part of the CSS3 box model module, overflow-x and -y are not widely implemented yet. They did not trigger hasLayout in prior versions of IE.</dd>
+            </dl>
+
+            <p>And new hasLayout actors appeared on the screen in IE7. As far as hasLayout is concerned, the min/max properties act similar to how width and height works, and the effects of fixed and absolute positioning seem to be identical.</p>
+
+            <dl>
+                <dt><code class="c2">position: fixed</code></dt>
+
+                <dd>./.</dd>
+
+                <dt><code class="c2">min-width: any value</code></dt>
+
+                <dd>Even the value 0 lets the element gain layout.</dd>
+
+                <dt><code class="c2">max-width: any value other than 'none'</code></dt>
+
+                <dd>./.</dd>
+
+                <dt><code class="c2">min-height: any value</code></dt>
+
+                <dd>Even the value 0 sets haslayout=true</dd>
+
+                <dt><code class="c2">max-height: any value other than 'none'</code></dt>
+
+                <dd>./.</dd>
+            </dl>
+
+            <p>Based on querying the IE Developer Toolbar and preliminary testing.</p>
+
+            <h3 id="inline">Notes on elements at inline level</h3>
+
+            <p>For inline elements (either inline by default like <code>span</code>, or having <code>display: inline</code>)</p>
+
+            <ul>
+                <li><code>width</code> and <code>height</code> trigger <code>hasLayout</code> in IE 5.x and IE 6 or newer in quirks mode only. As of IE6, when the browser is in “standards-compliance mode” inline elements will ignore the width and height properties, and setting the width and height properties will not cause the element to have layout.</li>
+
+                <li><code>zoom</code> always triggers <code>hasLayout</code>, but it's not supported in IE5.0.</li>
+            </ul>
+
+            <p>Elements having both “layout” and <code>display: inline</code> behave in a similar way as what the standards say about inline-block: they flow horizontally like words in a paragraph, are sensitive to vertical align, and apply a sort of shrink-wrapping to their content. As soon as the inline elements have layout, they act as inline-block, this is an explanation why, in IE/Win, inline elements can contain and hold block-level elements with less problems than in other browsers, where <code>display: inline</code> remains inline.</p>
+
+            <h3 id="reset">Resetting hasLayout</h3>
+
+            <p>Resetting the following properties to their default value in a separate rule set will reset (or undo) <code>hasLayout</code>, if no other property giving <code>hasLayout</code> remains in effect:</p>
+
+            <ul>
+                <li><code>width, height</code> (to 'auto')</li>
+
+                <li><code>max-width, max-height</code> (to 'none') (in IE 7)</li>
+
+                <li><code>position</code> (to 'static')</li>
+
+                <li><code>float</code> (to 'none')</li>
+
+                <li><code>overflow</code> (to 'visible') (in IE 7)</li>
+
+                <li><code>zoom</code> (to 'normal')</li>
+
+                <li><code>writing-mode</code> (from 'tb-rl' to 'lr-tb')</li>
+            </ul>
+
+            <p>Authors must be careful with resetting these properties. Consider a menu system: Changing the hasLayout-status on <code>a:hover</code>, be it intentionally or not, might result in unexpected rendering (or IE 6 program instability when undone dynamically in combination with <code>position: relative</code>).</p>
+
+            <p>The display-property differs: while 'inline-block' sets <code>haslayout = true</code>, the flag will not be reset to <code>false</code> later on by overriding the value with <a href="http://www.tanfa.co.uk/archives/show.asp?var=300" title="Tanfa: EasyClearing, the Aslett/PIE way is NOT broken in IE7!">'block'</a> or <a href="http://www.brunildo.org/test/InlineBlockLayout.html" title="Bruno Fassino: IE/Win: inline-block and hasLayout">'inline'</a> in another rule set.</p>
+
+            <p>Setting the properties <code>min-width, min-height</code> to their default value '0' still gives <code>hasLayout</code>, but IE 7 accepts for them the invalid value 'auto', which resets <code>hasLayout</code>.</p>
+
+            <h3 id="haslayoutprop">The hasLayout script property</h3>
+
+            <p>We have chosen to refer to <code>hasLayout</code> as a “script property” in order to distinguish it from the CSS properties we are familiar with.</p>
+
+            <p>There is no way to set or reset the script property <code>hasLayout</code> directly.</p>
+
+            <p>The <a href="http://msdn.microsoft.com/en-us/library/ms533776.aspx" title="See the MSDN property description">hasLayout-property</a> can be used to check if an element has layout: If, for example, it has “eid” as <code>id</code>, then simply writing in the IE5.5+ address bar <code class="c1">javascript: alert(eid.currentStyle.hasLayout)</code> tests its state.</p>
+
+            <p>The IE <a href="http://www.microsoft.com/downloads/details.aspx?FamilyID=e59c3964-672d-4511-bb3e-2d5e1db91038&amp;displaylang=en" title="MS Download">Developer Toolbar</a> allows for live inspecting of the current style of an element; when <code>hasLayout</code> is true its value is reported as “-1”. By live editing the attributes of a node, you can set “zoom (css)” to “1” to trigger <code>hasLayout</code> for debugging purposes.</p>
+
+            <p>Another thing to consider is how “layout” affects scripting. The <code>clientWidth</code>/<code>clientHeight</code> properties always return zero for elements without “layout.” This can be confusing to new scripters and is different to how Mozilla browsers behave. We can use this fact to determine “layout” for IE5.0: If the <code>clientWidth</code> is zero then the element does not have layout.</p>
+        </div><!--/alpha-->
+
+        <h2 id="hack">CSS hacks</h2>
+
+        <p>The following hacks to trigger <code>haslayout</code> have been well tested in IE7 and lower.</p>
+
+        <p>John Gallant and Holly Bergevin published the <a href="http://www.communitymx.com/content/article.cfm?page=2&amp;cid=C37E0" title="see communitymx">Holly hack</a> in 2003:</p>
+
+        <ol class="csshtml">
+            <li class="t00"><code>/* \*/</code></li>
+
+            <li class="t01"><code>* html .gainlayout { height: 1%; }</code></li>
+
+            <li class="t00"><code>/* */</code></li>
+        </ol>
+
+        <ul>
+            <li>Gives layout in IE5-6 to any element, except to inline elements in IE6 standards mode.</li>
+
+            <li>Works generally well, except in rare cases where height:0 or 1px is more stable.</li>
+
+            <li>Is incompatible with <code>overflow: hidden</code>, except in IE6 standards mode (where <code>height: 1%</code> reverts to <code>height: auto</code>, unless the parent has a specified height.)</li>
+
+            <li>Has no effect in IE7 standards mode where <code>* html</code> doesn't select anything.</li>
+        </ul>
+
+        <p>To give layout to IE6 and lower we can also use the <a href="http://wellstyled.com/singlelang.php?lang=en&amp;page=css-underscore-hack.html" title="see the WellStyled Workshop">underscore hack</a>:</p>
+
+        <ol class="csshtml">
+            <li class="t01"><code>.gainlayout { _height: 0; }</code></li>
+        </ol>
+
+        <p>And to give layout to IE7 we can use the min-height property:</p>
+
+        <ol class="csshtml">
+            <li class="t01"><code>.gainlayout { min-height: 0; }</code></li>
+        </ol>
+
+        <p>Alternatively, and possibly more future proof, are <a href="http://msdn2.microsoft.com/en-us/library/ms537512.aspx" title="see the MSDN">conditional comments</a>:</p>
+
+        <ol class="csshtml">
+            <li class="t00"><code>&lt;!--[if lte IE 6]&gt;</code></li>
+
+            <li class="t01"><code>&lt;style&gt;</code></li>
+
+            <li class="t02"><code>.gainlayout { height: 1px; }</code></li>
+
+            <li class="t01"><code>&lt;/style&gt;</code></li>
+
+            <li class="t00"><code>&lt;![endif]--&gt;</code></li>
+        </ol>
+
+        <ol class="csshtml">
+            <li class="t00"><code>&lt;!--[if IE 7]&gt;</code></li>
+
+            <li class="t01"><code>&lt;style&gt;</code></li>
+
+            <li class="t02"><code>.gainlayout { zoom: 1; }</code></li>
+
+            <li class="t01"><code>&lt;/style&gt;</code></li>
+
+            <li class="t00"><code>&lt;![endif]--&gt;</code></li>
+        </ol>
+
+        <p>The use of an external style sheet for whatever fixes IE-Win needs, linked from inside a conditional comment, is also a secure and elegant solution:</p>
+
+        <ol class="csshtml">
+            <li class="i01"><code>&lt;link rel="stylesheet" href="allbrowsers.css" type="text/css" /&gt;</code></li>
+
+            <li class="t00">&nbsp;</li>
+
+            <li class="i01"><code>&lt;!--[if lte IE 7]&gt;</code></li>
+
+            <li class="i01"><code>&lt;link rel="stylesheet" href="iefix.css" type="text/css" /&gt;</code></li>
+
+            <li class="i01"><code>&lt;![endif]--&gt;</code></li>
+        </ol>
+
+        <p>For IE6 and lower <code>height</code> should “always” be used (if we want to include IE5.0 there aren't many alternatives), unless it conflicts with something else (<code>overflow: hidden</code>). About the value, <code>1%, 1px, 0</code> are more or less equivalent, but <code>1%</code> may (albeit very rarely) cause <a href="http://www.brunildo.org/test/relayout.html" title="see Bruno Fassino's test case">problems</a>.</p>
+
+        <p><code>height</code> cannot be used for inline elements in standard mode, and should be avoided in IE7 (or used with care: only percentage values, and then only if the parent element has no specified height). In those cases we prefer <code>display: inline-block</code> or <code>zoom: 1</code>.</p>
+
+        <p>We've seen desperate attempts of “holy” hacks (sic!) applied to floated elements, or to elements already having a width. Remember the goal of such an hack is not to apply a height to an element, but to trigger <code>hasLayout = True</code>.</p>
+
+        <p>Don't give layout to all: <code>* {_height: 1px;}</code>. Poison in that concentration, having layout is not the cure, it changes the rendering fundamentally.</p>
+
+        <div class="alpha">
+            <h3 id="hackmanagement">Hack management</h3>
+
+            <p>As the release of IE7 has demonstrated, it's impossible to foresee if future versions of IE will still need hasLayout to fix some bugs and how they will react to filters in use today. In this light, the use of the MS proprietary <code>zoom</code> and/or conditional comments, can be advised.</p>
+
+            <ol class="csshtml">
+                <li class="t00"><code>&lt;!--[if lt IE 7]&gt;&lt;style&gt;</code></li>
+
+                <li class="t01"><code>/* style for IE6 + IE5.5 + IE5.0 */</code></li>
+
+                <li class="t01"><code>.gainlayout { height: 0; }</code></li>
+
+                <li class="t00"><code>&lt;/style&gt;&lt;![endif]--&gt;</code></li>
+
+                <li class="t00">&nbsp;</li>
+
+                <li class="t00"><code>&lt;!--[if IE 7]&gt;&lt;style&gt;</code></li>
+
+                <li class="t01"><code>.gainlayout { zoom: 1; }</code></li>
+
+                <li class="t00"><code>&lt;/style&gt;&lt;![endif]--&gt;</code></li>
+            </ol>
+
+            <ul>
+                <li><code>zoom: 1;</code> gives layout in IE5.5+ to any element (including inline elements), but it has no effect in IE5.0</li>
+
+                <li>No known side effects (inline elements behave like inline-block, though).</li>
+
+                <li>If validation is required, <code>zoom</code> must be hidden via conditional comments.</li>
+            </ul>
+
+            <p>While we think “future proof” is a contradiction in terms, we strongly suggest the web designer “plays for sure” and review her pages for explicit and implicit “hacks” and use conditional comments to serve those hacks to the appropriate browser version.</p>
+
+            <p>For a more detailed overview of hasLayout triggers and comparison of hasLayout hacks in the various IE versions, see <a href="http://onhavinglayout.fwpf-webdesign.de/hack_management/" title="tables of hasLayout triggers and hacks">Thoughts on IE hack management</a>.</p>
+        </div><!--/alpha-->
+
+        <h2 id="iemac">A short note about IE Mac.</h2>
+
+        <p>IE Mac and IE for Windows are two different animals, living in separate parts of the zoo. Each has its own rendering engine, and IE Mac doesn't know about the “hasLayout” behaviour (or <code>contenteditable</code>) in any way. The IE Mac rendering engine tend to be rather standard compliant, with i.e. <code>height</code> being treated as <code>height</code>, as it should. Hacks and workarounds for the “hasLayout” problems (especially when using the <code>height</code> or <code>width</code> properties) will often have rather detrimental effects on IE Mac, and should be hidden from that browser. More on IE Mac problems can be found at the <a href="http://www.l-c-n.com/IE5tests/" title="CSS problems in IE Mac">IE Mac, bugs and oddities pages</a>.</p>
+
+        <h2 id="docu">MSDN documentation</h2>
+
+        <p>In the MSDN, there are very few pages related to the hasLayout MS-property, and less is explained how having layout correlates with the visual formatting model of IE.</p>
+
+        <p>Back in IE4, nearly every element had sort of layout, except for simple inline elements not positioned absolutely and without a dimension (MSDN - document was modified<sup><a href="#endnote_001">1</a></sup>). And in this early layout concept, there were “layout properties” like <code>border, margin, padding</code>, which can't be applied to such a simple inline element. In other words, “having layout” was just another term for roughly: “may have these properties.”</p>
+
+        <p>MSDN still speaks of “<a href="http://msdn.microsoft.com/en-us/library/ms531207.aspx" title="See the MSDN CSS attributes page">layout properties</a>,” but the meaning has changed, they are not associated with elements having layout anymore. In IE5.5, the MS-property <a href="http://msdn.microsoft.com/en-us/library/ms533776.aspx" title="See the MSDN property description"><code>hasLayout</code></a> was introduced, more or less an internal flag.</p>
+
+        <p>In IE5.5, the documentation of the MSHTML Editing Platform (which allows for live editing, sizing, and dragging layout elements via <code>&lt;body contenteditable=true&gt;</code>) reveals three important aspects related to having layout:</p>
+
+        <div class="quote">
+            <blockquote cite="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dnmshtml/html/mshtmleditplatf.asp" title="from the MSDN spec: Editing Platform">
+                <p>If a layout element has contents, the layout of its contents is determined by its bounding rectangle.</p>
+
+                <p>Having layout basically means an element is rectangular.</p>
+
+                <p>Internally, having layout means that an element is responsible for drawing its own content.</p>
+            </blockquote>
+
+            <p class="blockquotesource">(Editing Platform — document removed from the MSDN<sup><a href="#endnote_002">2</a></sup>)</p>
+        </div>
+
+        <p>The inner workings related to layout itself was not documented until August 2005, when, as a result of <a href="http://www.webstandards.org/" title="meet the WaSP">The Web Standards Project</a> and Microsoft task force, Markus Mielke [MSFT] opened the door for a thorough discussion:</p>
+
+        <div class="quote">
+            <blockquote cite="http://msdn.microsoft.com/en-us/library/bb250481.aspx" title="see the MSDN article">
+                <p>In general, elements in Internet Explorer's Dynamic HTML engine are not responsible for arranging themselves. A div or a p element may have a position within the source-order and flow of the document, but their contents are arranged by their nearest ancestor with a layout (frequently body). These elements rely on the ancestor layout to do all the heavy lifting of determining size and measurement information for them.</p>
+            </blockquote>
+
+            <p class="blockquotesource">(<a href="http://msdn.microsoft.com/en-us/library/bb250481.aspx" title="see the MSDN article">HasLayout Overview</a>)</p>
+        </div>
+
+        <h2 id="interpr">Interpretation</h2>
+
+        <p>Our interpretation is an attempt to explain what happens in known cases, and it should serve as a guide for cases not fully known. The attempt to demystify a black box only by inserting some test cases into it and listen if it rattles is doomed to failure. The “question why” cannot be answered. We have to try to understand the framework in which the whole “hasLayout” model works, and how it affects rendering of web documents. Out of this, <em>guidelines</em> can be developed (and those can only be guidelines, not absolute solutions).</p>
+
+        <p>We think they speak of a little window. The content of a layout element would be completely independent from anything outside of the element's boundary, and the content couldn't affect anything outside either.</p>
+
+        <p>The hasLayout MS-property is a sort of flag: when it is set, the element has this layout “quality”, which includes special capabilities — for instance, on the floating and stacking — for the element itself and for its non-layouted child elements.</p>
+
+        <p>This greater independence of layout elements is probably the reason why they are usually more stable, and so they make some bugs to disappear. The price for this can be both deviance from standards, and further bugs/problems at their boundaries.</p>
+
+        <p>The MS “page” model, thinking in semiotics, can be seen as consisting of little blocks of stories that are unrelated, where as the HTML and W3C model has “page” model as complete narrative, story, blocks of information that are related.</p>
+
+        <h2 id="rev">A review of the consequences</h2>
+
+        <div class="alpha">
+            <h3 id="clear">Clearing floats and the extend to fit</h3>
+
+            <p>Floats are auto-contained by layout elements. That's one reason why most beginners struggle with their IE-build pages in a compliant browser where floats stick out of the container when not cleared.</p>
+
+            <ul>
+                <li><a href="http://www.complexspiral.com/publications/containing-floats" title="see Eric Meyer's article">Containing Floats</a></li>
+
+                <li><a href="http://positioniseverything.net/easyclearing.html" title="see PIE">how to clear floats without structural markup</a></li>
+            </ul>
+
+            <p>The opposite behavior: what if a float must stick out of its container, e.g. when auto-containing is not the desired effect? For a demonstration of the frustrating problems one might encounter, check out our in-depth discussion:</p>
+
+            <ul>
+                <li><a href="http://www.satzansatz.de/cssd/acidicfloat.html" title="Undesired float enclosing caused by hasLayout">acidic float tests</a></li>
+            </ul>
+
+            <p>In IE, a float will always “belong” to its layout container. Subsequent elements might respect the layout container, but not the float itself.</p>
+
+            <p>This, and IE6's expanding of a container to fit any wider content (the “extend-to-fit”), can be seen as an aspect of the “determined by its bounding rectangle” rule.</p>
+
+            <p>Even worse: <code>clear</code> can't affect a float outside of the clearer's layout container. Float layouts relying on that bug in IE cannot be transferred to work in a compliant browser without a general re-do.</p>
+
+            <p>The IE's auto-containing of float, which is sometimes unavoidable, can be achieved in other browsers: see our section “<a href="onhavinglayout.html#engineer">Similarities with the CSS specs</a>” for concepts on containing floats.</p>
+
+            <h3 id="nextfloat">Elements next to floats</h3>
+
+            <p>When a block follows a floated element, it should — as a block — ignore the float, but its contents should be displaced by the float: the text in a block-level element next to a left-floated element should flow to the right of the float, and then (if it is longer than the float) continue below the floated element. But if the block has “layout”, say, a width is set for some reasons, then the whole element is displaced by the float, as if it were a float itself, and so the text content does not wrap around the float anymore (it remains at its right, rectangularly shaped.)</p>
+
+            <p>A percentage width for the block is computed in IE 5 on the basis of the available space at the side of the float, and in IE 6 on the basis of the full available width of a parent block. So in IE 6 a <code>width: 100%</code> results in something not fitting at the side of the float, with all the layout problems that not-fitting blocks may cause.</p>
+
+            <p>Test cases for hasLayout blocks adjacent to floated blocks:</p>
+
+            <ul>
+                <li><a href="http://dev.l-c-n.com/IEW2-bugs/float-layout.php">by using width</a></li>
+
+                <li><a href="http://dev.l-c-n.com/IEW2-bugs/float-adjecant.php">by using min-width (IE 7) and zoom (IE 6)</a></li>
+            </ul>
+
+            <p>Similar to this, actually, relatively positioned elements next to floats should offset with respect to the padding edge of the parent (i.e. <code>left: 0;</code> on a r.p. element would place it on top of a preceding left floated box). In IE 6, the offset <code>left: value;</code> starts from the right margin edge of the float, causing a horizontal misalignment by the total outer width of the float (a workaround is to use <code>margin-left</code> instead, but beware the quirky percentages flaws).</p>
+
+            <ul>
+                <li><a href="http://dev.l-c-n.com/IEW2-bugs/float-layout2-rp.php">layout blocks with relative positioning adjacent to floated blocks</a></li>
+            </ul>
+
+            <p>According to the specs, floats <i>interweave</i> with subsequent boxes. This cannot be accomplished with two-dimensional rectangles that don't intersect.</p>
+
+            <p>If the author gives in to IE's inadequacy, then the question arises how to get boxes in standards compliant browsers look similar to these layout boxes which “retract” to make room for a preceding float. We're giving options to establish a new block formatting context next to the float in our section “<a href="onhavinglayout.html#engineer">Similarities with the CSS specs</a>”.</p>
+
+            <p>By (re-)visiting this bug page in IE 6</p>
+
+            <ul>
+                <li><a href="http://positioniseverything.net/explorer/threepxtest.html" title="see PIE">three pixel text-jog</a></li>
+            </ul>
+
+            <p>we'll see that the layout box following the float will not show the 3px text jog, because the float's hardwired 3px surrounding cannot affect the content inside the layout element anymore, but moves the whole layout element by 3px. Like a shield, layout prevented the content from being affected, but the energy of the push by the float moves the shielded box itself.</p>
+
+            <h3 id="list">Lists</h3>
+
+            <p>Lists are affected by layout applied either to the list (<code>ol, ul</code>) or to the list elements (<code>li</code>). Different versions of IE react differently. The most evident effects are on the list markers (fully customized lists where the markers are not required won't have these problems.) The markers are probably created by internally adding some elements that are somewhat “attached” to the list elements (usually hangs out of them) and seems rather unstable. Unfortunately, being “internal” only objects, they cannot be accessed to try to correct mis-behaviours.</p>
+
+            <p>The most evident effects are:</p>
+
+            <ul>
+                <li>Layout applied to a list makes the markers to disappear or to be differently/wrongly positioned.</li>
+            </ul>
+
+            <p>Sometimes they can be restored by changing margins on the list elements. This looks like a consequence of the fact that a layout element tends to crop internal elements hanging out of it.</p>
+
+            <ul>
+                <li>Layout applied to list elements creates the same problems as above, and more (<a href="http://www.brunildo.org/test/IEWlispace.php" title="see Bruno Fassino's test case">extra vertical space between list items</a>)</li>
+            </ul>
+
+            <p>A further problem is that (in ordered lists) any list element with layout seems to have its own counter. Let's say we have an ordered list with five elements where only the third has layout. We'll see this:</p>
+
+            <p>1... 2... 1... 4... 5...</p>
+
+            <p>Moreover when a list element with layout displays on multiple lines the marker is vertically aligned at the bottom (not at the top, as expected.)</p>
+
+            <p>Some of these problems cannot be cured, so when the markers are desired it's better to avoid layout on lists and list elements. If it's necessary to apply some dimension, this is better applied to other elements: for example a width can be applied to an external wrapper, and a height to the content of each list item.</p>
+
+            <p>Another common problem with lists in IE occurs when the content of any <code>li</code> is an anchor with <code>display: block</code>. In these conditions the white space between list items is not ignored and usually displayed as an extra line for each <code>li</code>. One of the methods to avoid this extra vertical space is to give layout to the block anchors. This also has the benefit of making the whole rectangular area of the anchors clickable.</p>
+
+            <h3 id="tab">Tables</h3>
+
+            <p>A <code>table</code> always has layout, always behaves as a width defined object. In IE6, <a href="http://msdn.microsoft.com/en-us/library/ms531161.aspx" title="see the MSDN"><code>table-layout: fixed</code></a> is usually equivalent to a table with a width of 100%, with all problems that this brings (erroneous computations). As a side note, <a href="http://dev.l-c-n.com/tables_2/" title="see Philippe Wittenbergh's article">just a few things</a> on the situation in IE5.5 and “quirks mode” IE6.</p>
+
+            <h3 id="rp">Relatively positioned elements</h3>
+
+            <p>Note that <code>position: relative</code> does not trigger hasLayout, which leads to some rendering errors, mostly disappearing or misplaced content. Inconsistencies might be encountered by page reload, window sizing and scrolling, selecting. With this property, IE offsets the element, but seems to forget to send a “redraw” to its layout child elements (as a layout element would have sent correctly in the signal chain of redraw events).</p>
+
+            <ul>
+                <li><a href="http://www.satzansatz.de/cssd/rpfloat.html" title="see Ingo Chao's article">r.p. parent and disappearing floated child</a></li>
+
+                <li><a href="http://positioniseverything.net/explorer/ie-listbug.html" title="see PIE">disappearing list-background bug</a></li>
+            </ul>
+
+            <p>are related descriptions. As a rule of thumb, never position an element relatively without setting layout. In addition, we may check if the parent of such a construct needs layout and/or <code>position: relative</code> too, this becomes essential when floats are affected.</p>
+
+            <h3 id="cb">Absolutely positioned elements:<br />
+            <span>Containing block, what containing block?</span></h3>
+
+            <p>It is essential to understand the CSS concept of the containing block, which answers where to relate an absolutely positioned (a.p.) element to: to define the offset origin, and to define the length percentages are calculated with respect to.</p>
+
+            <p>For a.p. elements, the containing block is established by its nearest positioned ancestor. If there is no such ancestor, the initial containing block of <code>html</code> is used.</p>
+
+            <p>Normally, we would set such a containing block via position: relative. That means, we can let a.p. elements relate to lengths and origins independent from the flow of elements, i.e. to fulfill the needs of the “content first” accessibility concept or to make life easier in complex float layouts.</p>
+
+            <p>This design concept is questioned by IE: offsets of an a.p. element are correctly computed only if the containing block has layout, and a percentage width of an a.p. element may refer to the wrong ancestor. Here IE 5 and IE 6 behave differently, but both have problems. IE 7b2 has a more consistent behaviour, but is still incorrect in some cases. When possible, try to stick to cases where the containing block has layout and it is the parent of the a.p. element (i.e. there aren't other ancestors in between the a.p. and the containing block).</p>
+
+            <p>Say a non–layout parent is positioned relatively — we are urged to set layout to this parent to get the offset to work:</p>
+
+            <ul>
+                <li><a href="http://www.positioniseverything.net/abs_relbugs.html" title="see PIE">Absolutely Buggy II</a></li>
+            </ul>
+
+            <p>Say a non-positioned parent must have a dimension, and the design relies on a percentage width calculation — we can drop that idea, due to a lack of browser support:</p>
+
+            <ul>
+                <li><a href="http://www.satzansatz.de/cssd/tmp/apboxpercentagewidth.html" title="see Ingo Chao's test case">absolutely positioned element and percentage width</a></li>
+            </ul>
+
+            <h3 id="filter">Filter</h3>
+
+            <p>The MS-proprietary <a href="http://msdn.microsoft.com/en-us/library/ms532853.aspx" title="see the MSDN spec">filters</a> are applicable to layout elements only. They show their own specific <a href="http://www.satzansatz.de/cssd/tmp/alphatransparency.html" title="see Ingo Chao's attempt to get them work">flaws</a>.</p>
+
+            <h3 id="reflow">Re–flow of rendered elements</h3>
+
+            <p>Once all the elements are rendered, IE reflows the containing layout block when a :hover-transition (i.e., a change of the link's <code>background</code>) occurs. Sometimes the elements are placed at a new position because at the moment the hover occurs, all the widths and offsets of the related elements are known to IE. This is unlike to happen on first load, where the width is undetermined yet due to the expand-to-fit feature. This can result in a jump on hover.</p>
+
+            <ul>
+                <li><a href="http://www.satzansatz.de/cssd/pseudocss.html#hoverjump" title="see Ingo Chao's article about pseudo-css">Jump on :hover</a></li>
+
+                <li><a href="http://www.positioniseverything.net/explorer/percentages.html" title="see PIE">quirky percentages: the reflow</a></li>
+            </ul>
+
+            <p>These relational bugs, based on the re-flow problem, create problems in liquid layouts where is most common the use of percentages for margins and paddings.</p>
+
+            <h3 id="bgorigin">Background origin</h3>
+
+            <p>The hasLayout MS-property affects the extension and the positioning of the background. For example, according to the <a href="http://www.w3.org/TR/CSS21/colors.html#q2" title="see the W3C spec">CSS spec</a>, <code>background-position: 0 0</code> should refer to the “padding edge” of the element. In IE/Win it refers to the “border edge” when <code>hasLayout = false</code>, and to the “padding edge” when <code>hasLayout=true</code>:</p>
+
+            <ul>
+                <li><a href="http://www.brunildo.org/test/BackgroundBorderLayout.html" title="see Bruno Fassino's article">Background, Border, hasLayout</a></li>
+            </ul>
+
+            <h3 id="uncollapse">Margin collapsing</h3>
+
+            <p>The <code>hasLayout</code> MS-property affects the collapsing of margins between a box and its descendants. According to the spec the top margin of a box with no top padding and no top border should collapse with the top margin of its first in-flow block-level child:</p>
+
+            <ul>
+                <li><a href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins" title="see the W3C spec">Collapsing Margins</a></li>
+
+                <li><a href="http://complexspiral.com/publications/uncollapsing-margins" title="see Eric Meyer's article">Uncollapsing Margins</a></li>
+            </ul>
+
+            <p>In IE/Win this never happens when the box has layout: it seems that layout prevents the margins of the children to stick out of the containing box. Moreover when <code>hasLayout</code> is true, either on the container or on the child, other wrong margins computations show up:</p>
+
+            <ul>
+                <li><a href="http://www.brunildo.org/test/IEMarginCollapseLayout.html" title="see Bruno Fassino's article">Margin collapsing and hasLayout</a></li>
+            </ul>
+
+            <h3 id="marginform">Horizontal margins get copied onto form elements</h3>
+
+            <p>Form elements whose immediate containing box has layout, inherit the sum of the horizontal margins of all of their containing boxes, up to, but not including, the next containing box having layout.</p>
+
+            <p>A fix, for most cases, is to give layout to the containing box next to the immediate one. Another fix, one that works for all cases we have found, is to add an innermost, unstyled, container around the form element.</p>
+
+            <ul>
+                <li><a href="http://www.positioniseverything.net/explorer/inherited_margin.html" title="see Barry Jaspan's article">IE inherited margin bug: form elements and hasLayout</a></li>
+            </ul>
+
+            <h3 id="link">Block–level links</h3>
+
+            <p>hasLayout affects the clickable/hoverable area of a block-level anchor. Usually with <code>hasLayout = false</code> only the part covered by the text is sensitive. With <code>hasLayout = true</code> the whole block area is sensitive. The same is true for any block element with an attached onclick/onmouseover event handler.</p>
+
+            <ul>
+                <li><a href="http://www.brunildo.org/test/IEABlock1.html" title="see Bruno Fassino's article">Block anchors and hasLayout</a></li>
+            </ul>
+
+            <h3 id="inpage">In–page keyboard navigation: an odyssey</h3>
+
+            <p>While tabbing through a page and entering an in-page link, the next <kbd>tab</kbd> key press won't resume on the subsequent anchor:</p>
+
+            <ul>
+                <li><a href="http://www.jimthatcher.com/news-05.htm#haslayout" title="see Jim Thatcher's article">hasLayout Property Characterizes IE6 Bug</a></li>
+
+                <li><a href="http://juicystudio.com/article/ie-keyboard-navigation.php" title="see Gez Lemon's article">Keyboard Navigation and Internet Explorer</a></li>
+            </ul>
+
+            <p>The <kbd>tab</kbd> will bring — and often mislead — the user to the first target of the nearest layout ancestor (if this layout ancestor is formed by a <code>table</code>, <code>div</code>, <code>span</code> and certain other elements).</p>
+
+            <h3 id="shrinkwrap">Shrink-wrapping</h3>
+
+            <p>Some properties applied to elements with <code>width: auto</code> cause them to compute their width with a shrink-wrap algorithm. Examples of such properties are <code>float: left|right, position: absolute|fixed, display: table|table-cell|inline-block|inline-table.</code></p>
+
+            <p>This works in IE/Win, of course limited to the supported properties. But when the element which should shrink-wrap contains a block element with “layout” assigned, then in most cases this child expands to the full available width, independently of its content, and prevents the shrink-wrapping effect of the parent.</p>
+
+            <dl>
+                <dt><a href="http://dev.l-c-n.com/IEW2-bugs/shrinkwrap.php" title="tests: hasLayout and shrinkwrapping">Example</a>:</dt>
+
+                <dd>A floating vertical navigation ul fails to shrink-wrap, because for the links, <code>a {display: block; zoom: 1;}</code> was needed to fix the list whitespace bug and to expand the clickable area.</dd>
+            </dl>
+
+            <p>The shrink-wrap remains in effect only if the layout child has an assigned width, or it has a shrink-wrap property itself, such as float.</p>
+
+            <h3 id="clip">Clipping over the edge</h3>
+
+            <p>In general, when a box contains more complex structures like protruding content, “hasLayout” on this container is often necessary to avoid rendering problems. This almost-requirement causes a dilemma at the boundaries, since a block element that gains “layout” becomes a sort of <a href="#interpr" title="see interpretation">self-enclosed box</a>.</p>
+
+            <p>Nested content boxes that are moved outwards from that element (by using negative margins, for example) are clipped.</p>
+
+            <ul>
+                <li><a href="http://dev.l-c-n.com/IEW2-bugs/min-width-clip.php">Clipping of negative margined blocks in a hasLayout container</a></li>
+            </ul>
+
+            <p>The clipped portions can be restored by triggering “hasLayout” on that content box, and <code>position: relative</code> is also needed in IE 6. The IE 7 behaviour seems slightly better in that <code>position: relative</code> is no longer necessary.</p>
+        </div><!--/alpha-->
+
+        <h2 id="stack">The stack, the layering, and layout</h2>
+
+        <p>There seem to be two layering and stacking orders within IE/Win:</p>
+
+        <ul>
+            <li>One is the (pseudo) attempt to implement the css model: <a href="http://www.aplus.co.yu/css/z-pos/" title="see Aleksandar Vacic's series">Effect of z-index value to RP and AP blocks</a></li>
+
+            <li>Then there is the stacking order created by “hasLayout” and its twin the “contenteditable” behaviour. As shown in the example to relative positioning, not having layout can affect the stacking in a way Harry Houdini would had have fun with.</li>
+        </ul>
+
+        <p>Both stacking models, though incompatible, are residents of IE's engine. As a rule of thumb: While debugging, don't miss checking both suspects. We regularly see related problems in drop down or similar complex menus, where the stacking, positioning and floating can lead to manifold disasters, and bug fixes may include giving z-indexed positioned layout, but it varies, so be warned.</p>
+
+        <h2 id="contenteditable">The contenteditable–debacle</h2>
+
+        <p>The attribute <code>contenteditable=true</code>, set on a HTML tag like <code>&lt;body contenteditable=true&gt;</code> allows for live editing, dragging and re-sizing the element and it's layout children. Now try that with floats or layout li in an ordered list.</p>
+
+        <p>In order to manipulate elements (edit them), “contenteditable” and “hasLayout” introduce a separate stacking order for those elements which return <code>true</code> for <code>hasLayout</code>.</p>
+
+        <p>The Editing Platform (document removed from the MSDN<sup><a href="#endnote_002">2</a></sup>) inherits the layout-concept, evidence can be seen that contenteditable is the <em>reason</em> for the layout-misconception (with the implication that applications that somewhat integrate the IE editing engine force a backward compatibility to this layout-concept).</p>
+
+        <ul>
+            <li><a href="http://annevankesteren.nl/2005/07/more-contenteditable" title="see Anne van Kesteren's blog entry">More on contenteditable</a></li>
+        </ul>
+
+        <h2 id="engineer">Similarities with the CSS specs</h2>
+
+        <p>Are your MSIE-designed pages failing in other browsers? No need to let that happen, you know! Any good browser can handle MSIE-designs just fine if you ask them nicely — and serve them some valid CSS.</p>
+
+        <p>Utilizing the <i>slight</i> similarities found between <code>hasLayout</code> and the establishment of “<a href="http://www.w3.org/TR/CSS21/visuren.html#block-formatting" title="CSS 2.1 spec - 9.4.1">new block formatting context</a>” gives us some means to reproduce the effects of <code>hasLayout</code> for “<a href="http://www.w3.org/TR/CSS21/visudet.html#root-height" title="Visual formatting model details - 10.6.7">containment of floats”</a> and for the behaviour of “<a href="http://www.w3.org/TR/CSS21/visuren.html#floats" title="Visual formatting model - 9.5">elements next to a floated element</a>” in standard compliant browsers.</p>
+
+        <ul>
+            <li><a href="http://www.gunlaug.no/contents/wd_example_01.html" title="see Georg Sørtun's series">Reverse engineering series</a></li>
+
+            <li><a href="http://dev.l-c-n.com/IEW/simulations.php" title="see Philippe Wittenbergh's simulations of hasLayout: overflow, display:table, new block formatting context">Simulations</a></li>
+        </ul>
+
+        <h2 id="quirk">Quirks mode</h2>
+
+        <p>Please refer to our <a href="http://www.satzansatz.de/cssd/quirksmode.html" title="Quirks mode in IE 6 and IE 7">quirks mode chapter</a> for information about this rendering mode.</p>
+
+        <h2 id="conclusion">Layout — a conclusion</h2>
+
+        <p>The layout concept as a whole is not compatible to a number of basic CSS concepts of the visual formatting model, namely containing, the flow, floating, positioning and layering.</p>
+
+        <p>This leads to IE/Win specific violations of the CSS specification due to the presence or absence of layout on elements in the page.</p>
+
+        <h2 id="bottomline">Having layout — part of another engine?</h2>
+
+        <div class="quote">
+            <blockquote cite="http://dean.edwards.name/IE7/notes/#layout" title="see Dean Edwards' notes on IE7">
+                <p>The object model inside Explorer appears to be a hybrid of a document model and their traditional application model. I mention this as it is important in understanding how Explorer renders pages. The switch for jumping from a document model to an application model is to give an element “layout”.</p>
+            </blockquote>
+
+            <p class="blockquotesource">(<a href="http://dean.edwards.name/IE7/notes/#layout" title="see the notes on IE7">Dean Edwards</a>)</p>
+        </div>
+
+        <p>Sometimes it's impossible to give an interpretation to some behaviour: it's simply like, depending on hasLayout status, one of two different rendering engines is used, each one with its own quirks and bugs.</p>
+
+        <h2 id="absurd">The absurdity of bugs</h2>
+
+        <div class="quote">
+            <blockquote cite="http://www.gunlaug.no/contents/molly_1_15.html" title="Molly speaks up...">
+                <p>Software-bugs are the result of human errors and lack of completeness and logic during the creation-process. It's a fundamental human shortcoming, for which a lasting cure is yet to be found.<br />
+                Any attempts to correct buggy software without recreating it from scratch, will inevitably lead to even more and more complex bugs finding their way into the software, because of the same human shortcomings.<br />
+                All software that rely on other software — including Operating Systems (of course), will also rely on its bugs. Thus we get a cascade of bugs from all involved bits of software, which makes even the thought of finding bug-free software completely absurd.</p>
+            </blockquote>
+
+            <p class="blockquotesource">(<a href="http://www.gunlaug.no/contents/molly_1_15.html" title="Molly speaks up...">Molly ‚the cat‛</a>)</p>
+        </div>
+
+        <p id="update">This article was created on June 30, 2005 and last changed on November 16, 2008.</p>
+
+        <dl id="editors">
+            <dt>Editors:</dt>
+
+            <dd><a href="http://positioniseverything.net/" title="Holly on PIE">Holly Bergevin</a></dd>
+
+            <dd><a href="http://www.satzansatz.de/css.html" title="satzansatz">Ingo Chao</a>, coauthor of “<a href="http://dolphinsback.com/#book">Fortgeschrittene CSS-Techniken inkl. CSS-Debugging</a>”</dd>
+
+            <dd><a href="http://www.brunildo.org/" title="Brunildo — CSS">Bruno Fassino</a></dd>
+
+            <dd><a href="http://positioniseverything.net/" title="Big John on PIE">John Gallant</a></dd>
+
+            <dd><a href="http://www.gunlaug.no/" title="Web-carpenter and farm assistent">Georg Sørtun</a></dd>
+
+            <dd><a href="http://emps.l-c-n.com/" title="Empty Spaces">Philippe Wittenbergh</a></dd>
+        </dl>
+
+        <dl id="support">
+            <dt>Special thanks for supporting the project to:</dt>
+
+            <dd><a href="http://dean.edwards.name" title="">Dean Edwards</a>, <a href="http://www.gunlaug.no/contents/molly_1.html" title="bug hunter">Molly ‚the cat‛</a>, <a href="http://chelseacreekstudio.com/" title="Chelsea Creek Studio">David Laakso</a> and <a href="http://corina-rudel.de/">Corina Rudel</a></dd>
+        </dl>
+
+        <dl id="translation">
+            <dt>Translations:</dt>
+        
+
+            <dd><a href="http://www.maujor.com/tutorial/haslayout.php" title="">Brazilian Portuguese</a> by <a href="http://www.maujor.com" title="">Mauricio Samy Silva</a>, author of “<a href="http://www.maujor.com/livro/livro.html" title="">Construindo Sites com CSS e (X)HTML</a>”</dd>
+
+            <dd><a href="http://fuedo.com/index.php?title=%D0%9A%D0%BE%D0%BD%D1%86%D0%B5%D0%BF%D1%86%D0%B8%D1%8F%D1%82%D0%B0_hasLayout_%D0%B8%D0%B7%D0%BF%D0%BE%D0%BB%D0%B7%D0%B2%D0%B0%D0%BD%D0%B0_%D0%B2_Internet_Explorer_%D0%B7%D0%B0_Windows" title="">Bulgarian</a> by <a href="http://fuedo.com/" title="">Yordan Stoev</a></dd>
+
+            <dd><a href="http://old9.blogsome.com/2006/04/11/onhavinglayout/" title="">Chinese</a> by <a href="http://old9.blogsome.com">old9</a></dd>
+
+            <dd><a href="http://yoyodesign.org/doc/on-having-layout/" title="">French</a> by <a href="http://yoyodesign.org/about/">Jean-Jacques Solari</a></dd>
+
+            <dd><a href="http://onhavinglayout.fwpf-webdesign.de/">German</a> by <a href="http://corina-rudel.de/">Corina Rudel</a></dd>
+
+            <dd><a href="http://gabrieleromanato.altervista.org/css/onhavinglayout.html" title="Italiano">Italian</a> by <a href="http://gabrieleromanato.altervista.org/" title="Gabriele Romanato">Gabriele Romanato</a></dd>
+
+            <dd><a href="http://www.habrahabr.ru/blog/webdev/24553.html">Russian</a> by <a href="http://sunnybear.ru">DreamwinD</a></dd>
+
+            <dd><!--In preparation:<br /> -->
+            Translations are welcome, please get in touch with us.</dd>
+        </dl>
+
+        <dl id="discussion">
+            <dt>Discuss this article:</dt>
+
+            <dd><a href="http://dean.edwards.name/weblog/2005/06/layout/" title="">dean.edwards.name/weblog/</a></dd>
+
+            <dt>Contact us:</dt>
+
+            <dd class="email">
+                <del>spam.</del><ins>layout</ins>@satzansatz.de
+            </dd>
+        </dl>
+
+        <dl id="licence">
+            <dt>Copyright notice:</dt>
+
+            <dd>This work is published under a <a href="http://creativecommons.org/licenses/by-nc-sa/2.0/" rel="license">Creative Commons license</a>.</dd>
+        </dl>
+
+        <h2>Table of contents</h2>
+
+        <ol id="toc" class="csshtml">
+            <li class="i01"><a href="#intro">Introduction</a></li>
+
+            <li class="i01"><a href="#def">hasLayout — A Definition</a></li>
+
+            <li class="i02"><a href="#nom">Nomenclature</a></li>
+
+            <li class="i01"><a href="#begin">The Hand We've Been Dealt</a></li>
+
+            <li class="i01"><a href="#wherefrom">Where Layout Comes From</a></li>
+
+            <li class="i02"><a href="#elem">Default layout elements</a></li>
+
+            <li class="i02"><a href="#prop">Properties</a></li>
+
+            <li class="i02"><a href="#inline">Notes on elements at inline level</a></li>
+
+            <li class="i02"><a href="#reset">Resetting hasLayout</a></li>
+
+            <li class="i02"><a href="#haslayoutprop">The hasLayout script property</a></li>
+
+            <li class="i01"><a href="#hack">CSS hacks</a></li>
+
+            <li class="i02"><a href="#hackmanagement">Hack management</a></li>
+
+            <li class="i01"><a href="#iemac">A short note about IE Mac.</a></li>
+
+            <li class="i01"><a href="#docu">MSDN documentation</a></li>
+
+            <li class="i01"><a href="#interpr">Interpretation</a></li>
+
+            <li class="i01"><a href="#rev">A review of the consequences</a></li>
+
+            <li class="i02"><a href="#clear">Clearing floats and the extend to fit</a></li>
+
+            <li class="i02"><a href="#nextfloat">Elements next to floats</a></li>
+
+            <li class="i02"><a href="#list">Lists</a></li>
+
+            <li class="i02"><a href="#tab">Tables</a></li>
+
+            <li class="i02"><a href="#rp">Relatively positioned elements</a></li>
+
+            <li class="i02"><a href="#cb">Absolutely positioned elements: Containing block, what containing block?</a></li>
+
+            <li class="i02"><a href="#filter">Filter</a></li>
+
+            <li class="i02"><a href="#reflow">Re–flow of rendered elements</a></li>
+
+            <li class="i02"><a href="#bgorigin">Background origin</a></li>
+
+            <li class="i02"><a href="#uncollapse">Margin collapsing</a></li>
+
+            <li class="i02"><a href="#marginform">Horizontal margins get copied onto form elements</a></li>
+
+            <li class="i02"><a href="#link">Block–level links</a></li>
+
+            <li class="i02"><a href="#inpage">In–page keyboard navigation: an odyssey</a></li>
+
+            <li class="i02"><a href="#shrinkwrap">Shrink-wrapping</a></li>
+
+            <li class="i02"><a href="#clip">Clipping over the edge</a></li>
+
+            <li class="i01"><a href="#stack">The stack, the layering, and layout</a></li>
+
+            <li class="i01"><a href="#contenteditable">The contenteditable–debacle</a></li>
+
+            <li class="i01"><a href="#engineer">Similarities with the CSS specs</a></li>
+
+            <li class="i01"><a href="#quirk">Quirks mode</a></li>
+
+            <li class="i01"><a href="#conclusion">Layout — a conclusion</a></li>
+
+            <li class="i01"><a href="#bottomline">Having layout — part of another engine?</a></li>
+
+            <li class="i01"><a href="#absurd">The absurdity of bugs</a></li>
+        </ol>
+
+        <p id="url">Permanent location: http://www.satzansatz.de/cssd/onhavinglayout.html</p>
+
+        <ol id="endnotes">
+            <li id="endnote_001">The <a href="http://msdn.microsoft.com/workshop/author/css/overview/measurementandlocation.asp" title="See the MSDN measurement and location overview">original document</a> has been modified in the MSDN. We are referring to a version that is available in the Internet Archive (<a href="http://web.archive.org/web/20060213042931/http://msdn.microsoft.com/workshop/author/css/overview/measurementandlocation.asp" title="see the MSDN">Controlling Presentation with Measurement and Location Properties</a>).</li>
+
+            <li id="endnote_002">The <a href="http://msdn.microsoft.com/library/en-us/dnmshtml/html/mshtmleditplatf.asp" title="See the MSDN">original document</a> has been removed from the MSDN and is available in the Internet Archive (<a href="http://web.archive.org/web/20060207170714/http://msdn.microsoft.com/library/en-us/dnmshtml/html/mshtmleditplatf.asp" title="see the MSDN spec">The MSHTML Editing Platform in Internet Explorer 5.5</a>).</li>
+        </ol>
+    </div>
+</body>
+</html>

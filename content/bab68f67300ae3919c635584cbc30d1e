@@ -1,0 +1,2903 @@
+<HTML>
+<HEAD>
+    <TITLE>gotAPI.com :: documentation search engine</TITLE>
+    <meta name="keywords" content="API help reference search lookup HTML CSS JavaScript DOM XSL XPath Schema PHP Ruby Rails MySQL ActionScript ColdFusion Hibernate Spring Struts DITA J2EE Struts Oracle GWT">
+    <meta name="description" content="Abbreviated version of gotAPI.com providing quick API search for MySQL, Oracle, HTML, CSS, JavaScript, DOM, XSL, XPath, Schema, PHP, Ruby, Rails, ActionScript, ColdFusion, Spring, Hibernate and more">
+    <LINK REL="SHORTCUT ICON" HREF="images/favicon.ico">
+<STYLE>
+TD {
+    font-family: Verdana, Arial;
+    font-size: 11px;
+    color: #202020;
+}
+
+.moduleLink {
+}
+
+.moduleLinkH {
+    color: black;
+    background: #d8eaed;
+}
+
+.headerMinimized{
+	background: #e8eff7;
+}
+
+.gaMenu {
+	border-style: solid;
+	border-width: 1px 2px 2px 1px;
+	border-color:  #707070;
+	background-color: #FAFAFA;
+	padding: 0px 5px 0px 5px;
+}
+.gaSelectedRow {
+	font: 8pt Arial;
+	background-color: #c1e0e6;
+	cursor: pointer;
+}
+.gaHeaderRow {
+	font: bold 8pt Arial;
+	color: #359155;
+	border-top: 1px solid #C0C0C0;
+	width: 250px;
+}
+.gaFooterRow {
+	font: 8pt Arial;
+	color: #505050;
+}
+.gaRegularRow {
+	font: 8pt Arial;
+	cursor: pointer;
+}
+
+
+.contentFrame {
+	border-style: solid;
+    border-width: 2px 0px 2px 0px;
+    border-color: #359155;
+    background: white;
+}
+
+h3 {
+    font-family: Arial;
+    font-size: 9pt;
+    margin: 6px 0px 1px 0px;
+    font-weight: normal;
+
+    border-style: solid;
+    border-width: 0px 0px 1px 0px;
+    padding: 1px 0px 0px 0px;
+    border-color:  #359155;
+}
+
+.sample
+{
+    padding: 0px;
+    font-size: 7pt;
+    color: #909090;
+}
+
+.moduleList
+{
+    font-family: Arial;
+    font-size: 12px;
+    padding: 0px 15px 0px 15px;
+}
+
+.cbox {
+	margin: -1px -1px 0px 0px;
+}
+
+.header {
+	font-size: 15px;
+	font-weight: bold;
+	color: #359155;
+}
+
+.rem {
+	font-size: 10px;
+	font-weight: normal;
+}
+
+.contributor {
+	font-size: 9px;
+	font-weight: normal;
+	color: #808080
+}
+
+.pup {
+	cursor: pointer;
+	margin-left: 2px;
+}
+
+.note {
+	font-size: 8px;
+    color: white;
+    background: #800000;
+    padding: 0px 2px 0px 2px;
+}
+
+.recentA {
+	color: #808080;
+	font-size: 10px;
+	text-decoration:none;
+	white-space: nowrap;
+}
+
+.copyright {
+	color: #808080;
+	font-family: Arial;
+	font-size: 10px;
+	text-decoration: none;
+}
+
+body {
+	background: white;
+}
+</STYLE>
+<SCRIPT><!--
+var ROW_SPACER = '\u00A0\u00A0\u00A0\u00A0';
+updateRequired = false;
+queueProcessing = false;
+currentSearchId = 0;
+textInput = null;
+rowCount = 35;
+menuTable = null;
+menuTableRows = new Array();
+previousQuery = null;
+var targetDoc = null;
+var targetWin = null;
+
+function setupSearchField(win)
+{
+	targetWin = win;
+	targetDoc = win.document;
+
+	// Setup text input
+    textInput = targetDoc.getElementById('gaSearch');
+    textInput.onkeydown = keydown;
+    textInput.onkeyup = keyup;
+    textInput.onfocus = processFocus;
+    textInput.onblur = processBlur;
+    try
+    {
+        // Try catch because it could be hidden
+        //textInput.focus();
+    }
+    catch(e)
+    {
+    }
+
+    // Position results table
+    menuTable = targetDoc.createElement('table');
+	menuTable.className = 'gaMenu';
+	menuTable.style.display = 'none';
+	menuTable.cellSpacing = 0;
+	menuTable.cellPadding = 0;
+	menuTable.border = 0;
+	menuTable.style.position = 'absolute';
+	menuTable.style.zIndex = 100;
+
+    // Collect menu table rows
+    for(var i=0; i<rowCount; i++)
+    {
+        var row = menuTable.insertRow(i);
+        var td = targetDoc.createElement('td');
+        td.idx = i;
+        td.onmousedown = goToResource;
+        row.appendChild( td );
+        td.appendChild( targetDoc.createTextNode('\u00A0') );
+        menuTableRows[i] = td;
+    }
+	
+    targetDoc.body.appendChild(menuTable);
+}
+
+function gotapi_prepareData(data)
+{
+    // Setup parent links
+    for(var i=0; i<data.length-1; i++)
+    {
+        var offset = data[i].p;
+        data[i].p = data[i-offset];
+    }
+}
+
+/** Removes all childs from the node */
+function removeAllChilds(argNode)
+{
+	while(argNode.firstChild)
+    {
+    	argNode.removeChild( argNode.firstChild );
+    }
+}
+
+/** Processing focus on the text field */
+function processFocus(evt)
+{
+    var value = textInput.value;
+    if( value == '' )
+    {
+        setMenuVisible( false );
+        return;
+    }
+
+    if( updateRequired ) {
+    	update();
+    }
+
+    setMenuVisible( true );
+}
+
+function processBlur(evt)
+{
+	setMenuVisible( false );
+}
+
+function Module(id,path,title,url,popup)
+{
+	this.id = id;
+	this.path = path;
+    this.title = title;
+	this.data = null;
+    this.url = url;
+    this.popup = popup;
+}
+
+/** Key down handler */
+function keyup(evt)
+{
+    var key = evt ? evt.keyCode : targetWin.event.keyCode;
+    if( key != 13 && key != 255 && key != 40 && key != 38 )
+    {
+		update();
+        return false;
+    }
+}
+
+/** Key down handler */
+function keydown(evt)
+{
+    var key = evt ? evt.keyCode : targetWin.event.keyCode;
+    if( key == 13 )
+    {
+        showRow(selectedRow,false);
+
+        var isNetscape = navigator.appName.toLowerCase().indexOf('netscape') >= 0;
+        if( isNetscape )
+        {
+            if (evt.preventDefault) evt.preventDefault();
+            if (evt.returnValue) evt.returnValue = false;
+            if (evt.stopPropagation) evt.stopPropagation();
+        }
+        return false;
+
+    }
+    else if( key == 40 )
+    {
+        selectRow(selectedRow+1,+1);
+        setMenuVisible( true );
+    }
+    else if( key == 38 )
+    {
+        selectRow(selectedRow-1,-1);
+        setMenuVisible( true );
+    }
+    else if( key != 255 )
+    {
+        setMenuVisible( true );
+        return true;
+    }
+
+    return false;
+}
+
+/** Selects a single row */
+function selectRow(argRow,argDirection)
+{
+    // Find new one to be selected
+    var row = argRow;
+    for(;;)
+    {
+        if( row >= rowCount || row < 0 || menuTableRows[row].style.display == 'none' )
+        {
+            return;
+        }
+        if( menuTableRows[row].n )
+        {
+            break;
+        }
+        row += argDirection;
+    }
+
+    // Deselect old one
+    if( selectedRow >= 0 )
+    {
+        var activeRow = menuTableRows[selectedRow];
+        activeRow.className = 'gaRegularRow';
+    }
+
+    selectedRow = row;
+
+    var activeRow = menuTableRows[selectedRow];
+    activeRow.className = 'gaSelectedRow';
+}
+
+function search(argSearchId)
+{
+    // Interrupt search if next one is coming in
+    if( currentSearchId != argSearchId )
+    {
+        return;
+    }
+
+	if( updateRequired )
+		previousQuery = null;
+
+    // Get all keywords
+    var value = textInput.value;
+
+    // Ignore if field is empty
+    if( value == '' )
+    {
+    	setMenuVisible( false );
+        return;
+    }
+
+    // Ignore if same as previous value
+    if( value == previousQuery )
+    {
+        return;
+    }
+    var extendPrevious = value.indexOf( previousQuery ) == 0;
+    previousQuery = value;
+
+    // Split into keywords and build regexp list
+    var keywords = value.split(/[ \t\.=<>\/\\\*_\(\):]+/);
+    var res = new Array();
+    for(var i=0; i<keywords.length; i++)
+    {
+        res.push( new RegExp(keywords[i],"i") );
+    }
+
+    // Execute query
+	var startTime = new Date();
+    var result = searchModules(argSearchId,res,keywords[0].toLowerCase());
+    if( !result )
+    {
+        return;
+    }
+    displayedRows = result;
+	var endTime = new Date();
+    var queryExecutionTime = endTime.getTime()-startTime.getTime();
+
+
+	var startTime = new Date();
+    var proceed = showResults(argSearchId,displayedRows);
+	var endTime = new Date();
+    var resultsRenderingTime = endTime.getTime()-startTime.getTime();
+
+    if( ! proceed )
+    {
+        return;
+    }
+
+   selectedRow = -1;
+    setMenuVisible( true );
+    selectRow(0,+1);
+
+    // Collect statistics
+    addStats('s',value+':'+queryExecutionTime+":"+resultsRenderingTime);
+}
+
+/** Searches provided list of modules */
+function searchModules(argSearchId,argRegList,argPriorityKey)
+{
+    var results = new Array();
+
+    var klen = argRegList.length;
+    for(var m=0; m<allModules.length; m++)
+    {
+        var module = allModules[m];
+        var moduleResults = new Array();
+		var exactMatchEnd = 0;
+		var startsWithEnd = 0;
+        results.push(moduleResults);
+        if( !module.data || !module.active ) continue;
+        var dx = module.data;
+        if( ! dx )
+        {
+            continue;
+        }
+
+        var len = dx.length-1;
+        for(var i=0; i<len; i++)
+        {
+            // Go to the next module if there are more records than fits in the list
+            if( exactMatchEnd + startsWithEnd > rowCount )
+            {
+                break;
+            }
+
+            // Interrupt search if next one is coming in
+            if( currentSearchId != argSearchId )
+            {
+                return null;
+            }
+
+            var item = dx[i];
+
+            // Make sure that at least one RE matches this node
+            // otherwise proceed to the next one
+            var n = dx[i].n;
+            var matched = false;
+            var re = null;
+            for(var k=0; k<klen; k++)
+            {
+                re = argRegList[k];
+                if( re.test( n ) )
+                {
+                    matched = true;
+                    break;
+                }
+            }
+            if( !matched )
+            {
+                continue;
+            }
+
+            // Now examine this item and childs for other keys
+            if( klen == 1 || matchItemParents(item,argRegList,re) )
+            {
+				if( n )
+				{
+					var ln = n.toLowerCase();
+					if( ln == argPriorityKey )
+					{
+						moduleResults.splice(exactMatchEnd++,0,item);
+					}
+					else if( ln.indexOf( argPriorityKey ) == 0 )
+					{
+						moduleResults.splice(exactMatchEnd+startsWithEnd++,0,item);
+					}
+					else
+					{
+						moduleResults.push( item );
+					}
+				}
+				else
+				{
+					moduleResults.push( item );
+				}
+            }
+        }
+    }
+
+    return results;
+}
+
+
+/** Matches item parents */
+function matchItemParents(argItem,argRes,argExcludingRe)
+{
+    // Match every keyword
+    var klen = argRes.length;
+    var failed = false;
+    for(var k=0; k<klen; k++)
+    {
+        var re = argRes[k];
+        if( re == argExcludingRe )
+        {
+            continue;
+        }
+
+        // Check this node and its parents
+        var matched = false;
+        var current = argItem;
+        while( current )
+        {
+            if( re.test( current.n ) )
+            {
+                matched = true;
+                break;
+            }
+            current = current.p;
+        }
+
+        if( !matched )
+        {
+            failed = true;
+            break;
+        }
+    }
+
+    return !failed;
+}
+
+/** Shows provided list of results */
+function showResults(argSearchId,argResults)
+{
+    // First calculate 'fair share' for all modules
+    var nonemptyModuleCount = 0;
+    for(var i=0; i<argResults.length; i++)
+    {
+        if( argResults[i].length > 0 ) nonemptyModuleCount++;
+    }
+
+    var row = 0;
+    if( nonemptyModuleCount > 0 )
+    {
+        var fairCount = (rowCount - nonemptyModuleCount*2 )/ nonemptyModuleCount;
+        fairCount = Math.floor(fairCount);
+
+        // Now Calculate size of the leftovers
+        var leftoverCount = 0;
+        for(var i=0; i<argResults.length; i++)
+        {
+            var r = argResults[i];
+            var module = allModules[i];
+            if( module.active && module.data && r.length > 0 && r.length < fairCount )
+            {
+                leftoverCount += fairCount - r.length;
+            }
+        }
+
+        // Now having fair count and leftover count render the childs
+        for(var m=0; m<allModules.length; m++)
+        {
+            var module = allModules[m];
+            if( !module.data || !module.active ) continue;
+            var moduleResults = argResults[m];
+            if( ! module.data || moduleResults.length <= 0 )
+            {
+                continue;
+            }
+
+            if( row+1 >= rowCount ) break;
+
+            updateResultRow(row++,module.title,'gaHeaderRow',null);
+
+            var i=0;
+            for(; i<moduleResults.length; i++)
+            {
+                if( i >= fairCount )
+                {
+                    if( leftoverCount == 0 ) break;
+                    leftoverCount--;
+                }
+
+                var n = moduleResults[i];
+                updateResultRow(row++,getResourceTitle(n),'gaRegularRow',n);
+            }
+
+            // Add '...' row if needed
+            if( i < moduleResults.length )
+            {
+                updateResultRow(row++,ROW_SPACER+'...','gaFooterRow',null);
+            }
+        }
+    }
+
+    if( row == 0 )
+    {
+        // Show at least one row
+        updateResultRow(row++,'... No Matches Found ...','gaHeaderRow',null);
+        addStats('s','-');
+    }
+
+    while(row < rowCount)
+    {
+        var tableRow = menuTableRows[row++];
+        tableRow.style.display = 'none';
+    }
+    return true;
+}
+
+/** Updates single result row */
+function updateResultRow(argRowId,argTitle,argStyle,argNode)
+{
+    var row = menuTableRows[argRowId];
+    row.firstChild.nodeValue = argTitle;
+    row.className = argStyle;
+    row.n = argNode;
+    row.style.display = '';
+}
+
+/** Returns resource title */
+function getResourceTitle(argItem)
+{
+    var result = '';
+    var item = argItem;
+    while( item && (item.p || item == argItem ))
+    {
+		name = getResourceLabel( item );
+
+        result = name + ( result=='' ? '' : ' \u00A0\u2192\u00A0 ' + result);
+        item = item.p;
+    }
+    return ROW_SPACER+result;
+}
+
+function getResourceLabel(argItem)
+{
+    var name = argItem.n;
+    var type = argItem.t;
+
+    if( type == 'T' ) name = '<'+name+' ... >';
+    else if( type == 'M' ) name = name+' ( ... )';
+    else if( type == 'C' ) name = 'class '+name;
+    else if( type == 'P' ) ;
+    else if( type == 'I' ) name = 'interface '+name;
+    else if( type == 'O' ) ;
+    else if( type == 'D' ) name = /*'\u00A7\u00A7 '+*/name;
+    else if( type == 'S' ) name = '{ '+name+': ... }';
+    else if( type == 'V' ) ;
+
+    return name;
+}
+
+/** Shows or hides menu */
+function setMenuVisible(argVisible)
+{
+	if( queueProcessing ) return;
+	
+    var visibleNow = menuTable.style.display == '';
+    if( visibleNow == argVisible )
+    {
+        return;
+    }
+    if( argVisible )
+    {
+        showPopupNode(menuTable,textInput,3,0);
+    }
+    else
+    {
+        menuTable.style.display = 'none';
+    }
+    if( window.opera )
+    {
+    	// Hide site frame. Opera does not respect z-index on IFrames
+        siteFrame.style.display = argVisible ? 'none' : '';
+    }
+}
+
+/** Shows popup node relative to the specified one */
+function showPopupNode(showNode,relativeNode,offsetX,offsetY)
+{
+    var nodeX = relativeNode.offsetLeft ;
+    var nodeY = relativeNode.offsetTop + relativeNode.offsetHeight;
+    var node = relativeNode;
+    while( node.offsetParent )
+    {
+        node = node.offsetParent;
+        nodeX += node.offsetLeft;
+        nodeY += node.offsetTop;
+    }
+    showNode.style.left = nodeX + offsetX;
+    showNode.style.top = nodeY + offsetY;
+    showNode.style.display = '';
+}
+
+/** Returns resource URL for the specified node */
+function getResourceContext(argNode)
+{
+    var context = argNode.p
+            ? getResourceContext( argNode.p )
+            : '';
+
+    var c = argNode.c;
+    if( c )
+    {
+        c = uncompressValue(c,argNode);
+        context = c.indexOf('http://') == 0
+        		? c : context + c;
+    }
+
+    return context;
+}
+
+/** Returns resource URL for the specified node */
+function getResourceUrl(argNode)
+{
+	if( argNode.u || argNode.c )
+	{
+		var ctx = getResourceContext(argNode);
+		var u = argNode.u;
+		if( ! u )
+		{
+		    return ctx;
+		}
+		u = uncompressValue(u,argNode);
+		return u.indexOf('http://') == 0
+		        ? u
+		        : ctx + u;
+	}
+	else
+	{
+		return argNode.p ? getResourceUrl(argNode.p) : null;
+	}
+}
+
+/** Replace '`' with node name if needed */
+function uncompressValue(argValue,argNode)
+{
+    var idx = argValue.indexOf('`');
+    if( idx < 0 )
+    {
+        return argValue;
+    }
+
+    var name = argNode.n;
+    return argValue.substr(0,idx) + name + argValue.substr(idx+1);
+
+}
+
+/** Selects specified resource */
+function goToResource()
+{
+    showRow(this.idx,false)
+}
+
+/** Displays specified row */
+function showRow(argRow,argMenuVisible)
+{
+    if( argRow < 0 )
+    {
+        return;
+    }
+
+    setMenuVisible( argMenuVisible );
+    var row = menuTableRows[argRow];
+    showItem(row.n);
+}
+
+function update()
+{
+    if( queueProcessing ) {    	
+    	if( textInput.value == '' ) {
+    		return;
+    	}
+		updateWhenLoaded = true;
+        var lbl = $('loading')
+		if( lbl ) lbl.style.color = 'black';
+        return;
+    }
+
+    ++currentSearchId;
+    setTimeout('search('+currentSearchId+')',1);
+}
+
+/** Shows specified item */
+function showItem(argItem)
+{
+    var url = getResourceUrl(argItem);
+	targetWin.location.href = url;
+}//--></SCRIPT>
+<SCRIPT><!--
+var ROW_SPACER = '\u00A0\u00A0\u00A0\u00A0';
+var HISTORY_SIZE = 4;
+var VISIBLE_HISTORY_SIZE = 4;
+var loadQueue = new Array();
+var displayedUrl = null;
+var updateWhenLoaded = false;
+var queuedLoading = true;
+searchHistory = null; // will be loaded on demand
+var recentDiv = null;
+
+function go()
+{
+	setupSearchField(window);
+
+	// Recent items DIV
+	recentDiv = $('recentDiv');
+	
+	var loadList = readCookie('v2');
+	if( loadList && loadList.length > 0 )
+	{
+		//loadList = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27';
+	    //loadList = '1,4,33';
+
+		var items = loadList.split(',');
+		for(var i=0; i<items.length; i++) {
+			var idString = items[i];
+			if( idString == '' ) continue;
+			var id = parseInt( idString );
+			if( isNaN(id) ) continue;
+			var m = getModuleById(id)
+			highlightModule(m,true);
+	    }
+	    for(var i=0; i<items.length; i++) {
+			var idString = items[i];
+			if( idString == '' ) continue;
+			var id = parseInt( idString );
+			if( isNaN(id) ) continue;
+			var m = getModuleById(id)
+	        queueModule(m);
+		}
+	}
+	else
+	{
+		loadFirstModules();
+	}
+
+	// Update history
+	renderHistory();
+}
+
+
+function $(id)
+{
+	return document.getElementById( id );
+}
+
+function gotapi_runLoaderScript(path)
+{
+    var doc = window.gotapi_loader.document;
+    doc.open();
+    doc.write("<HTML><HEAD><SC"+"RIPT DEFER src='"+path
+			+"' type='text/javascript'></SCRI"+"PT></HEAD><BODY></BODY></HTML>");
+    doc.close();
+}
+
+function toggleModule(cb)
+{
+    var newState = cb.checked;
+    var parentId = cb.parentNode.id;
+    var idx = parseInt( parentId.substring(1) );
+    var m = getModuleById( idx );
+
+    highlightModule(m,newState);
+    m.active = newState;
+    if( newState )
+    {
+        if( ! m.data )
+        {
+            queueModule(m);
+        }
+    }
+    else
+    {
+    	// Purge data
+    	m.data = null;
+    	validateActiveSize();
+    }
+
+    saveConfiguration();
+
+    updateRequired = true;
+}
+
+function saveConfiguration()
+{
+	var mlist = null;
+	for(var i=0; i<allModules.length; i++)
+	{
+		var m = allModules[i];
+		if( m.active )
+			mlist += mlist ? ',' + m.id : m.id;
+	}
+	saveCookie('v2',mlist);
+}
+
+function queueModule(m)
+{
+    loadQueue.push( m );
+    processQueue();
+}
+
+function processQueue(force)
+{
+	if( loadQueue.length == 0 )
+	{
+        $('loading').style.color = 'white';
+		queueProcessing = false;
+
+		validateActiveSize();
+
+		if( updateWhenLoaded ) {
+			updateWhenLoaded = false;
+			update();
+		}
+				
+		return;
+	}
+
+    if( queueProcessing && !force) return;
+	queueProcessing = true;
+
+    var m = loadQueue[0];
+
+    setTimeout("gotapi_runLoaderScript('modules/"+m.path+".jsz')",1);
+}
+
+function getModuleById(id)
+{
+	for(var i=0; i<allModules.length; i++)
+	{
+		var m = allModules[i];
+		if( m.id == id ) return m;
+	}
+	throw 'Module '+id+' not found';
+}
+
+function getModuleByPath(path)
+{
+	for(var i=0; i<allModules.length; i++)
+	{
+		var m = allModules[i];
+		if( m.path == path ) return m;
+	}
+	throw 'Module '+path+' not found';
+}
+
+function highlightModule(m,h)
+{
+	var div = $('m'+m.id);
+	div.className = h ? 'moduleLinkH' : 'moduleLink';
+    div.firstChild.checked = h;
+}
+
+function startModuleProcessing(path)
+{
+}
+
+function finishModuleProcessing(path,data)
+{
+	gotapi_prepareData(data);
+
+	var m = getModuleByPath(path);
+	m.data = data;
+	m.active = true;
+
+	// Remove from the queue
+	for(i=0; i<loadQueue.length; i++)
+	{
+		if( loadQueue[i] == m )
+		{
+            loadQueue.splice(i,1);
+			break;
+		}
+	}
+ 
+	if( queuedLoading )
+	{
+		updateRequired = true;
+	    setTimeout('processQueue(true)',10);
+	}
+	else
+	{
+		highlightModule(m,true);
+	}
+}
+
+function validateActiveSize()
+{
+	var count = 0;
+	var size = 0;
+	for(var i=0; i<allModules.length; i++)
+	{
+		var m = allModules[i];
+		if( m.data && m.active )
+		{
+			size += m.data.length;
+			count++;
+		}
+	}
+	
+	$('warn').style.color = size > 35000 || count > 7 ? 'red' : 'white';
+}
+
+/** adds stats record */
+function addStats(argType,argMsg)
+{
+}
+
+function sendStats()
+{
+}
+
+/** Shows specified item */
+function showItem(argItem)
+{
+    var url = getResourceUrl(argItem);
+
+    showSiteFrame(true);
+
+    // Refresh if its a new URL or menu was hidden as a result of user scrolling in the site frame
+    if( displayedUrl != url || ! isMenuVisible() )
+    {
+        window.site.location = url;
+        displayedUrl = url;
+		addToRecent(getResourceLabel(argItem),url);
+    }
+
+    // Report stats
+    addStats('go',argItem.n);
+    sendStats();
+}
+
+function showModuleSelector()
+{
+    showSiteFrame(false);
+    return false;
+}
+
+function showSiteFrame(show)
+{
+    $('moduleTr').style.display = show ? 'none' : '';
+    $('siteTr').style.display = show ? '' : 'none';
+    $('vertSpacer').style.display = show ? 'none' : '';
+    $('selectLink').style.display = show ? '' : 'none';
+    $('sample').style.display = show ? 'none' : '';
+
+//    $('header').className = show ? 'headerMinimized' : '';
+    $('header').className = show ? '' : '';
+	//$('topBox').style.border = '2px solid #A0A0A0';
+
+   /*
+    var ad = $('ad');
+    ad.parentNode.removeChild( ad );
+    var newContainer = show ?  : $('adContainer1');
+    newContainer.appendChild( ad );
+    */
+
+}
+
+
+function pup(img)
+{
+
+    var parentId = img.parentNode.id;
+    var idx = parseInt( parentId.substring(1) );
+    var m = getModuleById( idx );
+
+    var win = window.open(m.url);
+    win.focus();
+}
+
+/** Saves cookie with specified name and value */
+function saveCookie(name,value)
+{
+    var date = new Date();
+    date.setTime(date.getTime()+(365*24*60*60*1000));
+    document.cookie = name+"="+value+"; expires="+date.toGMTString()+"; path=/";
+}
+
+/** Reads cookie */
+function readCookie(name)
+{
+	var nameEQ = name + "=";
+	var ca = document.cookie.split(';');
+	for(var i=0;i < ca.length;i++)
+	{
+		var c = ca[i];
+		while (c.charAt(0)==' ') c = c.substring(1,c.length);
+		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	}
+	return null;
+}
+
+function loadFirstModules()
+{
+}
+
+/** Lazy loading history storage */
+function getHistory()
+{
+	if( searchHistory ) return searchHistory;
+
+	// If not yet loaded read from cookies
+	searchHistory = new Array();
+    var hist = readCookie('history');
+	var hi = hist ? hist.split('!') : new Array();
+	for(var i=0; i<hi.length; i++) {
+		var h = hi[i];
+		var idx = h.indexOf('@');
+		var title = h.substring(0,idx);
+		var url = h.substring(idx+1);
+		searchHistory.push( {t:title,u:url} );
+	}
+	
+	return searchHistory;
+}
+
+/** Saves history object */
+function saveHistory(hist) 
+{
+	var str = '';
+	for(var i=0; i<HISTORY_SIZE && i<hist.length; i++) {
+		if( i!=0 ) str += '!';
+		str += hist[i].t + '@' + hist[i].u;
+	}
+	
+	saveCookie('history',str);
+}
+
+/** Adds recent item to the history */
+function addToRecent(title,url)
+{
+	var hist = getHistory();
+	
+	// Exclude from history if its already there
+	for(var i=0; i<hist.length; i++) {
+		if( hist[i].t == title && hist[i].u == url ) {
+			hist.splice(i--,1);
+		}
+	}
+	
+	// Append to the top
+	hist.splice(0,0,{t:title,u:url});
+	
+	// Save & render
+	saveHistory(hist);
+	renderHistory();	
+}
+
+/** Updates history */
+function renderHistory()
+{
+	var hist = getHistory();
+	
+	// Render history items
+	removeAllChilds(recentDiv)
+	for(var i=0; i<hist.length && i<VISIBLE_HISTORY_SIZE; i++) {
+		if( i!=0 ) recentDiv.appendChild( document.createElement('br') );
+		var txt = hist[i].t.replace(/[ \t]+/g,'');
+		var a = document.createElement('a');		
+		a.href = hist[i].u;
+		a.className = 'recentA';
+		a.target = 'site';
+		a.appendChild( document.createTextNode( '\u2192\u00A0' + txt));
+		a.onclick = function() {
+			showSiteFrame(true);
+			window.site.location = this.href;			
+		};
+		recentDiv.appendChild( a );
+	}	
+}
+//--></SCRIPT>
+<SCRIPT><!--
+/*
+ * Generated content
+ */
+var allModules = [
+new Module(4,'module_css.js','CSS at htmlhelp.com','http://www.htmlhelp.com/reference',false)
+,new Module(5,'module_cssmsft.js','CSS at msdn.microsoft.com','http://msdn.microsoft.com/workshop/author/dhtml/reference/dhtml_reference_entry.asp',false)
+,new Module(6,'module_cssw3s.js','CSS2 at w3schools.com','http://www.w3schools.com/css/default.asp',false)
+,new Module(1,'module_html.js','HTML at htmlhelp.com','http://www.htmlhelp.com/reference',false)
+,new Module(2,'module_htmlmsft.js','HTML at msdn.microsoft.com','http://msdn.microsoft.com/workshop/author/dhtml/reference/dhtml_reference_entry.asp',false)
+,new Module(3,'module_htmlw3c.js','HTML at w3.org','http://www.w3.org/TR/html4/cover.html',false)
+,new Module(33,'module_jsdomw3s.js','JavaScript/DOM at www.w3schools.com','http://www.w3schools.com/js/default.asp',false)
+,new Module(37,'module_xpath.js','XPath at www.w3schools.com','http://www.w3schools.com/xpath/xpath_functions.asp',false)
+,new Module(36,'module_xsl.js','XSL at www.w3schools.com','http://www.w3schools.com/xsl/xsl_languages.asp',false)
+,new Module(38,'module_xsd.js','Schema (XSD) at www.w3schools.com','http://www.w3schools.com/schema/default.asp',false)
+,new Module(7,'module_mysql.js','MySQL at mysql.com','http://dev.mysql.com/doc/refman/4.1/en/index.html',false)
+,new Module(10,'module_php.js','PHP at php.net','http://www.php.net/manual/en/index.php',false)
+,new Module(11,'module_cake.js','CakePHP at cakephp.org','http://api.cakephp.org/index.html',false)
+,new Module(12,'module_symfony.js','Symfony at symfony-project.com','http://www.symfony-project.com/api/symfony.html',false)
+,new Module(32,'module_ant.js','Ant at ant.apache.com','http://ant.apache.org/manual',false)
+,new Module(19,'module_java13.js','J2SE v1.3.0','http://java.sun.com/j2se/1.3/docs',false)
+,new Module(20,'module_java14.js','J2SE v1.4.2','http://java.sun.com/j2se/1.4.2/docs',false)
+,new Module(21,'module_java15.js','J2SE v1.5.0','http://java.sun.com/j2se/1.5.0/docs',false)
+,new Module(22,'module_java15noui.js','J2SE v1.5.0 less UI','http://java.sun.com/j2se/1.5.0/docs',false)
+,new Module(23,'module_j2ee.js','J2EE','http://java.sun.com/j2ee/sdk_1.2.1/techdocs',false)
+,new Module(25,'module_spring.js','Spring Framework','http://www.springframework.org/documentation',false)
+,new Module(26,'module_hibernate.js','Hibernate','http://www.hibernate.org/5.html',false)
+,new Module(30,'module_junit.js','JUnit','http://www.junit.org/index.htm',false)
+,new Module(46,'module_dbunit.js','DbUnit','http://www.dbunit.org/index.htm',false)
+,new Module(31,'module_httpunit.js','HttpUnit','http://www.httpunit.org',false)
+,new Module(24,'module_struts.js','Struts Framework','http://struts.apache.org/struts-action/userGuide/index.html',false)
+,new Module(27,'module_castor.js','Castor ORM Mapping','http://www.castor.org',false)
+,new Module(28,'module_log4j.js','Log4J','http://logging.apache.org/log4j/docs/documentation.html',false)
+,new Module(29,'module_regexp.js','Apache RegExp','http://jakarta.apache.org/regexp',false)
+,new Module(40,'module_dita.js','DITA XML','http://www.oasis-open.org/specs/index.php#ditav1.0',false)
+,new Module(15,'module_perl.js','Perl','http://aspn.activestate.com/ASPN/docs/ASPNTOC-APERL5.6.0-005/',false)
+,new Module(13,'module_rubyrails.js','Ruby / Rails at ruby-doc.org & rubyonrails.com','http://api.rubyonrails.com/',false)
+,new Module(14,'module_rubystdlib.js','Ruby Standard Packages at ruby-doc.org','http://ruby-doc.org',false)
+,new Module(16,'module_actionscript.js','ActionScript at macromedia.com','http://livedocs.macromedia.com/flash/8/main/wwhelp/wwhimpl/common/html/wwhelp.htm?context=LiveDocs_Parts&file=Part4_ASLR2.html',false)
+,new Module(17,'module_actionscriptf.js','ActionScript (frames) at macromedia.com','http://livedocs.macromedia.com/flash/8/main/wwhelp/wwhimpl/common/html/wwhelp.htm?context=LiveDocs_Parts&file=Part4_ASLR2.html',false)
+,new Module(39,'module_dom.js','XML DOM at www.w3.org','http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/Overview.html',false)
+,new Module(8,'module_postgresql.js','PostgreSQL at postgresql.org','http://www.postgresql.org/docs/manuals',false)
+,new Module(9,'module_oracle.js','Oracle9i at oracle.com','http://www.oracle.com/technology/documentation/oracle9i_arch_901.html',false)
+,new Module(45,'module_oracle10.js','Oracle 10g at oracle.com','http://www.oracle.com/pls/db102/homepage',false)
+,new Module(41,'module_ccpp.js','C, C++, STL at cppreference.com','http://cppreference.com/index.html',false)
+,new Module(18,'module_coldfusion.js','ColdFusion Tags & Functions at macromedia.com','http://livedocs.macromedia.com/coldfusion/7/htmldocs/wwhelp/wwhimpl/common/html/wwhelp.htm?context=ColdFusion_Documentation&file=00000354.htm',false)
+,new Module(34,'module_prototypejs.js','Prototype.js at www.sergiopereira.com','http://www.sergiopereira.com/articles/prototype.js.html',false)
+,new Module(35,'module_google.js','Google GWT at code.google.com','http://code.google.com/webtoolkit/documentation/gwt.html',false)
+,new Module(42,'module_roguewave.js','Rogue Wave','http://www.roguewave.com/support/docs/leif/sourcepro/html/toolsref/functoc.html',false)
+,new Module(43,'module_commonsnet.js','Apache Commons Net','http://jakarta.apache.org/commons/net',false)
+,new Module(44,'module_python.js','Python','http://docs.python.org/lib/',false)
+,new Module(-1,'module_j2mecdc.js','','http://java.sun.com/javame/reference/apis/jsr218/overview-summary.html',false)
+,new Module(-1,'module_j2memidp.js','','http://java.sun.com/javame/reference/apis/jsr118/overview-summary.html',false)
+,new Module(-1,'module_j2mecldc.js','','http://java.sun.com/javame/reference/apis/jsr139/overview-summary.html',false)
+,new Module(-1,'module_j2mefp.js','','http://java.sun.com/javame/reference/apis/jsr219/overview-summary.html',false)
+,new Module(-1,'module_j2mepbp.js','','http://java.sun.com/javame/reference/apis/jsr217/overview-summary.html',false)
+,new Module(-1,'module_j2mebluetooth.js','','http://java.sun.com/javame/reference/apis/jsr082/overview-summary.html',false)
+,new Module(-1,'module_j2mews.js','','http://java.sun.com/javame/reference/apis/jsr172/overview-summary.html',false)
+,new Module(-1,'module_j2memedia.js','','http://java.sun.com/javame/reference/apis/jsr135/overview-summary.html',false)
+,new Module(47,'module_drupal.js','Drupal CMS','http://api.drupal.org',false)
+,new Module(48,'module_flickr.js','Flickr API','http://flickr.com',false)
+,new Module(49,'module_jquery.js','jQuery','http://www.jquery.com',false)
+,new Module(50,'module_groovy.js','Groovy RC-1','http://groovy.codehaus.org/apidocs',false)
+,new Module(51,'module_rmagic.js','RMagic','http://www.simplesystems.org/RMagick/doc/',false)
+,new Module(52,'module_yahoo.js','Yahoo! UI','http://developer.yahoo.com/yui/',false)
+,new Module(53,'module_dinkumc.js','Dinkumware C/C++/STL','http://www.dinkumware.com/manuals/',false)
+,new Module(54,'module_prolog.js','Sicstus Prolog','http://www.sics.se/sicstus/docs/latest/html/sicstus.html/',false)
+,new Module(55,'module_berkeley.js','BDB XML C++','http://www.oracle.com/technology/documentation/berkeley-db/xml/api_cxx/frame.html',false)
+,new Module(56,'module_erlang.js','Erlang','http://erlang.org/doc/doc-5.5.4/doc/',false)
+,new Module(57,'module_opengl.js','OpenGL 2.1','http://www.opengl.org/sdk/docs/man/',false)
+,new Module(58,'module_orb.js','Orb API','http://developer.orb.com',false)
+,new Module(59,'module_selenium.js','Selenium','http://release.openqa.org/selenium-core/0.8.0/reference.html',false)
+,new Module(60,'module_phptutorials.js','PHP Tutorials','http://www.gotapi.com',false)
+,new Module(61,'module_flex.js','Flex 2','http://livedocs.adobe.com/flex/201/langref/package-summary.html',false)
+,new Module(62,'module_gecko.js','Firefox JavaScript/DOM','http://developer.mozilla.org/en/docs/Gecko_DOM_Reference',false)
+,new Module(63,'module_mochikit.js','MochiKit','http://mochikit.com/doc/html/MochiKit/index.html',false)
+,new Module(64,'module_docbook.js','DocBook','http://www.docbook.org/tdg/en/html/docbook.html',false)
+,new Module(65,'module_prototypejs2.js','Prototype.js at prototypejs.org','http://www.prototypejs.org/api/',false)
+];//--></SCRIPT>
+<SCRIPT><!--
+function loadFirstModules() {
+queuedLoading = false;
+startModuleProcessing('module_html.js');var P = 'P';
+var C = 'C';
+var I = 'I';
+var M = 'M';
+var O = 'O';
+var T = 'T';
+var D = 'D';
+var S = 'S';
+var V = 'V';
+var tmp = new Array(
+{t:D,n:'HTML Elements',u:'alist.html',c:'http://www.htmlhelp.com/reference/html40/',p:1},
+{t:T,n:'a',c:'speci`l/a.html',p:1},
+{t:O,n:'href',p:1},
+{t:O,n:'name',p:2},
+{t:O,n:'rel',p:3},
+{t:V,n:'Alternate',p:1},
+{t:V,n:'StyleSheet',p:2},
+{t:V,n:'Start',p:3},
+{t:V,n:'Next',p:4},
+{t:V,n:'Prev',p:5},
+{t:V,n:'Contents',p:6},
+{t:V,n:'Index',p:7},
+{t:V,n:'Glossary',p:8},
+{t:V,n:'Copyright',p:9},
+{t:V,n:'Chapter',p:10},
+{t:V,n:'Section',p:11},
+{t:V,n:'Subsection',p:12},
+{t:V,n:'Appendix',p:13},
+{t:V,n:'Help',p:14},
+{t:V,n:'Bookmark',p:15},
+{t:O,n:'rev',p:19},
+{t:V,n:'Alternate',p:1},
+{t:V,n:'StyleSheet',p:2},
+{t:V,n:'Start',p:3},
+{t:V,n:'Next',p:4},
+{t:V,n:'Prev',p:5},
+{t:V,n:'Contents',p:6},
+{t:V,n:'Index',p:7},
+{t:V,n:'Glossary',p:8},
+{t:V,n:'Copyright',p:9},
+{t:V,n:'Chapter',p:10},
+{t:V,n:'Section',p:11},
+{t:V,n:'Subsection',p:12},
+{t:V,n:'Appendix',p:13},
+{t:V,n:'Help',p:14},
+{t:V,n:'Bookmark',p:15},
+{t:O,n:'type',p:35},
+{t:O,n:'target',p:36},
+{t:V,n:'_blank',p:1},
+{t:V,n:'_self',p:2},
+{t:V,n:'_parent',p:3},
+{t:V,n:'_top',p:4},
+{t:O,n:'hreflang',p:41},
+{t:O,n:'charset',p:42},
+{t:O,n:'accesskey',p:43},
+{t:O,n:'tabindex',p:44},
+{t:O,n:'shape',p:45},
+{t:V,n:'rect',p:1},
+{t:V,n:'circle',p:2},
+{t:V,n:'poly',p:3},
+{t:V,n:'default',p:4},
+{t:O,n:'coords',p:50},
+{t:O,n:'onfocus',p:51},
+{t:O,n:'onblur',p:52},
+{t:T,n:'abbr',u:'phrase/`.html',p:54},
+{t:T,n:'acronym',u:'phrase/`.html',p:55},
+{t:T,n:'address',u:'block/`.html',p:56},
+{t:T,n:'applet',c:'special/`.html',p:57},
+{t:O,n:'code',p:1},
+{t:O,n:'codebase',p:2},
+{t:O,n:'archive',p:3},
+{t:O,n:'object',p:4},
+{t:O,n:'name',p:5},
+{t:O,n:'alt',p:6},
+{t:O,n:'align',p:7},
+{t:V,n:'top',p:1},
+{t:V,n:'middle',p:2},
+{t:V,n:'bottom',p:3},
+{t:V,n:'left',p:4},
+{t:V,n:'right',p:5},
+{t:O,n:'hspace',p:13},
+{t:O,n:'vspace',p:14},
+{t:T,n:'area',c:'special/`.html',p:72},
+{t:O,n:'shape',p:1},
+{t:V,n:'rect',p:1},
+{t:V,n:'circle',p:2},
+{t:V,n:'poly',p:3},
+{t:V,n:'default',p:4},
+{t:O,n:'coords',p:6},
+{t:O,n:'href',p:7},
+{t:O,n:'target',p:8},
+{t:V,n:'_blank',p:1},
+{t:V,n:'_self',p:2},
+{t:V,n:'_parent',p:3},
+{t:V,n:'_top',p:4},
+{t:O,n:'tabindex',p:13},
+{t:O,n:'onfocus',p:14},
+{t:O,n:'onblur',p:15},
+{t:T,n:'b',u:'fontstyle/`.html',p:88},
+{t:T,n:'base',c:'head/`.html',p:89},
+{t:O,n:'href',p:1},
+{t:O,n:'target',p:2},
+{t:V,n:'_blank',p:1},
+{t:V,n:'_self',p:2},
+{t:V,n:'_parent',p:3},
+{t:V,n:'_top',p:4},
+{t:T,n:'basefont',c:'special/`.html',p:96},
+{t:O,n:'color',p:1},
+{t:O,n:'face',p:2},
+{t:T,n:'bdo',u:'special/`.html',p:99},
+{t:T,n:'big',u:'fontstyle/`.html',p:100},
+{t:T,n:'blockquote',c:'block/`.html',p:101},
+{t:O,n:'cite',p:1},
+{t:T,n:'body',u:'html/`.html',p:103},
+{t:T,n:'br',c:'special/`.html',p:104},
+{t:O,n:'clear',p:1},
+{t:V,n:'left',p:1},
+{t:V,n:'all',p:2},
+{t:V,n:'right',p:3},
+{t:V,n:'none',p:4},
+{t:T,n:'button',c:'forms/`.html',p:110},
+{t:O,n:'name',p:1},
+{t:O,n:'value',p:2},
+{t:O,n:'type',p:3},
+{t:V,n:'submit',p:1},
+{t:V,n:'reset',p:2},
+{t:V,n:'button',p:3},
+{t:O,n:'accesskey',p:7},
+{t:O,n:'tabindex',p:8},
+{t:O,n:'onfocus',p:9},
+{t:O,n:'onblur',p:10},
+{t:T,n:'caption',c:'tables/`.html',p:121},
+{t:O,n:'align',p:1},
+{t:V,n:'top',p:1},
+{t:V,n:'bottom',p:2},
+{t:V,n:'left',p:3},
+{t:V,n:'right',p:4},
+{t:T,n:'center',u:'block/`.html',p:127},
+{t:T,n:'cite',u:'phrase/`.html',p:128},
+{t:T,n:'code',u:'phrase/`.html',p:129},
+{t:T,n:'col',c:'tables/`.html',p:130},
+{t:O,n:'span',p:1},
+{t:O,n:'width',p:2},
+{t:O,n:'align',p:3},
+{t:V,n:'left',p:1},
+{t:V,n:'center',p:2},
+{t:V,n:'right',p:3},
+{t:V,n:'justify',p:4},
+{t:V,n:'char',p:5},
+{t:O,n:'char',p:9},
+{t:O,n:'charoff',p:10},
+{t:O,n:'valign',p:11},
+{t:V,n:'top',p:1},
+{t:V,n:'middle',p:2},
+{t:V,n:'bottom',p:3},
+{t:V,n:'baseline',p:4},
+{t:T,n:'colgroup',c:'tables/`.html',p:146},
+{t:O,n:'span',p:1},
+{t:O,n:'width',p:2},
+{t:O,n:'align',p:3},
+{t:V,n:'left',p:1},
+{t:V,n:'center',p:2},
+{t:V,n:'right',p:3},
+{t:V,n:'justify',p:4},
+{t:V,n:'char',p:5},
+{t:O,n:'char',p:9},
+{t:O,n:'charoff',p:10},
+{t:O,n:'valign',p:11},
+{t:V,n:'top',p:1},
+{t:V,n:'middle',p:2},
+{t:V,n:'bottom',p:3},
+{t:V,n:'baseline',p:4},
+{t:T,n:'dd',u:'lists/`.html',p:162},
+{t:T,n:'del',c:'phrase/`.html',p:163},
+{t:O,n:'cite',p:1},
+{t:O,n:'datetime',p:2},
+{t:T,n:'dfn',u:'phrase/`.html',p:166},
+{t:T,n:'dir',u:'lists/`.html',p:167},
+{t:T,n:'div',c:'block/`.html',p:168},
+{t:O,n:'align',p:1},
+{t:V,n:'left',p:1},
+{t:V,n:'center',p:2},
+{t:V,n:'right',p:3},
+{t:V,n:'justify',p:4},
+{t:T,n:'dl',u:'lists/`.html',p:174},
+{t:T,n:'dt',u:'lists/`.html',p:175},
+{t:T,n:'em',u:'phrase/`.html',p:176},
+{t:T,n:'fieldset',u:'forms/`.html',p:177},
+{t:T,n:'font',c:'special/`.html',p:178},
+{t:O,n:'size',p:1},
+{t:O,n:'color',p:2},
+{t:O,n:'face',p:3},
+{t:T,n:'form',c:'`s/form.html',p:182},
+{t:O,n:'method',p:1},
+{t:V,n:'get',p:1},
+{t:V,n:'post',p:2},
+{t:O,n:'enctype',p:4},
+{t:O,n:'target',p:5},
+{t:V,n:'_blank',p:1},
+{t:V,n:'_self',p:2},
+{t:V,n:'_parent',p:3},
+{t:V,n:'_top',p:4},
+{t:O,n:'onsubmit',p:10},
+{t:O,n:'onreset',p:11},
+{t:T,n:'frame',u:'`s/frame.html',p:194},
+{t:T,n:'frameset',u:'frames/`.html',p:195},
+{t:T,n:'h1',c:'block/`.html',p:196},
+{t:O,n:'align',p:1},
+{t:V,n:'left',p:1},
+{t:V,n:'center',p:2},
+{t:V,n:'right',p:3},
+{t:V,n:'justify',p:4},
+{t:T,n:'h2',c:'block/`.html',p:202},
+{t:O,n:'align',p:1},
+{t:V,n:'left',p:1},
+{t:V,n:'center',p:2},
+{t:V,n:'right',p:3},
+{t:V,n:'justify',p:4},
+{t:T,n:'h3',c:'block/`.html',p:208},
+{t:O,n:'align',p:1},
+{t:V,n:'left',p:1},
+{t:V,n:'center',p:2},
+{t:V,n:'right',p:3},
+{t:V,n:'justify',p:4},
+{t:T,n:'h4',c:'block/`.html',p:214},
+{t:O,n:'align',p:1},
+{t:V,n:'left',p:1},
+{t:V,n:'center',p:2},
+{t:V,n:'right',p:3},
+{t:V,n:'justify',p:4},
+{t:T,n:'h5',c:'block/`.html',p:220},
+{t:O,n:'align',p:1},
+{t:V,n:'left',p:1},
+{t:V,n:'center',p:2},
+{t:V,n:'right',p:3},
+{t:V,n:'justify',p:4},
+{t:T,n:'h6',c:'block/`.html',p:226},
+{t:O,n:'align',p:1},
+{t:V,n:'left',p:1},
+{t:V,n:'center',p:2},
+{t:V,n:'right',p:3},
+{t:V,n:'justify',p:4},
+{t:T,n:'head',u:'`/head.html',p:232},
+{t:T,n:'hr',c:'block/`.html',p:233},
+{t:O,n:'align',p:1},
+{t:V,n:'left',p:1},
+{t:V,n:'center',p:2},
+{t:V,n:'right',p:3},
+{t:O,n:'size',p:5},
+{t:O,n:'width',p:6},
+{t:T,n:'html',c:'`/html.html',p:240},
+{t:O,n:'version',p:1},
+{t:T,n:'i',u:'fontstyle/`.html',p:242},
+{t:T,n:'iframe',c:'special/`.html',p:243},
+{t:O,n:'src',p:1},
+{t:O,n:'name',p:2},
+{t:O,n:'longdesc',p:3},
+{t:O,n:'width',p:4},
+{t:O,n:'height',p:5},
+{t:O,n:'align',p:6},
+{t:V,n:'top',p:1},
+{t:V,n:'middle',p:2},
+{t:V,n:'bottom',p:3},
+{t:V,n:'left',p:4},
+{t:V,n:'right',p:5},
+{t:O,n:'frameborder',p:12},
+{t:V,n:'1',p:1},
+{t:V,n:'0',p:2},
+{t:O,n:'marginwidth',p:15},
+{t:O,n:'marginheight',p:16},
+{t:O,n:'scrolling',p:17},
+{t:V,n:'yes',p:1},
+{t:V,n:'no',p:2},
+{t:V,n:'auto',p:3},
+{t:T,n:'img',c:'special/`.html',p:264},
+{t:O,n:'longdesc',p:1},
+{t:O,n:'width',p:2},
+{t:O,n:'height',p:3},
+{t:O,n:'usemap',p:4},
+{t:O,n:'align',p:5},
+{t:V,n:'top',p:1},
+{t:V,n:'middle',p:2},
+{t:V,n:'bottom',p:3},
+{t:V,n:'left',p:4},
+{t:V,n:'right',p:5},
+{t:O,n:'border',p:11},
+{t:O,n:'hspace',p:12},
+{t:O,n:'vspace',p:13},
+{t:T,n:'input',c:'forms/`.html',p:278},
+{t:O,n:'type',p:1},
+{t:V,n:'text',p:1},
+{t:V,n:'password',p:2},
+{t:V,n:'checkbox',p:3},
+{t:V,n:'radio',p:4},
+{t:V,n:'submit',p:5},
+{t:V,n:'reset',p:6},
+{t:V,n:'file',p:7},
+{t:V,n:'hidden',p:8},
+{t:V,n:'image',p:9},
+{t:V,n:'button',p:10},
+{t:O,n:'name',p:12},
+{t:O,n:'value',p:13},
+{t:O,n:'size',p:14},
+{t:O,n:'maxlength',p:15},
+{t:O,n:'src',p:16},
+{t:O,n:'alt',p:17},
+{t:O,n:'usemap',p:18},
+{t:O,n:'align',p:19},
+{t:V,n:'top',p:1},
+{t:V,n:'middle',p:2},
+{t:V,n:'bottom',p:3},
+{t:V,n:'left',p:4},
+{t:V,n:'right',p:5},
+{t:O,n:'accept',p:25},
+{t:O,n:'accesskey',p:26},
+{t:O,n:'tabindex',p:27},
+{t:O,n:'onfocus',p:28},
+{t:O,n:'onblur',p:29},
+{t:O,n:'onselect',p:30},
+{t:O,n:'onchange',p:31},
+{t:T,n:'ins',c:'phrase/`.html',p:310},
+{t:O,n:'cite',p:1},
+{t:O,n:'datetime',p:2},
+{t:T,n:'isindex',c:'block/`.html',p:313},
+{t:O,n:'prompt',p:1},
+{t:T,n:'kbd',u:'phrase/`.html',p:315},
+{t:T,n:'label',c:'forms/`.html',p:316},
+{t:O,n:'for',p:1},
+{t:O,n:'accesskey',p:2},
+{t:O,n:'onfocus',p:3},
+{t:O,n:'onblur',p:4},
+{t:T,n:'legend',c:'forms/`.html',p:321},
+{t:O,n:'accesskey',p:1},
+{t:O,n:'align',p:2},
+{t:V,n:'top',p:1},
+{t:V,n:'bottom',p:2},
+{t:V,n:'left',p:3},
+{t:V,n:'right',p:4},
+{t:T,n:'li',c:'`sts/li.html',p:328},
+{t:O,n:'type',p:1},
+{t:V,n:'disc',p:1},
+{t:V,n:'square',p:2},
+{t:V,n:'circle',p:3},
+{t:V,n:'1',p:4},
+{t:V,n:'a',p:5},
+{t:V,n:'A',p:6},
+{t:V,n:'i',p:7},
+{t:V,n:'I',p:8},
+{t:O,n:'value',p:10},
+{t:T,n:'link',c:'head/`.html',p:339},
+{t:O,n:'rel',p:1},
+{t:V,n:'Alternate',p:1},
+{t:V,n:'StyleSheet',p:2},
+{t:V,n:'Start',p:3},
+{t:V,n:'Next',p:4},
+{t:V,n:'Prev',p:5},
+{t:V,n:'Contents',p:6},
+{t:V,n:'Index',p:7},
+{t:V,n:'Glossary',p:8},
+{t:V,n:'Copyright',p:9},
+{t:V,n:'Chapter',p:10},
+{t:V,n:'Section',p:11},
+{t:V,n:'Subsection',p:12},
+{t:V,n:'Appendix',p:13},
+{t:V,n:'Help',p:14},
+{t:V,n:'Bookmark',p:15},
+{t:O,n:'rev',p:17},
+{t:V,n:'Alternate',p:1},
+{t:V,n:'StyleSheet',p:2},
+{t:V,n:'Start',p:3},
+{t:V,n:'Next',p:4},
+{t:V,n:'Prev',p:5},
+{t:V,n:'Contents',p:6},
+{t:V,n:'Index',p:7},
+{t:V,n:'Glossary',p:8},
+{t:V,n:'Copyright',p:9},
+{t:V,n:'Chapter',p:10},
+{t:V,n:'Section',p:11},
+{t:V,n:'Subsection',p:12},
+{t:V,n:'Appendix',p:13},
+{t:V,n:'Help',p:14},
+{t:V,n:'Bookmark',p:15},
+{t:O,n:'href',p:33},
+{t:O,n:'type',p:34},
+{t:O,n:'target',p:35},
+{t:V,n:'_blank',p:1},
+{t:V,n:'_self',p:2},
+{t:V,n:'_parent',p:3},
+{t:V,n:'_top',p:4},
+{t:O,n:'media',p:40},
+{t:O,n:'hreflang',p:41},
+{t:O,n:'charset',p:42},
+{t:T,n:'map',u:'special/`.html',p:382},
+{t:T,n:'menu',u:'lists/`.html',p:383},
+{t:T,n:'meta',c:'head/`.html',p:384},
+{t:O,n:'name',p:1},
+{t:O,n:'scheme',p:2},
+{t:T,n:'noframes',u:'frames/`.html',p:387},
+{t:T,n:'noscript',u:'block/`.html',p:388},
+{t:T,n:'object',c:'special/`.html',p:389},
+{t:O,n:'data',p:1},
+{t:O,n:'classid',p:2},
+{t:O,n:'archive',p:3},
+{t:O,n:'codebase',p:4},
+{t:O,n:'width',p:5},
+{t:O,n:'height',p:6},
+{t:O,n:'name',p:7},
+{t:O,n:'usemap',p:8},
+{t:O,n:'type',p:9},
+{t:O,n:'codetype',p:10},
+{t:O,n:'standby',p:11},
+{t:O,n:'tabindex',p:12},
+{t:O,n:'align',p:13},
+{t:V,n:'top',p:1},
+{t:V,n:'middle',p:2},
+{t:V,n:'bottom',p:3},
+{t:V,n:'left',p:4},
+{t:V,n:'right',p:5},
+{t:O,n:'border',p:19},
+{t:O,n:'hspace',p:20},
+{t:O,n:'vspace',p:21},
+{t:T,n:'ol',c:'lists/`.html',p:411},
+{t:O,n:'type',p:1},
+{t:V,n:'1',p:1},
+{t:V,n:'a',p:2},
+{t:V,n:'A',p:3},
+{t:V,n:'i',p:4},
+{t:V,n:'I',p:5},
+{t:O,n:'start',p:7},
+{t:T,n:'optgroup',u:'forms/`.html',p:419},
+{t:T,n:'option',c:'forms/`.html',p:420},
+{t:O,n:'value',p:1},
+{t:O,n:'label',p:2},
+{t:T,n:'p',c:'block/`.html',p:423},
+{t:O,n:'align',p:1},
+{t:V,n:'left',p:1},
+{t:V,n:'center',p:2},
+{t:V,n:'right',p:3},
+{t:V,n:'justify',p:4},
+{t:T,n:'param',c:'special/`.html',p:429},
+{t:O,n:'value',p:1},
+{t:O,n:'valuetype',p:2},
+{t:V,n:'data',p:1},
+{t:V,n:'ref',p:2},
+{t:V,n:'object',p:3},
+{t:O,n:'type',p:6},
+{t:T,n:'pre',c:'block/`.html',p:436},
+{t:O,n:'width',p:1},
+{t:T,n:'q',c:'special/`.html',p:438},
+{t:O,n:'cite',p:1},
+{t:T,n:'s',u:'font`tyle/s.html',p:440},
+{t:T,n:'samp',u:'phrase/`.html',p:441},
+{t:T,n:'script',c:'special/`.html',p:442},
+{t:O,n:'language',p:1},
+{t:O,n:'src',p:2},
+{t:O,n:'charset',p:3},
+{t:T,n:'select',c:'forms/`.html',p:446},
+{t:O,n:'name',p:1},
+{t:O,n:'size',p:2},
+{t:O,n:'tabindex',p:3},
+{t:O,n:'onfocus',p:4},
+{t:O,n:'onblur',p:5},
+{t:O,n:'onchange',p:6},
+{t:T,n:'small',u:'fontstyle/`.html',p:453},
+{t:T,n:'span',u:'special/`.html',p:454},
+{t:T,n:'strike',u:'fontstyle/`.html',p:455},
+{t:T,n:'strong',u:'phrase/`.html',p:456},
+{t:T,n:'style',c:'head/`.html',p:457},
+{t:O,n:'media',p:1},
+{t:O,n:'title',p:2},
+{t:T,n:'sub',u:'special/`.html',p:460},
+{t:T,n:'sup',u:'special/`.html',p:461},
+{t:T,n:'table',c:'`s/table.html',p:462},
+{t:O,n:'summary',p:1},
+{t:O,n:'width',p:2},
+{t:O,n:'border',p:3},
+{t:O,n:'frame',p:4},
+{t:V,n:'void',p:1},
+{t:V,n:'above',p:2},
+{t:V,n:'below',p:3},
+{t:V,n:'hsides',p:4},
+{t:V,n:'lhs',p:5},
+{t:V,n:'rhs',p:6},
+{t:V,n:'vsides',p:7},
+{t:V,n:'box',p:8},
+{t:V,n:'border',p:9},
+{t:O,n:'rules',p:14},
+{t:V,n:'none',p:1},
+{t:V,n:'groups',p:2},
+{t:V,n:'rows',p:3},
+{t:V,n:'cols',p:4},
+{t:V,n:'all',p:5},
+{t:O,n:'cellspacing',p:20},
+{t:O,n:'cellpadding',p:21},
+{t:O,n:'align',p:22},
+{t:V,n:'left',p:1},
+{t:V,n:'center',p:2},
+{t:V,n:'right',p:3},
+{t:O,n:'bgcolor',p:26},
+{t:T,n:'tbody',c:'tables/`.html',p:489},
+{t:O,n:'align',p:1},
+{t:V,n:'left',p:1},
+{t:V,n:'center',p:2},
+{t:V,n:'right',p:3},
+{t:V,n:'justify',p:4},
+{t:V,n:'char',p:5},
+{t:O,n:'char',p:7},
+{t:O,n:'charoff',p:8},
+{t:O,n:'valign',p:9},
+{t:V,n:'top',p:1},
+{t:V,n:'middle',p:2},
+{t:V,n:'bottom',p:3},
+{t:V,n:'baseline',p:4},
+{t:T,n:'td',c:'tables/`.html',p:503},
+{t:O,n:'rowspan',p:1},
+{t:O,n:'colspan',p:2},
+{t:O,n:'headers',p:3},
+{t:O,n:'abbr',p:4},
+{t:O,n:'scope',p:5},
+{t:V,n:'row',p:1},
+{t:V,n:'col',p:2},
+{t:V,n:'rowgroup',p:3},
+{t:V,n:'colgroup',p:4},
+{t:O,n:'axis',p:10},
+{t:O,n:'align',p:11},
+{t:V,n:'left',p:1},
+{t:V,n:'center',p:2},
+{t:V,n:'right',p:3},
+{t:V,n:'justify',p:4},
+{t:V,n:'char',p:5},
+{t:O,n:'char',p:17},
+{t:O,n:'charoff',p:18},
+{t:O,n:'valign',p:19},
+{t:V,n:'top',p:1},
+{t:V,n:'middle',p:2},
+{t:V,n:'bottom',p:3},
+{t:V,n:'baseline',p:4},
+{t:O,n:'width',p:24},
+{t:O,n:'height',p:25},
+{t:O,n:'bgcolor',p:26},
+{t:T,n:'textarea',c:'forms/`.html',p:530},
+{t:O,n:'name',p:1},
+{t:O,n:'accesskey',p:2},
+{t:O,n:'tabindex',p:3},
+{t:O,n:'onfocus',p:4},
+{t:O,n:'onblur',p:5},
+{t:O,n:'onselect',p:6},
+{t:O,n:'onchange',p:7},
+{t:T,n:'tfoot',c:'tables/`.html',p:538},
+{t:O,n:'align',p:1},
+{t:V,n:'left',p:1},
+{t:V,n:'center',p:2},
+{t:V,n:'right',p:3},
+{t:V,n:'justify',p:4},
+{t:V,n:'char',p:5},
+{t:O,n:'char',p:7},
+{t:O,n:'charoff',p:8},
+{t:O,n:'valign',p:9},
+{t:V,n:'top',p:1},
+{t:V,n:'middle',p:2},
+{t:V,n:'bottom',p:3},
+{t:V,n:'baseline',p:4},
+{t:T,n:'th',c:'tables/`.html',p:552},
+{t:O,n:'rowspan',p:1},
+{t:O,n:'colspan',p:2},
+{t:O,n:'headers',p:3},
+{t:O,n:'abbr',p:4},
+{t:O,n:'scope',p:5},
+{t:V,n:'row',p:1},
+{t:V,n:'col',p:2},
+{t:V,n:'rowgroup',p:3},
+{t:V,n:'colgroup',p:4},
+{t:O,n:'axis',p:10},
+{t:O,n:'align',p:11},
+{t:V,n:'left',p:1},
+{t:V,n:'center',p:2},
+{t:V,n:'right',p:3},
+{t:V,n:'justify',p:4},
+{t:V,n:'char',p:5},
+{t:O,n:'char',p:17},
+{t:O,n:'charoff',p:18},
+{t:O,n:'valign',p:19},
+{t:V,n:'top',p:1},
+{t:V,n:'middle',p:2},
+{t:V,n:'bottom',p:3},
+{t:V,n:'baseline',p:4},
+{t:O,n:'width',p:24},
+{t:O,n:'height',p:25},
+{t:O,n:'bgcolor',p:26},
+{t:T,n:'thead',c:'tables/`.html',p:579},
+{t:O,n:'align',p:1},
+{t:V,n:'left',p:1},
+{t:V,n:'center',p:2},
+{t:V,n:'right',p:3},
+{t:V,n:'justify',p:4},
+{t:V,n:'char',p:5},
+{t:O,n:'char',p:7},
+{t:O,n:'charoff',p:8},
+{t:O,n:'valign',p:9},
+{t:V,n:'top',p:1},
+{t:V,n:'middle',p:2},
+{t:V,n:'bottom',p:3},
+{t:V,n:'baseline',p:4},
+{t:T,n:'title',u:'head/`.html',p:593},
+{t:T,n:'tr',c:'tables/`.html',p:594},
+{t:O,n:'align',p:1},
+{t:V,n:'left',p:1},
+{t:V,n:'center',p:2},
+{t:V,n:'right',p:3},
+{t:V,n:'justify',p:4},
+{t:V,n:'char',p:5},
+{t:O,n:'char',p:7},
+{t:O,n:'charoff',p:8},
+{t:O,n:'valign',p:9},
+{t:V,n:'top',p:1},
+{t:V,n:'middle',p:2},
+{t:V,n:'bottom',p:3},
+{t:V,n:'baseline',p:4},
+{t:O,n:'bgcolor',p:14},
+{t:T,n:'tt',u:'fontstyle/`.html',p:609},
+{t:T,n:'u',u:'fontstyle/`.html',p:610},
+{t:T,n:'ul',c:'lists/`.html',p:611},
+{t:O,n:'type',p:1},
+{t:V,n:'disc',p:1},
+{t:V,n:'square',p:2},
+{t:V,n:'circle',p:3},
+{t:T,n:'var',u:'phrase/`.html',p:616},
+null);
+finishModuleProcessing('module_html.js',tmp);startModuleProcessing('module_css.js');var P = 'P';
+var C = 'C';
+var I = 'I';
+var M = 'M';
+var O = 'O';
+var T = 'T';
+var D = 'D';
+var S = 'S';
+var V = 'V';
+var tmp = new Array(
+{t:D,n:'CSS',c:'http://www.htmlhelp.com/reference/css/all-properties.html',p:1},
+{t:S,n:'font-family',c:'#`',p:1},
+{t:V,n:'serif',p:1},
+{t:V,n:'sans-serif',p:2},
+{t:V,n:'cursive',p:3},
+{t:V,n:'fantasy',p:4},
+{t:V,n:'monospace',p:5},
+{t:S,n:'font-style',c:'#`',p:7},
+{t:V,n:'normal',p:1},
+{t:V,n:'italic',p:2},
+{t:V,n:'oblique',p:3},
+{t:S,n:'font-variant',c:'#`',p:11},
+{t:V,n:'normal',p:1},
+{t:V,n:'small-caps',p:2},
+{t:S,n:'font-weight',c:'#`',p:14},
+{t:V,n:'normal',p:1},
+{t:V,n:'bold',p:2},
+{t:V,n:'bolder',p:3},
+{t:V,n:'lighter',p:4},
+{t:S,n:'font-size',c:'#`',p:19},
+{t:V,n:'xx-small',p:1},
+{t:V,n:'x-small',p:2},
+{t:V,n:'small',p:3},
+{t:V,n:'medium',p:4},
+{t:V,n:'large',p:5},
+{t:V,n:'x-large',p:6},
+{t:V,n:'xx-large',p:7},
+{t:V,n:'larger',p:8},
+{t:V,n:'smaller',p:9},
+{t:S,n:'font',u:'#`',p:29},
+{t:S,n:'color',u:'#`',p:30},
+{t:S,n:'background-color',c:'#`',p:31},
+{t:V,n:'transparent',p:1},
+{t:S,n:'background-image',c:'#`',p:33},
+{t:V,n:'none',p:1},
+{t:S,n:'background-repeat',c:'#`',p:35},
+{t:V,n:'repeat',p:1},
+{t:V,n:'repeat-x',p:2},
+{t:V,n:'repeat-y',p:3},
+{t:V,n:'no-repeat',p:4},
+{t:S,n:'background-attachment',c:'#`',p:40},
+{t:V,n:'scroll',p:1},
+{t:V,n:'fixed',p:2},
+{t:S,n:'background-position',c:'#`',p:43},
+{t:V,n:'top',p:1},
+{t:V,n:'center',p:2},
+{t:V,n:'bottom',p:3},
+{t:V,n:'left',p:4},
+{t:V,n:'center',p:5},
+{t:V,n:'right',p:6},
+{t:S,n:'background',u:'#`',p:50},
+{t:S,n:'word-spacing',u:'#`',p:51},
+{t:S,n:'letter-spacing',u:'#`',p:52},
+{t:S,n:'text-decoration',c:'#`',p:53},
+{t:V,n:'none',p:1},
+{t:V,n:'underline',p:2},
+{t:V,n:'overline',p:3},
+{t:V,n:'line-through',p:4},
+{t:V,n:'blink',p:5},
+{t:S,n:'vertical-align',u:'#`',p:59},
+{t:S,n:'text-transform',c:'#`',p:60},
+{t:V,n:'none',p:1},
+{t:V,n:'capitalize',p:2},
+{t:V,n:'uppercase',p:3},
+{t:V,n:'lower',p:4},
+{t:S,n:'text-align',c:'#`',p:65},
+{t:V,n:'left',p:1},
+{t:V,n:'right',p:2},
+{t:V,n:'center',p:3},
+{t:V,n:'justify',p:4},
+{t:S,n:'text-indent',u:'#`',p:70},
+{t:S,n:'line-height',u:'#`',p:71},
+{t:S,n:'margin-top',u:'#`',p:72},
+{t:S,n:'margin-right',u:'#`',p:73},
+{t:S,n:'margin-bottom',u:'#`',p:74},
+{t:S,n:'margin-left',u:'#`',p:75},
+{t:S,n:'margin',u:'#`',p:76},
+{t:S,n:'padding-top',u:'#`',p:77},
+{t:S,n:'padding-right',u:'#`',p:78},
+{t:S,n:'padding-bottom',u:'#`',p:79},
+{t:S,n:'padding-left',u:'#`',p:80},
+{t:S,n:'padding',u:'#`',p:81},
+{t:S,n:'border-top-width',c:'#`',p:82},
+{t:V,n:'thin',p:1},
+{t:V,n:'medium',p:2},
+{t:V,n:'thick',p:3},
+{t:S,n:'border-right-width',c:'#`',p:86},
+{t:V,n:'thin',p:1},
+{t:V,n:'medium',p:2},
+{t:V,n:'thick',p:3},
+{t:S,n:'border-bottom-width',c:'#`',p:90},
+{t:V,n:'thin',p:1},
+{t:V,n:'medium',p:2},
+{t:V,n:'thick',p:3},
+{t:S,n:'border-left-width',c:'#`',p:94},
+{t:V,n:'thin',p:1},
+{t:V,n:'medium',p:2},
+{t:V,n:'thick',p:3},
+{t:S,n:'border-width',c:'#`',p:98},
+{t:V,n:'thin',p:1},
+{t:V,n:'medium',p:2},
+{t:V,n:'thick',p:3},
+{t:S,n:'border-color',u:'#`',p:102},
+{t:S,n:'border-style',c:'#`',p:103},
+{t:V,n:'none',p:1},
+{t:V,n:'dotted',p:2},
+{t:V,n:'dashed',p:3},
+{t:V,n:'solid',p:4},
+{t:V,n:'double',p:5},
+{t:V,n:'groove',p:6},
+{t:V,n:'ridge',p:7},
+{t:V,n:'inset',p:8},
+{t:V,n:'outset',p:9},
+{t:S,n:'border-top',u:'#`',p:113},
+{t:S,n:'border-right',u:'#`',p:114},
+{t:S,n:'border-bottom',u:'#`',p:115},
+{t:S,n:'border-left',u:'#`',p:116},
+{t:S,n:'border',u:'#`',p:117},
+{t:S,n:'width',u:'#`',p:118},
+{t:S,n:'height',u:'#`',p:119},
+{t:S,n:'float',c:'#`',p:120},
+{t:V,n:'left',p:1},
+{t:V,n:'right',p:2},
+{t:V,n:'none',p:3},
+{t:S,n:'clear',c:'#`',p:124},
+{t:V,n:'none',p:1},
+{t:V,n:'left',p:2},
+{t:V,n:'right',p:3},
+{t:V,n:'both',p:4},
+{t:S,n:'display',c:'#`',p:129},
+{t:V,n:'block',p:1},
+{t:V,n:'inline',p:2},
+{t:V,n:'list-item',p:3},
+{t:V,n:'none',p:4},
+{t:S,n:'white-space',c:'#`',p:134},
+{t:V,n:'normal',p:1},
+{t:V,n:'pre',p:2},
+{t:V,n:'nowrap',p:3},
+{t:S,n:'list-style-type',c:'#`',p:138},
+{t:V,n:'disc',p:1},
+{t:V,n:'circle',p:2},
+{t:V,n:'square',p:3},
+{t:V,n:'decimal',p:4},
+{t:V,n:'lower-roman',p:5},
+{t:V,n:'upper-roman',p:6},
+{t:V,n:'lower-alpha',p:7},
+{t:V,n:'upper-alpha',p:8},
+{t:V,n:'none',p:9},
+{t:S,n:'list-style-image',u:'#`',p:148},
+{t:S,n:'list-style-position',c:'#`',p:149},
+{t:V,n:'inside',p:1},
+{t:V,n:'outside',p:2},
+{t:S,n:'list-style',u:'#`',p:152},
+{t:S,n:'length',u:'#`',p:153},
+{t:S,n:'percentage',u:'#`',p:154},
+{t:S,n:'color-units',u:'#`',p:155},
+{t:S,n:'urls',u:'#`',p:156},
+null);
+finishModuleProcessing('module_css.js',tmp);startModuleProcessing('module_jsdomw3s.js');var P = 'P';
+var C = 'C';
+var I = 'I';
+var M = 'M';
+var O = 'O';
+var T = 'T';
+var D = 'D';
+var S = 'S';
+var V = 'V';
+var tmp = new Array(
+{t:D,n:'JavaScript/HTML DOM',u:'jsref/default.asp',c:'http://www.w3schools.com/',p:1},
+{t:D,n:'JavaScript Global',u:'obj_global.asp',c:'jsref/jsref_',p:1},
+{t:O,n:'Infinity',u:'infinity.asp',p:1},
+{t:O,n:'NaN',u:'`.asp',p:2},
+{t:O,n:'undefined',u:'`.asp',p:3},
+{t:M,n:'decodeURI',u:'`.asp',p:4},
+{t:M,n:'decodeURIComponent',u:'`.asp',p:5},
+{t:M,n:'encodeURI',u:'`.asp',p:6},
+{t:M,n:'encodeURIComponent',u:'`.asp',p:7},
+{t:M,n:'escape',u:'`.asp',p:8},
+{t:M,n:'eval',u:'`.asp',p:9},
+{t:M,n:'isFinite',u:'`.asp',p:10},
+{t:M,n:'isNaN',u:'`.asp',p:11},
+{t:M,n:'Number',u:'`.asp',p:12},
+{t:M,n:'parseFloat',u:'`.asp',p:13},
+{t:M,n:'parseInt',u:'`.asp',p:14},
+{t:M,n:'String',u:'`.asp',p:15},
+{t:M,n:'unescape',u:'`.asp',p:16},
+{t:D,n:'JavaScript Objects',p:18},
+{t:C,n:'Array',u:'obj_array.asp',c:'http://www.w3schools.com/jsref/jsref_',p:1},
+{t:O,n:'constructor',u:'`_array.asp',p:1},
+{t:O,n:'index',p:2},
+{t:O,n:'input',p:3},
+{t:O,n:'length',u:'`_array.asp',p:4},
+{t:O,n:'prototype',u:'`_array.asp',p:5},
+{t:M,n:'concat',u:'`_array.asp',p:6},
+{t:M,n:'join',u:'`.asp',p:7},
+{t:M,n:'pop',u:'`.asp',p:8},
+{t:M,n:'push',u:'`.asp',p:9},
+{t:M,n:'reverse',u:'`.asp',p:10},
+{t:M,n:'shift',u:'`.asp',p:11},
+{t:M,n:'slice',u:'`_array.asp',p:12},
+{t:M,n:'sort',u:'`.asp',p:13},
+{t:M,n:'splice',u:'`.asp',p:14},
+{t:M,n:'toSource',u:'`_array.asp',p:15},
+{t:M,n:'toString',u:'`_array.asp',p:16},
+{t:M,n:'unshift',u:'`.asp',p:17},
+{t:M,n:'valueOf',u:'`_array.asp',p:18},
+{t:C,n:'Boolean',u:'obj_boolean.asp',c:'http://www.w3schools.com/jsref/jsref_',p:20},
+{t:O,n:'constructor',u:'`_boolean.asp',p:1},
+{t:O,n:'prototype',u:'`_boolean.asp',p:2},
+{t:M,n:'toSource',u:'`_boolean.asp',p:3},
+{t:M,n:'toString',u:'`_boolean.asp',p:4},
+{t:M,n:'valueOf',u:'`_boolean.asp',p:5},
+{t:C,n:'Date',u:'obj_date.asp',c:'http://www.w3schools.com/jsref/jsref_',p:26},
+{t:O,n:'constructor',u:'`_date.asp',p:1},
+{t:O,n:'prototype',u:'`_date.asp',p:2},
+{t:M,n:'Date',u:'`.asp',p:3},
+{t:M,n:'getDate',u:'`.asp',p:4},
+{t:M,n:'getDay',u:'`.asp',p:5},
+{t:M,n:'getFullYear',u:'`.asp',p:6},
+{t:M,n:'getHours',u:'`.asp',p:7},
+{t:M,n:'getMilliseconds',u:'`.asp',p:8},
+{t:M,n:'getMinutes',u:'`.asp',p:9},
+{t:M,n:'getMonth',u:'`.asp',p:10},
+{t:M,n:'getSeconds',u:'`.asp',p:11},
+{t:M,n:'getTime',u:'`.asp',p:12},
+{t:M,n:'getTimezoneOffset',u:'`.asp',p:13},
+{t:M,n:'getUTCDate',u:'`.asp',p:14},
+{t:M,n:'getUTCDay',u:'`.asp',p:15},
+{t:M,n:'getUTCFullYear',u:'`.asp',p:16},
+{t:M,n:'getUTCHours',u:'`.asp',p:17},
+{t:M,n:'getUTCMilliseconds',u:'`.asp',p:18},
+{t:M,n:'getUTCMinutes',u:'`.asp',p:19},
+{t:M,n:'getUTCMonth',u:'`.asp',p:20},
+{t:M,n:'getUTCSeconds',u:'`.asp',p:21},
+{t:M,n:'getYear',u:'`.asp',p:22},
+{t:M,n:'parse',u:'`.asp',p:23},
+{t:M,n:'setDate',u:'`.asp',p:24},
+{t:M,n:'setFullYear',u:'`.asp',p:25},
+{t:M,n:'setHours',u:'`.asp',p:26},
+{t:M,n:'setMilliseconds',u:'`.asp',p:27},
+{t:M,n:'setMinutes',u:'`.asp',p:28},
+{t:M,n:'setMonth',u:'`.asp',p:29},
+{t:M,n:'setSeconds',u:'`.asp',p:30},
+{t:M,n:'setTime',u:'`.asp',p:31},
+{t:M,n:'setUTCDate',u:'`.asp',p:32},
+{t:M,n:'setUTCFullYear',u:'`.asp',p:33},
+{t:M,n:'setUTCHours',u:'`.asp',p:34},
+{t:M,n:'setUTCMilliseconds',u:'`.asp',p:35},
+{t:M,n:'setUTCMinutes',u:'`.asp',p:36},
+{t:M,n:'setUTCMonth',u:'`.asp',p:37},
+{t:M,n:'setUTCSeconds',u:'`.asp',p:38},
+{t:M,n:'setYear',u:'`.asp',p:39},
+{t:M,n:'toGMTString',u:'`.asp',p:40},
+{t:M,n:'toLocaleString',u:'`.asp',p:41},
+{t:M,n:'toSource',u:'`_date.asp',p:42},
+{t:M,n:'toString',u:'`_date.asp',p:43},
+{t:M,n:'toUTCString',u:'`.asp',p:44},
+{t:M,n:'UTC',u:'utc.asp',p:45},
+{t:M,n:'valueOf',u:'`_date.asp',p:46},
+{t:C,n:'Math',u:'obj_math.asp',c:'http://www.w3schools.com/jsref/jsref_',p:73},
+{t:O,n:'constructor',u:'`_math.asp',p:1},
+{t:O,n:'E',p:2},
+{t:O,n:'LN10',p:3},
+{t:O,n:'LN2',p:4},
+{t:O,n:'LOG10E',p:5},
+{t:O,n:'LOG2E',p:6},
+{t:O,n:'PI',p:7},
+{t:O,n:'prototype',u:'`_math.asp',p:8},
+{t:O,n:'SQRT1_2',p:9},
+{t:O,n:'SQRT2',p:10},
+{t:M,n:'abs',u:'`.asp',p:11},
+{t:M,n:'acos',u:'`.asp',p:12},
+{t:M,n:'asin',u:'`.asp',p:13},
+{t:M,n:'atan',u:'`.asp',p:14},
+{t:M,n:'atan2',u:'atan.asp',p:15},
+{t:M,n:'ceil',u:'`.asp',p:16},
+{t:M,n:'cos',u:'`.asp',p:17},
+{t:M,n:'exp',u:'`.asp',p:18},
+{t:M,n:'floor',u:'`.asp',p:19},
+{t:M,n:'log',u:'`.asp',p:20},
+{t:M,n:'max',u:'`.asp',p:21},
+{t:M,n:'min',u:'`.asp',p:22},
+{t:M,n:'pow',u:'`.asp',p:23},
+{t:M,n:'random',u:'`.asp',p:24},
+{t:M,n:'round',u:'`.asp',p:25},
+{t:M,n:'sin',u:'`.asp',p:26},
+{t:M,n:'sqrt',u:'`.asp',p:27},
+{t:M,n:'tan',u:'`.asp',p:28},
+{t:M,n:'toSource',u:'`_math.asp',p:29},
+{t:M,n:'valueOf',u:'`_math.asp',p:30},
+{t:C,n:'String',u:'obj_string.asp',c:'http://www.w3schools.com/jsref/jsref_',p:104},
+{t:O,n:'constructor',u:'`_string.asp',p:1},
+{t:O,n:'length',u:'`_string.asp',p:2},
+{t:O,n:'prototype',u:'`_string.asp',p:3},
+{t:M,n:'anchor',u:'`.asp',p:4},
+{t:M,n:'big',u:'`.asp',p:5},
+{t:M,n:'blink',u:'`.asp',p:6},
+{t:M,n:'bold',u:'`.asp',p:7},
+{t:M,n:'charAt',u:'`.asp',p:8},
+{t:M,n:'charCodeAt',u:'`.asp',p:9},
+{t:M,n:'concat',u:'`_string.asp',p:10},
+{t:M,n:'fixed',u:'`.asp',p:11},
+{t:M,n:'fontcolor',u:'`.asp',p:12},
+{t:M,n:'fontsize',u:'`.asp',p:13},
+{t:M,n:'fromCharCode',u:'`.asp',p:14},
+{t:M,n:'indexOf',u:'`.asp',p:15},
+{t:M,n:'italics',u:'`.asp',p:16},
+{t:M,n:'lastIndexOf',u:'`.asp',p:17},
+{t:M,n:'link',u:'`.asp',p:18},
+{t:M,n:'match',u:'`.asp',p:19},
+{t:M,n:'replace',u:'`.asp',p:20},
+{t:M,n:'search',u:'`.asp',p:21},
+{t:M,n:'slice',u:'`_string.asp',p:22},
+{t:M,n:'small',u:'`.asp',p:23},
+{t:M,n:'split',u:'`.asp',p:24},
+{t:M,n:'strike',u:'`.asp',p:25},
+{t:M,n:'sub',u:'`.asp',p:26},
+{t:M,n:'substr',u:'`.asp',p:27},
+{t:M,n:'substring',u:'`.asp',p:28},
+{t:M,n:'sup',u:'`.asp',p:29},
+{t:M,n:'toLowerCase',u:'`.asp',p:30},
+{t:M,n:'toSource',u:'`_string.asp',p:31},
+{t:M,n:'toUpperCase',u:'`.asp',p:32},
+{t:M,n:'valueOf',u:'`_string.asp',p:33},
+{t:C,n:'XMLHttpRequest',u:'http://www.w3schools.com/ajax/ajax_xmlhttprequest.asp',p:138},
+{t:D,n:'HTML DOM Objects',u:'default.asp',c:'htmldom/',p:157},
+{t:C,n:'Anchor',u:'dom_obj_anchor.asp',p:1},
+{t:O,n:'accessKey',u:'prop_anchor_accesskey.asp',p:1},
+{t:O,n:'charset',u:'prop_anchor_`.asp',p:2},
+{t:O,n:'coords',u:'prop_anchor_`.asp',p:3},
+{t:O,n:'href',u:'prop_anchor_`.asp',p:4},
+{t:O,n:'hreflang',u:'prop_anchor_`.asp',p:5},
+{t:O,n:'id',u:'prop_anchor_`.asp',p:6},
+{t:O,n:'innerHTML',u:'prop_anchor_innerhtml.asp',p:7},
+{t:O,n:'name',u:'prop_anchor_`.asp',p:8},
+{t:O,n:'rel',u:'prop_anchor_`.asp',p:9},
+{t:O,n:'rev',u:'prop_anchor_`.asp',p:10},
+{t:O,n:'shape',u:'prop_anchor_`.asp',p:11},
+{t:O,n:'tabIndex',u:'prop_anchor_tabindex.asp',p:12},
+{t:O,n:'target',u:'prop_anchor_`.asp',p:13},
+{t:O,n:'type',u:'prop_anchor_`.asp',p:14},
+{t:M,n:'blur',u:'met_anchor_`.asp',p:15},
+{t:M,n:'focus',u:'met_anchor_`.asp',p:16},
+{t:C,n:'Area',u:'dom_obj_area.asp',p:18},
+{t:O,n:'accessKey',u:'prop_area_accesskey.asp',p:1},
+{t:O,n:'alt',u:'prop_area_`.asp',p:2},
+{t:O,n:'coords',u:'prop_area_`.asp',p:3},
+{t:O,n:'hash',u:'prop_area_`.asp',p:4},
+{t:O,n:'host',u:'prop_area_`.asp',p:5},
+{t:O,n:'href',u:'prop_area_`.asp',p:6},
+{t:O,n:'id',u:'prop_area_`.asp',p:7},
+{t:O,n:'noHref',u:'prop_area_nohref.asp',p:8},
+{t:O,n:'pathname',u:'prop_area_`.asp',p:9},
+{t:O,n:'protocol',u:'prop_area_`.asp',p:10},
+{t:O,n:'search',u:'prop_area_`.asp',p:11},
+{t:O,n:'shape',u:'prop_area_`.asp',p:12},
+{t:O,n:'tabIndex',u:'prop_area_tabindex.asp',p:13},
+{t:O,n:'target',u:'prop_area_`.asp',p:14},
+{t:C,n:'Base',u:'dom_obj_base.asp',p:33},
+{t:O,n:'href',u:'prop_base_`.asp',p:1},
+{t:O,n:'id',u:'prop_base_`.asp',p:2},
+{t:O,n:'target',u:'prop_base_`.asp',p:3},
+{t:C,n:'Body',u:'dom_obj_body.asp',p:37},
+{t:O,n:'className',u:'prop_body_classname.asp',p:1},
+{t:O,n:'dir',u:'prop_body_`.asp',p:2},
+{t:O,n:'id',u:'prop_body_`.asp',p:3},
+{t:O,n:'lang',u:'prop_body_`.asp',p:4},
+{t:O,n:'title',u:'prop_body_`.asp',p:5},
+{t:C,n:'Button',u:'dom_obj_pushbutton.asp',p:43},
+{t:O,n:'accessKey',u:'prop_pushbutton_accesskey.asp',p:1},
+{t:O,n:'disabled',u:'prop_pushbutton_`.asp',p:2},
+{t:O,n:'form',u:'prop_pushbutton_`.asp',p:3},
+{t:O,n:'id',u:'prop_pushbutton_`.asp',p:4},
+{t:O,n:'name',u:'prop_pushbutton_`.asp',p:5},
+{t:O,n:'tabIndex',u:'prop_pushbutton_tabindex.asp',p:6},
+{t:O,n:'type',u:'prop_pushbutton_`.asp',p:7},
+{t:O,n:'value',u:'prop_pushbutton_`.asp',p:8},
+{t:C,n:'Document',u:'dom_obj_document.asp',p:52},
+{t:O,n:'anchors',u:'coll_doc_`.asp',p:1},
+{t:O,n:'body',p:2},
+{t:O,n:'cookie',u:'prop_doc_`.asp',p:3},
+{t:O,n:'domain',u:'prop_doc_`.asp',p:4},
+{t:O,n:'forms',u:'coll_doc_`.asp',p:5},
+{t:O,n:'images',u:'coll_doc_`.asp',p:6},
+{t:O,n:'lastModified',u:'prop_doc_lastmodified.asp',p:7},
+{t:O,n:'links',u:'coll_doc_`.asp',p:8},
+{t:O,n:'referrer',u:'prop_doc_`.asp',p:9},
+{t:O,n:'title',u:'prop_doc_`.asp',p:10},
+{t:O,n:'URL',u:'prop_doc_url.asp',p:11},
+{t:M,n:'close',u:'met_doc_`.asp',p:12},
+{t:M,n:'getElementById',u:'met_doc_getelementbyid.asp',p:13},
+{t:M,n:'getElementsByName',u:'met_doc_getelementsbyname.asp',p:14},
+{t:M,n:'getElementsByTagName',u:'met_doc_getelementsbytagname.asp',p:15},
+{t:M,n:'open',u:'met_doc_`.asp',p:16},
+{t:M,n:'write',u:'met_doc_`.asp',p:17},
+{t:M,n:'writeln',u:'met_doc_`.asp',p:18},
+{t:C,n:'Event',u:'dom_obj_event.asp',p:71},
+{t:O,n:'altKey',u:'event_altkey.asp',p:1},
+{t:O,n:'button',u:'event_`.asp',p:2},
+{t:O,n:'clientX',u:'event_clientx.asp',p:3},
+{t:O,n:'clientY',u:'event_clienty.asp',p:4},
+{t:O,n:'ctrlKey',u:'event_ctrlkey.asp',p:5},
+{t:O,n:'metaKey',u:'event_metakey.asp',p:6},
+{t:O,n:'relatedTarget',p:7},
+{t:O,n:'screenX',u:'event_screenx.asp',p:8},
+{t:O,n:'screenY',u:'event_screeny.asp',p:9},
+{t:O,n:'shiftKey',u:'event_shiftkey.asp',p:10},
+{t:C,n:'Form',u:'dom_obj_form.asp',p:82},
+{t:O,n:'acceptCharset',u:'prop_form_acceptcharset.asp',p:1},
+{t:O,n:'action',u:'prop_form_`.asp',p:2},
+{t:O,n:'elements',u:'coll_form_`.asp',p:3},
+{t:O,n:'enctype',u:'prop_form_`.asp',p:4},
+{t:O,n:'id',u:'prop_form_`.asp',p:5},
+{t:O,n:'length',u:'prop_form_`.asp',p:6},
+{t:O,n:'method',u:'prop_form_`.asp',p:7},
+{t:O,n:'name',u:'prop_form_`.asp',p:8},
+{t:O,n:'target',u:'prop_form_`.asp',p:9},
+{t:M,n:'reset',u:'met_form_`.asp',p:10},
+{t:M,n:'submit',u:'met_form_`.asp',p:11},
+{t:C,n:'Frame',u:'dom_obj_frame.asp',p:94},
+{t:O,n:'contentDocument',u:'prop_frame_contentdocument.asp',p:1},
+{t:O,n:'frameBorder',u:'prop_frame_frameborder.asp',p:2},
+{t:O,n:'id',u:'prop_frame_`.asp',p:3},
+{t:O,n:'longDesc',u:'prop_frame_longdesc.asp',p:4},
+{t:O,n:'marginHeight',u:'prop_frame_marginheight.asp',p:5},
+{t:O,n:'marginWidth',u:'prop_frame_marginwidth.asp',p:6},
+{t:O,n:'name',u:'prop_frame_`.asp',p:7},
+{t:O,n:'noResize',u:'prop_frame_noresize.asp',p:8},
+{t:O,n:'scrolling',u:'prop_frame_`.asp',p:9},
+{t:O,n:'src',u:'prop_frame_`.asp',p:10},
+{t:C,n:'Frameset',u:'dom_obj_frameset.asp',p:105},
+{t:O,n:'cols',u:'prop_frameset_`.asp',p:1},
+{t:O,n:'id',u:'prop_frameset_`.asp',p:2},
+{t:O,n:'rows',u:'prop_frameset_`.asp',p:3},
+{t:C,n:'History',u:'dom_obj_history.asp',p:109},
+{t:O,n:'length',u:'prop_his_`.asp',p:1},
+{t:M,n:'back',u:'met_his_`.asp',p:2},
+{t:M,n:'forward',u:'met_his_`.asp',p:3},
+{t:M,n:'go',u:'met_his_`.asp',p:4},
+{t:C,n:'IFrame',u:'dom_obj_iframe.asp',p:114},
+{t:O,n:'align',u:'prop_iframe_`.asp',p:1},
+{t:O,n:'contentDocument',u:'prop_iframe_`.asp',p:2},
+{t:O,n:'frameBorder',u:'prop_iframe_frameborder.asp',p:3},
+{t:O,n:'height',u:'prop_iframe_`.asp',p:4},
+{t:O,n:'id',u:'prop_iframe_`.asp',p:5},
+{t:O,n:'longDesc',u:'prop_iframe_longdesc.asp',p:6},
+{t:O,n:'marginHeight',u:'prop_iframe_marginheight.asp',p:7},
+{t:O,n:'marginWidth',u:'prop_iframe_marginwidth.asp',p:8},
+{t:O,n:'name',u:'prop_iframe_`.asp',p:9},
+{t:O,n:'scrolling',u:'prop_iframe_`.asp',p:10},
+{t:O,n:'src',u:'prop_iframe_`.asp',p:11},
+{t:O,n:'width',u:'prop_iframe_`.asp',p:12},
+{t:C,n:'Image',u:'dom_obj_image.asp',p:127},
+{t:O,n:'align',u:'prop_img_`.asp',p:1},
+{t:O,n:'alt',u:'prop_img_`.asp',p:2},
+{t:O,n:'border',u:'prop_img_`.asp',p:3},
+{t:O,n:'complete',u:'prop_img_`.asp',p:4},
+{t:O,n:'height',u:'prop_img_`.asp',p:5},
+{t:O,n:'hspace',u:'prop_img_`.asp',p:6},
+{t:O,n:'id',u:'prop_img_`.asp',p:7},
+{t:O,n:'isMap',u:'prop_img_ismap.asp',p:8},
+{t:O,n:'longDesc',u:'prop_img_longdesc.asp',p:9},
+{t:O,n:'lowsrc',u:'prop_img_`.asp',p:10},
+{t:O,n:'name',u:'prop_img_`.asp',p:11},
+{t:O,n:'src',u:'prop_img_`.asp',p:12},
+{t:O,n:'useMap',u:'prop_img_usemap.asp',p:13},
+{t:O,n:'vspace',u:'prop_img_`.asp',p:14},
+{t:O,n:'width',u:'prop_img_`.asp',p:15},
+{t:C,n:'Input Button',u:'dom_obj_button.asp',p:143},
+{t:O,n:'accessKey',u:'prop_button_accesskey.asp',p:1},
+{t:O,n:'alt',u:'prop_button_`.asp',p:2},
+{t:O,n:'disabled',u:'prop_button_`.asp',p:3},
+{t:O,n:'form',u:'prop_button_`.asp',p:4},
+{t:O,n:'id',u:'prop_button_`.asp',p:5},
+{t:O,n:'name',u:'prop_button_`.asp',p:6},
+{t:O,n:'tabIndex',u:'prop_button_tabindex.asp',p:7},
+{t:O,n:'type',u:'prop_button_`.asp',p:8},
+{t:O,n:'value',u:'prop_button_`.asp',p:9},
+{t:M,n:'blur',u:'met_button_`.asp',p:10},
+{t:M,n:'click',u:'met_button_`.asp',p:11},
+{t:M,n:'focus',u:'met_button_`.asp',p:12},
+{t:C,n:'Input Checkbox',u:'dom_obj_checkbox.asp',p:156},
+{t:O,n:'accessKey',u:'prop_checkbox_accesskey.asp',p:1},
+{t:O,n:'alt',u:'prop_checkbox_`.asp',p:2},
+{t:O,n:'checked',u:'prop_checkbox_`.asp',p:3},
+{t:O,n:'defaultChecked',u:'prop_checkbox_defaultchecked.asp',p:4},
+{t:O,n:'disabled',u:'prop_checkbox_`.asp',p:5},
+{t:O,n:'form',u:'prop_checkbox_`.asp',p:6},
+{t:O,n:'id',u:'prop_checkbox_`.asp',p:7},
+{t:O,n:'name',u:'prop_checkbox_`.asp',p:8},
+{t:O,n:'tabIndex',u:'prop_checkbox_tabindex.asp',p:9},
+{t:O,n:'type',u:'prop_checkbox_`.asp',p:10},
+{t:O,n:'value',p:11},
+{t:M,n:'blur',u:'met_checkbox_`.asp',p:12},
+{t:M,n:'click',u:'met_checkbox_`.asp',p:13},
+{t:M,n:'focus',u:'met_checkbox_`.asp',p:14},
+{t:C,n:'Input File',c:'dom_obj_fileupload.asp',p:171},
+{t:O,n:'accept',p:1},
+{t:O,n:'accessKey',p:2},
+{t:O,n:'alt',p:3},
+{t:O,n:'defaultValue',p:4},
+{t:O,n:'disabled',p:5},
+{t:O,n:'form',p:6},
+{t:O,n:'id',p:7},
+{t:O,n:'name',p:8},
+{t:O,n:'tabIndex',p:9},
+{t:O,n:'type',p:10},
+{t:O,n:'value',p:11},
+{t:M,n:'blur',p:12},
+{t:M,n:'focus',p:13},
+{t:M,n:'select',p:14},
+{t:C,n:'Input Hidden',u:'dom_obj_hidden.asp',p:186},
+{t:O,n:'alt',u:'prop_hidden_`.asp',p:1},
+{t:O,n:'form',u:'prop_hidden_`.asp',p:2},
+{t:O,n:'id',u:'prop_h`den_id.asp',p:3},
+{t:O,n:'name',u:'prop_hidden_`.asp',p:4},
+{t:O,n:'type',u:'prop_hidden_`.asp',p:5},
+{t:O,n:'value',u:'prop_hidden_`.asp',p:6},
+{t:C,n:'Input Password',u:'dom_obj_password.asp',p:193},
+{t:O,n:'accessKey',u:'prop_password_accesskey.asp',p:1},
+{t:O,n:'alt',u:'prop_password_`.asp',p:2},
+{t:O,n:'defaultValue',u:'prop_password_defaultvalue.asp',p:3},
+{t:O,n:'disabled',u:'prop_password_`.asp',p:4},
+{t:O,n:'form',u:'prop_password_`.asp',p:5},
+{t:O,n:'id',u:'prop_password_`.asp',p:6},
+{t:O,n:'maxLength',u:'prop_password_maxlength.asp',p:7},
+{t:O,n:'name',u:'prop_password_`.asp',p:8},
+{t:O,n:'readOnly',u:'prop_password_readonly.asp',p:9},
+{t:O,n:'size',u:'prop_password_`.asp',p:10},
+{t:O,n:'tabIndex',u:'prop_password_tabindex.asp',p:11},
+{t:O,n:'type',u:'prop_password_`.asp',p:12},
+{t:O,n:'value',u:'prop_password_`.asp',p:13},
+{t:M,n:'blur',u:'met_password_`.asp',p:14},
+{t:M,n:'focus',u:'met_password_`.asp',p:15},
+{t:M,n:'select',u:'met_password_`.asp',p:16},
+{t:C,n:'Input Radio',u:'dom_obj_radio.asp',p:210},
+{t:O,n:'accessKey',u:'prop_radio_accesskey.asp',p:1},
+{t:O,n:'alt',u:'prop_radio_`.asp',p:2},
+{t:O,n:'checked',u:'prop_radio_`.asp',p:3},
+{t:O,n:'defaultChecked',u:'prop_radio_defaultchecked.asp',p:4},
+{t:O,n:'disabled',u:'prop_radio_`.asp',p:5},
+{t:O,n:'form',u:'prop_radio_`.asp',p:6},
+{t:O,n:'id',u:'prop_radio_`.asp',p:7},
+{t:O,n:'name',u:'prop_radio_`.asp',p:8},
+{t:O,n:'tabIndex',u:'prop_radio_tabindex.asp',p:9},
+{t:O,n:'type',u:'prop_radio_`.asp',p:10},
+{t:O,n:'value',u:'prop_radio_`.asp',p:11},
+{t:M,n:'blur',u:'met_radio_`.asp',p:12},
+{t:M,n:'click',u:'met_radio_`.asp',p:13},
+{t:M,n:'focus',u:'met_radio_`.asp',p:14},
+{t:C,n:'Input Reset',u:'dom_obj_reset.asp',p:225},
+{t:O,n:'accesskey',u:'prop_reset_`.asp',p:1},
+{t:O,n:'alt',u:'prop_reset_`.asp',p:2},
+{t:O,n:'disabled',u:'prop_reset_`.asp',p:3},
+{t:O,n:'form',u:'prop_reset_`.asp',p:4},
+{t:O,n:'id',u:'prop_reset_`.asp',p:5},
+{t:O,n:'name',u:'prop_reset_`.asp',p:6},
+{t:O,n:'tabIndex',u:'prop_reset_tabindex.asp',p:7},
+{t:O,n:'type',u:'prop_reset_`.asp',p:8},
+{t:O,n:'value',u:'prop_reset_`.asp',p:9},
+{t:M,n:'blur',p:10},
+{t:M,n:'click',p:11},
+{t:M,n:'focus',p:12},
+{t:C,n:'Input Submit',u:'dom_obj_submit.asp',p:238},
+{t:O,n:'accessKey',u:'prop_submit_accesskey.asp',p:1},
+{t:O,n:'alt',u:'prop_submit_`.asp',p:2},
+{t:O,n:'disabled',u:'prop_submit_`.asp',p:3},
+{t:O,n:'form',u:'prop_submit_`.asp',p:4},
+{t:O,n:'id',u:'prop_submit_`.asp',p:5},
+{t:O,n:'name',u:'prop_submit_`.asp',p:6},
+{t:O,n:'tabIndex',u:'prop_submit_tabindex.asp',p:7},
+{t:O,n:'type',u:'prop_submit_`.asp',p:8},
+{t:O,n:'value',u:'prop_submit_`.asp',p:9},
+{t:M,n:'blur',p:10},
+{t:M,n:'click',p:11},
+{t:M,n:'focus',p:12},
+{t:C,n:'Input Text',u:'dom_obj_text.asp',p:251},
+{t:O,n:'accessKey',u:'prop_text_accesskey.asp',p:1},
+{t:O,n:'alt',u:'prop_text_`.asp',p:2},
+{t:O,n:'defaultValue',u:'prop_text_defaultvalue.asp',p:3},
+{t:O,n:'disabled',u:'prop_text_`.asp',p:4},
+{t:O,n:'form',u:'prop_text_`.asp',p:5},
+{t:O,n:'id',u:'prop_text_`.asp',p:6},
+{t:O,n:'maxLength',u:'prop_text_maxlength.asp',p:7},
+{t:O,n:'name',u:'prop_text_`.asp',p:8},
+{t:O,n:'readOnly',u:'prop_text_readonly.asp',p:9},
+{t:O,n:'size',u:'prop_text_`.asp',p:10},
+{t:O,n:'tabIndex',u:'prop_text_tabindex.asp',p:11},
+{t:O,n:'type',u:'prop_text_`.asp',p:12},
+{t:O,n:'value',u:'prop_text_`.asp',p:13},
+{t:M,n:'blur',u:'met_text_`.asp',p:14},
+{t:M,n:'focus',u:'met_text_`.asp',p:15},
+{t:M,n:'select',u:'met_text_`.asp',p:16},
+{t:C,n:'Link',u:'dom_obj_link.asp',p:268},
+{t:O,n:'charset',u:'prop_link_`.asp',p:1},
+{t:O,n:'disabled',u:'prop_link_`.asp',p:2},
+{t:O,n:'href',u:'prop_link_`.asp',p:3},
+{t:O,n:'hreflang',u:'prop_link_`.asp',p:4},
+{t:O,n:'id',u:'prop_link_`.asp',p:5},
+{t:O,n:'media',u:'prop_link_`.asp',p:6},
+{t:O,n:'name',u:'prop_link_`.asp',p:7},
+{t:O,n:'rel',u:'prop_link_`.asp',p:8},
+{t:O,n:'rev',u:'prop_link_`.asp',p:9},
+{t:O,n:'type',u:'prop_link_`.asp',p:10},
+{t:C,n:'Location',u:'dom_obj_location.asp',p:279},
+{t:O,n:'hash',u:'prop_loc_`.asp',p:1},
+{t:O,n:'host',u:'prop_loc_`.asp',p:2},
+{t:O,n:'hostname',u:'prop_loc_`.asp',p:3},
+{t:O,n:'href',u:'prop_loc_`.asp',p:4},
+{t:O,n:'pathname',u:'prop_loc_`.asp',p:5},
+{t:O,n:'port',u:'prop_loc_`.asp',p:6},
+{t:O,n:'protocol',u:'prop_loc_`.asp',p:7},
+{t:O,n:'search',u:'prop_loc_`.asp',p:8},
+{t:M,n:'assign',u:'met_loc_`.asp',p:9},
+{t:M,n:'reload',u:'met_loc_`.asp',p:10},
+{t:M,n:'replace',u:'met_loc_`.asp',p:11},
+{t:C,n:'Meta',u:'dom_obj_meta.asp',p:291},
+{t:O,n:'content',u:'prop_meta_`.asp',p:1},
+{t:O,n:'httpEquiv',u:'prop_meta_httpequiv.asp',p:2},
+{t:O,n:'name',u:'prop_meta_`.asp',p:3},
+{t:O,n:'scheme',u:'prop_meta_`.asp',p:4},
+{t:C,n:'Navigator',u:'dom_obj_navigator.asp',p:296},
+{t:O,n:'appCodeName',u:'prop_nav_appcodename.asp',p:1},
+{t:O,n:'appMinorVersion',u:'prop_nav_appminorversion.asp',p:2},
+{t:O,n:'appName',u:'prop_nav_appname.asp',p:3},
+{t:O,n:'appVersion',u:'prop_nav_appversion.asp',p:4},
+{t:O,n:'browserLanguage',u:'prop_nav_browserlanguage.asp',p:5},
+{t:O,n:'cookieEnabled',u:'prop_nav_cookieenabled.asp',p:6},
+{t:O,n:'cpuClass',u:'prop_nav_cpuclass.asp',p:7},
+{t:O,n:'onLine',u:'prop_nav_online.asp',p:8},
+{t:O,n:'platform',u:'prop_nav_`.asp',p:9},
+{t:O,n:'plugins',p:10},
+{t:O,n:'systemLanguage',u:'prop_nav_systemlanguage.asp',p:11},
+{t:O,n:'userAgent',u:'prop_nav_useragent.asp',p:12},
+{t:O,n:'userLanguage',u:'prop_nav_userlanguage.asp',p:13},
+{t:M,n:'javaEnabled',u:'met_nav_javaenabled.asp',p:14},
+{t:M,n:'taintEnabled',u:'met_nav_taintenabled.asp',p:15},
+{t:C,n:'Object',c:'dom_obj_object.asp',p:312},
+{t:O,n:'align',p:1},
+{t:O,n:'archive',p:2},
+{t:O,n:'border',p:3},
+{t:O,n:'code',p:4},
+{t:O,n:'codeBase',p:5},
+{t:O,n:'codeType',p:6},
+{t:O,n:'data',p:7},
+{t:O,n:'declare',p:8},
+{t:O,n:'form',p:9},
+{t:O,n:'height',p:10},
+{t:O,n:'hspace',p:11},
+{t:O,n:'id',p:12},
+{t:O,n:'name',p:13},
+{t:O,n:'standby',p:14},
+{t:O,n:'tabIndex',p:15},
+{t:O,n:'type',p:16},
+{t:O,n:'useMap',p:17},
+{t:O,n:'vspace',p:18},
+{t:O,n:'width',p:19},
+{t:C,n:'Option',u:'dom_obj_option.asp',p:332},
+{t:O,n:'defaultSelected',u:'prop_option_defaultselected.asp',p:1},
+{t:O,n:'disabled',u:'prop_option_`.asp',p:2},
+{t:O,n:'form',u:'prop_option_`.asp',p:3},
+{t:O,n:'id',u:'prop_option_`.asp',p:4},
+{t:O,n:'index',u:'prop_option_`.asp',p:5},
+{t:O,n:'label',p:6},
+{t:O,n:'selected',u:'prop_option_`.asp',p:7},
+{t:O,n:'text',u:'prop_option_`.asp',p:8},
+{t:O,n:'value',u:'prop_option_`.asp',p:9},
+{t:C,n:'Screen',u:'dom_obj_screen.asp',p:342},
+{t:O,n:'availHeight',u:'prop_screen_availheight.asp',p:1},
+{t:O,n:'availWidth',u:'prop_screen_availwidth.asp',p:2},
+{t:O,n:'bufferDepth',u:'prop_screen_bufferdepth.asp',p:3},
+{t:O,n:'colorDepth',u:'prop_screen_colordepth.asp',p:4},
+{t:O,n:'deviceXDPI',u:'prop_screen_devicexdpi.asp',p:5},
+{t:O,n:'deviceYDPI',u:'prop_screen_deviceydpi.asp',p:6},
+{t:O,n:'fontSmoothingEnabled',u:'prop_screen_fontsmoothingenabled.asp',p:7},
+{t:O,n:'height',u:'prop_screen_`.asp',p:8},
+{t:O,n:'logicalXDPI',u:'prop_screen_logicalxdpi.asp',p:9},
+{t:O,n:'logicalYDPI',u:'prop_screen_logicalydpi.asp',p:10},
+{t:O,n:'pixelDepth',u:'prop_screen_pixeldepth.asp',p:11},
+{t:O,n:'updateInterval',u:'prop_screen_updateinterval.asp',p:12},
+{t:O,n:'width',u:'prop_screen_`.asp',p:13},
+{t:C,n:'Select',u:'dom_obj_select.asp',p:356},
+{t:O,n:'disabled',u:'prop_select_`.asp',p:1},
+{t:O,n:'form',u:'prop_select_`.asp',p:2},
+{t:O,n:'id',u:'prop_select_`.asp',p:3},
+{t:O,n:'length',u:'prop_select_`.asp',p:4},
+{t:O,n:'multiple',u:'prop_select_`.asp',p:5},
+{t:O,n:'name',u:'prop_select_`.asp',p:6},
+{t:O,n:'options',u:'coll_select_`.asp',p:7},
+{t:O,n:'selectedIndex',u:'prop_select_selectedindex.asp',p:8},
+{t:O,n:'size',u:'prop_select_`.asp',p:9},
+{t:O,n:'tabIndex',u:'prop_select_tabindex.asp',p:10},
+{t:O,n:'type',u:'prop_select_`.asp',p:11},
+{t:M,n:'add',u:'met_select_`.asp',p:12},
+{t:M,n:'blur',u:'met_select_`.asp',p:13},
+{t:M,n:'focus',u:'met_select_`.asp',p:14},
+{t:M,n:'remove',u:'met_select_`.asp',p:15},
+{t:C,n:'Style',u:'dom_obj_style.asp',p:372},
+{t:O,n:'background',u:'prop_style_`.asp',p:1},
+{t:O,n:'backgroundAttachment',u:'prop_style_backgroundattachment.asp',p:2},
+{t:O,n:'backgroundColor',u:'prop_style_backgroundcolor.asp',p:3},
+{t:O,n:'backgroundImage',u:'prop_style_backgroundimage.asp',p:4},
+{t:O,n:'backgroundPosition',u:'prop_style_backgroundposition.asp',p:5},
+{t:O,n:'backgroundPositionX',u:'prop_style_backgroundpositionx.asp',p:6},
+{t:O,n:'backgroundPositionY',u:'prop_style_backgroundpositiony.asp',p:7},
+{t:O,n:'backgroundRepeat',u:'prop_style_backgroundrepeat.asp',p:8},
+{t:C,n:'Table',u:'dom_obj_table.asp',p:381},
+{t:O,n:'border',u:'prop_table_`.asp',p:1},
+{t:O,n:'caption',u:'prop_table_`.asp',p:2},
+{t:O,n:'cellPadding',u:'prop_table_cellpadding.asp',p:3},
+{t:O,n:'cells',u:'coll_table_`.asp',p:4},
+{t:O,n:'cellSpacing',u:'prop_table_cellspacing.asp',p:5},
+{t:O,n:'frame',u:'prop_table_`.asp',p:6},
+{t:O,n:'id',u:'prop_table_`.asp',p:7},
+{t:O,n:'rows',u:'coll_table_`.asp',p:8},
+{t:O,n:'rules',u:'prop_table_`.asp',p:9},
+{t:O,n:'summary',u:'prop_table_`.asp',p:10},
+{t:O,n:'tBodies',p:11},
+{t:O,n:'tFoot',p:12},
+{t:O,n:'tHead',p:13},
+{t:O,n:'width',u:'prop_table_`.asp',p:14},
+{t:M,n:'createCaption',u:'met_table_createcaption.asp',p:15},
+{t:M,n:'createTFoot',p:16},
+{t:M,n:'createTHead',p:17},
+{t:M,n:'deleteCaption',u:'met_table_deletecaption.asp',p:18},
+{t:M,n:'deleteRow',u:'met_table_deleterow.asp',p:19},
+{t:M,n:'deleteTFoot',p:20},
+{t:M,n:'deleteTHead',p:21},
+{t:M,n:'insertRow',u:'met_table_insertrow.asp',p:22},
+{t:C,n:'TableCell',u:'dom_obj_tabledata.asp',p:404},
+{t:O,n:'abbr',u:'prop_tabledata_`.asp',p:1},
+{t:O,n:'align',u:'prop_tabledata_`.asp',p:2},
+{t:O,n:'axis',u:'prop_tabledata_`.asp',p:3},
+{t:O,n:'cellIndex',u:'prop_tabledata_cellindex.asp',p:4},
+{t:O,n:'ch',p:5},
+{t:O,n:'chOff',p:6},
+{t:O,n:'colSpan',u:'prop_tabledata_colspan.asp',p:7},
+{t:O,n:'headers',p:8},
+{t:O,n:'id',u:'prop_tabledata_`.asp',p:9},
+{t:O,n:'innerHTML',u:'prop_tabledata_innerhtml.asp',p:10},
+{t:O,n:'rowSpan',u:'prop_tabledata_rowspan.asp',p:11},
+{t:O,n:'scope',p:12},
+{t:O,n:'vAlign',u:'prop_tabledata_valign.asp',p:13},
+{t:O,n:'width',u:'prop_tabledata_`.asp',p:14},
+{t:C,n:'TableRow',u:'dom_obj_tablerow.asp',p:419},
+{t:O,n:'align',u:'prop_tablerow_`.asp',p:1},
+{t:O,n:'cells',p:2},
+{t:O,n:'ch',p:3},
+{t:O,n:'chOff',p:4},
+{t:O,n:'id',u:'prop_tablerow_`.asp',p:5},
+{t:O,n:'innerHTML',u:'prop_tablerow_innerhtml.asp',p:6},
+{t:O,n:'rowIndex',u:'prop_tablerow_rowindex.asp',p:7},
+{t:O,n:'sectionRowIndex',p:8},
+{t:O,n:'vAlign',u:'prop_tablerow_valign.asp',p:9},
+{t:M,n:'deleteCell',u:'met_tablerow_deletecell.asp',p:10},
+{t:M,n:'insertCell',u:'met_tablerow_insertcell.asp',p:11},
+{t:C,n:'Textarea',u:'dom_obj_textarea.asp',p:431},
+{t:O,n:'accessKey',u:'prop_textarea_accesskey.asp',p:1},
+{t:O,n:'cols',u:'prop_textarea_`.asp',p:2},
+{t:O,n:'defaultValue',u:'prop_textarea_defaultvalue.asp',p:3},
+{t:O,n:'disabled',u:'prop_textarea_`.asp',p:4},
+{t:O,n:'form',u:'prop_textarea_`.asp',p:5},
+{t:O,n:'id',u:'prop_textarea_`.asp',p:6},
+{t:O,n:'name',u:'prop_textarea_`.asp',p:7},
+{t:O,n:'readOnly',u:'prop_textarea_readonly.asp',p:8},
+{t:O,n:'rows',u:'prop_textarea_`.asp',p:9},
+{t:O,n:'tabIndex',u:'prop_textarea_tabindex.asp',p:10},
+{t:O,n:'type',u:'prop_textarea_`.asp',p:11},
+{t:O,n:'value',u:'prop_textarea_`.asp',p:12},
+{t:M,n:'blur',u:'met_textarea_`.asp',p:13},
+{t:M,n:'focus',u:'met_textarea_`.asp',p:14},
+{t:M,n:'select',u:'met_textarea_`.asp',p:15},
+{t:C,n:'Window',u:'dom_obj_window.asp',p:447},
+{t:O,n:'closed',u:'prop_win_`.asp',p:1},
+{t:O,n:'defaultStatus',u:'prop_win_defaultstatus.asp',p:2},
+{t:O,n:'document',u:'dom_obj_`.asp',p:3},
+{t:O,n:'frames',p:4},
+{t:O,n:'history',u:'dom_obj_`.asp',p:5},
+{t:O,n:'length',p:6},
+{t:O,n:'location',u:'dom_obj_`.asp',p:7},
+{t:O,n:'name',u:'prop_win_`.asp',p:8},
+{t:O,n:'opener',u:'prop_win_`.asp',p:9},
+{t:O,n:'outerheight',u:'prop_win_`.asp',p:10},
+{t:O,n:'outerwidth',u:'prop_win_`.asp',p:11},
+{t:O,n:'pageXOffset',p:12},
+{t:O,n:'pageYOffset',p:13},
+{t:O,n:'parent',p:14},
+{t:O,n:'personalbar',p:15},
+{t:O,n:'scrollbars',p:16},
+{t:O,n:'See',u:'dom_obj_document.asp',p:17},
+{t:O,n:'self',u:'prop_win_`.asp',p:18},
+{t:O,n:'status',u:'prop_win_`.asp',p:19},
+{t:O,n:'statusbar',p:20},
+{t:O,n:'toolbar',p:21},
+{t:O,n:'top',u:'prop_win_`.asp',p:22},
+{t:M,n:'alert',u:'met_win_`.asp',p:23},
+{t:M,n:'blur',u:'met_win_`.asp',p:24},
+{t:M,n:'clearInterval',u:'met_win_clearinterval.asp',p:25},
+{t:M,n:'clearTimeout',u:'met_win_cleartimeout.asp',p:26},
+{t:M,n:'close',u:'met_win_`.asp',p:27},
+{t:M,n:'confirm',u:'met_win_`.asp',p:28},
+{t:M,n:'createPopup',u:'met_win_createpopup.asp',p:29},
+{t:M,n:'focus',u:'met_win_`.asp',p:30},
+{t:M,n:'moveBy',u:'met_win_moveby.asp',p:31},
+{t:M,n:'moveTo',u:'met_win_moveto.asp',p:32},
+{t:M,n:'open',u:'met_win_`.asp',p:33},
+{t:M,n:'print',u:'met_win_`.asp',p:34},
+{t:M,n:'prompt',u:'met_win_`.asp',p:35},
+{t:M,n:'resizeBy',u:'met_win_resizeby.asp',p:36},
+{t:M,n:'resizeTo',u:'met_win_resizeto.asp',p:37},
+{t:M,n:'scrollBy',u:'met_win_scrollby.asp',p:38},
+{t:M,n:'scrollTo',u:'met_win_scrollto.asp',p:39},
+{t:M,n:'setInterval',u:'met_win_setinterval.asp',p:40},
+{t:M,n:'setTimeout',u:'met_win_settimeout.asp',p:41},
+null);
+finishModuleProcessing('module_jsdomw3s.js',tmp);queuedLoading = true;
+}
+//--></SCRIPT>
+</HEAD>
+<BODY leftmargin='0' topmargin='0' onLoad='go()' bgcolor='white'>
+<TABLE  border='0' width='100%' height='98%' cellspacing='0' cellpadding='0'>
+<TR height='10' id='header'>
+	<TD width='234' style='padding: 2px 5px 0px 5px' valign='top'>
+		<DIV class='recentA' style='border:0px solid #E0E0E0; padding:3px'><B>Recent Searches</B>
+			<DIV id='recentDiv' style='width:170px;overflow:hidden;padding:0px;margin:0px'></DIV>
+		</DIV>
+	</TD>
+    <TD align='center' style='padding:7px' id='topBox'>
+        <TABLE cellspacing=0 celllpadding=0 border='0'>
+            <TR id='vertSpacer'>
+                <TD colspan='2' align='right'>
+					<br><br><br>
+				</TD>
+            </TR>
+            <TR>
+                <TD style='background: white url(images/bg.png); background-repeat: no-repeat; padding:0px 0px 0px 60px'>
+	                <DIV class='header' valign='top' align='right' style='font-size:15px;margin-left:30px;padding:0px;font-weight:bold'>
+	                	<!--<SPAN style='font-size:9px'>got</SPAN>API Search <SUP style='font-size:8px;color:#C03030;font-weight:bold;'>(beta)</SUP>-->
+	                	&nbsp;<!--<A href='http://www.gotapi.com' style='font-size:8px;color:#357c91;text-decoration:none'>by gotAPI.com</A>-->
+					</DIV>
+                    <INPUT id='gaSearch' type='text' size='45' style='margin-left:20px'>
+                    <DIV align='right' style='font-size:10px;font-weight:normal'>...try 'splice' or 'text align'</DIV>
+                    <!-- <DIV align='right' style='font-size:10px;font-weight:normal'>...tags, classes, functions, attributes</DIV> -->
+                    <!-- <IMG src='images/load___.gif'> -->
+                </TD>
+                <TD valign='top' style='padding:25px 0px 0px 5px'>
+                    <SPAN id='loading' style='color:white'>Searching...</SPAN><BR>
+                    <A id='selectLink' href='#' onclick='showModuleSelector();return false;' class='header' style='display:none;text-decoration:none;font-weight:bold;font-size:11px'>&nbsp;back&nbsp;to&nbsp;API&nbsp;list</A>
+				</TD>
+            </TR>
+            <TR id='sample'>
+
+            </TR>
+        </TABLE>
+        <IFRAME name='gotapi_loader' width='1' height='1' FRAMEBORDER=0 SCROLLING=no></IFRAME>
+    </TD>
+	<TD width='234' valign='top' style='padding:0px 4px 0px 0px'>
+
+<script type="text/javascript"><!--
+google_ad_client = "pub-9345217452045101";
+google_ad_width = 234;
+google_ad_height = 60;
+google_ad_format = "234x60_as";
+google_ad_type = "text_image";
+google_ad_channel ="";
+google_color_border = "FFFFFF";
+google_color_bg = "FFFFFF";
+google_color_link = "A00000";
+google_color_text = "404040";
+google_color_url = "000080";
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+	</TD>
+</TR>
+<TR id='siteTr' style='display:none'>
+<TD colspan='3' align='center' valign='middle'>
+    <IFRAME id='siteFrame' name='site' width='100%' height='100%' class='contentFrame' frameborder='0'></IFRAME>
+</TD>
+</TR>
+<TR id='moduleTr'>
+<TD colspan='3' align='center' valign='middle'>
+
+
+    <TABLE border='0' cellpadding='10' cellspacing='0'>
+    <TR>
+    	<TD align='center' colspan='3' style='font-size: 15px' style='padding: 12px 0px 0px 0px' class='header'>
+    		search in...
+    	</TD>
+    </TR>
+    <TR>
+        <TD class='moduleList' valign='top'>
+            <H3>HTML / CSS / JavaScript</H3>
+            <DIV id='m1'><INPUT id='cm1' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm1'>HTML <SPAN class='rem'>at htmlhelp.com</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <!-- <DIV id='m2'><INPUT id='cm2' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm2'>HTML <SPAN class='rem'>at msdn.microsoft.com</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV> -->
+            <DIV id='m3'><INPUT id='cm3' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm3'>HTML <SPAN class='rem'>at w3.org</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m4'><INPUT id='cm4' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm4'>CSS <SPAN class='rem'>at htmlhelp.com</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m5'><INPUT id='cm5' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm5'>CSS <SPAN class='rem'>at msdn.microsoft.com</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m6'><INPUT id='cm6' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm6'>CSS2 <SPAN class='rem'>at w3schools.com</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m33'><INPUT id='cm33' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm33'>JavaScript/DOM <SPAN class='rem'>w3schools.com</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m62'><INPUT id='cm62' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm62'>JavaScript/DOM on Firefox <SPAN class='rem'>mozilla.org</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+
+			<H3>AJAX and Frameworks</H3>
+            <DIV id='m34'><INPUT id='cm34' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm34'>Prototype.js <SPAN class='rem'>sergiopereira.com</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m65'><INPUT id='cm65' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm65'>Prototype.js <SPAN class='rem'>prototypejs.org</SPAN> <SPAN class='contributor'>- Dusan Maliarik</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'> <SUP class='note'>NEW</SUP></DIV>
+            <DIV id='m35'><INPUT id='cm35' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm35'>Google GWT </LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m49'><INPUT id='cm49' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm49'>jQuery <SPAN class='contributor'>from Rich Manalang</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m52'><INPUT id='cm52' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm52'>Yahoo! UI <SPAN class='contributor'>from Misha Peric</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m63'><INPUT id='cm63' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm63'>MochiKit <SPAN class='contributor'>from Arnar Birgisson</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+
+            <H3>XML</H3>
+            <DIV id='m36'><INPUT id='cm36' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm36'>XSL <SPAN class='rem'>w3schools.com</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m37'><INPUT id='cm37' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm37'>XPath <SPAN class='rem'>w3schools.com</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m38'><INPUT id='cm38' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm38'>Schema (XSD) <SPAN class='rem'>w3schools.com</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m39'><INPUT id='cm39' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm39'>XML DOM <SPAN class='rem'>w3.org</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m40'><INPUT id='cm40' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm40'>DITA <SPAN class='rem'>at oasis-open.org</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m64'><INPUT id='cm64' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm64'>DocBook <SPAN class='rem'>at docbook.org</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+
+            <H3>C/C++, Libraries</H3>
+            <DIV id='m41'><INPUT id='cm41' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm41'>C, C++, STL <SPAN class='rem'>at cppreference.com</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m42'><INPUT id='cm42' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm42'>RogueWave </LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m53'><INPUT id='cm53' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm53'>Dinkumware C/C++/STL <SPAN class='contributor'>- Jason Petrone</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m55'><INPUT id='cm55' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm55'>Berkeley DB XML in C++ <SPAN class='contributor'>- Michael Driscoll</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m57'><INPUT id='cm57' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm57'>OpenGL 2.1 <SPAN class='contributor'>- James Darpinian</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+
+        </TD>
+        <TD class='moduleList' valign='top' >
+
+            <H3>PHP</H3>
+            <DIV id='m10'><INPUT id='cm10' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm10'>PHP <SPAN class='rem'>at php.net</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m60'><INPUT id='cm60' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm60'>PHP Tutorials <SPAN class='contributor'>- misc sources</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m11'><INPUT id='cm11' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm11'>CakePHP <SPAN class='rem'>at cakephp.org</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m12'><INPUT id='cm12' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm12'>Symfony <SPAN class='rem'>at symfony-project.com</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+
+			<H3>Ruby / Rails</H3>
+            <DIV id='m13'><INPUT id='cm13' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm13'>Ruby/Rails <SPAN class='rem'>at ruby-doc.org & rubyonrails.com</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m14'><INPUT id='cm14' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm14'>Ruby Standard Packages <SPAN class='rem'>at ruby-doc.org</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+			<DIV id='m51'><INPUT id='cm51' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm51'>RMagic <SPAN class='rem'>simplesystems.org</SPAN> <SPAN class='contributor'>- Adam Christensen</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+
+            <H3>Python</H3>
+            <DIV id='m44'><INPUT id='cm44' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm44'>Python <SPAN class='rem'>at docs.python.org</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'> `</DIV>
+
+			<H3>More Programming Languages</H3>
+            <DIV id='m15'><INPUT id='cm15' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm15'>Perl Functions <SPAN class='rem'>at aspn.activestate.com</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m54'><INPUT id='cm54' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm54'>Sicstus Prolog <SPAN class='contributor'>from Rowan Nairn</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m56'><INPUT id='cm56' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm56'>Erlang <SPAN class='contributor'>- Matthew Pflueger</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+
+            <H3>Adobe/Macromedia</H3>
+            <DIV id='m16'><INPUT id='cm16' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm16'>ActionScript </LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m17'><INPUT id='cm17' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm17'>ActionScript (frames) </LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m18'><INPUT id='cm18' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm18'>ColdFusion Tags & Functions </LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m61'><INPUT id='cm61' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm61'>Flex 2 </LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+
+			<H3>Groovy</H3>
+            <DIV id='m50'><INPUT id='cm50' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm50'>Groovy 1.0 <SPAN class='contributor'>from Marc Dexet</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'> <SUP class='note'>updated</SUP></DIV>
+
+			<H3>Drupal CMS</H3>
+            <DIV id='m47'><INPUT id='cm47' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm47'>Drupal 4.7/HEAD </LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+
+			<H3>Flickr</H3>
+            <DIV id='m48'><INPUT id='cm48' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm48'>Flickr API <SPAN class='contributor'>from parhuzamos</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+
+
+        </TD>
+        <TD class='moduleList' valign='top'>
+
+            <H3>Databases</H3>
+            <DIV id='m7'><INPUT id='cm7' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm7'>MySQL <SPAN class='rem'>at mysql.com</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m8'><INPUT id='cm8' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm8'>PostgreSQL <SPAN class='rem'>at postgresql.org</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m9'><INPUT id='cm9' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm9'>Oracle9i </LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m45'><INPUT id='cm45' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm45'>Oracle10g </LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+
+			<H3>Java</H3>
+            <DIV id='m19'><INPUT id='cm19' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm19'>J2SE v1.3.0</LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m20'><INPUT id='cm20' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm20'>J2SE v1.4.2</LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m21'><INPUT id='cm21' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm21'>J2SE v1.5.0</LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m22'><INPUT id='cm22' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm22'>J2SE v1.5.0 less UI</LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m23'><INPUT id='cm23' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm23'>J2EE</LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m24'><INPUT id='cm24' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm24'>Struts</LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m25'><INPUT id='cm25' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm25'>Spring Framework</LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m26'><INPUT id='cm26' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm26'>Hibernate</LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m27'><INPUT id='cm27' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm27'>Castor</LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m28'><INPUT id='cm28' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm28'>Log4J</LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m29'><INPUT id='cm29' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm29'>Apache RegExp</LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m43'><INPUT id='cm43' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm43'>Apache Commons Net </LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m32'><INPUT id='cm32' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm32'>Ant <SPAN class='rem'>at ant.apache.com</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+
+			<H3>Application Testing</H3>
+            <DIV id='m30'><INPUT id='cm30' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm30'>JUnit </LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m31'><INPUT id='cm31' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm31'>HttpUnit </LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m46'><INPUT id='cm46' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm46'>DbUnit </LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+            <DIV id='m59'><INPUT id='cm59' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm59'>Selenium <SPAN class='contributor'>- Tom Smyth</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+
+			<H3>Orb</H3>
+            <DIV id='m58'><INPUT id='cm58' class='cbox' type='checkbox' onclick='toggleModule(this)'> <LABEL for='cm58'>Orb API <SPAN class='contributor'>- Orb Networks</SPAN></LABEL><IMG  width='8' height='12' src='images/p.gif' class='pup' onclick='pup(this)'></DIV>
+        </TD>
+    </TR>
+    <TR>
+        <TD id='warn' colspan='3' align='center' style='color:white;font-size:10px;padding:4px'>
+        	Selecting unnecessary API modules may produce too many results and affect search performance.
+        </TD>
+    </TR>
+    <TR>
+        <TD colspan='3' align='center' style='color:black;font-size:10px;padding-top:3px'>
+			<DIV class='copyright'>
+			<A class='copyright' href='http://www.gotapi.com'>www.gotapi.com</A>
+			| <A class='copyright' href='http://www.gotapi.com/widgets/index.html'>Add API search to your page</A>
+			| <A class='copyright' href='http://www.gotapi.com/contribute/index.html'>Contribute (beta)</A>
+			| <A class='copyright' href='http://www.gotapi.com/about.html'> Contact Us</A>
+			| &copy;2006,2007 LogPerspective Inc.
+			</DIV>
+        </TD>
+    </TR>
+    </TABLE>
+
+</TD>
+</TR>
+</TABLE>
+<TABLE id="menu" class="menu" style='display:none' cellspacing='0' cellpadding='0' border='0'>
+</TABLE>
+</BODY>
+</HTML>
+

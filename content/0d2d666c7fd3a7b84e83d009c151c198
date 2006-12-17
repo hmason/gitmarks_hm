@@ -1,0 +1,1595 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Never store passwords in a database!</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  
+  <link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://blog.moertel.com/xml/rsd" />
+  <link rel="alternate" type="application/atom+xml" title="Atom" href="http://blog.moertel.com/xml/atom/article/267/feed.xml" />
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.moertel.com/xml/rss20/article/267/feed.xml" />
+  <script src="/javascripts/cookies.js?1153753467" type="text/javascript"></script>
+  <script src="/javascripts/prototype.js?1153753467" type="text/javascript"></script>
+  <script src="/javascripts/effects.js?1153753467" type="text/javascript"></script>
+  <script src="/javascripts/typo.js?1156179783" type="text/javascript"></script>
+  
+  <script type="text/javascript"></script>
+  <link href="/stylesheets/theme/azure.css?1219506366" media="all" rel="Stylesheet" type="text/css" />
+  <link href="/stylesheets/user-styles.css?1187979284" media="all" rel="Stylesheet" type="text/css" />
+  <link href="/stylesheets/theme/print.css?1167996662" media="print" rel="Stylesheet" type="text/css" />
+
+  <link rel="openid2.provider" href="https://www.google.com/accounts/o8/ud?source=profiles" /> 
+  <link rel="openid2.local_id" href="http://www.google.com/profiles/tmoertel" /> 
+</head>
+
+<body >
+  <div id="container" class="clearfix">
+      <div id="header">
+        <div id="logo-box">
+          <div id="logo">
+            <h1 id="sitename"><a href="/">Tom Moertel's Blog</a></h1>
+            <h2 id="subtitle">Quality rants on programming theory and stuff geeks like</h2>
+          </div>
+        </div>
+      </div>
+
+      <div id="search"> <form action="/articles/search" id="sform" method="get">
+ <label for="q">Live Search:</label><input type="text" id="q" name="q" value="" size="15" />
+<img alt="Spinner-blue" id="search_spinner" src="/images/spinner-blue.gif?1153753467" style="display:none;" />
+</form>
+<script type="text/javascript">
+//<![CDATA[
+new Form.Element.Observer('q', 1, function(element, value) {new Ajax.Updater('search-results', '/live/search', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('search_spinner')}, onLoading:function(request){Element.show('search_spinner')}, parameters:'q=' + escape($F('q'))})})
+//]]>
+</script></div>
+      
+
+      <div id="content" class="clearfix">
+        <div id="main">
+          <!--
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+       xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/"
+       xmlns:dc="http://purl.org/dc/elements/1.1/">
+<rdf:Description
+    rdf:about=""
+    trackback:ping="http://blog.moertel.com/articles/trackback/267"
+    dc:title="Never store passwords in a database!"
+    dc:identifier="http://blog.moertel.com/articles/2006/12/15/never-store-passwords-in-a-database"
+    dc:description="Recently, the folks behind Reddit.com confessed that a backup copy of their database had been stolen. Later, spez, one of the Reddit"
+    dc:creator="tmoertel"
+    dc:date="2010-08-11T10:07:19-04:00" />
+</rdf:RDF>
+-->
+
+<div class="post" onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_article'); }"  onmouseout="Element.hide('admin_article');" >
+  <a href="/admin/content/edit/267" class="admintools" id="admin_article" style="display: none">edit</a>
+  <h2>Never store passwords in a database!</h2>
+  <p class="auth">Posted by Tom Moertel
+  <span class="typo_date" title="Fri, 15 Dec 2006 18:25:00 GMT">Fri, 15 Dec 2006 18:25:00 GMT</span></p>
+  <p>Recently, the folks behind <a href="http://reddit.com/">Reddit.com</a> confessed
+that <a href="http://web.archive.org/web/20070109023445/http%3A//reddit.com/blog/theft">a backup copy of their database had been
+stolen.</a> Later, spez, one of the Reddit
+developers, <a href="http://reddit.com/info/usqe/comments/cuugl">confirmed</a>
+that the database contained password information for Reddit&#8217;s users,
+and that the information was stored as plain, unprotected text.
+In other words, once the thief had the database, he had everyone&#8217;s
+passwords as well.</p>
+
+
+	<p>Had the folks at Reddit <a href="http://en.wikipedia.org/wiki/Password_cracking#Salting">salted and hashed</a> the
+passwords and then stored the salts and resulting hashes in the database instead, the thief would now be in a very different
+situation.  Instead of holding all the keys to the kingdom, he would
+face the prospect of a potentially expensive search for each and every
+user&#8217;s password he wanted to extract from the database.  The expense
+of the search would likely have dissuaded him from making the attempt
+in earnest, given how little exploitable value a Reddit account
+represents.  In short, the passwords would have been secure, even
+though the database had fallen into the thief&#8217;s hands.</p>
+
+
+	<p>Why, then, didn&#8217;t Reddit&#8217;s programmers salt and hash the passwords?  Because, according to the
+earlier post by spez, they wanted to be able to send forgotten
+passwords to users via email.  It was a design decision: they
+weighed the risks of having plain-as-day passwords in the database
+against the convenience of being able to email users their forgotten
+passwords and decided that, in the balance, convenience carried more
+weight.  It&#8217;s a decision they now regret.  (It&#8217;s a doubly unfortunate
+decision because the reasoning behind it is faulty: <a href="http://blog.moertel.com/articles/2007/02/09/dont-let-password-recovery-keep-you-from-protecting-your-users">you don&#8217;t need to store passwords in your user database
+in order to offer convenient account recovery</a>.)</p>
+
+
+	<p>The reason I&#8217;m writing about this event isn&#8217;t to kick the
+good folks at Reddit while they&#8217;re down.  Rather, I&#8217;m trying to make a point:</p>
+
+
+<p style="padding-left: 2em; padding-right: 2em"><strong>If you are
+storing passwords in a database, you are almost certainly making a
+mistake.</strong></p>
+
+	<p>The guys at Reddit are known for being smart.  They thought they had a
+good reason for storing passwords in their database.  They
+were wrong.  If smart programmers can make this mistake, lots
+of programmers can.  Do you think you have a good reason for storing
+passwords in your database?  If so, you&#8217;re probably wrong, too.</p>
+
+
+	<p>How can I be so sure?  Because, when it comes to web-app authentication,
+cutting corners doesn&#8217;t buy you anything. It doesn&#8217;t save you coding time.
+It doesn&#8217;t give your users a better experience. All it does is weaken the security of your web site, needlessly putting your users, your employer, and yourself at  risk.</p>
+
+
+	<p>So please let me take this opportunity to ask if you
+know of (or perhaps work on) any software systems that store passwords
+in a database.  If so, <em>fix your
+software now</em>:</p>
+
+
+	<ul>
+	<li>Salt and hash each and every password (use an expensive hashing function such as <a href="http://www.usenix.org/events/usenix99/provos.html">bcrypt</a> that was designed for password applications)</li>
+		<li>Store the salt and
+hash &#8211; not the password &#8211; in your database.</li>
+		<li>Throw the password itself away.</li>
+	</ul>
+
+
+	<p>You&#8217;ll be glad you did.</p>
+
+
+<div class="update">
+<p><strong>Update:</strong> Minor edits for clarity.</p>
+<p><strong>Update 2007-02-13:</strong> Salting and hashing does not get in the way of account recovery.  You do <em>not</em> need to email users their forgotten passwords: there are other account-recovery options that are just as convenient but much more secure.  See <a href="http://blog.moertel.com/articles/2007/02/09/dont-let-password-recovery-keep-you-from-protecting-your-users">Don&#8217;t let password recovery keep you from protecting your users</a> for more.</p>
+<p><strong>Update 2007-10-03:</strong> Revised text slightly to emphasize that there is no benefit to be had by implementing a weak password system, and therefore there is no reason <em>not</em> to implement a secure system. Pointed more directly to bcrypt, too.
+</div>
+</div>
+<p class="meta">
+  Posted in <a href="/articles/category/web-development" rel="tag">web development</a>, <a href="/articles/category/security" rel="tag">security</a><br/>
+Tags <a href="/articles/tag/hash" rel="tag">hash</a>, <a href="/articles/tag/passwords" rel="tag">passwords</a>, <a href="/articles/tag/reddit" rel="tag">reddit</a>, <a href="/articles/tag/salt" rel="tag">salt</a>, <a href="/articles/tag/security" rel="tag">security</a><br/>
+<a href="/articles/2006/12/15/never-store-passwords-in-a-database#comments">55 comments</a><br/>
+<a href="/articles/2006/12/15/never-store-passwords-in-a-database#trackbacks">no trackbacks</a><br/>
+<a href="http://reddit.com/submit?url=http%3A%2F%2Fblog.moertel.com%2Farticles%2F2006%2F12%2F15%2Fnever-store-passwords-in-a-database&amp;title=Never%20store%20passwords%20in%20a%20database%21"
+         title="Submit to Reddit.com: &#x201C;Never store passwords in a database!&#x201D;"
+      ><img alt="Reddit" border="0" height="18" src="/images/reddit.gif?1153169832" width="18" /></a>&#160;<a href="http://del.icio.us/post?v=2&amp;url=http%3A%2F%2Fblog.moertel.com%2Farticles%2F2006%2F12%2F15%2Fnever-store-passwords-in-a-database&amp;title=Never%20store%20passwords%20in%20a%20database%21"
+         title="Save to del.icio.us: &#x201C;Never store passwords in a database!&#x201D;"
+      ><img alt="Delicious" border="0" height="16" src="/images/delicious.gif?1130112712" width="16" /></a>
+</p>
+
+  <a name="comments"></a><h4 class="blueblk">Comments</h4>
+      <p class="postmetadata alt">
+      <small><a href="#respond">Leave a response</a></small>
+    </p>
+    <ol class="comment-list" id="commentList">
+  
+    <li id="comment-268"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_268'); }"  onmouseout="Element.hide('admin_comment_268');" >
+  <div id="admin_comment_268" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/268', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-268&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/268" class="admintools">edit</a></div>
+  <a name="comment-268"></a>
+  
+  <cite><strong>lazy</strong> </cite> said about 2 hours later:<br />
+  <p>Yeah, God forbid someone log into my account and piss off all you whiney ass crybabies or vote up a story I disagree with.  Damn you reddit for giving away the kingdom!</p>
+  </li>
+<li id="comment-269"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_269'); }"  onmouseout="Element.hide('admin_comment_269');" >
+  <div id="admin_comment_269" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/269', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-269&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/269" class="admintools">edit</a></div>
+  <a name="comment-269"></a>
+  
+  <cite><strong><a href="http://www.kccinc.ca/">Chad</a></strong> </cite> said about 2 hours later:<br />
+  <p>ok lazy, but what if you were a dumbass and used the same password for your email account (also on file with reddit) as you do for your reddit account?</p>
+  </li>
+<li id="comment-270"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_270'); }"  onmouseout="Element.hide('admin_comment_270');" >
+  <div id="admin_comment_270" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/270', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-270&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/270" class="admintools">edit</a></div>
+  <a name="comment-270"></a>
+  
+  <cite><strong>lazy</strong> </cite> said about 2 hours later:<br />
+  <p>Then the evil hackers that lurk the internet could rape my ass by downloading all the spam I get for being an idiot while surfing the net.</p>
+  </li>
+<li id="comment-271"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_271'); }"  onmouseout="Element.hide('admin_comment_271');" >
+  <div id="admin_comment_271" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/271', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-271&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/271" class="admintools">edit</a></div>
+  <a name="comment-271"></a>
+  
+  <cite><strong>Cory Boston</strong> </cite> said about 3 hours later:<br />
+  <p>Storing passwords in a database per se isn&#8217;t wrong only if storing them un-encrypted.  An easy solution to their problem would be to simply delete the (encrypted) password in the database and either send them an email with a new temporary password or a link to a page to set a new password (via email to authenticate).</p>
+  </li>
+<li id="comment-272"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_272'); }"  onmouseout="Element.hide('admin_comment_272');" >
+  <div id="admin_comment_272" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/272', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-272&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/272" class="admintools">edit</a></div>
+  <a name="comment-272"></a>
+  
+  <cite><strong>Drew</strong> </cite> said about 4 hours later:<br />
+  <p>If you store the salt in the database, and the database is compromised, then the salt is absolutely worthless.  The salt must be stored somewhere else to be worth any extra security at all.</p>
+
+
+	<p>An attacker that gets your salt can use it to brute-force the password hashes offline.</p>
+  </li>
+<li id="comment-273"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_273'); }"  onmouseout="Element.hide('admin_comment_273');" >
+  <div id="admin_comment_273" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/273', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-273&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/273" class="admintools">edit</a></div>
+  <a name="comment-273"></a>
+  
+  <cite><strong>Rob</strong> </cite> said about 4 hours later:<br />
+  <p>I disagree Drew.  First imagine that there are no salts.  The attacker can build a single dictionary to simultanously attack every password at once.  Now imagine everyone has a different salt which the attacker knows. The bruteforce dictionary attack now needs a dictionary for each salt, which signficantly increases the amount of computation needed.</p>
+
+
+	<p>See <a href="http://en.wikipedia.org/wiki/Password_cracking#Salting">http://en.wikipedia.org/wiki/Password_cracking#Salting</a></p>
+  </li>
+<li id="comment-274"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_274'); }"  onmouseout="Element.hide('admin_comment_274');" >
+  <div id="admin_comment_274" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/274', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-274&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/274" class="admintools">edit</a></div>
+  <a name="comment-274"></a>
+  
+  <cite><strong>ryan</strong> </cite> said about 4 hours later:<br />
+  <p>Some authentication protocols, such as CHAP, REQUIRE access to the plaintext password.</p>
+  </li>
+<li id="comment-275" class="author_comment"  onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_275'); }"  onmouseout="Element.hide('admin_comment_275');" >
+  <div id="admin_comment_275" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/275', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-275&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/275" class="admintools">edit</a></div>
+  <a name="comment-275"></a>
+  
+  <cite><strong>Tom Moertel</strong> </cite> said about 5 hours later:<br />
+  <p>Drew, the salt is far from worthless.  It prevents the use of precomputed-dictionary attacks.  These attacks make it possible to assault the <em>entire database</em> of hashed passwords at a very low cost.  (See, e.g., <a href="http://en.wikipedia.org/wiki/RainbowCrack">RainbowCrack</a>.)</p>
+
+
+	<p>With the addition of per-password salt, however, each and every password must be attacked <em>individually</em> and without the benefit of precomputed dictionaries &#8211; each dictionary term must be rehashed anew for each password under attack.  Thus salt makes the prospect of assaulting the entire database several orders of magnitude more expensive.</p>
+  </li>
+<li id="comment-276"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_276'); }"  onmouseout="Element.hide('admin_comment_276');" >
+  <div id="admin_comment_276" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/276', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-276&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/276" class="admintools">edit</a></div>
+  <a name="comment-276"></a>
+  
+  <cite><strong>Bart</strong> </cite> said about 5 hours later:<br />
+  <p>If you really want a send-me-my-password feature without forcing it to be reset, you could ENCRYPT the passwords in the database using a key that is only available to the application.</p>
+
+
+	<p>You could put the key directly in the code or if you are really feeling adventurous, require that it be entered by a system administrator when the app/web starts up.</p>
+
+
+	<p>At least this way, the thief needs to steal both a copy of the data and a copy of the server application.</p>
+
+
+	<p>Not perfect, but certainly better than storing the passwords in plain text.</p>
+  </li>
+<li id="comment-278"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_278'); }"  onmouseout="Element.hide('admin_comment_278');" >
+  <div id="admin_comment_278" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/278', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-278&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/278" class="admintools">edit</a></div>
+  <a name="comment-278"></a>
+  
+  <cite><strong>Damien</strong> </cite> said about 5 hours later:<br />
+  <p>&#8220;Never store passwords in a database&#8221;</p>
+
+
+	<p>Why not? Did you mean to say &#8220;Never store passwords in clear text&#8221;?</p>
+  </li>
+<li id="comment-279"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_279'); }"  onmouseout="Element.hide('admin_comment_279');" >
+  <div id="admin_comment_279" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/279', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-279&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/279" class="admintools">edit</a></div>
+  <a name="comment-279"></a>
+  
+  <cite><strong>PineappleClock</strong> </cite> said about 5 hours later:<br />
+  <p>A bruteforce attack on salted passwords in only feasable if the attacker knows how the plaintext was altered with the salt. If the alteration is&#8217;nt something simple like concatenation, storing the salt in the same database is safe.</p>
+  </li>
+<li id="comment-280"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_280'); }"  onmouseout="Element.hide('admin_comment_280');" >
+  <div id="admin_comment_280" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/280', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-280&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/280" class="admintools">edit</a></div>
+  <a name="comment-280"></a>
+  
+  <cite><strong>Pete</strong> </cite> said about 5 hours later:<br />
+  <p>Drew -&gt; different salt for every password, like, I dunno, Unix has been doing for the last 25 years or so.</p>
+  </li>
+<li id="comment-281" class="author_comment"  onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_281'); }"  onmouseout="Element.hide('admin_comment_281');" >
+  <div id="admin_comment_281" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/281', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-281&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/281" class="admintools">edit</a></div>
+  <a name="comment-281"></a>
+  
+  <cite><strong>Tom Moertel</strong> </cite> said about 5 hours later:<br />
+  <p>Damien,</p>
+
+
+	<p>By &#8220;never store passwords in a database&#8221; I do, indeed, mean &#8220;never store cleartext passwords in a database.&#8221;  I used the first wording, however, because it makes sense to people who may not know what &#8220;cleartext&#8221; means.</p>
+
+
+	<p>Cheers. &#8212;Tom</p>
+  </li>
+<li id="comment-282"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_282'); }"  onmouseout="Element.hide('admin_comment_282');" >
+  <div id="admin_comment_282" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/282', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-282&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/282" class="admintools">edit</a></div>
+  <a name="comment-282"></a>
+  
+  <cite><strong>Jason</strong> </cite> said about 6 hours later:<br />
+  <p>Reddit does not use secure transmission so if you&#8217;re worried about your password well then, I think you know where this is going&#8230;</p>
+  </li>
+<li id="comment-283"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_283'); }"  onmouseout="Element.hide('admin_comment_283');" >
+  <div id="admin_comment_283" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/283', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-283&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/283" class="admintools">edit</a></div>
+  <a name="comment-283"></a>
+  
+  <cite><strong>Keith McLaughlin</strong> </cite> said about 6 hours later:<br />
+  <p>Very misleading title! It&#8217;s fine to store passwords in a database, providing it&#8217;s not clear text.</p>
+  </li>
+<li id="comment-284"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_284'); }"  onmouseout="Element.hide('admin_comment_284');" >
+  <div id="admin_comment_284" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/284', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-284&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/284" class="admintools">edit</a></div>
+  <a name="comment-284"></a>
+  
+  <cite><strong>Ed</strong> </cite> said about 6 hours later:<br />
+  <p>Well, duh!</p>
+
+
+	<p>Anyway, it is also possible to store the original passwords in the database so that you can send them out when required but not in cleartext. We have to do this in an app at work that stores sensitive data. You can store the encrypted text and give some extra special thought to how and where from the app gets the encryption keys from. In the case of our project, if the web-app code and the database are both stolen they still won&#8217;t be able to decrypt the data.</p>
+
+
+	<p>Also, if salting it&#8217;s pretty convenient to salt with <strong>at least</strong> something like the hash of the username, that way they need a computed dictionary for each user. Using the contents of some access-controlled file on the server as a second part of the salt is a further idea.</p>
+  </li>
+<li id="comment-285"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_285'); }"  onmouseout="Element.hide('admin_comment_285');" >
+  <div id="admin_comment_285" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/285', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-285&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/285" class="admintools">edit</a></div>
+  <a name="comment-285"></a>
+  
+  <cite><strong>Tom Bortels</strong> </cite> said about 7 hours later:<br />
+  <p>Pfftt. The real lesson is &#8220;make sure your password database is secure&#8221;. Storing plaintext passwords so that you can, if necessary, send them to users is a valid design decision &#8211; and you have to weigh it against the possible downside of exposure.</p>
+
+
+	<p>We&#8217;re not talking about nuclear secrets, life or death, or even financial information here &#8211; we&#8217;re talking about bragging rights and preferences on a link site. Frankly, the information protected by that password <strong>isn&#8217;t all that valuable</strong>, unless people are dumb enough to use the same password all over the place (in which case, reddit having their plaintext is the <strong>LEAST</strong> of their problems). Hell &#8211; the list of usernames (and email and whatever else was stored there) is probably more valuable than the passwords.</p>
+
+
+	<p>Yeah &#8211; they probably shouldn&#8217;t have stored them as plaintext. But if the password isn&#8217;t protecting anything terribly important, and if being able to send the plaintext password to the user <strong>is</strong>, it&#8217;s not always a bad decision.</p>
+
+
+	<p>Frankly, if you want real security, you don&#8217;t even want to salt/hash &#8211; you want to move to a challenge-response architecture, and only store an intermediate hash (someone mentioned above you need plaintext for APOP and such &#8211; no, you don&#8217;t, you can pre-hash the password portion, then hash again with the timestamp). Man, I&#8217;m a dork.</p>
+
+
+	<p>But make the security effort be proportional to the information being secured&#8230;</p>
+  </li>
+<li id="comment-286"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_286'); }"  onmouseout="Element.hide('admin_comment_286');" >
+  <div id="admin_comment_286" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/286', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-286&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/286" class="admintools">edit</a></div>
+  <a name="comment-286"></a>
+  
+  <cite><strong>Jerry</strong> </cite> said about 8 hours later:<br />
+  <p>No guys, the wording is absolutely correct.  Don&#8217;t store passwords in your database.  Storing a one way hash of a password+salt is not storing the password.  Its not storing it encrypted either.  Its not storing it at all, and is the correct way to do it.</p>
+  </li>
+<li id="comment-287"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_287'); }"  onmouseout="Element.hide('admin_comment_287');" >
+  <div id="admin_comment_287" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/287', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-287&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/287" class="admintools">edit</a></div>
+  <a name="comment-287"></a>
+  
+  <cite><strong>Jelloman</strong> </cite> said about 8 hours later:<br />
+  <p>The ultimatum to NEVER store passwords in a database makes about as much sense as an ultimatum that ALL doors must have locks.</p>
+
+
+	<p>The level of security should match the importance of the thing being secured.  In the case of <b>most</b> non-commerce web sites, passwords (and the integrity of identities) really aren&#8217;t that important.  The point is usually just to create a small hurdle to using another person&#8217;s identity, and password protection is a damn simple and easy-to-use way to do that.  The downside of an identity being compromised in a typical web forum is typically slim to none.  Whereas the benefit of being able to email the user their password without changing it is underrated&#8230; personally it always bugs me when a site with a password that basically protects nothing forces me through all kinds of secret-question and password-resetting hoops when I forget my password.  Just email me the #$%! thing.</p>
+
+
+	<p>I&#8217;m not claiming that all web forums and discussion sites need the same level of security.  I&#8217;ve been building karma on Slashdot for years, so I&#8217;d expect slightly stronger security there. Likewise for the official forums for an online game, where the integrity of identity is important, especially if it bridges into the game.</p>
+  </li>
+<li id="comment-288"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_288'); }"  onmouseout="Element.hide('admin_comment_288');" >
+  <div id="admin_comment_288" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/288', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-288&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/288" class="admintools">edit</a></div>
+  <a name="comment-288"></a>
+  
+  <cite><strong>Jelloman</strong> </cite> said about 8 hours later:<br />
+  <p>Indeed Tom&#8230; you just made the same point better than I did.</p>
+  </li>
+<li id="comment-289"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_289'); }"  onmouseout="Element.hide('admin_comment_289');" >
+  <div id="admin_comment_289" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/289', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-289&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/289" class="admintools">edit</a></div>
+  <a name="comment-289"></a>
+  
+  <cite><strong>Stray</strong> </cite> said about 9 hours later:<br />
+  <p>bullshit, Jelloman &#8211; people reuse passwords between Reddit and their bank accounts</p>
+
+
+	<p>if you don&#8217;t think that&#8217;s true, then you&#8217;re pretty damn ignorant</p>
+
+
+	<p>NEVER, EVER, EVER&#8230;store passwords in cleartext in a database</p>
+
+
+	<p>YOU DON&#8217;T HAVE TO RESEND PEOPLE THEIR PASSWORDS IN AN E-MAIL, FOR GOD&#8217;S SAKE!</p>
+
+
+	<p>RESET IT TO A TEMP!</p>
+  </li>
+<li id="comment-290"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_290'); }"  onmouseout="Element.hide('admin_comment_290');" >
+  <div id="admin_comment_290" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/290', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-290&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/290" class="admintools">edit</a></div>
+  <a name="comment-290"></a>
+  
+  <cite><strong>Manfred</strong> </cite> said about 10 hours later:<br />
+  <p>I recently had this happen to me.  You use an insecure password which you don&#8217;t care about on a (secondary) e-mail account.  Attacker guesses username and password from another account (reddit gets compromised or whatever).  They then reset passwords that link to that e-mail account.  In my case, my excite email was the culprit (who knows how they got that password.) they took over my rarely used ebay account.  luckily my paypal account (and all financial accounts) had other passwords, so my system didn&#8217;t fail outright&#8230;but I lost an e-mail and my ebay account.  What would happen to you in the same situation?  People reuse usernames and passwords (it&#8217;s impossible to remember them otherwise).  So what are the damages?  With reddit&#8217;s blunder, I just lost my least secure password again.  Luckily it isn&#8217;t tied to any e-mail accounts, or anything important, so I&#8217;m good.  The moral is, e-mail accounts are more powerful than you think: USE A DIFFERENT PASSWORD FOR YOUR E-MAIL!</p>
+  </li>
+<li id="comment-291"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_291'); }"  onmouseout="Element.hide('admin_comment_291');" >
+  <div id="admin_comment_291" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/291', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-291&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/291" class="admintools">edit</a></div>
+  <a name="comment-291"></a>
+  
+  <cite><strong>Lex</strong> </cite> said about 10 hours later:<br />
+  <p>I&#8217;ve recently started using the Django python framework (djangoproject.com), and was pleasantly surprised to see salting and hashing was built in!</p>
+  </li>
+<li id="comment-292"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_292'); }"  onmouseout="Element.hide('admin_comment_292');" >
+  <div id="admin_comment_292" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/292', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-292&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/292" class="admintools">edit</a></div>
+  <a name="comment-292"></a>
+  
+  <cite><strong>Tom Bortels</strong> </cite> said about 11 hours later:<br />
+  <p>Stray &#8211; those people also have passwords that are vulnerable to trivial dictionary attacks &#8211; better than 5% of them will be &#8220;password&#8221;, &#8220;password1&#8221;, or their username [1] (or they were when I did my Crack analysis of the actual 80,000+ dialup passwords I used to have to deal with). That same &#8220;secret&#8221; password is stored on 20 other sites on the net, and is transferred in plaintext hundreds of times in a day of their surfing. It&#8217;s silly to worry too much that this breach has any real effect on the world &#8211; the people with secure passwords had a different one for this site, and have likely already changed theirs, and the other 98% of them don&#8217;t know or care.</p>
+
+
+	<p>NEVER, EVER, EVER accept absolute rules in anything, security included. Encryption and Hashing are excellent ideas, of course, but they are by no means a requirement &#8211; plaintext password storage has a place and purpose &#8211; and it can be argued that when the information/access you&#8217;re trying to protect is worth little, and ease of customer service is worth a lot (like we have here), plaintext is a valid choice. You&#8217;d want to back that up with better database security of course [2], but that&#8217;s another story.</p>
+
+
+	<p>[1] That&#8217;s why Salting doesn&#8217;t help all that much. You can try a small custom dictionary &#8211; username, username backwards, &#8220;password&#8221;, and variants, and  still have an excellent hit rate. Salting is useful to stop large-dictionary attacks &#8211; but you don&#8217;t need a large dictionary for a big percentage of insecure passwords. Salting might reduce your hit rate from 5% to 3% &#8211; happy for the 2% who got missed, but who cares, you&#8217;re in now.</p>
+
+
+	<p>[2] We don&#8217;t really know how this happened &#8211; database breach is a likely guess, but it could have been an inside job &#8211; and if it was (say someone modified the cgi and logged passwords), then any encryption did in the database would mean <strong>nothing</strong>. There is no silver bullet &#8211; site security is best done on a holistic basis, not bit by bit.</p>
+  </li>
+<li id="comment-293" class="author_comment"  onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_293'); }"  onmouseout="Element.hide('admin_comment_293');" >
+  <div id="admin_comment_293" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/293', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-293&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/293" class="admintools">edit</a></div>
+  <a name="comment-293"></a>
+  
+  <cite><strong>Tom Moertel</strong> </cite> said about 12 hours later:<br />
+  <p>Tom Bortels:</p>
+
+
+	<p><a href="http://www.schneier.com/blog/archives/2006/12/realworld_passw.html">Some recent data on real-world passwords</a>  suggest that people (in this sample, MySpace users) are much better at picking passwords these days:</p>
+
+
+	<ul>
+	<li>Less than 4 percent of passwords were dictionary words.</li>
+		<li>Only 0.34 percent of users had their user name as their password.</li>
+		<li>Less than 1 percent of passwords were any variation on &#8220;password&#8221;.  (The most-popular variant, &#8220;password1&#8221;, was used on 0.22 percent of  accounts.)</li>
+	</ul>
+
+
+	<p>Regarding this:</p>
+
+
+	<blockquote>
+		<p>NEVER, EVER, EVER accept absolute rules in anything, security included.</p>
+	</blockquote>
+
+
+	<p>Let me clarify:  I&#8217;m not arguing that there are zero cases where it makes sense to store passwords in a database.  Rather, I&#8217;m arguing that there are so few legitimate cases for storing passwords in a database that it makes sense to adopt the policy of never doing it as the default.</p>
+
+
+	<p>I think that this point was clear in my article (hint: read the part in bold toward the end of the article), but if you must insist on interpreting natural language in a mathematical or logical sense, you should know that in natural usage it is understood that absolutes are not in fact strictly absolute.  The terms &#8220;always&#8221; and &#8220;never,&#8221; like all terms in natural usage, imply a certain degree of imprecision and contextual interpretation.</p>
+
+
+	<p>If you, however, want to ignore the difference between natural and mathematical language, here&#8217;s your decoder ring: Whenever you see the word &#8220;never,&#8221; mentally replace it with &#8220;almost never&#8221; because that is almost always what the author meant.  That&#8217;s why authors can write things such as, &#8220;Never argue with a police officer,&#8221; and, &#8220;Never swim after eating a large meal,&#8221; and be perfectly understood, even though we can all think of cases where it would make sense to do those things that we should &#8220;never&#8221; do.</p>
+
+
+	<p>Cheers. &#8212;Tom</p>
+  </li>
+<li id="comment-294"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_294'); }"  onmouseout="Element.hide('admin_comment_294');" >
+  <div id="admin_comment_294" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/294', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-294&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/294" class="admintools">edit</a></div>
+  <a name="comment-294"></a>
+  
+  <cite><strong>Ricky</strong> </cite> said about 13 hours later:<br />
+  <p>For the sake of clarity the title should be amended.  The people saying a hash isn&#8217;t &#8220;the password&#8221; are just being pedantic and boring.</p>
+  </li>
+<li id="comment-295" class="author_comment"  onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_295'); }"  onmouseout="Element.hide('admin_comment_295');" >
+  <div id="admin_comment_295" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/295', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-295&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/295" class="admintools">edit</a></div>
+  <a name="comment-295"></a>
+  
+  <cite><strong>ivanof</strong> </cite> said about 13 hours later:<br />
+  <p>yes, but if the theif got away with the database, had it been salted he could not access the passwords unless he had pepper. if he had pepper then he would also need papprika, even then sugar too might be needed to decrypt the passwords. if he was smart he could remove the salt from the database by submerging it in water and boiling it to remove the salt, but then the risks losing data.</p>
+  </li>
+<li id="comment-296"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_296'); }"  onmouseout="Element.hide('admin_comment_296');" >
+  <div id="admin_comment_296" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/296', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-296&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/296" class="admintools">edit</a></div>
+  <a name="comment-296"></a>
+  
+  <cite><strong>Markus</strong> </cite> said about 15 hours later:<br />
+  <p>You ask for the passwords not to be stored in a database. But where else ?</p>
+
+
+<p>In the fine print you talk about salting and hashing, but your headline should say: Don&#8217;t store <b>clear-text</b> passwords !</p>
+  </li>
+<li id="comment-297"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_297'); }"  onmouseout="Element.hide('admin_comment_297');" >
+  <div id="admin_comment_297" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/297', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-297&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/297" class="admintools">edit</a></div>
+  <a name="comment-297"></a>
+  
+  <cite><strong>pcdinh</strong> </cite> said about 19 hours later:<br />
+  <p>Reddit seems not to be a PHP application. Almost PHP applications store hashed passwords in a database so it is rather difficult to guess them out even the database are stolen.</p>
+
+
+	<p>Is Reddit implemented in Python or Ruby?</p>
+  </li>
+<li id="comment-298"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_298'); }"  onmouseout="Element.hide('admin_comment_298');" >
+  <div id="admin_comment_298" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/298', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-298&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/298" class="admintools">edit</a></div>
+  <a name="comment-298"></a>
+  
+  <cite><strong>Noah Slater</strong> </cite> said about 19 hours later:<br />
+  <p>pcdinh, your argument makes no sense. PHP is a language, not a framework, and so each application is likely to store passwords as per the developers preference.</p>
+  </li>
+<li id="comment-299"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_299'); }"  onmouseout="Element.hide('admin_comment_299');" >
+  <div id="admin_comment_299" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/299', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-299&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/299" class="admintools">edit</a></div>
+  <a name="comment-299"></a>
+  
+  <cite><strong><a href="http://binnyva.blogspot.com/">Binny V A</a></strong> </cite> said about 19 hours later:<br />
+  <p>If you hash the password(MD5/SHA1), retrieval is impossible. So &#8216;Forgot Password&#8217; will not work. Yes, you can reset the password &#8211; but that tends to irritate the users.</p>
+
+
+	<p>If you are maintaining a critical website &#8211; where unauthenticated access can create real problems, there is no excuse for not hashing the password. But in the case of reddit, that is not so important.</p>
+
+
+	<p>The lesson to be learned here is not to use the same password on all sites.</p>
+  </li>
+<li id="comment-300"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_300'); }"  onmouseout="Element.hide('admin_comment_300');" >
+  <div id="admin_comment_300" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/300', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-300&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/300" class="admintools">edit</a></div>
+  <a name="comment-300"></a>
+  
+  <cite><strong>Noah Slater</strong> </cite> said about 20 hours later:<br />
+  <p>Binny V A, hashed passwords can be recovered using dictionary attacks.</p>
+  </li>
+<li id="comment-301"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_301'); }"  onmouseout="Element.hide('admin_comment_301');" >
+  <div id="admin_comment_301" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/301', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-301&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/301" class="admintools">edit</a></div>
+  <a name="comment-301"></a>
+  
+  <cite><strong><a href="http://uzemeltet.hu/lexandro">lexandro</a></strong> </cite> said about 21 hours later:<br />
+  <p>Dear Tom!</p>
+
+
+	<p>I translated your post to hungarian and posted to my blog with your blog&#8217;s URL</p>
+
+
+	<p>Lex</p>
+  </li>
+<li id="comment-302"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_302'); }"  onmouseout="Element.hide('admin_comment_302');" >
+  <div id="admin_comment_302" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/302', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-302&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/302" class="admintools">edit</a></div>
+  <a name="comment-302"></a>
+  
+  <cite><strong>J. Random Hacker</strong> </cite> said about 21 hours later:<br />
+  <p>Ow, the stupid.  It hurts us, precious.</p>
+
+
+	<p>The average user has maybe one or two passwords, so it&#8217;s a disservice to them to store their passwords in the clear.</p>
+
+
+	<p>The slightly more clever user has good, unique passwords for everything important, and a couple of disposable login/passwords combos for everything else. (I know, everybody here uses a randomly-generated 12-character alphanumeric string for each and every Web 2.0 site. But we&#8217;re talking about everybody else, not you.)</p>
+
+
+	<p>So, any way you look at it, salting and hashing passwords is the way to go.  You could also use an iterated SHA1 hash, applying it perhaps 50 times.  This slows down authentication slightly, but proportionally increases the work required for a dictionary attack.</p>
+  </li>
+<li id="comment-303"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_303'); }"  onmouseout="Element.hide('admin_comment_303');" >
+  <div id="admin_comment_303" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/303', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-303&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/303" class="admintools">edit</a></div>
+  <a name="comment-303"></a>
+  
+  <cite><strong>oldmangettingold</strong> </cite> said about 21 hours later:<br />
+  <p>The best way to store passwords is not storing it. Whenever an user creates an account and provides a password, the following technique can be used to make the life of hackers difficult:
+1. use some unique technique should be used to generate a salt, 
+2. concatenate the salt to the password, 
+3. use a hashing algorithm such MD5 or SHA1 to hash the password
+4. Encrypt the hashed key and save it to database</p>
+
+
+	<p>To authenticate:
+1. After the user enters the password, use SSL to transfer the password to the server, add the salt and take a hash, retrieve the encrypted hash, decrypt the hash and match the hashes to authenticate the user.</p>
+
+
+	<p>Though, the above method is bit cumbersome and will take time to develop, but it works good and makes the life of a hacker much more difficult.</p>
+  </li>
+<li id="comment-304"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_304'); }"  onmouseout="Element.hide('admin_comment_304');" >
+  <div id="admin_comment_304" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/304', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-304&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/304" class="admintools">edit</a></div>
+  <a name="comment-304"></a>
+  
+  <cite><strong>Nate</strong> </cite> said about 23 hours later:<br />
+  <p>Just a copy of my comment on reddit:</p>
+
+
+	<p>It&#8217;s not incompetence but a common design decision of 95% of the &#8220;fun&#8221; sites everyone here uses every day. Go look at YouTube and MySpace, no SSL and they both send back the original passwords in email. 37Signals sends back forgotten passwords in email. Everyone here then should spread this outrage around with all those sites too.</p>
+
+
+	<p>If the site isn&#8217;t using SSL for logins, then it doesn&#8217;t really matter if these passwords are cleartext in the database. And if you move to SSL logins, then that makes logging in one extra click for everyone. (since the login form can&#8217;t be embedded right on the page anymore, or your form is prone to a &#8216;man in the middle&#8217; attack)</p>
+
+
+	<p>I expect my Mom maybe to use the same password at Reddit and at her bank, but the people here!? Why would you trust any site with the same password that you might use somewhere that&#8217;s important?</p>
+
+
+	<p>I like these Reddit guys a lot, but Aaron is one shady looking mofo. :) I just assume that he&#8217;d try to use my password at every bank site he could find to funnel money into his porno slush fund.</p>
+  </li>
+<li id="comment-305"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_305'); }"  onmouseout="Element.hide('admin_comment_305');" >
+  <div id="admin_comment_305" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/305', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-305&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/305" class="admintools">edit</a></div>
+  <a name="comment-305"></a>
+  
+  <cite><strong>Noah Slater</strong> </cite> said 1 day later:<br />
+  <p>Nate, why can the login form NOT be embedded on the same page?</p>
+  </li>
+<li id="comment-306"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_306'); }"  onmouseout="Element.hide('admin_comment_306');" >
+  <div id="admin_comment_306" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/306', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-306&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/306" class="admintools">edit</a></div>
+  <a name="comment-306"></a>
+  
+  <cite><strong>Jonas</strong> </cite> said 1 day later:<br />
+  <p>Storing passwords in a database in cleartext is, as someone mentioned above, /required/ for some protocols, but then it&#8217;s very important to encrypt the backups with GPG. This doesn&#8217;t help the security of the runtime database but it sure helps securing backups.</p>
+  </li>
+<li id="comment-307"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_307'); }"  onmouseout="Element.hide('admin_comment_307');" >
+  <div id="admin_comment_307" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/307', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-307&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/307" class="admintools">edit</a></div>
+  <a name="comment-307"></a>
+  
+  <cite><strong>Peter</strong> </cite> said 1 day later:<br />
+  <p>Tom Moertel:</p>
+
+
+	<p>Natural language usage doesn&#8217;t have to be sloppy.  That in itself is a design decision by the user.</p>
+  </li>
+<li id="comment-310"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_310'); }"  onmouseout="Element.hide('admin_comment_310');" >
+  <div id="admin_comment_310" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/310', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-310&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/310" class="admintools">edit</a></div>
+  <a name="comment-310"></a>
+  
+  <cite><strong>Anony Moose</strong> </cite> said 2 days later:<br />
+  <p>Alternate design: The &#8220;I forgot my password&#8221; handler generates a cryptographically strong new password, then sends that out to the user, who can then reset their own password back to the name of their dog.</p>
+
+
+	<p>Well, ok, sending passwords by email isn&#8217;t entirely perfect, but it would have been less bad.</p>
+
+
+	<p>And it avoids screwing around with encrypting passwords in the database and thus needing to protect the key used to decrypt the passwords. If the hackers can get the database, they can get the key &#8211; and if they can&#8217;t get the key, then the database could have been protected.</p>
+
+
+	<p>And if the protocol &#8220;requires&#8221; the password to be stored in plain text, perhaps you&#8217;re asking for trouble by using that protocol. But if you don&#8217;t have a damn good reason to require the password to be stored as plaintext, then doing so is just wrong. It&#8217;s nowhere near necessary enough to be worth the risk.</p>
+  </li>
+<li id="comment-316"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_316'); }"  onmouseout="Element.hide('admin_comment_316');" >
+  <div id="admin_comment_316" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/316', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-316&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/316" class="admintools">edit</a></div>
+  <a name="comment-316"></a>
+  
+  <cite><strong><a href="http://neuroxik.blogspot.com">neuroxik</a></strong> </cite> said 11 days later:<br />
+  <p>One method that could be used if one feels it&#8217;s better to send back a password by email than requiring a reset is to atleast use a homegrown encryption algorithm. Now I&#8217;m not talking about writing a 100K class, just something rather simple and append random chars, make it equal to 16 or 32 bytes to make it resemble a md5/sha1 hash and use that same algo to restore the password. Of course, that would be to use only on &#8220;fun&#8221; sites.</p>
+  </li>
+<li id="comment-367"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_367'); }"  onmouseout="Element.hide('admin_comment_367');" >
+  <div id="admin_comment_367" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/367', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-367&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/367" class="admintools">edit</a></div>
+  <a name="comment-367"></a>
+  
+  <cite><strong>Unni</strong> </cite> said 55 days later:<br />
+  <p>Definitely, its bad idea of storing password in plain text in database,rather store it in salting hash.
+     BUT i have no idea how to DECRYPT the salted hash. I want to know, if user FORGETS his/her password then HOW we are going to get back the password? 
+    I am creating a login page &#38; i have to add &#8220;FORGET PASSWORD&#8221; feature also.
+How can i do it??</p>
+  </li>
+<li id="comment-368"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_368'); }"  onmouseout="Element.hide('admin_comment_368');" >
+  <div id="admin_comment_368" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/368', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-368&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/368" class="admintools">edit</a></div>
+  <a name="comment-368"></a>
+  
+  <cite><strong>Tom Moertel</strong> </cite> said 55 days later:<br />
+  <p>Unni, the primary benefit of using a hash is that it is <em>one way</em>.  Once you salt and hash the password, there is no practical way to retrieve it, not for would-be attackers, nor for you.  Thus when users forget their passwords, you <em>cannot</em> mail their passwords to them.</p>
+
+
+	<p>How, then, can they log in?  If your site requires no stronger authentication than knowing that users own the email addresses they claim to own, you can use the following method.</p>
+
+
+	<p>Say Joe has lost his password and wants to recover his account.  Here&#8217;s how you do it:</p>
+
+
+	<ol>
+	<li>Generate a big, random, unique token and stuff it into Joe&#8217;s account record in the database along with the current date and time.</li>
+		<li>Send an email to Joe, but instead of enclosing his password (which you can&#8217;t recover), tell Joe to click on the enclosed account-recovery link, which of course includes the random token: <code><a href="http://example.com/recover-account?token=pCIqq1unxntVqc8XtCXg">http://example.com/recover-account?token=pCIqq1unxntVqc8XtCXg</a></code>.</li>
+		<li>Joe receives the email and follows the link, which sends his token to your site.</li>
+		<li>Look up the token in the user database.  Is it there?
+	<ol>
+	<li>No? Render &#8220;Sorry, bub, that token is bogus, so we cannot recover your account.&#8221;  Stop.</li>
+		<li>Yes? Excellent. Grab the user record associated with the token.  (It will, of course, be Joe&#8217;s record.)</li>
+	</ol>
+	</li>
+		<li>Is the date and time stamp on that record more than a few hours old?
+	<ol>
+	<li>Yes? Render &#8220;Sorry, bub, that token has expired.&#8221; Stop.</li>
+		<li>No? Congratulations.  Joe has effectively authenticated himself via his email address.</li>
+	</ol>
+	</li>
+		<li>Render a confirmation screen that explains the following to Joe:
+	<ol>
+	<li>His account password is going to be reset to the following random string: <strong>ocZodbew</strong>. (Generate a new random password each time.)</li>
+		<li>If he likes the password, great.  If not, he can use the change-password feature immediately after the password is reset.</li>
+		<li>If he understands the above and wants to reset his account password, confirm by clicking the big &#8220;Reset My Account Password&#8221; button.</li>
+	</ol>
+	</li>
+		<li>Joe clicks the big button.</li>
+		<li>You, in response, do the following:
+	<ol>
+	<li>Delete the recovery token from Joe&#8217;s user record in the database. (This prevents somebody who steals a copy of Joe&#8217;s mail from using the old token to steal his account.)</li>
+		<li>Replace the salt and hash for Joe&#8217;s old password with a new salt and the salted-hash of the new, randomly generated password from above.</li>
+		<li>Render a screen saying, &#8220;Joe, your password has been changed to <strong>ocZodbew</strong>.  If you would like to change it, just visit Change Password in your account preferences.&#8221; (Provide a link.)</li>
+	</ol>
+	</li>
+		<li>And you&#8217;re done!</li>
+	</ol>
+
+
+	<p>If that seems like a complicated process, you should know that the code required to make it happen is shorter than the explanation above.  In any case, it&#8217;s a small price to pay to protect your users&#8217; passwords.</p>
+
+
+	<p>Cheers,<br />
+Tom</p>
+  </li>
+<li id="comment-369"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_369'); }"  onmouseout="Element.hide('admin_comment_369');" >
+  <div id="admin_comment_369" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/369', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-369&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/369" class="admintools">edit</a></div>
+  <a name="comment-369"></a>
+  
+  <cite><strong>Parker</strong> </cite> said 55 days later:<br />
+  <p>I use a program called Secret Server.  It uses all that good stuff (SHA512, AES26)and works well for multi-users because you can share and audit.</p>
+  </li>
+<li id="comment-386"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_386'); }"  onmouseout="Element.hide('admin_comment_386');" >
+  <div id="admin_comment_386" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/386', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-386&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/386" class="admintools">edit</a></div>
+  <a name="comment-386"></a>
+  
+  <cite><strong><a href="http://blog.codahale.com">Coda Hale</a></strong> </cite> said 67 days later:<br />
+  <p>This is why engineers look down on programmers.</p>
+
+
+	<p>&#8220;Yeah, but you only need that kind of support if you&#8217;re going to have a lot of cars on the bridge. Duct tape will do fine&#8212;you can always replace it once you&#8217;ve got a lot of cars on the bridge.&#8221;</p>
+
+
+	<p>&#8220;There are no fixed rules with high-voltage electricity. That&#8217;s why we use dried-up oatmeal as an insulator.&#8221;</p>
+
+
+	<p>&#8220;But if you can&#8217;t kick through the walls of the building, then how will people get inside?&#8221;</p>
+
+
+	<p>&#8220;Look, responsible people should be wearing parachutes at all times. That way, when a bridge collapses they won&#8217;t have to die. It&#8217;s common sense, and people who drive on bridges without parachutes get what they deserve. They should know better.&#8221;</p>
+
+
+	<p>&#8220;You&#8217;re probably better off inventing your own steel alloy, like maybe 30% iron, 10% old GI Joe figurines, and 60% margarine. If you paint it rust-colored, people won&#8217;t know the difference. But that&#8217;s really just for &#8216;fun&#8217; skyscrapers.&#8221;</p>
+
+
+	<p>&#8220;I don&#8217;t see why we should have to spend so much time making sure the dam doesn&#8217;t burst. I mean, someone could just use a garden hose and flood the houses downstream just as easily.&#8221;</p>
+
+
+	<p>Jesus wept. Tom, thanks for the article&#8212;always nice to see a flash of competency in muddy water. &#8220;How would you design an authentication system&#8221; just became my #1 job interview question.</p>
+  </li>
+<li id="comment-394"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_394'); }"  onmouseout="Element.hide('admin_comment_394');" >
+  <div id="admin_comment_394" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/394', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-394&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/394" class="admintools">edit</a></div>
+  <a name="comment-394"></a>
+  
+  <cite><strong><a href="http://kapiti.geek.nz/">Andy Chilton</a></strong> </cite> said 72 days later:<br />
+  <p>I wrote an article (in Sep 2006) on storing passwords. This was after hearing of a few places where plaintext passwords were being use. You might like to check it out:</p>
+
+
+	<p><a href="http://kapiti.geek.nz/random/setting-a-good-example-with-passwords.html">http://kapiti.geek.nz/random/setting-a-good-example-with-passwords.html</a></p>
+
+
+	<p>I agree, salting and hashing your passwords is the way to go.</p>
+
+
+	<p>Thanks for the article pointing out Reddit&#8217;s mistake.</p>
+  </li>
+<li id="comment-397"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_397'); }"  onmouseout="Element.hide('admin_comment_397');" >
+  <div id="admin_comment_397" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/397', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-397&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/397" class="admintools">edit</a></div>
+  <a name="comment-397"></a>
+  
+  <cite><strong><a href="http://blog.codahale.com">Coda Hale</a></strong> </cite> said 76 days later:<br />
+  <p>FWIW, I went out and implemented state-of-the-art password hashing for Ruby:</p>
+
+
+	<p><a href="http://blog.codahale.com/2007/02/28/bcrypt-ruby-secure-password-hashing/">http://blog.codahale.com/2007/02/28/bcrypt-ruby-secure-password-hashing/</a></p>
+
+
+<pre>
+<code>
+require "bcrypt" 
+
+password = BCrypt::Password.create("secret")
+password #=&gt; "$2a$10$zMW2EmVgmKLRtHZLHUPZk.yydsOQPkqMvko2A8GYpJT0o7QVlNrq." 
+password == "wrong password" #=&gt; false
+password == "secret"         #=&gt; true
+
+password = BCrypt::Password.new("$2a$10$zMW2EmVgmKLRtHZLHUPZk.yydsOQPkqMvko2A8GYpJT0o7QVlNrq.")
+password == "wrong password" #=&gt; false
+password == "secret"         #=&gt; true
+</code>
+</pre>
+
+	<p>It doesn&#8217;t get any easier than that. Don&#8217;t be Reddit.</p>
+  </li>
+<li id="comment-574"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_574'); }"  onmouseout="Element.hide('admin_comment_574');" >
+  <div id="admin_comment_574" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/574', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-574&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/574" class="admintools">edit</a></div>
+  <a name="comment-574"></a>
+  
+  <cite><strong>brianeleahy@cox.net</strong> </cite> said 268 days later:<br />
+  <p>More then likely it wasn&#8217;t smart programmers that dropped the ball.</p>
+
+
+	<p>I bet it was dumb managers insisting that the functionallity of emailing someone their forgotten password was of dire importance.</p>
+  </li>
+<li id="comment-654"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_654'); }"  onmouseout="Element.hide('admin_comment_654');" >
+  <div id="admin_comment_654" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/654', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-654&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/654" class="admintools">edit</a></div>
+  <a name="comment-654"></a>
+  
+  <cite><strong><a href="http://www.tomisimo.org/blog">David</a></strong> </cite> said 350 days later:<br />
+  <p>bcrypt is not nearly as secure a hash as sha1 or even md5.</p>
+  </li>
+<li id="comment-710"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_710'); }"  onmouseout="Element.hide('admin_comment_710');" >
+  <div id="admin_comment_710" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/710', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-710&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/710" class="admintools">edit</a></div>
+  <a name="comment-710"></a>
+  
+  <cite><strong><a href="http://www.tothepub.co.uk">James Law</a></strong> </cite> said 467 days later:<br />
+  <p>Forgive me for asking a possibly obvious question but what stops your application from unencrypting the password from the database and then sending it to the user via email?</p>
+
+
+	<p>Just for the record I do disagree with this method of password recovery as email isn&#8217;t a secure medium.</p>
+  </li>
+<li id="comment-711" class="author_comment"  onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_711'); }"  onmouseout="Element.hide('admin_comment_711');" >
+  <div id="admin_comment_711" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/711', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-711&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/711" class="admintools">edit</a></div>
+  <a name="comment-711"></a>
+  
+  <cite><strong>Tom Moertel</strong> </cite> said 468 days later:<br />
+  <p>James, thanks for your question.</p>
+
+
+	<p>In answer, what stops a (reasonably secure) application from unencrypting the password from the database and then sending it to the user is that the password isn&#8217;t encrypted or stored in the database. Rather, the password was fed to a one-way hashing function, and the resulting hash value, which cannot be &#8220;decrypted&#8221; into the original password, was stored in the database instead.  The password itself was thrown away and is long gone by the time a user might need to recover his account.</p>
+
+
+	<p>Cheers! &#8212;Tom</p>
+  </li>
+<li id="comment-809"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_809'); }"  onmouseout="Element.hide('admin_comment_809');" >
+  <div id="admin_comment_809" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/809', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-809&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/809" class="admintools">edit</a></div>
+  <a name="comment-809"></a>
+  
+  <cite><strong>Hurricane</strong> </cite> said 620 days later:<br />
+  <p>I was looking for links about the typical password-stored issue and found this.</p>
+
+
+	<p>I&#8217;ve read the comments an I can only add this : encrypted passwords is BAD.</p>
+
+
+	<p>Why ?</p>
+
+
+	<p>_ Because there is a way to decrypt them.
+_ Because it means YOU know the password of your users.  And if you are a company it means that the disgrunted guy you just fired knows them too.</p>
+
+
+	<p>If a user loses his password, start an recovery using a question and contact him by email/fax/phone/... to allow him to reset.</p>
+
+
+	<p>Digests are good :</p>
+
+
+	<p>A digest using a salt, login and password will not allow an opponent to retrieve the password easily.  He may find something that matches the digest but it will most probably not be the original password of the user. (So he is safe, which is what matters)</p>
+
+
+	<p>You can also use a few random bits in your digest.  It means you will have to try&#38;error all the bits to see if one matches but it means the brute-force attacker will have to too.  It will be less expensive for you than for him. (Just check the last OpenPGP specifications)</p>
+  </li>
+<li id="comment-874"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_874'); }"  onmouseout="Element.hide('admin_comment_874');" >
+  <div id="admin_comment_874" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/874', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-874&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/874" class="admintools">edit</a></div>
+  <a name="comment-874"></a>
+  
+  <cite><strong><a href="http://lostsouls.org">chaos</a></strong> </cite> said 755 days later:<br />
+  <p>Could we add in &#8220;for God&#8217;s sake stop sending me the password I just signed up with in cleartext in an account creation email?&#8221;</p>
+  </li>
+<li id="comment-971"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_971'); }"  onmouseout="Element.hide('admin_comment_971');" >
+  <div id="admin_comment_971" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/971', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-971&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/971" class="admintools">edit</a></div>
+  <a name="comment-971"></a>
+  
+  <cite><strong>movax</strong> </cite> said 910 days later:<br />
+  <p>SRP protocol is very interesting option. But is hard to implement. Salted SHA256 with 8000 iterations is simpler :)</p>
+
+
+	<p>Anyway of this, entier backup should be encrypted.</p>
+  </li>
+<li id="comment-972"   onmouseover="if (getCookie('is_admin') == 'yes') { Element.show('admin_comment_972'); }"  onmouseout="Element.hide('admin_comment_972');" >
+  <div id="admin_comment_972" style="display: none"><a class="admintools" href="#" onclick="if (confirm('Are you sure you want to delete this comment?')) { new Ajax.Request('/articles/nuke_comment/972', {asynchronous:true, evalScripts:true, onComplete:function(request){new Effect.Puff(&quot;comment-972&quot;,{duration:0.6});}}); }; return false;">nuke</a><a href="/admin/comments/article/267/edit/972" class="admintools">edit</a></div>
+  <a name="comment-972"></a>
+  
+  <cite><strong>movax</strong> </cite> said 910 days later:<br />
+  <p>scrypt (which is very very slow = 60ms per password, and needs lots of memory, so even hardware brute force attack is impossible) is even better. (it uses few millions iterations of SHA256, salsa cipher, and needs real random memory).</p>
+  </li>
+
+  
+  </ol>
+
+  <a name="trackbacks"></a><h4 class="blueblk">Trackbacks</h4>
+  <p>
+    Use the following link to trackback from your own site:<br/>
+    <span class="light-bg">http://blog.moertel.com/articles/trackback/267</span>
+    </p>
+  
+
+<p class="postmetadata alt">
+  <small>
+  <a href="http://blog.moertel.com/xml/rss20/article/267/feed.xml" title="RSS Feed">RSS feed for this post</a>
+  <a href="http://blog.moertel.com/articles/trackback/267" >trackback uri</a>
+  </small>
+</p>
+
+  <form action="/articles/comment/267" class="commentform" id="commentform" method="post" onsubmit="new Ajax.Updater({success:'commentList'}, '/articles/comment/267', {asynchronous:true, evalScripts:true, insertion:Insertion.Bottom, onComplete:function(request){complete(request)}, onFailure:function(request){failure(request)}, onLoading:function(request){loading()}, parameters:Form.serialize(this)}); return false;">
+
+
+<div class="comment-box">
+  <div id="errors"></div>
+  <div id="preview" style="display: none"></div>
+
+  <a name="respond"></a>
+  <table cellpadding="4" cellspacing="0" class="frm-tbl">
+    <tr>
+      <td><p><label for="comment_author">Your name</label></p></td>
+      <td> <input id="comment_author" name="comment[author]" size="20" type="text" /> <small><a href="#" onclick="Element.toggle('guest_url'); Element.toggle('guest_email'); return false;">(leave url/email &#187;)</a></small></td>
+    </tr>
+    <tr id="guest_url" style="display:none;">
+      <td><p><label for="comment_url">Your blog</label></p></td>
+      <td> <input id="comment_url" name="comment[url]" size="30" type="text" /></td>
+    </tr>
+    <tr id="guest_email" style="display:none;">
+      <td><p><label for="comment_email">Your email</label></p></td>
+      <td> <input id="comment_email" name="comment[email]" size="30" type="text" /></td>
+    </tr>
+    <tr>
+      <td><p><label for="comment_body">Your message</label></p></td>
+      <td valign="top" colspan="2">
+        <textarea cols="40" id="comment_body" name="comment[body]" rows="20"></textarea>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2" id="frm-btns">
+      <span id="comment_loading" style="display:none;"><img alt="Spinner" src="/images/spinner.gif?1153753467" /></span>&nbsp;&nbsp;
+      <a href="/articles/markup_help/5" onclick="return popup(this, 'Typo Markup Help')">Comment Markup Help</a>
+      <a href="#" onclick="new Ajax.Updater('preview', '/articles/comment_preview',  {asynchronous:true, evalScripts:true, parameters:Form.serialize('commentform'), onComplete:function(request){Element.show('preview')}}); return false;">Preview comment</a>      
+      <input type="submit" name="submit" id="form-submit-button" value="submit" class="button" />
+      </td>
+    </tr>
+  </table>
+</div>
+</form>
+
+          <script type="text/javascript">
+//<![CDATA[
+show_dates_as_local_time()
+//]]>
+</script>
+        </div>
+        
+        <div id="sidebar">
+
+            <div id="search-results"></div>
+            
+              
+      
+<div class="sidebar-node">
+  <h3>Advertisements</h3>
+<script type="text/javascript"><!--
+google_ad_client = "pub-7843396314403828";
+google_ad_width = 180;
+google_ad_height = 90;
+google_ad_format = "180x90_0ads_al_s";
+google_ad_channel = "";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+
+</div>
+
+
+      
+<div class="sidebar-node">
+  <h3>Tags</h3>
+<p style="overflow:hidden">
+<span style="font-size:66.6666666666667%"><a href="/articles/tag/amazon">amazon</a></span>
+<span style="font-size:66.6666666666667%"><a href="/articles/tag/darcs">darcs</a></span>
+<span style="font-size:66.6666666666667%"><a href="/articles/tag/emacs">emacs</a></span>
+<span style="font-size:126.315789473684%"><a href="/articles/tag/fedora">fedora</a></span>
+<span style="font-size:66.6666666666667%"><a href="/articles/tag/get">get</a></span>
+<span style="font-size:78.9473684210526%"><a href="/articles/tag/git">git</a></span>
+<span style="font-size:66.6666666666667%"><a href="/articles/tag/gwa">gwa</a></span>
+<span style="font-size:200%"><a href="/articles/tag/haskell">haskell</a></span>
+<span style="font-size:66.6666666666667%"><a href="/articles/tag/imdb">imdb</a></span>
+<span style="font-size:66.6666666666667%"><a href="/articles/tag/lectrotest">lectrotest</a></span>
+<span style="font-size:66.6666666666667%"><a href="/articles/tag/life">life</a></span>
+<span style="font-size:78.9473684210526%"><a href="/articles/tag/linux">linux</a></span>
+<span style="font-size:66.6666666666667%"><a href="/articles/tag/movies">movies</a></span>
+<span style="font-size:200%"><a href="/articles/tag/perl">perl</a></span>
+<span style="font-size:66.6666666666667%"><a href="/articles/tag/photography">photography</a></span>
+<span style="font-size:78.9473684210526%"><a href="/articles/tag/pittsburgh">pittsburgh</a></span>
+<span style="font-size:78.9473684210526%"><a href="/articles/tag/programming">programming</a></span>
+<span style="font-size:66.6666666666667%"><a href="/articles/tag/puzzles">puzzles</a></span>
+<span style="font-size:110.526315789474%"><a href="/articles/tag/r">R</a></span>
+<span style="font-size:157.894736842105%"><a href="/articles/tag/rails">rails</a></span>
+<span style="font-size:142.105263157895%"><a href="/articles/tag/ruby">ruby</a></span>
+<span style="font-size:78.9473684210526%"><a href="/articles/tag/safe">safe</a></span>
+<span style="font-size:66.6666666666667%"><a href="/articles/tag/security">security</a></span>
+<span style="font-size:142.105263157895%"><a href="/articles/tag/statistics">statistics</a></span>
+<span style="font-size:66.6666666666667%"><a href="/articles/tag/talks">talks</a></span>
+<span style="font-size:126.315789473684%"><a href="/articles/tag/testing">testing</a></span>
+<span style="font-size:94.7368421052632%"><a href="/articles/tag/typo">typo</a></span>
+<span style="font-size:66.6666666666667%"><a href="/articles/tag/unsafe">unsafe</a></span>
+<span style="font-size:78.9473684210526%"><a href="/articles/tag/writing">writing</a></span>
+<span style="font-size:66.6666666666667%"><a href="/articles/tag/yapc">yapc</a></span>
+</p>
+
+
+</div>
+
+
+      
+<div class="sidebar-node">
+  <h3>About the author</h3>
+<ul>
+  <li><a href="/pages/about-tom">About Tom Moertel</a></li>
+</ul>
+
+<div style="text-align:center; margin-top:1em; border: solid 1px #ccc">
+<a href="http://blog.moertel.com/articles/2007/08/22/fun-with-statistics-estiating-blog-readership" style="text-decoration: none">now serving <img style="vertical-align:middle" src="http://blog.moertel.com/images/readers.png" alt="reader counter"/> readers</a>
+</div>
+
+
+</div>
+
+
+      
+<div class="sidebar-node">
+  <h3>Syndicate</h3>
+<ul>
+    <li><a href="/xml/atom10/feed.xml" title="Articles feed">Articles</a></li>
+  
+    <li><a href="/xml/atom10/comments/feed.xml" title="Comments feed">Comments</a></li>
+  
+  
+</ul>
+
+</div>
+
+
+      
+<div class="sidebar-node">
+  <h3>Popular stuff</h3>
+<ul class="popular-links">
+<li><a href="/">Blog home page</a></li>
+<li><a href="http://community.moertel.com/ss/space/Talks">Talks</a></li><li><a href="http://blog.moertel.com/articles/2006/10/18/a-type-based-solution-to-the-strings-problem">A type-based solution to the strings problem: a fitting end to XSS attacks?</a></li>
+<li><a href="http://blog.moertel.com/articles/2006/12/15/never-store-passwords-in-a-database">Never store passwords in a database!</a></li>
+<li><a href="http://blog.moertel.com/articles/2007/08/22/fun-with-statistics-estiating-blog-readership">Fun with statistics: estimating blog readership</a></li>
+<li><a href="http://blog.moertel.com/pages/seven-lessons-from-the-icfp-programming-contest">Seven lessons from the ICFP programming contest</a></li>
+<li><a href="http://community.moertel.com/ss/space/IMDB+Movie-Rating+Decoder+Ring">IMDB Movie-Rating Decoder Ring</a></li>
+<li><a href="http://blog.moertel.com/pages/coders-guide-to-coffee">A Coder's Guide To Coffee</a></li>
+<li><a href="http://community.moertel.com/ss/space/Programming+Fun+Challenge">Programming Fun Challenge</a></li>
+<li><a href="http://www.cafepress.com/lectrotest">The LectroTest Emporium</a> <em>New!</em></li>
+</ul>
+
+
+</div>
+
+
+      
+<div class="sidebar-node">
+  <h3>Projects</h3>
+<ul>
+<li><a href="http://community.moertel.com/LectroTest">LectroTest</a> &#8211; automated Perl testing</li>
+<li><a href="http://community.moertel.com/ss/space/PXSL">PXSL</a> &#8211; sensible XML shorthand</li>
+<li><a href="http://community.moertel.com/ss/space/Cabal2rpm">Cabal2rpm</a> &#8211; Haskell pkgs to RPMs</li>
+</ul>
+
+
+</div>
+
+
+      
+<div class="sidebar-node">
+  <h3>Recent Comments</h3>
+<div>
+    <ul>
+                    <li>
+                                                <a href="/articles/2007/05/25/repairing-my-kenwood-a-v-receivers-remote-control-sensor#comment-1768">by Wido on Repairing my Kenwood A/V receiver's remote-control sensor</a>
+            </li>
+                    <li>
+                                                <a href="/articles/2007/05/25/repairing-my-kenwood-a-v-receivers-remote-control-sensor#comment-1766">by Wakefield on Repairing my Kenwood A/V receiver's remote-control sensor</a>
+            </li>
+                    <li>
+                                                <a href="/articles/2010/12/07/on-the-evidence-of-a-single-coin-toss#comment-1765">by BMoertel on On the evidence of a single coin toss</a>
+            </li>
+                    <li>
+                                                <a href="/articles/2010/12/07/on-the-evidence-of-a-single-coin-toss#comment-1764">by Anon53 on On the evidence of a single coin toss</a>
+            </li>
+                    <li>
+                                                <a href="/articles/2010/12/07/on-the-evidence-of-a-single-coin-toss#comment-1760">by mh on On the evidence of a single coin toss</a>
+            </li>
+        
+    </ul>
+</div>
+
+</div>
+
+
+      
+<div class="sidebar-node">
+  <h3>Advertisements</h3>
+<script type="text/javascript"><!--
+google_ad_client = "pub-7843396314403828";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text";
+google_ad_channel = "";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+
+</div>
+
+
+      
+<div class="sidebar-node">
+  
+<h3>Archives</h3>
+<ul id="archives">
+  
+    <li>
+      <a href="/articles/2010/12">December 2010</a>
+      <em>(2)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2010/11">November 2010</a>
+      <em>(1)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2010/8">August 2010</a>
+      <em>(1)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2010/7">July 2010</a>
+      <em>(1)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2010/6">June 2010</a>
+      <em>(2)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2010/1">January 2010</a>
+      <em>(1)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2009/7">July 2009</a>
+      <em>(2)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2009/6">June 2009</a>
+      <em>(1)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2009/5">May 2009</a>
+      <em>(2)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2009/4">April 2009</a>
+      <em>(2)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2009/2">February 2009</a>
+      <em>(3)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2009/1">January 2009</a>
+      <em>(1)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2008/10">October 2008</a>
+      <em>(1)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2008/9">September 2008</a>
+      <em>(1)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2008/8">August 2008</a>
+      <em>(4)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2008/5">May 2008</a>
+      <em>(1)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2008/4">April 2008</a>
+      <em>(1)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2008/3">March 2008</a>
+      <em>(1)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2007/12">December 2007</a>
+      <em>(2)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2007/11">November 2007</a>
+      <em>(3)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2007/10">October 2007</a>
+      <em>(4)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2007/9">September 2007</a>
+      <em>(4)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2007/8">August 2007</a>
+      <em>(6)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2007/7">July 2007</a>
+      <em>(2)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2007/6">June 2007</a>
+      <em>(2)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2007/5">May 2007</a>
+      <em>(3)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2007/4">April 2007</a>
+      <em>(3)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2007/3">March 2007</a>
+      <em>(5)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2007/2">February 2007</a>
+      <em>(3)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2007/1">January 2007</a>
+      <em>(1)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2006/12">December 2006</a>
+      <em>(1)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2006/11">November 2006</a>
+      <em>(4)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2006/10">October 2006</a>
+      <em>(5)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2006/9">September 2006</a>
+      <em>(2)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2006/8">August 2006</a>
+      <em>(10)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2006/7">July 2006</a>
+      <em>(6)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2006/6">June 2006</a>
+      <em>(7)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2006/5">May 2006</a>
+      <em>(1)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2006/4">April 2006</a>
+      <em>(5)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2006/3">March 2006</a>
+      <em>(4)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2006/2">February 2006</a>
+      <em>(5)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2006/1">January 2006</a>
+      <em>(6)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2005/12">December 2005</a>
+      <em>(2)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2005/11">November 2005</a>
+      <em>(9)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2005/10">October 2005</a>
+      <em>(3)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2005/9">September 2005</a>
+      <em>(4)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2005/8">August 2005</a>
+      <em>(5)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2005/7">July 2005</a>
+      <em>(2)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2005/6">June 2005</a>
+      <em>(2)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2005/5">May 2005</a>
+      <em>(3)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2005/4">April 2005</a>
+      <em>(2)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2005/3">March 2005</a>
+      <em>(1)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2005/2">February 2005</a>
+      <em>(2)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2005/1">January 2005</a>
+      <em>(1)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2004/12">December 2004</a>
+      <em>(2)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2004/11">November 2004</a>
+      <em>(2)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2004/9">September 2004</a>
+      <em>(2)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2004/8">August 2004</a>
+      <em>(2)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2004/7">July 2004</a>
+      <em>(1)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2004/3">March 2004</a>
+      <em>(1)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2004/2">February 2004</a>
+      <em>(1)</em>
+    </li>
+  
+    <li>
+      <a href="/articles/2003/11">November 2003</a>
+      <em>(1)</em>
+    </li>
+  
+</ul>
+
+
+</div>
+
+
+      
+<div class="sidebar-node">
+  <h3>Categories</h3>
+<ul id="categories">
+  
+  <li><a href="/articles/category/asterisk">asterisk</a> <em>(1)</em></li>
+  
+  
+  <li><a href="/articles/category/books">books</a> <em>(2)</em></li>
+  
+  
+  <li><a href="/articles/category/business">business</a> <em>(3)</em></li>
+  
+  
+  <li><a href="/articles/category/engineering">engineering</a> <em>(1)</em></li>
+  
+  
+  <li><a href="/articles/category/espresso">espresso</a> <em>(2)</em></li>
+  
+  
+  <li><a href="/articles/category/food">food</a> <em>(3)</em></li>
+  
+  
+  <li><a href="/articles/category/freedom">freedom</a> <em>(1)</em></li>
+  
+  
+  <li><a href="/articles/category/fun-stuff">fun stuff</a> <em>(12)</em></li>
+  
+  
+  <li><a href="/articles/category/functional-programming">functional programming</a> <em>(12)</em></li>
+  
+  
+  <li><a href="/articles/category/good-stuff">good stuff</a> <em>(7)</em></li>
+  
+  
+  <li><a href="/articles/category/hacks">hacks</a> <em>(5)</em></li>
+  
+  
+  <li><a href="/articles/category/hardware">hardware</a> <em>(9)</em></li>
+  
+  
+  <li><a href="/articles/category/haskell">haskell</a> <em>(20)</em></li>
+  
+  
+  <li><a href="/articles/category/humor">humor</a> <em>(4)</em></li>
+  
+  
+  <li><a href="/articles/category/interesting-stuff">interesting stuff</a> <em>(11)</em></li>
+  
+  
+  <li><a href="/articles/category/linux">linux</a> <em>(6)</em></li>
+  
+  
+  <li><a href="/articles/category/marketing">marketing</a> <em>(5)</em></li>
+  
+  
+  <li><a href="/articles/category/math">math</a> <em>(2)</em></li>
+  
+  
+  <li><a href="/articles/category/movies">movies</a> <em>(2)</em></li>
+  
+  
+  <li><a href="/articles/category/networking">networking</a> <em>(1)</em></li>
+  
+  
+  <li><a href="/articles/category/perl">perl</a> <em>(21)</em></li>
+  
+  
+  <li><a href="/articles/category/photography">photography</a> <em>(7)</em></li>
+  
+  
+  <li><a href="/articles/category/pittsburgh">pittsburgh</a> <em>(7)</em></li>
+  
+  
+  <li><a href="/articles/category/privacy">privacy</a> <em>(2)</em></li>
+  
+  
+  <li><a href="/articles/category/programming">programming</a> <em>(32)</em></li>
+  
+  
+  <li><a href="/articles/category/programming-languages">programming languages</a> <em>(9)</em></li>
+  
+  
+  <li><a href="/articles/category/rails">rails</a> <em>(8)</em></li>
+  
+  
+  <li><a href="/articles/category/rants">rants</a> <em>(3)</em></li>
+  
+  
+  <li><a href="/articles/category/reviews">reviews</a> <em>(9)</em></li>
+  
+  
+  <li><a href="/articles/category/rpms">rpms</a> <em>(1)</em></li>
+  
+  
+  <li><a href="/articles/category/ruby">ruby</a> <em>(13)</em></li>
+  
+  
+  <li><a href="/articles/category/security">security</a> <em>(4)</em></li>
+  
+  
+  <li><a href="/articles/category/site-news">site news</a> <em>(11)</em></li>
+  
+  
+  <li><a href="/articles/category/statistics">statistics</a> <em>(11)</em></li>
+  
+  
+  <li><a href="/articles/category/sysadmin">sysadmin</a> <em>(4)</em></li>
+  
+  
+  <li><a href="/articles/category/talks">talks</a> <em>(4)</em></li>
+  
+  
+  <li><a href="/articles/category/testing">testing</a> <em>(8)</em></li>
+  
+  
+  <li><a href="/articles/category/typo">typo</a> <em>(7)</em></li>
+  
+  
+  <li><a href="/articles/category/usability">usability</a> <em>(1)</em></li>
+  
+  
+  <li><a href="/articles/category/web-development">web development</a> <em>(15)</em></li>
+  
+  
+  <li><a href="/articles/category/wondrous-oddities">wondrous oddities</a> <em>(1)</em></li>
+  
+  
+  <li><a href="/articles/category/work">work</a> <em>(2)</em></li>
+  
+  
+  <li><a href="/articles/category/writing">writing</a> <em>(4)</em></li>
+  
+</ul>
+
+
+</div>
+
+
+      
+<div class="sidebar-node">
+  <h3>Advertisements</h3>
+<script type="text/javascript"><!--
+google_ad_client = "pub-7843396314403828";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text";
+google_ad_channel = "";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+
+</div>
+
+
+  
+
+
+            
+
+            <a href="http://www.typosphere.org/" class="powered"><img alt="Powered" src="/images/powered.gif?1153753467" /></a>
+            </div>
+
+            <br clear="all" />
+      </div>
+      <div id="footer">
+        <ul>
+          <li><a href="http://validator.w3.org/check?uri=referer">Valid XHTML 1.0</a></li>
+          <li><a href="http://jigsaw.w3.org/css-validator/validator?uri=http://blog.moertel.com/">Valid CSS</a></li>
+        </ul>
+        <p>&#169; 2003&#8211;10 Thomas G. Moertel.  All rights reserved worldwide.<br/>
+        Unless otherwise specified, my source code on this site is licensed under the <a href="http://www.gnu.org/licenses/gpl.txt">GNU GPL</a>.</p>
+      </div>
+  </div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-604725-1");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+
+</body>
+</html>
+

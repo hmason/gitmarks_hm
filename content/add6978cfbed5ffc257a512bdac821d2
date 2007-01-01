@@ -1,0 +1,2192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>How to turn your blog in to an OpenID</title>
+<link rel="alternate" type="application/atom+xml" title="Atom" href="http://feeds.simonwillison.net/swn-everything">
+<link rel="stylesheet" type="text/css" href="/static/css/all.css?r291">
+<script type="text/javascript" src="/static/js/all.js?r291"></script>
+
+
+<link rev="canonical" href="http://swtiny.eu/EYu">
+
+</head>
+<body class="smallhead">
+
+<p class="smallhead-toolbar">
+    <a id="atomfeedlink" href="http://feeds.simonwillison.net/swn-everything" title="My Atom feed"><img class="feedicon" src="/static/css/img/feed-icon-14x14.png" width="14" height="14" alt="Feed"></a>
+    
+    <a href="/openid/" class="signin">Sign in with <img src="/static/css/img/openid-14x14.png" alt="OpenID" width="14" height="14"> OpenID</a>
+    
+</p>
+
+
+
+<div id="smallhead">
+  <h1><a href="/">Simon Willison’s Weblog</a></h1>
+</div><!-- #smallhead -->
+
+<div id="wrapper">
+<div id="primary">
+
+<div class="entry entryPage">
+
+
+<h2>How to turn your blog in to an OpenID</h2>
+<p>Wouldn’t it be great if you could use the same account to log in to multiple sites and applications, without having to trust them all with your password? Wouldn’t it be even better if you could do this without having to hand ownership of your online identity over to some monolithic third party? (I’m looking at you, <del>.NET Passport</del> <del>Microsoft Passport</del> <a href="http://en.wikipedia.org/wiki/Windows_Live_ID">Windows Live ID</a>.)</p>
+
+<p>The good news is, you can! <a href="http://openid.net/">OpenID</a> is a decentralised authentication system invented by LiveJournal but now being developed as an open standard under the <a href="http://incubator.apache.org/projects/heraldry.html" title="The Heraldry Project">careful mentorship</a> of the Apache Software Foundation. Anyone can create an OpenID, and the number of sites which let you log in with one is growing by the day.</p>
+
+<p>An OpenID is simply a URL. My OpenID is <a href="http://simonwillison.net/">simonwillison.net</a>, the address of my weblog. I can use it to sign in to any site that supports OpenID, and because I’m the only person with control over my weblog’s homepage I’m the only person who can use that identity.</p>
+
+<p>If you want your own OpenID (and you should), here’s how to get one.</p>
+
+<h4>1. Sign up with an OpenID provider</h4>
+
+<p>OpenID is decentralised, which means that anyone can set themselves up as an OpenID provider. You can run your own server if you want to (<a href="http://siege.org/projects/phpMyID/">phpMyID</a> is one way of doing that) but there are a number of free services that will host an ID for you. Those include:</p>
+
+<ol>
+  <li><a href="http://www.livejournal.com/">LiveJournal</a>. They invented it, and if you have a LiveJournal account you already have an OpenID—it’s the URL of your journal. I’m <samp>swillison.livejournal.com</samp>.</li>
+  <li><a href="http://www.vox.com/">Vox</a>—Six Apart’s sexy new social network thang. I’m <samp>simon.vox.com</samp>.</li>
+  <li><a href="https://pip.verisignlabs.com/">VeriSign Labs</a>, who have done some excellent work around OpenID and run a provider as part of their Personal Identity Provider service. I’m <samp>swillison.pip.verisignlabs.com</samp>.</li>
+  <li><a href="http://www.myopenid.com/">MyOpenID</a>, run by JanRain, authors of the most widely used OpenID libraries. I’m <samp>swillison.myopenid.com</samp>.</li>
+</ol>
+
+<p>If you already have an account with Vox or LiveJournal you can skip straight to step 2. If not, pick the provider that you trust the most and create an account there. This isn’t a permanent decision: you can move provider at any time without losing your account, provided you follow step 2.</p>
+
+<h4>2. Point your own site at your new OpenID</h4>
+
+<p>Here comes the magic. Having picked your provider and created an OpenID there, edit the HTML of your weblog’s homepage (or indeed whichever URL you want to use as your personal OpenID) and add the following to the document <code>&lt;head&gt;</code>:</p>
+
+<pre>&lt;link rel="openid.server"
+  href="http://www.livejournal.com/openid/server.bml"&gt;
+&lt;link rel="openid.delegate"
+  href="http://swillison.livejournal.com/"&gt;
+</pre>
+
+<p>Replace the openid.delegate href with the OpenID at your provider, and the openid.server href with that provider’s OpenID server. You can find the server by viewing source on your OpenID page there, or by using this table:</p>
+
+<table>
+ <tr>
+  <th>OpenID Provider</th><th>Server URL</th>
+ </tr>
+ <tr>
+  <td>LiveJournal</td>
+  <td>http://www.livejournal.com/openid/server.bml</td>
+ </tr>
+ <tr>
+  <td>Vox</td>
+  <td>http://www.vox.com/services/openid/server</td>
+ </tr>
+ <tr>
+  <td>VeriSign</td>
+  <td>https://pip.verisignlabs.com/server</td>
+ </tr>
+ <tr>
+  <td>MyOpenID</td>
+  <td>http://www.myopenid.com/server</td>
+ </tr>
+</table>
+
+<p>This delegation mechanism is key to OpenID’s status as a truly decentralised authentication system. If you decide you no longer trust your identity provider you can switch to another one by just editing a couple of lines of HTML—your OpenID will stay the same.</p>
+
+<h4>3. Log in to something!</h4>
+
+<p>Now that you have an OpenID, you can use it to log in to all sorts of sites. Find their OpenID login form and enter your new OpenID—that’s the URL of your weblog. You will be redirected to a page on your identity provider which will either ask you to log in or ask you to authorize the site to use your identity. Click “Yes” and you’ll be sent back to the original site and magically logged in—no password required.</p>
+
+<p>I’ve been collecting a list of sites that allow you to log in using OpenID under the <a href="http://del.icio.us/tag/openidconsumer">openidconsumer tag</a>; sites you may have heard of include <a href="http://ma.gnolia.com/signin">Ma.gnolia</a>, <a href="http://beta.zooomr.com/login">Zooomr</a> and <a href="http://wikitravel.org/en/Special:OpenIDLogin">Wikitravel</a>.</p>
+
+<h4>OpenID on simonwillison.net</h4>
+
+<p>This whole entry is a round-about way of announcing the addition of OpenID support to my weblog engine. You can sign in <a href="http://simonwillison.net/openid/">here</a>; once signed in you’ll be able to leave comments with a pretty OpenID logo (proving that they came from you) and track recent comments that you’ve posted on the <a href="http://simonwillison.net/comments/yours/">Your Comments</a> page. I’m working on adding other functionality for logged-in users such as the ability to edit your own comments or for trusted users to flag comment spam.</p>
+
+<p>This kind of light-weight account mechanism is one of the things that makes OpenID so interesting. I doubt I could convince anyone to create a new account just to access a few features on my weblog, but if they already have an OpenID the overhead of logging in is small enough that I’m hopeful at least a few people will give it a go.</p>
+
+<p>As always, report any bugs in the comments.</p>
+
+<p><strong>Update:</strong> I’ve created a screencast showing <a href="http://simonwillison.net/2006/openid-screencast/">how to use OpenID</a>.</p>
+
+<div class="entryFooter">Posted <a href="/2006/Dec/19/">19th December 2006</a> at 11:37 am</div>
+
+
+</div>
+
+</div> <!-- #primary -->
+
+<div id="secondary">
+
+<div class="metabox">
+<p>This is <strong>How to turn your blog in to an OpenID</strong> by Simon Willison, posted on <a href="/2006/Dec/19/">19th December 2006</a>.</p>
+
+<p>Tagged <a href="/tags/livejournal/" rel="tag">livejournal</a>, <a href="/tags/myopenid/" rel="tag">myopenid</a>, <a href="/tags/openid/" rel="tag">openid</a>, <a href="/tags/verisign/" rel="tag">verisign</a>, <a href="/tags/vox/" rel="tag">vox</a>, <a href="/tags/weblog/" rel="tag">weblog</a></p>
+
+<p><script src="http://embed.technorati.com/linkcount" type="text/javascript"></script>
+<a href="http://technorati.com/search/http://simonwillison.net/2006/Dec/19/openid/" rel="linkcount">View blog reactions</a></p>
+
+<p><strong>Next:</strong> <a href="/2006/Dec/20/json/">Why JSON isn&#39;t just for JavaScript</a></p>
+
+
+<p><strong>Previous:</strong> <a href="/2006/Dec/15/upgrade/">Finally powered by Django</a></p>
+
+
+
+
+
+
+
+<div id="sidead">
+
+
+<script type="text/javascript"><!--
+google_ad_client = "pub-2620176238477590";
+google_ad_width = 250;
+google_ad_height = 250;
+google_ad_format = "250x250_as";
+google_ad_type = "text";
+google_ad_channel = "";
+google_color_border = "733a96";
+google_color_bg = "FFFFFF";
+google_color_link = "0000FF";
+google_color_text = "000000";
+google_color_url = "008000";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+</div>
+
+
+
+</div>
+
+</div> <!-- #secondary -->
+</div> <!-- #wrapper -->
+
+
+<h2 class="band">142 comments</h2>
+
+<div id="comment-wrapper">
+
+<div id="comments">
+
+
+
+
+
+<ol>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34833">
+        
+    <p>There's masses of potential with OpenID, and I think once people get their heads around the process flow we'll start to see implementations grow in number.</p>
+
+<p>Getting user acceptance is another hurdle - but hopefully not an insurmountable one.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://drewmclellan.myopenid.com/" rel="nofollow">Drew McLellan</a></strong>
+       - 19th December 2006 12:15 - <a href="/2006/Dec/19/openid/#c34833" title="Permalink for comment 1">#</a></p>
+    </div></li>
+  
+    <li
+    class="simon"
+    
+    ><div class="comment" id="c34834">
+        
+    <p>The biggest hurdle appears to be explaining what it is and how it works - just putting this blog entry together took quite a bit of head scratching, and I'm still not sure I got the right angle on it.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://simonwillison.net/" rel="nofollow">Simon Willison</a></strong>
+       - 19th December 2006 12:22 - <a href="/2006/Dec/19/openid/#c34834" title="Permalink for comment 2">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34836">
+        
+    <p>This is pretty cool. Although I must admit to not fully understanding it :) If I don't *get it*, I'd be concerned that most of the people I know won't.</p>
+
+<p>Getting the big boys to provide it is important - I'm thinking MySpace, Facebook, YouTube - these have some of the biggest communities outside of the IM networks (what happened with Yahoo! opening up potentially one of the largest user bases online?)</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://swannieuk.livejournal.com/" rel="nofollow">Mark S</a></strong>
+       - 19th December 2006 12:27 - <a href="/2006/Dec/19/openid/#c34836" title="Permalink for comment 3">#</a></p>
+    </div></li>
+  
+    <li
+    class="simon"
+    
+    ><div class="comment" id="c34837">
+        
+    Yahoo! launched <a href="http://developer.yahoo.com/auth/">BBAuth</a> a while back, which is similar to OpenID in that it lets Yahoo! users sign in to your application - the difference is that the only information it gives you is a userhash (unlike OpenID which at least gives you a URL) and it's centralised around Yahoo!'s authentication servers.
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://simonwillison.net/" rel="nofollow">Simon Willison</a></strong>
+       - 19th December 2006 12:32 - <a href="/2006/Dec/19/openid/#c34837" title="Permalink for comment 4">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34838">
+        
+    <p>I've been meaning to look into Open ID for a while but never quite got around to it.  Thanks for this quick intro...can we have a equally quick intro to how to implement it in applications?</p>
+
+<p>I'm lazy, sorry, but it would be good to know as you've obviously already done the legwork.</p>
+
+<p>Great post though, cheers!</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://www.danwebb.net/" rel="nofollow">Dan Webb</a></strong>
+       - 19th December 2006 12:41 - <a href="/2006/Dec/19/openid/#c34838" title="Permalink for comment 5">#</a></p>
+    </div></li>
+  
+    <li
+    class="simon"
+    
+    ><div class="comment" id="c34839">
+        
+    <p>Dan: I'll try to post something about that in a day or two.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://simonwillison.net/" rel="nofollow">Simon Willison</a></strong>
+       - 19th December 2006 12:43 - <a href="/2006/Dec/19/openid/#c34839" title="Permalink for comment 6">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34840">
+        
+    <p>Good short introduction to the matter. I agree it is a great mechanism to stop you from having to remember hundreds of logins.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://wait-till-i.com/" rel="nofollow">Chris Heilmann</a></strong>
+       - 19th December 2006 12:53 - <a href="/2006/Dec/19/openid/#c34840" title="Permalink for comment 7">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34841">
+        
+    <p>It's not a smooth and quick process to set up an account, and most people don't have sites (I'm guessing), but I like the concept.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://www.ilovejackdaniels.com/" rel="nofollow">Dave Child</a></strong>
+       - 19th December 2006 13:12 - <a href="/2006/Dec/19/openid/#c34841" title="Permalink for comment 8">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34842">
+        
+    <p>Great blog post! I've set up an OpenID with <a href="http://myopenid.com" rel="nofollow">myopenid.com</a> (tried Vox first but couldn't get it to work with Zoomr login). I had seen OpenID discussed before, on Slashdot, but it wasn't explained very well and I dismissed it after a short look. But as it's free and open, there's no excuse not to give it a try.</p>
+
+<p>I really like that you can use your website to delegate to your actual server, giving you a easy URL to remember. I can see OpenID being a good idea for businesses, perhaps running an OpenID server for their employees.</p>
+
+<p>Now all I need are some websites I actually use to support it.. :P</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://id.bruceboughton.me.uk/" rel="nofollow">Bruce Boughton</a></strong>
+       - 19th December 2006 13:53 - <a href="/2006/Dec/19/openid/#c34842" title="Permalink for comment 9">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34843">
+        
+    <p>Logging in using my blog (<a href="http://groovymother.com/" rel="nofollow">http://groovymother.com/</a>) which delegates to a self-hosted phpMyID didn't work.  Not clear which end failed.</p>
+
+<p>However, logging in with my iName worked a treat.  Hurrah!</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://xri.net/=rod.begbie" rel="nofollow">Rod Begbie</a></strong>
+       - 19th December 2006 13:58 - <a href="/2006/Dec/19/openid/#c34843" title="Permalink for comment 10">#</a></p>
+    </div></li>
+  
+    <li
+    class="simon"
+    
+    ><div class="comment" id="c34844">
+        
+    <p>Oops, I didn't take iNames in to account - will have to fix the template not to render them as links.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://simonwillison.net/" rel="nofollow">Simon Willison</a></strong>
+       - 19th December 2006 14:08 - <a href="/2006/Dec/19/openid/#c34844" title="Permalink for comment 11">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34845">
+        
+    <p>My self-hosted OpenID allegedly gives out my nickname and my full name, but your comment form still asks for my name anyway.  Bug on my side or yours?</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://diveintomark.org/id/" rel="nofollow">Mark</a></strong>
+       - 19th December 2006 14:30 - <a href="/2006/Dec/19/openid/#c34845" title="Permalink for comment 12">#</a></p>
+    </div></li>
+  
+    <li
+    class="simon"
+    
+    ><div class="comment" id="c34848">
+        
+    <p>That's my bug: I haven't integrated any of the identity discovery stuff yet - just basic authentication. I've set it up so that if you've commented before it will pre-populate with the name that you used in your last comment though.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://simonwillison.net/" rel="nofollow">Simon Willison</a></strong>
+       - 19th December 2006 14:54 - <a href="/2006/Dec/19/openid/#c34848" title="Permalink for comment 13">#</a></p>
+    </div></li>
+  
+    <li
+    class="simon"
+    
+    ><div class="comment" id="c34849">
+        
+    <p>(Aside: having load issues at the moment so I've turned on full page caching - this means comments may take up to two minutes to show up.)</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://simonwillison.net/" rel="nofollow">Simon Willison</a></strong>
+       - 19th December 2006 14:58 - <a href="/2006/Dec/19/openid/#c34849" title="Permalink for comment 14">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34850">
+        
+    <p>Wow, Simon -- this is fan-freeking-tastic.</p>
+
+<p>I especially like the "signed in as" with the OpenID logo at the top; it's a neat reminder.</p>
+
+<p>I'm assuming you did this as a custom Django auth backend -- any chance you want to share the code?</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://jacobian.pip.verisignlabs.com/" rel="nofollow">Jacob Kaplan-Moss</a></strong>
+       - 19th December 2006 14:59 - <a href="/2006/Dec/19/openid/#c34850" title="Permalink for comment 15">#</a></p>
+    </div></li>
+  
+    <li
+    class="simon"
+    
+    ><div class="comment" id="c34851">
+        
+    <p>I'll definitely share the code - it's actually decoupled entirely from the auth stuff at the moment (I don't even use sessions; I'm using a signed cookie instead) but I'm going to add a way of hooking an OpenID up to a proper site account at some point.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://simonwillison.net/" rel="nofollow">Simon Willison</a></strong>
+       - 19th December 2006 15:02 - <a href="/2006/Dec/19/openid/#c34851" title="Permalink for comment 16">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34852">
+        
+    <p>Sweet!</p>
+
+<p>Hurrah for the network effect - the more blogs supporting OpenID the better :)</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://www.jasondavies.com/" rel="nofollow">Jason Davies</a></strong>
+       - 19th December 2006 16:00 - <a href="/2006/Dec/19/openid/#c34852" title="Permalink for comment 17">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34853">
+        
+    <p>So, as a non-openid user, it's about 5 steps too many to create an account.</p>
+
+<p>What is the one easy way to tell my user (Johnny NoWebsite) to get an account?</p>
+    <p class="commentFooter">
+      
+        <a href="http://billmill.org" rel="nofollow">Bill Mill</a>
+       - 19th December 2006 16:17 - <a href="/2006/Dec/19/openid/#c34853" title="Permalink for comment 18">#</a></p>
+    </div></li>
+  
+    <li
+    class="simon"
+    
+    ><div class="comment" id="c34854">
+        
+    <p>Bill: OpenID isn't a replacement for your own account system. If it's too complex for your users, just give them a regular sign-up process and have them create accounts with usernames and passwords on your site. Then have an option for users who understand OpenID to associate their OpenID with their account and log in with their OpenID instead of having to remember their password.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://simonwillison.net/" rel="nofollow">Simon Willison</a></strong>
+       - 19th December 2006 16:27 - <a href="/2006/Dec/19/openid/#c34854" title="Permalink for comment 19">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34855">
+        
+    <p>I think it would be worth it to me if I could delegate all of my auth responsibilities to OpenID, but that it's too small of a benefit for me to implement just so that a few of my users don't need to remember a new password for my site.</p>
+
+<p>It should be easy as pie for a user to get an OpenID and then be able to sign in on any OpenID-enabled site. (Like a distributed typekey (<a href="http://typekey.com" rel="nofollow">http://typekey.com</a>))</p>
+
+<p>I'll enable comments on my site again once something like this is easy to use.</p>
+    <p class="commentFooter">
+      
+        <a href="http://billmill.org" rel="nofollow">Bill Mill</a>
+       - 19th December 2006 16:39 - <a href="/2006/Dec/19/openid/#c34855" title="Permalink for comment 20">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34856">
+        
+    <p>It's pretty easy to sign up for an OpenID with somewhere like <a href="http://www.myopenid.com" rel="nofollow">www.myopenid.com</a>.  Surely just as easy as signing up for a typekey...</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://www.jasondavies.com/" rel="nofollow">Jason Davies</a></strong>
+       - 19th December 2006 16:45 - <a href="/2006/Dec/19/openid/#c34856" title="Permalink for comment 21">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34858">
+        
+    <p>Jason: That's exactly what I was looking for, and it worked like a charm. Sweet! (gets to hacking...)</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://llimllib.myopenid.com/" rel="nofollow">Bill Mill</a></strong>
+       - 19th December 2006 17:12 - <a href="/2006/Dec/19/openid/#c34858" title="Permalink for comment 22">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34859">
+        
+    <p>Good stuff.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://nacs.livejournal.com/" rel="nofollow">JonD</a></strong>
+       - 19th December 2006 17:18 - <a href="/2006/Dec/19/openid/#c34859" title="Permalink for comment 23">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34860">
+        
+    <strong>Dave Child</strong>: You don't need to own a site or a domain. Just use the URL the IdP provides (someone.provider.net).
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://karel.istream.hu/" rel="nofollow">sessy</a></strong>
+       - 19th December 2006 17:29 - <a href="/2006/Dec/19/openid/#c34860" title="Permalink for comment 24">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34861">
+        
+    <p>Works like a charm. I'm a big fan of OpenID: Thanks for supporting it.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://reginald.braythwayt.com/" rel="nofollow">Reginald Braithwaite</a></strong>
+       - 19th December 2006 17:43 - <a href="/2006/Dec/19/openid/#c34861" title="Permalink for comment 25">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34862">
+        
+    <p>Nice info - thanks Simon. I like the idea of using OpenID to validate user comments.</p>
+
+<p>It seems to me that we blindly trust that people posting comments are who they say they are - much potential for damaging someone's reputation. OpenID seems like a good solution.</p>
+    <p class="commentFooter">
+      
+        <a href="http://www.ejeliot.com/" rel="nofollow">Ed Eliot</a>
+       - 19th December 2006 18:15 - <a href="/2006/Dec/19/openid/#c34862" title="Permalink for comment 26">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34863">
+        
+    <p>Very cool. Thanks for the post!</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://brianellin.com/" rel="nofollow">Brian Ellin</a></strong>
+       - 19th December 2006 18:15 - <a href="/2006/Dec/19/openid/#c34863" title="Permalink for comment 27">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34864">
+        
+    <p>Good Job!!!</p>
+    <p class="commentFooter">
+      
+        <a href="http://neojjang.myopenid.com" rel="nofollow">Chang</a>
+       - 20th December 2006 00:15 - <a href="/2006/Dec/19/openid/#c34864" title="Permalink for comment 28">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34867">
+        
+    <p>This is awesome!  Thanks for posting this.  I've been trying to wrap my brain around for a while, and I think I'm finally starting to understand it.</p>
+
+<p>You've just convinced me to implement OpenID in my next Django project. :)</p>
+    <p class="commentFooter">
+      
+        <a href="http://blog.andrlik.org" rel="nofollow">Daniel</a>
+       - 20th December 2006 00:31 - <a href="/2006/Dec/19/openid/#c34867" title="Permalink for comment 29">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34869">
+        
+    <a href="http://autkit.org">AuthKit</a> now has full OpenID support too so anyone who wants to use Python to add OpenID to their blog too can use AuthKit to do just that!
+    <p class="commentFooter">
+      
+        <a href="http://3aims.com" rel="nofollow">James Gardner</a>
+       - 20th December 2006 02:54 - <a href="/2006/Dec/19/openid/#c34869" title="Permalink for comment 30">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34870">
+        
+    <p>Regarding iNames, you can still render them as links. Just use the XRI resolution format: <a href="http://xri.net/=whatever" rel="nofollow">http://xri.net/=whatever</a>. I logged in w/ my OpenID, but my iName is =trei and so the url is <a href="http://xri.net/=trei" rel="nofollow">http://xri.net/=trei</a>. More info about all that at <a href="http://xri.net" rel="nofollow">http://xri.net</a>.</p>
+    <p class="commentFooter">
+      
+        <a href="http://trei.myopenid.com" rel="nofollow">Trei Brundrett</a>
+       - 20th December 2006 03:24 - <a href="/2006/Dec/19/openid/#c34870" title="Permalink for comment 31">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34871">
+        
+    <p>For big dummies like me, you might want to specify in Step #2 that the code goes in the header of your Web page.</p>
+
+<p>Thanks for the writeup, though, very straightforward. -- Joe</p>
+    <p class="commentFooter">
+      
+        <a href="http://www.joelogon.com/blog" rel="nofollow">joelogon</a>
+       - 20th December 2006 04:00 - <a href="/2006/Dec/19/openid/#c34871" title="Permalink for comment 32">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34872">
+        
+    <p>This is great! I just created an open id account and signed into your website ... I think it worked, but it's hard to tell b/c I still see the 'Sign in with OpenID' link above the comments section.  Either way, I'll be looking into this more and trying to promote it - it's a great idea.  Thanks for the post!</p>
+    <p class="commentFooter">
+      
+        Kevin
+       - 20th December 2006 05:44 - <a href="/2006/Dec/19/openid/#c34872" title="Permalink for comment 33">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34873">
+        
+    <p>Simon,<br />This is waaay cool. I was looking at this only the other day for my own django site ;)</p>
+
+<p>I used my verisign pip to login (their log says it authorised) but I still see the 'Sign in with OpenID' link. Buglet?</p>
+    <p class="commentFooter">
+      
+        Tony
+       - 20th December 2006 07:24 - <a href="/2006/Dec/19/openid/#c34873" title="Permalink for comment 34">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34874">
+        
+    <p>Technorati supports OpenID too, both as a way to sign in, and using the Technorati profile URL as an ID source</p>
+    <p class="commentFooter">
+      
+        <a href="http://technorati.com/profile/kevinmarks" rel="nofollow">Kevin Marks</a>
+       - 20th December 2006 07:40 - <a href="/2006/Dec/19/openid/#c34874" title="Permalink for comment 35">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34875">
+        
+    <p>Much like Tony, I'm seeing the "Sign in with OpenID" after attempting to sign on through various OpenID endpoints.</p>
+    <p class="commentFooter">
+      
+        <a href="http://full-speed.org/" rel="nofollow">Scott Johnson</a>
+       - 20th December 2006 07:53 - <a href="/2006/Dec/19/openid/#c34875" title="Permalink for comment 36">#</a></p>
+    </div></li>
+  
+    <li
+    class="simon"
+    
+    ><div class="comment" id="c34876">
+        
+    <p>I think I broke OpenID sign-ins here when I was switching web servers. I'll get it up and running again today.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://simonwillison.net/" rel="nofollow">Simon Willison</a></strong>
+       - 20th December 2006 08:21 - <a href="/2006/Dec/19/openid/#c34876" title="Permalink for comment 37">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34877">
+        
+    <p>don't forget about <a href="http://getopenid.com" rel="nofollow">http://getopenid.com</a></p>
+
+<p>it's a registrar that's SSL-enabled for extra security</p>
+    <p class="commentFooter">
+      
+        <a href="http://fourkitchens.com" rel="nofollow">Aaron</a>
+       - 20th December 2006 08:24 - <a href="/2006/Dec/19/openid/#c34877" title="Permalink for comment 38">#</a></p>
+    </div></li>
+  
+    <li
+    class="simon"
+    
+    ><div class="comment" id="c34878">
+        
+    <p>OpenID sign-in should be working again. I'm hopefully a lot more resilient to traffic now as well.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://simonwillison.net/" rel="nofollow">Simon Willison</a></strong>
+       - 20th December 2006 10:59 - <a href="/2006/Dec/19/openid/#c34878" title="Permalink for comment 39">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34879">
+        
+    <p>Actually more information could be obtained @</p>
+
+<p><a href="http://en.wikipedia.org/wiki/OpenID" rel="nofollow">http://en.wikipedia.org/wiki/OpenID</a><br /><a href="http://openid.net/" rel="nofollow">http://openid.net/</a></p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://dreamiurg.livejournal.com/" rel="nofollow">Demiurg</a></strong>
+       - 20th December 2006 11:00 - <a href="/2006/Dec/19/openid/#c34879" title="Permalink for comment 40">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34883">
+        
+    <p>Now it works perfectly :) Yesterday I couldn't logging into your blog using my OpenID :(. Great job Simon</p>
+
+<p>Regards from Spain!</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://www.alfonsojimenez.com/" rel="nofollow">Alfonso Jiménez</a></strong>
+       - 20th December 2006 11:53 - <a href="/2006/Dec/19/openid/#c34883" title="Permalink for comment 41">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34887">
+        
+    Oh, hell there.  Nice to see more OpenID adoption.  Please keep up with your "evangelism" work.
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="https://getopenid.com/saoshyant" rel="nofollow">Ivo Emanuel Gonçalves</a></strong>
+       - 20th December 2006 13:50 - <a href="/2006/Dec/19/openid/#c34887" title="Permalink for comment 42">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34889">
+        
+    <p>Hmmm... I was trying to get phpMyId working, but it didn't work for me (yes, I did hash the password as the instructions said to). I'm currently trying out MyOpenID, and it seems to be quite nice. Thanks for the excellent article! :)</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://www.daniel15.com/" rel="nofollow">Daniel15</a></strong>
+       - 20th December 2006 14:49 - <a href="/2006/Dec/19/openid/#c34889" title="Permalink for comment 43">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34890">
+        
+    <p>Thanks Simon! This is a well written HOWTO. I have to admit, I didn't totally understand OpenID until implementing it after reading your post. I did make one minor change though. Adding a slash to the links (&lt;link rel ... /&gt;) makes them XHTML compliant. Thanks also for the link to phpMyID, it is easy to set up and seems to be working well.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://jpreardon.com/" rel="nofollow">jpreardon</a></strong>
+       - 20th December 2006 14:58 - <a href="/2006/Dec/19/openid/#c34890" title="Permalink for comment 44">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34894">
+        
+    <p>Great, but I believe that email providers plus google-microsoft-and-so must take part in this OpenID, or it is going to be vaporware.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://www.brindys.com/manuelgonzalez/" rel="nofollow">Manuel Gonzalez</a></strong>
+       - 20th December 2006 17:08 - <a href="/2006/Dec/19/openid/#c34894" title="Permalink for comment 45">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34895">
+        
+    <p>Thank you for taking the time to write an intro that a slightly-less-techie person can understand.</p>
+
+<p>Your next task: So, in 10 words or less, what IS Web 2.0?</p>
+
+<p>(runs away)</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://hus.myopenid.com/" rel="nofollow">Husey</a></strong>
+       - 20th December 2006 18:00 - <a href="/2006/Dec/19/openid/#c34895" title="Permalink for comment 46">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34896">
+        
+    <p>Thanks for the clear instructions.  This is my first login with my new OpenID.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://jclark.org/weblog/" rel="nofollow">Jason Clark</a></strong>
+       - 20th December 2006 18:42 - <a href="/2006/Dec/19/openid/#c34896" title="Permalink for comment 47">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34897">
+        
+    <p>Ah, excellent, Simon.</p>
+
+<p>A great post and lots of new adopters it seems found you as well.</p>
+
+<p>Thanks, and congrats,</p>
+
+<p>Terrell<br /><a href="http://claimID.com" rel="nofollow">http://claimID.com</a></p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://terrellrussell.com/" rel="nofollow">Terrell Russell</a></strong>
+       - 20th December 2006 19:02 - <a href="/2006/Dec/19/openid/#c34897" title="Permalink for comment 48">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34910">
+        
+    <p>^^</p>
+    <p class="commentFooter">
+      
+        <a href="http://www.myopenid.com/server" rel="nofollow">nhan</a>
+       - 21st December 2006 03:07 - <a href="/2006/Dec/19/openid/#c34910" title="Permalink for comment 49">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34919">
+        
+    Very very cool simon. I just translated your post on my <a href="http://xtof.livejournal.com/3305.html?mode=reply">journal</a>. Think it will help french users and I hope you don't mind. If so just drop me a mail or a comment. Thanks.
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://xtof.livejournal.com/" rel="nofollow">Christophe Ducamp</a></strong>
+       - 21st December 2006 11:05 - <a href="/2006/Dec/19/openid/#c34919" title="Permalink for comment 50">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34922">
+        
+    <p>Thanks for pushing me over the edge.  I <em>had</em> OpenID (client and server) running on my Wordpress blog but then changed themes and it went kaflooie.  So I've bitten the bullet and gotten an account on JanRain's myopenid and now I'm delegatin'.  That solves the server part but I'm back to square one on the client...</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://memerocket.com/" rel="nofollow">Bill</a></strong>
+       - 21st December 2006 14:40 - <a href="/2006/Dec/19/openid/#c34922" title="Permalink for comment 51">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34923">
+        
+    <p>Nice explanation.  As others have said, what we need now are some of the big beasts in the tech jungle to take it up.  Of course, my blog isn't enabled yet...</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://chrs.me.uk/" rel="nofollow">Chris Rimmer</a></strong>
+       - 21st December 2006 16:40 - <a href="/2006/Dec/19/openid/#c34923" title="Permalink for comment 52">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34924">
+        
+    <p>This is pretty interesting.  I was able to sign in to post a comment using my Vox OpenID!  Technology gets cooler and cooler every day.</p>
+
+<p>As far as I can tell, LiveJournal allows comments using OpenID, but you can't yet add comments to Vox posts using an OpenID.  Am I missing something?</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://infusion.vox.com/" rel="nofollow">Ben Gertzfield</a></strong>
+       - 21st December 2006 17:21 - <a href="/2006/Dec/19/openid/#c34924" title="Permalink for comment 53">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34926">
+        
+    <p>yay for OpenID! :)</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://www.methylblue.com/" rel="nofollow">Max Howell</a></strong>
+       - 21st December 2006 18:46 - <a href="/2006/Dec/19/openid/#c34926" title="Permalink for comment 54">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34928">
+        
+    <p>i-name support works as well with an edited SEP file on 2idi...</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://xri.net/=glasser" rel="nofollow">Avery Glasser</a></strong>
+       - 21st December 2006 19:23 - <a href="/2006/Dec/19/openid/#c34928" title="Permalink for comment 55">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34930">
+        
+    <p>Good post, very interesting.<br />Let's hope more and more platforms start embracing OpenID soon: right now it is quite hard to find a website to test you brand new id :P</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://simbul.bzaar.net/" rel="nofollow">Simbul</a></strong>
+       - 21st December 2006 20:37 - <a href="/2006/Dec/19/openid/#c34930" title="Permalink for comment 56">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34937">
+        
+    <p>Thanks for this extremely helpful post. Now I understand how to use OpenID.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://neville.pip.verisignlabs.com/" rel="nofollow">Neville</a></strong>
+       - 21st December 2006 23:06 - <a href="/2006/Dec/19/openid/#c34937" title="Permalink for comment 57">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34939">
+        
+    <p>Thanks for getting the i-names stuff to work. I am super jazzed OpenID is happening...I can't wait for more blogs to have it. I will finally be willing to comment on peoples blogs.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://xri.net/=Kaliya" rel="nofollow">Kaliya</a></strong>
+       - 22nd December 2006 02:17 - <a href="/2006/Dec/19/openid/#c34939" title="Permalink for comment 58">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34940">
+        
+    <p>You realize the link doesn't resolve? All you have to do is put <a href="http://xri.net/=kaliya" rel="nofollow">http://xri.net/=kaliya</a> for a link and it gets to my contact page.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://xri.net/=Kaliya" rel="nofollow">Kaliya</a></strong>
+       - 22nd December 2006 02:19 - <a href="/2006/Dec/19/openid/#c34940" title="Permalink for comment 59">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34941">
+        
+    <p>Nice. I would like to to translate this post into Chinese. Thanks.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://if20.net/" rel="nofollow">Feir</a></strong>
+       - 22nd December 2006 03:15 - <a href="/2006/Dec/19/openid/#c34941" title="Permalink for comment 60">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34942">
+        
+    You might want to note that &lt;link&gt;s must be placed in the &lt;head&gt; for OpenID servers to be able to find them. Currently you just say "edit the HTML".
+
+Working great here after that change though :)
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://sethkinast.com/" rel="nofollow">Seth Kinast</a></strong>
+       - 22nd December 2006 03:47 - <a href="/2006/Dec/19/openid/#c34942" title="Permalink for comment 61">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34944">
+        
+    <p>Bonjour Simon.</p>
+
+<p>How about adding claimid as a nice OpenID provider (server <a href="http://openid.claimid.com/server" rel="nofollow">http://openid.claimid.com/server</a>) ?<br />&lt;pre&gt;<br />&lt;link rel="openid.server" href="http://openid.claimid.com/server" /&gt;<br />    &lt;link rel="openid.delegate" href="http://openid.claimid.com/xtof" /&gt;<br />&lt;/pre&gt;</p>
+
+<p>Think I'll hack the french translation - if you don't mind ;) Happy Xmas</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://xtof.livejournal.com/" rel="nofollow">Christophe Ducamp</a></strong>
+       - 22nd December 2006 07:30 - <a href="/2006/Dec/19/openid/#c34944" title="Permalink for comment 62">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34945">
+        
+    <p>Bonjour Simon.</p>
+
+<p>How about adding claimid as a nice OpenID provider :</p>
+
+<p>openid.server  : <a href="http://openid.claimid.com/server" rel="nofollow">http://openid.claimid.com/server</a></p>
+
+<p>openid.delegate  : <a href="http://openid.claimid.com/xtof" rel="nofollow">http://openid.claimid.com/xtof</a></p>
+
+<p>Ready to add that to the french translation (<a href="http://xtof.livejournal.com/3305.html" rel="nofollow">http://xtof.livejournal.com/3305.html</a>) if you don't mind.</p>
+
+<p>Cheers &amp; Happy Xmas</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://xtof.livejournal.com/" rel="nofollow">Christophe Ducamp</a></strong>
+       - 22nd December 2006 07:36 - <a href="/2006/Dec/19/openid/#c34945" title="Permalink for comment 63">#</a></p>
+    </div></li>
+  
+    <li
+    class="simon"
+    
+    ><div class="comment" id="c34947">
+        
+    <p>Thanks Kaliya; I've fixed up i-names to provide a proper link. Othen than doing that I didn't have to do any extra work to support them - the JanRain Python OpenID library provides that for free.</p>
+
+<p>Seth: I've updated the entry to reflect that; thanks.</p>
+
+<p>Feir: Go ahead!</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://simonwillison.net/" rel="nofollow">Simon Willison</a></strong>
+       - 22nd December 2006 09:23 - <a href="/2006/Dec/19/openid/#c34947" title="Permalink for comment 64">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34949">
+        
+    <p>Thanks for the post, made me create an OpenID.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://www.sivas.com/aleene/blog/" rel="nofollow">Arnaud Leene</a></strong>
+       - 22nd December 2006 10:41 - <a href="/2006/Dec/19/openid/#c34949" title="Permalink for comment 65">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34950">
+        
+    <p>Despite me setting up an Open ID with <a href="http://claimid.com" rel="nofollow">claimid.com</a> account a good few months back, this is the first time, this is the first time I've actually used it.</p>
+
+<p>The usage seem pretty simple from a consumer end. Are there any idiot-simple, blogger style three step illustrations explaining how non tech savvy people would use it?</p>
+
+<p>Currently, finding out about, involves trawling through a fair amount of dense text, which is pretty off putting for casual users.</p>
+
+<p />
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://claimid.com/chrisadams" rel="nofollow">Chris Adams</a></strong>
+       - 22nd December 2006 13:44 - <a href="/2006/Dec/19/openid/#c34950" title="Permalink for comment 66">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34951">
+        
+    <p>Well this is the first time I've signed in with OpenID. Love it, can't wait until everything uses is, hurrah, no more passwords!!</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://invalidmemory.com/" rel="nofollow">Neil Edwards</a></strong>
+       - 22nd December 2006 13:47 - <a href="/2006/Dec/19/openid/#c34951" title="Permalink for comment 67">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34952">
+        
+    <p>Sort-of response (not by me):<br /><a href="http://adamcaudill.com/2006/12/21/openid-id-of-the-future/" rel="nofollow">http://adamcaudill.com/2006/12/21/openid-id-of-the -future/ </a><br />Related reddit thread:<br /><a href="http://programming.reddit.com/info/vpc5/comments" rel="nofollow">http://programming.reddit.com/info/vpc5/comments</a></p>
+    <p class="commentFooter">
+      
+        Jeremy Dunck
+       - 22nd December 2006 14:16 - <a href="/2006/Dec/19/openid/#c34952" title="Permalink for comment 68">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34959">
+        
+    Thanks for putting this together.  My main problem is that not enough sites use it.  Hopefully, your information will help break the chicken and the egg problem.  Cool that you put your screencast up on <a href="http://www.archive.org">the archive</a> as well.  Cheers!
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://paisleychick.livejournal.com/" rel="nofollow">BeatriceM</a></strong>
+       - 23rd December 2006 05:31 - <a href="/2006/Dec/19/openid/#c34959" title="Permalink for comment 69">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34960">
+        
+    <p>Thanks, Simon.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://profile.typekey.com/mariecarnes/" rel="nofollow">Marie</a></strong>
+       - 23rd December 2006 06:31 - <a href="/2006/Dec/19/openid/#c34960" title="Permalink for comment 70">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34962">
+        
+    <p>When I tried to use this, I signed up with Verisign, however when I try to use the delegate with my own OpenID, it redirects properly to Verisign, but then Verisign's site says:</p>
+
+<p>"You do not own <a href="http://myid.pip.verisignlabs.com" rel="nofollow">myid.pip.verisignlabs.com</a>. Please login with an account that owns this url."</p>
+
+<p>Even though at the top of the Verisign page it says logged in as me, and my identity URL is correct as <a href="http://myid.pip.verisignlabs.com" rel="nofollow">myid.pip.verisignlabs.com</a></p>
+
+<p>Maybe Verisign's the only provider that has this problem?</p>
+    <p class="commentFooter">
+      
+        Steve
+       - 23rd December 2006 13:48 - <a href="/2006/Dec/19/openid/#c34962" title="Permalink for comment 71">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34963">
+        
+    This is great except it also puts the onus of security on the OpenID holder. While it's very convenient to create your own OpenID by just adding two links on your HTML page, that also means now that page needs to be very secure. If someone can easily edit your HTML, they can simply redirect your login and you're screwed. Same goes for the OpenID providers, if any of them slacks on security, you have now broken your identity on multiple sites. Also, these providers (at least Verisign) shows you all past activity, so if someone can break into that provider, they can instantly see all the sites you are using with that OpenID, making exploitation even easier.
+
+I think this is a great concept, but I'm surprised he doesn't mention the security issues that this creates. It's one thing to worry about whether the provider goes out of business, but it's another to recognize how easy it is to exploit. That's a benefit of a strong master who has very tight security controls in place.
+    <p class="commentFooter">
+      
+        Steve
+       - 23rd December 2006 13:58 - <a href="/2006/Dec/19/openid/#c34963" title="Permalink for comment 72">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34964">
+        
+    VOX provider isn't working with the delegate trick either, what's going on?
+    <p class="commentFooter">
+      
+        Steve
+       - 23rd December 2006 14:07 - <a href="/2006/Dec/19/openid/#c34964" title="Permalink for comment 73">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34965">
+        
+    Ok, I think I figure out the issue. In the delegate, you must put the full http protocol around your delegate name. However, when you sign in with OpenID (at least on the sites I tried), you do not need to put the http around the delegate name.
+
+To be safe, you can just put http around everything, even when you sign in.
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://alchemista.dealraider.com/" rel="nofollow">Steve</a></strong>
+       - 23rd December 2006 14:28 - <a href="/2006/Dec/19/openid/#c34965" title="Permalink for comment 74">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34966">
+        
+    Ok, I think I figure out the issue. In the delegate, you must put the full http protocol around your delegate name. However, when you sign in with OpenID (at least on the sites I tried), you do not need to put the http around the delegate name.
+
+To be safe, you can just put http around everything, even when you sign in.
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://alchemista.dealraider.com/" rel="nofollow">Steve</a></strong>
+       - 23rd December 2006 14:28 - <a href="/2006/Dec/19/openid/#c34966" title="Permalink for comment 75">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34967">
+        
+    <p>Worked pretty well, thanks for the info!</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://doyouwanttodie.com/" rel="nofollow">The_Decryptor</a></strong>
+       - 23rd December 2006 14:31 - <a href="/2006/Dec/19/openid/#c34967" title="Permalink for comment 76">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34968">
+        
+    <p>just testing out something for The_Decryptor</p>
+    <p class="commentFooter">
+      
+        <a href="http://doyouwanttodie.com/" rel="nofollow">karl</a>
+       - 23rd December 2006 14:41 - <a href="/2006/Dec/19/openid/#c34968" title="Permalink for comment 77">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34969">
+        
+    <p>Neither zooomr [ <a href="http://beta.zooomr.com/login/" rel="nofollow">http://beta.zooomr.com/login/</a> ] nor <a href="http://simonwillison.net" rel="nofollow">simonwillison.net</a> like how <a href="http://cdn.cx/" rel="nofollow">http://cdn.cx/</a> presents itself - yes, I know there's nothing there. I didn't have &lt;head&gt; and &lt;/head&gt; until five minutes ago ...</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://cdn.myopenid.com/" rel="nofollow">Chris Neale</a></strong>
+       - 23rd December 2006 14:46 - <a href="/2006/Dec/19/openid/#c34969" title="Permalink for comment 78">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34970">
+        
+    <p>Hm, seems to work!</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://id.raven.ch/" rel="nofollow">Red</a></strong>
+       - 23rd December 2006 15:12 - <a href="/2006/Dec/19/openid/#c34970" title="Permalink for comment 79">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34975">
+        
+    <p>It would be great if Firefox had an OpenID login field. It would make the entire browsing experience seamless!</p>
+    <p class="commentFooter">
+      
+        Liono
+       - 23rd December 2006 19:07 - <a href="/2006/Dec/19/openid/#c34975" title="Permalink for comment 80">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34978">
+        
+    <p>Cool stuff Simon, I've had ClaimID a while but I'm up and running with OpenID too. I guess I'll need to hunt down a WordPress plugin now for my regular commenters.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://thatstandardsguy.pip.verisignlabs.com/" rel="nofollow">Karl</a></strong>
+       - 23rd December 2006 20:43 - <a href="/2006/Dec/19/openid/#c34978" title="Permalink for comment 81">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34980">
+        
+    <p>OpenID is a great idea but it needs some sort of megasite to support it before it will become very mainstream. I'm thinking digg, Joystiq/Engadget/that network, or some other site that has a mass following.</p>
+
+<p>Great screencast too, helped me see exactly how to do things.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://calhounweb.net/" rel="nofollow">Billy Presley</a></strong>
+       - 23rd December 2006 23:32 - <a href="/2006/Dec/19/openid/#c34980" title="Permalink for comment 82">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34981">
+        
+    <p>Thanks for the fantastic tutorial! I was wondering how to get this to work with my blog, didn't realise your own OpenID server wasn't needed. Nice one!</p>
+
+<p>Glad to see you doing more "this is what it is, this is how you use and this is why you care" posts again -- really your forte ;-)</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://blog.meriwilliams.com/" rel="nofollow">Meri</a></strong>
+       - 23rd December 2006 23:56 - <a href="/2006/Dec/19/openid/#c34981" title="Permalink for comment 83">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34987">
+        
+    May <a href="http://www.matsuya.co.uk">I</a> just point out that it may be slightly confusing for those who don't know much about OpenID that you have four OpenID identities, with all four providers, in your example above? For almost everyone, the main reason for using Open ID is to <em>reduce</em> the number of logins but they may misunderstand that you <em>need</em> lots of OpenIDs. Though you probably have more experience writing these things and so may know better!
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://matsuya.myopenid.com/" rel="nofollow">Lionel Matsuya</a></strong>
+       - 24th December 2006 10:55 - <a href="/2006/Dec/19/openid/#c34987" title="Permalink for comment 84">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34988">
+        
+    <p>I've been meaning to figure out OpenID for a while now.  Thanks to this howto I went ahead and created an account at <a href="http://myopenid.com" rel="nofollow">myopenid.com</a>.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://gedmin.as/" rel="nofollow">Marius Gedminas</a></strong>
+       - 24th December 2006 11:25 - <a href="/2006/Dec/19/openid/#c34988" title="Permalink for comment 85">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34989">
+        
+    <p>Hey,</p>
+
+<p>Thanks for the article, this is really cool :-) A suggestions though: When I sign in with OpenID, it would be nice if your login page redirected to the referring page (i.e. this page).</p>
+
+<p>I can see a few problems with OpenID, mainly for websites to transition from their built-in authentication to OpenID.</p>
+
+<p>Providing they allow some way of linking your OpenID to your profile (whatever this means in the context of the website), then this transition should be smooth.</p>
+
+<p>For example, I want to be able to use my OpenID login for {YouTube, Google Mail, LiveJournal} but obviously keep my current profile/email setup.</p>
+
+<p>Finally, I don't really think that most users will care about how it *works*, only how to *use* it. They should be aware of is that the login page should have the URL of &lt;their OpenID provider&gt; to prevent phishing, for example.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://moogman.myopenid.com/" rel="nofollow">Kris Marsh</a></strong>
+       - 24th December 2006 12:54 - <a href="/2006/Dec/19/openid/#c34989" title="Permalink for comment 86">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34991">
+        
+    <p>that's pretty cool.</p>
+
+<p>Could you please also write "how to make your django app using OpenID".</p>
+
+<p>That would be really really nice :)</p>
+    <p class="commentFooter">
+      
+        mike
+       - 24th December 2006 13:44 - <a href="/2006/Dec/19/openid/#c34991" title="Permalink for comment 87">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34992">
+        
+    <p>This kinda rocks :)</p>
+
+<p>Now it's time to create a MyID.py *g</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://gummibaerchen.org/" rel="nofollow">gummibaerchen</a></strong>
+       - 24th December 2006 14:08 - <a href="/2006/Dec/19/openid/#c34992" title="Permalink for comment 88">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34993">
+        
+    <p>Can I create a OpenID provider server that's ONLY for 3 websites that I own?</p>
+
+<p>Also, if people register to the provider for the first time, and I want them to enter extra attributes, for example their Waist size...</p>
+
+<p>Is OpenID directly able to handle these extra attributes or is it something I code myself?</p>
+    <p class="commentFooter">
+      
+        Ash\
+       - 24th December 2006 16:58 - <a href="/2006/Dec/19/openid/#c34993" title="Permalink for comment 89">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34996">
+        
+    <p>Seems that phpMyID 0.3 is not quite there yet.  Set it up on my site - no joy.  Sent logs to the author.  Hopefully we can work through whatever went wrong.</p>
+
+<p>I do prefer hosting my OpenID "identity" at my own domain (rather than through a third party).  So phpMyID is exactly the sort of minimal-dependency drop-in solution it would be good to have working.</p>
+    <p class="commentFooter">
+      
+        <a href="http://bannister.us/" rel="nofollow">Preston L. Bannister</a>
+       - 24th December 2006 19:46 - <a href="/2006/Dec/19/openid/#c34996" title="Permalink for comment 90">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c34997">
+        
+    <p>Great piece, Simon! Thanks a lot -- I definitely want to do this. And if you want to share your code, I'm all for it. :)</p>
+    <p class="commentFooter">
+      
+        <a href="http://jeffcroft.com" rel="nofollow">Jeff Croft</a>
+       - 24th December 2006 21:08 - <a href="/2006/Dec/19/openid/#c34997" title="Permalink for comment 91">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c34999">
+        
+    <p>I need to take a more detailed look at how the source actually works, but I've set one up, and I definitely like it.</p>
+
+<p>I can't wait to play more…</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://nokrev.com/" rel="nofollow">Jeff</a></strong>
+       - 24th December 2006 23:48 - <a href="/2006/Dec/19/openid/#c34999" title="Permalink for comment 92">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35004">
+        
+    <p>This jazz really works!</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://alex.weej.com/" rel="nofollow">Alex Jones</a></strong>
+       - 25th December 2006 13:42 - <a href="/2006/Dec/19/openid/#c35004" title="Permalink for comment 93">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c35010">
+        
+    <p>Simon,</p>
+
+<p>I appreciate the concept of the OpenID, however at this stage I don't see a compelling reason for the masses to use it.</p>
+
+<p>Anyone that might use an OpenID, will already have trusted their account information to one or both of the monolithic companies you pointed out. Think about it for a second, the majority of people use Windows; as such probably have it registered. If you dismiss that option, the vast portion of people will probably have either a Hotmail/Live account, Yahoo! account and in quite a few cases, both. So if a hell of a lot of people already have account information held with the monoliths, why would they want to give it to yet another?</p>
+
+<p>For something like OpenID to really take off, in my opinion - it would need to be integrated into, but certainly not limited to, your monolithic companies listed above. If that were the case, you might end up with a true single sign on solution for the internet.</p>
+
+<p>The next question is though, would Microsoft or Yahoo! want to risk diluting their respecitve single sign on products, just to make someones life ever so slightly more convenient?</p>
+
+<p>Al.</p>
+    <p class="commentFooter">
+      
+        <a href="http://www.lattimore.id.au" rel="nofollow">Alistair</a>
+       - 26th December 2006 14:01 - <a href="/2006/Dec/19/openid/#c35010" title="Permalink for comment 94">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35014">
+        
+    Good Job spreading the word about OpenID, now I'm using <a href="http://technorati.com">Technorati</a> as provider, but it lacks SSL support.
+It could be great if Google supports OpenID...
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://technorati.com/profile/eliastorres" rel="nofollow">Elías Torres</a></strong>
+       - 26th December 2006 20:11 - <a href="/2006/Dec/19/openid/#c35014" title="Permalink for comment 95">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35019">
+        
+    <p>It looks like the OpenID signin is back to a working state again.  :)  A very nice touch to this site.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://full-speed.org/" rel="nofollow">Scott Johnson</a></strong>
+       - 27th December 2006 17:46 - <a href="/2006/Dec/19/openid/#c35019" title="Permalink for comment 96">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35022">
+        
+    <p>Thanks Simon, this is great! I didn’t know about delegation before.</p>
+
+<p>I had experimented with phpMyID but couldn’t get it to work. Now I can delegate to a provider until I am able to provide <a href="http://michaelstrasser.com" rel="nofollow">michaelstrasser.com</a> myself.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://michaelstrasser.com/" rel="nofollow">Michael Strasser</a></strong>
+       - 28th December 2006 11:57 - <a href="/2006/Dec/19/openid/#c35022" title="Permalink for comment 97">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35024">
+        
+    <p>Still can't use my delegated OpenID to sign in here ... entering <a href="http://cdn.cx" rel="nofollow">http://cdn.cx</a> at <a href="http://simonwillison.net/openid/" rel="nofollow">http://simonwillison.net/openid/</a> sends me to <a href="http://simonwillison.net/openid/begin" rel="nofollow">http://simonwillison.net/openid/begin</a></p>
+
+<p>Works at ma.gnolia; but not at zooomr</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://cdn.myopenid.com/" rel="nofollow">Chris Neale</a></strong>
+       - 28th December 2006 20:16 - <a href="/2006/Dec/19/openid/#c35024" title="Permalink for comment 98">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35025">
+        
+    <p>Thanks for this screencast! It was most helpful and should help people understand how easy it is to set things up, as well as learning how to have a "permanent" OpenID URL using your own domain. This is not obvious to most people!</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://gwynethllewelyn.net/" rel="nofollow">Gwyneth Llewelyn</a></strong>
+       - 28th December 2006 23:13 - <a href="/2006/Dec/19/openid/#c35025" title="Permalink for comment 99">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35029">
+        
+    <p>Very Cool! Thank You.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://www.aniltj.com/blog/" rel="nofollow">Anil John</a></strong>
+       - 29th December 2006 06:24 - <a href="/2006/Dec/19/openid/#c35029" title="Permalink for comment 100">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35039">
+        
+    <p>Uh, wow.</p>
+
+<p>That was easy. :-)</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://jeremy.zawodny.com/" rel="nofollow">Jeremy Zawodny</a></strong>
+       - 1st January 2007 01:39 - <a href="/2006/Dec/19/openid/#c35039" title="Permalink for comment 101">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35043">
+        
+    <p>very interesting article.</p>
+
+<p>Do you know if it is easyly possible to turn dotclear into an OpenID consummer?</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://gplouin.pip.verisignlabs.com/" rel="nofollow">Guillaume Plouin</a></strong>
+       - 2nd January 2007 14:10 - <a href="/2006/Dec/19/openid/#c35043" title="Permalink for comment 102">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35047">
+        
+    &lt;shameless plug&gt;
+I wrote a small <a href="http://cowpowered.com/2007/01/02/openid-links-plugin/">OpenID links plugin</a> for Wordpress. It only adds OpenID links to the &lt;head&gt; of your blog, which is useful if you often change themes.
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://cowpowered.com/" rel="nofollow">Matthijs</a></strong>
+       - 2nd January 2007 23:00 - <a href="/2006/Dec/19/openid/#c35047" title="Permalink for comment 103">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35054">
+        
+    <p>This is just a test of making a comment with OpenId.  Please ignore me.  Thanks.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://www.alleged.org.uk/pdc/" rel="nofollow">Damian Cugley</a></strong>
+       - 4th January 2007 15:48 - <a href="/2006/Dec/19/openid/#c35054" title="Permalink for comment 104">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35055">
+        
+    <p>If you like the decentraliced idea of OpenID you perhaps do like the idea of a decentralized avatar: <a href="http://pavatar.com">pavatar.com</a>. The Pavatar spec is now in Candidate Recommendation status and we need some plugins for different software.</p>
+<p>Some people think OpenID and Pavatar work well together: <a href="http://brianellin.com/blog/2006/12/29/openid-pavatar-is-a-good-thing/">OpenID + Pavatar is a good thing</a> and so do I. It would be really cool to have only the one URL to log in and add your avatar automaticly on sites like Flickr, MySpace, Mo.gnolia some forums and so on.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://jeenaparadies.net/" rel="nofollow">Jeena Paradies</a></strong>
+       - 4th January 2007 21:24 - <a href="/2006/Dec/19/openid/#c35055" title="Permalink for comment 105">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35056">
+        
+    Don't doubt, you convinced me to create a new account just to access a few features on your weblog ... and to write this comment in order to test if everything is ok and how thing look ;-)
+Thanks!
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://gnuband.org/" rel="nofollow">paolo</a></strong>
+       - 4th January 2007 23:07 - <a href="/2006/Dec/19/openid/#c35056" title="Permalink for comment 106">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35066">
+        
+    <p>Top notch. I just made one up. <br />Took 5 minutes:<br />2 with verisign,<br />1 making a subdomain,<br />2 making a quick and dirty html page.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://oli.thepcspy.com/" rel="nofollow">Oli</a></strong>
+       - 7th January 2007 16:42 - <a href="/2006/Dec/19/openid/#c35066" title="Permalink for comment 107">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35069">
+        
+    <p>Er, right, let's see if this OpenID stuff worked.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://pauldwaite.co.uk/" rel="nofollow">pauldwaite</a></strong>
+       - 8th January 2007 00:11 - <a href="/2006/Dec/19/openid/#c35069" title="Permalink for comment 108">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35070">
+        
+    <p>Sweet, it did.</p>
+
+<p>So, I've signed up with an OpenID provider and got an OpenID URI with them, but that doesn't matter, cos the HTML &lt;link&gt; elements I put on <em>my</em> domain means I can use my domain's URI (pauldwaite.co.uk) as my OpenID instead. That's sweet.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://pauldwaite.co.uk/" rel="nofollow">pauldwaite</a></strong>
+       - 8th January 2007 00:15 - <a href="/2006/Dec/19/openid/#c35070" title="Permalink for comment 109">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35094">
+        
+    <p>I tried signing in on your site here using my homepage address, but it didn't work, I kept getting a 404 not found error. I can sign in using my TypeKey profile URI, though. Additionally, I tried to log in using again, my homepage URI at <a href="http://www.openidenabled.com/" rel="nofollow">http://www.openidenabled.com/</a> and was able to hop on and authenticate through TypeKey without a hitch. For any readers of yours looking for how to do this with TypeKey (I couldn't find the info on the TypeKey site) is this:<br />&lt;code&gt;[link rel="openid.delegate" href="http://profile.typekey.com/username/" /] [link rel="openid.server" href="https://www.typekey.com/t/openid" /]&lt;/code&gt;<br />Just replace every "[ ]" set with "&lt; &gt;"<br />Good luck to all, hope to see this spread.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://profile.typekey.com/typekeybriandigitalcom/" rel="nofollow">Brian</a></strong>
+       - 9th January 2007 05:56 - <a href="/2006/Dec/19/openid/#c35094" title="Permalink for comment 110">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35098">
+        
+    I tried adding the &lt;link&gt; tags to my blog's head area, but I keep getting the following error from myopenid.com:<br />
+"This openid server is not authoritative for http://cs.nerdbank.net/blogs/jmpinline/default.asp x" 
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://andrew.arnott.myopenid.com/" rel="nofollow">Andrew Arnott</a></strong>
+       - 9th January 2007 19:42 - <a href="/2006/Dec/19/openid/#c35098" title="Permalink for comment 111">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35102">
+        
+    <p>Pretty clever! I didn't use a blog, since this doesn't *really* have anything to do with using a blog, just any url where you have control over the HTML content (i.e. can add the appropriate meta tags). Thanks!</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://semmons.com/" rel="nofollow">scotte</a></strong>
+       - 10th January 2007 06:37 - <a href="/2006/Dec/19/openid/#c35102" title="Permalink for comment 112">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35119">
+        
+    <p>Shiny. I still don't get it, but it'll sink in, then I'll add it to DasBlog.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://www.hanselman.com/blog/" rel="nofollow">Scott Hanselman</a></strong>
+       - 11th January 2007 09:31 - <a href="/2006/Dec/19/openid/#c35119" title="Permalink for comment 113">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35133">
+        
+    <p>Good job with this!  I am going to mull over everything and see if I am able to write something simple on my site as well.  (As of this writing, the current website is too archaic for me, and I have a new one slated to be up sometime this month.)</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://tenach.livejournal.com/" rel="nofollow">Tom Martin</a></strong>
+       - 14th January 2007 04:04 - <a href="/2006/Dec/19/openid/#c35133" title="Permalink for comment 114">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35168">
+        
+    <p>I finally setup an OpenId.  From the info on your site and this easy advice for setting up my homepage as an OpenID proxy, I finally "get" OpenID.  Well, I get it as well as I can understand the slippery idea of "identity", but that's really a much larger question that has plagued mankind for ages.</p>
+
+<p>Anyhow, thanks very much.  This post (and others on your site) are very clear and helpful.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://dl.nibble.bz/~archangel/" rel="nofollow">dom</a></strong>
+       - 15th January 2007 18:48 - <a href="/2006/Dec/19/openid/#c35168" title="Permalink for comment 115">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35192">
+        
+    <p>Great article! Thanks for the advice!</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://tim.hokkertjes.nl/" rel="nofollow">Tim Stoop</a></strong>
+       - 18th January 2007 14:50 - <a href="/2006/Dec/19/openid/#c35192" title="Permalink for comment 116">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35195">
+        
+    <p>Thank you for this article :)</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://www.infimite.info/blog/" rel="nofollow">Julie</a></strong>
+       - 18th January 2007 20:15 - <a href="/2006/Dec/19/openid/#c35195" title="Permalink for comment 117">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35198">
+        
+    <p>You may want to close those link tags in the sample code. Thanks for the tutorial. I have been waiting for someone to make it easy for me :-]</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://chris.chiasson.name/" rel="nofollow">Chris</a></strong>
+       - 19th January 2007 06:05 - <a href="/2006/Dec/19/openid/#c35198" title="Permalink for comment 118">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35350">
+        
+    <p>That last note is exactly why I started using OpenID; There's no point in registering at my blog (and a billion others) just to leave a comment! But with OpenID there's hardly any hassle.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://www.booberfish.com/" rel="nofollow">GP</a></strong>
+       - 28th January 2007 06:54 - <a href="/2006/Dec/19/openid/#c35350" title="Permalink for comment 119">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35441">
+        
+    <p>Thanks for the How-To! I implemented your directions on my blog and logged in here amazingly easily to leave this comment.  I used Vox as my OpenID server.</p>
+
+<p>I'm still puzzled how OpenID works "under the hood" but right now I'm just happy I didn't need to fill in any more boxes with the same old stuff.  Thanks again!</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://www.raffyd.com/" rel="nofollow">Raffy</a></strong>
+       - 8th February 2007 00:49 - <a href="/2006/Dec/19/openid/#c35441" title="Permalink for comment 120">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c35456">
+        
+    <p>A fantastic introduction, the flow of language is pitched just right to inform without lecturing or droning on with mindless jargon.  I've already started lobbing it at various friends maintaining private weblogs.</p>
+    <p class="commentFooter">
+      
+        Ben
+       - 10th February 2007 21:00 - <a href="/2006/Dec/19/openid/#c35456" title="Permalink for comment 121">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35463">
+        
+    <p>Excellent!  Thank you, thank you.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://socket7.net/" rel="nofollow">Brett</a></strong>
+       - 13th February 2007 02:59 - <a href="/2006/Dec/19/openid/#c35463" title="Permalink for comment 122">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35475">
+        
+    <p>Nice presentation.  I followed the link to phpMyID and 20 minutes later, here I am!  Sweet.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://me.texatopia.com/" rel="nofollow">Texatopia</a></strong>
+       - 16th February 2007 04:42 - <a href="/2006/Dec/19/openid/#c35475" title="Permalink for comment 123">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35515">
+        
+    <p>Thank you Simon!</p>
+<p>That was almost <em>too</em> easy</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://robbie.robnrob.com/" rel="nofollow">Robbie Coleman</a></strong>
+       - 23rd February 2007 16:55 - <a href="/2006/Dec/19/openid/#c35515" title="Permalink for comment 124">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35517">
+        
+    <p>Awesome, thanks for the help.  I hope everyone goes this route very soon.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://www.dailyplacebo.com/" rel="nofollow">jeadly</a></strong>
+       - 23rd February 2007 18:46 - <a href="/2006/Dec/19/openid/#c35517" title="Permalink for comment 125">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c35519">
+        
+    <p>Nice intro.  I had problems setting up the delegate to myopenid until I noticed in their docs that you need a meta tag as well as the two links.  See <a href="https://www.myopenid.com/help#own_domain" rel="nofollow">https://www.myopenid.com/help#own_domain</a></p>
+
+<p>Didn't notice anyone else hitting this, but I scanned the comments pretty quick, sorry if this is a dupe.</p>
+
+<p>Also, using wikitravel as a test, it seems to have created me two separate logins using the myopenid direct, and then via the delegate.  That's a bummer, and slightly unexpected, but perhaps that's in the spec.</p>
+    <p class="commentFooter">
+      
+        max
+       - 23rd February 2007 20:56 - <a href="/2006/Dec/19/openid/#c35519" title="Permalink for comment 126">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35522">
+        
+    <p>I just created an OpenID and wanted to try it.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://ideogram.blogspot.com/" rel="nofollow">Ideogram</a></strong>
+       - 25th February 2007 09:23 - <a href="/2006/Dec/19/openid/#c35522" title="Permalink for comment 127">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35532">
+        
+    <p>Thanks to this simple tutorial, I finally had my "Aha!" moment with OpenID.  Thanks a ton.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://libgrunt.blogspot.com/" rel="nofollow">John Fink</a></strong>
+       - 26th February 2007 00:57 - <a href="/2006/Dec/19/openid/#c35532" title="Permalink for comment 128">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35533">
+        
+    <p>Great Write-Up. All, there is a wordpress plugin for openid. Google it ;-)<br />Cheers!<br />Alpesh</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://alpesh.myopenid.com/" rel="nofollow">Alpesh Nakars&#39; Blogosphere</a></strong>
+       - 26th February 2007 03:07 - <a href="/2006/Dec/19/openid/#c35533" title="Permalink for comment 129">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35534">
+        
+    <p>And they are<br /><a href="http://verselogic.net/projects/wordpress/wordpress-openid-plugin/" rel="nofollow">http://verselogic.net/projects/wordpress/wordpress -openid-plugin/ </a></p>
+
+<p>and</p>
+
+<p><a href="http://eran.sandler.co.il/openid-delegate-wordpress-plugin/" rel="nofollow">http://eran.sandler.co.il/openid-delegate-wordpres s-plugin/ </a></p>
+
+<p>Which could be better?</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://alpesh.myopenid.com/" rel="nofollow">Alpesh Nakars&#39; Blogosphere</a></strong>
+       - 26th February 2007 05:01 - <a href="/2006/Dec/19/openid/#c35534" title="Permalink for comment 130">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c35543">
+        
+    <p>hi<br />very nice work...</p>
+    <p class="commentFooter">
+      
+        <a href="http://www.nakliyat.name" rel="nofollow">evden eve nakliyat</a>
+       - 26th February 2007 15:02 - <a href="/2006/Dec/19/openid/#c35543" title="Permalink for comment 131">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c35544">
+        
+    <p>Hi<br />I didn't take iNames in to account - will have to fix the template not to render them as links.</p>
+    <p class="commentFooter">
+      
+        <a href="http://www.lazerepilasyon.name" rel="nofollow">lazer epilasyon</a>
+       - 26th February 2007 15:08 - <a href="/2006/Dec/19/openid/#c35544" title="Permalink for comment 132">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c35570">
+        
+    <p>This is like LDAP for internet.<br />This is great stuff, I dont have to remember now rememeber different user names and password.</p>
+
+<p>Thanks!</p>
+    <p class="commentFooter">
+      
+        <a href="http://rubymerchant.blogspot.com" rel="nofollow">Jatinder Singh</a>
+       - 1st March 2007 20:26 - <a href="/2006/Dec/19/openid/#c35570" title="Permalink for comment 133">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c35598">
+        
+    <p>thankkss alll.</p>
+    <p class="commentFooter">
+      
+        <a href="http://www.nakliyat-nakliye.info" rel="nofollow">nakliyat</a>
+       - 6th March 2007 09:44 - <a href="/2006/Dec/19/openid/#c35598" title="Permalink for comment 134">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c35601">
+        
+    <p>A large bulb has just illuminated about my small brain. Thanks for this. It makes so much sense.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://www.shapeshed.com/" rel="nofollow">George</a></strong>
+       - 6th March 2007 12:10 - <a href="/2006/Dec/19/openid/#c35601" title="Permalink for comment 135">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c35623">
+        
+    <p>great thanks, good tutorial</p>
+
+<p />
+    <p class="commentFooter">
+      
+        <a href="http://www.ankaracicekevi.com" rel="nofollow">çiçekçi</a>
+       - 8th March 2007 20:25 - <a href="/2006/Dec/19/openid/#c35623" title="Permalink for comment 136">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c35626">
+        
+    <p>Good information! Thanks! Heiko from Germany</p>
+    <p class="commentFooter">
+      
+        <a href="http://www.maniero.de" rel="nofollow">Heiko Maniero</a>
+       - 8th March 2007 23:16 - <a href="/2006/Dec/19/openid/#c35626" title="Permalink for comment 137">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c35649">
+        
+    <p>Very good. Thanks for all the work. Steven</p>
+    <p class="commentFooter">
+      
+        <a href="http://www.diagnostix.at" rel="nofollow">Steven</a>
+       - 14th March 2007 08:44 - <a href="/2006/Dec/19/openid/#c35649" title="Permalink for comment 138">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c35657">
+        
+    <p>Worked pretty well. Thanks a lot. Jürgen from Germany</p>
+    <p class="commentFooter">
+      
+        <a href="http://www.araratholds.co.uk" rel="nofollow">Jürgen</a>
+       - 16th March 2007 18:11 - <a href="/2006/Dec/19/openid/#c35657" title="Permalink for comment 139">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c35678">
+        
+    <p>Thanks to this simple tutorial, I finally had my "Aha!" moment with OpenID. Thanks a ton.</p>
+    <p class="commentFooter">
+      
+        <a href="http://www.sitelersitesi.net" rel="nofollow">Link ekle</a>
+       - 21st March 2007 07:07 - <a href="/2006/Dec/19/openid/#c35678" title="Permalink for comment 140">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c35683">
+        
+    <p>Hi guys, very good information. I will implanting this on my blog. Thanks. Guy</p>
+    <p class="commentFooter">
+      
+        <a href="http://www.araratholds.com" rel="nofollow">Jürgen</a>
+       - 21st March 2007 16:37 - <a href="/2006/Dec/19/openid/#c35683" title="Permalink for comment 141">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c35686">
+        
+    <p>Wow, what a fantastic idea.</p>
+
+<p>Looks like I will be up tonight setting up an OpenID for myself.</p>
+
+<p>Love it.</p>
+    <p class="commentFooter">
+      
+        <a href="http://www.oppenheim.com.au" rel="nofollow">James Oppenheim</a>
+       - 22nd March 2007 12:49 - <a href="/2006/Dec/19/openid/#c35686" title="Permalink for comment 142">#</a></p>
+    </div></li>
+  
+</ol>
+
+</div> <!-- #comments -->
+
+
+<div id="addcomment">
+
+<em>Comments are closed.</em>
+
+</div><!-- #addcomment -->
+
+</div><!-- #comment-wrapper -->
+
+
+
+
+
+
+
+<div id="ft">
+    <ul>
+      <li><a href="/about/">About</a></li>
+      <li><a href="/talks/">Speaking</a></li>
+      <li>&copy;</li>
+      <li><a href="/2002/">2002</a></li>
+      <li><a href="/2003/">2003</a></li>
+      <li><a href="/2004/">2004</a></li>
+      <li><a href="/2005/">2005</a></li>
+      <li><a href="/2006/">2006</a></li>
+      <li><a href="/2007/">2007</a></li>
+      <li><a href="/2008/">2008</a></li>
+      <li><a href="/2009/">2009</a></li>
+      <li><a href="/2010/">2010</a></li>
+      <li><a href="/feeds/">Feeds</a></li>
+    </ul>
+    <a id="djangosite" href="http://www.djangoproject.com/"><img src="/static/css/img/djangosite80x15.gif" alt="A django site" width="80" height="15"></a>
+</div>
+
+
+
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-1090368-1";
+urchinTracker();
+</script>
+
+<script type="text/javascript" src="http://liquidfold.net/js/simonwillison"></script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<script type="text/javascript">var _sf_startpt=(new Date()).getTime()</script>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="author" content="Bitnik, Inc.">
+<meta name="copyright" content="2009 Bitnik, Inc.">
+<meta name="description" content="Picnik lets you edit all your photos online, from one easy place.">
+<meta name="keywords" content="photo, photograph, picture, edit, editing, adjustments, online, flickr, camera, digital, image, redeye, fix, photoshop">
+<meta name="robots" content="index, follow">
+<link rel="alternate" type="application/rss+xml" title="Picnik Blog Feed" href="http://feeds.feedburner.com/picnik" />
+<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+<META HTTP-EQUIV="EXPIRES" CONTENT="0">
+
+<script type="text/javascript">
+
+	// Make sure we always load the state from the real server and not the CDN
+	var strServerRoot = 'http://';
+	if( document.domain.indexOf('cdn') != 0) {
+		strServerRoot = 'http://'+document.domain.replace('cdn', '');
+	}
+
+	document.domain = "picnik.com";	
+
+	function on_resize() {
+		var height=window.innerWidth; // FF
+		if (document.body.clientHeight) {
+			height=document.body.clientHeight; //IE
+		}
+		document.getElementById("content").style.height=parseInt(height-document.getElementById("content").offsetTop)+"px";
+	}
+	window.onresize=on_resize; 
+
+	// load current state from the server
+	var oPicnikState = {}
+	function OnPicnikState( oState ) {
+		oPicnikState = oState;
+	}
+	document.write('<script type="text/javascript" src="'+strServerRoot+'/picnikstate?cb=OnPicnikState"></scr'+'ipt>');
+</script>
+</head>
+<body style="padding:0px;margin:0px">
+<script type="text/javascript">
+	// write out code to load our static documents
+	document.write('<script type="text/javascript" src="' + oPicnikState.fnStatic("/js/webutil.js") + '"></scr'+'ipt>');
+</script>
+
+<iframe id="content" style="width:100%;border:0px;padding:0px;margin:0px;" src="about:blank" onload="on_resize()"></iframe>
+
+<script type="text/javascript">
+	// check for locale
+	if (window.location.protocol.indexOf('https')==0) {
+		window.location.href = "http://" + window.location.href.substring(8);
+	}
+	var args = ExtractArgs();
+
+	// cache buster
+	var strCacheBuster = "";
+	if (args["nc"] == "1") {
+	    strCacheBuster = "&nocache=" +Math.random();
+	}
+	
+	function SetTitle(t) { 
+		document.title = t;
+	}
+	
+	function WriteContent() {
+		var aToken = tokenGet();
+		if (tokenCheck(aToken, false)) {
+			// allowed in!
+			tokenSet(aToken,1);
+			
+			if ('import' in args && args['import'].length > 0) {
+				window.location.href = "/import/?" + args['import'];
+			}
+			else {
+				if (aToken[2] == 'R') {
+					window.location.href = "/appclean";
+				} else {
+					document.getElementById("content").src = oPicnikState.fnDynamic("/home", "locale=" + strLocale);
+				}
+			}
+		} else {
+			// not allowed in!
+			tokenSet(aToken,0);
+			
+			// but check to see if login access would work
+			var strSuffix = "";
+			if (aToken[2] != 'R') {
+				aToken[2] = 'R';
+				if (tokenCheck(aToken, false)) {
+					strSuffix = "_guest";
+				}				
+			} else {
+				strSuffix = "_registered";
+			}
+			document.getElementById("content").src = oPicnikState.fnDynamic("/static/" + strLocale + "/noaccess" + strSuffix + ".html");
+		}
+	}
+
+	function SetLocale(strCalcLocale ) {
+		strLocale = strCalcLocale;
+		WriteContent();
+	}
+	
+	function OnSoint( oData ) {
+		var aToken = null;
+		if ('lastuser' in oData) {
+			aToken = tokenCreate(oData['lastuser']);
+		} else {
+			aToken = tokenGet();
+			if ('token' in oData && oData.token && oData.token.length > 0) {
+				aToken[2] = 'R';
+			}
+		}
+		var strSointLocale = oPicnikState.strDefaultLocale;
+		if ('locale' in oData && oData.locale && oData.locale.length > 0) {
+			strSointLocale = oData.locale;
+		}
+		tokenSet(aToken);
+		SetLocale(strSointLocale);
+	}
+	
+	function WriteSoint() {
+		document.write( '<iframe id="ifrmSoint" src="' + oPicnikState.fnDynamic("/soint2", "reportcb=OnSoint&dest=_none_") + '" height="0px" width="0px" frameborder="0"></iframe>');
+	}
+
+	if (null == readCookie('lastuser')) {
+		WriteSoint();
+	} else {
+		// locale
+		var strLocale = "";
+		if (args["locale"] && args["locale"].length > 0) {
+		    strLocale = args["locale"];
+		} else {
+		    var strCookieLocale = readCookie("locale");
+		    strLocale = strCookieLocale ? (strCookieLocale) : "";
+		}
+		
+		if (strLocale == "" || strLocale == null) {
+			document.write('<script type="text/javascript" src="' + oPicnikState.fnDynamic("/defaultlocale","cb=SetLocale") + '"></scr'+'ipt>');
+		} else {
+			setTimeout("SetLocale(strLocale)", 10);
+		}	
+	}
+</script>
+	
+</body>
+</html>
+

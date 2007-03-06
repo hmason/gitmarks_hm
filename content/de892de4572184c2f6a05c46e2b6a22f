@@ -1,0 +1,813 @@
+<html>
+<head>
+<meta name="keywords" content="macromedia flash,adobe flash,flash,javascript,query,string,mx,php,asp,action script">
+<SCRIPT LANGUAGE="JavaScript1.2">
+<!--
+function setCookie(name, value)
+{
+//alert(value);
+	var today=new Date;
+	today.setDate(today.getDate()+1);
+	document.cookie = name+"="+value;//+"; expires="+today.toGMTString();
+	alert("Cookie \"" +name+ "\" is set to \"" + getCookie(name)+"\"");
+//	alert("done "+name+" "+getCookie(name));
+}
+//-->
+</SCRIPT>
+
+<SCRIPT LANGUAGE="JavaScript1.2">
+<!--
+function getCookie(name)
+{
+//alert("finding value of cookie "+name);
+//alert(document.cookie);
+	if (document.cookie)
+	{
+		var strName=new String(name);
+		var cookies=document.cookie.split(";");
+		for (var i=0; i<cookies.length; i++)
+		{
+			var varName=(cookies[i].split("=")[0]);
+			var varValue=(cookies[i].split("=")[1]);
+
+			while (varName.charAt(0)==" ")
+			{
+				varName=varName.substr(1,varName.length);
+			}
+			if (varName==name)
+				return escape(varValue);
+		}
+		//alert(document.cookie);
+	}
+	return " ";
+}
+//alert(getCookie("UserName"));
+//getCookie("UserName");
+//alert(document.cookie);
+-->
+</SCRIPT>
+
+<LINK REL=stylesheet TYPE="text/css" HREF="../../style/main.css">
+<title>Flash: Passing Variables to Flash from HTML via Query String </title>
+</head>
+<body bgcolor="#CCCCCC" text="#000000" link="#FF0000" vlink="#FF0000" alink="#FF0000">
+<center>
+&nbsp;
+
+<table border="0" cellspacing="0" cellpadding="0" bordercolor="#000000">
+  <tr>
+    <td bgcolor="#000000"><font size="2" color="#FFFFFF">Advertisement</font></td>
+  </tr>
+  <tr><td>
+<!--GOOGLE AD-->
+<script type="text/javascript"><!--
+google_ad_client = "pub-2969475232836602";
+/* 728x90, created 4/18/09 */
+google_ad_slot = "4107085638";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<!--END GOOGLE AD-->
+</td></tr>
+  </table>
+</center>
+<p>
+</center>
+<table border="1" cellpadding="0" cellspacing="0" bordercolor="#000000" bgcolor="#FFFFFF" ALIGN="CENTER" width="700">
+  <tr>
+    <td width=> 
+      <div align="right"> 
+      <table border="0" bgcolor="#FFFFFF" cellspacing="0" cellpadding="0">
+      <center>
+        <center>
+              <tr> 
+                <td width="25" height="93" bgcolor="#0099CC"><img src="../../images/blank.gif" width="25" height="3"></td>
+                <td bgcolor="#0099CC" colspan="2" align="center"> 
+                  <img src="../images/header_flash.gif" width="245" height="53">
+                </td>
+                <td width="25" height="93" bgcolor="#0099CC"><img src="../../images/blank.gif" width="25" height="3"></td>
+              </tr>
+              <tr> 
+                <td width="25"><img src="../../images/blank.gif" width="25" height="3"></td>
+                <td colspan="2"> 
+                  <p align="center"><font face="Arial" size="4" color="#0099CC">PASSING
+                  VARIABLES FROM HTML TO FLASH VIA QUERY STRING</font> 
+                </td>
+                <td width="25"><img src="../../images/blank.gif" width="25" height="3"></td>
+              </tr>
+              <tr> 
+                <td width="25" bgcolor="#000000">&nbsp;</td>
+                <td bgcolor="#000000" colspan="2"> 
+                  
+                <p align="center"><strong><font face="Arial" color="#FFFFFF">OVERVIEW</font></strong> </td>
+              <td width="25" bgcolor="#000000" >&nbsp;</td>
+              <tr>
+                     <td width="25" align="left">&nbsp;</td>
+                <td align="left" bgcolor="#FFFFFF"> <p><br>
+                    This tutorial is very similar to another tutorial elsewhere 
+                    on this site about <a class="contentlink" href="../flashVars/index.html">Passing 
+                    Variables From HTML to Flash via FlashVars</a>.&nbsp; The main 
+                    difference is in the syntax; and it is fairly minor.&nbsp; Also, 
+                    FlashVars only works with Flash Player 6 (that is Flash MX) 
+                    or newer.&nbsp; If you're only supporting Flash Player 6 or 
+                    newer, I recommend using <a class="contentlink" href="../flashVars/index.html">FlashVars</a>. </p>
+                  <p>Note: ActionScript 3 user should go <a href="indexAs3.html" class="contentlink">here</a> after reding this tutorial for Action Script 3 way of accessing query strings. </p>
+                  <p>
+                  <b><font color="#0099CC">Why and When to use Query String</font><br>
+                  </b>Flash supports several methods of communicating to the outside world.&nbsp;&nbsp;
+                  Some of the common methods are: <a class="contentlink" href="../flash4readtext/index.html">loadVariables</a>,
+                  the <a class="contentlink" href="../flashXMLNewsExample/index.html">XML</a> object,
+                  the <a class="contentlink" href="../flashVars/index.html">FlashVars</a>, and
+                  the <b>XMLSocket</b>.&nbsp; With these
+                  methods, you can retrieve parameters via an external file or
+                  via CGI scripts.&nbsp;&nbsp;&nbsp;However, there is a less conventional
+                  method, which is to use what is called the <b>query string</b>.&nbsp; This method is
+                  practical but only suitable for simple situations such as
+                  these:&nbsp;&nbsp;</p>
+                  <ul>
+                    <li>The data to be passed is fairly simple.&nbsp; By simple,
+                      I mean simple text (such as user name, filename, id, or cookie
+                      info).</li>
+                    <li>The data to be passed is not long.&nbsp; I recommend
+                      less than 1024 characters.&nbsp; (The actual limit&nbsp; depends on
+                      the browser and the server.)</li>
+                    <li>You don't care about the security of the data.&nbsp;&nbsp;<br>
+                      Query string is not secure.&nbsp; Any user can
+                      easily see the content of the query string in the browser's
+                      URL/Address bar; or by viewing the page source (as will be
+                      shown later).&nbsp; Something like a password should <b>NEVER</b>
+                      be passed via the query string.&nbsp; Let me say this
+                      again: anything even
+                      remotely sensitive should not be passed via the query
+                      string.&nbsp;&nbsp;&nbsp;</li>
+                  </ul>
+                  <p><b>What is Query String?<br>
+                  </b>Query string is the string that follows the <b>&quot;?&quot;</b>
+                  sign within an URL.&nbsp; Below, is an URL followed by the query
+                  string.</p>
+                  <p><img border="0" src="images/url.gif" width="402" height="47"></p>
+                  <p>The query string by itself (such as shown above) normally
+                  is not very meaningful to
+                  the end user.&nbsp; Most commonly, query string is used by CGI programs to retrieve data from HTML
+                  forms.&nbsp;&nbsp; As an example, in the above case, suppose that the file <b>mycgi.pl</b>
+                  is a CGI program, it will be able to retrieve these <i>variable</i>
+                  and <i> value pairs</i> from the query string:</p>
+                  <ul>
+                    <li>message = hello</li>
+                    <li>day = Tuesday</li>
+                  </ul>
+                <td bgcolor="#FFFFFF" valign="top" align="right"> <br>
+                  <table border="1" bordercolor="#000000" cellspacing="0" cellpadding="0" bordercolorlight="#000000" bordercolordark="#000000">
+                    <tr>
+                      <td width="100%" bgcolor="#000000"><font color="#FFFFFF" size="2">Advertisement</font></td>
+                    </tr>
+                    <tr><td><!-- FASTCLICK.COM 120x600 and 160x600 SkyScraper CODE for permadi.com -->
+<script language="javascript" src="http://media.fastclick.net/w/get.media?sid=13433&m=3&tp=7&d=j&t=s"></script>
+<noscript><a href="http://media.fastclick.net/w/click.here?sid=13433&m=3&c=1" target="_top">
+<img src="http://media.fastclick.net/w/get.media?sid=13433&m=3&tp=7&d=s&c=1" border=1></a></noscript>
+<!-- FASTCLICK.COM 120x600 and 160x600 SkyScraper CODE for permadi.com END --></td></tr>
+                    <tr>
+                      <td width="100%" bgcolor="#000000"><!-- FASTCLICK.COM REFERRAL BUTTON [permadi.com] -->
+<!-- FASTCLICK.COM REFERRAL LINK [permadi.com] --><font color="#FFFFFF" size="1"><a class="brightlinkunderlined" href="http://www.fastclick.com/re.f?13433" target="_top">FastClick Ad Network</a>
+ </font><!-- FASTCLICK.COM REFERRAL LINK [permadi.com] END --></td>
+                    </tr>
+                  </table>
+                </TD>
+
+                <td width="25" >&nbsp;</td>
+              <tr>
+                     <td width="25"><img src="../../images/blank.gif" width="25" height="3"></td>
+                <td colspan="2" align="left" bgcolor="#FFFFFF">
+                  <table border="0" bgcolor="#CCCCCC" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td>
+                  <p><font size="2">Side note: Doing a search on Yahoo for the word
+                  &quot;Flash&quot; yields this query string:<br>
+                  <img border="0" src="images/yahoo.gif" width="530" height="24"><br>
+                  Here' you can see that&nbsp;the query string is as follows:</font></p>
+                  <pre><font size="2">p=flash&amp;ei=UTF-8&amp;fr=fp-tab-web-t&amp;cop=mss&amp;tab=</font></pre>
+                        <p><font size="2">This is an example of how the form
+                        data is sent to the search engine via the query
+                        string.&nbsp;&nbsp; You, the user, don't usually care how
+                        the query string works (the query string may even look
+                        like a gibberish).&nbsp; You may not even notice that it is
+                        there in the URL.&nbsp; The CGI program handles the
+                        details for you.&nbsp;&nbsp;</font></p>
+                      </td>
+                    </tr>
+                  </table>
+                  <p><b><font color="#0099CC">Basic Query String Syntax</font><br>
+                  </b>The format of the query string is as follows:
+                  <pre><b><font size="2"><font color="#CC0000">variableName1=variableValue1</font><font color="#000000">&amp;</font><font color="#CC0000">variableName2=variableValue2</font><font color="#000000">&amp;</font><font color="#CC0000">variableName3=variableValue3...</font></font></b></pre>
+                  <p>Each
+                  variable <i> name</i> and <i> value</i> pair is separated by a '<b>=</b>'
+                  sign; and
+          an '<b>&amp;</b>'<b> </b>sign separates the variables.&nbsp;
+                  You can have as many variable name and value pairs, but
+                  remember, there is a limit, and I recommend not more than 1024 <i>characters</i> total (including the www... URL part).&nbsp; After
+                  all, if you need more space, you should consider using other
+                  methods, such as reading from a data file.&nbsp;&nbsp;
+                  <p>Several more things that should be noted:&nbsp;
+                  <ul>
+                    <li>You can add (type) a query string manually to an URL.&nbsp;
+                      For
+                      example, I can enter <b>http://www.permadi.com/index.html<i>?message=Hello</i></b>,
+                      and the page will work as usual.&nbsp; The query string is
+                      simply ignored if the destination URL doesn't do anything with it.&nbsp;&nbsp;
+                      (<i>index.html</i>
+                      file in the above example does not do anything with the query
+                      string, so it's simply ignored).&nbsp;&nbsp;This is something that doesn't seem
+                      useful, but&nbsp; later you will see how it can be
+                      utilized.&nbsp;&nbsp;</li>
+                    <li>Do not put line breaks within a query string. even if
+                      the string is long.</li>
+                  </ul>
+                  <p>Several things that should be noted about variable names:&nbsp;
+                  <ul>
+                    <li>Use only letters, underline, and numbers.&nbsp; Avoid symbols such as '$' or '#'.&nbsp;&nbsp;</li>
+                    <li>Do not start a name with a number (<i><b>1message</b></i>
+                      is an invalid variable name because the name starts with a
+                      number; whereas <i><b>message1</b></i> is a
+                      valid variable name).&nbsp;&nbsp;<br>
+ Flash will certainly reject
+                      or get confused if you use a
+                      variable name that starts with a number or other special
+                      characters - except underlines (ie:<b> _message</b>, and <b>_1message</b>
+                      are valid names).&nbsp;</li>
+                    <li>A variable name should not contain any <b>&lt;space&gt;</b> 
+                      character (ie: <b>my message</b> is an invalid name,<b>
+                      my_message</b> is a valid name).&nbsp;&nbsp;</li>
+                  </ul>
+                  <p>And for variable values, there are also rules:</p>
+                  <ul>
+                    <li>Characters needs to be URL encoded (see:
+					<a href="../urlEncoding" class="contentlink">Introduction to 
+					URL Encoding</a>).&nbsp; This means
+                      that special characters, such as =, &amp;, &lt;SPACE&gt;,
+                      + need to be substituted with their URL encoded
+                      format.&nbsp; For example: <b>name=John Doe</b>.&nbsp; Here, the <b>&lt;space&gt;</b>
+                      between <b>John</b> and <b>Doe</b> needs
+                      to be encoded with <b>+ </b>sign, so you need to pass it
+                      as <b>name=John+Doe</b> or <b>name=John%20Doe</b>.&nbsp; (Flash doesn't seem to
+                      enforce this, but you should follow the proper way.)&nbsp;
+                      Search for URL encoding on the net for more details on
+                      this subject.&nbsp;&nbsp;</li>
+                    <li>If you need to include an&nbsp;<b>&amp;</b> as part
+                      of a value, such as in <b>ingredients=Beef&amp;Pork</b>, then you need to encode the <b>&amp;</b> like
+                      this: <b>ingredients=Beef%26Pork</b>.&nbsp;&nbsp; The <b>%26</b>
+                      is an encoded form of the <b>&amp;</b> sign.&nbsp; The number
+                      26 is the hexadecimal code of the character <b>&amp;</b>.&nbsp; If you
+              need to know the encoding value of a particular character, consult
+              an <a class="contentlink" href="../ascii/index.html"> ASCII table</a>.&nbsp;
+                      There are other characters that need to be
+                      encoded, such as <b>&lt;</b>, <b>&gt;</b>, <b>/</b>,<b> ?</b>.&nbsp;&nbsp;</li>
+                  </ul>
+                <td width="25" ><img src="../../images/blank.gif" width="25" height="3"></td>
+              <tr> 
+                <td width="25" bgcolor="#000000">&nbsp;</td>
+                <td bgcolor="#000000" colspan="2"> 
+                  <p align="center"><strong><font face="Arial" color="#FFFFFF">QUERY
+                  STRING AND FLASH</font></strong> 
+                </td>
+                <td width="25" bgcolor="#000000" >&nbsp;</td>
+              </tr>
+            </CENTER></center>
+      <tr>
+                <td width="25" bgcolor="#FFFFFF">&nbsp;</td>
+                <td bgcolor="#FFFFFF" colspan="2"> 
+              <div align="left">&nbsp;&nbsp;<br>
+                Now that we know what a query string is, let's see how it applies 
+                to Flash.&nbsp;&nbsp;&nbsp; </div>
+              <p> When you put a Flash movie on a html page, you will have an 
+                <b>OBJECT</b> tag code that is similar to this:&nbsp;</p>
+              <table border="0" bgcolor="#CCCCCC" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td width="100%" bgcolor="#FFFFCC"> 
+                    <pre><font color="#0000FF">&lt;OBJECT classid=&quot;clsid:D27CDB6E-AE6D-11cf-96B8-444553540000&quot;
+  codebase=&quot;http://macromedia.com/cabs/swflash.cab#version=4,0,0,0&quot;   
+  ID=flaMovie WIDTH=250 HEIGHT=250&gt;
+  &lt;PARAM NAME=movie VALUE=&quot;</font><b><font color="#CC0000">flaMovie.swf</font></b><font color="#0000FF">&quot;&gt;
+  &lt;PARAM NAME=quality VALUE=medium&gt;
+  &lt;PARAM NAME=bgcolor VALUE=#99CC33&gt;
+  &lt;EMBED src=&quot;</font><b><font color="#CC0000">flaMovie.swf</font></b><font color="#0000FF">&quot; bgcolor=#99CC33 WIDTH=250 HEIGHT=250 
+    TYPE=&quot;application/x-shockwave-flash&quot;&gt;
+  &lt;/EMBED&gt;
+&lt;/OBJECT&gt;</font></pre>
+                  </td>
+                </tr>
+              </table>
+              <p><font color="#000000">In that example, the Flash movie filename 
+                is: <b>flaMovie.swf</b>.&nbsp; Notice how that filename is used 
+                twice; this is the result of incompatibilities between Netscape 
+                and Internet Explorer.&nbsp; To be on the safe side, you should 
+                support/use both.&nbsp;&nbsp;</font></p>
+              <p><font color="#000000">You can append a query string following 
+                the Flash movie filename, and Flash will get the variable(s) from 
+                the query string for you automatically.&nbsp; The variable(s) 
+                will go into the <b>_root</b> or <strong>_level0</strong> of the movie.&nbsp;&nbsp; Note: ActionScript 3 user should go <a href="indexAs3.html" class="contentlink">here</a> after reding this tutorial for Action Script 3 way of accessing query strings. </font></p>
+              <p><font color="#000000">Let's 
+                  see some examples. <br>
+&nbsp;&nbsp;</font></p>
+              <!--GOOGLE AD BEGIN-->			  
+<script type="text/javascript"><!--
+google_ad_client = "pub-2969475232836602";
+/* 728x90, created 4/18/09 */
+google_ad_slot = "4107085638";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<!--GOOGLE AD END-->			<P>
+                </td>
+                <td width="25" bgcolor="#FFFFFF" >&nbsp;</td>
+      </tr>
+      <tr>
+                <td width="25" bgcolor="#000000">&nbsp;</td>
+                <td bgcolor="#000000" colspan="2"> 
+                  <p align="center"><strong><font face="Arial" color="#FFFFFF">EXAMPLE
+                  1<br>
+                  </font></strong><b><font color="#FFFFFF">Using Query String to
+                  Maximize Code Reuse</font></b> 
+                </td>
+                <td width="25" bgcolor="#000000" >&nbsp;</td>
+      </tr>
+      <tr><center><center> 
+                <td width="25">&nbsp;</td>
+                </center></center><td colspan="2">
+                <p align="left">&nbsp;&nbsp;<br>
+                In this contrived example, suppose that you have a Flash movie 
+                  that loads an image file and display the image (using <b> loadMovie</b> 
+                  on <b>Flash MX </b>- if you're using Flash 5, think of it as 
+                  loading another .swf file).&nbsp;&nbsp;</p>
+                <p align="left"> You want to be able to use the same swf file on many pages 
+                  to show different images.&nbsp; Obviously, you need to pass 
+                  the image filename to Flash.&nbsp; What can you do?&nbsp; Since 
+                  a filename is such a simple text, you can use query string to 
+                  pass it.&nbsp;&nbsp;</p>
+                <p align="left">Assuming the image filename is <b>image1.jpg</b>, located at 
+                  a folder named <b>images</b>.&nbsp; And assuming that the Flash 
+                  movie will use a variable named <b>imageFilename</b> to refer 
+                  to the file, then we can do this:</p>
+                <table border="0" bgcolor="#CCCCCC" cellspacing="0" cellpadding="0">
+                  <tr> 
+                    <td width="100%" bgcolor="#FFFFCC"> 
+                      <div align="left">
+                      <pre><font color="#0000FF">&lt;OBJECT classid=&quot;clsid:D27CDB6E-AE6D-11cf-96B8-444553540000&quot;
+  codebase=&quot;http://download.macromedia.com/&quot;  
+  WIDTH=&quot;250&quot; HEIGHT=&quot;300&quot; id=&quot;flaMovie1&quot;&gt;
+  &lt;PARAM NAME=movie VALUE=&quot;</font><font color="#FF0000">flaMovie1.swf<b>?imageFilename=images%2Fimage1%2Ejpg</b></font><font color="#0000FF">&quot;&gt; 
+  &lt;PARAM NAME=quality VALUE=high&gt;
+  &lt;PARAM NAME=bgcolor VALUE=#FFFFFF&gt; 
+  &lt;EMBED src=&quot;</font><font color="#FF0000">flaMovie1.swf<b>?imageFilename=images%2Fimage1%2Ejpg</b></font><font color="#0000FF">&quot; 
+    quality=high bgcolor=#FFFFFF WIDTH=&quot;250&quot; HEIGHT=&quot;250&quot; NAME=&quot;flaMovie1&quot;
+    TYPE=&quot;application/x-shockwave-flash&quot; 
+    PLUGINSPAGE=&quot;http://www.macromedia.com/go/getflashplayer&quot;&gt;
+  &lt;/EMBED&gt;
+&lt;/OBJECT&gt;</font></pre>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+                <p align="left"><font color="#000000">There you see that I appended a query 
+                  string after the Flash movie filename (flaMovie1.swf).&nbsp; 
+                  The query string contains one variable: </font><font color="#000000"><b>imageFilename</b>, 
+                  with the value of <b>images/image1.jpg</b>.&nbsp;&nbsp;</font></p>
+                <p align="left"><font color="#000000" size="2">
+				<span style="background-color: #CCFFFF">Note: The <b>%2F</b> is the 
+                  url encoding for the &quot;<b>/</b>&quot; sign, and <b>%2E</b> 
+                  is the url encoding for the &quot;<b>.</b>&quot; sign.&nbsp; 
+                  Since these symbols are unsafe or reserved, we should url encode 
+                  them, although at the present Flash does not seem to care.&nbsp; 
+                  So saying: <b>imageFilename=images%2Fimage1%2Ejpg</b> is essentially 
+                  the same as saying <b>imageFilename=images/image1.jpg</b>.&nbsp;
+				</span></font><font size="2">
+				<span style="background-color: #CCFFFF">(see: </span>
+				<a href="../urlEncoding" class="contentlink">
+				<span style="background-color: #CCFFFF">Introduction to URL 
+				Encoding</span></a><span style="background-color: #CCFFFF">)</span></font></p>
+                <p align="left">In this way, when the Flash movie starts, that movie will have 
+                  a variable named <b>imageFilename </b>within its <b> _root</b> or <strong>_level0</strong>.&nbsp; 
+                  Then, I can say: <b>loadMovie(_root.imageFilename)</b>; and 
+                  it will load<b> </b>the specified image.&nbsp;&nbsp;</p>
+                <p align="left">Note: ActionScript 3 user should go <a href="indexAs3.html" class="contentlink">here</a> after reding this tutorial for Action Script 3 way of accessing query strings. </p>
+                <p align="left">Here are example of the swf file with different query string 
+                  being passed:</P>
+                <table border="0" width="100%">
+                  <tr>
+                    <td>
+                    <p align="left"><b> &nbsp;imageFilename=images/image1.jpg<br>
+                  <!-- URL's used in the movie--><!-- text used in the movie--> 
+                  <OBJECT classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
+ codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0"
+ WIDTH="250" HEIGHT="250" id="flaMovie1" ALIGN="CENTER">
+                    <PARAM NAME=movie VALUE="flaMovie1.swf?imageFilename=images%2Fimage1%2Ejpg">
+                    <PARAM NAME=quality VALUE=high>
+                    <PARAM NAME=bgcolor VALUE=#FFFFFF>
+                    <embed src="flaMovie1.swf?imageFilename=images%2Fimage1%2Ejpg" quality="high" bgcolor="#FFFFFF" WIDTH="250" HEIGHT="250" NAME="flaMovie1" ALIGN TYPE="application/x-shockwave-flash" PLUGINSPAGE="http://www.macromedia.com/go/getflashplayer">
+                    </embed> 
+                  </OBJECT> </b></P>
+              <p align="left">
+                <b> imageFilename=images/image2.jpg<br>
+                <OBJECT classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
+ codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0"
+ WIDTH="250" HEIGHT="250" id="flaMovie1A" ALIGN="CENTER">
+                  <PARAM NAME=movie VALUE="flaMovie1.swf">
+                  <PARAM NAME=FlashVars VALUE="imageFilename=images%2Fimage2%2Ejpg">
+                  <PARAM NAME=quality VALUE=high>
+                  <PARAM NAME=bgcolor VALUE=#FFFFFF>
+                  <embed src="flaMovie1.swf" FlashVars="imageFilename=images%2Fimage2%2Ejpg" quality="high" bgcolor="#FFFFFF" WIDTH="250" HEIGHT="300" NAME="flaMovie1A" ALIGN TYPE="application/x-shockwave-flash" PLUGINSPAGE="http://www.macromedia.com/go/getflashplayer">
+                  </embed> 
+                </OBJECT> </b>
+                    <p></td>
+                    <td valign="top">
+<table border="0">
+  <tr>
+    <td bgcolor="#000000"><font color="#FFFFFF">&nbsp;Advertisement</font></td>
+  </tr>
+  <tr>
+    <td><!-- FASTCLICK.COM 180x150 Rectangle CODE for permadi.com -->
+<script language="javascript" src="http://media.fastclick.net/w/get.media?sid=13433&m=7&tp=9&d=j&t=s"></script>
+<noscript><a href="http://media.fastclick.net/w/click.here?sid=13433&m=7&c=1" target="_top">
+<img src="http://media.fastclick.net/w/get.media?sid=13433&m=7&tp=9&d=s&c=1"
+width=180 height=150 border=1></a></noscript><!-- FASTCLICK.COM 180x150 Rectangle CODE for permadi.com END --></td>
+  </tr>
+  <tr>
+    <td bgcolor="#000000"><font color="#FFFFFF" size="1"><a class="brightlinkunderlined" href="http://www.fastclick.com/re.f?13433" target="_top">FastClick Ad Network</a>
+ </font><!-- FASTCLICK.COM REFERRAL LINK [permadi.com] END --></td>
+  </tr>
+</table>
+</td>
+                  </tr>
+                </table>
+                <p align="left">
+<!-- GOOGLE AD SENSE BEGIN-->
+<script type="text/javascript"><!--
+google_ad_client = "pub-2969475232836602";
+google_ad_width = 728;
+google_ad_height = 15;
+google_ad_format = "728x15_0ads_al";
+google_ad_channel ="";
+google_color_border = "FF4500";
+google_color_bg = "FFEBCD";
+google_color_link = "DE7008";
+google_color_url = "E0AD12";
+google_color_text = "8B4513";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<!-- GOOGLE AD SENSE END-->                
+<p>
+                </td>
+                <td width="25" >&nbsp;</td>
+          </tr>
+      <tr>
+                <td width="25" bgcolor="#000000">&nbsp;</td>
+                <td bgcolor="#000000" colspan="2"> 
+                  <p align="center"><font face="Arial" color="#FFFFFF"><strong>EXAMPLE
+                  2<br>
+                  </strong></font><b><font color="#FFFFFF">Passing Cookie to
+                  Query String</font></b> 
+                </td>
+                <td width="25" bgcolor="#000000" >&nbsp;</td>
+      </tr>
+              <tr> 
+                <td width="25" height="21"><img src="../../images/blank.gif" width="25" height="3"></td>
+                <td height="21" colspan="2"><center>
+                    <p align="left">&nbsp;&nbsp;<br>
+                    Suppose that you have a Flash movie that displays 
+                      the current user name; and the user name is stored in a 
+                      cookie.&nbsp; You can get a cookie value into Flash via 
+                      <b>loadVariables</b> (with CGI); or even using <a class="contentlink" href="../flashjscommand/index.html">JavaScript 
+                      and FSCommand (see here)</a>.&nbsp; But, since the userName 
+                      is a fairly simple data, let's see how it can be done with 
+                      a query string.&nbsp; <b>Note: Query string is not safe, 
+                      <i>user can see it</i>.&nbsp; Anything confidential like 
+                      a password should NEVER be passed via the query string</b>.</p>
+                    <p align="left"> Because you don't even know who the user will 
+                      be, you cannot hard code the query string.&nbsp;&nbsp; That 
+                      is, you cannot put: <b>flashMovie.swf?userName=jim2000</b> 
+                      in the html code since <b>userName</b> might be <b>jane2</b> 
+                      instead of <b>jim2000</b>.&nbsp;&nbsp; So, in this case, 
+                      we must use another way to get the proper query string value.&nbsp;&nbsp;This 
+                      requires being able to write the query string on the fly, 
+                      as will be explored later.&nbsp;&nbsp; Let's first create 
+                      a cookie.&nbsp; Enter a user name below then click the button.&nbsp;&nbsp;
+                    When the button is clicked, a cookie named &quot;<b>userName</b>&quot; 
+                      will be created for you (JavaScript must be enabled for 
+                      this example to work):&nbsp;</p>
+            </center>
+                  <form name="form1">
+                    <p align="left">Please enter <b>userName</b> <input type="text" name="UserName" size="20" value="Guest User">&nbsp;
+                    <input type="button" value="SetCookie" onClick="javascript:setCookie('userName', document.form1.UserName.value);"></p>
+                  </form>
+                  <center>
+                    <p align="left">Now that we have a cookie, let's see how we 
+                      can get the cookie into Flash.&nbsp; Because Flash does 
+                      not support cookie reading directly, we need to use a scripting 
+                      language.&nbsp;&nbsp; I will show 2 examples.&nbsp; The 
+                      first one uses <b>ASP</b>, the second one uses <b>JavaScript</b>,
+                    and the third one uses <b>PHP</b>.&nbsp;&nbsp;</p>
+            </center>
+                  <p align="left"><b><font color="#CC0000">Using
+                  ASP</font></b></p>
+                  <p align="left">Below is an example of using <b> ASP</b> to get the cookie value
+                  and pass the value to Flash.&nbsp;&nbsp;</p>
+                  <table border="0" bgcolor="#CCCCCC" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td width="100%" bgcolor="#FFFFCC">
+                        <div align="left">
+                          <pre><font color="#000000">&lt;HTML&gt;
+&lt;HEAD&gt;&lt;TITLE&gt;Example&lt;/TITLE&gt;
+&lt;BODY&gt;
+&lt;%
+'compose OBJECT string
+swfTag = _
+  &quot;&lt;OBJECT classid=&quot;&quot;clsid:553540000&quot;&quot;&quot;&amp; vbCrLf &amp; _
+  &quot; codebase=&quot;&quot;http://macromedia.com/rsion=4,0,0,0&quot;&quot;&quot;&amp; vbCrLf &amp; _
+  &quot; ID=flaMovie WIDTH=250 HEIGHT=75&gt;&quot;&amp; vbCrLf &amp; _
+  &quot; &lt;PARAM NAME=movie &quot;&amp; vbCrLf &amp; _
+  &quot; VALUE=&quot;&quot;flaMovie2.swf?userName=&quot; &amp; _
+   </font><b><font color="#CC0000">Server.URLEncode(Request.Cookies(&quot;userName&quot;))</font></b><font color="#000000"> &amp;&quot;&quot;&quot;&gt;&quot;&amp; vbCrLf &amp; _
+  &quot; &lt;PARAM NAME=quality VALUE=medium&gt;&quot;&amp; vbCrLf &amp; _
+  &quot; &lt;PARAM NAME=bgcolor VALUE=#99CC33&gt;&quot;&amp; vbCrLf &amp; _
+  &quot; &lt;EMBED src=&quot;&quot;flaMovie2.swf?userName=&quot; &amp; _
+   </font><font color="#CC0000"><b>Server.URLEncode(Request.Cookies(&quot;userName&quot;))</b></font><font color="#000000"> &amp;&quot;&quot;&quot;&quot;&amp; vbCrLf &amp; _
+  &quot; bgcolor=#99CC33 WIDTH=250 HEIGHT=75 &quot;&amp; vbCrLf &amp; _
+  &quot; TYPE=&quot;&quot;application/x-shockwave-flash&quot;&quot;&gt;&quot;&amp; vbCrLf &amp; _
+  &quot; &lt;/EMBED&gt;&quot;&amp; vbCrLf &amp; _
+  &quot;&lt;/OBJECT&gt;&quot;
+ 'writes out the OBJECT string
+ Response.Write swfTag
+%&gt;
+</font>&lt;/BODY&gt;
+&lt;/HTML&gt;</pre>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                  <p align="left"><font size="2">Notice that I added lots of carriage returns
+                  (vbCrLf) so that the resulting code will be easier to debug.&nbsp;
+                  (Ie: when you open the page and view
+                  the page source, this prevents having everything written on a
+                  single line.).&nbsp; The&nbsp;</font></p>
+                  <p align="left"><font color="#000000">When that code is run, the line&nbsp; </font></p>
+                  <div align="left">
+                  <pre><font color="#000000">  &quot; VALUE=&quot;&quot;flaMovie2.swf?userName=&quot; &amp; _
+   </font><font color="#CC0000">Server.URLEncode(Request.Cookies(&quot;userName&quot;))</font><font color="#000000"> &amp;&quot;&quot;&quot;&gt;&quot;&amp; vbCrLf &amp; _</font></pre>
+                  </div>
+                  <p align="left"><font color="#000000">will be
+                  replaced with something like <b>flaMovie2.swf?userName=john</b>,
+                  assuming <b>john</b> is the <b>userName</b> stored in the
+                  cookie<b>.&nbsp; </b>The <b>Server.URLEncode()</b>
+                  function will make sure that the string is URL encoded, otherwise,
+                  if you enter something like &quot;<b>Jack &amp; Joan</b>&quot;,
+                  Flash will not interpret it correctly because the &quot;<b>&amp;</b>&quot;
+                  sign is a special character. </font></p>
+                  <p align="left"><a class="contentlink" href="example2asp1.asp">
+                  Click here to see the page
+                  generated by the script above</a>.&nbsp;&nbsp;(Remember to set
+                  the cookie first using the form above, or the result will be
+                  undefined)</p>
+                  <p align="left"> You can do it more cleanly and efficiently with a code like below
+                  (even better, you should consider writing a function if you
+                  use the code often):</p>
+                  <table border="0" bgcolor="#CCCCCC" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td width="100%" bgcolor="#FFFFCC">
+                        <div align="left"> 
+                          <pre><font color="#000000">&lt;HTML&gt;
+&lt;HEAD&gt;&lt;TITLE&gt;Example&lt;/TITLE&gt;&lt;/HEAD&gt;
+&lt;BODY&gt;
+&lt;OBJECT classid=&quot;clsid:D27CDB6E-AE6D-11cf-96B8-444553540000&quot;
+  codebase=&quot;http://macromedia.com/cabs/swflash.cab#version=4,0,0,0&quot;
+  ID=flaMovie WIDTH=250 HEIGHT=75&gt;
+  &lt;PARAM NAME=movie 
+    VALUE=&quot;flaMovie2.swf?userName=</font><b><font color="#FF0000">&lt;%=Server.URLEncode(Request.Cookies(&quot;userName&quot;))%&gt;</font></b><font color="#000000">&quot;&gt;
+  &lt;PARAM NAME=quality VALUE=medium&gt;
+  &lt;PARAM NAME=bgcolor VALUE=#99CC33&gt;
+  &lt;EMBED src=&quot;flaMovie2.swf?userName=</font><b><font color="#FF0000">&lt;%=Server.URLEncode(Request.Cookies(&quot;userName&quot;))%&gt;</font></b><font color="#000000">&quot;
+    bgcolor=#99CC33 WIDTH=250 HEIGHT=250 
+    TYPE=&quot;application/x-shockwave-flash&quot;&gt;
+  &lt;/EMBED&gt;
+&lt;/OBJECT&gt;
+&lt;/BODY&gt;
+&lt;/HTML&gt;</font></pre>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                  <p align="left">&nbsp;<br>
+                  <a class="contentlink" href="example2asp2.asp">
+                  Click here to see the page
+                  generated by the script above</a>.&nbsp;&nbsp;(Remember to set
+                  the cookie first using the form above, or the result will be
+                  undefined)</p>
+                <p align="left"><b><font color="#CC0000">Using JavaScript</font></b></p>
+                  <p align="left">With JavaScript, the process is similar.&nbsp;
+                  You can use <b>document.write</b> to pass
+                  the query string to Flash.&nbsp; You will need to write the entire OBJECT tag, since JavaScript
+                  is a client side scripting language, and you can't run a JavaScript code nested within an OBJECT tag.&nbsp;
+                  An example is shown
+                  below.&nbsp;&nbsp;</p>
+                  <table border="0" bgcolor="#CCCCCC" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td width="100%" bgcolor="#FFFFCC">
+                        <div align="left">
+                          <pre>&lt;HTML&gt;
+&lt;HEAD&gt;&lt;TITLE&gt;Example&lt;/TITLE&gt;
+&lt;SCRIPT LANGUAGE=&quot;JavaScript&quot;&gt;
+&lt;!--
+// a simple function that returns the value of a cookie
+function getCookie(name)
+{
+  if (document.cookie)
+  {
+    var cookies=document.cookie.split(&quot;;&quot;);
+    for (var i=0; i&lt;cookies.length; i++)
+    {
+      var varName=(cookies[i].split(&quot;=&quot;)[0]);
+      var varValue=(cookies[i].split(&quot;=&quot;)[1]);
+
+      // the next 2 lines trim whitespaces (Netscape 7 problem)
+      while (varName.charAt(0)==&quot; &quot;)
+        varName=varName.substr(1,varName.length);
+      // the escape() function will return URL encoded string.
+      if (varName==name)
+        return escape(varValue);
+    }
+  }
+}
+//--&gt;
+&lt;/SCRIPT&gt;
+&lt;/HEAD&gt;
+&lt;BODY&gt;
+<font color="#000000">&lt;SCRIPT LANGUAGE=&quot;JavaScript&quot;&gt;
+&lt;!--
+// this writes out the entire OBJECT tag.  If you use this kind of code
+// often, you should consider writing a function to do this.  Then you
+// can pass parameters (swf filename, width, height, etc) and reuse the
+// function.  Some parameters have been truncated to fit this space.  
+// Just pay attention to the red portion.
+document.write(
+  '&lt;OBJECT classid=&quot;clsid:D27CDB6E-AE6D-11cf-96B8-444553540000&quot;\n'+
+  '  codebase=&quot;http://macromedia.com/cabs/swflash.cab#version=4,0,0,0&quot;\n'+   
+  '  ID=flaMovie WIDTH=250 HEIGHT=75&gt;\n'+
+  '  &lt;PARAM NAME=movie '+
+  '    VALUE=&quot;flaMovie2.swf</font><font color="#CC0000"><b>?userName=</b></font><font color="#000000">' + </font><b><font color="#CC0000">getCookie('userName')</font></b><font color="#000000">+'&quot;&gt;\n'+
+  '  &lt;PARAM NAME=quality VALUE=medium&gt;\n'+
+  '  &lt;PARAM NAME=bgcolor VALUE=#99CC33&gt;\n'+
+  '  &lt;EMBED src=&quot;flaMovie2.swf</font><b><font color="#CC0000">?userName=</font></b><font color="#000000">' + </font><b><font color="#CC0000">getCookie('userName')</font></b><font color="#000000">+'&quot;&gt;\n'+
+  '    bgcolor=#99CC33 WIDTH=250 HEIGHT=250 \n'+
+  '    TYPE=&quot;application/x-shockwave-flash&quot;&gt;\n'+
+  '  &lt;/EMBED&gt;\n'+
+  '&lt;/OBJECT&gt;\n');
+//--&gt;
+&lt;/SCRIPT&gt;
+</font>&lt;/BODY&gt;
+&lt;/HTML&gt;</pre>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                  <p align="left"><font size="2">Note: Coding <b>document.write</b>s
+                  like above is very error prone and hard to debug because when
+                  you do View Source after opening the document, you don't see
+                  what the being written by the <b>document.write</b>s.&nbsp; Sometimes you forget to put a closing tag or a closing &quot;<b>&gt;&quot;</b>&nbsp;and
+                  don't know why the page won't load.&nbsp; The easiest way for
+                  me to debug this kind of code is to use an older Netscape 4.8
+                  browser.&nbsp; That older browser (at least the PC version) shows the result of <b>document.write</b>s
+                  when you do View Source.&nbsp; This is also why I appended the
+                  <b>\n</b> (start anew new line) often: to make it easier to see the result.</font></p>
+                  <p align="left"><a class="contentlink" href="example2js.html">Click here to see the page
+                  generated by the script above</a>.&nbsp;&nbsp;(Remember to set
+                  the cookie first using the form above, or the result will be
+                  undefined).&nbsp; Note: <font color="#000000">The <b>escape()</b>
+                  function in <b>getCookie()</b> will make sure that the string is URL encoded, otherwise,
+                  if you enter something like &quot;<b>Jack &amp; Joan</b>&quot;,
+                  Flash will not interpret it correctly because &quot;<b>&amp;</b>&quot;
+                  is a special character.&nbsp; Note however, that the escape() 
+					function does not encode '+' and '/' characters.&nbsp; For a 
+					workaround, <a href="../urlEncoding" class="contentlink">see 
+					here</a>.</font></p>
+                  <p align="left"><b><font color="#CC0000">Using PHP<br>
+                </font><font color="#FFFFFF">&nbsp;&nbsp;
+                <br>
+                </font></b>This example is for PHP 4 or above.</p>
+                  <table border="0" bgcolor="#CCCCCC" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td width="100%" bgcolor="#FFFFCC">
+                        <div align="left">
+                          <pre>&lt;OBJECT classid=&quot;clsid:D27CDB6E-AE6D-11cf-96B8-444553540000&quot;
+  codebase=&quot;http://macromedia.com/cabs/swflash.cab#version=6,0,0,0&quot;
+  ID=flaMovie WIDTH=250 HEIGHT=250&gt;
+  &lt;PARAM NAME=movie VALUE=&quot;flaMovie2.swf?<b><font color="#CC0000">&lt;?php echo(urlencode($userName));?&gt;</font></b>&quot;&gt;
+  &lt;PARAM NAME=quality VALUE=medium&gt;
+  &lt;PARAM NAME=bgcolor VALUE=#99CC33&gt;
+  &lt;EMBED src=&quot;flaMovie2.swf?userName=<b><font color="#CC0000">&lt;?php echo(urlencode($userName));?&gt;</font></b>&quot;
+    bgcolor=#99CC33 WIDTH=250 HEIGHT=250 
+    TYPE=&quot;application/x-shockwave-flash&quot;&gt;
+  &lt;/EMBED&gt;
+&lt;/OBJECT&gt;</pre>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                  
+                <p align="left">Or, using <b>$HTTP_COOKIE_VARS[]</b>:</p>
+                  <table border="0" bgcolor="#CCCCCC" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td width="100%" bgcolor="#FFFFCC">
+                        <div align="left">
+                          <pre>&lt;OBJECT classid=&quot;clsid:D27CDB6E-AE6D-11cf-96B8-444553540000&quot;
+  codebase=&quot;http://macromedia.com/cabs/swflash.cab#version=6,0,0,0&quot;
+  ID=flaMovie WIDTH=250 HEIGHT=250&gt;
+  &lt;PARAM NAME=movie 
+    VALUE=&quot;flaMovie2.swf?<b><font color="#CC0000">&lt;?php echo(urlencode($HTTP_COOKIE_VARS[&quot;userName&quot;]));?&gt;</font></b>&quot;&gt;
+  &lt;PARAM NAME=quality VALUE=medium&gt;
+  &lt;PARAM NAME=bgcolor VALUE=#99CC33&gt;
+  &lt;EMBED 
+    src=&quot;flaMovie2.swf?userName=<b><font color="#CC0000">&lt;?php echo(urlencode($HTTP_COOKIE_VARS[&quot;userName&quot;]));?&gt;</font><font color="#000000">&quot;</font></b>
+    bgcolor=#99CC33 WIDTH=250 HEIGHT=250 
+    TYPE=&quot;application/x-shockwave-flash&quot;&gt;
+  &lt;/EMBED&gt;
+&lt;/OBJECT&gt;</pre>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                <p align="left"><font color="#000000">When that code is run, the line </font><b>$userName</b><font color="#000000"><b>
+                </b>(which is the same as
+                </font><b>$HTTP_COOKIE_VARS[&quot;userName&quot;]</b>) <font color="#000000">will be
+                  replaced with the <b>userName</b> stored in the
+                  cookie<b>.&nbsp; </b>The <b>urlencode()</b> function encodes
+                the string to make sure that special characters in the
+                string are URL encoded.&nbsp; Without this, if the userName
+                contains special characters, such as the &quot;<b>&amp;</b>&quot;
+                character in: <b>John &amp; Associates</b>, then the result
+                will become unpredictable.<br>
+                <br>
+                </font><a class="contentlink" href="example2php.php">
+                  Click here to see the page
+                  generated by the script above</a>.&nbsp;&nbsp;(Remember to set
+                  the cookie first using the form above, or the result will be
+                  undefined)</p>
+                  <p align="left"><b>Next, we will discuss how to pass HTTP query
+                  string (such as data from html forms) to Flash.&nbsp;</b></p>
+                  
+                </td>
+                <td width="25" height="21"><img src="../../images/blank.gif" width="25" height="3"></td>
+              </tr>
+              <tr> 
+                <td width="25" height="19"><img src="../../images/blank.gif" width="25" height="3"></td>
+                <td height="19" colspan="2"> 
+                  <p align="center"><b><font color="#CC0000">&lt;&lt;</font></b><font face="Arial" color="#0099CC"><b><a CLASS="backbutton" HREF="index2.html">NEXT
+                  PAGE</a></b></font><b><font color="#CC0000">&gt;&gt;<br>
+                  &lt;&lt;</font></b><font face="Arial" color="#0099CC"><b><a CLASS="backbutton" HREF="../index.html">INDEX</a></b></font><b><font color="#CC0000">&gt;&gt;</font></b> 
+                  <br>
+                  <br>
+                  <font size="2">
+                  <a class="contentlink" href="../termofuse/index.html">Terms
+        of Use
+        </a>
+        </font><font face="Arial">
+                  <a class="darklink" href="mailto:permadi@permadi.com">
+                  <br>
+                  permadi@permadi.com</a>&nbsp;<br>
+                  (C) F. Permadi<br>
+                  </font><br>
+&nbsp;<div align="center">
+                </div>
+                  <p align="center">&nbsp;&nbsp; 
+                </td>
+                <td width="25" height="19"><img src="../../images/blank.gif" width="25" height="3"></td>
+              </tr>
+      </table>
+      </div>
+</TABLE>
+<p>
+<!--GOOGLE AD BEGIN -->
+<CENTER>
+<script type="text/javascript"><!--
+google_ad_client = "pub-2969475232836602";
+google_ad_width = 728;
+google_ad_height = 90;
+google_ad_format = "728x90_as";
+google_ad_type = "text";
+google_ad_channel ="";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</CENTER>
+<!--GOOGLE AD END -->
+
+
+</BODY>                

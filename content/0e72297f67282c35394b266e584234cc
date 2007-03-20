@@ -1,0 +1,917 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+ "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+  Use Windows Vista Reliability Monitor to Troubleshoot Crashes - How-To Geek	</title>
+	<meta name="verify-v1" content="WiU7236KQY8e6jcxePbZscPXDuMvJ3b9ydseGd4G5AE=" />
+    <META HTTP-EQUIV="EXPIRES" CONTENT="0">
+    <META NAME="RESOURCE-TYPE" CONTENT="DOCUMENT">
+    <META NAME="DISTRIBUTION" CONTENT="GLOBAL">
+    <META NAME="AUTHOR" CONTENT="www.howtogeek.com">
+    <META NAME="COPYRIGHT" CONTENT="Copyright (c) by HowToGeek.com">
+    <META NAME="KEYWORDS" CONTENT="Windows, Windows Vista, Ubuntu, Programming, Networking, Firefox, Help, Solaris, Linux, Unix, VMware ,SQL Server, Oracle, MySQL, Analytics, Suse, Redhat, network security, firewall, postgresql,database, how to, how-to, howto, hints, tips, shell scripts, system administration ">
+    <META NAME="DESCRIPTION" CONTENT="Computer Help from your Friendly How-To Geek">
+    <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+    <META NAME="REVISIT-AFTER" CONTENT="1 DAYS">
+    <META NAME="RATING" CONTENT="GENERAL">
+	<link title="How-To Geek Search" type="application/opensearchdescription+xml" rel="search" href="http://www.howtogeek.com/public/search/opensearch.html" />
+		<meta name="title" content="Use Windows Vista Reliability Monitor to Troubleshoot Crashes" />
+	<meta name="description" content="" />
+	<link rel="image_src" href="" />
+	    	<link rel="stylesheet" href="/public/css/howtogeek.css?1291707310t1" type="text/css">
+    	<link rel="stylesheet" href="/public/css/print.css?1289724288" type="text/css" media="print" >
+	<link rel="shortcut icon" href="http://http.cdnlayer.com/howtogeek/favicon.ico" type="image/x-icon" />
+
+		<script type="text/javascript" src="http://http.cdnlayer.com/howtogeek/public/js/jquery.min.js"></script>
+		<script type="text/javascript" src="/public/js/megamenu.js"></script>
+		<!--[if lte IE 7]>
+	<link rel="stylesheet" type="text/css" href="http://http.cdnlayer.com/howtogeek/public/css/ie_hacks.css?1289724288" />
+	<![endif]-->
+	<!--[if lt IE 7]>
+	<link rel="stylesheet" type="text/css" href="http://http.cdnlayer.com/howtogeek/public/css/ie6_hacks.css?1289724288" />
+	<link rel="stylesheet" type="text/css" href="http://http.cdnlayer.com/howtogeek/public/css/ie_hacks.css?1289724288" />
+	<![endif]-->
+		<link rel="alternate" type="application/rss+xml" title="How-To Geek &raquo; Use Windows Vista Reliability Monitor to Troubleshoot Crashes Comments Feed" href="http://www.howtogeek.com/howto/windows-vista/use-windows-vista-reliability-monitor-to-troubleshoot-crashes/feed/" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.howtogeek.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.howtogeek.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='How-To Geek' href='http://www.howtogeek.com' />
+<link rel='start' title='Upgrade Ubuntu from Breezy to Dapper' href='http://www.howtogeek.com/howto/uncategorized/upgrade-breezy-to-dapper/' />
+<link rel='prev' title='Stop Firefox From Tracking Downloads' href='http://www.howtogeek.com/howto/internet/firefox/stop-firefox-from-tracking-downloads/' />
+<link rel='next' title='Command Line Hack for: &quot;Terminal Server Has Exceeded the Maximum Number of Allowed Connections&quot;' href='http://www.howtogeek.com/howto/windows/command-line-hack-for-terminal-server-has-exceeded-the-maximum-number-of-allowed-connections/' />
+<meta name="generator" content="WordPress 2.9.2" />
+<link rel='canonical' href='http://www.howtogeek.com/howto/windows-vista/use-windows-vista-reliability-monitor-to-troubleshoot-crashes/' />
+
+		<link rel="alternate" type="application/rss+xml" title="the How-To Geek RSS Feed" href="http://feeds.howtogeek.com/HowToGeek" />
+	<script type="text/javascript" src="/public/js/TmnAdsense-min.js"></script>
+<meta property="fb:page_id" content="65878196434" />
+</head>
+
+<body >
+<center id="top728ad">
+<!-- begin ad tag -->
+<script type="text/javascript">
+//<![CDATA[
+ord=Math.random()*10000000000000000;
+document.write('<script type="text/javascript" src="http://ad.doubleclick.net/adj/tmn.howtogeek/;pos=atf;sz=728x90;ord=' + ord + '?"><\/script>');
+//]]>
+</script>
+<noscript><a href="http://ad.doubleclick.net/jump/tmn.howtogeek/;sz=728x90;ord=123456789?" target="_blank" ><img src="http://ad.doubleclick.net/ad/tmn.howtogeek/;sz=728x90;ord=123456789?" border="0" alt="" /></a></noscript>
+<!-- end ad tag -->
+</center><div id="doc4" class="yui-t7">
+	<div id="hd" style="">
+		
+	</div>
+	<div id="bd">
+		<div class="yui-g" id="tophead">
+			<div class="header">
+					<div id="toplinkbar">
+						<div id="topbarleft">
+							<ul>
+								<li><a id="twitterlink" href="http://feeds.howtogeek.com/howtogeek"><img width="84px" height="28px" src="/public/images/blank.gif" border=0 /></a></li>
+								<li><a href="http://twitter.com/howtogeek"><img width="70px" height="28px" src="/public/images/blank.gif" border=0 /></a></li>
+							</ul>								
+						</div>						
+						
+						<div id="topbarright">
+							<ul>
+								<li><img width="58px" height="28px" src="/public/images/blank.gif" border=0 /></li>
+								<li><a href="http://sysadmingeek.com"><img width="35px" height="28px" src="/public/images/blank.gif" border=0 /></a></li>
+								<li><a href="http://productivegeek.com"><img width="104px" height="28px" src="/public/images/blank.gif" border=0 /></a></li>
+								<li><a href="http://www.howtogeek.com"><img width="81px" height="28px" src="/public/images/blank.gif" border=0 /></a></li>
+							</ul>								
+						</div>
+					</div>
+					<div style="clear:both;"></div>
+					<div id="mainheader">
+						<h1 id="printH1">How-To Geek</h1>
+						<a href="http://www.howtogeek.com/" style="float:left;"><img id="mainLogo" src="/public/images/blank.gif" border="0" width="450" height="168" alt="How-To Geek" title="How-To Geek" style="margin-left:40px;"></a>
+						<div id="skyboxes">
+							<a title="Join the Discussion on our Forum" href="http://www.howtogeek.com/forum/"><img width="115" height="157" border="0" style="margin-left:0px;" src="/public/images/blank.gif"></a>
+							<a title="Check Out Our Massive Collection of Windows 7 Articles!" href="http://www.howtogeek.com/tag/windows-7/"><img width="115" height="157" border="0" style="margin-left:9px;" src="/public/images/blank.gif"></a>
+							<a title="Just Read the Best Articles"  href="http://www.howtogeek.com/t/features/"><img width="115" height="157" border="0" style="margin-left:9px;" src="/public/images/blank.gif"></a>
+							<div style="clear:both;"></div>
+						</div>
+						<div style="clear:both;"></div>
+					</div>
+			</div>
+		</div>
+		<div class="yui-g">
+			<div class="menu">
+				<div id="mainnav">
+					<ul>
+						<li><a class="navbutton" id="menu-home" href="http://www.howtogeek.com/" title="How-To Geek Home"><img width="62px" height="26px" src="/public/images/blank.gif" border=0 /></a></li>
+						<li><a class="navbutton" id="menu-forum" href="http://www.howtogeek.com/forum/" title="Join the Discussion on Our Forum"><img width="75px" height="26px" src="/public/images/blank.gif" border=0 /></a></li>
+						<li><a class="navbutton" id="menu-features" href="http://www.howtogeek.com/t/features/" title="View Our Feature Articles"><img width="88px" height="26px" src="/public/images/blank.gif" border=0 /></a></li>
+						<li style="padding-right:0px;"><a class="navbutton" id="menu-etc" href="http://www.howtogeek.com/news/" title="Random Geek Links and News"><img width="52px" height="26px" src="/public/images/blank.gif" border=0 /></a></li>
+					</ul>
+					<div style="clear:both;"></div>
+				</div>				
+											
+						
+				
+				<div id="menucat">
+					<ul>
+						<li><a class="menuicon" id="menu-win7" href="http://www.howtogeek.com/tag/windows-7/" title="View Articles about Windows 7"><img width="33px" height="26px" src="/public/images/blank.gif" border=0 /></a></li>
+						<li><a class="menuicon" id="menu-virus" href="http://www.howtogeek.com/tag/malware/" title="View Articles about Malware"><img width="28px" height="26px" src="/public/images/blank.gif" border=0 /></a></li>
+						<li><a class="menuicon" id="menu-vista" href="http://www.howtogeek.com/tag/windows-vista/" title="View Articles about Windows Vista"><img width="30px" height="26px" src="/public/images/blank.gif" border=0 /></a></li>
+						<li><a class="menuicon" id="menu-xp" href="http://www.howtogeek.com/tag/windows/" title="View Articles about Windows XP"><img width="33px" height="26px" src="/public/images/blank.gif" border=0 /></a></li>
+						<li><a class="menuicon" id="menu-office" href="http://www.howtogeek.com/tag/microsoft-office/" title="View Articles about Microsoft Office"><img width="27px" height="26px" src="/public/images/blank.gif" border=0 /></a></li>
+						<li><a class="menuicon" id="menu-web" href="http://www.howtogeek.com/tag/internet/" title="View Articles about Web Browsing"><img width="29px" height="26px" src="/public/images/blank.gif" border=0 /></a></li>
+						<li><a class="menuicon" id="menu-linux" href="http://www.howtogeek.com/tag/linux/" title="View Articles about Linux and Ubuntu"><img width="26px" height="26px" src="/public/images/blank.gif" border=0 /></a></li>
+						<li><a class="menuicon" id="menu-fun" href="http://www.howtogeek.com/tag/desktop-fun/" title="View Articles about Desktop Fun"><img width="27px" height="26px" src="/public/images/blank.gif" border=0 /></a></li>
+						<li><a class="menuicon" id="menu-misc" href="http://www.howtogeek.com/tag/the-geek-blog/" title="View Articles about Everything Else"><img width="25px" height="26px" src="/public/images/blank.gif" border=0 /></a></li>
+					</ul>
+					<div style="clear:both;"></div>
+				</div>
+				
+
+
+				<div id="menusearch" style="height:28px;background:url(/public/images/search-button.gif) top right no-repeat;padding-right:25px;">
+					<!-- Google CSE Search Box Begins  -->
+					<form style="display:inline" action="http://www.howtogeek.com/sitesearch/" id="searchbox_009481737823548119489:w5lekpyovpo">
+						<input type="hidden" name="cx" value="009481737823548119489:w5lekpyovpo" />
+						<input type="hidden" name="cof" value="FORID:9" />
+						<input type="text" name="q" size="17" />
+					</form>
+					<script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=searchbox_009481737823548119489%3Aw5lekpyovpo&lang=en"></script>
+					<!-- Google CSE Search Box Ends -->
+					<div style="width:25px;height:28px;"></div>
+					<div style="clear:both;"></div>
+				</div>
+				
+				<div id="menulogin">
+					<div class="loginbox">
+													<a href="http://www.howtogeek.com/login/" title="Welcome! It's Time for Geekery!">Login</a> / <a href="http://www.howtogeek.com/register/" title="Create a How-To Geek Account">Signup</a>
+											 </div>
+				</div>
+					
+				
+
+			</div>
+		</div>
+		<div class="yui-g" id="headerpanel">
+		</div>
+<div class="yui-ge">
+	<div class="yui-u first">
+		<div class="content">
+		<h1 id="printHeader" style="display:none;">How-To Geek</h1>
+		<!-- abovepost -->
+					<div class="thepost" id="post-312">
+				
+				<div style="width:650px;margin-bottom:10px;margin-top:-30px;min-height:30px;">
+												<script>TmnAdsense.display(options = {'adsbyposition':'topleft','adsbyColor':'000000','width':630,'ad_width':170,'max_ads':3,'col_margin':55,'titleFontSize':17,'titleFontColor':'003371','adFontFamily':'arial','titleMarginBottom':0,'descFontSize':12,'descFontColor':'000000','linkFontSize':10,'linkFontColor':'000000','channel_id':'2315583640'});</script>										
+					<div style="clear:both;"></div>
+				</div>
+				<style>
+					.thepost h2 a {text-decoration:none;}
+					.thepost h2 a:hover {text-decoration:underline;}
+					.thecontent p:first-child {margin-top:0px;}
+					.sharinglinks li {display:inline;}
+					.sharinglinks {width:650px;}
+					.fbShare {margin-left:0px;}
+					.diggShare, .twitShare {float:right;}
+					.twitShare {margin-left:10px;}
+				</style>
+				
+				<h2><a href="http://www.howtogeek.com/howto/windows-vista/use-windows-vista-reliability-monitor-to-troubleshoot-crashes/" rel="bookmark" title="Permanent Link: Use Windows Vista Reliability Monitor to Troubleshoot Crashes">Use Windows Vista Reliability Monitor to Troubleshoot Crashes</a> </h2>
+				
+				<ul class="sharinglinks">
+
+					<li class="fbShare">
+						<iframe src="http://www.facebook.com/plugins/like.php?href=http://www.howtogeek.com/howto/windows-vista/use-windows-vista-reliability-monitor-to-troubleshoot-crashes/&layout=standard&show_faces=false&width=450&action=like&colorscheme=light&height=25" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:25px;" allowTransparency="true"></iframe>
+					</li>
+					
+														</ul>
+				<div style="clear:both;height:5px;"></div>
+
+				<div class="thecontent">
+					<!-- google_ad_section_start -->
+					<p>If you&#8217;ve owned a computer running Windows, you&#8217;ve probably complained about things crashing on your computer. Windows Vista includes a Reliability Monitor utility that lets you track all of the times that something crashed.</p>
+<p>To get to this screen, you&#8217;ll just need to open Performance and Reliability Monitor in the administrative tools section (or just type <em>perf</em> into the start menu search box, and it&#8217;ll show up)</p>
+<p>Once you are there, click on Reliability Monitor in the left hand tree menu, and you&#8217;ll be greeted with this screen:&nbsp;</p>
+<p><img height="470" src="http://www.howtogeek.com/wp-content/uploads/UseWindowsVistaReliabilityMonitortoTrack_147E3/image01.png" width="491"> </p>
+<p>You can track how stable your computer is, based on the number of crashes, and you can select a large number of dates to get a nice graph like you see above, which includes information on various system failures, as well as installs and uninstalls of software.</p>
+<p>In order to illustrate how this could be used for troubleshooting, let&#8217;s give an example:</p>
+<p>Your computer has been crashing for at least a few weeks now, but you aren&#8217;t sure what you did to make it start crashing. You go to the Reliability Monitor and discover that there were no crashes before 2 weeks ago, and the day before the crashes started, you installed some shareware software. Now we know that the shareware software is what probably caused the application crashes, and we can just uninstall that.</p>
+<p>Note: The <a href="http://www.howtogeek.com/howto/windows-vista/using-windows-vista-system-restore/">System Restore</a> feature is very useful, and is well worth using as you tinker with Windows Vista. Most installations of software automatically set a restore point, but if you are tinkering with the registry or other system settings, you might want to set a restore point first.</p>
+<script type="text/javascript" src="http://www.howtogeek.com/wp-content/plugins/top-10/top-10-addcount.js.php?top_ten_id=312"></script>					<!-- google_ad_section_end -->
+				</div>
+				
+
+				<div class="smalltext usertagline" style="float:left;font-style:italics">
+					<span class='date'>This article was originally written on 03/17/07</span>
+					<span class='tags'>Tagged with: <a href="http://www.howtogeek.com/tag/windows-vista/system-administration/" title="View all posts in System Administration" rel="category tag">System Administration</a>,  <a href="http://www.howtogeek.com/tag/windows-vista/" title="View all posts in Vista" rel="category tag">Vista</a></span>
+				</div>
+
+				<div style="clear:both;"></div>
+				
+				<div style="clear:both;"></div>
+				<div style="width:650px;margin-bottom:10px;margin-top:15px;">
+						<script>TmnAdsense.display(options = {'adsbyposition':'topleft','adsbyColor':'000000','width':630,'ad_width':170,'max_ads':3,'col_margin':55,'titleFontSize':17,'titleFontColor':'003371','adFontFamily':'arial','titleMarginBottom':0,'descFontSize':12,'descFontColor':'000000','linkFontSize':10,'linkFontColor':'000000','channel_id':'4956229975'});</script>					<div style="clear:both;"></div>
+				</div>				
+				
+				
+
+				
+				<div id='ad-email-box' style="margin-top:10px;margin-bottom:10px;width:640px;overflow:none;">
+	
+				</div>
+
+								<div class="contsep"></div>
+				<div id='related-table'>
+						<style type='text/css'>
+		#articleTable {
+			border: 0;
+			width: 640px;
+		}
+		#articleTable td { 
+			padding:4px;
+		}
+
+		#articleTable .header {
+			background-color: #DDD;
+			padding:4px;
+			font-weight: bold;
+			text-align: center;
+		}
+
+		#articleTable ul {
+			margin-left: 2px;
+			padding:8px;
+			padding-left:0px;
+		}
+
+		#articleTable ul li {
+			background: transparent url(http://www.howtogeek.com/wp-content/themes/htg/img/bullet_black.png) no-repeat left center;
+			list-style-type: none;
+			padding: 3px 0px 3px 18px;
+		}
+		</style>
+				<table border='0' cellpadding='3' cellspacing='0' id='articleTable'>
+			<tr>
+				<td class='header' width='50%'>Latest Features</td>
+				<td class='header' width='50%'>How-To Geek ETC</td>				
+			</tr>
+			<tr>
+				<td valign='top'><ul>			<li><a href="http://www.howtogeek.com/howto/14529/the-complete-list-of-ipad-tips-tricks-and-tutorials/">The Complete List of iPad Tips, Tricks, and Tutorials</a></li>
+					<li><a href="http://www.howtogeek.com/howto/37920/the-50-best-registry-hacks-that-make-windows-better/">The 50 Best Registry Hacks that Make Windows Better</a></li>
+					<li><a href="http://www.howtogeek.com/howto/37506/the-how-to-geek-holiday-gift-guide-geeky-stuff-we-like/">The How-To Geek Holiday Gift Guide (Geeky Stuff We Like)</a></li>
+					<li><a href="http://www.howtogeek.com/howto/37271/lcd-led-plasma-the-how-to-geek-guide-to-hdtv-technology/">LCD? LED? Plasma? The How-To Geek Guide to HDTV Technology</a></li>
+					<li><a href="http://www.howtogeek.com/howto/36778/the-how-to-geek-guide-to-learning-photoshop-part-8-filters/">The How-To Geek Guide to Learning Photoshop, Part 8: Filters</a></li>
+					<li><a href="http://www.howtogeek.com/howto/36440/improve-digital-photography-by-calibrating-your-monitor/">Improve Digital Photography by Calibrating Your Monitor</a></li>
+		</ul></td>
+				<td valign='top'><ul>			<li><a href="http://www.howtogeek.com/news/drag2up-lets-you-drag-and-drop-files-to-the-web-with-ease/2470/">Drag2Up Lets You Drag and Drop Files to the Web With Ease</a></li>
+					<li><a href="http://www.howtogeek.com/news/the-spam-police-parts-1-and-2-goodbye-spammers-videos/2464/">The Spam Police Parts 1 and 2 – Goodbye Spammers [Videos]</a></li>
+					<li><a href="http://www.howtogeek.com/news/snow-angels-theme-for-windows-7/2461/">Snow Angels Theme for Windows 7</a></li>
+					<li><a href="http://www.howtogeek.com/news/exploring-the-jungle-ruins-wallpaper/2457/">Exploring the Jungle Ruins Wallpaper</a></li>
+					<li><a href="http://www.howtogeek.com/news/protect-your-privacy-when-browsing-with-chrome-and-iron-browser/2448/">Protect Your Privacy When Browsing with Chrome and Iron Browser</a></li>
+					<li><a href="http://www.howtogeek.com/news/free-shipping-day-is-friday-december-17-2010-national-free-shipping-day/2426/">Free Shipping Day is Friday, December 17, 2010 – National Free Shipping Day</a></li>
+		</ul></td>
+			</tr>
+		</table>
+		</div>
+				<div class="contsep"></div>
+
+			</div>
+			
+<!-- You can start editing here. -->
+
+<style>
+	#commentform p {padding:10px;}
+	#respond h3 {font-size:140%;margin-left:10px;}
+	#commentform #submit {padding:10px;}
+	#respond h3 {border-top:1px solid #CCC;padding-top:20px;width:600px;margin-top:10px;}
+	
+.commentlist {float: left;width: 640px;border-top: 1px solid #dfdfdf;border-left: 1px solid #dfdfdf;border-right: 1px solid #dfdfdf;margin-top:10px;margin-bottom:20px;}
+
+
+
+</style>
+
+	<h3 id="comments">Comments <span id="commentnumber">(15)</h3>
+
+
+
+
+
+	<ol class="commentlist">
+	
+						<li class="comment-alt" id="comment-17348">
+	        	
+			<div class="commentmetadata date"><a href="#comment-17348" title="">May 31, 2007 3:19 pm</a> </div>
+			<div id="commentauthor">
+				<div style="width:50px;height:50px;float:left;">
+					<img alt='' src='http://www.gravatar.com/avatar/0800cacf240996c75f771bafdbb5ad8e?s=40&amp;d=http%3A%2F%2Fwww.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />   			</div>
+				<div style="padding-top:10px;width:300px;">
+					Bernie Becker				</div>
+			</div>
+			
+			<div style="clear:both;"></div>
+			<div class="commenttext">
+			<p>I couldn&#8217;t believe the requirement to be in &#8220;Safe Mode&#8221; to successfully System Restore VISTA.<br />
+I worked for day trying to figure what was wrong.  Who knew?</p>
+			</div>
+					</li>
+						<li class="comment-def" id="comment-24274">
+	        	
+			<div class="commentmetadata date"><a href="#comment-24274" title="">October 9, 2007 1:44 pm</a> </div>
+			<div id="commentauthor">
+				<div style="width:50px;height:50px;float:left;">
+					<img alt='' src='http://www.gravatar.com/avatar/b9f8da5e5891a51e70c303aacf0d5d7f?s=40&amp;d=http%3A%2F%2Fwww.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />   			</div>
+				<div style="padding-top:10px;width:300px;">
+					Doug Faber				</div>
+			</div>
+			
+			<div style="clear:both;"></div>
+			<div class="commenttext">
+			<p>New to win Vista and a Toshiba laptop which has crashed or lost something when in use causing lines and a dark screen to appear for no reason.<br />
+I opened the the Realibility Monitor as listed, and it does show errors, but does not say what caused them.</p>
+<p>It only says no events for the selected types are available so I don&#8217;t know how I can prevent them in the future.</p>
+<p>Thanks for any suggestions.</p>
+<p>I never had this with my desktop running xp</p>
+			</div>
+					</li>
+						<li class="comment-alt" id="comment-25116">
+	        	
+			<div class="commentmetadata date"><a href="#comment-25116" title="">October 21, 2007 6:01 am</a> </div>
+			<div id="commentauthor">
+				<div style="width:50px;height:50px;float:left;">
+					<img alt='' src='http://www.gravatar.com/avatar/af961636b65841210b505d3433afdb3b?s=40&amp;d=http%3A%2F%2Fwww.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />   			</div>
+				<div style="padding-top:10px;width:300px;">
+					Ed Hurst				</div>
+			</div>
+			
+			<div style="clear:both;"></div>
+			<div class="commenttext">
+			<p>I opened the reliability monitor and it does a good job on showing problems/crashes but there is limited help in finging the causes.  Problems shown: IE stopped working, Outlook stopped responding, or OS stopped working.</p>
+<p>Any suggestions?</p>
+			</div>
+					</li>
+						<li class="comment-def" id="comment-31118">
+	        	
+			<div class="commentmetadata date"><a href="#comment-31118" title="">December 26, 2007 10:28 pm</a> </div>
+			<div id="commentauthor">
+				<div style="width:50px;height:50px;float:left;">
+					<img alt='' src='http://www.gravatar.com/avatar/3931d4b1c90c496672374511c50387c6?s=40&amp;d=http%3A%2F%2Fwww.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />   			</div>
+				<div style="padding-top:10px;width:300px;">
+					James S				</div>
+			</div>
+			
+			<div style="clear:both;"></div>
+			<div class="commenttext">
+			<p>I read this article&#8230;i reformatted my drive 2 times&#8230;Comprehensive (7passes) and then a custom lucky 13!!!&#8230;well&#8230; to no avail, computer still crashes!!! I get the BSOD (blue screen of death) everytime.  any suggestions?&#8230;thanks alot&#8230;James S.</p>
+			</div>
+					</li>
+						<li class="comment-alt" id="comment-41105">
+	        	
+			<div class="commentmetadata date"><a href="#comment-41105" title="">March 18, 2008 11:21 pm</a> </div>
+			<div id="commentauthor">
+				<div style="width:50px;height:50px;float:left;">
+					<img alt='' src='http://www.gravatar.com/avatar/b406bdf3103356df0be4c06f36e36127?s=40&amp;d=http%3A%2F%2Fwww.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />   			</div>
+				<div style="padding-top:10px;width:300px;">
+					Darren N				</div>
+			</div>
+			
+			<div style="clear:both;"></div>
+			<div class="commenttext">
+			<p>Hi, your article is very informative. </p>
+<p>What kind of numbers in the reliability monitor would warrant really changing things around? I have reached as low as 2.9 but I am currently at 6.9 I believe. I&#8217;m not sure if I should expect more than this. Perhaps with SP1 it will improve. </p>
+<p>Thank you for any suggestions.</p>
+			</div>
+					</li>
+						<li class="comment-def" id="comment-42439">
+	        	
+			<div class="commentmetadata date"><a href="#comment-42439" title="">April 2, 2008 9:47 pm</a> </div>
+			<div id="commentauthor">
+				<div style="width:50px;height:50px;float:left;">
+					<img alt='' src='http://www.gravatar.com/avatar/3eda6fcd3204ef285fa52176c28c4d3e?s=40&amp;d=http%3A%2F%2Fwww.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />   			</div>
+				<div style="padding-top:10px;width:300px;">
+					Michael K				</div>
+			</div>
+			
+			<div style="clear:both;"></div>
+			<div class="commenttext">
+			<p>What made you think that doing a comprehensive pass or a custom 13 pass would actually improve the stability of your system Jame S.</p>
+			</div>
+					</li>
+						<li class="comment-alt" id="comment-47263">
+	        	
+			<div class="commentmetadata date"><a href="#comment-47263" title="">April 26, 2008 10:44 am</a> </div>
+			<div id="commentauthor">
+				<div style="width:50px;height:50px;float:left;">
+					<img alt='' src='http://www.gravatar.com/avatar/f29b2677cbd7ac124e5dfa74b386141b?s=40&amp;d=http%3A%2F%2Fwww.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />   			</div>
+				<div style="padding-top:10px;width:300px;">
+					Kathleen				</div>
+			</div>
+			
+			<div style="clear:both;"></div>
+			<div class="commenttext">
+			<p>I got onto the Reliability Monitor easily but it means nothing to me.  How is an ordinary 60year old grandmother supposed to know what all this means?</p>
+			</div>
+					</li>
+						<li class="comment-def" id="comment-55869">
+	        	
+			<div class="commentmetadata date"><a href="#comment-55869" title="">August 11, 2008 10:05 pm</a> </div>
+			<div id="commentauthor">
+				<div style="width:50px;height:50px;float:left;">
+					<img alt='' src='http://www.gravatar.com/avatar/7448159907ae9c5d23767883656c0521?s=40&amp;d=http%3A%2F%2Fwww.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />   			</div>
+				<div style="padding-top:10px;width:300px;">
+					Angel				</div>
+			</div>
+			
+			<div style="clear:both;"></div>
+			<div class="commenttext">
+			<p>Finding this was a cinch, but figuring weather the problem was created by another program or so was not so close. Honestly, this didn&#8217;t solve my issue here, my PC crashes, and doesn&#8217;t turn on after restart after 20x tries of rebooting. Pisses me when I can&#8217;t find help.</p>
+			</div>
+					</li>
+						<li class="comment-alt" id="comment-56663">
+	        	
+			<div class="commentmetadata date"><a href="#comment-56663" title="">August 27, 2008 8:24 am</a> </div>
+			<div id="commentauthor">
+				<div style="width:50px;height:50px;float:left;">
+					<img alt='' src='http://www.gravatar.com/avatar/897ef6c54099876f479232a7570f93e3?s=40&amp;d=http%3A%2F%2Fwww.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />   			</div>
+				<div style="padding-top:10px;width:300px;">
+					Maxine S				</div>
+			</div>
+			
+			<div style="clear:both;"></div>
+			<div class="commenttext">
+			<p>thanks.  This helped me understand a lot when my system kept crashing out of nowhere.  Two windows updates were install right before this started.  So I deleted them and waiting to see if helped.  If not I&#8217;ll try system retore.  Your other comments, for them they can go on help menu and print out reliability monitor information</p>
+			</div>
+					</li>
+						<li class="comment-def" id="comment-63991">
+	        	
+			<div class="commentmetadata date"><a href="#comment-63991" title="">January 1, 2009 10:40 am</a> </div>
+			<div id="commentauthor">
+				<div style="width:50px;height:50px;float:left;">
+					<img alt='' src='http://www.gravatar.com/avatar/e7ebe4e2c399b762f5ccb38aea4dc576?s=40&amp;d=http%3A%2F%2Fwww.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />   			</div>
+				<div style="padding-top:10px;width:300px;">
+					Nickey				</div>
+			</div>
+			
+			<div style="clear:both;"></div>
+			<div class="commenttext">
+			<p>I found the Reliability Monitor but the dates of the events only covers Dec &#8216;07 thru Jan &#8216;08 and I can&#8217;t find any way to view anything after that. It is like it stopped recording any information after Jan.</p>
+			</div>
+					</li>
+						<li class="comment-alt" id="comment-66178">
+	        	
+			<div class="commentmetadata date"><a href="#comment-66178" title="">February 4, 2009 4:04 am</a> </div>
+			<div id="commentauthor">
+				<div style="width:50px;height:50px;float:left;">
+					<img alt='' src='http://www.gravatar.com/avatar/bbe8ec5e8c7e6c0c2129be33173f9618?s=40&amp;d=http%3A%2F%2Fwww.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />   			</div>
+				<div style="padding-top:10px;width:300px;">
+					Rhyme				</div>
+			</div>
+			
+			<div style="clear:both;"></div>
+			<div class="commenttext">
+			<p>my vista started crashing for a while and with the reliability monitor, i found out that it started crashing when i installed ADOBE AIR. maybe it&#8217;s not compatible for vista or still have a bug or something that causes the vista to crash.</p>
+			</div>
+					</li>
+						<li class="comment-def" id="comment-67205">
+	        	
+			<div class="commentmetadata date"><a href="#comment-67205" title="">February 19, 2009 1:27 am</a> </div>
+			<div id="commentauthor">
+				<div style="width:50px;height:50px;float:left;">
+					<img alt='' src='http://www.gravatar.com/avatar/ad400e8e262228ff6bfb4dfeb9ed59d7?s=40&amp;d=http%3A%2F%2Fwww.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />   			</div>
+				<div style="padding-top:10px;width:300px;">
+					Heather				</div>
+			</div>
+			
+			<div style="clear:both;"></div>
+			<div class="commenttext">
+			<p>my comp is weird&#8230;.. i have 2 gig dual core memory, 500 hd and all the best of gear&#8230;so they say&#8230;but i keep getting freeze ups and my windows Im working in say not responding, this happens all the time and some times I have to shut down from the tower to get things going again&#8230; can you help me plezzzz</p>
+			</div>
+					</li>
+						<li class="comment-alt" id="comment-73878">
+	        	
+			<div class="commentmetadata date"><a href="#comment-73878" title="">June 30, 2009 6:27 pm</a> </div>
+			<div id="commentauthor">
+				<div style="width:50px;height:50px;float:left;">
+					<img alt='' src='http://www.gravatar.com/avatar/7ba3eb91bafec63a21d2a5cf652449c5?s=40&amp;d=http%3A%2F%2Fwww.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />   			</div>
+				<div style="padding-top:10px;width:300px;">
+					Melanie				</div>
+			</div>
+			
+			<div style="clear:both;"></div>
+			<div class="commenttext">
+			<p>Gee, I must have a different Vista then you guys because mine doesn&#8217;t show a reliability monitor.  It just shows a Windows Experience Index rating.  Course I am challenged sometimes.  I&#8217;m running the Home Premium version</p>
+			</div>
+					</li>
+						<li class="comment-def" id="comment-73879">
+	        	
+			<div class="commentmetadata date"><a href="#comment-73879" title="">June 30, 2009 6:36 pm</a> </div>
+			<div id="commentauthor">
+				<div style="width:50px;height:50px;float:left;">
+					<img alt='' src='http://www.gravatar.com/avatar/7ba3eb91bafec63a21d2a5cf652449c5?s=40&amp;d=http%3A%2F%2Fwww.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />   			</div>
+				<div style="padding-top:10px;width:300px;">
+					Melanie				</div>
+			</div>
+			
+			<div style="clear:both;"></div>
+			<div class="commenttext">
+			<p>never mind &#8211; it was user error.  I found it under a subdirectory<br />
+Only problem is, it tells me there were no events &#8212; hmm?</p>
+			</div>
+					</li>
+						<li class="comment-alt" id="comment-78087">
+	        	
+			<div class="commentmetadata date"><a href="#comment-78087" title="">October 21, 2009 5:29 am</a> </div>
+			<div id="commentauthor">
+				<div style="width:50px;height:50px;float:left;">
+					<img alt='' src='http://www.gravatar.com/avatar/46cc408536afae5f9abe29c1cfbd3ec0?s=40&amp;d=http%3A%2F%2Fwww.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />   			</div>
+				<div style="padding-top:10px;width:300px;">
+					barb fels				</div>
+			</div>
+			
+			<div style="clear:both;"></div>
+			<div class="commenttext">
+			<p>My windows vista program suddenly stops working and there are only lines in the checkerboard pattern and I can&#8217;t get anything to move.  Help me find a fix.</p>
+			</div>
+					</li>
+		
+	</ol>
+
+
+ 
+
+
+<div id="respond">
+
+<h3>Leave a Reply</h3>
+
+<div class="cancel-comment-reply">
+	<small><a rel="nofollow" id="cancel-comment-reply-link" href="/howto/windows-vista/use-windows-vista-reliability-monitor-to-troubleshoot-crashes/#respond" style="display:none;">Click here to cancel reply.</a></small>
+</div>
+
+
+
+
+<form action="http://www.howtogeek.com/wp-comments-post.php" method="post" id="commentform">
+
+
+<p><input type="text" name="author" id="author" value="" size="22" tabindex="1" aria-required='true' />
+<label for="author"><small>Name (required)</small></label></p>
+
+<p><input type="text" name="email" id="email" value="" size="22" tabindex="2" aria-required='true' />
+<label for="email"><small>Email (required)</small></label></p>
+
+
+
+<!--<p><small><strong>XHTML:</strong> You can use these tags: <code>&lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;strike&gt; &lt;strong&gt; </code></small></p>-->
+
+<p><textarea name="comment" id="comment" cols="100%" rows="10" tabindex="4"></textarea></p>
+
+<p><input name="submit" type="submit" id="submit" tabindex="5" value="Submit Comment" />
+<input type='hidden' name='comment_post_ID' value='312' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p>
+
+</form>
+
+</div>
+
+            			<div style="clear:both;"></div>
+			
+			
+
+
+
+
+      </div>
+    </div>
+    <div class="yui-u">
+		<div class="sidebar">
+	<style>
+	.catcloud a {display:inline!important;}
+	#relatedVideoTable td {padding-bottom:10px;}
+	</style>
+
+	<div style="width:300px;min-height:20px;">
+
+<div id="ns_ad3" style="min-width:300px;min-height:250px;">		
+<div id="ns_ad3" style="min-width:300px;min-height:250px;">		
+<!-- begin ad tag (tile=2) -->
+<script type="text/javascript">
+//<![CDATA[
+ord=Math.random()*10000000000000000;
+document.write('<script type="text/javascript" src="http://ad.doubleclick.net/adj/tmn.howtogeek/;tile=2;sz=300x250;ord=' + ord + '?"><\/script>');
+//]]>
+</script>
+<noscript><a href="http://ad.doubleclick.net/jump/tmn.howtogeek/;tile=2;sz=300x250;ord=123456789?" target="_blank" ><img src="http://ad.doubleclick.net/ad/tmn.howtogeek/;tile=2;sz=300x250;ord=123456789?" border="0" alt="" /></a></noscript>
+<!-- end ad tag -->
+</div></div>
+
+</div>
+
+
+
+
+
+    			<div align="center" style="width:298px;background-color:#FEFFED;padding:0px;padding-bottom:10px;border:1px solid #EEE;margin-bottom:10px;margin-top:10px;">
+				<img src="http://http.cdnlayer.com/howtogeek/geekers/up/email-48.png" align="left" style="padding-right:0px;padding-left:10px;" /><p style="color: rgb(51, 51, 51); font-size: 150%; font-weight: bold;padding-top:12px; padding-bottom: 5px;">Daily Email Updates</p>
+				<p style="text-align:left;clear:both;padding-left:10px;padding-right:5px;">You can get our how-to articles in your inbox each day for free. Just enter your email below:</p><br/>
+				<form action="http://www.aweber.com/scripts/addlead.pl" method="post">
+					<input type="hidden" value="1357186873" name="meta_web_form_id"/>
+					<input type="hidden" value="" name="meta_split_id"/>
+					<input type="hidden" value="howtogeek-daily" name="unit"/>
+					<input type="hidden" id="redirect_e4db1606a84c007a4b26df0e9b3a904c" value="http://www.howtogeek.com/thanks-for-subscribing/" name="redirect"/>
+					<input type="hidden" value="" name="meta_redirect_onlist"/>
+					<input type="hidden" value="belowarticle" name="meta_adtracking"/>
+					<input type="hidden" value="1" name="meta_message"/>
+					<input type="hidden" value="from" name="meta_required"/>
+					<input type="hidden" value="0" name="meta_forward_vars"/>
+					<table>
+						<tbody><tr>
+							<td colspan="2"><center/></td>
+						</tr>
+						<tr>
+							<td style="padding: 4px;">Email:</td>
+							<td style="padding: 4px;"><input type="text" size="20" value="" name="from" style="width:200px;font-size: 13px; height: 22px;"/></td>
+						</tr>
+						<tr>
+							<td colspan="2"><center/></td>
+						</tr>
+						<tr>
+							<td align="right" colspan="2"><input style="padding:8px;" type="submit" value="Subscribe!" name="submit"/></td>
+						</tr>
+					</tbody></table>
+				</form>
+			</div>		<style type='text/css'>
+		.htgauthorbox {
+			background: #EBF3FB none repeat scroll 0 0;
+			border: 1px solid #AACCEE;
+			padding-bottom: 5px;
+			width: 298px;
+		}
+		.htgauthorbox h4 {
+			margin: 0 0 10px;
+			padding: 6px 0 0 10px;
+		}
+		.htgauthorbox h4 span {
+			border-bottom: 1px dashed #AACCEE;
+			color: #003366;
+			font-size: 11px;
+			font-weight: bold;
+			text-transform: uppercase;
+		}
+		.htgauthorbox img {
+			float: right;
+			height: 80px;
+			margin: 0 10px 0 5px;
+			width: 80px;
+		}
+		.htgauthorbox .htgauthorimg img {
+			width: 80px;
+			height: 80px;
+		}
+		.htgauthorbox .htgauthorbio {
+			float: left;
+			margin: 0;
+			padding: 0;
+			width: 195px;
+		}
+		.htgauthorbox .htgauthorbio p {
+			font-size: 11.3px;
+			margin: 0 10px 5px;
+		}
+		</style>
+		<div class="htgauthorbox">
+			<h4><span>Meet the Author</span></h4>
+			<div class="htgauthorbio">
+				<p>Programmer by day, geek by night, The Geek spends all his free time bringing you fresh geekery on a daily basis.</p>
+			</div>
+			<img src="http://www.howtogeek.com/wp-content/authors/thegeek-1.png" alt="" />			<br style='clear:both' />
+		</div>
+
+		
+
+		<div class="htgsidelinksbox">
+			<p class="boxtitle">Recent Articles</p>
+			<ul class="rp">
+					<li><a href='http://www.howtogeek.com/howto/39071/holiday-2010-personas-themes-for-firefox/' title='Holiday 2010 Personas Themes for Firefox'>Holiday 2010 Personas Themes for Firefox</a></li>
+	<li><a href='http://www.howtogeek.com/howto/38869/how-to-setup-your-verizon-fios-router-with-opendns-or-google-dns/' title='How to Setup Your Verizon FIOS Router with OpenDNS or Google DNS'>How to Setup Your Verizon FIOS Router with OpenDNS or Google DNS</a></li>
+	<li><a href='http://www.howtogeek.com/news/drag2up-lets-you-drag-and-drop-files-to-the-web-with-ease/2470/' title='Drag2Up Lets You Drag and Drop Files to the Web With Ease'>Drag2Up Lets You Drag and Drop Files to the Web With Ease</a></li>
+	<li><a href='http://www.howtogeek.com/howto/38788/how-to-create-quality-photo-prints-with-free-software/' title='How to Create Quality Photo Prints With Free Software'>How to Create Quality Photo Prints With Free Software</a></li>
+	<li><a href='http://www.howtogeek.com/howto/38889/how-to-use-the-avira-rescue-cd-to-clean-your-infected-pc/' title='How to Use the Avira Rescue CD to Clean Your Infected PC'>How to Use the Avira Rescue CD to Clean Your Infected PC</a></li>
+			</ul>
+		</div>
+
+				<div class="htgsidelinksbox">
+			<p class="boxtitle">Related Articles</p>
+			<ul class="rp">
+				<li><a href="http://www.howtogeek.com/howto/7473/troubleshoot-computer-problems-with-reliability-monitor-in-windows-7/" rel="bookmark" title="Permanent Link: Troubleshoot Computer Problems with Reliability Monitor in Windows 7">Troubleshoot Computer Problems with Reliability Monitor in Windows 7</a></li><li><a href="http://www.howtogeek.com/howto/apple/make-safari-stop-crashing-every-20-seconds-on-windows-vista/" rel="bookmark" title="Permanent Link: Make Safari Stop Crashing Every 20 Seconds on Windows Vista">Make Safari Stop Crashing Every 20 Seconds on Windows Vista</a></li><li><a href="http://www.howtogeek.com/howto/windows-vista/dual-monitors-use-a-different-wallpaper-on-each-desktop-in-vista-or-xp/" rel="bookmark" title="Permanent Link: Dual Monitors: Use a Different Wallpaper on Each Desktop in Windows 7, Vista or XP">Dual Monitors: Use a Different Wallpaper on Each Desktop in Windows 7, Vista or XP</a></li><li><a href="http://www.howtogeek.com/howto/27840/create-a-shortcut-to-troubleshoot-windows-7-using-system-maintenance/" rel="bookmark" title="Permanent Link: Create a Shortcut to Troubleshoot Windows 7 Using System Maintenance">Create a Shortcut to Troubleshoot Windows 7 Using System Maintenance</a></li><li><a href="http://www.howtogeek.com/howto/6152/use-advanced-tools-to-troubleshoot-performance-problems-in-windows-7/" rel="bookmark" title="Permanent Link: Use Advanced Tools to Troubleshoot Performance Problems in Windows 7">Use Advanced Tools to Troubleshoot Performance Problems in Windows 7</a></li>			</ul>
+		</div>
+		
+
+
+
+		<div style="clear:both;"></div>
+				<div style="width:300px;min-height:20px;margin-top:30px;">
+			<div style="width:160px;text-align:center;margin-left:auto;margin-right:auto;">
+				<!-- begin ad tag (tile=3) -->
+<script type="text/javascript">
+//<![CDATA[
+ord=Math.random()*10000000000000000;
+document.write('<script type="text/javascript" src="http://ad.doubleclick.net/adj/tmn.howtogeek/;tile=3;sz=160x600;ord=' + ord + '?"><\/script>');
+//]]>
+</script>
+<noscript><a href="http://ad.doubleclick.net/jump/tmn.howtogeek/;tile=3;sz=160x600;ord=123456789?" target="_blank" ><img src="http://ad.doubleclick.net/ad/tmn.howtogeek/;tile=3;sz=160x600;ord=123456789?" border="0" alt="" /></a></noscript>
+<!-- end ad tag -->				<div style="padding-top:10px;"></div>
+			</div>
+			
+				<div style="clear:both;"></div>
+				<script>TmnAdsense.display(options = {'adsbyposition':'topleft','adsbyColor':'000000','width':270,'ad_width':270,'max_ads':4,'row_margin':30,'titleFontSize':17,'titleFontColor':'003371','adFontFamily':'arial','titleMarginBottom':0,'descFontSize':12,'descFontColor':'000000','linkFontSize':10,'linkFontColor':'000000','channel_id':'6997772520'});</script>														
+			
+			<div style="clear:both;"></div>
+		</div>
+				
+		
+</div>
+    </div>
+    
+</div>
+
+    <div class="yui-g">
+    	<div style="padding-top:20px;margin-top:210px;margin-bottom:10px;min-height:115px;text-align:center;width:750px;margin-left:15px;">
+				<div id="ns_ad8">
+					<!-- begin ad tag -->
+<script type="text/javascript">
+//<![CDATA[
+ord=Math.random()*10000000000000000;
+document.write('<script type="text/javascript" src="http://ad.doubleclick.net/adj/tmn.howtogeekbtf/;sz=728x90;ord=' + ord + '?"><\/script>');
+//]]>
+</script>
+<noscript><a href="http://ad.doubleclick.net/jump/tmn.howtogeekbtf/;sz=728x90;ord=123456789?" target="_blank" ><img src="http://ad.doubleclick.net/ad/tmn.howtogeekbtf/;sz=728x90;ord=123456789?" border="0" alt="" /></a></noscript>
+<!-- end ad tag -->				<div style="clear:both;"></div>
+			</div>
+    </div>
+
+
+<script type="text/javascript">
+(function() {
+var s = document.createElement('SCRIPT'), s1 = document.getElementsByTagName('SCRIPT')[0];
+s.type = 'text/javascript';
+s.async = true;
+s.src = 'http://widgets.digg.com/buttons.js';
+s1.parentNode.insertBefore(s, s1);
+})();
+</script>
+
+
+
+<div class="yui-g">
+		 
+  	  </div>
+	      </div>
+    
+<div id="ft">
+    <div style="width:20%;float:left;">
+        <div style="font-size:120%;font-weight:bold;color:#555;padding-bottom:10px;">Categories</div>
+        <ul id="popul2" class="bottomul2" style="margin-left:0px;">
+        		<li><a href="http://www.howtogeek.com/tag/windows-7/">Windows 7</a></li>
+            <li><a href="http://www.howtogeek.com/tag/windows-vista/">Windows Vista</a></li>
+        		<li><a href="http://www.howtogeek.com/tag/windows/">Windows XP</a></li>
+        		<li><a href="http://www.howtogeek.com/tag/malware/">Malware & Viruses</a></li>        		
+        		<li><a href="http://www.howtogeek.com/tag/microsoft-office/">Microsoft Office</a></li>
+        		<li><a href="http://www.howtogeek.com/tag/internet/">Web Browsing</a></li>
+        		<li><a href="http://www.howtogeek.com/tag/linux/">Linux</a></li>
+        		<li><a href="http://www.howtogeek.com/tag/desktop-fun/">Desktop Fun</a></li>
+        		<li><a href="http://www.howtogeek.com/tag/the-geek-blog/">Other...</a></li>
+        </ul>
+        <div style="clear:both;"></div>
+    </div>
+
+    <div style="width:20%;float:left;border-left:1px solid #CCC;padding-left:10px;height:90px;margin-left:10px;">
+        <div style="font-size:120%;font-weight:bold;color:#555;padding-bottom:10px;">Getting Started</div>
+        <ul class="bottomul">
+        		<li><a href="http://www.howtogeek.com/t/features/">Feature Articles</a></li>           
+            <li><a href="http://www.howtogeek.com/forum/">Get Help on our Forums</a></li>                        
+            <li><a href="http://www.howtogeek.com/wiki/">How-To Geek Wiki</a></li>           
+            <li><a href="http://www.howtogeek.com/games/">How-To Geek Arcade</a></li>           
+            <li><a href="http://www.howtogeek.com/reviews/">How-To Geek Reviews</a></li>           
+            <li><a href="http://www.howtogeek.com/news/">How-To Geek ETC</a></li>           
+            <li><a href="http://toolsgeek.com">ToolsGeek [Useful Online Tools]</a></li>
+        </ul>
+    </div>
+
+    <div style="width:20%;float:left;border-left:1px solid #CCC;padding-left:10px;margin-left:10px;">
+        <div style="font-size:120%;font-weight:bold;color:#555;padding-bottom:10px;">About How-To Geek</div>
+        <ul class="bottomul">
+            <li><a href="http://www.howtogeek.com/about/">About Us</a></li>
+            <li><a href="http://www.howtogeek.com/contact/">Contact Us</a></li>
+            <li><a href="http://www.techmedianetwork.com/advertisers.html">Advertising</a></li>
+            <li><a href="http://www.howtogeek.com/privacy-policy/">Privacy Policy</a></li>
+            <li><a href="http://www.howtogeek.com/disclaimers/">Disclaimers</a></li>
+            <li><a href="http://www.howtogeek.com/howto/the-geek-blog/how-to-geek-comment-policy/">Comment Policy</a></li>
+            <li><a href="http://www.howtogeek.com/resumes/">Write for How-To Geek</a></li>
+        </ul>
+    </div>
+    <div style="width:25%;float:left;border-left:1px solid #CCC;padding-left:10px;margin-left:10px;">
+        <div style="font-size:120%;font-weight:bold;color:#555;padding-bottom:10px;">What Is That Process?</div>
+  
+              
+                  <table id="proclistfoot"><tr>
+                  <td valign=top>
+                      <a  href="http://www.howtogeek.com/howto/windows-vista/what-is-svchostexe-and-why-is-it-running/">svchost.exe</a><br/>
+                      <a href="http://www.howtogeek.com/howto/windows-vista/what-is-juschedexe-and-why-is-it-running/">jusched.exe</a><br/>
+                      <a href="http://www.howtogeek.com/howto/windows-vista/what-is-dwmexe-and-why-is-it-running/">dwm.exe</a><br/>
+                      <a href="http://www.howtogeek.com/howto/windows-vista/what-is-ctfmonexe-and-why-is-it-running/">ctfmon.exe</a><br/>
+                      <a href="http://www.howtogeek.com/howto/windows-vista/what-are-wmpnscfgexe-and-wmpnetwkexe-and-why-are-they-running/">wmpnetwk.exe</a><br/>
+								      <a href="http://www.howtogeek.com/howto/6456/what-is-mdnsresponder.exe-bonjour-and-how-can-i-uninstall-or-remove-it/">mDNSResponder.exe</a>
+                      <a href="http://www.howtogeek.com/howto/windows-vista/what-is-dpupdchkexe-and-why-is-it-running/">Dpupdchk.exe</a><br/>
+                      <a href="http://www.howtogeek.com/howto/windows-vista/what-is-adobe_updaterexe-and-why-is-it-running/">Adobe_Updater.exe</a><br/>
+                      <a href="http://www.howtogeek.com/howto/28450/what-is-searchindexer.exe-and-why-is-it-running/">SearchIndexer.exe</a>
+                  </td>
+                  <td valign=top>
+                      <a href="http://www.howtogeek.com/howto/windows-vista/what-are-wmpnscfgexe-and-wmpnetwkexe-and-why-are-they-running/">wmpnscfg.exe</a><br/>
+                      <a href="http://www.howtogeek.com/howto/windows-vista/what-is-rundll32exe-and-why-is-it-running/">rundll32.exe</a><br/>
+                      <a href="http://www.howtogeek.com/wiki/Wfcrun32.exe">wfcrun32.exe</a><br/>
+                      <a href="http://www.howtogeek.com/wiki/Ipoint.exe">Ipoint.exe</a><br/>
+                      <a href="http://www.howtogeek.com/wiki/Itype.exe">Itype.exe</a><br/>
+                      <a href="http://www.howtogeek.com/howto/30348/what-are-wlidsvc.exe-and-wlidsvcm.exe-and-why-are-they-running/">wlidsvc.exe</a>
+                      <a href="http://www.howtogeek.com/wiki/Wfica32.exe">Wfica32.exe</a><br/>
+                      <a href="http://www.howtogeek.com/wiki/Mobsync.exe">Mobsync.exe</a><br/>
+		      						<a href="http://www.howtogeek.com/howto/4996/what-is-conhost.exe-and-why-is-it-running/">conhost.exe</a><br/>
+                  </td>
+                  </tr>
+                  </table>
+              
+        
+        <div style="clear:both;"></div>
+    </div>
+						
+				
+						
+<div style="clear:both;"></div><br/>
+    <center style="color:#555">Copyright &copy; 2006-2010 HowToGeek.com. All Rights Reserved.</center>
+</div>
+</div>
+
+
+                    
+<!-- Start Quantcast tag -->
+<script type="text/javascript">
+_qoptions={
+qacct:"p-306sOjcgY0NWo"
+};
+</script>
+<script type="text/javascript" src="http://edge.quantserve.com/quant.js"></script>
+<noscript>
+<img src="http://pixel.quantserve.com/pixel/p-306sOjcgY0NWo.gif" style="display: none;" border="0" height="1" width="1" alt="Quantcast"/>
+</noscript>
+<!-- End Quantcast tag -->
+
+
+                                         
+                                             
+<!-- Begin comScore Tag -->
+<script>
+var csDocDomain = document.location.href;
+ document.write(unescape("%3Cscript src='" + (document.location.protocol == "https:" ? "https://sb" : "http://b")
++ ".scorecardresearch.com/beacon.js' %3E%3C/script%3E"));
+</script>
+
+<script>
+ COMSCORE.beacon({
+  c1:2,
+  c2:"6035753",
+  c3:"6035753",
+  c4:csDocDomain,
+  c5:"Technology - News",
+  c6:"",
+  c15:""
+ });
+</script>
+<noscript>
+ <img src="http://b.scorecardresearch.com/b?c1=2&c2=6035753&c3=6035753&c4=http://www.howtogeek.com&c5=Technology - News&c6=&c15=&cv=1.3&cj=1" style="display:none" width="0" height="0" alt="" />
+</noscript>
+<!-- End comScore Tag -->
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-1113647-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+
+		<script language="JavaScript"><!--
+			if (document.referrer.indexOf('search?') > -1 || document.referrer.indexOf('q=') > -1){
+    			document.write("<div id='popup_object_ad' style='display:none;'><iframe id='popup_object_ad_ifrm' name='popup_object_ad_ifrm' scrolling='no' frameborder='0' src='http://api.toptenreviews.com/r/c/request_ad.php?path=tmn/partner/howtogeek'></iframe></div><sc"+"ript type='text/javascript' id='popup_tag_script' src='http://api.toptenreviews.com/r/c/request.php?path=tmn/partner/howtogeek&sub_id=testsubid'></scr"+"ipt>");
+			}
+			//-->
+		</script>
+	
+
+</body>
+</html>
+
+<!-- Dynamic page generated in 0.197 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2010-12-20 10:20:28 -->

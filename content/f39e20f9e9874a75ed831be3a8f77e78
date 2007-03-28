@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Parallax Background with Javascript and CSS</title>
+<style type="text/css">
+<!--
+body {
+	background-color: #457429;
+	margin: 0;
+	padding: 0;
+	font-family: "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
+}
+#ground {
+	background-image: url(bg-green.gif);
+	background-repeat: repeat;
+	background-attachment: fixed;
+}
+#clouds {
+	background-image: url(clouds.png);
+	background-repeat: repeat;
+	background-attachment: fixed;
+	padding: 5em 0;
+}
+* html #clouds {
+	/* because IE6 can't do transparent PNGs for backgrounds */
+	background-image: url(clouds.gif);	
+}
+#content {
+	background-color: #FFFFFF;
+	padding: 1em;
+	border: 5px solid #999;
+	margin: 5em auto;
+	width: 600px;
+}
+.scrollcode {
+	overflow:auto;
+	white-space:nowrap;
+}
+#javascriptcode {
+	background-image: url(bg-greenwhite.gif);
+	background-repeat: repeat;
+}
+pre {
+	font-size: 0.8em;
+	font-family: Monaco, "Courier New", courier, monospace;
+}
+
+-->
+</style>
+<script type="text/javascript">
+<!--
+function calcParallax(tileheight, speedratio, scrollposition) {
+	//    by Brett Taylor http://inner.geek.nz/
+	//    originally published at http://inner.geek.nz/javascript/parallax/
+	//    usable under terms of CC-BY 3.0 licence
+	//    http://creativecommons.org/licenses/by/3.0/
+	return (tileheight - (Math.floor(scrollposition / speedratio) % (tileheight+1)));
+}
+window.onload = function() {
+	window.onscroll = function() {
+		var posY = (document.documentElement.scrollTop) ? document.documentElement.scrollTop : window.pageYOffset;
+		var ground = document.getElementById('ground');
+		var groundparallax = calcParallax(53, 8, posY);
+		ground.style.backgroundPosition = "0 " + groundparallax + "px"; 
+
+		var clouds = document.getElementById('clouds');
+		var cloudsparallax = calcParallax(400, .5, posY);
+		clouds.style.backgroundPosition = "0 " + cloudsparallax + "px"; 
+		
+	}
+	
+	document.getElementById('javascriptcode').onscroll = function() {
+		var posX = (this.scrollLeft) ? this.scrollLeft : this.pageXOffset;
+		var j = calcParallax(53, 16, posX);
+		console.log('scroll js: '+ j);
+		document.getElementById('javascriptcode').style.backgroundPosition = j + "px 0";
+	}
+}
+-->
+</script>
+</head>
+
+<body id='ground'>
+<div id="clouds">
+<div id="content">
+	<a href="http://inner.geek.nz/archives/2007/03/20/parallax-backgrounds/">&laquo; back to inner.geek</a>
+	<h1>Parallax Backgrounds</h1>
+	<p><em>a multi–layered javascript experiment</em></p>
+	<p style='text-align: center; font-size: 0.8em; padding: 1em;'><a rel="license" href="http://creativecommons.org/licenses/by/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by/3.0/88x31.png"/></a><br/>This <span xmlns:dc="http://purl.org/dc/elements/1.1/" href="http://purl.org/dc/dcmitype/InteractiveResource" rel="dc:type">work</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0  License</a>.</p>
+	<p>First of all, try scrolling up and down thing page.  Use your scroll wheel, use the scroll bar, use the arrow keys, page up, page down, space bar.</p>
+	<p>Note how the text scrolls normally, but the green background scrolls slowly, and how the clouds scroll faster than normal. That's the parallax effect.</p>
+	<p>You can make as many layers parallax as you desire, or as many as your browser can render fast enough to keep the effect alive.</p>
+	<p>It works best in Safari, and Firefox if you have Smooth Scrolling enabled.</p>
+	<h2>Support</h2>
+	<p>Safari, Firefox, IE6+, Opera, maybe others.</p>
+	<h2>Implementation</h2>
+	<h3>Markup</h3>
+	<blockquote class='scrollcode'><code><pre>&lt;body id=&apos;ground&apos;&gt;
+  &lt;div id=&apos;clouds&apos;&gt;
+   ...
+   &lt;blockquote id=&apos;javascriptcode&apos;&gt;&lt;/blockquote&gt;
+   ...
+  &lt;/div&gt;
+&lt;/body&gt;</pre></code></blockquote>
+	<h3>CSS</h3>
+	<blockquote class='scrollcode'><code><pre>#ground {
+  background-image: url(bg-green.gif);
+  background-repeat: repeat;
+  background-attachment: fixed;
+}
+
+#clouds {
+  background-image: url(clouds.png);
+  background-repeat: repeat;
+  background-attachment: fixed;
+}
+
+* html #clouds {
+  /* because IE6 can't do transparent PNGs for backgrounds */
+  background-image: url(clouds.gif);  
+}
+
+#javascriptcode {
+	background-image: url(bg-greenwhite.gif);
+	background-repeat: repeat;
+}</pre></code></blockquote>
+	<h3>JavaScript</h3>
+	<blockquote id='javascriptcode' class='scrollcode'><code><pre>function calcParallax(tileheight, speedratio, scrollposition) {
+  //    by Brett Taylor http://inner.geek.nz/
+  //    originally published at http://inner.geek.nz/javascript/parallax/
+  //    usable under terms of CC-BY 3.0 licence
+  //    http://creativecommons.org/licenses/by/3.0/
+  return ((tileheight) - (Math.floor(scrollposition / speedratio) % (tileheight+1)));
+}
+
+window.onload = function() {
+
+  window.onscroll = function() {
+    var posX = (document.documentElement.scrollLeft) ? document.documentElement.scrollLeft : window.pageXOffset;
+    var posY = (document.documentElement.scrollTop) ? document.documentElement.scrollTop : window.pageYOffset;
+    
+    var ground = document.getElementById('ground');
+    var groundparallax = calcParallax(53, 8, posY);
+    ground.style.backgroundPosition = "0 " + groundparallax + "px"; 
+
+    var clouds = document.getElementById('clouds');
+    var cloudsparallax = calcParallax(400, .5, posY);
+    clouds.style.backgroundPosition = "0 " + cloudsparallax + "px"; 
+  }
+
+  document.getElementById('javascriptcode').onscroll = function() {
+    var posX = (this.scrollLeft) ? this.scrollLeft : this.pageXOffset;
+    var j = calcParallax(53, 16, posX);
+    console.log('scroll js: '+ j);
+    document.getElementById('javascriptcode').style.backgroundPosition = j + "px 0";
+  }
+}</pre></code></blockquote>
+	
+	<hr />
+	<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Mauris nisi. Fusce vel nibh. Mauris consequat, purus ac porta porta, nisl felis euismod libero, quis rutrum dolor dui at mi. Nam pede nisl, congue vitae, varius sed, suscipit vestibulum, elit. Curabitur vehicula euismod nulla. Etiam convallis dapibus nulla. Aliquam mi orci, volutpat hendrerit, venenatis vel, suscipit et, urna. Pellentesque vitae odio. Aliquam a tortor sit amet tortor hendrerit aliquet. Morbi eget risus. Suspendisse potenti.</p>
+
+	<p>Integer et metus. Integer rutrum aliquet diam. Cras ligula. Vivamus vulputate. Nullam purus. Integer tincidunt adipiscing diam. Nulla quam. In placerat vehicula odio. Quisque ante ante, fringilla ut, fermentum at, gravida sed, arcu. Fusce volutpat, tellus nec mollis sagittis, est pede interdum nibh, non egestas sapien lacus in est. Nunc consectetuer sem eget tortor. Suspendisse potenti. Etiam nisi nunc, pulvinar non, volutpat vitae, dapibus vitae, mi. Quisque nonummy, urna in faucibus aliquam, turpis mi facilisis justo, et blandit nisl leo id risus. Curabitur dignissim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+
+	<p>Proin tincidunt magna. In hac habitasse platea dictumst. Praesent mollis sollicitudin nulla. Nulla molestie, risus sit amet malesuada hendrerit, lacus dui mattis tellus, pharetra faucibus nisl elit sit amet nisl. Phasellus vel justo. Praesent ut sapien in libero ultrices imperdiet. Cras a neque. Proin tempor. Duis id felis at risus accumsan bibendum. Mauris purus augue, lacinia a, bibendum eget, egestas ut, erat. Vivamus eros. Nunc ac nibh. Sed mauris.</p>
+
+	<p>Morbi vel eros in neque facilisis commodo. Pellentesque quis sem. Integer sollicitudin mi id mauris. Donec vitae ligula sit amet lacus feugiat laoreet. Ut mi nisl, vestibulum eu, viverra in, iaculis et, leo. Sed viverra. Fusce ac velit. Proin ut metus id nunc accumsan pharetra. Suspendisse condimentum posuere nisi. Nullam hendrerit. Phasellus sodales sem et nisi. Quisque vehicula nisi porttitor elit. Nam odio tellus, ornare ac, posuere sed, placerat ac, pede. Integer a velit sit amet diam faucibus dignissim. Pellentesque vel massa. Morbi sem leo, eleifend eu, elementum eget, semper vitae, leo.</p>
+
+	<p>Nullam odio urna, laoreet elementum, ultricies a, cursus ac, dui. Aliquam sit amet sem nec ante condimentum fringilla. Nam ultrices. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Praesent fringilla gravida tellus. Ut laoreet dolor vel quam. Mauris nisl arcu, consectetuer eu, malesuada fringilla, convallis sit amet, lacus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam rhoncus. Aliquam vel nisl. Quisque sed lacus ut nisl lobortis interdum. Proin ullamcorper egestas nunc. Nam ipsum velit, blandit at, semper et, condimentum sit amet, nulla. Donec venenatis vehicula dolor.</p>
+
+	<p>Nullam tincidunt tempus nisl. Donec hendrerit turpis luctus lectus. Sed non arcu. Donec justo lectus, dictum sed, congue sit amet, interdum sit amet, lacus. Curabitur rhoncus. Sed dui. Vestibulum in lacus vitae mauris luctus varius. Fusce sed sem. Sed consectetuer gravida tortor. Mauris sodales sem id sapien. Praesent tortor turpis, fermentum sit amet, mattis nec, dignissim sit amet, tellus. Donec pretium, orci tincidunt luctus faucibus, arcu pede placerat felis, at iaculis nisi pede in justo. Integer gravida nulla a erat. Mauris eu nunc. In ipsum quam, volutpat id, imperdiet non, congue at, pede. Cras magna dui, viverra a, feugiat at, pharetra vel, metus.</p>
+
+	<p>Morbi lacus turpis, pretium tincidunt, ultricies quis, tincidunt nonummy, massa. Nunc vestibulum nisi id nisl. Nullam nonummy eros. Aliquam dignissim, metus quis faucibus laoreet, lectus dui nonummy nulla, at nonummy nisi sapien vel purus. Cras tellus nulla, dictum ac, auctor eu, cursus sed, augue. Praesent pede ante, tincidunt id, feugiat ac, iaculis in, lacus. Curabitur et purus. Ut vulputate libero quis nisl. Sed accumsan. Vivamus tempor. Phasellus auctor, mi a posuere mollis, quam enim tempor libero, at aliquam augue ligula vitae massa. In blandit. Donec nulla eros, lobortis id, molestie ut, vestibulum a, magna. Quisque a diam. Nulla tempus pharetra velit. Nullam ultricies arcu a purus.</p>
+
+	<p>Quisque molestie nisi sollicitudin metus. Curabitur pretium quam vel risus. Morbi pede. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed vitae elit. Praesent tincidunt lobortis magna. Fusce pretium, nulla eu auctor aliquet, lectus sapien ornare elit, ac commodo tellus nibh eget mauris. Donec vulputate. Donec diam leo, pulvinar ac, rutrum nec, ullamcorper ac, nisl. Nunc tincidunt sem sed nulla.</p>
+
+	<p>Suspendisse leo. Duis ut mauris. Aliquam erat volutpat. Vivamus et dolor at mauris commodo venenatis. Cras ultrices, magna ac sollicitudin posuere, nisi diam feugiat mauris, vitae auctor ligula dolor sit amet quam. Duis quis tellus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In pharetra, ipsum vestibulum molestie pellentesque, lacus mi pretium nunc, egestas dictum quam ligula sed diam. Nunc quis massa id felis volutpat ullamcorper. Suspendisse potenti. Nullam semper odio dictum orci. Nunc pellentesque. Phasellus lacinia auctor lectus. Donec metus odio, pellentesque id, auctor vitae, volutpat ut, massa. Maecenas non pede nec nisl pharetra iaculis. Nunc lectus risus, tincidunt vel, malesuada in, pharetra nec, augue. In tempor diam a leo. Aliquam sed arcu et velit dictum auctor.</p>
+
+	<p>Fusce imperdiet euismod quam. Mauris volutpat lacus sed dui. Nulla facilisi. Ut semper, erat ut tempor mattis, dolor libero fermentum justo, non faucibus tellus odio at mi. Duis eu nisi. Suspendisse et enim id tortor rhoncus nonummy. Pellentesque dapibus. Nunc eget ligula. Nunc placerat velit id risus. Etiam ut augue. Duis eleifend. In eu urna eu dui imperdiet elementum. Vivamus est.</p>
+	
+	<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Quisque cursus laoreet est. Nulla facilisi. Mauris magna massa, ultrices id, varius id, condimentum eu, sapien. Nulla tincidunt. Integer nunc metus, euismod interdum, ultricies rutrum, tincidunt mattis, nunc. Mauris non purus. Etiam tristique elit a eros. Curabitur eu lectus at dolor pharetra eleifend. Nam purus metus, congue vestibulum, semper eu, accumsan vel, velit. Morbi in sapien imperdiet felis mollis porttitor. Donec venenatis consequat ante. Phasellus purus. In hac habitasse platea dictumst. Praesent erat. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Pellentesque velit purus, commodo sit amet, mattis eu, luctus iaculis, diam. Nulla facilisi. Donec sit amet neque nec risus elementum condimentum. Vestibulum nisl. Donec dapibus, turpis vestibulum adipiscing iaculis, risus tellus feugiat dui, ac condimentum augue dolor a nisl.</p>
+
+	<p>Vivamus eu neque ut nibh eleifend ultricies. Nunc pulvinar. Donec lobortis. Sed placerat consectetuer lacus. Cras quam erat, vehicula sed, vehicula sit amet, placerat a, diam. Donec fermentum. Vestibulum vehicula nisi. Donec pellentesque. Cras tellus nunc, eleifend at, volutpat vitae, mattis quis, elit. Morbi lacinia pharetra lacus. Phasellus diam. Cras sed velit. Duis et odio in nulla eleifend aliquet.</p>
+
+	<p>Quisque eget velit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Praesent nisi. Proin vel augue. Nulla suscipit. Etiam nunc ligula, imperdiet et, accumsan vitae, aliquam ac, tellus. Suspendisse potenti. Proin sit amet orci. In vel erat ac enim dignissim lacinia. Nullam fermentum. Cras eu lectus et augue pharetra lobortis. Suspendisse potenti.</p>
+
+	<p>Aenean vulputate posuere odio. Fusce venenatis volutpat turpis. Ut tempus ultricies nisl. Aenean lorem felis, pellentesque eget, sodales quis, dignissim eu, pede. In quis diam. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In rutrum. Morbi quis nulla sed erat gravida rutrum. Cras ac risus. Mauris eleifend, ipsum eu condimentum hendrerit, justo magna tristique nibh, quis semper nisi turpis et nibh.</p>
+
+	<p>Vivamus augue ante, elementum non, eleifend nec, vulputate at, purus. Cras sed lacus. Donec adipiscing, tellus non dignissim consequat, risus ligula lacinia ipsum, ac elementum ante tellus vitae nunc. Suspendisse ut turpis rhoncus urna imperdiet semper. Suspendisse mattis neque vitae tellus. Maecenas pretium. Ut mattis, felis eget pretium suscipit, nisl lorem hendrerit massa, in accumsan eros nisl placerat augue. Mauris aliquam. Vivamus commodo interdum sem. Suspendisse pellentesque bibendum erat. Nullam ullamcorper ipsum quis orci. Vivamus vel tortor nec sem elementum venenatis.</p>
+
+	<p>Cras eget augue ut arcu gravida cursus. Duis nonummy. Sed iaculis, lectus at suscipit ultricies, purus augue tincidunt libero, quis congue elit libero nec eros. Suspendisse potenti. Cras neque velit, dapibus et, mollis ut, dictum sed, dolor. Duis odio neque, accumsan sodales, tempus vitae, tempor vel, mauris. Pellentesque turpis. Curabitur eget est nec elit facilisis vestibulum. Donec euismod, libero eu vulputate faucibus, turpis magna fringilla orci, non iaculis libero eros nec arcu. Sed feugiat facilisis lectus. Vestibulum vulputate, urna quis mattis posuere, nibh elit ultrices magna, eu eleifend purus diam non ante. Suspendisse luctus consectetuer nibh. Ut facilisis sollicitudin lectus. Donec lacinia. Fusce convallis augue et leo. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Sed sodales semper velit. Nullam tellus.</p>
+
+	<p>Cras tristique varius lorem. Suspendisse potenti. Cras sollicitudin nonummy lectus. Vestibulum tincidunt pretium est. Vivamus neque quam, sagittis eget, vestibulum vel, pulvinar et, felis. Nulla dignissim dui vitae sapien. Donec ultrices. Aliquam mi urna, rhoncus sed, tempor at, rutrum quis, dolor. Sed ut augue quis lacus sagittis ultricies. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec dignissim felis et est. Nullam sem felis, commodo non, eleifend ut, facilisis id, ante. Pellentesque placerat fringilla erat. Donec lectus. Praesent pellentesque velit ac sem fringilla sodales.</p>
+
+	<p>Proin consectetuer, erat vitae aliquet pretium, lacus justo vehicula metus, ut eleifend massa ante ut justo. Suspendisse tempus. Praesent nec dolor vitae erat tincidunt malesuada. Etiam molestie. Sed in leo. Donec eu mi at nunc mattis rhoncus. Vestibulum accumsan. Integer leo erat, dignissim a, dictum sed, viverra sit amet, mauris. Proin sagittis sem eu ante. Donec magna mauris, venenatis tempor, condimentum in, auctor nec, purus. In vel nisi. Nulla facilisi. Proin faucibus pede sed nibh. Morbi tristique ornare felis. Sed id dolor. Suspendisse quis turpis vel sapien euismod egestas.</p>
+
+	<p>Ut at quam. Vivamus at dui ac augue bibendum tempus. Donec feugiat volutpat sem. Aenean nulla. Cras quis velit vel nisi hendrerit sollicitudin. Vestibulum interdum. Cras nisi elit, congue ac, dapibus dignissim, sollicitudin eget, nisi. Morbi tincidunt volutpat metus. Donec tincidunt augue ut nisl. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Sed sollicitudin vehicula enim. Morbi id velit vulputate lacus elementum consequat. Mauris metus eros, malesuada id, pulvinar eget, pretium vel, nulla. Nulla metus nisi, facilisis sed, facilisis et, vestibulum nec, sapien. Maecenas ullamcorper risus et neque. Mauris tristique. Pellentesque eget pede a felis tincidunt scelerisque. Vestibulum aliquet. Donec pellentesque massa sed turpis.</p>
+
+	<p>Cras feugiat erat sit amet quam. Integer a ante. Fusce ut elit non lectus luctus auctor. Phasellus iaculis euismod nulla. Nullam mi. Sed eu tortor eget est lobortis eleifend. Praesent fermentum lacus nonummy velit. Suspendisse vel mauris. Nulla facilisi. Phasellus vel diam eget quam hendrerit venenatis. Fusce porta nisi non odio. Donec accumsan dui eget urna. Phasellus eget nisl ac ante suscipit bibendum. Phasellus velit. Sed erat. Nunc accumsan leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos.</p>
+
+</div>
+</div>
+</body>
+
+</html>

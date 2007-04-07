@@ -1,0 +1,1197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard" xmlns:fb="http://www.facebook.com/2008/fbml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="generator" content="http://www.typepad.com/" />
+	
+	<meta name="description" content="Independent developer Mark Atwood has been working on a MySQL interface to Amazon S3. Released under the GNU Public License, the code is compatible with version 5.1 of MySQL. Once the interface has been installed and configured with your AWS..." />
+	<link rel="stylesheet" href="http://aws.typepad.com/aws/styles.css?v=6" type="text/css" media="screen" />
+	<link rel="stylesheet" href="http://static.typepad.com/.shared:v20101216.02-0-g8ba2d3f:typepad:en_us/themes/common/print.css" type="text/css" media="print" />
+	<link rel="alternate" type="application/atom+xml" title="Posts on 'Amazon Web Services Blog' (Atom)" href="http://aws.typepad.com/aws/atom.xml" />
+	<link rel="alternate" type="application/rss+xml" title="Posts on 'Amazon Web Services Blog' (RSS 1.0)" href="http://aws.typepad.com/aws/index.rdf" />
+	<link rel="alternate" type="application/rss+xml" title="Posts on 'Amazon Web Services Blog' (RSS 2.0)" href="http://aws.typepad.com/aws/rss.xml" />
+	<script type="text/javascript">
+		var TPApp = {};
+		TPApp.app_uri = "http://www.typepad.com/";
+	</script>
+	<script type="text/javascript" src="http://static.typepad.com/.shared:v20101216.02-0-g8ba2d3f:typepad:en_us/js/yui/yahoo-dom-event.js,/js/app/thumbnail-gallery-min.js,/js/sixatrack-loader.js,/js/app/flyouts-min.js"></script>
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['t2._setAccount', 'UA-225723-36']);
+		_gaq.push(['t2._setDomainName', 'none']);
+		_gaq.push(['t2._setAllowLinker', true]);
+        _gaq.push(['t2._setCustomVar', 1, 'Blog', '6a00d8341c534853ef00d83451ba1569e2', 3]);
+        _gaq.push(['t2._setCustomVar', 2, 'Page Type', 'Individual', 3]);
+		_gaq.push(['t2._trackPageview']);
+
+		(function() {
+		  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+	<title>Amazon Web Services Blog: MySQL Interface to Amazon S3</title>
+	<link rel="start" href="http://aws.typepad.com/aws/" title="Home" />
+	<link rel="prev" href="http://aws.typepad.com/aws/2007/04/links_for_thurs.html?no_prefetch=1" title="Links for Thursday, April 5, 2007" />
+	<link rel="next" href="http://aws.typepad.com/aws/2007/04/fastest_way_to_.html?no_prefetch=1" title="Fastest way to Get Started with EC2 - EC2UI" />
+<!--
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/"
+         xmlns:dc="http://purl.org/dc/elements/1.1/">
+<rdf:Description
+    rdf:about="http://aws.typepad.com/aws/2007/04/mysql_interface.html"
+    trackback:ping="http://www.typepad.com/services/trackback/6a00d8341c534853ef00d83434620c53ef"
+    dc:title="MySQL Interface to Amazon S3"
+    dc:identifier="http://aws.typepad.com/aws/2007/04/mysql_interface.html"
+    dc:description="Independent developer Mark Atwood has been working on a MySQL interface to Amazon S3. Released under the GNU Public License, the code is compatible with version 5.1 of MySQL. Once the interface has been installed and configured with your AWS..."
+    dc:creator="AWS Evangelist"
+    dc:date="2007-04-06T18:35:54-07:00" />
+</rdf:RDF>
+-->
+
+</head>
+
+<body class="layout-three-column">
+
+	<script src="http://4839.hittail.com/mlt.js" type="text/javascript">
+        </script>
+        <script type="text/javascript" src="http://s25.sitemeter.com/js/counter.js?site=s25awsblog">
+        </script>
+        <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+        </script>
+        <script type="text/javascript">
+         _uacct = "UA-1142536-1";
+        urchinTracker();
+         </script>
+
+        
+	<div id="container">
+		<div id="container-inner" class="pkg">
+			
+			<!-- banner -->
+<div id="banner">
+	<div id="banner-inner" class="pkg">
+		
+		<h1 id="banner-header"><a href="http://aws.typepad.com/aws/" accesskey="1">Amazon Web Services Blog</a></h1>
+		<h2 id="banner-description">
+			Amazon Web Services, Products, Tools, and Developer Information...
+		</h2>
+	</div>
+</div>
+
+
+
+			<div id="pagebody">
+				<div id="pagebody-inner" class="pkg">
+					<div id="alpha">
+						<div id="alpha-inner" class="pkg">
+							<!-- sidebar1 -->
+
+
+<!-- user photo -->
+
+	<div class="module-photo module">
+		<div class="module-content"><img src="http://aws.typepad.com/.a/6a00d8341c534853ef00e54ff18b618833-150wi" alt="My Photo" /></div>
+	</div>
+
+
+	<div class="module-archives module">
+		<h2 class="module-header">Recent Posts</h2>
+		<div class="module-content">
+			<ul class="module-list">
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/12/run-oracle-applications-on-amazon-ec2-now.html">Run Oracle Applications on Amazon EC2 Now!</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/12/amazon-vm-import-bring-your-vmware-images-to-the-cloud.html">VM Import - Bring Your VMware Images to The Cloud</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/12/dns30-a-visual-tool-for-amazon-route-53.html">DNS30 - A Visual Tool for Amazon Route 53</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/12/freebsd-on-amazon-ec2.html">FreeBSD on Amazon EC2</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/12/amazon-s3-object-size-limit.html">Amazon S3 - Object Size Limit Now 5 TB</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/12/new-mechanical-turk-blog.html">New Mechanical Turk Blog</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/12/new-aws-sdks-for-mobile-development.html">New AWS SDKs for Mobile Development (Android and iOS)</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/12/aws-achieves-pci-dss-20-validated-service-provider-status.html">AWS Achieves PCI DSS 2.0 Validated Service Provider Status</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/12/amazon-route-53-the-aws-domain-name-service.html">Amazon Route 53 - The AWS Domain Name Service</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/12/simpledb-batchdelete.html">Amazon SimpleDB BatchDelete</a></li>
+				
+			</ul>
+		</div>
+	</div>
+
+<div class="module-recent-comments module">
+	<h2 class="module-header">Recent Comments</h2>
+	<div class="module-content">
+		<ul class="module-list">
+			
+				<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/12/freebsd-on-amazon-ec2.html#comment-6a00d8341c534853ef0148c6ddd51d970c">Zladivliba</a> on <a href="http://aws.typepad.com/aws/2010/12/freebsd-on-amazon-ec2.html">FreeBSD on Amazon EC2</a></li>
+			
+				<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/12/amazon-vm-import-bring-your-vmware-images-to-the-cloud.html#comment-6a00d8341c534853ef0147e0d23f18970b">Randy </a> on <a href="http://aws.typepad.com/aws/2010/12/amazon-vm-import-bring-your-vmware-images-to-the-cloud.html">VM Import - Bring Your VMware Images to The Cloud</a></li>
+			
+				<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/12/run-oracle-applications-on-amazon-ec2-now.html#comment-6a00d8341c534853ef0148c6d57b43970c">Jeff Barr</a> on <a href="http://aws.typepad.com/aws/2010/12/run-oracle-applications-on-amazon-ec2-now.html">Run Oracle Applications on Amazon EC2 Now!</a></li>
+			
+				<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/12/run-oracle-applications-on-amazon-ec2-now.html#comment-6a00d8341c534853ef0148c6d2dccf970c">eoracleapps</a> on <a href="http://aws.typepad.com/aws/2010/12/run-oracle-applications-on-amazon-ec2-now.html">Run Oracle Applications on Amazon EC2 Now!</a></li>
+			
+				<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/12/run-oracle-applications-on-amazon-ec2-now.html#comment-6a00d8341c534853ef0147e0c88df6970b">@lex</a> on <a href="http://aws.typepad.com/aws/2010/12/run-oracle-applications-on-amazon-ec2-now.html">Run Oracle Applications on Amazon EC2 Now!</a></li>
+			
+				<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/04/introducing-the-amazon-simple-notification-service.html#comment-6a00d8341c534853ef0147e0c31e01970b">Ulrik Born</a> on <a href="http://aws.typepad.com/aws/2010/04/introducing-the-amazon-simple-notification-service.html">Introducing the Amazon Simple Notification Service</a></li>
+			
+				<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/12/amazon-vm-import-bring-your-vmware-images-to-the-cloud.html#comment-6a00d8341c534853ef0147e0c28d8d970b">D_Roch</a> on <a href="http://aws.typepad.com/aws/2010/12/amazon-vm-import-bring-your-vmware-images-to-the-cloud.html">VM Import - Bring Your VMware Images to The Cloud</a></li>
+			
+				<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/12/amazon-linux-ami-2010111-released.html#comment-6a00d8341c534853ef0147e0bbabe1970b">Gavin</a> on <a href="http://aws.typepad.com/aws/2010/12/amazon-linux-ami-2010111-released.html">Amazon Linux AMI 2010.11.1 Released</a></li>
+			
+				<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/12/dns30-a-visual-tool-for-amazon-route-53.html#comment-6a00d8341c534853ef0148c6c16793970c">Jeff Barr</a> on <a href="http://aws.typepad.com/aws/2010/12/dns30-a-visual-tool-for-amazon-route-53.html">DNS30 - A Visual Tool for Amazon Route 53</a></li>
+			
+				<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/12/dns30-a-visual-tool-for-amazon-route-53.html#comment-6a00d8341c534853ef0147e0b72e97970b">Simone Brunozzi</a> on <a href="http://aws.typepad.com/aws/2010/12/dns30-a-visual-tool-for-amazon-route-53.html">DNS30 - A Visual Tool for Amazon Route 53</a></li>
+			
+		</ul>
+	</div>
+</div>
+
+<script type="text/javascript" src="http://feeds.delicious.com/v2/js/awsbuzz?title=AWS%20Buzz%20on%20Delicious&icon=rss&count=10&sort=date"></script>
+
+<!-- 
+<div class="module-typelist module">
+	<h2 class="module-header">Recent Links</h2>
+	<div class="module-content">
+		<ul class="module-list">
+							<li class="module-list-item"><a title="" href="http://krow.livejournal.com/442461.html">Brian "Krow" Aker's Idle Thoughts - S3, JungleDisk, and where did I put my tape drive?</a></li>
+							<li class="module-list-item"><a title="" href="http://www.ddj.com/dept/database/191601621">Dr. Dobb's | Synchronize Now! | August 2, 2006</a></li>
+							<li class="module-list-item"><a title="" href="http://tsandhol.blogspot.com/2006/08/backupy-goodness.html">tsandhol's boring crap: Backupy Goodness</a></li>
+							<li class="module-list-item"><a title="" href="http://blog.einfach-firefox.de/index.php/alexa-traffic-rank-what-it-is-and-why-you-should-care-or-not/">Make Money Online » Alexa traffic rank: what it is and why you should care (or not)</a></li>
+							<li class="module-list-item"><a title="" href="http://www.birddogdigital.com/blog/2006/07/von-kempelen-home-great-idea.html">birdDog digital Blog & Podcast - Mac Sales & Support for Small Businesses & Creative Firms: von Kempelen - Home - Great idea</a></li>
+							<li class="module-list-item"><a title="" href="http://www.juliogarcia.org/2006/07/28/i-hate-hard-drives/">I hate hard drives » Julio Garcia dot org - Now with more 'Whaaaaaaa?'</a></li>
+							<li class="module-list-item"><a title="" href="http://www.stairways.com/blog/2006-08-01-amazon-s3-interarchy">Stairways Software: How Do I Make An Amazon S3 Hosted Website Using Interarchy</a></li>
+							<li class="module-list-item"><a title="" href="http://akatsuki.co.uk/article/backup-in-the-age-of-the-terabyte">akatsuki.co.uk: Backup in the Age of the Terabyte</a></li>
+							<li class="module-list-item"><a title="" href="http://www.pardonthedisruption.com/2006/08/10_ways_web_20_.html">Chip Griffin: Pardon the Disruption: 10 Ways Web 2.0 Promises to Change the Way We Live and Work</a></li>
+							<li class="module-list-item"><a title="" href="http://mechanical-turk.blogspot.com/2006/07/happy-monday-turkers.html">Mechanical Turk Monitor: Happy Monday Turkers!</a></li>
+			
+		</ul>
+	</div>
+</div>
+
+<div class="module-wishlist module">
+	
+		<h2 class="module-header"><a href="http://www.amazon.com/exec/obidos/redirect?tag=harukak-22&amp;path=http%3A%2F%2Fwww.amazon.com%2Fgp%2Fregistry%2F2AT7V3BAJ69DX">Web Services Wish List</a></h2>
+	
+	<div class="module-content"><a href="http://www.amazon.com/exec/obidos/redirect?tag=harukak-22&amp;path=http%3A%2F%2Fwww.amazon.com%2Fgp%2Fregistry%2F2AT7V3BAJ69DX"
+		title="Visit this Wish List at Amazon.com"><img
+		src="http://www.typepad.com/t/content?src=TiledWishlist:183837,73998"
+		alt="Visit this Wish List at Amazon.com" /></a></div>
+</div>
+
+-->
+
+<!--
+
+<script type="text/javascript" defer="true" src="http://blueorganizer.adaptiveblue.com/js/bluelink-window.js"></script>
+
+    <div style="max-width: 170px">
+        <a href="http://www.amazon.com/E-Commerce-Service-AWS-home-page/b/ref=sc_fe_c_0_15763381_1/103-8605431-4007801?ie=UTF8&node=12738641&no=15763381&me=A36L942TSJ2AJA" blueKey="Q%22zCU7M61tR7gyytH4f6KEIVtRgeAOwZhYTWJFbutYsFOnJrsK5jDvZtn2z8cmaSujw9XXQDxdYnZ_gbMRgV0Of5kgNbzZqGO_q%22rN5pVvENV8Vofw144rvluDkQtDEZCInELnq6GJlfzaLqiQEjIRXK3p64cVSJt6p_xbL1gAL6st35d9w8hIunA5hYE60zIZFwdXMQdmN7GLwPAA_qGK124Vu8pxgoHvGHH3hfP6p">E-Commerce Service</a><br>
+        <div style="margin-top: 5px;"><span style="font-size: 11px; line-height: 13px">Amazon E-Commerce Service (ECS) exposes Amazon's product data and e-commerce functionality.</span></div><br>
+        <a href="http://www.amazon.com/b/ref=sc_fe_c_0_15763381_2/103-8605431-4007801?ie=UTF8&node=201590011&no=15763381&me=A36L942TSJ2AJA" blueKey="Q%22zCU7M61tR7gyytH4f6KEIVtRgeAOwZhYTWJFbutYsFOnJrsK5jDvZtn2z8feqOELwPN1RsuJ2g1kKqqJd7U0aOkt2xPp1Y0_0RBsSj98%2225HQkcBaJPKGqgCC8PTEJFJ4CWv1TBZUbAafqqU_iI7HLIZFOlR8Itc%22_vDLJfBG_Boh7t12Px%22bFyysZmZbm">Elastic Compute Cloud</a><br>
+
+        <div style="margin-top: 5px;"><span style="font-size: 11px; line-height: 13px">Amazon Elastic Compute Cloud is a web service that provides resizable compute capacity in the cloud.</span></div><br>
+        <a href="http://www.amazon.com/Historical-Pricing-AWS-home-page/b/ref=sc_fe_c_0_15763381_3/103-8605431-4007801?ie=UTF8&node=15811391&no=15763381&me=A36L942TSJ2AJA" blueKey="Q%22zCU7M61tR7gyytH4f6KEIVtRgeAOwZhYTWJFbutYsFOnJrsK5jDvZtn2z8pCeOpbM691lDEdcnKsxeMFMV0Of5kgNbzZqGO_q%22rN5pVvENV8Vofw144rvluDkQtDEZCInELnq6GRlfzaLqiQEjIRXK3p64cVSJt6p_xbL1gAL6st35d9w8hIunAL3XCEKyVZFwdXMQdmN7GLwPAA_qGK124Vu8pxgoHvGHH3hfP6p">Historical Pricing</a>
+        <div style="margin-top: 5px;"><span style="font-size: 11px; line-height: 13px">The Amazon Historical Pricing web service gives developers programmatic access to over three years of actual sales data for books, music, videos, and DVDs.</span></div><br>
+        <a href="http://www.amazon.com/Mechanical-Turk-AWS-home-page/b/ref=sc_fe_c_0_15763381_4/103-8605431-4007801?ie=UTF8&node=15879911&no=15763381&me=A36L942TSJ2AJA" blueKey="Q%22zCU7M61tR7gyytH4f6KEIVtRgeAOwZhYTWJFbutYsFOnJrsK5jDvZtn2z8kSeSt5M991lDEdcmJ_wgIIMRQzX_wgZcBgrHIRXSupTyOXQ05Opwqo1495MqOLCR7a_YyATEj8W9oMlcfG1rvE_jH7HIWlQ%22bpSJvMFOdiLYx2WPaYhSbq2OsJbmCvNXCE0D4kQqCydOeuN6UTgSpllwS8a01h08rIYF5meLH7c">Mechanical Turk</a><br>
+        <div style="margin-top: 5px;"><span style="font-size: 11px; line-height: 13px">One of the best ways to understand Amazon Mechanical Turk is to complete a HIT and see what the experience is like.</span></div><br>
+        <a href="http://www.amazon.com/S3-AWS-home-page-Money/b/ref=sc_fe_c_0_15763381_5/103-8605431-4007801?ie=UTF8&node=16427261&no=15763381&me=A36L942TSJ2AJA" blueKey="Q%22zCU7M61tR7gyytH4f6KEIVtRgeAOwZhYTWJFbutYsFOnJrsK5jDvZtn2z8u0H%22AH365yREFJwAMYxfQtcT2vL9aohdzorGJl07vpQDOvjJvKkwhpWIOiqqpK8X5KFYB2TzU1a6k2lcz0urvkojQ%22HL7V%22Ql7OYc7V7iaW2gALRqAs7sndQsVGzeeNZyg0zL7%22rCuI_xThULXM_Bo_v58eJRMrRcd">Simple Storage Service</a><br>
+
+        <div style="margin-top: 5px;"><span style="font-size: 11px; line-height: 13px">Amazon S3 is storage for the Internet. It is designed to make web-scale computing easier for developers.</span></div><br>
+        <a href="http://www.amazon.com/Simple-Queue-Service-home-page/b/ref=sc_fe_c_0_15763381_6/103-8605431-4007801?ie=UTF8&node=13584001&no=15763381&me=A36L942TSJ2AJA" blueKey="Q%22zCU7M61tR7gyytH4f6KEIVtRgeAOwZhYTWJFbutYsFOnJrsK5jDvZtn2z8uCKVlnw%2258kyxJxi772f9%22hS65LVroZatZeLKJr_z65p%229AI3PozPcv2bjvlhCAQ5eUZy29CNrM7qI7cB0ustkUjMZHLPBQ%22gZSHuE%229pOGGw_r_EstSku2_EZXoEr3YDAeyWpkeqiJOfaN6Lj2PeQlaW1v1VsH%22x6gEGSXXQxcf">Simple Queue Service</a>
+        <div style="margin-top: 5px;"><span style="font-size: 11px; line-height: 13px">Amazon Simple Queue Service offers a reliable, highly scalable hosted queue for storing messages as they travel between computers.</span></div><br>
+        <a href="http://www.amazon.com/b/ref=sc_fe_c_0_15763381_7/103-8605431-4007801?ie=UTF8&node=236156011&no=15763381&me=A36L942TSJ2AJA" blueKey="Q%22zCU7M61tR7gyytH4f6KEIVtRgeAOwZhYTWJFbutYsFOnJrsK5jDvZtn2z8feqOELwPN1RsuJ2g1kKqqJd7U0aOkt2xPB1Y0_0RBsSj98%2225HQkcBaJPKGqgCC8PTEJFJ4CWv1TBZUbAm1ruEEjI7HLIZFOlR8Itc%22_vDLJfBG_Boh7t12Px%22bFyysZmZbm">Alexa Thumbnails</a><br>
+        <div style="margin-top: 5px;"><span style="font-size: 11px; line-height: 13px">All thumbnail images are accessible via web services, using SOAP or REST.</span></div><br>
+        <a href="http://www.amazon.com/Alexa-Top-Sites-home-page/b/ref=sc_fe_c_0_15763381_8/103-8605431-4007801?ie=UTF8&node=14248821&no=15763381&me=A36L942TSJ2AJA" blueKey="Q%22zCU7M61tR7gyytH4f6KEIVtRgeAOwZhYTWJFbutYsFOnJrsK5jDvZtn2z8giKTd5wTGfBzF6xlIIxaIgMT05LVj2tct7KHQ2q_qh8yUvzIVymzPAW4VqqrbS8Q0C_PtgSEMHq9h_7cDqLqu_%22jI%22bK8l6%22jl52zolVaCvMnsW_d%22I7rnJQBxHoAPwKcVeyJRFsEaZRdagTZC29rgEc0Ha1TVqRr2JzYa">Alexa Top Sites</a><br>
+
+        <div style="margin-top: 5px;"><span style="font-size: 11px; line-height: 13px">The Alexa Top Sites web service provides ranked lists of the top sites on the Internet.</span></div><br>
+        <a href="http://www.amazon.com/Alexa-Web-Information-Service-home/b/ref=sc_fe_c_0_15763381_9/103-8605431-4007801?ie=UTF8&node=12782661&no=15763381&me=A36L942TSJ2AJA" blueKey="Q%22zCU7M61tR7gyytH4f6KEIVtRgeAOwZhYTWJFbutYsFOnJrsK5jDvZtn2z8giKTd5wTJT7DFsMkWkhaIJwRWrv%22u%22YceFrJMRrSEpzFOvEJLTUyqUWZ95gfsD6_tz_PAUnFGHW6hIlzr8eqvgUpQNXLXBA%22hBTIuA%22%22E9LJClG_BE2QdKdUnkeBoeNZFguAKVFsCus_DTh6J1gOrsEx8PXI8xKPqQgyQv0X%22ZZhX7VRPb">Alexa Web Information Service</a><br>
+        <div style="margin-top: 5px;"><span style="font-size: 11px; line-height: 13px">The Alexa Web Information Service makes Alexa's vast repository of information about the traffic and structure of the web available to developers.</span></div><br>
+        <a href="http://www.amazon.com/b/ref=sc_fe_c_0_15763381_10/103-8605431-4007801?ie=UTF8&node=269962011&no=15763381&me=A36L942TSJ2AJA" blueKey="Q%22zCU7M61tR7gyytH4f6KEIVtRgeAOwZhYTWJFbutYsFOnJrsK5jDvZtn2z8feqOELwPN1RsuJ2g1kKqqJd7U0aOkt2xPdf1Q6eRfgnk7OV2_PQnBlaJUyGshK8PLnBXERzlU1HTq3Uxvi1rCUEjG%22HL1tlOzA8JrgV%22vX1Hs3K8d%22IVwDJ8ANHoF8tLFEXo3c">Alexa Web Search</a><br/>
+        <div style="margin-top: 5px;"><span style="font-size: 11px; line-height: 13px">The Alexa Web Search web service offers programmatic access to Alexa's web search engine.</span></div>
+    </div>
+
+-->
+
+
+
+						</div>
+					</div>
+					<div id="beta">
+						<div id="beta-inner" class="pkg">
+							<!-- content nav -->
+<p class="content-nav">
+	<a href="http://aws.typepad.com/aws/2007/04/links_for_thurs.html">&laquo; Links for Thursday, April 5, 2007</a> |
+	<a href="http://aws.typepad.com/aws/">Main</a>
+	| <a href="http://aws.typepad.com/aws/2007/04/fastest_way_to_.html">Fastest way to Get Started with EC2 - EC2UI &raquo;</a>
+</p>
+
+<!-- entry -->
+
+
+<div class="entry-category-announcements entry-author-aws_evangelist entry-type-post entry" id="entry-32599984">
+			<h3 class="entry-header">MySQL Interface to Amazon S3</h3>
+	
+	<div class="entry-content">
+		<div class="entry-body">
+			<p>Independent developer <a href="http://mark.atwood.name/resume.txt">Mark Atwood</a> has been working on a MySQL interface to Amazon S3. Released under the GNU Public License, the code is compatible with version 5.1 of <a href="http://www.mysql.com/">MySQL</a>. Once the interface has been installed and configured with your AWS developer credentials,&nbsp; you can now create tables using the AWSS3 storage engine like this:</p><blockquote><p><tt>CREATE TABLE <em>atst</em> (s3id VARCHAR(255) NOT NULL PRIMARY KEY, s3val BLOB)) ENGINE='AWSS3' connection='awss3 <em>bucketname</em> <em>aws_id</em> <em>aws_secret</em>'</tt></p></blockquote><p>This is a bleeding-edge, first-cut release and, as is the case with popular open source projects, will undoubtedly evolve and mature rapidly over the coming weeks and months.<br /> </p>
+
+<p>Based on Mark's <a href="http://fallenpegasus.livejournal.com/tag/s3">S3 journal entries</a>, the basic functionality is now in place. Each database table row is stored in an S3 object. The object's S3 key corresponds to the table's primary key (which must be of type VARCHAR). Inserts, deletes, and selects are functional.</p>
+
+<p>Mark's code is stored in a <a href="http://www.selenic.com/mercurial/wiki/">Mercurial</a> repository and can be found <a href="http://hg.fallenpegasus.com/mysql-awss3">here</a>.</p>
+
+<p>Congratulations, Mark; this is awesome.</p>
+
+<p>-- Jeff;</p>
+		</div>
+		
+		
+	</div>
+	<div class="entry-footer">
+			<p class="entry-footer-info">
+				<span class="post-footers">April 06, 2007 in <a href="http://aws.typepad.com/aws/announcements/">Announcements</a> </span> <span class="separator">|</span> <a class="permalink" href="http://aws.typepad.com/aws/2007/04/mysql_interface.html">Permalink</a>
+			</p>
+		
+		<!-- technorati tags -->
+	
+
+
+		<!-- post footer links -->
+
+	</div>
+</div>
+
+		<div class="trackbacks">
+		<a id="trackback"></a>
+		<h3 class="trackbacks-header">TrackBack</h3>
+		<div class="trackbacks-info">
+			<p>TrackBack URL for this entry:<br /><span class="trackbacks-link">http://www.typepad.com/services/trackback/6a00d8341c534853ef00d83434620c53ef</span></p>
+			<p>Listed below are links to weblogs that reference <a href="http://aws.typepad.com/aws/2007/04/mysql_interface.html">MySQL Interface to Amazon S3</a>:</p>
+		</div>
+		<div class="trackbacks-content">
+							<div class="trackback">
+					<div class="trackback-content">
+						<p>
+							<a id="p4112476"></a>
+							&raquo; <a rel="nofollow" href="http://www.ecommerce-well.com/wpb/tidbit-of-the-day/amazon-web-service-s3-now-with-mysql/28/">amazon web service s3 - now with mysql!</a> from ecommerce-well.com<br />
+							Amazons s3 web service may have a mysql interface!
+... <a rel="nofollow" href="http://www.ecommerce-well.com/wpb/tidbit-of-the-day/amazon-web-service-s3-now-with-mysql/28/">[Read More]</a>
+						</p>
+					</div>
+					<p class="trackback-footer">
+						Tracked on April 07, 2007 at 08:40 AM
+					</p>
+				</div>
+							<div class="trackback">
+					<div class="trackback-content">
+						<p>
+							<a id="p4113922"></a>
+							&raquo; <a rel="nofollow" href="http://joseph.randomnetworks.com/archives/2007/04/09/mysql-interface-to-amazon-s3/">MySQL Interface to Amazon S3</a> from Joseph Scott's Blog<br />
+							Mark Atwood wrote a MySQL Interface to Amazon S3.  Some basic functionality is there, but this is bleeding edge stuff.
+This is a really neat idea, abstract the S3 storage and provide methods that people already use to store their data.  Someone needs t... <a rel="nofollow" href="http://joseph.randomnetworks.com/archives/2007/04/09/mysql-interface-to-amazon-s3/">[Read More]</a>
+						</p>
+					</div>
+					<p class="trackback-footer">
+						Tracked on April 09, 2007 at 10:43 AM
+					</p>
+				</div>
+							<div class="trackback">
+					<div class="trackback-content">
+						<p>
+							<a id="p4114932"></a>
+							&raquo; <a rel="nofollow" href="http://www.amountaintop.com/mysql-interface-amazon-s3">MySQL Interface to Amazon S3</a> from A Mountain Top<br />
+							When you think about disruptive technologies, keep this one on your list to watch.
+ <a rel="nofollow" href="http://www.amountaintop.com/mysql-interface-amazon-s3">[Read More]</a>
+						</p>
+					</div>
+					<p class="trackback-footer">
+						Tracked on April 10, 2007 at 08:49 AM
+					</p>
+				</div>
+			
+		</div>
+	</div>
+
+
+
+
+
+
+
+        
+        <a id="comments"></a>
+	<div class="comments" id="all-comments">
+		<h3 class="comments-header">Comments</h3>
+		
+		<div class="comments-content" id="comments-content">
+                <!-- comment list --><a id="c65608704"></a>
+<div class="comment comment-odd comment-has-avatar" id="comment-65608704">
+	<div class="comment-avatar">
+		<img id="comment-6a00d8341c534853ef00d834f4628b53ef-avatarimg" src="http://static.typepad.com/.shared:v20101216.02-0-g8ba2d3f:typepad:en_us/default-userpics/19-50si.gif" alt="Doug Kaye" width="50" height="50" />
+	</div>
+	<div class="comment-content" id="comment-65608704-content">
+		<span id="comment-65608704-content"><p>This is sick and twisted. I love it.</p></span>
+	</div>
+	<p class="comment-footer">
+		Posted by:
+		<a rel="nofollow" target="_blank" title="http://www.blogarithms.com" href="http://www.blogarithms.com">Doug Kaye</a> |
+		<a href="http://aws.typepad.com/aws/2007/04/mysql_interface.html?cid=65608704#comment-6a00d8341c534853ef00d834f4628b53ef">April 06, 2007 at 07:06 PM</a>
+	</p>
+</div><a id="c65622736"></a>
+<div class="comment comment-even comment-has-avatar" id="comment-65622736">
+	<div class="comment-avatar">
+		<img id="comment-6a00d8341c534853ef00d834f46ef753ef-avatarimg" src="http://static.typepad.com/.shared:v20101216.02-0-g8ba2d3f:typepad:en_us/default-userpics/03-50si.gif" alt="Michele" width="50" height="50" />
+	</div>
+	<div class="comment-content" id="comment-65622736-content">
+		<span id="comment-65622736-content"><p>This looks like what everyone has been looking for! Got to give it a try...</p></span>
+	</div>
+	<p class="comment-footer">
+		Posted by:
+		<a rel="nofollow" target="_blank" title="http://blog.wonsys.net" href="http://blog.wonsys.net">Michele</a> |
+		<a href="http://aws.typepad.com/aws/2007/04/mysql_interface.html?cid=65622736#comment-6a00d8341c534853ef00d834f46ef753ef">April 07, 2007 at 01:26 AM</a>
+	</p>
+</div><a id="c65625408"></a>
+<div class="comment comment-odd comment-has-avatar" id="comment-65625408">
+	<div class="comment-avatar">
+		<img id="comment-6a00d8341c534853ef00d834f470c053ef-avatarimg" src="http://static.typepad.com/.shared:v20101216.02-0-g8ba2d3f:typepad:en_us/default-userpics/17-50si.gif" alt="patent" width="50" height="50" />
+	</div>
+	<div class="comment-content" id="comment-65625408-content">
+		<span id="comment-65625408-content"><p>veryy veryy nice informations...thank you veryy much.  mr suma</p></span>
+	</div>
+	<p class="comment-footer">
+		Posted by:
+		<a rel="nofollow" target="_blank" title="http://www.marka-patent.biz" href="http://www.marka-patent.biz">patent</a> |
+		<a href="http://aws.typepad.com/aws/2007/04/mysql_interface.html?cid=65625408#comment-6a00d8341c534853ef00d834f470c053ef">April 07, 2007 at 03:10 AM</a>
+	</p>
+</div><a id="c65631214"></a>
+<div class="comment comment-even comment-has-avatar" id="comment-65631214">
+	<div class="comment-avatar">
+		<img id="comment-6a00d8341c534853ef00d834f4776c53ef-avatarimg" src="http://static.typepad.com/.shared:v20101216.02-0-g8ba2d3f:typepad:en_us/default-userpics/18-50si.gif" alt="Alex Iskold" width="50" height="50" />
+	</div>
+	<div class="comment-content" id="comment-65631214-content">
+		<span id="comment-65631214-content"><p>This is interesting! Does this include joins? Does a single table get scattered around or is there a way to cluster it on machines?</p>
+
+<p>Alex</p></span>
+	</div>
+	<p class="comment-footer">
+		Posted by:
+		<a rel="nofollow" target="_blank" title="http://www.adaptiveblue.com" href="http://www.adaptiveblue.com">Alex Iskold</a> |
+		<a href="http://aws.typepad.com/aws/2007/04/mysql_interface.html?cid=65631214#comment-6a00d8341c534853ef00d834f4776c53ef">April 07, 2007 at 06:05 AM</a>
+	</p>
+</div><a id="c65641330"></a>
+<div class="comment comment-odd comment-has-avatar" id="comment-65641330">
+	<div class="comment-avatar">
+		<img id="comment-6a00d8341c534853ef00d834f47dcb53ef-avatarimg" src="http://static.typepad.com/.shared:v20101216.02-0-g8ba2d3f:typepad:en_us/default-userpics/14-50si.gif" alt="Jon" width="50" height="50" />
+	</div>
+	<div class="comment-content" id="comment-65641330-content">
+		<span id="comment-65641330-content"><p>Question -</p>
+
+<p>There has been alot of talk about how to solve the &quot;persistant data&quot; problem around an EC2 instance and MySQL data, this seems like it would be a good solution no? I think supporting this project and offering an EC2 image w/ this storage engine built in would be a great idea.</p>
+
+<p>(Sorry, was going to post @ the Dev forums but was not sure where it would go)</p></span>
+	</div>
+	<p class="comment-footer">
+		Posted by:
+		Jon |
+		<a href="http://aws.typepad.com/aws/2007/04/mysql_interface.html?cid=65641330#comment-6a00d8341c534853ef00d834f47dcb53ef">April 07, 2007 at 09:15 AM</a>
+	</p>
+</div><a id="c65656296"></a>
+<div class="comment comment-even comment-has-avatar" id="comment-65656296">
+	<div class="comment-avatar">
+		<img id="comment-6a00d8341c534853ef00d834f489cb53ef-avatarimg" src="http://static.typepad.com/.shared:v20101216.02-0-g8ba2d3f:typepad:en_us/default-userpics/05-50si.gif" alt="GP" width="50" height="50" />
+	</div>
+	<div class="comment-content" id="comment-65656296-content">
+		<span id="comment-65656296-content"><p>Thanks to Mark for doing this work. Is there any benchmark data available? Is there any indication that this storage engine will support basic RDBMS features like indexes, foreign key constraints, etc.? It seems like the latency you are introducing by storing all the data elsewhere would make this difficult to use for any real production application. A partial SQL interface to S3 buckets is certainly novel, but this doesn&#39;t seem to solve any of the problems  people have voiced about a fast, persistent database available from EC2.</p></span>
+	</div>
+	<p class="comment-footer">
+		Posted by:
+		GP |
+		<a href="http://aws.typepad.com/aws/2007/04/mysql_interface.html?cid=65656296#comment-6a00d8341c534853ef00d834f489cb53ef">April 07, 2007 at 01:46 PM</a>
+	</p>
+</div><a id="c65673336"></a>
+<div class="comment comment-odd comment-has-avatar" id="comment-65673336">
+	<div class="comment-avatar">
+		<img id="comment-6a00d8341c534853ef00d8352a001b69e2-avatarimg" src="http://static.typepad.com/.shared:v20101216.02-0-g8ba2d3f:typepad:en_us/default-userpics/18-50si.gif" alt="Jeffrey" width="50" height="50" />
+	</div>
+	<div class="comment-content" id="comment-65673336-content">
+		<span id="comment-65673336-content"><p>Any chance that this will be backported to MySQL 5.0?</p></span>
+	</div>
+	<p class="comment-footer">
+		Posted by:
+		<a rel="nofollow" target="_blank" title="http://approver.com/" href="http://approver.com/">Jeffrey</a> |
+		<a href="http://aws.typepad.com/aws/2007/04/mysql_interface.html?cid=65673336#comment-6a00d8341c534853ef00d8352a001b69e2">April 07, 2007 at 08:00 PM</a>
+	</p>
+</div><a id="c65775190"></a>
+<div class="comment comment-even comment-has-avatar" id="comment-65775190">
+	<div class="comment-avatar">
+		<img id="comment-6a00d8341c534853ef00d834f4d8c653ef-avatarimg" src="http://static.typepad.com/.shared:v20101216.02-0-g8ba2d3f:typepad:en_us/default-userpics/10-50si.gif" alt="Computer Guru" width="50" height="50" />
+	</div>
+	<div class="comment-content" id="comment-65775190-content">
+		<span id="comment-65775190-content"><p>It doesn&#39;t sound like a good idea.<br />
+Well it sounds like a good idea, but it&#39;ll never work. Latency (even with caching) will be the death of it.</p>
+
+<p>Anyway, there&#39;s an easier method - just store an SQLite db on the remote server via a mounted SSH or WebDAV tunnel and connect to it normally via a symlink.</p></span>
+	</div>
+	<p class="comment-footer">
+		Posted by:
+		<a rel="nofollow" target="_blank" title="http://neosmart.net/blog/" href="http://neosmart.net/blog/">Computer Guru</a> |
+		<a href="http://aws.typepad.com/aws/2007/04/mysql_interface.html?cid=65775190#comment-6a00d8341c534853ef00d834f4d8c653ef">April 09, 2007 at 05:41 AM</a>
+	</p>
+</div><a id="c65801446"></a>
+<div class="comment comment-odd comment-has-avatar" id="comment-65801446">
+	<div class="comment-avatar">
+		<img id="comment-6a00d8341c534853ef00d834f4e8d053ef-avatarimg" src="http://static.typepad.com/.shared:v20101216.02-0-g8ba2d3f:typepad:en_us/default-userpics/10-50si.gif" alt="Jinesh" width="50" height="50" />
+	</div>
+	<div class="comment-content" id="comment-65801446-content">
+		<span id="comment-65801446-content"><p>hi computer guru,</p>
+
+<p>Very interesting. Somebody from the developer community is also experimenting with SQLLite DB: </p>
+
+<p><a href="http://blog.nanobeepers.com/2007/04/07/infinitely-scalable-framework-with-aws/" rel="nofollow">http://blog.nanobeepers.com/2007/04/07/infinitely-scalable-framework-with-aws/</a></p>
+
+<p>I am waiting for his first release too. Its getting more exciting now.</p>
+
+<p>Jinesh</p></span>
+	</div>
+	<p class="comment-footer">
+		Posted by:
+		Jinesh |
+		<a href="http://aws.typepad.com/aws/2007/04/mysql_interface.html?cid=65801446#comment-6a00d8341c534853ef00d834f4e8d053ef">April 09, 2007 at 09:52 AM</a>
+	</p>
+</div><a id="c65803428"></a>
+<div class="comment comment-even comment-has-avatar" id="comment-65803428">
+	<div class="comment-avatar">
+		<img id="comment-6a00d8341c534853ef00d834f4e9a153ef-avatarimg" src="http://static.typepad.com/.shared:v20101216.02-0-g8ba2d3f:typepad:en_us/default-userpics/04-50si.gif" alt="Mark Atwood" width="50" height="50" />
+	</div>
+	<div class="comment-content" id="comment-65803428-content">
+		<span id="comment-65803428-content"><p>I&#39;m the developer of this project.</p>
+
+<p>It will be presented at the MySQL Expo in Santa Clara on April 25th.  I&#39;m also available at the monthly Seattle MySQL meetups to answer questions.  I also welcome constructive questions and suggestions via email and on my LJ blog.</p></span>
+	</div>
+	<p class="comment-footer">
+		Posted by:
+		<a rel="nofollow" target="_blank" title="http://mark.atwood.name/" href="http://mark.atwood.name/">Mark Atwood</a> |
+		<a href="http://aws.typepad.com/aws/2007/04/mysql_interface.html?cid=65803428#comment-6a00d8341c534853ef00d834f4e9a153ef">April 09, 2007 at 10:13 AM</a>
+	</p>
+</div><a id="c109675498"></a>
+<div class="comment comment-odd comment-has-avatar" id="comment-109675498">
+	<div class="comment-avatar">
+		<img id="comment-6a00d8341c534853ef00e551adc5c58833-avatarimg" src="http://static.typepad.com/.shared:v20101216.02-0-g8ba2d3f:typepad:en_us/default-userpics/17-50si.gif" alt="julio" width="50" height="50" />
+	</div>
+	<div class="comment-content" id="comment-109675498-content">
+		<span id="comment-109675498-content"><p>I&#39;m not sure there&#39;s a reason to go to S3 for the actual database. Where you need scalability is with the storage of stuff that you wouldn&#39;t put in the database anyway, just pointers to them. Does anybody actually store photos and stuff in the database? No, they store it in the file system. The database just points to it.</p></span>
+	</div>
+	<p class="comment-footer">
+		Posted by:
+		julio |
+		<a href="http://aws.typepad.com/aws/2007/04/mysql_interface.html?cid=109675498#comment-6a00d8341c534853ef00e551adc5c58833">April 06, 2008 at 11:05 AM</a>
+	</p>
+</div><a id="c120305220"></a>
+<div class="comment comment-even comment-has-avatar" id="comment-120305220">
+	<div class="comment-avatar">
+		<img id="comment-6a00d8341c534853ef00e5537443c28833-avatarimg" src="http://static.typepad.com/.shared:v20101216.02-0-g8ba2d3f:typepad:en_us/default-userpics/01-50si.gif" alt="Dubai Web Design, Development " width="50" height="50" />
+	</div>
+	<div class="comment-content" id="comment-120305220-content">
+		<span id="comment-120305220-content"><p>Excellent Interface. This is something new for a developer like me and especially for bingers.</p></span>
+	</div>
+	<p class="comment-footer">
+		Posted by:
+		<a rel="nofollow" target="_blank" title="http://www.go-gulf.com" href="http://www.go-gulf.com">Dubai Web Design, Development </a> |
+		<a href="http://aws.typepad.com/aws/2007/04/mysql_interface.html?cid=120305220#comment-6a00d8341c534853ef00e5537443c28833">June 27, 2008 at 01:42 AM</a>
+	</p>
+</div>
+
+		</div>
+        
+	</div>
+    	<!-- comment-form-atp -->
+
+	
+<div id="atp-comments">
+    
+        <div id="comment-preview" class="hiddenBox">
+	<h3 id="header-verify-comment" class="comments-header hiddenBox">Verify your Comment</h3>
+    <h3 id="header-preview-comment" class="comments-header hiddenBox">Previewing your Comment</h3>
+	<div class="comments-content">
+		<div class="comment comment-has-avatar">
+			<div id="comment-preview-content" class="comment-content">
+			</div>
+			<p class="comment-footer">
+				Posted by: 
+				<span id="comment-preview-author"></span>&nbsp;|&nbsp;<span id="comment-preview-datetime"></span>
+			</p>
+		</div>
+	</div>
+</div>
+<div id="comment-preview-confirmation" class="hiddenBox yellowBox">
+    <p>This is only a preview. Your comment has not yet been posted.</p>
+   	<form id="comment-preview-form"
+   		method="post"
+   		onsubmit="atpComments.interceptPost(); return false;">
+		<input type="submit" name="post" id="comment-confirm-post" value="&nbsp;Post&nbsp;" onclick="atpComments.interceptPost(); return false;"/>		    
+		<input type="submit" name="edit" id="comment-edit" value="&nbsp;&nbsp;Edit&nbsp;&nbsp;" onclick="atpComments.previewOnly(2); return false;"/>
+        <span id="previewFormSpinner" class="hiddenBox"><img src="/.shared/images/spinner.gif" alt="Working..." /></span>
+	</form>
+</div>
+<div id="comment-error" class="hiddenBox redBox">	    
+   Your comment could not be posted. Error type: <span id="comment-error-msg"></span> 
+</div>	
+<div id="comment-complete" class="hiddenBox redBox">
+    Your comment has been saved. Comments are moderated and will not appear until approved by the author. <a href="javascript:void 0;" onclick="window.location.hash='#comment-form';window.location.reload(false)">Post another comment</a>
+</div>	
+<div id="comment-captcha" class="hiddenBox yellowBox">	
+    <div id="captchaText">
+	    <p id="captchaFailMsg" class="captchaErrorText hiddenBox">The letters and numbers you entered did not match the image. Please try again.</p>	    	        
+	    <p>As a final step before posting your comment, enter the letters and numbers you see in the image below. This prevents automated programs from posting comments.</p>
+	    <p><span id="comment-captcha-viewalt">Having trouble reading this image? <a href="#comment-captcha" onClick="atpComments.generateCaptcha();">View an alternate.</a></span></p>
+    </div>
+    <p class=""><img id="captchaImg" /></p>		
+    <form id="comment-captcha-form" 
+		  method="post"
+		  onsubmit="atpComments.submitWithCaptcha(); return false;">
+		<input type="hidden" name="captcha_chal" id="comment-captcha-chal" value="" />
+        <p>
+	        <input id="comment-captcha-text" name="captcha_text" size="10" />
+        </p>
+        <p>
+            <input type="submit" name="continue" id="captcha-continue" value="&nbsp;Continue&nbsp;" />
+            <span id="captchaFormSpinner" class="commentSpinner hiddenBox"><img src="/.shared/images/spinner.gif" alt="Working..." /></span>
+        </p>
+    </form>
+</div>
+
+    
+	<div id="primary-comment-form" class="comment-form">
+    	<form id="comment-form" action="http://aws.typepad.com/.services/comments"
+    		method="post">
+    		<input type="hidden" name="entry_xid" id="comment-entry-xid" value="6a00d8341c534853ef00d83434620c53ef" />
+                <input type="hidden" name="token" value="1292858308-7f7b084f697eb754268ed2b77f9d8fb1bec42736:YLeBo11kuZcZ2mTP" />
+    		<div class="comments-open">
+    			<h2 class="comments-open-header" id="comment-title">Post a comment</h2>
+    			<div id="comments-open-content" class="comments-open-content">
+    									
+    				    <p class="comments-open-moderated">
+    						Comments are moderated, and will not appear until the author has approved them.
+    					</p>
+    				
+				
+    									
+    					<div id="comments-open-login" style="display: none;">
+                  <div class="login-list">
+                      
+                      <span class="first">Comment below or sign in with</span> <span class="typepad"><a href="https://www.typekey.com/t/typekey/login?v=1.0&t=e9440c3ce3fe22b3d2ffbf13bee27cedcef5674e&lang=en_US&_return=http%3A%2F%2Faws.typepad.com%2Faws%2F2007%2F04%2Fmysql_interface.html&_portal=typepad">TypePad</a></span> <span class="facebook"><a href="https://www.typekey.com/t/typekey/login?v=1.0&t=e9440c3ce3fe22b3d2ffbf13bee27cedcef5674e&lang=en_US&_return=http%3A%2F%2Faws.typepad.com%2Faws%2F2007%2F04%2Fmysql_interface.html&_portal=typepad&service=facebook">Facebook</a></span> <span class="twitter"><a href="https://www.typekey.com/t/typekey/login?v=1.0&t=e9440c3ce3fe22b3d2ffbf13bee27cedcef5674e&lang=en_US&_return=http%3A%2F%2Faws.typepad.com%2Faws%2F2007%2F04%2Fmysql_interface.html&_portal=typepad&service=twitter">Twitter</a></span> <span>and <a href="https://www.typekey.com/t/typekey/login?v=1.0&t=e9440c3ce3fe22b3d2ffbf13bee27cedcef5674e&lang=en_US&_return=http%3A%2F%2Faws.typepad.com%2Faws%2F2007%2F04%2Fmysql_interface.html&_portal=typepad&service=openid">more...</a></span>
+                      
+                  </div>
+                  <div class="clr"></div>
+    					</div>
+    					<div id="comments-open-logout" style="display: none;">
+    						You are currently signed in as
+    						<span id="commenter-name">(nobody)</span>.
+    						<a href="http://aws.typepad.com/.services/sitelogout?to=https%3A%2F%2Fwww.typekey.com%2Ft%2Ftypekey%2F%3F__mode%3Dlogout%26_return%3Dhttp%253A%252F%252Faws.typepad.com%252Faws%252F2007%252F04%252Fmysql_interface.html">Sign Out</a>
+    					</div>
+    				
+                    	<div id="comments-open-text" style="display:none;">
+        					<textarea id="comment-text" name="text" rows="10" cols="30" onkeyup="atpComments.maxTextArea(this, 64000);"></textarea>
+            				
+            				<p class="comments-open-subtext">
+            				    (URLs automatically linked.)
+            				</p>			
+            				                    					
+        				</div>
+    				    <div id="comments-open-data" style="display:none;">
+                            <p>Your Information</p>
+                            <p>
+                                (Name and email address are required. Email address will not be displayed with the comment.)
+                            
+                            </p>
+    						<p>
+    							<input id="comment-author" at:default="Name" name="author" size="30" value="Name" onfocus="if(this.value==this.getAttribute('at:default')) this.value='';"  onBlur="if(this.value=='') this.value=this.getAttribute('at:default');" class="grayText"/>
+    							<label for="comment-author" id="comment-author-error" class="comment-error hiddenBox">Name is required to post a comment</label>
+    						</p>
+    						<p>
+    							<input id="comment-email" at:default="Email Address" name="email" size="30" value="Email Address" onfocus="if(this.value==this.getAttribute('at:default')) this.value='';"  onBlur="if(this.value=='') this.value=this.getAttribute('at:default');" class="grayText"/>
+    							<label for="comment-email" id="comment-email-error" class="comment-error hiddenBox">Please enter a valid email address</label>
+    						</p>
+    						<p>
+    							<input id="comment-url" at:default="Web Site URL" name="url" size="30" value="Web Site URL" onfocus="if(this.value==this.getAttribute('at:default')) this.value='';"  onBlur="if(this.value=='') this.value=this.getAttribute('at:default');" class="grayText"/>
+    							<label for="comment-url" id="comment-url-error" class="comment-error hiddenBox">Invalid URL</label>
+    						</p>
+    					</div>
+    			</div>
+                <div id="comments-open-footer" class="comments-open-footer" style="display:none;">
+    				<input type="submit" name="post" id="comment-post-button" value="&nbsp;Post&nbsp;" onclick="atpComments.interceptPost(); return false;" disabled="true" />
+    				<input type="submit" name="preview" id="comment-preview-button" value="&nbsp;Preview&nbsp;" onclick="atpComments.previewOnly(1); return false;" disabled="true" />
+    				<span id="commentEntryFormSpinner" class="commentSpinner hiddenBox"><img src="/.shared/images/spinner.gif" alt="Working..." /></span>
+    			</div>
+    		</div>
+    	</form>
+        <noscript>
+            
+			<div id="comments-open-noscript" class="comments-open-noscript">
+		        <form action="http://aws.typepad.com/.services/comments" method="post">
+		            <input type="hidden" name="entry_xid" id="comment-entry-xid" value="6a00d8341c534853ef00d83434620c53ef" />
+                            <input type="hidden" name="token" value="1292858308-6ab9beedad7670383225a90ef6d05dc498e802c0:UuuYpNl1PhRjYa0G" />
+		            Name:<br /><input type="text" name="author" size="30" /><br />
+		            Email address:<br /><input type="text" name="email" size="30" /><br />
+		            URL:<br /><input type="text" name="url" size="30" /><br /><br />
+		            Comment:<br /><textarea name="text" cols="40" rows="4"></textarea><br />
+		            
+		            <input type="submit" name="submit" value="Submit" />
+		        </form>
+			</div>
+			
+		</noscript>
+	</div>
+</div>
+
+
+
+    	
+
+
+						</div>
+					</div>
+					<div id="gamma">
+						<div id="gamma-inner" class="pkg">
+							<!-- sidebar2 -->
+
+<!--    #include virtual="/lists/rss_feed/module.inc"-->
+
+<div class="module-content">
+  <h2 class="module-header">RSS Feed</h2>
+  <div style="text-align:center;">
+    <a href="http://feeds.feedburner.com/AmazonWebServicesBlog">
+      <img src="http://media.amazonwebservices.com/blog/Newspaper_Feed_add_128x128.png" />
+    </a>
+    <ul class="module-list">
+      <li class="module-list-item">
+        <a href="http://feeds.feedburner.com/AmazonWebServicesBlog">
+          Subscribe to this blog's feed
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="module-content">
+  <h2 class="module-header">Coming Soon</h2>
+  <ul  class="module-list">
+
+    <li  class="module-list-item">December 16 - <a href="https://www2.gotomeeting.com/register/727490090">Route 53 Webinar</a></li>
+
+    <li  class="module-list-item">December 17 - <a href="https://www2.gotomeeting.com/register/255123067">HPC on Amazon Web Services</a></li>
+
+    <li  class="module-list-item">December 20 - <a href="https://www2.gotomeeting.com/register/699644731">Migrating Internal IT Apps to Amazon Web Services</a></li>
+
+  </ul>
+</div>
+
+<div class="module-content">
+  <h2 class="module-header">Email Subscription</h2>
+  <form
+   style="border:1px solid #ccc;padding:3px;text-align:center;"
+   action="http://feedburner.google.com/fb/a/mailverify"
+   method="post" target="popupwindow"
+   onsubmit="window.open('http://feedburner.google.com/fb/a/mailverify?uri=AmazonWebServicesBlog', 'popupwindow', 'scrollbars=yes,width=550,height=520');return true">
+    <p> Enter your email address:</p>
+    <p><input type="text" style="width:140px" name="email"/></p>
+    <input type="hidden" value="AmazonWebServicesBlog" name="uri"/>
+    <input type="hidden" name="loc" value="en_US"/><input type="submit" value="Subscribe" />
+    <p>Delivered by <a href="http://feedburner.google.com" target="_blank">FeedBurner</a></p>
+  </form>
+</div>
+
+<div class="module-typelist module">
+	<h2 class="module-header">Useful Links</h2>
+	<div class="module-content">
+		<ul class="module-list">
+							<li class="module-list-item"><a title="" href="http://aws.amazon.com">Amazon Web Services</a></li>
+							<li class="module-list-item"><a title="" href="http://aws.amazon.com/solutions/aws-solutions/">AWS Solutions</a></li>
+							<li class="module-list-item"><a title="" href="http://aws.amazon.com/products/">AWS Products</a></li>
+							<li class="module-list-item"><a title="" href="http://status.aws.amazon.com/">AWS Service Health Dashboard</a></li>
+							<li class="module-list-item"><a title="" href="http://developer.amazonwebservices.com/connect/forumindex.jspa">AWS Developer Forums</a></li>
+							<li class="module-list-item"><a title="" href="http://phx.corporate-ir.net/phoenix.zhtml?c=176060&amp;p=irol-InfoReq">Media/Analyst Inquiries</a></li>
+			
+		</ul>
+	</div>
+</div>
+
+<div class="module-subscribe module">
+	<div class="module-content">
+		<a onclick="window.open(this.href, 'blogroll', 'width=550,height=600,scrollbars=yes'); return false;" href="http://www.typepad.com/t/app/lists?__mode=quickpost&amp;is_qp=1&amp;type=1&amp;qp_href=http%3A%2F%2Faws.typepad.com%2Faws%2F">Add me to your TypePad People list</a>
+	</div>
+</div>
+<div class="module-calendar module">
+	<h2 class="module-header">December 2010</h2>
+	<div class="module-content">
+		<table summary="Monthly calendar with links to each day's posts">
+			<tr>
+				
+					<th>Sun</th>
+				
+					<th>Mon</th>
+				
+					<th>Tue</th>
+				
+					<th>Wed</th>
+				
+					<th>Thu</th>
+				
+					<th>Fri</th>
+				
+					<th>Sat</th>
+				
+			</tr>
+			
+				<tr>
+					<td>&nbsp;</td>
+				
+			
+				
+					<td>&nbsp;</td>
+				
+			
+				
+					<td>&nbsp;</td>
+				
+			
+				
+					<td><a href="http://aws.typepad.com/aws/2010/12/amazon-linux-ami-2010111-released.html">1</a></td>
+				
+			
+				
+					<td>2</td>
+				
+			
+				
+					<td><a href="http://aws.typepad.com/aws/2010/12/simpledb-batchdelete.html">3</a></td>
+				
+			
+				
+					<td>4</td>
+				</tr>
+			
+				<tr>
+					<td><a href="http://aws.typepad.com/aws/2010/12/amazon-route-53-the-aws-domain-name-service.html">5</a></td>
+				
+			
+				
+					<td>6</td>
+				
+			
+				
+					<td><a href="http://aws.typepad.com/aws/2010/12/aws-achieves-pci-dss-20-validated-service-provider-status.html">7</a></td>
+				
+			
+				
+					<td><a href="http://aws.typepad.com/aws/2010/12/new-aws-sdks-for-mobile-development.html">8</a></td>
+				
+			
+				
+					<td><a href="http://aws.typepad.com/aws/2010/12/amazon-s3-object-size-limit.html">9</a></td>
+				
+			
+				
+					<td>10</td>
+				
+			
+				
+					<td>11</td>
+				</tr>
+			
+				<tr>
+					<td>12</td>
+				
+			
+				
+					<td><a href="http://aws.typepad.com/aws/2010/12/freebsd-on-amazon-ec2.html">13</a></td>
+				
+			
+				
+					<td><a href="http://aws.typepad.com/aws/2010/12/dns30-a-visual-tool-for-amazon-route-53.html">14</a></td>
+				
+			
+				
+					<td><a href="http://aws.typepad.com/aws/2010/12/amazon-vm-import-bring-your-vmware-images-to-the-cloud.html">15</a></td>
+				
+			
+				
+					<td><a href="http://aws.typepad.com/aws/2010/12/run-oracle-applications-on-amazon-ec2-now.html">16</a></td>
+				
+			
+				
+					<td>17</td>
+				
+			
+				
+					<td>18</td>
+				</tr>
+			
+				<tr>
+					<td>19</td>
+				
+			
+				
+					<td>20</td>
+				
+			
+				
+					<td>21</td>
+				
+			
+				
+					<td>22</td>
+				
+			
+				
+					<td>23</td>
+				
+			
+				
+					<td>24</td>
+				
+			
+				
+					<td>25</td>
+				</tr>
+			
+				<tr>
+					<td>26</td>
+				
+			
+				
+					<td>27</td>
+				
+			
+				
+					<td>28</td>
+				
+			
+				
+					<td>29</td>
+				
+			
+				
+					<td>30</td>
+				
+			
+				
+					<td>31</td>
+				
+			
+				
+					<td>&nbsp;</td>
+				</tr>
+			
+		</table>
+	</div>
+</div>
+
+	<div class="module-archives module">
+		<h2 class="module-header"><a
+			href="http://aws.typepad.com/aws/archives.html">Archives</a></h2>
+		<div class="module-content">
+			<ul class="module-list">
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/12/index.html">December 2010</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/11/index.html">November 2010</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/10/index.html">October 2010</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/09/index.html">September 2010</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/08/index.html">August 2010</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/07/index.html">July 2010</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/06/index.html">June 2010</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/05/index.html">May 2010</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/04/index.html">April 2010</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/03/index.html">March 2010</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/02/index.html">February 2010</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2010/01/index.html">January 2010</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2009/12/index.html">December 2009</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2009/11/index.html">November 2009</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2009/10/index.html">October 2009</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2009/09/index.html">September 2009</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2009/08/index.html">August 2009</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2009/07/index.html">July 2009</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2009/06/index.html">June 2009</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2009/05/index.html">May 2009</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2009/04/index.html">April 2009</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2009/03/index.html">March 2009</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2009/02/index.html">February 2009</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2009/01/index.html">January 2009</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2008/12/index.html">December 2008</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2008/11/index.html">November 2008</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2008/10/index.html">October 2008</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2008/09/index.html">September 2008</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2008/08/index.html">August 2008</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2008/07/index.html">July 2008</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2008/06/index.html">June 2008</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2008/05/index.html">May 2008</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2008/04/index.html">April 2008</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2008/03/index.html">March 2008</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2008/02/index.html">February 2008</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2008/01/index.html">January 2008</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2007/12/index.html">December 2007</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2007/11/index.html">November 2007</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2007/10/index.html">October 2007</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2007/09/index.html">September 2007</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2007/08/index.html">August 2007</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2007/07/index.html">July 2007</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2007/06/index.html">June 2007</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2007/05/index.html">May 2007</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2007/04/index.html">April 2007</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2007/03/index.html">March 2007</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2007/02/index.html">February 2007</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2007/01/index.html">January 2007</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2006/12/index.html">December 2006</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2006/11/index.html">November 2006</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2006/10/index.html">October 2006</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2006/09/index.html">September 2006</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2006/08/index.html">August 2006</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2006/07/index.html">July 2006</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2006/06/index.html">June 2006</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2006/05/index.html">May 2006</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2006/04/index.html">April 2006</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2006/03/index.html">March 2006</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2006/02/index.html">February 2006</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2006/01/index.html">January 2006</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2005/12/index.html">December 2005</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2005/11/index.html">November 2005</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2005/10/index.html">October 2005</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2005/09/index.html">September 2005</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2005/08/index.html">August 2005</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2005/07/index.html">July 2005</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2005/06/index.html">June 2005</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2005/05/index.html">May 2005</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2005/04/index.html">April 2005</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2005/03/index.html">March 2005</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2005/02/index.html">February 2005</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2005/01/index.html">January 2005</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2004/12/index.html">December 2004</a></li>
+				
+					<li class="module-list-item"><a href="http://aws.typepad.com/aws/2004/11/index.html">November 2004</a></li>
+				
+			</ul>
+		</div>
+	</div>
+
+<div class="module-typelist module">
+	<h2 class="module-header">Useful Books</h2>
+	<div class="typelist-thumbnailed module-content">
+		<ul class="module-list">
+							<li class="module-list-item"><div class="typelist-thumbnail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/0980576830/harukak-22"><img alt="Jeff Barr: Host Your Web Site on the Cloud: Amazon Web Services Made Easy" src="http://a4.typepad.com/6a00d8341c534853ef013488d5abd4970c-75hi" /></a></div><p class="typelist-description"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/0980576830/harukak-22">Jeff Barr: Host Your Web Site on the Cloud: Amazon Web Services Made Easy</a></p></li>
+							<li class="module-list-item"><div class="typelist-thumbnail"><a href="http://www.amazon.com/exec/obidos/ASIN/0596156367/harukak-22"><img alt="George Reese: Cloud Application Architectures: Building Applications and Infrastructure in the Cloud (Theory in Practice (O'Reilly))" src="http://a2.typepad.com/6a00d8341c534853ef0115708fca3a970b-75hi" /></a></div><p class="typelist-description"><a href="http://www.amazon.com/exec/obidos/ASIN/0596156367/harukak-22">George Reese: Cloud Application Architectures: Building Applications and Infrastructure in the Cloud (Theory in Practice (O'Reilly))</a></p></li>
+							<li class="module-list-item"><div class="typelist-thumbnail"><a href="http://www.amazon.com/exec/obidos/ASIN/0596515812/harukak-22"><img alt="James Murty: Programming Amazon Web Services: S3, EC2, SQS, FPS, and SimpleDB (Programming)" src="http://a6.typepad.com/6a00d8341c534853ef00e55174e08e8833-75hi" /></a></div><p class="typelist-description"><a href="http://www.amazon.com/exec/obidos/ASIN/0596515812/harukak-22">James Murty: Programming Amazon Web Services: S3, EC2, SQS, FPS, and SimpleDB (Programming)</a></p></li>
+							<li class="module-list-item"><div class="typelist-thumbnail"><a href="http://www.amazon.com/exec/obidos/ASIN/0470097779/harukak-22"><img alt="Francis Shanahan: Amazon.com Mashups" src="http://a5.typepad.com/6a00d8341c534853ef00e54fe32f258834-75hi" /></a></div><p class="typelist-description"><a href="http://www.amazon.com/exec/obidos/ASIN/0470097779/harukak-22">Francis Shanahan: Amazon.com Mashups</a></p></li>
+							<li class="module-list-item"><div class="typelist-thumbnail"><a href="http://www.amazon.com/exec/obidos/ASIN/0471768588/harukak-22"><img alt="Jason  Bloomberg: Service Orient or Be Doomed! : How Service Orientation Will Change Your Business" src="http://a6.typepad.com/6a00d8341c534853ef00e54fdd758e8834-75hi" /></a></div><p class="typelist-description"><a href="http://www.amazon.com/exec/obidos/ASIN/0471768588/harukak-22">Jason  Bloomberg: Service Orient or Be Doomed! : How Service Orientation Will Change Your Business</a></p></li>
+							<li class="module-list-item"><div class="typelist-thumbnail"><a href="http://www.amazon.com/exec/obidos/ASIN/0425190390/harukak-22"><img alt="Tom  Standage: The Turk : The Life and Times of the Famous Eighteenth-Century Chess-Playing Machine" src="http://a4.typepad.com/6a00d8341c534853ef00e5501478148834-75hi" /></a></div><p class="typelist-description"><a href="http://www.amazon.com/exec/obidos/ASIN/0425190390/harukak-22">Tom  Standage: The Turk : The Life and Times of the Famous Eighteenth-Century Chess-Playing Machine</a></p></li>
+							<li class="module-list-item"><div class="typelist-thumbnail"><a href="http://www.amazon.com/exec/obidos/ASIN/0764543555/harukak-22"><img alt="Theodore W.  Leung: Professional XML Development with Apache Tools : Xerces, Xalan, FOP, Cocoon, Axis, Xindice (Wrox Professional Guides)" src="http://a3.typepad.com/6a00d8341c534853ef00e550026f938833-75hi" /></a></div><p class="typelist-description"><a href="http://www.amazon.com/exec/obidos/ASIN/0764543555/harukak-22">Theodore W.  Leung: Professional XML Development with Apache Tools : Xerces, Xalan, FOP, Cocoon, Axis, Xindice (Wrox Professional Guides)</a></p></li>
+							<li class="module-list-item"><div class="typelist-thumbnail"><a href="http://www.amazon.com/exec/obidos/ASIN/141162551X/harukak-22"><img alt="Jason Levitt: The Web Developer's Guide to Amazon E-Commerce Service: Developing Web Applications Using Amazon Web Services and PHP" src="http://a0.typepad.com/6a00d8341c534853ef00e54fee32f88834-75hi" /></a></div><p class="typelist-description"><a href="http://www.amazon.com/exec/obidos/ASIN/141162551X/harukak-22">Jason Levitt: The Web Developer's Guide to Amazon E-Commerce Service: Developing Web Applications Using Amazon Web Services and PHP</a></p></li>
+							<li class="module-list-item"><div class="typelist-thumbnail"><a href="http://www.amazon.com/exec/obidos/ASIN/059600642X/harukak-22"><img alt="Will Iverson: Real World Web Services" src="http://a7.typepad.com/6a00d8341c534853ef00e54fd7bf3f8833-75hi" /></a></div><p class="typelist-description"><a href="http://www.amazon.com/exec/obidos/ASIN/059600642X/harukak-22">Will Iverson: Real World Web Services</a></p></li>
+							<li class="module-list-item"><div class="typelist-thumbnail"><a href="http://www.amazon.com/exec/obidos/ASIN/0782143075/harukak-22"><img alt="John Mueller: Mining Amazon Web Services: Building Applications with the Amazon API" src="http://a5.typepad.com/6a00d8341c534853ef00e54fea2a458834-75hi" /></a></div><p class="typelist-description"><a href="http://www.amazon.com/exec/obidos/ASIN/0782143075/harukak-22">John Mueller: Mining Amazon Web Services: Building Applications with the Amazon API</a></p></li>
+			
+		</ul>
+	</div>
+</div>
+
+
+
+
+
+						</div>
+					</div>
+				</div>
+			</div>
+			
+
+		</div>
+	</div>
+	
+
+<script type="text/javascript">
+<!--
+var extra_happy = Math.floor(1000000000 * Math.random());
+document.write('<img src="http://www.typepad.com/t/stats?blog_id=73998&amp;user_id=183837&amp;page=' + escape(location.href) + '&amp;referrer=' + escape(document.referrer) + '&amp;i=' + extra_happy + '" width="1" height="1" alt="" style="position: absolute; top: 0; left: 0;" />');
+// -->
+</script>
+
+
+<!-- Start Quantcast tag -->
+<script type="text/javascript" src="http://edge.quantserve.com/quant.js"></script>
+<script type="text/javascript">_qoptions = { tags:"typepad.core" }; _qacct="p-fcYWUmj5YbYKM"; quantserve();</script>
+<noscript>
+<a href="http://www.quantcast.com/p-fcYWUmj5YbYKM" target="_blank"><img src="http://pixel.quantserve.com/pixel/p-fcYWUmj5YbYKM.gif?tags=typepad.core" style="display: none" border="0" height="1" width="1" alt="Quantcast"/></a>
+</noscript>
+<!-- End Quantcast tag -->
+
+<script type="text/javascript">
+var captchaImgAttempts = 0;
+var allowAnonComments = '0';
+var registrationRequired = 0;
+var registrationOptional = 1;
+var emailRequired = 1;
+var useAvatars = 1;
+
+var showSignInMessaging = 0;
+var jsonURL = "/.services/json-rpc";
+
+var captchaSrc = "/.services/captcha?code_encrypted=";
+var alertCommentCannotBeBlank = "You can not leave an empty comment. Please enter some text in the Comment field.";
+var alertEditingExpired = "Sorry, you're no longer allowed to edit this comment. You may have taken too much time before submitting your edit or someone may have already replied to it.";
+
+var alertAuthorCannotBeBlank = "Name must not be blank.";
+var alertEmailCannotBeBlank = "Email Address must not be blank.";
+var alertAuthorAndEmailCannotBeBlank = "Name and email address are both required!";
+var alertEmailIsInvalid = "The Email Address you entered is invalid. Please enter a valid email address.";
+var alertUnauthorizedAction = "The comments on this post are closed.";
+var msgPostReplyTo = "Reply to ";  
+var msgInReplyTo = "In reply to ";
+var msgPostAComment = "Post a comment ";
+var atpCommentsPath = "/.shared/js/atpcomments_yui.js?v=5";
+var hasChanged = 0;
+var hostName = ".typepad.com";
+var tp_comment_token = "1292858308-f1e5635d76b1be57078edab5fff4ff8e642fc8bd:Od76be5Z5T9vikJs";
+
+var isPage = 0;
+var blog_xid = "6a00d8341c534853ef00d83451ba1569e2";
+var xid = "";
+var injectCode = '<div id=\"comment-preview\" class=\"hiddenBox\">\n\t<h3 id=\"header-verify-comment\" class=\"comments-header hiddenBox\">Verify your Comment<\/h3>\n    <h3 id=\"header-preview-comment\" class=\"comments-header hiddenBox\">Previewing your Comment<\/h3>\n\t<div class=\"comments-content\">\n\t\t<div class=\"comment comment-has-avatar\">\n\t\t\t<div id=\"comment-preview-content\" class=\"comment-content\">\n\t\t\t<\/div>\n\t\t\t<p class=\"comment-footer\">\n\t\t\t\tPosted by: \n\t\t\t\t<span id=\"comment-preview-author\"><\/span>&nbsp;|&nbsp;<span id=\"comment-preview-datetime\"><\/span>\n\t\t\t<\/p>\n\t\t<\/div>\n\t<\/div>\n<\/div>\n<div id=\"comment-preview-confirmation\" class=\"hiddenBox yellowBox\">\n    <p>This is only a preview. Your comment has not yet been posted.<\/p>\n   \t<form id=\"comment-preview-form\"\n   \t\tmethod=\"post\"\n   \t\tonsubmit=\"atpComments.interceptPost(); return false;\">\n\t\t<input type=\"submit\" name=\"post\" id=\"comment-confirm-post\" value=\"&nbsp;Post&nbsp;\" onclick=\"atpComments.interceptPost(); return false;\"/>\t\t    \n\t\t<input type=\"submit\" name=\"edit\" id=\"comment-edit\" value=\"&nbsp;&nbsp;Edit&nbsp;&nbsp;\" onclick=\"atpComments.previewOnly(2); return false;\"/>\n        <span id=\"previewFormSpinner\" class=\"hiddenBox\"><img src=\"/.shared/images/spinner.gif\" alt=\"Working...\" /><\/span>\n\t<\/form>\n<\/div>\n<div id=\"comment-error\" class=\"hiddenBox redBox\">\t    \n   Your comment could not be posted. Error type: <span id=\"comment-error-msg\"><\/span> \n<\/div>\t\n<div id=\"comment-complete\" class=\"hiddenBox redBox\">\n    Your comment has been saved. Comments are moderated and will not appear until approved by the author. <a href=\"javascript:void 0;\" onclick=\"window.location.hash=\'#comment-form\';window.location.reload(false)\">Post another comment<\/a>\n<\/div>\t\n<div id=\"comment-captcha\" class=\"hiddenBox yellowBox\">\t\n    <div id=\"captchaText\">\n\t    <p id=\"captchaFailMsg\" class=\"captchaErrorText hiddenBox\">The letters and numbers you entered did not match the image. Please try again.<\/p>\t    \t        \n\t    <p>As a final step before posting your comment, enter the letters and numbers you see in the image below. This prevents automated programs from posting comments.<\/p>\n\t    <p><span id=\"comment-captcha-viewalt\">Having trouble reading this image? <a href=\"#comment-captcha\" onClick=\"atpComments.generateCaptcha();\">View an alternate.<\/a><\/span><\/p>\n    <\/div>\n    <p class=\"\"><img id=\"captchaImg\" /><\/p>\t\t\n    <form id=\"comment-captcha-form\" \n\t\t  method=\"post\"\n\t\t  onsubmit=\"atpComments.submitWithCaptcha(); return false;\">\n\t\t<input type=\"hidden\" name=\"captcha_chal\" id=\"comment-captcha-chal\" value=\"\" />\n        <p>\n\t        <input id=\"comment-captcha-text\" name=\"captcha_text\" size=\"10\" />\n        <\/p>\n        <p>\n            <input type=\"submit\" name=\"continue\" id=\"captcha-continue\" value=\"&nbsp;Continue&nbsp;\" />\n            <span id=\"captchaFormSpinner\" class=\"commentSpinner hiddenBox\"><img src=\"/.shared/images/spinner.gif\" alt=\"Working...\" /><\/span>\n        <\/p>\n    <\/form>\n<\/div>\n'; 
+var entryPermalink = "http://aws.typepad.com/aws/2007/04/mysql_interface.html";
+var inlineReply = document.createElement("div");
+var commentFooterLinks;
+var commentHeader;
+var commentReplyXID;
+var commentReplyAuthor;
+var commentReplyComplete;
+var inlineReplyLoaded = 0;
+var commentFormNum = undefined; /* Deprecated but still exists in advanced template sets, so must be defined */
+
+function xidToCommentPermalink (entryUrl, xid) {
+    return entryUrl + "?cid=" + xid + "#comment-" + xid;
+}
+
+
+/* Deprecated advanced template functions */
+function handleSubmit() { return true; };
+function handleChange() { return true; };
+</script>
+<script type="text/javascript" src="/.shared/js/yui/yuiloader-beta-min.js"></script>
+<script type="text/javascript" src="/.shared/js/atpcomments.js?v=5"></script>
+
+
+
+ 
+
+<!-- Blogside Toolbar -->
+<script type="text/javascript">
+    var TPToolbar = {
+        src:   "http://www.typepad.com/services/toolbar?blog_id=6a00d8341c534853ef00d83451ba1569e2&asset_id=6a00d8341c534853ef00d83434620c53ef&atype=Individual&to=http%3A%2F%2Faws.typepad.com%2Faws%2F2007%2F04%2Fmysql_interface.html&autofollowed=0",
+        asset_xid: "6a00d8341c534853ef00d83434620c53ef",
+    
+        bookmarklet_uri: "http://static.typepad.com/.shared/js/qp/loader-combined-min.js"
+    };
+    var TYPEPAD___bookmarklet_domain = "http://www.typepad.com/";
+</script>
+<script type="text/javascript" src="/.shared/js/toolbar/blogside-toolbar-combined-min.js"></script>
+<!-- End Blogside Toolbar -->
+<!-- Begin comScore Tag -->
+<script>
+document.write(unescape("%3Cscript src='" + (document.location.protocol == "https:" ? "https://sb" : "http://b") + ".scorecardresearch.com/beacon.js'%3E%3C/script%3E"));
+</script>
+<script>
+COMSCORE.beacon({
+  c1: 2,
+  c2: "6035669",
+  c3: "",
+  c4: "http://aws.typepad.com/aws/2007/04/mysql_interface.html",
+  c5: "",
+  c6: "",
+  c15: ""
+});
+</script>
+<noscript>
+  <img src="http://b.scorecardresearch.com/b?c1=2&c2=6035669&c3=&c4=http%3A%2F%2Faws.typepad.com%2Faws%2F2007%2F04%2Fmysql_interface.html&c5=&c6=&c15=&cv=1.3&cj=1" style="display:none" width="0" height="0" alt="" />
+</noscript>
+<!-- End comScore Tag -->
+</body>
+</html>
+<!-- ph=1 -->

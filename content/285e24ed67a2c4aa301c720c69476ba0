@@ -1,0 +1,249 @@
+ <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>IVR Hacks: Shortcuts for company IVR systems, IVR services and Call Centers</title>
+<link href="/assets/stylesheets/public.css" rel="stylesheet" type="text/css" />
+<script language="javascript" type="text/javascript" src="assets/javascripts/jquery.js"></script>
+<script language="javascript" type="text/javascript">
+
+var loading = false, typing = false, company_name_typing = "", current_page = 1;
+var country_id = 0, category_id = 0, department_id = 0, company_name = "";
+var sort_column = "name", sort_order = "asc";
+
+$(document).ready(function() {
+	country_id = $("#country_id").val();
+	category_id = $("#category_id").val();
+	department_id = $("#department_id").val();
+	company_name = $("#company_name").val();
+	
+	$("#loading").ajaxStart(function() { $(this).show(); loading = true; });
+	$("#loading").ajaxStop(function() {	$(this).hide();	loading = false; });
+	
+	setInterval(function() {
+		if(!loading && !typing) {
+			var dirty = (country_id != $("#country_id").val())
+				|| (category_id != $("#category_id").val())
+				|| (department_id != $("#department_id").val())
+				|| (company_name != $("#company_name").val());
+				
+			if(dirty) {
+				country_id = $("#country_id").val();
+				category_id = $("#category_id").val();
+				department_id = $("#department_id").val();
+				company_name = $("#company_name").val();
+				current_page = 1;
+				
+				$(".flash").hide("slow");
+				refresh_results();
+
+			}
+		}
+	}, 500);
+	
+	$(".dropdown select").focus(function() { typing = true; });
+	$(".dropdown select").change(function() { typing = false; });
+	
+	$("form").submit(function() {
+		$(".flash").hide("slow");
+		refresh_results();
+		return false;
+	});
+	
+	refresh_results();
+
+});
+
+function refresh_results() {
+	$("#results").load("/index.php/results/" + current_page, {
+		'country_id' : country_id,
+		'category_id' : category_id,
+		'department_id' : department_id,
+		'company_name' : company_name,
+		'sort_column' : sort_column,
+		'sort_order' : sort_order
+	}, function() {
+		$(".sortable").mousemove(function() { $(this).addClass("highlight"); });
+		$(".sortable").mouseout(function() { $(this).removeClass("highlight"); });
+		
+		$(".sortable img").hide();
+		$(".sortable#sort_" + sort_column + " img." + sort_order).show();
+
+		$(".sortable").click(function() {
+			if(sort_column == this.id.substr(5)) {
+				sort_order = (sort_order == "asc") ? "desc" : "asc";
+			}
+			else {
+				sort_order = "asc";
+			}
+			
+			sort_column = this.id.substr(5);
+			refresh_results();
+
+		})
+		
+		$("#results .pager a").click(function() {
+			current_page = parseInt(this.href.substr(this.href.lastIndexOf('/') + 1));
+			refresh_results();
+
+			return false;
+		});
+	});
+}
+
+
+
+
+
+
+</script>
+</head>
+<div id="leftsidebar">
+</div>
+<div id="sidebar">
+
+</div>
+<div id="page">
+<div id="header" onclick="location.href='http://www.ivrhacks.com/';" style="cursor: pointer;">
+<ul class="menu">
+			<li class="page_item"><a href="http://www.ivrhacks.com">Home</a></li>
+			<li class="page_item"><a href="http://www.ivrhacks.com/about.php" title="About Us">About Us</a></li>
+<li class="page_item"><a href="http://www.ivrhacks.com/company.php/suggest" title="Suggest">Submit New Listing</a></li>
+					</ul>
+		
+	</div>
+<body>
+<div class="primary">
+						
+
+						
+<div id="frame">
+
+<div id="loading">Loading...</div>
+
+
+<p>
+<div id="main-google-ad"><script type="text/javascript"><!--
+google_ad_client = "pub-5822190222401139";
+google_ad_width = 728;
+google_ad_height = 90;
+google_ad_format = "728x90_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+<p>
+Anyone who has had to navigate the maze of a company IVR system with it’s “Press 1 for blah, 2 for blah blah and 3 for blah blah” instructions will share our yearning for the past when phones were answered by humans — real humans rather than one of these IVR services or software for call centers.</p><p>
+IVR hacks is a database of shortcuts that you can use to exit their IVR system as soon as possible and reach a human being.  It may end up be a worker in an outsourced call center but, hey, it's a human being! </p>
+<div id="small-google-ad">
+<script type="text/javascript"><!--
+google_ad_client = "pub-5822190222401139";
+google_ad_width = 728;
+google_ad_height = 15;
+google_ad_format = "728x15_0ads_al";
+google_ad_type = "text";
+google_ad_channel ="";
+google_color_border = "FFFFFF";
+google_color_bg = "FFFFFF";
+google_color_link = "5577BB";
+google_color_url = "5577BB";
+google_color_text = "333333";
+//--></script>
+
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+<hr>
+<div id="search-box-label">Make selections to filter results:</div>
+<div id="search-box">
+<form action="" method="post">
+<table width="100%">
+<tr>
+	<td width="33%"><label>Country:</label></td>
+	<td width="33%"><label>Category:</label></td>
+	<td width="33%"><label>Department:</label></td>
+</tr>
+<tr class="dropdown">
+	<td>
+		<select id="country_id" name="country_id" class="medium">
+			<option value="0">--- All ---</option>
+			<option label="Australia" value="1">Australia</option>
+<option label="Canada" value="5">Canada</option>
+<option label="New Zealand" value="6">New Zealand</option>
+<option label="UK" value="2">UK</option>
+<option label="USA" value="4">USA</option>
+
+		</select>
+	</td>
+	<td>
+		<select id="category_id" name="category_id" class="medium">
+			<option value="0">--- All ---</option>
+			<option label="Automotive" value="7">Automotive</option>
+<option label="Banking &amp; Finance" value="1">Banking &amp; Finance</option>
+<option label="Cable &amp; Satellite TV" value="10">Cable &amp; Satellite TV</option>
+<option label="Government" value="2">Government</option>
+<option label="Insurance" value="3">Insurance</option>
+<option label="Retailers" value="5">Retailers</option>
+<option label="Shipping" value="8">Shipping</option>
+<option label="Technology" value="6">Technology</option>
+<option label="Telecommunications" value="4">Telecommunications</option>
+<option label="Television" value="11">Television</option>
+<option label="Travel" value="9">Travel</option>
+
+		</select>
+	</td>
+	<td>
+		<select id="department_id" name="department_id" class="medium">
+			<option value="0">--- All ---</option>
+			<option label="Customer Service" value="1">Customer Service</option>
+<option label="Sales" value="2">Sales</option>
+
+		</select>
+	</td>
+</tr>
+<tr>
+	<td colspan="3" style="height: 5px;"></td>
+</tr>
+<tr>
+	<td colspan="3"><label>Company Name:</label></td>
+</tr>
+<tr>
+	<td colspan="3">
+		<input class="entry" type="text" id="company_name" name="company_name" value="" />
+	</td>
+</tr>
+</table>
+</form>
+</div>
+
+
+<div id="results">
+</div>
+
+<div id="main-google-ad"><script type="text/javascript"><!--
+google_ad_client = "pub-5822190222401139";
+google_ad_width = 728;
+google_ad_height = 90;
+google_ad_format = "728x90_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+
+<p>Sponsored Links: <a href="http://www.certd.com">Certd: IT Certification Directory</a></p>
+
+</div>
+
+
+
+</div>
+</body>
+<script src="http://static.getclicky.com/7701.js" type="text/javascript"></script>
+</html>

@@ -1,0 +1,398 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<title>Who is Sick?</title>
+
+<link rel = "shortcut icon" href="http://s3.amazonaws.com/whoissick/images/logo.ico" type="image/x-icon"/>
+
+<link rel = "icon" href = "http://s3.amazonaws.com/whoissick/images/logo.ico"type="image/x-icon"/>
+
+<script type = "text/javascript">
+    /* since we are loading big images (actually, background-images), need to workaround the mozilla bug */
+    var djConfig =
+	{
+		isDebug: false,
+		delayMozLoadingFix: true,
+		parseWidgets: false
+	};
+</script>
+
+<link rel="stylesheet" type="text/css" href="submodal.css" />
+<script type="text/javascript" src="submodalsource.js"></script>
+<link rel = "stylesheet" type = "text/css" href= "whoissick.css" />
+<script src = "http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAARjULRUHvLSGSCFXFO4BnURSpRgWgAXlGPkPl1C58y9prsD2qYhSNEeNvpq0t3n9RQ6UZgfNYOQrhhg"type="text/javascript">
+<!--<script src = "http://maps.google.com/maps?file=api&amp;v=2.67&amp;key=ABQIAAAA7YvEh-HxAZm-IV0QMYbPphRb2g1XDKH6cSJEyU2Szj0Kl5uClhQ6gU8sS97B4cdHUiFl8ZNdqxjOsA"type="text/javascript">-->
+</script>
+<script src="http://www.google.com/uds/api?file=uds.js&amp;v=1.0&amp;key=ABQIAAAARjULRUHvLSGSCFXFO4BnURSpRgWgAXlGPkPl1C58y9prsD2qYhSNEeNvpq0t3n9RQ6UZgfNYOQrhhg" type="text/javascript"></script>
+
+<script type = "text/javascript"src="dojo/dojo.js">
+</script>
+
+<script type = "text/javascript"src="jsscripts/combined.js">
+</script>
+
+
+<body onunload = "GUnload()">
+<!--
+	<div id="splash" style="position: absolute; top: 200px; width: 100%; z-index: 100;">
+	   <div align="center">
+			Please wait, loading...
+			<img src="http://s3.amazonaws.com/whoissick/images/throbber.gif"/>
+	   </div>
+	</div>
+-->
+    <!--<div dojoType = "LayoutContainer" layoutChildPriority='none' style = "padding: 2px;height:600px;opacity: 0.01; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=1);" id="main">-->
+    <div dojoType = "LayoutContainer" layoutChildPriority='none' style = "padding: 2px;height:645px;" id="main">
+
+		<div id="control" class="style1" style="color:red;padding: 5px;" >
+			<i>Interactive Map: Double click the map to zoom in and see individual sicknesses. Drag map to move to different areas.</i>
+		</div>
+
+		<div dojoType = "dialog" id = "statusDialog"
+			 style = "background: transparent; position:absolute;font-size:36px;padding:30px;display:block;top:200px;left:500px;width:250px;">
+			Please wait, loading...
+		</div>
+
+		<div dojoType = "ModalFloatingPane" id = "medicalprofessional_newlogin_DialogContent" bgColor="white" bgOpacity = "0.3"
+			 toggle = "fade" toggleDuration = "250"
+			 style = "display:none;width:565px;height:490px;margin:0px;padding:0px;" title="Choose Profile">
+			<iframe src = "phpscripts/signon/main.php" id="login_iframe" name="login_iframe" style="width:535px;height:430px;margin:0px;padding:0px;">
+				IFrames not supported
+			</iframe>
+		</div>
+
+		<div dojoType = ModalFloatingPane
+			 id = "moresymptoms_DialogContent" bgColor="white"
+			 bgOpacity = "0.3"
+			 toggle = "fade"
+			 toggleDuration = "250"
+			 style = "display:none;width:550px;height:420px;margin:0px;overflow:hidden;" title="More Symptoms">
+			<a dojoType = LinkPane href = moreSymptomsDialog.html>MoreSymptomsDialog</a>
+		</div>
+
+		<div dojoType = ModalFloatingPane
+			 id = "emailFriends_DialogContent" bgColor="white"
+			 bgOpacity = "0.3"
+			 toggle = "fade"
+			 toggleDuration = "250"
+			 style = "display:none;width:280px;height:375px;margin:0px;overflow:hidden;" title="Send Email Invite(s)">
+			<a dojoType = LinkPane href = emailFriendsDialog.html>EmailFriendsDialog</a>
+		</div>
+
+		<div dojoType = ModalFloatingPane
+			 id = "sicknessAlert_DialogContent" bgColor="white"
+			 bgOpacity = "0.3"
+			 toggle = "fade"
+			 toggleDuration = "250"
+			 style = "display:none;width:360px;height:300px;margin:0px;overflow:hidden;" title="Receive outbreak alerts by email">
+			<a dojoType = LinkPane href = sicknessAlertDialog.html>SicknessAlertDialog</a>
+		</div>
+
+    <!--<div dojoType = "LayoutContainer"layoutChildPriority='none' style = "padding: 2px;height:600px;" id="main">-->
+        <div dojoType = "ContentPane" layoutAlign = "top"
+             style = "margin: 2px; height: 200px; font-family: Arial,Verdana,sans-serif; font-size: 0.8em;">
+            <table>
+                <tr>
+                    <td style = "vertical-align: top;">
+                        <a href = "http://www.whoissick.org">
+
+                        <img src = "http://s3.amazonaws.com/whoissick/images/title2.gif"/></a>
+
+                        <td style = "vertical-align: center;">
+                        <!---
+							<a href="#" style="font-family:Arial, Verdana, sans-serif;" onclick="window.open('http://www.latimes.com/features/health/la-hew-webbooster29may29,1,7092053.story?coll=la-headlines-health'); return false;" >
+                        		<b><i><center>LA Times article</center></i></b>
+
+							<a href="#" style="color:#00dd00;font-family:Arial, Verdana, sans-serif; font-size:1.5em; font-color: #ff0000;" onclick="window.open('http://whoissick.org/blog/2007/05/contest-amateur-filmmakers-and-tv-hosts.html'); return false;" >
+								<b><i><center>Who Is Sick Video Contest</center></i></b>
+							</a>
+						-->
+						<div align="center">
+						<form action=" https://www.paypal.com/cgi-bin/webscr" method="post">
+						<input type="hidden" name="cmd" value="_s-xclick">
+						<input type="image" src=" https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!">
+						<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+						<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----MIIHNwYJKoZIhvcNAQcEoIIHKDCCByQCAQExggEwMIIBLAIBADCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwDQYJKoZIhvcNAQEBBQAEgYC2XkJNiALi1VsmHl9zpN6rdRe7FCVpUZ0umcExJ3QqlW9LMtXw6Ua5XaQJ1RmSNh5sMCgSGbUGUov3HMKlRIpobhaFkBicBR4/VRXC7NFtHeng1dmZUR1wm2uD+Bp8FcS/4LWlzt3dksuCIUQjQLGW8jeHSWfedccz605NaLQv8jELMAkGBSsOAwIaBQAwgbQGCSqGSIb3DQEHATAUBggqhkiG9w0DBwQIf6Y3uXm4NVaAgZAV2t+JIhr+7YA3W1+2KYnAB9vedIgvLfeTMeDFMijhkliTO94vG0HFfnAqe2tgbXTY5M/DKL0UH7I66cE6jz+b1r7/yjMaG9UnWoBnmWs28eJvADzamXkOuhJH29qOkeliUOKsQylnE+7x43Ub+TruVMCCuwNASb3A8cyYDk6TgUexSkJ/r7znvWM1gBnleAegggOHMIIDgzCCAuygAwIBAgIBADANBgkqhkiG9w0BAQUFADCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20wHhcNMDQwMjEzMTAxMzE1WhcNMzUwMjEzMTAxMzE1WjCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAMFHTt38RMxLXJyO2SmS+Ndl72T7oKJ4u4uw+6awntALWh03PewmIJuzbALScsTS4sZoS1fKciBGoh11gIfHzylvkdNe/hJl66/RGqrj5rFb08sAABNTzDTiqqNpJeBsYs/c2aiGozptX2RlnBktH+SUNpAajW724Nv2Wvhif6sFAgMBAAGjge4wgeswHQYDVR0OBBYEFJaffLvGbxe9WT9S1wob7BDWZJRrMIG7BgNVHSMEgbMwgbCAFJaffLvGbxe9WT9S1wob7BDWZJRroYGUpIGRMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbYIBADAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA4GBAIFfOlaagFrl71+jq6OKidbWFSE+Q4FqROvdgIONth+8kSK//Y/4ihuE4Ymvzn5ceE3S/iBSQQMjyvb+s2TWbQYDwcp129OPIbD9epdr4tJOUNiSojw7BHwYRiPh58S1xGlFgHFXwrEBb3dgNbMUa+u4qectsMAXpVHnD9wIyfmHMYIBmjCCAZYCAQEwgZQwgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsUCmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1yZUBwYXlwYWwuY29tAgEAMAkGBSsOAwIaBQCgXTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0wNzExMjYwMzMwMDBaMCMGCSqGSIb3DQEJBDEWBBS05/3RO5QNfkscBEOadXsmf4Wi8jANBgkqhkiG9w0BAQEFAASBgFf+NKa4h0m/0qt/TPdAFIA036GIc/vUzP7jPle/7KM9jMbN7YGzzfz4ELDHY/wTfdtxxWoPx/AS/yobsG1/YGvkKnFQ5MFnGw6s6otihnMyDmthlHh6g43mZDsYVy3IZEHgaspylCw5YmrPEwY8kh1Bhi5DV+8ixoTi5UTIUtO9-----END PKCS7-----
+						">
+						</form>
+						</div>
+							<div class = "group_header"></div>
+                            <i>Your site for current and local sickness information&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i>
+
+                            <td>
+                                <td style = "vertical-align: top;margin:0px;padding:0px;" colspan="3">
+                                    <ol id = "group1" dojoType = "RadioGroup" selected = "li1">
+                                        <li id = "li1" contentId = "homeContent"
+                                            onItemSelect = "show('group1', dojo.byId('li1'))">Home
+
+                                        <li id = "li2" contentId = "aboutUsContent"
+                                            onItemSelect = "show('group1', dojo.byId('li2'))">About Us
+
+                                        <li id = "li3" contentId = "contactUsContent"
+                                            onItemSelect = "show('group1', dojo.byId('li3'))">Contact Us
+                                    </ol>
+				<tr>
+					<td colspan="4">
+<script type="text/javascript"><!--
+google_ad_client = "pub-7348016591261104";
+/* WhoIsSick Leaderboard */
+google_ad_slot = "9509603094";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+<td>
+				</tr>
+				<tr>
+					<td colspan="4">
+
+<form action="http://www.google.com/cse" id="cse-search-box" target="_blank">
+  <div>
+    <input type="hidden" name="cx"
+value="partner-pub-7348016591261104:c7etfmmd48n" />
+    <input type="hidden" name="ie" value="ISO-8859-1" />
+    <input type="text" name="q" size="31" />
+    <input type="submit" name="sa" value="Search" />
+  </div>
+</form>
+<script type="text/javascript"
+src="http://www.google.com/coop/cse/brand?form=cse-search-box&lang=en"></script>
+
+
+
+<td>
+				</tr>
+            </table>
+        </div>
+
+        <div id = "aboutUsContent" class = "hideContent">
+            <div class = "aboutUsContentPara">
+                <br/>
+                <br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>		
+                <p>
+                <h1>Our Story</h1>
+
+                The genesis of the idea for Who Is Sick was actually from an acute need that our founder had when his
+                wife started experiencing severe stomach pain while they were on vacation. With no way of knowing
+                whether the pain was from appendicitis, food poisoning, or some other stomach illness, our vacationing
+                couple went to the emergency room and waited for 4 hours (BTW - this was from 11pm until 3am) to be
+                seen by a doctor...only to be told that there was a stomach flu going around and that if the pain
+                didn't go away in 24 hours, to come back. Wow. 4 hours wait for that...in the middle of the night...
+                (of course the doctor did check to see if it was appendicitis so they weren't all bad...).
+
+                <div class = "group_header">
+                </div>
+
+                Our founder thought, "if only there were a website that had current AND local sickness information,
+                maybe we could have avoided the long wait." Needless to say, this started the wheels spinning and a
+                couple of months later, Who Is Sick was born.
+
+                <div class = "group_header">
+                </div>
+
+                Our inspiration for the design of the site came from Craigslist and HousingMaps. One - a remarkably
+                simple and intuitive user generated content site that has bucked the trend of "slick and cool" for
+                simple and easy. The other - the first truly groundbreaking mashup that also put simplicity over
+                full-featured functionality and complexity. We've done our best to provide the same type of experience.
+
+                <h1>About Us</h1>
+
+                Who Is Sick was started in 2006 with a mission to provide current and local sickness information to
+                the public - without the hassle of dealing with hospitals or doctors. With a strong belief in the
+                power of people and a faith that user generated content can be extremely valuable, our team set out to
+                create an entirely new system for tracking and monitoring sickness in your area and obtain sickness information.  Information retrieved by tracking sickness in my area can also be used to map sickness trends in my region.
+
+                <div class = "group_header">
+                </div>
+
+                Given the relatively slower adoption of internet and "web 2.0' technology by much of the healthcare
+                industry, our team of healthcare professionals, technology entrepreneurs, mothers, fathers, and
+                caregivers set out to create a simple, user-friendly, and valuable website for the average consumer.
+                We are currently building out our team and expanding our technology breadth across new and exciting
+                areas of healthcare with Who Is Sick as our first offering. Stay tuned for more!
+            </div>
+
+            <hr>
+        </div>
+
+        <div id = "contactUsContent" class = "hideContent">
+            <div class = "aboutUsContentPara">
+                <br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>		
+                <p>
+                <h1>Contact Us</h1>
+
+                We hope you find the service helpful.
+
+                <br/>
+
+                <br/>
+
+                <br/>Please send any feedback to <a href = "mailto:feedback@whoissick.com">feedback@whoissick.com</a>.
+
+                <br/>
+
+                <br/>
+
+                <br/>To discuss any partnership or syndication opportunities, please contact us at
+                <a href = "mailto:info@whoissick.com">info@whoissick.com</a>.
+            </div>
+
+            <hr>
+        </div>
+
+        <div class = "hideContent"
+             id = "leftSidebar"
+             dojoType = "ContentPane"
+             layoutAlign = "left"
+             style = "width: 255px; height: 465px;overflow:none; margin: 2px; font-family: Arial,Verdana,sans-serif; font-size: 0.7em;">
+            <div id = "mainTabContainer"
+                 dojoType = "TabContainer"
+                 selectedChild = "tabSearch"
+                 style = "width: 255px; height:485px; overflow:none; margin: 0px; font-family: Arial,Verdana,sans-serif; font-size: 1.0em;">
+                <div id = "tabPost" dojoType = "ContentPane" label = "Post Sickness" style="overflow:none;" href="tabPost.html"
+                     loadingMessage = "Please wait, loading..." onLoad="afterPostTabLoaded();">
+                </div>
+
+                <div id = "tabSearch" dojoType = "ContentPane" label = "Search" style = "overflow:none;" href="tabSearch.html"
+                     loadingMessage = "Please wait, loading..." onLoad="afterSearchTabLoaded();">
+                </div>
+
+                <div id = "tabForum" dojoType = "ContentPane" label = "Discussion Forum" style="overflow:none;">
+                    <a dojoType = "LinkPane" href = "forumtab.html">Forum Tab</a>
+                </div>
+
+            </div>
+        </div>
+
+        <div class = "hideContent" id = "bottomSidebar" dojoType = "ContentPane" layoutAlign = "bottom"
+             style = "margin: 2px;height: 77px;">
+			<span style="margin:0px;font-size:0.7em;">DISCLAIMER: WhoIsSick is not intended to be a substitute for professional medical advice. Always seek the advice of a qualified health provider with any questions you may have regarding a medical condition. The use of the WhoIsSick site and its content is at your own risk.</span>
+            <table align = "left">
+                <tr>
+                    <td style = "font-size: 11px; font-family:Arial, Verdana, sans-serif; text-align: center;">
+					<a href = "http://www.whoissick.org" target="_blank">Who is Sick</a><sup style = "font-size: 8px; font-family:Arial, Verdana, sans-serif;">TM</sup>&nbsp;&nbsp;&nbsp;All Rights Reserved.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://whoissick.org/sickblog/" target="_blank">Visit Our Blog</a>&nbsp;&nbsp;&nbsp;<a href="http://digg.com/submit?phase=3&amp;url=http%3A//whoissick.org&amp;title=Your%20site%20for%20current%20and%20local%20sickness%20information" target="_blank"><img src="http://s3.amazonaws.com/whoissick/images/digg.png" border="0" hspace="2">Digg</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://del.icio.us/post?v=2&amp;url=http%3A//whoissick.org&amp;title=Your%20site%20for%20current%20and%20local%20sickness%20information" target="_blank"><img src="http://s3.amazonaws.com/whoissick/images/deliciou.png" border="0" hspace="2">Delicious</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://technorati.com/faves/?add=http%3A//whoissick.org" target="_blank"><img src="http://s3.amazonaws.com/whoissick/images/technora.png" border="0" hspace="2">Technorati</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://myweb2.search.yahoo.com/myresults/bookmarklet?u=http%3A//whoissick.org&amp;t=Your%20site%20for%20current%20and%20local%20sickness%20information" target="_blank"><img src="http://s3.amazonaws.com/whoissick/images/yahoo.png" border="0" hspace="2">Yahoo</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="termsofuse.html" target="_blank">Terms of use</a>
+					</td></tr>
+            </table>
+        </div>
+
+        <div class = "hideContent"
+             id = "rightSidebar"
+             dojoType = "ContentPane"
+             layoutAlign = "right"
+             style = "width: 27%;height:440px; margin-right: 8px; font-family: Arial,Verdana,sans-serif; font-size: 0.9em;">
+            <div style = "font-size: 11px; font-family:Arial, Verdana, sans-serif;text-align: center;">
+                <div class = "group_header">
+                </div>
+
+                <div>
+                    Analysis of <span id = "totalNumSickness" name = "totalNumSickness"
+                          style = "color: red;font-weight: bold;">....</span> sicknesses in the current view
+                </div>
+            </div>
+
+            <div class = "mapContainer">
+                <span class = "graph_title">&nbsp;&nbsp;&nbsp;&nbsp;% breakdown of symptoms&nbsp;</span>
+
+                <div class = "group_header">
+                </div>
+
+                <IMG id = "iframe_summarygraph" name="iframe_summarygraph" SRC="phpscripts/summarygraph.php?sneLat=34.484068677987906&sswLat=33.91160271333786&sneLng=-118.16029357910155&sswLng=-119.1375274658203">
+
+                <div class = "group_header">
+                </div>
+				<!---
+                <span class = "graph_title">&nbsp;&nbsp;&nbsp;&nbsp;# of sicknesses over the last 8 weeks</span>
+                <IMG id = "iframe_linegraph"name="iframe_linegraph"SRC="phpscripts/linegraph.php?sneLat=34.484068677987906&sswLat=33.91160271333786&sneLng=-118.16029357910155&sswLng=-119.1375274658203">
+-->
+                <div class = "group_header">
+                </div>
+
+                <div id = "tag_cloud_div">
+                </div>
+            </div>
+        </div>
+
+        <div class = "hideContent" id = "contentSidebar" dojoType = "ContentPane" layoutAlign = "client"
+             style = "padding: 0px; margin: 1px;height:460px;overflow:none;">
+            <div style = "font-size: 10px; font-family:Arial, Verdana, sans-serif;text-align: center;">
+                <div class = "group_header">
+                </div>
+ 				<div align="left">
+				<strong>View:</strong>
+					<a href = "#" onclick="show('group1', dojo.byId('li1')); return false;" style="text-decoration: underline;">Map</a>
+				<strong> | </strong>
+					<a href = "#" onclick="showSicknessPostings(); return false;" style="text-decoration: underline;">Postings</a>
+                </div>
+				<div align="center">
+				<i ><a href = "#" onclick="viewDemoScreen(); return false;" style="text-decoration: underline;">How to use</a></i>
+				<i >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href = "#" onclick="showSicknessAlertDialog(); return false;" style="text-decoration: underline;color:red;">Receive alerts by email</a></i>
+                <i >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href = "#" onclick="showEmailFriendsDialog(); return false;" style="text-decoration: underline;">Tell a friend</a></i>
+				</div>
+            </div>
+            <div id="mapContainerID" class = "mapContainer" dojoType = "ContentPane">
+				<div class = "showContent" id = "mapSickness" style = "width: 100%; height: 440px; overflow: none;">
+                </div>
+				<div class = "hideContent" dojoType = "ContentPane"
+					 id = "sicknessPostings"
+					 title="show sickness postings"
+					 style = "width: 100%; height: 440px; overflow: none;">
+
+					<div id="sicknessPostingUrl" dojoType="LinkPane" href = "showSicknessPostingsList.php?sneLat=34.484068677987906&sswLat=33.91160271333786&sneLng=-118.16029357910155&sswLng=-119.1375274658203">showSicknessPostingsList</div>
+
+				</div>
+				<div class = "hideContent" dojoType = "ContentPane"
+					 id = "singleSicknessPostings"
+					 title=""
+					 style = "width: 100%; height: 440px; overflow: none;" onLoad="afterSingleSicknessPostingLoaded();">
+
+					<div id="singleSicknessPostingUrl" dojoType="LinkPane" href = "showSingleSicknessPostingsList.php?pid=0">showSingleSicknessPostingsList</div>
+
+				</div>
+            </div>
+        </div>
+    </div>
+<div>
+<br/>
+<br/>
+<div id='vu_ytplayer_vjVQa1PpcFOG8j3QM1cYizYsLUFJYRMLbZXp_VOHPIY='><a
+href='http://www.youtube.com/browse'>Watch the latest videos on
+YouTube.com</a></div><script type='text/javascript'
+src='http://www.youtube.com/watch_custom_player?id=vjVQa1PpcFOG8j3QM1cYizYsLUFJYRMLbZXp_VOHPIY='></script>
+
+</div>
+    <noscript>
+        <b>JavaScript must be enabled in order for you to use Google Maps.</b> However, it seems JavaScript is either
+        disabled or not supported by your browser. To view Google Maps, enable JavaScript by changing your browser
+        options, and then try again.
+    </noscript>
+
+	<script type = "text/javascript"src="jsscripts/bootstrap.js">
+	</script>
+
+    <script src = "http://www.google-analytics.com/urchin.js" type = "text/javascript">
+    </script>
+
+    <script type = "text/javascript">
+        _uacct = "UA-1527268-4";
+
+        urchinTracker();
+    </script>

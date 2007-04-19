@@ -1,0 +1,1075 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+  <title>The Strange Zen Of JavaScript: How to build a simple calendar with JavaScript</title>
+  <meta name="google-site-verification" content="3pwNiYsTSkgglhTEledsdLNRTr1DYi0Baq6nMMzS2AQ" />
+
+  <script type="text/javascript">(function() { var a=window;function c(b){this.t={};this.tick=function(d,i,e){e=e?e:(new Date).getTime();this.t[d]=[e,i]};this.tick("start",null,b)}var f=new c;a.jstiming={Timer:c,load:f};try{var g=null;if(a.chrome&&a.chrome.csi)g=Math.floor(a.chrome.csi().pageT);if(g==null)if(a.gtbExternal)g=a.gtbExternal.pageT();if(g==null)if(a.external)g=a.external.pageT;if(g)a.jstiming.pt=g}catch(h){};a.tickAboveFold=function(b){b=b;var d=0;if(b.offsetParent){do d+=b.offsetTop;while(b=b.offsetParent)}b=d;b<=750&&a.jstiming.load.tick("aft")};var j=false;function k(){if(!j){j=true;a.jstiming.load.tick("firstScrollTime")}}a.addEventListener?a.addEventListener("scroll",k,false):a.attachEvent("onscroll",k);
+ })();</script><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="MSSmartTagsPreventParsing" content="true" />
+<meta name="generator" content="Blogger" />
+<link rel="icon" type="image/vnd.microsoft.icon" href="http://www.blogger.com/favicon.ico"/>
+<link rel="alternate" type="application/atom+xml" title="The Strange Zen Of JavaScript - Atom" href="http://jszen.blogspot.com/feeds/posts/default" />
+<link rel="alternate" type="application/rss+xml" title="The Strange Zen Of JavaScript - RSS" href="http://jszen.blogspot.com/feeds/posts/default?alt=rss" />
+<link rel="service.post" type="application/atom+xml" title="The Strange Zen Of JavaScript - Atom" href="http://www.blogger.com/feeds/11521728/posts/default" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.blogger.com/rsd.g?blogID=11521728" />
+<link rel="alternate" type="application/atom+xml" title="The Strange Zen Of JavaScript - Atom" href="http://jszen.blogspot.com/feeds/117436538370756127/comments/default" />
+ <link rel="stylesheet" type="text/css" href="http://www.blogger.com/static/v1/v-css/50269083-blog_controls.css"/> <link rel="stylesheet" type="text/css" href="http://www.blogger.com/dyn-css/authorization.css?targetBlogID=11521728&zx=3fbadd0d-3dbd-4dab-91d3-02db3a66945b"/>
+
+  <style type="text/css">
+/*
+-----------------------------------------------
+Blogger Template Style
+Name:     Rounders
+Designer: Douglas Bowman
+URL:      www.stopdesign.com
+Date:     27 Feb 2004
+----------------------------------------------- */
+
+
+body {
+  background:#aba;
+  margin:0;
+  padding:20px 10px;
+  text-align:center;
+  font:x-small/1.5em "Trebuchet MS",Verdana,Arial,Sans-serif;
+  color:#333;
+  font-size/* */:/**/small;
+  font-size: /**/small;
+  }
+
+
+/* Page Structure
+----------------------------------------------- */
+/* The images which help create rounded corners depend on the 
+   following widths and measurements. If you want to change 
+   these measurements, the images will also need to change.
+   */
+#content {
+  width:840px;
+  margin:0 auto;
+  text-align:left;
+  background-color:#fff;
+  }
+#main {
+  width:840px;
+  background-color:#fff;
+  margin:15px 0 0;
+  padding:0 0 10px;
+  color:#000;
+  font-size:97%;
+  line-height:1.5em;
+  }
+#main2 {
+  width:585px;
+  float:right;
+  background-color:#fff;
+  padding:10px 0 0;
+  }
+#main3 {
+  padding:0;
+  background-color:#fff;
+  }
+#sidebar {
+  position:absolute;
+  width:240px;
+  margin:0px;
+  font-size:97%;
+  line-height:1.5em;
+  top:161px;
+  }
+
+
+/* Links
+----------------------------------------------- */
+a:link {
+  color:#258;
+  }
+a:visited {
+  color:#666;
+  }
+a:hover {
+  color:#c63;
+  }
+a img {
+  border-width:0;
+  }
+
+
+/* Blog Header
+----------------------------------------------- */
+#header {
+  background-color:#456;
+  margin:0 0 0;
+  padding:8px 0 0;
+  color:#fff;
+  }
+#header div {
+  /*background:url("http://www.blogblog.com/rounders/corners_cap_bot.gif") no-repeat left bottom;*/
+  padding:0 15px 8px;
+  }
+#blog-title {
+  margin:0;
+  padding:10px 30px 5px;
+  font-size:200%;
+  line-height:1.2em;
+  }
+#blog-title a {
+  text-decoration:none;
+  color:#fff;
+  }
+#description {
+  margin:0;
+  padding:5px 30px 10px;
+  font-size:94%;
+  line-height:1.5em;
+  }
+
+
+/* Posts
+----------------------------------------------- */
+.date-header {
+  margin:0 28px 0 43px;
+  font-size:85%;
+  line-height:2em;
+  text-transform:uppercase;
+  letter-spacing:.2em;
+  color:#357;
+  }
+.post {
+  margin:.3em 0 25px;
+  padding:0 13px;
+  border:1px dotted #bbb;
+  border-width:1px 0;
+  }
+.post-title {
+  margin:0;
+  font-size:135%;
+  line-height:1.5em;
+  background:url("http://www.blogblog.com/rounders/icon_arrow.gif") no-repeat 10px .5em;
+  display:block;
+  border:1px dotted #bbb;
+  border-width:0 1px 1px;
+  padding:2px 14px 2px 29px;
+  color:#333;
+  }
+a.title-link, .post-title strong {
+  text-decoration:none;
+  display:block;
+  }
+a.title-link:hover {
+  background-color:#ded;
+  color:#000;
+  }
+.post-body {
+  border:1px dotted #bbb;
+  border-width:0 1px 1px;
+  border-bottom-color:#fff;
+  padding:10px 14px 1px 29px;
+  }
+html>body .post-body {
+  border-bottom-width:0;
+  }
+.post p {
+  margin:0 0 .75em;
+  }
+p.post-footer {
+  background:#ded;
+  margin:0;
+  padding:2px 14px 2px 29px;
+  border:1px dotted #bbb;
+  border-width:1px;
+  border-bottom:1px solid #eee;
+  font-size:100%;
+  line-height:1.5em;
+  color:#666;
+  text-align:right;
+  }
+html>body p.post-footer {
+  border-bottom-color:transparent;
+  }
+p.post-footer em {
+  display:block;
+  float:left;
+  text-align:left;
+  font-style:normal;
+  }
+a.comment-link {
+  /* IE5.0/Win doesn't apply padding to inline elements,
+     so we hide these two declarations from it */
+  background/* */:/**/url("http://www.blogblog.com/rounders/icon_comment.gif") no-repeat 0 45%;
+  padding-left:14px;
+  }
+html>body a.comment-link {
+  /* Respecified, for IE5/Mac's benefit */
+  background:url("http://www.blogblog.com/rounders/icon_comment.gif") no-repeat 0 45%;
+  padding-left:14px;
+  }
+.post img {
+  margin:0 0 5px 0;
+  padding:4px;
+  border:1px solid #ccc;
+  }
+blockquote {
+  margin:.75em 0;
+  border:1px dotted #ccc;
+  border-width:1px 0;
+  padding:5px;
+  color:#000;
+  background-color:#eee;
+  }
+.post blockquote p {
+  margin:.5em 0;
+}
+pre {
+ color:#006600;
+}
+
+/* Comments
+----------------------------------------------- */
+#comments {
+  margin:-25px 13px 0;
+  border:1px dotted #ccc;
+  border-width:0 1px 1px;
+  padding:20px 0 15px 0;
+  }
+#comments h4 {
+  margin:0 0 10px;
+  padding:0 14px 2px 29px;
+  border-bottom:1px dotted #ccc;
+  font-size:120%;
+  line-height:1.4em;
+  color:#333;
+  }
+#comments-block {
+  margin:0 15px 0 9px;
+  }
+.comment-data {
+  background:url("http://www.blogblog.com/rounders/icon_comment.gif") no-repeat 2px .3em;
+  margin:.5em 0;
+  padding:0 0 0 20px;
+  color:#666;
+  }
+.comment-poster {
+  font-weight:bold;
+  }
+.comment-body {
+  margin:0 0 1.25em;
+  padding:0 0 0 20px;
+  }
+.comment-body p {
+  margin:0 0 .5em;
+  }
+.comment-timestamp {
+  margin:0 0 .5em;
+  padding:0 0 .75em 20px;
+  color:#666;
+  }
+.comment-timestamp a:link {
+  color:#666;
+  }
+.deleted-comment {
+  font-style:italic;
+  color:gray;
+  }
+
+
+/* Profile
+----------------------------------------------- */
+#profile-container {
+  background:#cdc url("http://www.blogblog.com/rounders/corners_prof_bot.gif") no-repeat left bottom;
+  margin:0 0 15px;
+  padding:0 0 10px;
+  color:#345;
+  }
+#profile-container h2 {
+  background:url("http://www.blogblog.com/rounders/corners_prof_top.gif") no-repeat left top;
+  padding:10px 15px .2em;
+  margin:0;
+  border-width:0;
+  font-size:115%;
+  line-height:1.5em;
+  color:#234;
+  }
+.profile-datablock {
+  margin:0 15px .5em;
+  border-top:1px dotted #aba;
+  padding-top:8px;
+  }
+.profile-img {display:inline;}
+.profile-img img {
+  float:left;
+  margin:0 10px 5px 0;
+  border:4px solid #fff;
+  }
+.profile-data strong {
+  display:block;
+  }
+#profile-container p {
+  margin:0 15px .5em;
+  }
+#profile-container .profile-textblock {
+  clear:left;
+  }
+#profile-container a {
+  color:#258;
+  }
+.profile-link a {
+  background:url("http://www.blogblog.com/rounders/icon_profile.gif") no-repeat 0 .1em;
+  padding-left:15px;
+  font-weight:bold;
+  }
+ul.profile-datablock {
+  list-style-type:none;
+  }
+
+
+
+/* Sidebar Boxes
+----------------------------------------------- */
+.box {
+  background:#fff url("") no-repeat left top;
+  margin:0 0 15px;
+  padding:10px 0 0;
+  color:#666;
+  }
+.box2 {
+  background:url("") no-repeat left bottom;
+  padding:0 13px 8px;
+  }
+.sidebar-title {
+  margin:0;
+  padding:0 0 .2em;
+  border-bottom:1px dotted #9b9;
+  font-size:115%;
+  line-height:1.5em;
+  color:#333;
+  }
+.box ul {
+  margin:.5em 0 1.25em;
+  padding:0 0px;
+  list-style:none;
+  }
+.box ul li {
+  background:url("http://www.blogblog.com/rounders/icon_arrow_sm.gif") no-repeat 2px .25em;
+  margin:0;
+  padding:0 0 3px 16px;
+  margin-bottom:3px;
+  border-bottom:1px dotted #eee;
+  line-height:1.4em;
+  }
+.box p {
+  margin:0 0 .6em;
+  }
+
+
+/* Footer
+----------------------------------------------- */
+#footer {
+  clear:both;
+  margin:0;
+  padding:15px 0 0;
+  }
+#footer div {
+  background:#456 url("") no-repeat left top;
+  padding:8px 0 0;
+  color:#fff;
+  }
+#footer div div {
+  background:url("") no-repeat left bottom;
+  padding:0 15px 8px;
+  }
+#footer hr {display:none;}
+#footer p {margin:0;}
+#footer a {color:#fff;}
+
+pre {color:#99000 !important;}
+  </style>
+
+
+<!-- --><style type="text/css">@import url(http://www.blogger.com/static/v1/v-css/navbar/697174003-classic.css);
+div.b-mobile {display:none;}
+</style>
+
+</head>
+
+
+
+<body><script type="text/javascript">
+    function setAttributeOnload(object, attribute, val) {
+      if(window.addEventListener) {
+        window.addEventListener("load",
+          function(){ object[attribute] = val; }, false);
+      } else {
+        window.attachEvent('onload', function(){ object[attribute] = val; });
+      }
+    }
+  </script>
+<iframe src="http://www.blogger.com/navbar.g?targetBlogID=11521728&amp;blogName=The+Strange+Zen+Of+JavaScript&amp;publishMode=PUBLISH_MODE_BLOGSPOT&amp;navbarType=BLACK&amp;layoutType=CLASSIC&amp;searchRoot=http%3A%2F%2Fjszen.blogspot.com%2Fsearch&amp;blogLocale=en_US&amp;homepageUrl=http%3A%2F%2Fjszen.blogspot.com%2F" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" height="30px" width="100%" id="navbar-iframe" allowtransparency="true" title="Blogger Navigation and Search"></iframe>
+<div></div>
+
+
+
+<!-- Begin #content - Centers all content and provides edges for floated columns -->
+
+<div id="content">
+
+
+
+<!-- Blog Header -->
+
+<div id="header"><div>
+
+  <h1 id="blog-title">
+    <a href="http://jszen.blogspot.com/">
+	The Strange Zen Of JavaScript
+    </a>
+  </h1>
+  <p id="description">We got your Ajax right here.</p>
+
+</div></div>
+
+
+
+
+
+<!-- Begin #main - Contains main-column blog content -->
+
+<div id="main"><div id="main2"><div id="main3">
+
+
+
+    
+  <h2 class="date-header">Monday, March 19, 2007</h2>
+  
+
+         <!-- Begin .post -->
+
+  <div class="post"><a name="117436538370756127"></a>
+
+     
+	 
+    <h3 class="post-title">
+	 How to build a simple calendar with JavaScript
+    </h3>
+	 
+    
+
+         <div class="post-body">
+
+          <p>
+      <div style="clear:both;"></div><p>While there are lots of JavaScript-based calendar widgets out there, there's not much in the way of explaining how they work for the JS acolyte. I recently had the opportunity of building one from memory (and best of all, for no particular reason), using none of the popular JS libraries. <em>This is the tutorial I wish I had found five years ago.</em></p>
+
+<p>This series of posts will cover:</p>
+
+<ol>
+<li>how to create a simple calendar view with JavaScript</li>
+<li>how to tie the calendar to an HTML element for rendering</li>
+<li>how to add next/previous month controls</li>
+<li>how to add date picker functionality</li>
+</ol>
+
+<h2>Part One: a basic calendar display</h2>
+
+<p>We're ready to start laying the groundwork for our calendar widget. Here are the steps we'll be taking:</p>
+
+<ol>
+<li>define some global variables to hold common values</li>
+<li>define the calendar object and its arguments</li>
+<li>write a method to generate the HTML needed to render the calendar</li>
+<li>write a method to return the HTML</li>
+</ol>
+
+<h3>The Date object</h3>
+
+<p>I used to fear the JavaScript Date object, but it's actually fairly simple. In short, here's what it does:</p>
+
+<ol>
+<li>parses a given date, and provides useful information about that date</li>
+<li>if no date is specified, the current date is used as the default</li>
+</ol>
+
+<p>A full discussion of the Date object is beyond the scope of this tutorial. <a href="http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Date">You can find documentation here</a>. However, for the purposes of this project, it's important to understand what the Date object <em>doesn't</em> do:</p>
+
+<ul>
+<li>it doesn't know the names of months or days of the week</li>
+<li>it doesn't know how many days are in a given month</li>
+<li>it doesn't compensate for leap year</li>
+<li>it doesn't know the day of the week on which a given month begins</li>
+</ul>
+
+<p>Surprisingly, the Date object isn't used in this widget as much as you'd expect. It's primarily used to determine the current date (if needed) and the starting day of the week for the specified month.</p>
+
+<h3>Global variables</h3>
+
+<p>As stated above, the Date object doesn't provide us with everything we need, so we have to compensate with a few predefined arrays of values.</p>
+
+<pre>
+
+// these are labels for the days of the week
+cal_days_labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+// these are human-readable month name labels, in order
+cal_months_labels = ['January', 'February', 'March', 'April',
+                     'May', 'June', 'July', 'August', 'September',
+                     'October', 'November', 'December'];
+
+// these are the days of the week for each month, in order
+cal_days_in_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+</pre>
+
+These are intentionally defined in the global scope, as they may be shared with multiple calendar widgets. The naming convention is arbitrary; you may prefer to append them to the calendar constructor to prevent collisions with other variables.
+
+Since the Date object returns integers for month (0-11) and day (1-31), we'll be able to use those as indexes for looking up the human-readable labels, as well as the number of days in the specified month.
+
+<blockquote><p>But wait, how do we compensate for leap year when February is hard-coded at 28 days? Don't worry, it's coming later in this tutorial.</p></blockquote>
+
+In addition, we'll need a Date object representing the current date, as a fallback:
+
+<pre>
+// this is the current date
+cal_current_date = new Date(); 
+</pre>
+
+<h3>The Calendar constructor</h3>
+
+Our constructor is pretty basic at the moment. I've designed it to take two arguments, a month and year (both integers) which will represent the intial calendar state. If these arguments are missing or null, the global default date object will be used instead.
+
+<pre>
+function Calendar(month, year) {
+  this.month = (isNaN(month) || month == null) ? cal_current_date.getMonth() : month;
+  this.year  = (isNaN(year) || year == null) ? cal_current_date.getFullYear() : year;
+  this.html = '';
+}
+</pre>
+
+<blockquote>
+<p>Right now you might be saying "hey, why the long syntax? Can't we just do a shortcut like this?"</p>
+<pre>
+this.month = month || cal_current_date.getMonth();
+</pre>
+
+<p>One of the pitfalls of this method is that <a href="http://jszen.blogspot.com/2005/08/beware-of-false-falses-or-something.html">zero can be interpreted as false</a>, which means if we specify zero (January) for our month, this expression would use the default month instead.</p>
+
+<p>We also want the option to pass <strong>null</strong> for one or both of the values. The isNaN() function returns <em>true</em> when passed a null value, which will produce an incorrect result. So we have to test for both conditions: the argument must either be not a number or null for the default to be used.</p>
+
+</blockquote>
+
+<h3>HTML generation</h3>
+
+<p>Here's where we take the date info and stitch together an HTML calendar grid view. Let's start with an empty method definition:</p>
+
+<pre>
+Calendar.prototype.generateHTML = function(){
+
+}
+</pre>
+
+<blockquote>
+<p>Not familiar with object prototyping in JavaScript? <a href="#">Here's some good reading.</a></p>
+</blockquote>
+
+<p>Now let's step through everything this method has to handle.</p>
+
+<h4>First day of the week</h4>
+
+<p>March 2007 begins on a Thursday, but the Date object doesn't know that. However, if we specifically give it the date of "March 1 2007" to parse, it can tell us that day of the week as an integer (from 0-6). So, let's feed it such a date:
+
+<pre>
+var firstDay = new Date(this.year, this.month, 1);
+</pre>
+
+<p>We can now query the new Date object for the day of the week:</p>
+
+<pre>
+var startingDay = firstDay.getDay();
+// returns 4 (Thursday)
+</pre>
+
+<p>So now the widget knows that March 2007 starts on the 5th day of the first week (remember, we're counting from zero like computers do).</p>
+
+<h4>Number of days in the month</h4>
+
+<p>This one's easy. Just use the numeric month value to look up the value in our days-in-month array:</p>
+
+<pre>
+var monthLength = cal_days_in_month[this.month];
+</pre>
+
+<h4>Compensate for leap year</h4>
+
+<p>Right, how <em>does</em> the widget know if it's leap year or not? This stumped me until I did a Google code search and found a <a href="http://www.google.com/codesearch?q=leap+year&hl=en&btnG=Search+Code">widely-implemented approach</a> that uses the <a href="http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Operators:Arithmetic_Operators#.25_.28Modulus.29">modulus operator</a>:</p>
+
+<pre>
+if (this.month == 1) { // February only!
+  if ((this.year % 4 == 0 && this.year % 100 != 0) || this.year % 400 == 0){
+    monthLength = 29;
+  }
+}
+</pre>
+
+<p>Damn, I'm glad I didn't have to figure that out. Thanks, Google Code!</p>
+
+<h4>Constructing the HTML</h4>
+
+<p>We're ready to start building the HTML string for our calendar view. First, the header stuff:
+
+<pre>
+var monthName = cal_months_labels[this.month];
+var html = '&lt;table class="calendar-table">';
+html += '&lt;tr>&lt;th colspan="7">';
+html +=  monthName + "&amp;nbsp;" + this.year;
+html += '&lt;/th>&lt;/tr>';
+html += '&lt;tr class="calendar-header">';
+for (var i = 0; i <= 6; i++ ){
+  html += '&lt;td class="calendar-header-day">';
+  html += cal_days_labels[i];
+  html += '&lt;/td>';
+}
+html += '&lt;/tr>&lt;tr>';
+</pre>
+
+<p>It's pretty straightforward: we begin with a table and header containing the month and year. Then we use a <a href="http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Statements:for">for loop</a> to iterate over our human-readable days-of-the-week array and create the first row of column headers.</p>
+
+<blockquote>
+<p>There are more efficient ways of concatenating HTML, but I thought this was the most clear. And don't gimme no lip about using a TABLE vs. a bunch of floated DIVs &mdash; I may be a <em>standardista</em> but I'm not a masochist.</p>
+</blockquote>
+
+<p>Now for the tricky part, the remaining boxes. We need to make sure that we don't start filling in boxes until we've reached the first weekday of the month, and then stop filling them in when we've reached the maximum number of days for that month.</p>
+
+<p>Since we don't know how many rows we'll need, we'll just generate a safe number of rows &mdash; like ten or so &mdash; and break out of the loop once we've run out of days. Here we go:</p>
+
+<pre>
+var day = 1;
+// this loop is for is weeks (rows)
+for (var i = 0; i < 9; j++) {
+  // this loop is for weekdays (cells)
+  for (var j = 0; j <= 6; j++) { 
+    html += '&lt;td class="calendar-day">';
+    if (day <= monthLength && (i > 0 || j >= startingDay)) {
+      html += day;
+      day++;
+    }
+    html += '&lt;/td>';
+  }
+  // stop making rows if we've run out of days
+  if (day > monthLength) {
+    break;
+  } else {
+    html += '&lt;/tr>&lt;tr>';
+  }
+}
+
+html += '&lt;/tr>&lt;/table>';
+
+this.html = html;
+
+</pre>
+
+
+<p>The real brain-twister is here:</p>
+
+<pre>
+if (day <= monthLength && (i > 0 || j >= startingDay)) {
+</pre>
+
+<p>...which roughly translates to "fill the cell only if we haven't run out of days, and we're sure we're not in the first row, or this day is after the starting day for this month." Whew!</p>
+
+<p>Here's the complete code for our HTML-generating method:</p>
+
+<pre>
+Calendar.prototype.generateHTML = function(){
+
+  // get first day of month
+  var firstDay = new Date(this.year, this.month, 1);
+  var startingDay = firstDay.getDay();
+  
+  // find number of days in month
+  var monthLength = cal_days_in_month[this.month];
+  
+  // compensate for leap year
+  if (this.month == 1) { // February only!
+    if((this.year % 4 == 0 && this.year % 100 != 0) || this.year % 400 == 0){
+      monthLength = 29;
+    }
+  }
+  
+  // do the header
+  var monthName = cal_months_labels[this.month]
+  var html = '&lt;table class="calendar-table">';
+  html += '&lt;tr>&lt;th colspan="7">';
+  html +=  monthName + "&amp;nbsp;" + this.year;
+  html += '&lt;/th>&lt;/tr>';
+  html += '&lt;tr class="calendar-header">';
+  for(var i = 0; i <= 6; i++ ){
+    html += '&lt;td class="calendar-header-day">';
+    html += cal_days_labels[i];
+    html += '&lt;/td>';
+  }
+  html += '&lt;/tr>&lt;tr>';
+
+  // fill in the days
+  var day = 1;
+  // this loop is for is weeks (rows)
+  for (var i = 0; i < 9; i++) {
+    // this loop is for weekdays (cells)
+    for (var j = 0; j <= 6; j++) { 
+      html += '&lt;td class="calendar-day">';
+      if (day <= monthLength && (i > 0 || j >= startingDay)) {
+        html += day;
+        day++;
+      }
+      html += '&lt;/td>';
+    }
+    // stop making rows if we've run out of days
+    if (day > monthLength) {
+      break;
+    } else {
+      html += '&lt;/tr>&lt;tr>';
+    }
+  }
+  html += '&lt;/tr>&lt;/table>';
+
+  this.html = html;
+}
+</pre>
+
+<h3>Returning the HTML</h3>
+
+<p>By design, the generateHTML method doesn't return the finished HTML string. Instead, it stores it in a property of the calendar object. Let's write a getter method to access that string.</p>
+
+<pre>
+Calendar.prototype.getHTML = function() {
+  return this.html;
+}
+</pre>
+
+<p>Okay, let's see what we've got!</p>
+
+<h3>Using the calendar</h3>
+
+<p>The widget may be complex on the inside, but it's ridiculously easy to implement. Here's how to embed a calendar displaying the current month into a web page:</p>
+
+<pre>
+&lt;script type="text/javascript">
+  var cal = new Calendar();
+  cal.generateHTML();
+  document.write(cal.getHTML());
+&lt;/script>
+</pre>
+
+<p>Now let's set it to September 2009:</p>
+
+<pre>
+&lt;script type="text/javascript">
+  var cal = new Calendar(8,2009);
+  cal.generateHTML();
+  document.write(cal.getHTML());
+&lt;/script>
+</pre>
+
+<h4>The Demo!</h4>
+
+<p><a href="http://s3.amazonaws.com/scottandrew-html/calendar-lesson-1.1.html">Here's our calendar widget in action.</a></p>
+
+<h3>That's nice, but...</h3>
+
+<p>We're stuck displaying only one month?</p>
+<p>Shouldn't generateHTML and getHTML be called automatically?</p>
+<p>And WTF is up with that lame <em>document.write?</em></p>
+
+<p>Yep, this simple calendar is "simple" alright. Later this week we'll look at a much slicker way to integrate the calendar into webpages and add controls to transform our humble static calendar view into a full-blown datepicker.</p><div style="clear:both; padding-bottom:0.25em"></div>
+    </p>
+
+        </div>
+
+        <p class="post-footer">
+
+      <em><a href="http://jszen.blogspot.com/2007/03/how-to-build-simple-calendar-with.html" title="permanent link">Permalink</a></em> &nbsp;
+      
+         <a class="comment-link" href="https://www.blogger.com/comment.g?blogID=11521728&postID=117436538370756127"location.href=https://www.blogger.com/comment.g?blogID=11521728&postID=117436538370756127;>4 comments</a>
+       <span class="item-control blog-admin pid-524660487"><a style="border:none;" href="http://www.blogger.com/post-edit.g?blogID=11521728&postID=117436538370756127" title="Edit Post"><img class="icon-action" alt="" src="http://img2.blogblog.com/img/icon18_edit_allbkg.gif" height="18" width="18"></a></span>
+    </p>
+
+    </div>
+
+  <!-- End .post -->
+
+        <!-- Begin #comments -->
+ 
+
+  <div id="comments">
+
+	<a name="comments"></a>
+
+        <div style="text-align:center;"><script type="text/javascript"><!--
+google_ad_client = "pub-1126772261757570";
+google_ad_host = "pub-1556223355139109";
+google_ad_host_channel="00000+00031+00302";
+google_ad_width = 300;
+google_ad_height = 250;
+google_ad_format = "300x250_as";
+google_ad_type = "image";
+google_ad_channel = "";
+google_color_border = "FFFFFF";
+google_color_bg = "FFFFFF";
+google_color_link = "336699";
+google_color_text = "000000";
+google_color_url = "336699";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script></div>
+
+        <h4>4 Comments:</h4>
+
+        <dl id="comments-block">
+      
+
+      <dt class="comment-data" id="c5423561024332415189"><a name="c5423561024332415189"></a>
+
+        At <a href="#c5423561024332415189" title="comment permalink">2:15 PM</a>,
+
+        <span style="line-height:16px" class="comment-icon blogger-comment-icon"><img src="http://img2.blogblog.com/img/b16-rounded.gif" alt="Blogger" style="display:inline;" /></span>&nbsp;<a href="http://www.blogger.com/profile/16587350053501087726" rel="nofollow">Portland Hobnob</a> said...
+
+      </dt>
+
+      <dd class="comment-body">
+
+        <p>Nice calendar!  And thanks so much for the step by step instructions so I actually learn what all the code means.<BR/><BR/>Question: Is there a way to make this an events calendar?  Being new to code, I don't know how to do it myself.  I would think that I could hide some code in each post (e.g. 20070704, for July 4th, 2007) and then build a search function into the calendar to find these future events.<BR/><BR/>Any help you can give would be great!  I have looked all over the web for something that would work on the new blogger, and haven't found anything yet.</p>
+	  <span class="item-control blog-admin pid-2142760884"><a style="border:none;" href="http://www.blogger.com/delete-comment.g?blogID=11521728&postID=5423561024332415189" title="Delete Comment" ><span class="delete-comment-icon">&nbsp;</span></a></span>
+
+      </dd>
+
+	  
+
+      <dt class="comment-data" id="c8302448092477528819"><a name="c8302448092477528819"></a>
+
+        At <a href="#c8302448092477528819" title="comment permalink">5:52 PM</a>,
+
+        <span style="line-height:16px" class="comment-icon blogger-comment-icon"><img src="http://img2.blogblog.com/img/b16-rounded.gif" alt="Blogger" style="display:inline;" /></span>&nbsp;<a href="http://www.blogger.com/profile/17908185877511547906" rel="nofollow">itsoknow</a> said...
+
+      </dt>
+
+      <dd class="comment-body">
+
+        <p>Do you think you can make a calendar like this for my <A HREF="http://www.entertainmentresidence.com/Index.htm" REL="nofollow">entertainment portal</A> ??<BR/>And how much you ask for that? I want to have it. <BR/><BR/>Thanks!!!</p>
+	  <span class="item-control blog-admin pid-1094978013"><a style="border:none;" href="http://www.blogger.com/delete-comment.g?blogID=11521728&postID=8302448092477528819" title="Delete Comment" ><span class="delete-comment-icon">&nbsp;</span></a></span>
+
+      </dd>
+
+	  
+
+      <dt class="comment-data" id="c7580751884493881393"><a name="c7580751884493881393"></a>
+
+        At <a href="#c7580751884493881393" title="comment permalink">12:17 AM</a>,
+
+        <span style="line-height:16px" class="comment-icon blogger-comment-icon"><img src="http://img2.blogblog.com/img/b16-rounded.gif" alt="Blogger" style="display:inline;" /></span>&nbsp;<a href="http://www.blogger.com/profile/03179702528250364639" rel="nofollow">aleh49</a> said...
+
+      </dt>
+
+      <dd class="comment-body">
+
+        <p>it's interested..<BR/><BR/>http://insomnia-causes-reason-insomnia.blogspot.com/</p>
+	  <span class="item-control blog-admin pid-1287343161"><a style="border:none;" href="http://www.blogger.com/delete-comment.g?blogID=11521728&postID=7580751884493881393" title="Delete Comment" ><span class="delete-comment-icon">&nbsp;</span></a></span>
+
+      </dd>
+
+	  
+
+      <dt class="comment-data" id="c625011005419072867"><a name="c625011005419072867"></a>
+
+        At <a href="#c625011005419072867" title="comment permalink">8:47 PM</a>,
+
+        <span style="line-height:16px" class="comment-icon blogger-comment-icon"><img src="http://img2.blogblog.com/img/b16-rounded.gif" alt="Blogger" style="display:inline;" /></span>&nbsp;<a href="http://www.blogger.com/profile/15913251476297602134" rel="nofollow">Jean-Sebastien</a> said...
+
+      </dt>
+
+      <dd class="comment-body">
+
+        <p>There's a more efficient way to check the number of days in a month without requiring the verification for leap years :<BR/><BR/>  function daysInMonth(year, month)<BR/>  {<BR/>   var dd = new Date(year, month, 0);<BR/>   return dd.getDate();<BR/>  }</p>
+	  <span class="item-control blog-admin pid-208660128"><a style="border:none;" href="http://www.blogger.com/delete-comment.g?blogID=11521728&postID=625011005419072867" title="Delete Comment" ><span class="delete-comment-icon">&nbsp;</span></a></span>
+
+      </dd>
+
+	  
+
+    </dl>
+		<p class="comment-timestamp">
+    <a class="comment-link" href="https://www.blogger.com/comment.g?blogID=11521728&postID=117436538370756127">Post a Comment</a>
+    </p>
+
+    
+		<p style="padding-left:20px;">
+	<a href="http://jszen.blogspot.com/">&lt;&lt; Home</a>
+    </p>
+    </div>
+
+
+
+  <!-- End #comments -->
+
+
+
+
+
+</div></div></div>
+
+<!-- End #main -->
+
+
+
+
+
+
+
+
+
+<!-- Begin #sidebar -->
+
+<div id="sidebar">
+
+    <!-- Begin #profile-container -->
+
+  <!-- End #profile -->
+
+
+
+    <!-- Begin .box -->
+
+  <div class="box"><div class="box2"><div class="box3">
+
+      <h2 class="sidebar-title">About</h2>
+
+      <p>A weblog about JavaScript quirks, caveats, odd hacks, curiosities and collected wisdom. Focused on practical uses for web application development.</p> <p>I'm your host, Scott Andrew LePera.</p>
+      <ul>
+         <li><a href="http://jszen.blogspot.com/2005/03/about-this-site.html">About SZOJ</a></li>
+         <li><a href="mailto:delimiter@gmail.com">Contact</a></li>
+      </ul>
+
+<div align="center" style="margin-bottom:20px;">
+
+<script type="text/javascript"><!--
+google_ad_client = "pub-1126772261757570";
+google_ad_host = "pub-1556223355139109";
+google_ad_host_channel="00000+00031+00302";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+google_color_border = "FFFFFF";
+google_color_bg = "FFFFFF";
+google_color_link = "336699";
+google_color_text = "000000";
+google_color_url = "336699";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+<!-- <iframe src="http://rcm.amazon.com/e/cm?t=scottandrewco-20&o=1&p=14&l=st1&mode=books&search=ajax javascript&nou=1&fc1=&lt1=_blank&lc1=&bg1=&f=ifr" marginwidth="0" marginheight="0" width="160" height="600" border="0" frameborder="0" style="border:none;" scrolling="no"></iframe> -->
+</div>
+
+<!-- <ul><li><a href="http://www.amazon.com/exec/obidos/redirect?link_code=ur2&tag=scottandrewco-20&camp=1789&creative=9325&path=external-search%3Fsearch-type=ss%26keyword=ajax%20javascript%26index=books">More JavaScript, Ajax and DHTML books at Amazon.com</a><img src="http://www.assoc-amazon.com/e/ir?t=scottandrewco-20&amp;l=ur2&amp;o=1" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /></li></ul> -->
+
+      <h2 class="sidebar-title">Previous Posts</h2>
+    <ul id="recently">
+    
+        <li><a href="http://jszen.blogspot.com/2007/03/mark-of-n00b.html">The Mark Of The n00b</a></li>
+     
+        <li><a href="http://jszen.blogspot.com/2007/03/return-false-to-prevent-jumping.html">Return false to prevent jumping scrollbars</a></li>
+     
+        <li><a href="http://jszen.blogspot.com/2007/02/how-to-parse-html-strings-into-dom.html">How to parse HTML strings into DOM nodes without i...</a></li>
+     
+        <li><a href="http://jszen.blogspot.com/2007/02/script-and-innerhtml-losing.html">SCRIPT and innerHTML: a losing combination</a></li>
+     
+        <li><a href="http://jszen.blogspot.com/2007/02/fix-your-login-system-you-freakin.html">Fix your login system, you freakin&#39; idiots</a></li>
+     
+        <li><a href="http://jszen.blogspot.com/2007/01/dynamic-script-elements-and-safari-20.html">Dynamic SCRIPT elements and Safari 2.0</a></li>
+     
+        <li><a href="http://jszen.blogspot.com/2007/01/ie6-select-value-gotcha.html">IE6 SELECT value gotcha</a></li>
+     
+        <li><a href="http://jszen.blogspot.com/2006/03/non-attachment.html">Non-attachment</a></li>
+     
+        <li><a href="http://jszen.blogspot.com/2006/02/happy-birthday-ajax.html">Happy birthday &quot;Ajax&quot;</a></li>
+     
+        <li><a href="http://jszen.blogspot.com/2006/02/y-design-pattern-library.html">Y! Design Pattern Library</a></li>
+     
+  </ul>
+
+    
+      <p id="powered-by"><a href="http://www.blogger.com"><img src="http://buttons.blogger.com/bloggerbutton1.gif" alt="Powered by Blogger" /></a></p>
+
+
+    </div></div></div>
+
+  <!-- End .box -->
+
+
+
+
+</div>
+
+<!-- End #sidebar -->
+
+
+
+
+
+
+
+
+
+<!-- Begin #footer -->
+
+<div id="footer"><div><div><hr />
+
+   
+
+  <p><script type="text/javascript"><!--
+google_ad_client = "pub-1126772261757570";
+google_ad_host = "pub-1556223355139109";
+google_ad_host_channel="00000+00031+00302";
+google_ad_width = 728;
+google_ad_height = 90;
+google_ad_format = "728x90_as";
+google_ad_type = "image";
+google_ad_channel = "";
+google_color_border = "FFFFFF";
+google_color_bg = "FFFFFF";
+google_color_link = "336699";
+google_color_text = "000000";
+google_color_url = "336699";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script></p>
+
+
+
+</div></div></div>
+
+<!-- End #footer -->
+
+
+
+
+
+
+
+
+</div>
+
+<!-- End #content -->
+
+
+
+<script type="text/javascript" src="http://www.blogger.com/static/v1/common/js/755007736-csitail.js"></script>
+<script type="text/javascript">BLOG_initCsi('classic_blogspot');</script></body>
+
+</html>

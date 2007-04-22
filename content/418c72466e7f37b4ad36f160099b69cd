@@ -1,0 +1,433 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title> Contactify: It's email. Without the address. </title>
+<meta name="Generator" content="Alleycode HTML Editor">
+<meta name="Description" content="It's email. Without the address.">
+<meta name="Keywords" content="contactify">
+<link rel="stylesheet" type="text/css" href="index.css">
+<script src="javascript/mootools.v1.00.js"></script>
+<script>
+emailaddress="";
+password="";
+
+function startfunction()
+{
+quickinformation = new Fx.Slide('id_quickinformation', {duration: 500});
+informationbox = new Fx.Scroll('id_informationbox');
+}
+
+function changetext(newelement)
+{
+document.getElementById('id_infobox3').style.display = 'none';
+document.getElementById('id_infobox4').style.display = 'none';
+document.getElementById('id_infobox5').style.display = 'none';
+document.getElementById('id_infobox6').style.display = 'none';
+document.getElementById('id_infobox7').style.display = 'none';
+document.getElementById(newelement).style.display = 'inline';
+}
+
+function createlink()
+{
+var code=document.getElementById('id_code').value;
+showloader('id_message3');
+if(code.length==5)
+{
+new Ajax('createlink.php', {method: 'post', postBody: 'emailaddress='+emailaddress+'&password='+password+'&code='+code, evalScripts: true}).request();
+}
+else
+{
+enablebutton();
+document.getElementById('id_message3').innerHTML = 'Please enter valid code';
+}
+}
+
+function checkcode()
+{
+emailaddress = document.getElementById('id_emailaddress').value;
+password = document.getElementById('id_password1').value;
+if(document.getElementById('id_emailaddress').value!="" && emailaddress.search("@")!=-1)
+{
+if(password.length>4)
+{
+if(document.getElementById('id_password1').value!="" && document.getElementById('id_password2').value!="")
+{
+if(document.getElementById('id_password1').value==document.getElementById('id_password2').value)
+{
+document.getElementById('id_contactifylinkcreation').style.display = 'none';
+document.getElementById('id_contactifylinkcreation2').style.display = 'inline';
+enablebutton();
+}
+else
+{
+document.getElementById('id_message').innerHTML = "Please check both passwords are the same";
+}
+}
+else
+{
+document.getElementById('id_message').innerHTML = "Please check both passwords are entered";
+}
+}
+else
+{
+document.getElementById('id_message').innerHTML = "Password must be at least 5 characters";
+}
+}
+else
+{
+document.getElementById('id_message').innerHTML = "Please enter an email address";
+}
+}
+
+function clicked(linkclicked)
+{
+changetext('id_infobox3');
+if(linkclicked=="createlink"){document.getElementById('id_signup').style.display = "inline"; document.getElementById('id_editlink').style.display = "none"; document.getElementById('id_forgotdetails').style.display = "none";}
+if(linkclicked=="editlink"){document.getElementById('id_signup').style.display = "none"; document.getElementById('id_editlink').style.display = "inline"; document.getElementById('id_forgotdetails').style.display = "none";}}
+
+function changedetails()
+{
+showloader('id_message2');
+var linknumber = document.getElementById('id_linknumber').value;
+var password = document.getElementById('id_password').value;
+new Ajax('contactify_login.php', {method: 'post', postBody: 'linknumber='+linknumber+'&password='+password, evalScripts: true, update: $('id_createlinkreturn')}).request();
+}
+
+function deletelink()
+{
+confirmdelete=confirm("This removes your details (actual link numbers are stored) in relation to linknumber "+currentlinknumber+" and you will be unable to reactivate it. Are you sure you want to proceed  ?");
+if(confirmdelete==true)
+{
+var oldpassword = document.getElementById('id_oldpassword').value;
+showloader('id_message2');
+if(oldpassword.value!="" && oldpassword.length>4)
+{
+new Ajax('deletelink.php', {method: 'post', postBody: 'linknumber='+currentlinknumber+'&oldpassword='+oldpassword, evalScripts: true, update: $('id_linkchanged')}).request();
+}
+else
+{
+document.getElementById('id_message2').innerHTML = "Please enter valid password";
+}
+
+}
+else
+{
+
+}
+}
+
+function showloader(element)
+{
+document.getElementById(element).innerHTML = "<img src=\"images/ajax-loader.gif\" width=\"43\" height=\"11\" alt=\"\">";
+}
+
+function showmoreinformation()
+{
+document.getElementById('id_quickinformation').style.display = 'none';
+document.getElementById('id_moreinformation').style.display = 'inline';
+}
+
+function showlessinformation()
+{
+document.getElementById('id_quickinformation').style.display = 'inline';
+document.getElementById('id_moreinformation').style.display = 'none';
+}
+
+function changecaptchaimage()
+{
+document.getElementById('id_code').value = '';
+document.getElementById('id_captcha').innerHTML ='';
+document.getElementById('id_captcha').innerHTML ='<img src=\"CaptchaSecurityImages.php?width=100&height=40&characters=5?='+Math.random();+'\" style=\"border: 1px solid #FFFFFF\">';
+}
+
+function forgotdetails()
+{
+showloader('id_message4');
+var linknumber = document.getElementById('id_linknumber2').value;
+var emailaddress = document.getElementById('id_emailaddress2').value;
+if(linknumber!="")
+{
+if(emailaddress!="" && emailaddress.search("@")!=-1)
+{
+new Ajax('forgotdetails.php', {method: 'post', postBody: 'linknumber='+linknumber+"&emailaddress="+emailaddress, evalScripts: true, update: $('id_createlinkreturn')}).request();
+}
+else
+{
+document.getElementById('id_message4').innerHTML = "Please enter an email address";
+}
+}
+else
+{
+document.getElementById('id_message4').innerHTML = "Please enter a link number";
+}
+
+}
+
+function showcredits()
+{
+document.getElementById('id_quickinformation').style.display = 'none';
+document.getElementById('id_moreinformation').style.display = 'none';
+document.getElementById('id_credits').style.display = 'inline';
+}
+
+function donotshowcredits()
+{
+document.getElementById('id_quickinformation').style.display = 'inline';
+document.getElementById('id_moreinformation').style.display = 'inline';
+document.getElementById('id_credits').style.display = 'none';
+}
+
+function disablebutton()
+{
+document.getElementById('id_createlinkbutton').disabled = true;
+}
+
+function enablebutton()
+{
+document.getElementById('id_createlinkbutton').disabled = false;
+}
+</script>
+</head>
+
+<body onload="startfunction()">
+<div id="id_topbar">
+<div class="centraldiv">
+<img src="images/logo.png" width="300" height="82" alt="" id="id_logo" onclick="informationbox.toTop();" style="cursor: pointer">
+<img src="images/embed.png" width="200" height="200" alt="" style="position: absolute; top: 40px; left: 5%; cursor: pointer" onclick="informationbox.scrollTo(0,430);">
+<div id="id_links"><span class="info" onclick="clicked('createlink')">.createlink</span>&nbsp;&nbsp;<span class="info" onclick="clicked('editlink')" id="id_linkeditlink">.login</span>&nbsp;&nbsp;<span class="info" class="info" style="text-decoration: none" onclick="informationbox.scrollTo(0,430);">.embed</span>&nbsp;&nbsp;<span class="info" class="info" style="text-decoration: none" onclick="informationbox.scrollTo(0,680);">.faq</span>&nbsp;&nbsp;<span class="info" onclick="changetext('id_infobox5')">.contact us</span>&nbsp;&nbsp;<span class="info" onclick="window.location='http://www.contactify.com/blog';">.blog</span></div>
+</div>
+</div>
+
+<div class="centraldiv">
+
+<div id="id_information" style="margin-top: 20px; height: 200px; overflow: hidden">
+
+<div id="id_credits" style="margin-top: 20px; display: none">
+<div class="infobox" style="font-size: 16px; font-weight: bold; width: 670px; height: 200px;">
+Credits:<BR><BR>
+<span style="font-size: 10px">Just a short note of thanks to some people, in no special order.<BR><BR>
+<a href="http://www.famfamfam.com">Mark James</a> (icons)<BR>
+<a href="http://www.white-hat-web-design.co.uk">White Hat Web Design</a> (code)<BR>
+<a href="http://www.04.jp.org">Yuji Oshimoto</a> (font)<BR>
+<a href="http://www.ajaxload.info">Ajaxload.info</a> (loader icon)<BR>
+<a href="http://www.twinhelix.com">Angus Turnbull</a> (code)<BR>
+<a href="http://www.spoono.com">Spoono.com</a> (code)<BR>
+</span>
+<span style="font-size: 10px; float: right; margin-top: 10px" class="info2" onclick="donotshowcredits()">go back</span>
+</div>
+</div>
+
+<div id="id_informationbox" style="height: 200px; overflow: hidden">
+<div id="id_quickinformation" class="infobox" style="font-size: 16px; font-weight: bold; width: 670px; height: 200px;">
+Create your own personal contact form, right here, right now.<BR><BR> Just one <a href="http://www.contactify.com/1" target="_blank">link</a>.<BR><BR> People click on it, they can send you a message. And YOU, never reveal your email address. Reduces spam. Guards your privacy. Keeps you contactable.<BR><BR>Try it, it's free!&nbsp;&nbsp;<span style="font-size: 10px; margin-top: 10px" class="info2" onclick="informationbox.scrollTo(0,200);">more info</span>
+</div>
+
+<div id="id_moreinformation" style="height: 200px">
+<div id="id_whatis" class="infobox">
+<b><center>What is contactify ?</center></b><BR>
+Contactify is the best, fastest and easiest way to allow people to contact you online, whilst never revealing your email address.<BR><BR>Contactify provides you with a <a href="http://www.contactify.com/1" target="_blank">contactify link</a> that gives you your own private contact form. (totally free!).
+</div>
+
+<div id="id_whyis" class="infobox">
+<b><center>Why is it useful ?</center></b><BR>
+Contactify allows you to maintain an online presence, on blogs, forums, social networks etc., whilst always guarding your privacy.<BR><BR>That means less chance of <span class="info2" onclick="changetext('id_infobox4')">spam</span> and less chance of having to reveal your email address.
+</div>
+
+<div id="id_howdoes" class="infobox">
+<b><center>How does it work ?</center></b><BR>
+After signing up, you receive your own <a href="http://www.contactify.com/1" target="_blank">contactify link</a>. Post that link anywhere you like, online or offline. When somone clicks on that link they are taken to a contact form. They can then send you a message, but your email address is never revealed. Our contact forms prevent spam too!.
+</div>
+
+<div id="id_howdo" class="infobox">
+<b><center>How do I get a link ?</center></b><BR>
+Getting a link is easy. Just below this text, is a little sign-up box. Sign-up, activate you account (you will receive an email) and that's it!<BR><BR>Make as many <a href="http://www.contactify.com/1" target="_blank">contactify links</a> as you need, you can easily modify or delete them too! Enjoy! <span style="font-size: 10px; float: right; margin-left: 10px"  class="info2" onclick="informationbox.scrollTo(0,430);">next</span><span style="font-size: 10px; float: right;" class="info2" onclick="informationbox.toTop();">back</span>
+</div>
+</div>
+
+<div id="id_onyoursite" style="margin-top: 30px; font-size: 10px; width: 700px; height: 200px;">
+<B style="font-size: 16px; margin-left: 10px">You can now embed the Contactify form on your site!</B><BR><BR>
+<div class="infobox">
+<a href="http://www.bhall.com/2005/06/contact.html" target="_blank">Just like this! [click here]</a><BR><BR>Contactify just got a whole lot more useful. The widget's here!<BR><BR>No longer do people who use your contactify link have to come to the Contactify website to send you messages. They can do it from the comfort of your website.
+</div>
+
+<div class="infobox" style="text-align: left">
+Just follow the instructions, and you can get the Contactify widget up and running on your website:<BR><BR><B>1. Enter your link number<BR><BR>2. Click on the widgetbox button</b><BR><BR>Super simple!
+</div>
+
+<div class="infobox">
+<form name="contactify_widgetform">
+<input type="text" size="10" id="contactify_widgetlinknumber"> Link No.
+</form>
+<input style="border: none" type="image" src="http://www.widgetbox.com/images/add-widgetbox.gif" onclick="window.open('http://www.widgetbox.com/widget/contactify-widget-beta?_wbx_external=1&amp;_wbx_autosubscribe=true&amp;linknumber=' + encodeURIComponent(document.contactify_widgetform.contactify_widgetlinknumber.value), 'widgetbox',''); return false;" title="Add to Widgetbox" />
+<BR><BR>Our <span class="info" style="text-decoration: underline" onclick="window.open('terms.html');">terms</span> and <span class="info" style="text-decoration: underline" onclick="window.open('privacy.html');">privacy policy</span> have been updated to reflect the widget, please make sure you read them.
+</div>
+
+<div class="infobox" style="text-align: left">
+<B>Features:</B><BR><BR>
+1. Embed on your site.<BR>
+2. Custom CSS file<BR>
+3. Easy to setup<BR>
+<BR>
+More information <a href="widget.html">here</a>
+<BR><BR><span style="font-size: 10px; float: right; margin-left: 10px"  class="info2" onclick="informationbox.scrollTo(0,680);">next</span><span style="font-size: 10px; float: right;" class="info2" onclick="informationbox.scrollTo(0,200);">back</span>
+</div>
+
+</div>
+
+<div style="margin-top: 30px; height: 200px; width: 700px; overflow: hidden">
+<B style="font-size: 16px">Super Fast FAQ</B>&nbsp;&nbsp;<span style="font-size: 10px;" class="info2" onclick="informationbox.scrollTo(0,430);">back</span><BR><BR>
+<div style="margin-left: 10px; margin-right: 10px; height: 140px; overflow: auto">
+
+<table>
+<B>What is Contactify ?</B><BR>A simple way for you to remain contactable, whilst never revealing your email address<BR><BR>
+<B>How do I use it ?</B><BR>Post your contactify link (contactify.com/your-link-number) anywhere you like. Anyone who clicks on this link is taken to your personal contact form.<BR><BR>
+<B>Where can I use it ?</B><BR>Anywhere you want, but its very useful for blogs, forums, messageboards, social networks, in fact anywhere where you would normally post your email address in public. So instead of posting your email address online, simply paste your full contactify link i.e. http://www.contactify.com/your-link-number<BR><BR>
+<B>How do I create one ?</B><BR>Click on the .createlink link at the top of the page or just go straight to the Super Fast Sign-Up Box.<BR><BR>
+<B>What about privacy ?</B><BR>Check out our <a href="http://www.contactify.com/privacy.html" target="_blank">privacy policy</a>.<BR><BR>
+
+
+<B>What happens if I want to modify or delete my link ?</B><BR>No problem. Click on .login at the top of this page and sign in. There you can modify (change the email address the link points to or the password) or delete your link. And you can create as many more as you need.<BR><BR>
+<B>So how does it reduce spam ?</B><BR>Spammers harvest your email address online, because Contactify uses a link, that doesn't display your email address, spammers can get your email address.<BR><BR>
+<B>How else ?</B><BR>Contactify also uses codes on all its forms, which humans can fill out very easily, but computers can't.<BR><BR>
+
+<B>I want the form on my site ?</B><BR>No problem. There's a widget. <span class="info2" onclick="informationbox.scrollTo(0,420);">Click here</span> to find out more and put Contactify on your site (for free!). The widget can be placed on your site very easily, so instead of your visitors coming to contactify to contact you, they can do so straight from your website. You can even make the form look just like your site!<BR><BR>
+<B>What can I customize on the widget ?</B><BR>At the moment, you can customize the 'sent message' message and also the CSS. To have the widget adopt CSS from your site, simply point it to the CSS file you want it to use, for example http://www.yourdomain.com/yourcssfile.css<BR><BR>
+<B>Can I have the contactify form display my name ?</B><BR>Yes. Instead of having the Contactify form display your link number you can have it display your name. To do this simply sign in, by clicking on .login at the top of the page. Then just enter your new display name.<BR><BR>
+<B>I never received an activation email ?</B><BR>You can login to your account (activated or not) and send yourself another activation email. However, Contactify may be blocked, Comcast for example currently block Contactify, they have very specific filters which is leading to us being blocked. Great! If you are repeatedly not receiving an activation email, the best thing to do is delete your link (by clicking on .login at the top of the page) and create a new one with a different email address.<BR><BR>
+<B>I have more questions ?</B><BR>Great. Just email us at feedback@contactify.com or use our <a href="http://www.contactify.com/feedback" target="_blank">contactify link</a><BR><BR>
+
+<I>Contactify allows you to maintain an online presence, on blogs, forums, social networks etc., whilst always guarding your privacy. That means less chance of <span class="info2" onclick="changetext('id_infobox4')">spam</span> and less chance of having to reveal your email address.</I><BR><BR>
+Contactify is a London, UK based project. Watch out for more exciting things soon! Want to get involved - <a href="http://www.contactify.com/feedback">send an email</a>!
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+</div>
+
+</div>
+
+
+
+</div>
+<div id="id_secondbar">
+	<div style="width: 700px; margin: 20px auto 0px auto; text-align: left">
+		<div id="id_signup" class="signupbox">
+			<b>Super Fast Sign-Up Box</b><BR><BR>
+				<div id="id_contactifylinkcreation">
+					<input type="text" name="emailaddress" id="id_emailaddress" size="12"> Email Address<BR><BR>
+					<input type="password" name="password1"  id="id_password1" size="12"> Password<BR><BR>
+					<input type="password" name="password2"  id="id_password2" size="12"> Re-type Password<BR><BR>
+					<span id="id_message" class="alert"></span><BR><BR>
+					<button onclick="checkcode()">Create Link</button><BR><BR>
+				</div>
+								<div id="id_contactifylinkcreation2" style="display: none">				
+				<span id="id_captcha"><img src="CaptchaSecurityImages.php?width=100&height=40&characters=5" style="border: 1px solid #FFFFFF"></span><BR><BR>
+<div id="id_captchafield" style="">
+Nearly done! Sorry. Please enter code:<BR> <span onmouseout="document.getElementById('id_message3').innerHTML = ''" onmouseover="document.getElementById('id_message3').innerHTML = 'Cookies must be enabled, click to change code'" onclick="changecaptchaimage();" style="cursor: pointer">(<u>can't read code?</u>)</span><BR>
+<input type="text" name="code" id="id_code">
+</div><BR>
+<span id="id_message3" class="alert"></span><BR><BR>
+<span id="id_termsagree">By creating a contactify link you fully accept our <span class="info" class="info" style="text-decoration: underline" onclick="window.open('terms.html');">terms</span> and <span class="info" class="info" style="text-decoration: underline" onclick="window.open('privacy.html');">privacy policy</span>. If you do not agree please do not continue.<BR><BR></span>
+<button id="id_createlinkbutton" onclick="disablebutton(); document.getElementById('id_message3').innerHTML = ''; createlink()">I agree, create link</button>&nbsp;&nbsp;<button onclick="window.location='index.php'">I don't agree</button><BR><BR>
+</div>
+
+		</div>
+		
+				<div id="id_editlink" class="signupbox" style="display: none">
+			<b>Super Fast Edit Login Box</b><BR><BR>
+				<div>
+<input type="text" name="linknumber" id="id_linknumber" size="12"> Link Number<BR><BR>
+<input type="password" name="password" id="id_password" size="12"> Password<BR><BR>
+<span onclick="document.getElementById('id_editlink').style.display = 'none'; document.getElementById('id_forgotdetails').style.display = 'inline';" class="options" >[Forgot password]</span><BR><BR>
+<span id="id_message2" class="alert"></span><BR><BR>
+<button onclick="changedetails()">Login</button><BR><BR>
+				</div>				
+		</div>
+		
+		<div id="id_forgotdetails" class="signupbox" style="display: none">
+			<b>Super Fast Forgot Details Box</b><BR><BR>
+				<div>
+<input type="text" name="linknumber" id="id_linknumber2" size="12"> Link Number<BR><BR>
+<input type="text" name="emailaddress" id="id_emailaddress2" size="12"> Email Address<BR><BR>
+<span id="id_message4" class="alert"></span><BR><BR>
+<button onclick="forgotdetails()">Send Reminder</button><BR><BR>
+				</div>				
+		</div>
+	
+		
+	<div class="infobox2">
+	<div  id="id_infobox2">
+	<BR><BR>
+	[As soon as you sign up]<BR><BR>
+	[your link will appear here, like magic]<BR><BR>
+	</div>
+			<div id="id_thirdbar">
+		<BR><BR>
+				<span class="info" style="text-decoration: none" onclick="changetext('id_infobox6');">.press</span>&nbsp;&nbsp;<span class="info" style="text-decoration: none" onclick="changetext('id_infobox7');">.advertise</span><BR><span class="info" style="text-decoration: none" onclick="window.open('terms.html');">.terms</span>&nbsp;&nbsp;<span class="info" style="text-decoration: none" onclick="window.open('privacy.html');">.privacy policy</span>&nbsp;&nbsp;<span class="info" onclick="changetext('id_infobox5')">.contact us</span><BR><BR>
+	</div>
+	</div>
+	
+	<div id="id_infobox3" class="infobox3">
+		<table width="100%" border="0" cellspacing="5" cellpadding="0">
+<tr>
+	<td><img src="images/wand.png" width="16" height="16" border="0" alt=""></td>
+	<td>Create a <U>free</U> contactify link.<BR></td>
+</tr>
+<tr>
+	<td><img src="images/world.png" width="16" height="16" border="0" alt=""></td>
+	<td>Post it anywhere you like.</td>
+</tr>
+<tr>
+	<td><img src="images/application.png" width="16" height="16" border="0" alt=""></td>
+	<td>When people click on it, it takes them to a contact form.</td>
+</tr>
+<tr>
+	<td><img src="images/group.png" width="16" height="16" border="0" alt=""></td>
+	<td>Real people can contact you, spammers can't.</td>
+</tr>
+<tr>
+	<td><img src="images/email_delete.png" width="16" height="16" border="0" alt=""></td>
+	<td>And your email address remains completely hidden.</td>
+</tr>
+<tr>
+	<td><img src="images/thumb_up.png" width="16" height="16" border="0" alt=""></td>
+	<td>And...it's totally free !</td>
+</tr>
+</table>
+		</div>
+		
+		<div id="id_infobox4" class="infobox3" style="width: 150px; margin: 0px 0px 0px 56px; display: none">
+		<b><center>Forget about Spam!</center></b><BR>Our contactify links, link to forms that contain security codes. This means it\'s easy for humans to send messages to you, but not computers. So not only does contactify prevent spammers scraping your email address from the internet, but it prevents spammers actually sending you messages too!
+		</div>
+		
+				<div id="id_infobox5" class="infobox3" style="width: 150px; margin: 0px 0px 0px 56px; display: none">
+		<b><center>Contact Us!</center></b><BR>Contact us at<BR><BR> <a href="mailto: feedback@contactify.com">feedback@contactify.com</a> Or <a href="http://www.contactify.com/feedback">www.contactify.com/feedback</a><BR><BR>
+<span onclick="showcredits()" class="info">Credits</span>
+		</div>
+		
+						<div id="id_infobox6" class="infobox3" style="width: 150px; margin: 0px 0px 0px 56px; display: none">
+		<b><center>Press</center></b><BR>If you require information about Contactify or have a press enquiry, please feel free to email us at:<BR><BR> <a href="mailto: press@contactify.com">press@contactify.com</a><BR><BR>
+		</div>
+		
+						<div id="id_infobox7" class="infobox3" style="width: 150px; margin: 0px 0px 0px 56px; display: none; text-align: left">
+		<b><center>Advertise</center></b><BR>Contactify has been featured on <a href="http://www.techcrunch.com/tag/contactify/" target="_blank">TechCrunch</a>, <a href="http://mashable.com/2007/05/02/contactify/" target="_blank">Mashable</>, <a href="http://lifehacker.com/software/email/add-a-contact-link-to-your-site-with-contactify-253924.php" target="_blank">LifeHacker</a> and <a href="http://blogs.zdnet.com/Orchant/?p=413" target="_blank">ZDNet</a>, amongst others.<BR><BR>If you are interested in advertising opportunties please email:<BR><BR> <a href="mailto: advertise@contactify.com">advertise@contactify.com</a><BR><BR>
+		</div>
+				
+	</div>
+	
+	
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-1850415-1";
+urchinTracker();
+</script>
+</body>
+</html>

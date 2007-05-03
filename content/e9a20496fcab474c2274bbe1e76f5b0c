@@ -1,0 +1,905 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Second Life client, Part 1: Hacking Second Life</title>
+<meta http-equiv="PICS-Label" content='(PICS-1.1 "http://www.icra.org/ratingsv02.html" l gen true r (cz 1 lz 1 nz 1 oz 1 vz 1) "http://www.rsac.org/ratingsv01.html" l gen true r (n 0 s 0 v 0 l 0) "http://www.classify.org/safesurf/" l gen true r (SS~~000 1))'/>
+<link rel="schema.DC" href="http://purl.org/DC/elements/1.0/"/>
+<link rel="SHORTCUT ICON" href="http://www.ibm.com/favicon.ico"/>
+<meta name="Owner" content="developerWorks Content/Raleigh/IBM"/>
+<meta name="DC.Language" scheme="rfc1766" content="en"/>
+<meta name="IBM.Country" content="ZZ"/>
+<meta name="Security" content="Public"/>
+<meta name="IBM.SpecialPurpose" content="SP001"/>
+<meta name="IBM.PageAttributes" content="sid=1003"/>
+<meta name="Source" content="v16 Template Generator"/>
+<meta name="Robots" content="index,follow"/>
+<meta name="Abstract" content="The open source release of the Second Life viewer program by developer Linden Lab offers a rare opportunity to peer into the comparative strengths of closed and open source development models. This article, the first in a series, gives an overview of some of the differences between these development styles, and talks about what's involved in setting up your own build environment."/>
+<meta name="Description" content="The open source release of the Second Life viewer program by developer Linden Lab offers a rare opportunity to peer into the comparative strengths of closed and open source development models. This article, the first in a series, gives an overview of some of the differences between these development styles, and talks about what's involved in setting up your own build environment."/>
+<meta name="Keywords" content="second life, secondlife, open source, client, viewer, peter seebach, tttlca, tttwaca, tttosca"/>
+<meta name="DC.Date" scheme="iso8601" content="2007-03-27"/>
+<meta name="DC.Type" scheme="IBM_ContentClassTaxonomy" content="CT316"/>
+<meta name="DC.Subject" scheme="IBM_SubjectTaxonomy" content="SWGC0"/>
+<meta scheme="IBM_WTMCategory" name="IBM.WTMCategory" content="SOFDCLNXZZ" />
+<meta name="DC.Rights" content="© Copyright IBM Corporation 2007"/>
+<meta name="IBM.Effective" scheme="W3CDTF" content="2007-03-27"/>
+<meta name="title" content="Second Life client, Part 1: Hacking Second Life"/>
+
+<!-- HEADER_SCRIPTS_AND_CSS_INCLUDE -->
+<link href="//dw1.s81c.com/common/v16/css/all.css" media="all" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/screen.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/screen-uas.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/zz/en/screen-fonts.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/handheld.css" media="handheld" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/print.css" media="print" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/overlay.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+
+<!-- dW-specific CSS -->
+<link href="//dw1.s81c.com/developerworks/css/dw-screen.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/developerworks/css/dw-screen-comments-ratings-signin.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.cluetip.css" media="screen,projection" rel="stylesheet"  title="www" type="text/css" />
+
+<script src="//dw1.s81c.com/common/js/ibmcommon.js" type="text/javascript">//</script>
+<script src="//dw1.s81c.com/common/js/dynamicnav.js" type="text/javascript">//</script>
+
+<!-- dW functional JS -->
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/urltactic.js" type="text/javascript"></script>
+<!-- Rating_START -->
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/artrating/showrating.js" type="text/javascript"></script>
+<style type="text/css">
+.metavalue {
+  display: none;
+}
+</style>
+<!-- Rating_END --><!-- RESERVED_HEADER_INCLUDE -->
+<script language="javascript" src="//dw1.s81c.com/developerworks/js/ajax1.js" type="text/javascript"></script>
+<script language="javascript" src="//dw1.s81c.com/developerworks/js/search_counter-maverick.js" type="text/javascript"></script>
+<script language="javascript" src="//dw1.s81c.com/developerworks/js/request_referer_capture-maverick.js" type="text/javascript"></script>
+<script language="JavaScript" type="text/javascript">
+ <!--
+ setDefaultQuery('');
+ //-->
+</script>
+<script language="JavaScript" type="text/javascript">
+ <!--
+ function openNewWindow(url,tar,arg){window.open(url,tar,arg);}
+ //-->
+</script>
+<!-- Include file support -->
+<script language="JavaScript" type="text/javascript">
+(function($) {
+	jQuery.extend({
+		getInc: function(u,d){
+			if(u==null)return;
+			jQuery.ajax({
+	    		type: "GET",
+			url: u,
+			dataType: "text",
+	        	success: function(t) {
+				jQuery(d).html(t);
+				ibmCommon.initShowHide(jQuery(d).children()[0]);			
+			},
+			async: true
+			});
+		}
+	});
+})(jQuery);
+</script>
+</head>
+
+<body id="ibm-com">
+<div id="ibm-top" class="ibm-landing-page">
+
+<!-- MASTHEAD_BEGIN -->
+<div class="ibm-access"><a href="#ibm-content">Skip to main content</a></div>
+<div id="ibm-masthead">
+<div id="ibm-logo"><a href="http://www.ibm.com/"><img height="50" src="//dw1.s81c.com/i/v16/t/ibm-logo.gif" width="110" alt="IBM®" /></a></div>
+<ul id="ibm-geo"><li id="ibm-country" class="ibm-first">Country/region</li><li id="ibm-change-country">[ <a href="http://www.ibm.com/developerworks/country/">select</a> ]</li></ul>
+  <form id="ibm-search-form" action="//www.ibm.com/developerworks/search/searchResults.jsp" method="get" name="form1"><input type="hidden" name="searchType" value="1"/><input type="hidden" name="searchSite" value="dW"/><p>
+<span id="ibm-search-scope">
+<label for="sn"><img src="//dw1.s81c.com/i/c.gif" width="1" height="1" alt="Search in:"/></label>
+<select name="searchScope" id="sn">
+<option value="dW" selected="selected">All of dW</option>
+<option value="dW">-----------------</option>
+<option value="aixunix">&nbsp;AIX and UNIX</option>
+<option value="db2">&nbsp;Information Mgmt</option>
+<option value="lotus">&nbsp;Lotus</option>
+<option value="rdd">&nbsp;Rational</option>
+<option value="tivoli">&nbsp;Tivoli</option>  
+<option value="WSDD">&nbsp;WebSphere</option>
+<option value="dW">-----------------</option> 
+<option value="javaZ">&nbsp;Java technology</option> 
+<option value="linuxZ">&nbsp;Linux</option> 
+<option value="opensrcZ">&nbsp;Open source</option>
+<option value="webservZ">&nbsp;SOA/Web services</option>
+<option value="webarchZ">&nbsp;Web development</option>  
+<option value="xmlZ">&nbsp;XML</option>
+<option value="dW">-----------------</option>
+<option value="forums">&nbsp;dW forums</option> 
+<option value="dW">-----------------</option>
+<option value="aI">University</option>
+<option value="dW">-----------------</option>
+<option value="aW">alphaWorks</option>
+<option value="dW">-----------------</option>
+<option value="all">All of IBM</option>
+</select>
+</span>
+
+<label for="q"><img alt="Search for:" height="1" width="1" src="//dw1.s81c.com/i/c.gif" /></label><input type="text" name="query" maxlength="100" id="q"/><input type="submit" id="ibm-search" class="ibm-btn-search" name="Search" value="Search" /></p></form>
+<div id="ibm-site-name">
+<!-- IBM site name container -->
+</div>
+<div id="ibm-universal-nav">
+<ul><li id="ibm-unav-home" class="ibm-first"><a href="http://www.ibm.com/">Home</a></li><li id="ibm-unav-solutions"><a href="http://www.ibm.com/solutions/">Solutions</a></li><li id="ibm-unav-services"><a href="http://www.ibm.com/technologyservices/">Services</a></li><li id="ibm-unav-products"><a href="http://www.ibm.com/products/">Products</a></li><li id="ibm-unav-support"><a href="http://www.ibm.com/support/">Support &amp; downloads</a></li><li id="ibm-unav-myibm"><a href="http://www.ibm.com/account/">My IBM</a></li></ul>
+</div>
+</div>
+<!-- MASTHEAD_END -->
+
+<div id="ibm-pcon">
+
+<!-- CONTENT_BEGIN -->
+<div id="ibm-content">
+
+<!-- Navigation_Trail_BEGIN -->
+<!-- &nbsp; -->
+        <div id="ibm-content-head"><ul id="ibm-navigation-trail"><li class="ibm-first"><a href="http://www.ibm.com/developerworks/">developerWorks</a></li><li><a href="http://www.ibm.com/developerworks/linux/">Linux</a></li><li><a href="http://www.ibm.com/developerworks/views/linux/library.jsp">Technical library</a></li></ul></div>
+<!-- Navigation_Trail_END -->
+
+<!-- dW_Summary Area_START -->
+<div id="dw-summary-article">
+
+<div class="dw-content-head">
+<h1>Second Life client, Part 1: Hacking Second Life</h1><p><em>Set up a Second Life development environment</em></p>
+</div>
+
+<div class="ibm-container-body ibm-two-column">
+
+<div class="ibm-column ibm-first">
+<div class="author"><a class="dwauthor" rel="#authortip1" href="#author1">Peter Seebach</a> (<a href="mailto:developerworks@seebs.plethora.net?subject=Hacking Second Life">developerworks@seebs.plethora.net</a>), Freelance writer, Plethora.net</div><div id="authortip1" class="dwauthor-onload-state ibm-no-print"><div class="position"><img src="http://www.ibm.com/developerworks/i/p-seebach.jpg" width="64" height="80" alt="Author photo" /></div>Peter Seebach has been using computers for years and is gradually becoming acclimated. He still doesn't know why mice need to be cleaned so often, though.</div>
+<p></p>
+<p><b>Summary:</b>&nbsp; The open source release of the Second Life viewer program by
+      developer Linden Lab offers a rare opportunity to peer into the comparative
+      strengths of closed and open source development models. This article, the first in a
+            <a href="http://www.ibm.com/developerworks/views/linux/libraryview.jsp?topic_by=All+topics+and+related+products&amp;sort_order=asc&amp;lcl_sort_order=asc&amp;search_by=second+life+client%2C&amp;search_flag=true&amp;type_by=Articles&amp;show_abstract=true&amp;start_no=1&amp;sort_by=Title&amp;end_no=100&amp;show_all=false&amp;S_TACT=105AGX03&amp;S_CMP=EDUp;show_abstract=true&amp;sort_by=Relevance&amp;end_no=100&amp;show_all=false" onmouseover="linkQueryAppend(this)">series</a> gives an overview of some of the differences between these development
+      styles, and talks about what's involved in setting up your own build environment.</p>
+<p class="ibm-no-print"><a href="http://www.ibm.com/developerworks/views/linux/libraryview.jsp?topic_by=All+topics+and+related+products&amp;sort_order=asc&amp;lcl_sort_order=asc&amp;search_by=second+life+client%2C&amp;search_flag=true&amp;type_by=Articles&amp;show_abstract=true&amp;start_no=1&amp;sort_by=Title&amp;end_no=100&amp;show_all=false&amp;S_TACT=105AGX03&amp;S_CMP=EDUp;show_abstract=true&amp;sort_by=Relevance&amp;end_no=100&amp;show_all=false">View more content in this series</a></p>
+<div id="dw-tag-content" class="ibm-no-print"></div><div id="dw-moretags-access" class="ibm-access"></div>
+<p class="ibm-no-print"><div id="dw-tag-this" class="ibm-no-print"><a class="ibm-external-link" onclick="jQuery.launchTagThisWindow(); return false;" href="#">Tag this!</a></div><div id="interestShow" class="ibm-no-print"></div></p>
+</div>
+
+<div class="ibm-column ibm-second">
+<p class="leading"><b>Date:</b>&nbsp; 27 Mar  2007
+<br /><b>Level: </b>&nbsp;Intermediate
+
+<br /><b>Also available in:&nbsp;</b>
+&nbsp;<a href="http://www.ibm.com/developerworks/cn/linux/l-second-life-1.html">Chinese</a>
+
+
+&nbsp;<a href="http://www.ibm.com/developerworks/jp/linux/library/l-second-life-1.html">Japanese</a> 
+
+
+
+<br />
+<br /><b>Activity:</b>&nbsp; 24656 views
+<br /><b>Comments:</b> &nbsp; <span id="nCmts"><img alt="" src="//dw1.s81c.com/developerworks/i/circle-preloader.gif" height="12" width="50" /><img alt="" src="//dw1.s81c.com/i/c.gif" height="14" width="1" /></span>
+<!-- Rating_Area_Begin -->
+<div id="art-rating-summary"></div>
+<!-- Rating_Area_End -->
+</p>
+</div>
+
+</div>
+</div>
+<!-- dW_Summary_Area_END -->
+
+<!-- CONTENT_BODY -->
+<div id="ibm-content-body">
+
+<!-- MAIN_COLUMN_BEGIN -->
+<div id="ibm-content-main">
+
+<!-- Related_Searches_Area -->
+<!-- Related_Searches_Area_Begin -->
+<script type="text/javascript" language="javascript">
+	     capture_referrer();
+</script>
+
+<div id="dw-related-searches-article" style="display:none">
+<div class="ibm-container ibm-alternate-two">
+<div class="ibm-container-body">
+
+<!--  START : HTML FOR ARTICLE SEARCH -->
+  <div id="article_results" style="display:block"></div>
+<!--  END : HTML FOR ARTICLE SEARCH -->
+
+</div>
+</div>
+</div>
+<!-- Related_Searches_Area_End -->
+<!-- MAIN_COLUMN_CONTAINER_BEGIN -->
+<div class="ibm-container">
+
+<!-- MAIN_COLUMN_CONTENT_BEGIN -->
+<p> Second Life is a virtual world, maintained through a combination of client
+        software and hosting servers. It is somewhat similar to various "massively
+        multiplayer" online games (MMOs) but has the unusual quality that nearly all of
+        the content is user-provided. It is also unusual in that Linden Labs recently
+        announced the release of its client software as open source. This is something
+        that is rarely, if ever, done in commercial MMO apps. The specific license chosen
+        is the GPL, version 2, with an exception for FLOSS software. </p>
+            <div class="ibm-container ibm-alt-header dw-container-sidebar"><h2>More in this series</h2><div class="ibm-container-body">
+                
+                <ul>
+                    <li>
+                        <a href="http://www.ibm.com/developerworks/linux/library/l-second-life-2.html" onmouseover="linkQueryAppend(this)">
+            Part 2: Hacking Second Life</a>:
+            <br />What happens when a company releases proprietary software to the
+            open source community? Find out here. We cover the build process and some of
+            the stepping stones and stumbling blocks on the way to hacking Second Life.<br />
+                        <br />
+                    </li>
+                    <li>
+                        <a href="http://www.ibm.com/developerworks/linux/library/l-second-life-3.html" onmouseover="linkQueryAppend(this)">
+            Part 3: Adding simple translation to Second Life</a>:
+            <br />The open source Second Life client is amenable to being modified. Add a
+            service that lets you translate other languages without leaving the comfort of
+            Second Life.</li>
+                </ul>
+            </div></div>
+            <p> In this series, I introduce the client (or "viewer" in Linden terminology) and
+        explore the development environment, documentation, and more. Developers who are
+        used to an open source environment are sometimes a little put off by things that
+        might be done differently in a commercial environment, and this project offers a
+        number of opportunities to explore some of the tradeoffs. Of course, the best way
+        to explore a program is to do something with it, so this series gets into the code
+        to make a few changes. </p>
+            <p><a name="N10080"><span class="atitle">Second Life system requirements</span></a></p>
+            <p> The Second Life client is available for Microsoft&#174; Windows, Mac&#174; OS
+        X, and Linux&#174; systems (and may run on others, now). I'll show how to build
+        and develop on Linux, and eventually cross-compile so that the client is available
+        for users of other platforms as well. To run the client, your system needs
+        reasonable 3D hardware and a moderately fast CPU; of course, faster is always
+        better. For Linux builds, the program requires direct rendering support in
+        hardware; most nVidia or ATI graphics cards are supported by some version or
+        another of the drivers. </p>
+
+            <p> Initial testing by Linden was done on Debian, Fedora Core 4, and Knoppix; I
+        tested on SUSE 10.1, but you are encouraged to use the distro of your choice and
+        can report problems to the Linden developer support forums (see
+        <a href="#resources">Resources</a> for a link). </p>
+            <p> Building the Second Life client is not exactly easy or painless right now, but
+        that is pretty normal when a package that has historically been closed gets opened
+        up. And compared to, for instance, the nightmarish experience of trying to get
+        early Mozilla releases built, it's a walk in the park. </p>
+
+            <p> As an alpha release, it is also subject to change. You will find the most
+        up-to-date list of packages, and instructions for building, at the
+        <a href="http://wiki.secondlife.com/wiki/Compiling_the_viewer_%28Linux%29">Compiling the viewer (Linux)</a>
+        page at the Second Life Wiki. </p>
+            <p> The instructions suggest a build time of "a couple of hours." I ran the build
+        several times under different CPUs and Linux installations and encountered build
+        times ranging from an hour and 20 minutes to just 25 minutes -- not one of which
+        was entirely glitch-free. Here are some of the more interesting things I
+        encountered: </p>
+            <ul>
+                <li>
+                    <b>Dependence on older packages.</b> The client is known not to work with gcc 4.
+          You will need gcc 3.4. </li>
+                <li>
+
+                    <b>Use of proprietary packages</b> like fmod sound toolkit; it's "free of
+          charge," but it's closed source. Similarly, the client was initially only really
+          usable with the Kakadu JPEG implementation instead of OpenJPEG (see
+          <a href="#resources">Resources</a> for more on this). </li>
+                <li>
+                    <b>Reliance on non-standard packages</b> like SCons. A replacement for GNU make,
+          it is available with many Linux installations but is rarely installed by
+          default. SCons is a cakewalk to build, but it's one more thing to do before
+          getting started. </li>
+                <li>
+                    <b>Special or additional build requirements:</b> For instance, the ELFIO normal
+          build produces a static library, and the Second Life viewer requires a shared
+          library. Second Life needs xmlrpc-epi, but you have to apply special patches to
+          it. </li>
+                <li>
+                    <b>Conflicts:</b> Speaking of xmlrpc-epi, it conflicts with xmlrpc-c. Although
+          it's hardly the client's fault, the accelerated 3D graphics driver I needed
+          broke compilation of OpenGL programs, leading to a fairly circuitous workaround. </li>
+            </ul>
+            <p> If you're used to an open source development environment, a commercial build
+        process can seem pretty bad. Why are there all these dependancies? Why do I have
+        to set up all these things before using the software? </p>
+            <p> Part of the problem is the (justifiable, for a commercial application)
+        assumption that you will only try to build the viewer on machines that are
+        configured correctly for the build. When you control the development systems, it's
+        easy to ensure that every development workstation or build machine has all the
+        libraries you need. The thing that takes most of your time in building the OpenGL
+        client for the first time is setting up the environment. </p>
+            <p> You could set up the entire environment by hand, but it's a fair amount of extra
+        work. The existence of the local patches (in the xmlrpc-epi code) and the variety
+        of packages many systems don't ship with means that you're going to be doing a
+        fair amount of compiling of other things before the Second Life code will even
+        compile, let alone run. This isn't totally unheard of in building open source
+        projects; what's unusual is that it doesn't all get caught by the "configure"
+        phase, because there isn't one. That saves time per build if your system is set up
+        correctly, but it can cost you a lot of time if it isn't. </p>
+
+            <p> Once the correct environment is in place, the essential process and most common
+        paths are automated, so you can just push the button and walk away. The source
+        downloads page (see <a href="#resources">Resources</a>) has a table showing all
+        the downloads for each version; the prebuilt libraries for each supported platform
+        are offered as separate downloads listed in the same table row. </p>
+            <p> The setup work isn't entirely automated, but it doesn't have to happen very
+        often, comparatively. For that matter, Linden Labs may well have an automated
+        system that creates a viable Second Life build environment. </p>
+            <p> The difference is that a commercial developer can usually assume complete
+        control over the build environment, while open source software typically has to be
+        able to build on a variety of platforms, reasonably easily, to achieve adoption:
+        When I built gcc 3.4 so I could build the Second Life client, I just ran
+        configure, make, and make install. </p>
+            <p> I couldn't just run configure, make, and make install to build the Second Life
+        client -- because it doesn't use make at all. </p>
+            <p><a name="N100E1"><span class="smalltitle">Meet SCons</span></a></p>
+            <p> The program used to build the Second Life viewer is called SCons, a program
+        intended to replace make. </p>
+            <p> Until I started working with Second Life, I'd never heard of SCons. My initial,
+        gut, reaction, was "oh, for crying out loud, why did they use some weird,
+        proprietary program instead of just using make?" That response lasted a good five,
+        maybe ten, minutes. By the time I'd tracked down the Web page for the project, I
+        realized that my gut reaction was just plain wrong. First off, SCons is not
+        "proprietary." It's not make, nor is it compatible with make, but you can't
+        possibly call a free product distributed in source with open source licensing
+        "proprietary." </p>
+            <p> That still leaves the question of why you'd use a program that many users don't
+        have (my Linux install was a "full install" and didn't have it, although I found
+        the RPM file on the install media) instead of a program pretty much everyone has.
+        There are a number of answers; frankly, SCons is technically superior to make.
+        Now, technical superiority isn't everything; there are a lot of advantages to
+        "widely available" and "well known to lots of people." However, these advantages
+        are much stronger in a traditional open source environment, where you want random
+        strangers to be able to pick up your project and hack on it, and much weaker in a
+        traditional corporate environment, where a week or so of training is easily
+        justified if it lets people do their jobs faster. For a large build (and the
+        Second Life viewer qualifies), the benefits of the parallel and distributed
+        building alone are probably sufficient to justify the learning curve. </p>
+            <p> The main thing you need to know if you're going to start messing around with the
+        build process is that the project file (called "SConstruct") used by SCons is a
+        Python program. Because SConstruct files are Python programs, they can do a lot of
+        internal configuration checking themselves. You don't need to run configure to
+        build these files; part of this is because the SConstruct program sets a lot of
+        build parameters correctly itself. </p>
+            <div class="ibm-container ibm-alt-header dw-container-sidebar"><h2>Architecture-specific optimizations</h2><div class="ibm-container-body">
+                
+        One question that might come to mind is, why isn't there code to offload 3D
+        rendering to, for instance, the SPEs on a Cell BE chip? In practice, the answer is
+        simple; there are very few user-targetable systems that have both coprocessors to
+        offload to, and an accessible GPU to handle the 3D rendering. For instance, Linux
+        on the PS3 doesn't get access to the system's GPU. For most users, the time it
+        would take to develop the features exceeds the performance benefits. That said,
+        although it's probably not commercially viable, it might make an interesting
+        project for a hobbyist to pursue. </div></div>
+            <p> Reading the SConstruct file gives you a lot of insights into the build process.
+        The options passed on the command line are explained at least in part by comments
+        in the file. Of particular interest is that the suggested invocation found in the
+        file header builds versions for every supported platform, not just the host
+        platform. </p>
+            <p> The default behavior is to do a distributed build using a list of hosts embedded
+        in the SConstruct file. This is an interesting option to have and is probably one
+        of the reasons SCons was used; most versions of make don't support distributed
+        compilation, but if you had a team of programmers working on a project that takes
+        over an hour to build, you might consider distributed compilation a significant
+        feature. </p>
+            <p><a name="N10102"><span class="smalltitle">Build</span></a></p>
+
+            <p> The Linden build process relies on copying files from all the many disparate
+        places that many Linux packages store their include files, to a unified location
+        in the Linden build tree. The instructions are found on the developer Wiki (see
+        <a href="#resources">Resources</a>). Their sample shell commands for preparing for
+        the build, even if you use the prebuilt libraries, look like this: </p>
+            <br /><a name="listing1"><b>Listing 1.  Copying include files</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+                
+cp -a /usr/include/atk-1.0 ${SLSRC}/libraries/i686-linux/include/
+cp -a /usr/include/gtk-2.0 ${SLSRC}/libraries/i686-linux/include/
+cp -a /usr/lib/gtk-2.0/include/* ${SLSRC}/libraries/i686-linux/include/gtk-2.0/
+cp -a /usr/include/glib-2.0 ${SLSRC}/libraries/i686-linux/include/
+cp -a /usr/lib/glib-2.0/include/* ${SLSRC}/libraries/i686-linux/include/glib-2.0/
+cp -a /usr/include/pango-1.0 ${SLSRC}/libraries/i686-linux/include/
+</pre></td></tr></table><br />
+            <p> This assumes that ${SLSRC} refers to the location in which you've unpacked the
+        second life client tree. In fact, the above didn't work for me, because on my
+        system, all of the /usr/ paths had to be replaced with /opt/gnome/; for instance,
+        the gtk include files are found in /opt/gnome/include/gtk-2.0. Easy enough to fix,
+        but it's an example of the sort of thing that makes people write giant configure
+        scripts. It took a couple more tries to get it running. </p>
+            <p> There are a lot more similar instructions to follow on the build process page,
+        but the downloaded prebuilt libs packages lets you skip ahead to actually running
+        the build. Simply invoke SCons with a couple of additional options: </p>
+            <br /><a name="listing1"><b>Listing 2: Invoking SCons</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+                
+$ cd indra
+$ scons DISTCC=no BTARGET=client BUILD=release
+</pre></td></tr></table><br />
+
+            <p> The additional options specify whether or not to do a distributed compile (no,
+        unless you want to do a lot of network preparation), which target to build (the
+        client is the only one you have source for), and what kind of build to do (for
+        instance, you could build a debug version). If you want to run more than one job
+        at once, just add <code>-j 3</code> to the
+        <code>scons</code> command line, same as for GNU make. </p>
+            <div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N10134"><span class="atitle">The directory tree</span></a></p>
+            <p> The Second Life viewer source tree has two main directories: the "libraries"
+        directory, which holds support code and header files, and the "indra" directory,
+        which contains the source for the viewer itself, as well as Linden-provided
+        support libraries. </p>
+            <p> The .o files are placed in /tmp; specifically, SCons builds a directory tree in
+        /tmp/username in which it stores output files so as to avoid altering the build
+        tree more than absolutely necessary. By contrast, the binary itself is stored in
+        the newview/ subdirectory of the indra/ directory. The Linux binary is about
+        131MB, unstripped. Stripped, it's a svelte 26MB. </p>
+            <div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N10140"><span class="atitle">The documentation</span></a></p>
+            <p> As you might expect for a project being released as open source, Second Life has
+        a Wiki. As is usually the case, the Wiki isn't perfect, but it's a very good
+        starting point for documentation; I'll explore it more fully in the next article. </p>
+            <div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N10149"><span class="atitle">Conclusion</span></a></p>
+            
+            <p> A good way to get a feel for an implementation is to see how easy or hard it is
+        to change it. I'll also do that in Part 2. </p>
+            <p> While there are a number of interesting quirks to the Second Life client's
+        design that aren't totally compatible with the average open source environment
+        (for instance, the Second Life client provides essentially its own GUI library,
+        complete with buttons and menus, instead of using an existing library -- not
+        unusual for game development, but definitely unusual for open source development),
+        the Second Life implementation seems to be fairly well organized. That speaks to a
+        good development model and one well suited to an open source release. Modules are
+        modular; that's a good thing, as I'll talk about next time. </p>
+        <!-- CMA ID: 205655 --> <!-- Site ID: 1 --><!--XSLT stylesheet used to transform this file: dw-document-html-6.0.xsl-->
+<br />
+<p><a name="resources"><span class="atitle">Resources</span></a></p><p><b>Learn</b></p><ul><li>
+      Read <a href="http://www.ibm.com/developerworks/views/linux/libraryview.jsp?topic_by=All+topics+and+related+products&amp;sort_order=asc&amp;lcl_sort_order=asc&amp;search_by=second+life+client%2C&amp;search_flag=true&amp;type_by=Articles&amp;show_abstract=true&amp;start_no=1&amp;sort_by=Title&amp;end_no=100&amp;show_all=false&amp;S_TACT=105AGX03&amp;S_CMP=EDUp;show_abstract=true&amp;sort_by=Relevance&amp;end_no=100&amp;show_all=false" onmouseover="linkQueryAppend(this)">more Second Life articles</a> on developerWorks.<br /><br /></li><li> Completely new to Second Life? The
+        <a href="http://en.wikipedia.org/wiki/Second_Life">Wikipedia is often "a good
+place to start,"</a> though in this case their entry will probably make more sense <i>after</i> you've
+        become a little familiar with it. <br /><br /></li><li> IBM has launched a
+        <a href="http://news.com.com/2100-1014_3-6143175.html">Second Life Business group</a>
+        to take advantage of the potential for virtual training, conferences and commerce,
+        and has worked on projects like
+        <a href="http://www.ibm.com/news/us/en/2007/01/2007_01_16B.html" onmouseover="linkQueryAppend(this)">Virtual Sears</a>
+        and
+        <a href="http://www.ascentstage.com/archives/2006/06/the_forbidden_c.html">a virtual online replica of China's Forbidden City</a>.
+        Some people
+        <a href="http://www.wired.com/gaming/virtualworlds/news/2006/02/70153">make a real-life living in Second Life</a>. <br /><br /></li><li>
+
+                <i>Experience</i> a movie trailer, instead of just watching one: the
+        <a href="http://www.virtualworlds2007.com/">Virtual Worlds 2007</a> outlines many
+        business opportunities in virtual reality gaming, focusing in large part on
+        advertising and entertainment. <br /><br /></li><li>
+                <a href="http://openmetaverse.org/wiki/OpenMetaverse">OpenMetaverse</a> is a
+        project that's been working on open source material related to Second Life. <br /><br /></li><li> The
+        <a href="http://wiki.secondlife.com/wiki/Open_Source_Portal">Second Life Open Source Portal</a>
+        includes guides for
+        <a href="http://wiki.secondlife.com/wiki/Get_source_and_compile">obtaining and compiling source for MS Windows, Mac OSX, Linux and FreeBSD</a>
+        as well as
+        <a href="http://wiki.secondlife.com/wiki/Common_compilation_problems">common compilation problems</a>,
+        and more. You must log on (with your Second Life user name and passwords) to even
+        view Linden's
+        <a href="http://forums.secondlife.com/forumdisplay.php?f=296">forums for Second Life users and developers</a>. <br /><br /></li><li> Developers will be interested in learning
+        <a href="http://www.scons.org/">more about SCons</a>; in the
+        <a href="http://bug.opensecondlife.org/my_view_page.php">OpenSL bugtracker</a> and
+        the
+        <a href="http://wiki.secondlife.com/wiki/Viewer_architecture#Learn_by_Example">stepby step guide for how to add different categories of features</a>
+        -- and perhaps even in
+        <a href="http://www.libsecondlife.org/wiki/Bounties">bounties</a> -- in which
+        people are willing to pay for desired improvements to code. <br /><br /></li><li> How does open sourced Second Life help the OSS
+        community? As an example, <a href="http://www.openjpeg.org/">OpenJPEG</a> is now
+        <a href="https://lists.secondlife.com/pipermail/sldev/2007-February/000345.html">more usable</a>
+        for everyone thanks to the community that is developing around work on the Second
+        Life client. <br /><br /></li><li> For creating things inside Second Life, see
+        <a href="http://www.ddj.com/197008520;jsessionid=2C1OKMAKFTODOQSNDLOSKH0CJUNN2JVN?_requestid=141693">Using the Linden Scripting Language</a>
+        (Dr. Dobb's Portal). <br /><br /></li><li> What kind of tradeoffs are made in a commercial
+        vs. an open development environment? The biggest difference is simply that, in a
+        commercial environment, the build system is adapted to the needs of the program,
+        and in an open source environment, the program generally adapts to the needs of a
+        variety of host systems. Many of Peter's thoughts on the engineering tradeoffs
+        that tend to influence the development path of open source software were
+        influenced by Eric Raymond's book,
+        <a href="http://www.catb.org/~esr/writings/taoup/">The Art of UNIX Programming</a>
+        (Addison Wesley). As well, Peter gained much insight from a conversation with
+        Linden's
+        "<a href="http://blog.secondlife.com/2007/01/08/open-source-busybody/">Open Source Busybody</a>,"
+        <a href="http://www.internetnews.com/dev-news/article.php/3657406">Rob Lanphier</a>. <br /><br /></li><li> In the
+        <a href="http://www.ibm.com/developerworks/linux/" onmouseover="linkQueryAppend(this)">developerWorks Linux zone</a>,
+        find more resources for Linux developers. <br /><br /></li><li> Stay current with
+        <a href="http://www.ibm.com/developerworks/offers/techbriefings/" onmouseover="linkQueryAppend(this)">
+developerWorks technical events and Webcasts</a>.<br /><br /></li></ul><p><b>Get products and technologies</b></p><ul><li>
+                <a href="http://www.ibm.com/developerworks/offers/sek/" onmouseover="linkQueryAppend(this)">Order the SEK for Linux</a>,
+        a two-DVD set containing the latest IBM trial software for Linux from DB2&#174;,
+        Lotus&#174;, Rational&#174;, Tivoli&#174;, and WebSphere&#174;. <br /><br /></li><li> With
+        <a href="http://www.ibm.com/developerworks/downloads/" onmouseover="linkQueryAppend(this)">IBM trial software</a>,
+        available for download directly from developerWorks, build your next development
+        project on Linux. <br /><br /></li></ul><p><b>Discuss</b></p><ul><li> Check out
+        <a href="http://www.ibm.com/developerworks/blogs/" onmouseover="linkQueryAppend(this)">developerWorks
+blogs</a> and
+        get involved in the
+        <a href="http://www.ibm.com/developerworks/community" onmouseover="linkQueryAppend(this)">developerWorks community</a>. <br /><br /></li></ul>
+<p><a name="author"><span class="atitle">About the author</span></a></p><div class="ibm-container ibm-portrait-module ibm-alternate-two"><div class="ibm-container-body"><img src="http://www.ibm.com/developerworks/i/p-seebach.jpg" width="64" height="80" alt="Author photo" /><p><a name="author1"></a>Peter Seebach has been using computers for years and is gradually becoming acclimated. He still doesn't know why mice need to be cleaned so often, though.</p></div></div>
+<!-- MAIN_COLUMN_CONTENT_END -->
+
+<!-- OVERLAYS_START -->
+<!-- Report_Abuse_Start -->
+<div class="ibm-common-overlay ibm-no-print" id="reportabuseoverlay">
+   <div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#">Close [x]</a></p></div>
+   <div class="ibm-body">
+      <div class="ibm-main">
+         <a class="ibm-access" name="reportabuseoverlay">Report abuse help</a>   
+         <div class="ibm-title"><h1>Report abuse</h1></div>
+         <div class="ibm-container ibm-alternate">
+            <p><strong>Thank you.</strong>  This entry has been flagged for moderator attention.</p>
+            <div class="ibm-overlay-rule"><hr /></div>
+            <div class="ibm-buttons-row">
+               <input type="button" onclick="ibmCommon.Overlays.hide('reportabuseoverlay');return false;" class="ibm-btn-cancel-sec dw-btn-cancel-sec" name="ibm-cancel" value="Close" />
+            </div>
+         </div>
+      </div> 
+   </div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Report_Abuse_Error_Start -->
+<div class="ibm-common-overlay ibm-no-print" id="reportabuseoverlayerror">
+   <div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#">Close [x]</a></p></div>
+   <div class="ibm-body">
+      <div class="ibm-main">
+         <a class="ibm-access" name="reportabuseoverlayerror">Report abuse help</a>   
+         <div class="ibm-title"><h1>Report abuse</h1></div>
+         <div class="ibm-container ibm-alternate">
+            <p class="ibm-ind-error"><strong>Report abuse submission failed.  Please try again later.</strong></p>
+            <div class="ibm-overlay-rule"><hr /></div>
+            <div class="ibm-buttons-row">
+               <input type="button" onclick="ibmCommon.Overlays.hide('reportabuseoverlayerror');return false;" class="ibm-btn-cancel-sec dw-btn-cancel-sec" name="ibm-cancel" value="Close" />
+            </div>
+         </div>
+      </div> 
+   </div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Sign in OVERLAY STARTS HERE --> 
+<div id="fdiv"></div>
+<div class="ibm-common-overlay" id="signin_overlay">
+<div class="ibm-head">
+<p><a class="ibm-common-overlay-close" href="#" onclick="clearForm();">Close [x]</a></p>
+</div>
+<div class="ibm-body">
+<div class="ibm-main">
+<div class="ibm-title ibm-subtitle">
+<h1>developerWorks: Sign in</h1>
+<div id="ibm-overlay-error-signin" class="no-display"></div>
+</div>
+
+<div class="ibm-container ibm-alternate ibm-buttons-last">
+<div class="ibm-container-body">
+<p class="ibm-overlay-intro">If you do not have an IBM ID and password, <a href="#" onclick="(function () {window.location='/developerworks/dwwi/DWAuthRouter?m=reg&amp;d='+encodeURIComponent(location.href);})();">register here</a>.</p>
+<form class="ibm-column-form" id="sFormId" action="" method="post" name="sForm" onsubmit="return false;">
+<p><label for="ibmid">IBM ID:</label><span><input name="ibm-id" id="ibmid" size="25" value="" class="required" type="text" onkeypress="handleEP(event,this.form);" /><br /><a class="ibm-forward-link" href="/developerworks/dwwi/jsp/WSHelp.jsp?lang=en_US">Forgot your IBM ID?</a></span>   
+</p> 
+<p><label for="password">Password:</label><span><input name="password" id="password" size="25" value="" class="required" type="password" onkeypress="handleEP(event,this.form);" /><br /><a class="ibm-forward-link" href="#" onclick="(function () {window.location='https://www.ibm.com/account/profile?page=forgot&amp;lang=en_US&amp;appname=ibm&amp;required=null&amp;d='+encodeURIComponent(getAuthUrl())+'%3Fm%3Dloginpage%26lang%3Den_US%26d%3D'+encodeURIComponent(location.href);})();">Forgot your password?</a><br /><a class="ibm-forward-link" href="#" onclick="(function () {window.location='https://www.ibm.com/account/profile?page=chpw&amp;lang=en_US&amp;appname=ibm&amp;required=null&amp;d='+encodeURIComponent(location.href);})();">Change your password?</a></span></p> 
+<p class="no-bottom-padding"> 
+   <label for="AfterSignIn">After sign in:</label> 
+   <span>
+
+      <select name="SignInAction" id="AfterSignIn">
+          <option value="">Stay on the current page</option>
+          <option value="/developerworks/mydeveloperworks/profiles/html/myProfileView.do">Go to My developerWorks profile</option>
+          <option value="/developerworks/mydeveloperworks/homepage/">Go to My developerWorks homepage</option>
+      </select>
+   </span>
+</p>
+<div class="ibm-overlay-rule"><hr /></div>
+<p>By clicking <strong>Submit</strong>, you agree to the developerWorks <a href="/developerworks/mydeveloperworks/terms?lang=en">terms of use</a>.</p>
+<div class="ibm-buttons-row">
+   <p><input class="ibm-btn-arrow-pri" name="ibm-submit" value="Submit" onclick="signin();return false;" type="button" /><span class="ibm-sep">&nbsp;</span>
+<input value="Cancel" type="button" name="ibm-cancel" class="ibm-btn-cancel-sec" onclick="clearForm();ibmCommon.Overlays.hide('signin_overlay');return false;"/></p>
+</div>
+</form>
+<div class="ibm-overlay-rule"><hr /></div>
+<p>The first time you sign into developerWorks, a My developerWorks profile is created for you. This profile includes the first name, last name, and display name contained in the profile you created when you registered with My developerWorks. Selected information in your My developerWorks profile is displayed to the public, but you may edit the information at any time. Your first name, last name (unless you choose to hide them), and display name will accompany the content that you post. </p>
+<div class="dw-overlay-legal"><p>All information submitted is secure.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Sign in OVERLAY ENDS HERE --> 
+ 
+
+<!-- Display name OVERLAY STARTS HERE --> 
+<div class="ibm-common-overlay" id="displayname_overlay">
+<div class="ibm-head">
+<p><a class="ibm-common-overlay-close" href="#" onclick="clearForm();">Close [x]</a></p>
+</div>
+<div class="ibm-body">
+<div class="ibm-main">
+<div class="ibm-title ibm-subtitle">
+<h1>Choose your display name</h1>
+<div id="ibm-overlay-error-dname" class="no-display"></div>
+</div>
+<div class="ibm-container ibm-alternate ibm-buttons-last">
+<div class="ibm-container-body">
+<p class="ibm-overlay-intro">The first time you sign in to developerWorks a profile is created for you, so you need to choose a display name.  Your display name accompanies the content you post on developerWorks.</p>
+
+<form id="dFormId" method="post" action="" name="dForm" onsubmit="return false;" class="ibm-column-form">
+<p><label for="displayname">Display name:</label><span><input name="displayname" id="displayname" size="25" value="" type="text" onkeypress="handleEP(event,this.form);" /></span><span class="ibm-form-note">(Must be between 3 &ndash; 31 characters.)</span>
+</p>
+<p><strong>Note:</strong>  Please choose a display name between 3-31 characters. Your display name must be unique in the developerWorks community and should not be your email for privacy reasons.</p>
+<div class="ibm-overlay-rule"><hr />
+</div>
+<p>By clicking Submit, you agree to the developerWorks <a href="/developerworks/mydeveloperworks/terms?lang=en">terms of use</a>.</p>
+<div class="ibm-buttons-row">
+   <p><input class="ibm-btn-arrow-pri" name="ibm-submit" value="Submit" onclick="signin();return false;" type="button" /><span class="ibm-sep">&nbsp;</span>
+<input value="Cancel" type="button" name="ibm-cancel" class="ibm-btn-cancel-sec" onclick="clearForm();ibmCommon.Overlays.hide('displayname_overlay');return false;" /></p>
+</div>
+</form>
+<div class="ibm-overlay-rule"><hr /></div>
+<div class="dw-overlay-legal"><p>All information submitted is secure.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Display name OVERLAY ENDS HERE -->
+<!-- OVERLAYS_END -->
+
+<!-- RATINGS START -->
+<p class="ibm-no-print"><span class="atitle"><a name="iratings">Rate this article</a></span></p>
+<input id="art-rating" name="ratinga" type="hidden" value="0"/><div id="art-rating-module"></div>
+<script language="JavaScript" type="text/javascript">
+// <![CDATA[
+   // widget div id and article id as args
+   window.artRating.init('art-rating-module','art-rating-summary');
+// ]]>
+</script>
+<!-- RATINGS END -->
+
+<!-- INLINE_COMMENTS_START -->
+<p class="ibm-no-print"><span class="atitle"><a name="icomments">Comments</a></span></p>
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/showcomments.js" type="text/javascript">//</script>
+<div id="threadShow"></div>
+<script language="JavaScript" type="text/javascript">
+// <![CDATA[
+ jQuery('threadShow').showComments('95%',5,'nCmts','icomments');
+// ]]>
+</script>
+<!-- INLINE_COMMENTS_END -->
+
+<p class="ibm-ind-link ibm-back-to-top"><a class="ibm-anchor-up-link" href="#ibm-pcon">Back to top</a></p>
+<p><a href="http://www.ibm.com/developerworks/ibm/trademarks/">Trademarks</a> &nbsp;|&nbsp; <a href="https://www.ibm.com/developerworks/mydeveloperworks/terms/">My developerWorks terms and conditions</a></p>
+
+<!-- Overlays -->
+<!-- Zone/Leaf_Interest_Overlay_Start -->
+<div class="ibm-common-overlay ibm-no-print" id="dwmyinterestadd">
+<div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#close">Close [x]</a></p></div>
+<div class="ibm-body">
+<div class="ibm-main">
+<a class="ibm-access" name="dwmyinterestaddhelp">Help: Update or add to My dW interests</a>   
+<div class="ibm-title"><h1>What's this?</h1></div>
+<div class="ibm-container ibm-alternate">
+<p>This little timesaver lets you update your My developerWorks profile with just one click!  The general subject of this content (AIX and UNIX, Information Management, Lotus, Rational, Tivoli, WebSphere, Java, Linux, Open source, SOA and Web services, Web development, or XML) will be added to the interests section of your profile, if it's not there already.  You only need to be logged in to My developerWorks.</p>
+<p>And what's the point of adding your interests to your profile?  That's how you find other users with the same interests as yours, and see what they're reading and contributing to the community.  Your interests also help us recommend relevant developerWorks content to you.</p>
+<p><a href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/home.do?lang=en">View your My developerWorks profile</a></p>
+<p class="ibm-access"><a href="#interestShow">Return from help</a></p>
+</div> 
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+
+<div class="ibm-common-overlay ibm-no-print" id="dwmyinterestremove">
+<div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#close">Close [x]</a></p></div>
+<div class="ibm-body">
+<div class="ibm-main">
+<a class="ibm-access" name="dwmyinterestremovehelp">Help: Remove from My dW interests</a> 
+<div class="ibm-title"><h1>What's this?</h1></div>
+<div class="ibm-container ibm-alternate">
+<p>Removing this interest does not alter your profile, but rather removes this piece of content from a list of all content for which you've indicated interest.  In a future enhancement to My developerWorks, you'll be able to see a record of that content.</p>
+<p><a href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/home.do?lang=en">View your My developerWorks profile</a></p>
+<p class="ibm-access"><a href="#interestShow">Return from help</a></p>
+</div> 
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Zone/Leaf_Interest_Overlay_End --></div>
+<!-- MAIN_COLUMN_CONTAINER_END -->
+
+<!-- Rating_Meta_BEGIN -->
+<!--Rating_Meta_BEGIN--><div class="metavalue">static.content.url=http://www.ibm.com/developerworks/js/artrating/</div><div class="metavalue">SITE_ID=1</div><div class="metavalue">Zone=Linux, Web development, Open source</div><div class="metavalue">ArticleID=205655</div><div class="metavalue">ArticleTitle=Second Life client, Part 1: Hacking Second Life</div><div class="metavalue">publish-date=03272007</div><div class="metavalue">author1-email=developerworks@seebs.plethora.net</div><div class="metavalue">author1-email-cc=</div><script language="javascript" type="text/javascript">document.write('<div class="metavalue">url='+location.href.replace('<', '%3C')+'</div>');</script><!--Rating_Meta_END-->
+<!-- Rating_Meta_END -->
+
+</div>
+<!-- MAIN_COLUMN_END-->
+
+<!-- RIGHT_COLUMN_BEGIN -->
+<div id="ibm-content-sidebar">
+<div id="ibm-social-tools-sidebar" class="ibm-share-this"></div>
+
+<!-- RIGHT_COLUMN_CONTENT_BEGIN --> 
+<div class="ibm-container"><h2>Table of contents</h2><div class="ibm-container-body"><img alt="" height="1" width="1" src="//www.ibm.com/i/c.gif"/><ul class="ibm-bullet-list"><li><a class="ibm-feature-link" href="#N10080">Second Life system requirements</a></li><li><a class="ibm-feature-link" href="#N10134">The directory tree</a></li><li><a class="ibm-feature-link" href="#N10140">The documentation</a></li><li><a class="ibm-feature-link" href="#N10149">Conclusion</a></li><li><a class="ibm-feature-link" href="#resources">Resources</a></li><li><a class="ibm-feature-link" href="#author">About the author</a></li><li><a class="ibm-feature-link" href="#icomments">Comments</a></li></ul></div></div>
+<!--XSLT stylesheet used to transform this content: s-danube.xsl--><div class="ibm-container"><h2>Local resources</h2><div class="ibm-container-body"><img src="//www.ibm.com/developerworks/i/spot-danube.jpg" alt="" border="0" height="58" width="188"/><ul class="ibm-bullet-list"><li><a href="http://www.ibm.com/partnerworld/iic/austin.html?S_TACT=105AGY81&amp;S_CMP=danube_us_na" class="ibm-feature-link">IBM Innovation Center - Austin, TX</a></li><li><a href="http://www.ibm.com/partnerworld/iic/chicago.htm?S_TACT=105AGY81&amp;S_CMP=danube_us_na" class="ibm-feature-link">IBM Innovation Center - Chicago, IL</a></li><li><a href="http://www.ibm.com/partnerworld/iic/dallas.html?S_TACT=105AGY81&amp;S_CMP=danube_us_na" class="ibm-feature-link">IBM Innovation Center - Dallas, TX</a></li><li><a href="http://www.ibm.com/partnerworld/iic/sanmateo.htm?S_TACT=105AGY81&amp;S_CMP=danube_us_na" class="ibm-feature-link">IBM Innovation Center - San Mateo, CA</a></li><li><a href="http://www.ibm.com/partnerworld/iic/waltham.htm?S_TACT=105AGY81&amp;S_CMP=danube_us_na" class="ibm-feature-link">IBM Innovation Center - Waltham, MA</a></li><li><a href="http://www.ibm.com/developerworks/views/global/techbriefing.jsp?end_no=100&amp;lcl_sort_order=desc&amp;sort_order=asc&amp;expand=North+America+(by+state%2Fprovince)&amp;show_all=false&amp;start_no=1&amp;geo_by=All+Geographies&amp;sort_by=Date&amp;search_by=&amp;topic_by=All+Topics&amp;show_abstract=true?S_TACT=105AGY81&amp;S_CMP=danube_us_na" class="ibm-feature-link">Technical Briefings in North America</a></li></ul></div></div>
+<!--XSLT stylesheet used to transform this content: s-community.xsl--><div class="ibm-container"><h2>My developerWorks community</h2><div class="ibm-container-body"><p>Interact, share, and communicate with developers worldwide.</p><div class="ibm-rule"><hr/></div><ul class="ibm-bullet-list"><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/homepage/web/getuserpref?ca=dma-" class="ibm-feature-link">My Home</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/home.do?lang=en&amp;ca=dma-" class="ibm-feature-link">Profiles</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/groups/service/html/allcommunities?ca=dma-" class="ibm-feature-link">Groups</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/blogs/?ca=dma-" class="ibm-feature-link">Blogs</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/bookmarks/?ca=dma-" class="ibm-feature-link">Bookmarks</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/activities/service/html/mainpage?ca=dma-" class="ibm-feature-link">Activities</a></li><li><a href="http://www.ibm.com/developerworks/mydeveloperworks/files?ca=dma-" class="ibm-feature-link">Files</a></li><li><a href="http://www.ibm.com/developerworks/mydeveloperworks/wikis?ca=dma-" class="ibm-feature-link">Wikis</a></li><li><a href="http://www.ibm.com/developerworks/forums/?ca=dma-" class="ibm-feature-link">Forums</a></li><li><a href="http://www.ibm.com/developerworks/podcast/?ca=dma-" class="ibm-feature-link">Podcasts</a></li></ul><div class="ibm-rule"><hr/></div><p class="ibm-ind-link"><a href="https://www.ibm.com/developerworks/mydeveloperworks/?ca=dma-" class="ibm-forward-link">My developerWorks overview</a></p></div></div>
+<!-- Tagging_Start -->
+<div id="dw-tag-cloud-container" class="ibm-container dw-hidetag"><h2>Tags</h2>
+<div id="dw-tag-help"><a class="dwauthor" rel="#tagtip" id="dwtagtip"><img alt="Help" height="16" width="16" align="top" src="//dw1.s81c.com/developerworks/i/help_icon.gif"/></a></div>
+<div id="tagtip" class="dwauthor-onload-state ibm-no-print">Use the <strong>search field</strong> to find all types of content in My developerWorks with that tag.<p>Use the <strong>slider bar</strong> to see more or fewer tags.</p><p>For articles in technology zones (such as Java technology, Linux, Open source, XML), <strong>Popular tags</strong> shows the top tags 
+for <em>all technology zones</em>.  For articles in product zones (such as Info Mgmt, Rational, WebSphere), <strong>Popular tags</strong> shows the top tags for <em>just that product zone</em>.</p><p>For articles in technology zones (such as Java technology, Linux, Open source, XML), <strong>My tags</strong> shows your tags for <em>all technology zones</em>.  For articles in product zones (such as Info Mgmt, Rational, WebSphere), <strong>My tags</strong> shows your tags for <em>just that product zone</em>.</p></div>
+<div class="ibm-access">Use the search field to find all types of content in My developerWorks with that tag.  <em>Popular tags</em> shows the top tags for this particular content zone (for example, Java technology, Linux, WebSphere).  <em>My tags</em> shows your tags for this particular content zone (for example, Java technology, Linux, WebSphere).</div>
+<div class="ibm-container-body">
+<div class="dw-tag-search"><form action="//www.ibm.com/developerworks/mydeveloperworks/bookmarks/html?lang=en" method="get" id="actualtagform" onsubmit="popupform(this, 'join')">
+<p><label for="tagfield"><strong>Search all tags</strong></label><input id="tagfield" name="tag" type="text" maxlength="20" size="17" />&nbsp;<input src="//dw1.s81c.com/i/v16/buttons/short-btn.gif" type="image" class="ibm-btn-view" alt="submit search" title="submit search" value="Search" /></p></form></div>
+<div class="ibm-rule"><hr/></div>
+<div id="dw-tag-select">
+<div id="dw-tag-select-popular"><p><strong>Popular article tags</strong>&nbsp;|&nbsp;<br /><a id="a-my" href="javascript:;">My article tags</a><a href="#dw-tag-access" class="ibm-access">Skip to tags list</a></p></div>
+<div id="dw-tag-select-my" class="dw-hidetag"><p><a id="a-popular" href="javascript:;">Popular article tags</a>&nbsp;|&nbsp;<br /><strong>My article tags</strong></p><a href="#dw-tag-access" class="ibm-access">Skip to tags list</a></div>
+<div id="dw-tag-cloud"></div>  
+</div>   
+</div>
+</div>
+<!-- Tagging_End -->
+<!-- Dig_Deeper -->
+<div class="ibm-container"><h2>Dig deeper into Linux on developerWorks</h2><div class="ibm-container-body"><ul class="ibm-link-list"><li class="ibm-first"><a href="http://www.ibm.com/developerworks/linux/" class="ibm-forward-link">Overview</a></li><li><a href="http://www.ibm.com/developerworks/linux/newto/" class="ibm-forward-link">New to Linux</a></li><li><a href="http://www.ibm.com/developerworks/views/linux/downloads.jsp" class="ibm-forward-link">Downloads and products</a></li><li><a href="http://www.ibm.com/developerworks/views/linux/projects.jsp" class="ibm-forward-link">Open source projects</a></li><li><a href="http://www.ibm.com/developerworks/views/linux/library.jsp" class="ibm-forward-link">Technical library (articles, tutorials, training, and more)</a></li><li><a href="http://www.ibm.com/developerworks/forums/dw_lforums.jsp" class="ibm-forward-link">Forums</a></li><li><a href="http://www.ibm.com/developerworks/views/linux/events.jsp" class="ibm-forward-link">Events</a></li><li><a href="http://www.ibm.com/developerworks/newsletter/" class="ibm-forward-link">Newsletter</a></li></ul></div></div>
+<!-- High_Visibility_Offer -->
+<!--XSLT stylesheet used to transform this content: s-highvisibilityoffer.xsl--><div class="ibm-container"><h2>Stay ahead of the latest cloud trends</h2><div class="ibm-container-body"><img width="188" height="70" border="0" alt="Stay ahead of the latest cloud trends" src="//www.ibm.com/developerworks/i/hivis-w-cloudzone.jpg"/><p class="ibm-ind-link"><a href="https://www.ibm.com/developerworks/cloud/index.html?ca=dti-cloudzone" class="ibm-forward-link">Cloud Computing resources from developerWorks</a></p></div></div>
+<!-- Special_Offers -->
+<div class="ibm-container"><h2>Special offers</h2><div class="ibm-container-body"><p class="dw-special-offers"><a href="http://www.ibm.com/developerworks/downloads/soasandbox/connect/?ca=dti-soasandboxconnect"><img src="//www.ibm.com/developerworks/i/tile_v16_soasandboxconn.gif" width="158" height="50" border="0" alt="Try the dynamic connectivity demo in the SOA Sandbox " /></a></p><p class="dw-special-offers"><a href="http://www.ibm.com/developerworks/downloads/im/cognosbi/learn.html?ca=dti-imcognosBItrial"><img src="//www.ibm.com/developerworks/i/tile_v16_cognos8bi.gif" width="158" height="50" border="0" alt="Try Cognos 8 Business Intelligence" /></a></p><p class="dw-special-offers"><a href="http://www.ibm.com/developerworks/downloads/r/rtcexpressc/learn.html?ca=dti-rattcexpc"><img src="//www.ibm.com/developerworks/i/tile_v16_etcec.gif" width="158" height="50" border="0" alt="Free Rational Team Concert for agile developers" /></a></p><div class="ibm-rule"><hr/></div><p class="ibm-ind-link"><a class="ibm-forward-link" href="http://www.ibm.com/developerworks/downloads/?ca=dti-tilemoreoffers">Trial software offers</a></p></div></div>
+<!-- RIGHT_COLUMN_CONTENT_END -->
+
+</div>
+<!-- RIGHT_COLUMN_END -->
+
+<!-- CONTENT_BODY_END -->
+</div>
+
+</div>
+<!-- CONTENT_END -->
+
+ <!-- END_IBM-PCON -->
+</div>
+
+<!-- FOOTER_BEGIN -->
+<div id="ibm-page-tools">
+<!-- IBM page tools container -->
+</div>
+<div id="ibm-footer">
+<ul>
+<li class="ibm-first"><a href="http://www.ibm.com/ibm/">About IBM</a></li>
+<li><a href="http://www.ibm.com/privacy/">Privacy</a></li>
+<li><a href="http://www.ibm.com/contact/">Contact</a></li>
+<li><a href="http://www.ibm.com/legal/">Terms of use</a></li>
+</ul>
+</div>
+<!-- FOOTER_END -->
+
+ <!-- END_IBM-TOP -->
+</div>
+ 
+ <!-- SCRIPTS_INCLUDE_BEGIN -->
+<!-- JQuery start -->
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.dimensions-1.2.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.hoverIntent.minified.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.cluetip.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/tagging/ui.core-1.7.1.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/tagging/ui.slider-1.7.1.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/tagging/dwjquerytags.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/si/flash-detect.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/si/dwsi.js"></script>
+<script type="text/javascript" language="JavaScript">
+	jQuery.noConflict();     
+	// Put all your code in your document ready area
+	jQuery(document).ready(function(jQuery) {
+	// Do jQuery stuff using jQuery 
+	jQuery('a.dwauthor').cluetip({
+		local: true,
+		showTitle: false,
+		positionBy: 'bottomTop',
+		sticky: true,	
+		mouseOutClose: true,
+		closeText: '<img src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/i/x.gif" alt="Close" />',
+		arrows: false,
+		dropShadow: true,
+		cluetipClass: 'dwbasic'
+		});
+
+		//tagging
+		login="false";
+		userid="";
+		whichTags = "init";
+		pCont = "";
+		mCont = "";
+		signInMCont = "";
+		accessCont = "";
+		pValue = 0;
+		mValue = 0;
+
+		rBHash = null;
+		rBHash = new Object();
+		rBHash['viperLang'] = 'en';
+		rBHash['urlLang'] = 'en';
+		rBHash['tagThisWinTitle'] = 'Tagit';
+		rBHash['pTags1'] = 'Popular tags';
+		rBHash['pTags2'] = 'End of Popular tags';
+		rBHash['mTags1'] = 'My tags';
+		rBHash['mTags2'] = 'End of My tags';
+		rBHash['alt1'] = 'Loading Content';
+		rBHash['noATags'] = 'No active tags';
+		rBHash['signIn1'] = 'Please ';
+		rBHash['signIn2'] = 'sign in';
+		rBHash['signIn3'] = ' to access';
+		rBHash['signIn4'] = 'My Tags';
+		rBHash['signIn5'] = 'To access My Tags, please ';
+		rBHash['signIn6'] = 'sign in';
+		rBHash['signIn7'] = 'Read Popular tags';
+
+		zoneHash = new Object();
+		zoneHash['aix'] = 'AIX and UNIX zone';
+		zoneHash['data'] = 'Information Management zone';
+		zoneHash['lotus'] = 'Lotus zone';
+		zoneHash['rational'] = 'Rational zone';
+		zoneHash['tivoli'] = 'Tivoli zone';
+		zoneHash['websphere'] = 'WebSphere zone';
+		zoneHash['architecture'] = 'Technical library';
+		zoneHash['autonomic'] = 'Technical library';
+		zoneHash['java'] = 'Technical library';
+		zoneHash['cloud'] = 'Technical library';
+		zoneHash['industry'] = 'Technical library';
+		zoneHash['library'] = 'Technical library';
+		zoneHash['linux'] = 'Technical library';
+		zoneHash['opensource'] = 'Technical library';
+		zoneHash['power'] = 'Technical library';
+		zoneHash['webservices'] = 'Technical library';
+		zoneHash['web'] = 'Technical library';
+		zoneHash['xml'] = 'Technical library';
+		zoneHash['wireless'] = 'Technical library';
+		jQuery.checkRB();
+		jQuery.getPopularTags("/developerworks/dwtags/dwjquerytabtags?lang=" + rBHash['viperLang'] + "&base=" + jQuery.getNormalizedZoneUrl(location.href));
+		jQuery.getUserTags();
+		if(jQuery.isTutorial(location.href) == "true") {
+			jQuery.getTagsForContent("/developerworks/tagging/UseCaseServlet?lang=" + rBHash['viperLang'] + "&format=maverick&cType=tutorials&use_case=geturltags&action=gettags&url=" + jQuery.normalizeUrl(location.href));
+		}
+		else {
+			jQuery.getTagsForContent("/developerworks/tagging/UseCaseServlet?lang=" + rBHash['viperLang'] + "&format=maverick&cType=articles&use_case=geturltags&action=gettags&url=" + jQuery.normalizeUrl(location.href));
+
+		}
+		
+		// si
+		initSI();
+	});
+ </script>
+ <!-- JQuery end -->
+ <!-- Overlay js -->
+<script language="JavaScript" src="//dw1.s81c.com/common/js/overlay.js" type="text/javascript"></script>
+<!-- My dW Interest article -->
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/showinterest.js" type="text/javascript">//</script>
+<script language="JavaScript" type="text/javascript">
+        // <![CDATA[
+			var contentId = '';
+			var contentAreas = '';
+			var caArr = [];
+			contentId = '205655';
+			contentAreas = 'linux,web,opensource';
+			if(contentAreas != ''){caArr = contentAreas.split(',');}
+			var loginLink = 'https://www.ibm.com/developerworks/dwwi/DWAuthRouter?m=loginpage&d=' + encodeURIComponent(window.location);jQuery('interestShow').showInterest(contentId,'dw-article',{'int_tops':[29,32],'int_prods':[], 'int_prod_fam':[],'int_cont_area':caArr},
+'<div id="dw-interest-anon"><a id="intAnonBtn" class="ibm-external-link" href="">Update My dW interests</a> (<a class="dw-interest" href="' + loginLink + '">Log in</a> | <a class="dw-interest" href="#overlay" onclick="ibmCommon.Overlays.show(\'dwmyinterestadd\', this);return false;">What\'s this?</a>) <a class="ibm-access" href="#dwmyinterestaddhelp">Skip to help for Update My dW interests</a></div>',
+'<div id="dw-interest-add"><a id="intSelectBtn" class="ibm-external-link" href="">Add to My dW interests</a> (<a class="dw-interest" href="#overlay" onclick="ibmCommon.Overlays.show(\'dwmyinterestadd\', this);return false;">What\'s this?</a>) <a class="ibm-access" href="#dwmyinterestaddhelp">Skip to help for Add to My dW interests</a></div>',
+'<div id="dw-interest-remove">Added to My dW interests (<a class="dw-interest" href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/html/myProfileView.do?lang=en">Edit</a>)</div>'
+);
+// ]]>
+</script><!-- BEGIN: Use this section to set page specific variables for the Unica Page Tag -->
+<script language="JavaScript">var NTPT_PGEXTRA="ibmSkillLevel=3&ibmAdoptPhase=-&ibmRole=-";</script>
+<!--END --><!-- SCRIPTS_INCLUDE_END -->
+
+<div id="ibm-metrics">
+<script src="//dw1.s81c.com/common/stats/stats.js" type="text/javascript">//</script>
+</div>
+
+</body>
+</html>

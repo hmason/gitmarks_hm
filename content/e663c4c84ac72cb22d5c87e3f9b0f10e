@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<title>jQuery Flash Plugin</title>
+		<meta name="content-type" content="text/html;charset=utf-8" />
+		<link rel="stylesheet" type="text/css" href="../../jquery.css" />
+		<script type="text/javascript" src="../../jquery.js"></script>
+		<script type="text/javascript" src="../../lukelutman.js"></script>
+	</head>
+	<body>
+		<h1>jQuery Flash Plugin</h1>
+		<h3>A <a href="http://jquery.com">jQuery</a> plugin for embedding Flash movies.</h3>
+		<dl id="nav">
+			<dt>Download</dt>
+				<dd><a href="jquery.flash.js">Source</a> (8.4k)</dd>
+			<dt>Requires</dt>
+				<dd><a href="http://jquery.com/src/jquery-latest.js">jQuery 1.0.3+</a></dd>				
+			<dt>Author</dt>
+				<dd><a href="http://www.lukelutman.com">Luke Lutman</a></dd>
+				<dd><script type="text/javascript">document.write(email())</script></dd>
+			<dt>Version</dt>
+				<dd>1.0.1</dd>
+			<dt>Updated</dt>
+				<dd>November 29th, 2007</dd>
+			<dt>Info</dt>
+				<dd><a href="#features">Features</a></dd>
+				<dd><a href="#examples">Examples</a></dd>
+				<dd><a href="#faq">FAQ</a></dd>
+				<dd><a href="#known-issues">Known Issues</a></dd>
+				<dd><a href="#version-history">Version History</a></dd>
+		</dl>
+		<ol id="topics">
+			<li id="features">
+				<h2>Features</h2>
+				<ol>
+					
+<!-- -->
+
+<li>
+<h3>Simple, but powerful.</h3>
+<p>Specify what you need, and nothing more -- sensible defaults take care of the rest.</p>
+<pre>
+$('#hello').flash({
+    src: 'hello.swf',
+    width: 320,
+    height: 240
+});
+</pre>
+<p>Perform sophisticated replacements by passing a custom callback.</p>
+<pre>
+$('.custom').flash(null, null, function(htmlOptions){
+    // do stuff
+});
+</pre>
+<p>Overwrite the defaults to always to meet your needs.</p>
+<pre>
+$.fn.flash.replace = function(htmlOptions) {
+    // always do stuff
+};
+</pre>
+</li>
+
+<!-- -->
+
+<li>
+<h3>Flash Detection, Express Install and more.</h3>
+<p>Detect specific major, minor and revision versions of the Flash plugin.</p>
+<pre>
+$('#hello').flash(
+    { src: 'hello.swf' }, 
+    { version: '6.0.65' }
+);</pre>
+<p>Use <a href="http://www.adobe.com/cfusion/knowledgebase/index.cfm?id=6a253b75">Express Install</a>, or show an update message if Flash isn't installed.</p>
+<pre>
+$('#hello').flash(
+    { src: 'hello.swf' }, 
+    { expressInstall: true }
+);</pre>
+<p>Or, degrade silently and gracefully.</p>
+<pre>
+$('#hello').flash(
+    { src: 'hello.swf' }, 
+    { update: false }
+);</pre>
+<p>Bypass Flash detection, just in case.</p>
+<pre>&lt;a href="page.html?hasFlash=true"&gt;I have Flash!&lt;/a&gt;</pre>
+</li>
+
+<!-- -->
+
+<li>
+<h3>Accessible and Unobtrusive.</h3>
+<p>Pages are progressively enhanced when Flash and Javascript are available, and fallback to plain (X)HTML when they're not — like search-engines, pdas or mobile phones. Replacements can happen as soon as the dom is ready. (X)HTML, CSS and Javascript stay where they belong — away from one another — making it easy to remove, update or swap out down the road.</p>
+<pre>
+$(document).ready(function(){
+    $('#hello').flash({
+        src: 'hello.swf'
+    });
+});
+</pre>
+</li>
+
+<!-- -->
+
+<li>
+<h3>Native and light-weight.</h3>
+<p>Inspired by tools like <a href="http://blog.deconcept.com/swfobject/">SWFObject</a>, <a href="http://www.bobbyvandersluis.com/ufo/">UFO</a> and <a href="http://www.mikeindustries.com/sifr/">sIFR</a>, but written line-by-line for <a href="http://www.jquery.com">jQuery</a> — no other scripts required. Less redundancy (jQuery and sIFR both find elements by css selectors and do browser detection, sIFR and SWFObject both do Flash detection) means smaller filesize and faster loading.</p>
+</li>
+
+				</ol>
+			</li>
+			<li id="examples">
+				<h2>Examples</h2>
+				<ul>
+					<li><a href="example-basic.html">Basic Embed</a></li>
+					<li><a href="example-flashvars.html">Basic Embed With Flashvars</a></li>
+					<li><a href="example-text-replacement.html">Flash Text-Replacement (sIFR)</a></li>
+					<li><a href="example-mp3.html">MP3 Player</a></li>
+					<li><a href="example-youtube.html">YouTube Video</a></li>
+					<li><a href="example-inline-params.html">Inline Params</a></li>
+					<li><a href="example-flashblock.html">FlashBlock</a></li>
+				</ul>
+			</li>
+			<li id="faq">
+				<h2>FAQ</h2>
+				<dl>
+					<dt>Which browsers are supported?</dt>
+					<dd>Internet Explorer 5.5/6.0/7.0</dd>
+					<dd>FireFox 1.5/2.0</dd>
+					<dd>Safari 2.0</dd>
+					<dd>Opera 9.0</dd>
+					<dt>Why isn't ActiveX control activation in Internet Explorer working?</dt>
+					<dd>The packed version of jQuery breaks ActiveX control activation, see: <a href="#activex">known issues</a>.</dd>
+				</dl>
+			</li>
+			<li id="known-issues">
+				<h2>Known Issues</h2>
+				<dl>
+					<dt id="activex">Problem:</dt>
+					<dd>Using the packed version of jQuery breaks <a href="http://msdn.microsoft.com/library/default.asp?url=/workshop/author/dhtml/overview/activating_activex.asp">ActiveX control activation in Internet Explorer</a>. To avoid manual activation, Flash movies (and other ActiveX controls) must be inserted by an external script. The packed version of jQuery is a string, which the browser unpacks using eval(). <strike>Internet Explorer doesn't think the jQuery object (unpacked in the <code>eval</code>) is &ldquo;external&rdquo;, which breaks the workaround. If anyone knows of a <a href="http://dean.edwards.name/packer/">/packer/</a>-compatible solution, I'm all ears!</strike> See: <a href="http://jquery.lukelutman.com/plugins/flash/activex/#patching-jquery">jQuery/Packer/ActiveX Bug</a> for more info.</dd>
+					<dt>Workaround:</dt>
+					<dd><strike>Use <a href="http://www.crockford.com/javascript/jsmin.html">JSMin</a> to minify jQuery.</strike> <strike><a href="http://jquery.lukelutman.com/plugins/flash/activex/#patching-jquery">Apply a simple patch</a> to the uncompressed version of jQuery and then pack it.</strike> Use the <a href="http://jqueryjs.googlecode.com/files/jquery-1.2.1.min.js">minified version of jQuery</a> instead of the packed version.</dd>
+				</dl>
+				<dl>
+					<dt id="imagebox">Problem:</dt>
+					<dd>When using the <a href="http://interface.eyecon.ro/docs/imagebox">imagebox</a> plugin on the same page as a swf embeded with jQuery.flash, the swf disappears when the imagebox opens, and doesn't reappear when the imagebox is closed. I haven't had time to test it myself.</dd>
+					<dt>Workaround:</dt>
+					<dd>None</dd>
+				</dl>
+				<dl>
+					<dt id="attribute-case">Problem:</dt>
+					<dd>Embed tag attributes are converted to lower case, which seems to be a problem with jQuery's DOM insertion methods (i.e. <code>.html()</code>, <code>.prepend()</code>, etc.)</dd>
+					<dt>Workaround:</dt>
+					<dd>Write a custom replace method that uses innerHTML instead of <code>.prepend()</code></dd>
+				</dl>
+			</li>
+			<li id="version-history">
+				<h2>Version History</h2>
+				<ul>
+					<li>
+						<h3>1.0.2</h3>
+						February 8th, 2007<br />
+						Updated documentation for the <a href="#activex">packed jQuery/Active X activation issue</a>.
+					</li>
+					<li>
+						<h3>1.0.1</h3>
+						November 17th, 2006<br />
+						Added documentation for the <a href="#activex">packed jQuery/Active X activation issue</a>.
+					</li>
+					<li>
+						<h3>1.0</h3>
+						November 6th, 2006<br />
+						Initial Release
+					</li>
+				</ul>
+			</li>
+		</ol>
+	</body>
+</html>

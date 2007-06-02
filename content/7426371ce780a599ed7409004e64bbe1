@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>There are Monsters in My Closet</title><link type="text/css" href="onedoc-slides.css" rel="stylesheet"/></head><body><div class="title-slide"><div class="title-block">
+    <p class="main-title">There are Monsters in My Closet</p>
+
+    <p class="subtitle">or</p>
+
+    <p class="subtitle">How Not to Use XSLT</p>
+  </div>
+    <div class="author">
+      <p class="author-name">R. Alexander Milowski</p>
+
+      <div class="author-contact-methods">
+        <p class="author-email">milowski@sims.berkeley.edu</p>
+      </div>
+
+      <p class="department">School of Information Management and Systems</p>
+    </div>
+  </div><div class="slide"><div class="slide-info"><p class="number">#1</p></div><p class="slide-title">What's Wrong?</p><div class="contents">
+      <ul>
+        <li>
+          <p>Overuse of:</p>
+
+          <ul>
+            <li>
+              <p>xsl:if</p>
+            </li>
+
+            <li>
+              <p>xsl:choose</p>
+            </li>
+
+            <li>
+              <p>xsl:for-each</p>
+            </li>
+
+            <li>
+              <p>xsl:value-of</p>
+            </li>
+          </ul>
+        </li>
+
+        <li>
+          <p>None of the assignments really required these.</p>
+        </li>
+
+        <li>
+          <p>There are certainly better ways.</p>
+        </li>
+      </ul>
+    </div></div><div class="slide"><div class="slide-info"><p class="number">#2</p></div><p class="slide-title">Er... But I like if, choose, for-each...</p><div class="contents">
+      <ul>
+        <li>
+          <p>Yes, they are simple.</p>
+        </li>
+
+        <li>
+          <p>But you are duplicating what the processor will do by default.</p>
+        </li>
+
+        <li>
+          <p>You're excluding many optimization opportunities!</p>
+        </li>
+
+        <li>
+          <p>You're disabling extensibility!</p>
+        </li>
+
+        <li>
+          <p>So, we're going to run through some examples,... good, bad,
+          and indifferent.</p>
+        </li>
+      </ul>
+    </div></div><div class="slide"><div class="slide-info"><p class="number">#3</p></div><p class="slide-title">Pull vs. Push</p><div class="contents">
+      <ul>
+        <li>
+          <p>Pull Model:</p>
+
+          <pre>&lt;xsl:template match="people"&gt;
+&lt;top&gt;
+&lt;name&gt;&lt;xsl:value-of select="person/last-name"/&gt;&lt;/name&gt;
+&lt;/top&gt;
+&lt;/xsl:template&gt;</pre>
+        </li>
+
+        <li>
+          <p>Push Model:</p>
+
+          <pre>&lt;xsl:template match="people"&gt;
+&lt;top&gt;
+&lt;xsl:apply-templates/&gt;
+&lt;/top&gt;
+&lt;/xsl:template&gt;
+
+&lt;xsl:template match="last-name"&gt;
+&lt;name&gt;&lt;xsl:apply-templates/&gt;&lt;/name&gt;
+&lt;/xsl:template&gt;</pre>
+        </li>
+
+        <li>
+          <p>Example Content: <a href="people-1.xml">people-1.xml</a>
+          <a href="people-2.xml">people-2.xml</a></p>
+        </li>
+
+        <li>
+          <p>Example Transformations: <a href="pull-person.xsl">pull-person.xsl</a>
+          <a href="push-person.xsl">push-person.xsl</a></p>
+        </li>
+      </ul>
+    </div></div><div class="slide"><div class="slide-info"><p class="number">#4</p></div><p class="slide-title">Make the Built-in Rules do the Work!</p><div class="contents">
+      <ul>
+        <li>
+          <p><b>Rule: </b>Use the built-in rules when you can!</p>
+        </li>
+
+        <li>
+          <p>There are two built-in template rules:</p>
+
+          <ul>
+            <li>
+              <p>This traverses your descendants:</p>
+
+              <pre>&lt;xsl:template match="*|/"&gt;
+  &lt;xsl:apply-templates/&gt;
+&lt;/xsl:template&gt;</pre>
+            </li>
+
+            <li>
+              <p>This copies text to the output:</p>
+
+              <pre>&lt;xsl:template match="text()|@*"&gt;
+  &lt;xsl:value-of select="."/&gt;
+&lt;/xsl:template&gt;</pre>
+
+              <p>Note: Attribute text is only copied if you apply templates
+              to an attribute.</p>
+            </li>
+
+            <li>
+              <p>These get dropped from the output:</p>
+
+              <pre>&lt;xsl:template match="processing-instruction()|comment()"/&gt;</pre>
+            </li>
+          </ul>
+        </li>
+
+        <li>
+          <p>You get these for free and the processor will do them in an
+          "optimal" way.</p>
+        </li>
+      </ul>
+    </div></div><div class="slide"><div class="slide-info"><p class="number">#5</p></div><p class="slide-title">xsl:value-of</p><div class="contents">
+      <ul>
+        <li>
+          <p>If you have:</p>
+
+          <pre>&lt;name&gt;Alex&lt;/name&gt;</pre>
+        </li>
+
+        <li>
+          <p>You shouldn't do this:</p>
+
+          <pre>&lt;xsl:template match="name"&gt;
+&lt;name&gt;&lt;xsl:value-of select="."/&gt;&lt;/name&gt;
+&lt;/xsl:template&gt;</pre>
+        </li>
+
+        <li>
+          <p>But rather, do this:</p>
+
+          <pre>&lt;xsl:template match="name"&gt;
+&lt;name&gt;&lt;xsl:apply-templates/&gt;&lt;/name&gt;
+&lt;/xsl:template&gt;</pre>
+        </li>
+
+        <li>
+          <p><b>Rule: </b>Only use xsl:value-of when you absolutely have
+          to do so.</p>
+        </li>
+      </ul>
+    </div></div><div class="slide"><div class="slide-info"><p class="number">#6</p></div><p class="slide-title">xsl:value-of and Descendants</p><div class="contents">
+      <ul>
+        <li>
+          <p>If you have:</p>
+
+          <pre>&lt;name&gt;Bingo&lt;trade-mark&gt;Palace&lt;/trade-mark&gt;&lt;/name&gt;</pre>
+        </li>
+
+        <li>
+          <p>This won't do what you want:</p>
+
+          <pre>&lt;xsl:template match="name"&gt;
+&lt;p&gt;&lt;xsl:value-of select="."/&gt;&lt;/p&gt;
+&lt;/xsl:template&gt;</pre>
+        </li>
+
+        <li>
+          <p>You'll get this:</p>
+
+          <pre>&lt;p&gt;BingoPalace&lt;/p&gt;</pre>
+
+          <p>instead of:</p>
+
+          <pre>&lt;p&gt;Bingo Palace&lt;/p&gt;</pre>
+        </li>
+      </ul>
+    </div></div><div class="slide"><div class="slide-info"><p class="number">#7</p></div><p class="slide-title">Use the Context</p><div class="contents">
+      <ul>
+        <li>
+          <p><b>Rule:</b> Don't replicate the context.</p>
+        </li>
+
+        <li>
+          <p>When a template is applied, the context is changed to the
+          matching node.</p>
+        </li>
+
+        <li>
+          <p>So use it!!!</p>
+        </li>
+
+        <li>
+          <p>Replicating the context is just extra work.</p>
+        </li>
+
+        <li>
+          <p>Keep in mind every select expression causes a document
+          traversal of some sort.</p>
+        </li>
+
+        <li>
+          <p>Minimizing document traversals optimizes your stylesheet for
+          performance.</p>
+        </li>
+
+        <li>
+          <p><b>Rule:</b> Don't use rooted XPath expressions unless
+          you absolutely need it.</p>
+        </li>
+      </ul>
+    </div></div><div class="slide"><div class="slide-info"><p class="number">#8</p></div><p class="slide-title">Use the Context - Example</p><div class="contents">
+      <ul>
+        <li>
+          <p>Suppose we have:</p>
+
+          <pre>&lt;syllabus&gt;
+  &lt;name&gt;XML and Related Technologies&lt;/name&gt;
+  &lt;office-hours&gt;103B South Hall at Monday 2-3:30pm and Wednesday 2-3:30pm&lt;/office-hours&gt;
+  &lt;short-description&gt;...&lt;/short-description&gt;
+  &lt;schedule&gt;...&lt;/schedule&gt;
+&lt;/syllabus&gt;</pre>
+        </li>
+
+        <li>
+          <p>This is extra work:</p>
+
+          <pre>&lt;xsl:template match="syllabus"&gt;
+&lt;div&gt;
+&lt;p&gt;Course Summary:&lt;/p&gt;
+&lt;xsl:apply-templates select="/syllabus/name"/&gt;
+&lt;xsl:apply-templates select="/syllabus/short-description"/&gt;
+&lt;/div&gt;
+&lt;/xsl:template&gt;</pre>
+        </li>
+
+        <li>
+          <p>This is much better and more flexible:</p>
+
+          <pre>&lt;xsl:template match="syllabus"&gt;
+&lt;div&gt;
+&lt;p&gt;Course Summary:&lt;/p&gt;
+&lt;xsl:apply-templates select="name|short-description"/&gt;
+&lt;/div&gt;
+&lt;/xsl:template&gt;</pre>
+        </li>
+      </ul>
+    </div></div><div class="slide"><div class="slide-info"><p class="number">#9</p></div><p class="slide-title">Use Document Order</p><div class="contents">
+      <ul>
+        <li>
+          <p><b>Rule: </b>Always start by using document order.</p>
+        </li>
+
+        <li>
+          <p>Unless you need to re-order elements, use the document order.</p>
+        </li>
+
+        <li>
+          <p>When expressions evaluate, they are return in document order:</p>
+
+          <pre>&lt;xsl:apply-templates select="A|B"/&gt;</pre>
+
+          <p>at this context:</p>
+
+          <pre>&lt;A/&gt;&lt;C/&gt;&lt;B/&gt;&lt;C/&gt;&lt;C/&gt;&lt;A/&gt;</pre>
+
+          <p>returns:</p>
+
+          <pre>&lt;A/&gt;&lt;B/&gt;&lt;A/&gt;</pre>
+        </li>
+      </ul>
+    </div></div><div class="slide"><div class="slide-info"><p class="number">#10</p></div><p class="slide-title">Ranking Elements by Position</p><div class="contents">
+      <ul>
+        <li>
+          <p><b>Rule: </b>Selecting exact positions of children is
+          fragile and so avoid doing it.</p>
+        </li>
+
+        <li>
+          <p>You don't need to call out a child's position.</p>
+        </li>
+
+        <li>
+          <p>Use document order so that instead of this:</p>
+
+          <pre>&lt;xsl:template match="description"&gt;
+&lt;div&gt;
+&lt;xsl:apply-templates select="p[1]"/&gt;
+&lt;xsl:apply-templates select="p[2]"/&gt;
+&lt;xsl:apply-templates select="p[3]"/&gt;
+&lt;/div&gt;
+&lt;/xsl:template&gt;</pre>
+
+          <p>do this:</p>
+
+          <pre>&lt;xsl:template match="description"&gt;
+&lt;div&gt;
+&lt;xsl:apply-templates select="p"/&gt;
+&lt;/div&gt;
+&lt;/xsl:template&gt;
+</pre>
+        </li>
+
+        <li>
+          <p>Example: <a href="doc-order.xml">doc-order.xml</a> <a href="no-doc-order.xsl">no-doc-order.xsl</a> <a href="doc-order.xsl">doc-order.xsl</a></p>
+        </li>
+      </ul>
+    </div></div><div class="slide"><div class="slide-info"><p class="number">#11</p></div><p class="slide-title">xsl:for-each vs. templates</p><div class="contents">
+      <ul>
+        <li>
+          <p><b>Rule: </b>Iterating expressions with xsl:for-each is
+          generally bad style.</p>
+        </li>
+
+        <li>
+          <p>You can typically do every xsl:for-each with an
+          xsl:apply-templates action.</p>
+        </li>
+
+        <li>
+          <p>But you might need modes...</p>
+        </li>
+
+        <li>
+          <p>And maybe named templates...</p>
+        </li>
+
+        <li>
+          <p>These will are explained in the adjoining slides.</p>
+        </li>
+      </ul>
+    </div></div><div class="slide"><div class="slide-info"><p class="number">#12</p></div><p class="slide-title">Re-casting xsl:for-each as a Template</p><div class="contents">
+      <ul>
+        <li>
+          <p>Suppose I want to output a 'p' element for each
+          recommened text.</p>
+        </li>
+
+        <li>
+          <p>You might do the following:</p>
+
+          <pre>&lt;xsl:template match="syllabus"&gt;
+&lt;xsl:for-each select="recommened-books/book"&gt;
+&lt;p&gt;&lt;xsl:apply-templates/&gt;&lt;/p&gt;
+&lt;/xsl:for-each&gt;
+&lt;/xsl:template&gt;</pre>
+        </li>
+
+        <li>
+          <p>But what if I add 'pamphlet' or 'article'
+          elements to the children (i.e. siblings of 'book')?</p>
+
+          <ul>
+            <li>
+              <p>The above statement is broken if I want all recommended
+              readings.</p>
+            </li>
+
+            <li>
+              <p>I'd have to change that template.</p>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div></div><div class="slide"><div class="slide-info"><p class="number">#13</p></div><p class="slide-title">Templates afford Extensibility</p><div class="contents">
+      <ul>
+        <li>
+          <p>In the previous example, I could instead have:</p>
+
+          <pre>&lt;xsl:template match="syllabus"&gt;
+&lt;xsl:apply-templates select="recommended-books"/&gt;
+&lt;/xsl:template&gt;
+
+&lt;xsl:template match="book"&gt;
+&lt;p&gt;&lt;xsl:apply-templates/&gt;&lt;/p&gt;
+&lt;/xsl:template&gt;</pre>
+        </li>
+
+        <li>
+          <p>When I add 'pamphlet' or 'article' elements to
+          the children (i.e. siblings of 'book') I just add:</p>
+
+          <pre>&lt;xsl:template match="pamphlet"&gt;
+&lt;p&gt;&lt;xsl:apply-templates/&gt;&lt;/p&gt;
+&lt;/xsl:template&gt;
+
+&lt;xsl:template match="article"&gt;
+&lt;p&gt;&lt;xsl:apply-templates/&gt;&lt;/p&gt;
+&lt;/xsl:template&gt;</pre>
+        </li>
+
+        <li>
+          <p>But it gets even better...</p>
+        </li>
+      </ul>
+    </div></div><div class="slide"><div class="slide-info"><p class="number">#14</p></div><p class="slide-title">Importing Stylesheets for Extensiblity</p><div class="contents">
+      <ul>
+        <li>
+          <p>I can leave my old stylesheet alone and do the following:</p>
+
+          <pre>&lt;xsl:import href="syllabus.xsl"/&gt;
+
+&lt;xsl:template match="pamphlet"&gt;
+&lt;p&gt;&lt;xsl:apply-templates/&gt;&lt;/p&gt;
+&lt;/xsl:template&gt;
+
+&lt;xsl:template match="article"&gt;
+&lt;p&gt;&lt;xsl:apply-templates/&gt;&lt;/p&gt;
+&lt;/xsl:template&gt;</pre>
+        </li>
+
+        <li>
+          <p>This will merge two stylesheet rules so that the importing
+          styleesheet's rules have precedence over the other.</p>
+        </li>
+
+        <li>
+          <p>Transformation example: <a href="recommended-base.xsl">recommended-base.xsl</a>
+          <a href="recommended.xsl">recommended.xsl</a></p>
+        </li>
+
+        <li>
+          <p>Input documents: <a href="books-1.xml">books-1.xml</a>
+          <a href="books-2.xml">books-2.xml</a></p>
+        </li>
+      </ul>
+    </div></div><div class="slide"><div class="slide-info"><p class="number">#15</p></div><p class="slide-title">Avoid // in Expressions</p><div class="contents">
+      <ul>
+        <li>
+          <p><b>Rule: </b> Avoid using // to search your descendants.</p>
+        </li>
+
+        <li>
+          <p>The "//" expression <b>will</b> cause you to visit
+          <b>every</b> descendant.</p>
+        </li>
+
+        <li>
+          <p>That means that "//something" is about the most
+          expensive operation.</p>
+        </li>
+
+        <li>
+          <p>You are writing your stylesheet for a particular kind of
+          document.</p>
+        </li>
+
+        <li>
+          <p>Use that structure in your stylesheet.</p>
+        </li>
+      </ul>
+    </div></div><div class="slide"><div class="slide-info"><p class="number">#16</p></div><p class="slide-title">Contracts, Schemas, and Stylesheets</p><div class="contents">
+      <ul>
+        <li>
+          <p>Transformations assume some kind of structure:</p>
+
+          <ul>
+            <li>
+              <p>It is a kind of "contract" between the stylesheet
+              and the input.</p>
+            </li>
+
+            <li>
+              <p>Typically, DTDs or XML Schemas encode this contract.</p>
+            </li>
+
+            <li>
+              <p>Sometimes there are additional application requirements.</p>
+            </li>
+          </ul>
+        </li>
+
+        <li>
+          <p>Validating content will help ensure your stylesheet works
+          properly.</p>
+        </li>
+
+        <li>
+          <p>Comment your assumptions in your stylesheet.</p>
+        </li>
+      </ul>
+    </div></div><div class="slide"><div class="slide-info"><p class="number">#17</p></div><p class="slide-title">Use of xsl:element and Readability</p><div class="contents">
+      <ul>
+        <li>
+          <p>There is no difference between xsl:element</p>
+
+          <pre>&lt;xsl:element name="e:Body"&gt;...&lt;/xsl:element&gt;</pre>
+
+          <p>and a literal element</p>
+
+          <pre>&lt;e:Body&gt;...&lt;/e:Body&gt;</pre>
+        </li>
+
+        <li>
+          <p><b>Rule: </b>If you don't have "dynamic" names
+          (e.g. parameters or expressions), use a literal result element.</p>
+        </li>
+
+        <li>
+          <p>Literal result elements are the norm and xsl:element is the
+          exception.</p>
+        </li>
+      </ul>
+    </div></div></body></html>

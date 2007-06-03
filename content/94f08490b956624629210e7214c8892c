@@ -1,0 +1,381 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Nifty Corners Cube - freedom to round</title>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+<meta name="generator" content="HAPedit 3.1">
+<style type="text/css">
+body{width: 75%;min-width:600px;margin: 1em auto;font: 76%/1.7 Verdana,sans-serif;background:#FFF;color: #222}
+a,address a{color: #4286F4;text-decoration:underline}
+a:visited{color: #55A628}
+h1{margin: 1em 0 0}
+h1 img{border: 0px solid}
+h2{font: lighter 230%/0.95 "Trebuchet MS",arial,sans-serif;color: #FF6600;margin: 1.5em 0 0.3em 0}
+p{margin: 0 0 1.3em}
+address{width:430px;font-size: 1.2em;text-align:right;color: #3399FF;margin:  -10px 0  1.5em}
+p.codice{background: #FFC}
+table{width: 600px;margin-bottom: 1.3em}
+table,td{border-collapse:collapse;vertical-align:top;font: 11px Arial,sans-serif}
+td,th{border:1px solid #CCC;padding: 5px}
+thead th{background: #3399FF;color: #FFF}
+tbody th{width: 250px;font-weight:normal;text-align:left;vertical-align:top}
+</style>
+</head>
+<body>
+<h1><img src="NiftyLogo.png" alt="nifty corners cube" title="nifty corners cube - rounded corners without images"></h1>
+<address>by <a href="mailto:a.fulciniti@html.it">Alessandro Fulciniti</a></address>
+<p>More than one year has passed from the <a href="http://www.html.it/articoli/nifty/index.html">first version</a> of Nifty Corners. While it
+was more of a proof of concept, and the <a href="http://pro.html.it/articoli/id_599/idcat_31/pro.html" title="more nifty corners">second version</a>
+presented some big improvements, there was still something missing. So here I present Nifty
+Corners Cube, that are simpler and more flexible than the previous versions. Let's start.</p>
+
+<h2>New features</h2>
+<p>If you're new to Nifty Corners, I suggest to look in particular at the article on the
+<a href="http://www.html.it/articoli/nifty/index.html">first version</a> to understand the concept behind them. Basically, Nifty Corners are a solution
+based on CSS and Javascript to get rounded corners <em>without images</em>.</p>
+<p>There are several improvements and new features introduced in Nifty Corners Cube which make it
+more versatile and simpler to use than the previous versions:</p>
+<ul>
+<li>The <em>numbers of parameters</em> has been reduced from four of the first version
+and five of the second version to just two, of which one is optional.</li>
+<li>It's not necessary specify the colors anymore, since they are detected automatically.</li>
+<li>They're easier to integrate into the design process, since the padding (both horizontal and vertical)
+of elements to round is preserved</li>
+<li>It's easier to use them with other scripts</li>
+<li>The support of CSS selectors has been improved and expanded</li>
+<li>Just a single line in the <code>head</code> section is now needed for
+the whole library: even if they're still based on both CSS and javascript,
+the presentational CSS for Nifty Corners is loaded automatically by js</li>
+<li>They're now released under GPL licence.</li>
+</ul>
+<p>Together with the many novelties, that we'll discover through several examples,
+two features of the previous version has been abandoned. First, the support
+in Internet Explorer 5.0/Win has been totally dropped. Users of this browser
+will simply see squared corners, just as users with javascript disabled. The
+support remains very good however: the examples of the articles have all been tested
+successfully in IE5.5, IE6 and IE7 beta 2 preview, Opera 8.5, Firefox 1.5 and
+Safari 2.0. I had to drop even Nifty Corners with borders for compatibility
+issues I've had with IE and the new approach of the script.</p>
+
+<h2>Nifty Corners Cube: introduction</h2>
+<p>Nifty Corners Cube are a solution to get rounded corners without images,
+and this third version is build by three main components:</p>
+<ul>
+<li>A javascript file, named "niftycornerscube.js"</li>
+<li>A CSS file, named "niftycorners.css"</li>
+<li>The javascript calls specific for the pages</li>
+</ul>
+<p>Now we're now ready to look at the <a href="nifty1.html">first example</a>:
+it's a <code>div</code> with big rounded corners thanks to Nifty Corners.
+As I said before, the CSS file it's added automatically by javascript. In fact,
+the only reference to an external file in the example is the following:</p>
+<p class="codice">
+&lt;script type=&quot;text/javascript&quot; src=&quot;niftycube.js&quot;&gt;&lt;/script&gt;
+</p>
+<p>Regarding the third point, as is the javascript calls needed for the page,
+the code for the <a href="nifty1.html">example</a> is the following:</p>
+<p class="codice">
+&lt;script type=&quot;text/javascript&quot;&gt;<br>
+window.onload=function(){<br>
+<strong>Nifty(&quot;div#box&quot;,&quot;big&quot;);</strong><br>
+}<br>
+&lt;/script&gt;
+</p>
+<p>In bold I've reported the part of the script that depends on the page,
+and that is the call for the function <strong>Nifty</strong>. This function
+is the core of the whole library, and receives two parameters that are the
+strength point of the script. Parameters have to be specified between quotes
+and separated by a comma. The first parameter is for the <strong>CSS selector</strong>
+that targets the elements to round, while the second parameter is for <strong>options</strong>
+for default cases could be omitted. Let's see them in depth.</p>
+<h2>The parameters</h2>
+<p>The first parameter is for the <strong>CSS selector</strong> to targets the elements on which
+apply Nifty Corners. The CSS selectors accepted are: tag selector, id selector,
+descendant selector (with id or class) and grouping. The following table show some
+example:</p>
+<table>
+<thead><tr><th>Selector</th><th>Example</th></tr></thead>
+<tbody>
+<tr><th>tag selector</th><td>"p"<br>"h2"</td></tr>
+<tr><th>id selector</th><td>"div#header"<br>"h2#about"</td></tr>
+<tr><th>class selector</th><td>"div.news"<br>"span.date"<br>"p.comment"</td></tr>
+<tr><th>descendant selector (with id)</th><td>"div#content h2"<br>"div#menu a"</td></tr>
+<tr><th>descendant selector (with class)</th><td>"ul.news li"<br>"div.entry h4"</td></tr>
+<tr><th>grouping (any number and combination of the previous selectors)</th><td>"h2,h3"<br>"div#header,div#content,div#footer"<br>"ul#menu li,div.entry li"</td></tr>
+</tbody>
+</table>
+<p>Talking about options: they're identified by keywords and they can be specified in any
+order and number. Let's see them:</p>
+<table>
+<thead><tr><th>keyword</th><th>meaning</th></tr></thead>
+<tbody>
+<tr><th>tl</th><td>top left corner</td></tr>
+<tr><th>tr</th><td>top right corner</td></tr>
+<tr><th>bl</th><td>bottom left corner</td></tr>
+<tr><th>br</th><td>bottom right corner</td></tr>
+<tr><th>top</th><td>upper corners</td></tr>
+<tr><th>bottom</th><td>lower corners</td></tr>
+<tr><th>left</th><td>left corners</td></tr>
+<tr><th>right</th><td>right corners</td></tr>
+<tr><th>all <em>(default)</em></th><td>all the four corners</td></tr>
+<tr><th>none</th><td>no corners will be rounded (to use for nifty columns)</td></tr>
+<tr><th>small</th><td>small corners (2px)</td></tr>
+<tr><th>normal <em>(default)</em></th><td>normal size corners (5px)</td></tr>
+<tr><th>big</th><td>big size corners (10px)</td></tr>
+<tr><th>transparent</th><td>inner transparent, alias corners will be obtained. This option activates
+automatically if the element to round does not have a background-color specified.</td></tr>
+<tr><th>fixed-height</th><td>to be applied when a fixed height is set via CSS</td></tr>
+<tr><th>same-height</th><td>Parameter for <em>nifty columns</em>: all elements identified by the CSS selector of the
+first parameter will have the same height. If the effect is needed without rounded corners, simply use this parameter
+in conjuction with the keyword <em>none</em>.</td></tr>
+</tbody>
+</table>
+<p>We'll meet the selectors and options through the many examples I've prepared. Let's start.</p>
+<h2>Example 1: a single div</h2>
+<p>The <a href="nifty1.html">first example</a> has been already presented.
+The code to round the div with <code>id="box"</code> is the
+following:</p>
+<p class="codice">
+&lt;script type=&quot;text/javascript&quot; src=&quot;niftycube.js&quot;&gt;&lt;/script&gt;<br>
+&lt;
+script type=&quot;text/javascript&quot;&gt;<br>
+window.onload=function(){<br>
+<strong>Nifty(&quot;div#box&quot;,&quot;big&quot;);</strong><br>
+}<br>
+&lt;/script&gt;
+</p>
+<p>The first line is needed to link the nifty corners library, while the others
+are for the specific page. Background colors of the page and the div id="box"
+are detected automatically by the script. Another thing to note is that the padding
+of the div (20px on vertical sides in this case) is preserved.</p>
+<p>The part reported in bold is the call to the <strong>Nifty</strong> function.
+For the sake of brevity, starting from the next example, I'll report just the
+calls for this function, but please keep in mind that these have to be
+incorportated in an embedded script tag or, even better, in an external
+js file.</p>
+<h2>Example 2: two divs</h2>
+<p>In the <a href="nifty2.html">second example</a> nifty corners were used
+to round two divs with one single call:</p>
+<p class="codice">
+Nifty("div#content,div#nav");
+</p>
+<p>In this case just the first parameter has been used, as is the CSS selector
+with grouping: the two id selector are separated by a comma. The second parameter
+hasn't been used, therefore nifty corners will be of medium size (5px) and with
+antialias by default.</p>
+
+<h2>Example 3: transparency</h2>
+<p>In the <a href="nifty3.html">example three</a> nifty corners were applied on
+a div with a gradient background. In such cases the use of inner transparency
+could be really useful, and will be obtained via the <em>transparent</em> option.
+Let's see the javascript call:</p>
+<p class="codice">
+Nifty("div#box","transparent");
+</p>
+<p>The transparency option is compatible with all others, and is used by default
+on elements with no background-color set.</p>
+
+<h2>Example 4: nifty tabs</h2>
+<p>The <a href="nifty4.html">fourth example</a> is one of the major request
+on nifty corners: a tabbed menu without images. The javascript call is the
+following:</p>
+<p class="codice">
+Nifty("ul#nav a","small transparent top");
+</p>
+<p>Links are rounded on the top side, with small and transparent inside
+corners. Inner transparency is essential for the rollover effect. In the
+case rollover with background-color is not needed, here's a
+<a href="nifty4bis.html">small variant</a> where each tab is smooth-rounded
+and has got a different color. The js call in this case is:</p>
+<p class="codice">
+Nifty("ul#nav a","top");
+</p>
+<p>There's a thing to highlight, as is the fact that in both examples the
+tabs are perfectly elastic, since they're em-dimensioned.</p>
+
+<h2>Example 5: nifty buttons</h2>
+<p>In the <a href="nifty5.html">fifth example</a> a mini-navigation, suitable
+for blogs and such, is obtained with nifty corners. The code is the following:</p>
+<p class="codice">
+Nifty("ul.postnav a","transparent");
+</p>
+<p>In this markup, a class for the buttons has been used, so it would be possible
+to get several sets of of link-buttons in the same page. On the nifty corners
+side, the descendant selector with a class has been therefore used.</p>
+
+<h2>Example 6: boxes</h2>
+<p>In the <a href="nifty6.html">sixth example</a> nifty corners are used
+to round six divs with fixed height and bold corners. Each of div has
+a different color, even the lower-right one which is white like the background
+of the page. Antialias is automatically done, and padding of the list-items,
+both vertical and horizontal, has been preserved. But in order to honour
+the fixed height specified via CSS, the <code>fixed-height</code> keyword
+has to be specified. Here's the only js call used:</p>
+<p class="codice">
+Nifty("div#about li","tl bottom big fixed-height");
+</p>
+
+<h2>Example 7: nifty columns</h2>
+<p>With the <a href="nifty7.html">seventh example</a> we introduce one of the biggest new features of
+nifty corners: nifty columns. This feature allow to get a <em>faux-column</em>
+effect without background. The option that does the trick is <strong>same-height</strong>,
+and the elements must be specified within the first parameter. The call for
+the example is:</p>
+<p class="codice">
+Nifty("div#content,div#nav","same-height");
+</p>
+<p>The option <code>same-height</code> tells the script to detect the height
+of the elements targetted by the css selector and to assign them the same height,
+as is the maximum value detected, without the need for background-images.</p>
+
+<h2>Example 8,9 and 10: more nifty columns</h2>
+<p>The examples <a href="nifty8.html">eight</a>, <a href="nifty9.html">nine</a> and <a href="nifty10.html">ten</a>
+are built on the same markup, which is the following:</p>
+<p class="codice">
+&lt;ul id=&quot;split&quot;&gt;<br>
+&lt;li id=&quot;one&quot;&gt;<br>
+&nbsp;&nbsp;&lt;h3&gt;Title&lt;/h3&gt;<br>
+&nbsp;&nbsp;&lt;div&gt;Content&lt;/div&gt;<br>
+&lt;/li&gt;<br>
+&lt;li id=&quot;two&quot;&gt;<br>
+&nbsp;&nbsp;&lt;h3&gt;Title&lt;/h3&gt;<br>
+&nbsp;&nbsp;&lt;div&gt;Content&lt;/div&gt;&lt;/li&gt;<br>
+&lt;li id=&quot;three&quot;&gt;<br>
+&nbsp;&nbsp;&lt;h3&gt;Title&lt;/h3&gt;<br>
+&nbsp;&nbsp;&lt;div&gt;Content&lt;/div&gt;<br>
+&lt;/li&gt;<br>
+&lt;/ul&gt;
+</p>
+<p>The only things that vary are in fact CSS and the calls to nifty corners,
+which use nifty columns in the three cases. In the <a href="nifty8.html">example height</a>
+the javascript call is the following:</p>
+<p class="codice">
+Nifty("ul#split li","same-height");
+</p>
+<p>In <a href="nifty9.html">example 9</a> two calls were used: one for the
+headings, and one, with the <code>same-height</code> options, for lower divs:</p>
+<p class="codice">
+Nifty("ul#split h3","top");<br>
+Nifty("ul#split div","bottom same-height");
+</p>
+<p>If you don't need rounded corners on the lower part, but you'd like to get anyway
+elements with the same height, as in the <a href="nifty10.html">example 10</a>,
+simply specify the <code>none</code> option:</p>
+<p class="codice">
+Nifty("ul#split h3","top");<br>
+Nifty("ul#split div","none same-height");
+</p>
+<h2>Example 11 and 12: Nifty Corners Layout</h2>
+<p>We've arrived to two major examples of the article, as is Nifty Corners
+Layouts. In the example <a href="nifty11.html">eleven</a> and
+<a href="nifty12.html">twelve</a> nifty corners are used extensively for layout
+and page elements.</p>
+<p>In <a href="nifty11.html">example eleven</a>, as in the previous examples, I left
+for ease of consultation the CSS and the script embedded in the page. The javascript
+section is the following:</p>
+<p class="codice">
+window.onload=function(){<br>
+Nifty("div#container");<br>
+Nifty("div#content,div#nav","same-height small");<br>
+Nifty("div#header,div#footer","small");<br>
+}
+</p>
+<p>When the page has loaded, Nifty Corners are applied on container, small and
+with faux columns on content and sidebar for navigation, and just small on the footer.
+The effect o a white border around all the page is achieved with a padding on the
+container.</p>
+<p>The <a href="nifty12.html">example twelve</a> represent a two-column layout,
+tabbed navigation and some elements (like dates and comments) common in blog design.
+In this case CSS and javascript are kept in external files, here is the regarding
+code in the <code>head</code> section:</p>
+<p class="codice">
+&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;NiftyLayout.css&quot; media=&quot;screen&quot;&gt;<br>
+&lt;script type=&quot;text/javascript&quot; src=&quot;niftycube.js&quot;&gt;&lt;/script&gt;<br>
+&lt;script type=&quot;text/javascript&quot; src=&quot;NiftyLayout.js&quot;&gt;&lt;/script&gt;
+</p>
+<p>Apart from the CSS, two javascript files are linked in; one is the library for
+nifty corners, while the second one contain the specific call for the page:</p>
+<p class="codice">
+window.onload=function(){<br>
+Nifty("div#menu a","small transparent top");<br>
+Nifty("ul#intro li","same-height");<br>
+Nifty("div.date");<br>
+Nifty("div#content,div#side","same-height");<br>
+Nifty("div.comments div");<br>
+Nifty("div#footer");<br>
+Nifty("div#container","bottom");<br>
+}
+</p>
+<p>The option <code>same-height</code> has been used in two cases: on the
+three boxes of introduction and between content and navigation. In this second
+case, rounded corners are not visible, since they're done with transparency inside
+because the content has not a background-color specified.</p>
+
+<h2>Example 13: NiftyLoad</h2>
+<p>We've finally arrived at the last example. One of the frequent reported
+question is in fact how to make coexist Nifty Corners with other script, given the fact
+only one assignation to <code>window.onload</code> is possible.</p>
+<p>In the <a href="nifty13.html">example 13</a> an alert message, attached
+to window.onload, is shown before nifty corners proceed. This is done thanks
+to the function NiftyLoad, that will preserve a previous window.onload function.
+The javascript section, embedded on the page this time, is the following:</p>
+<p class="codice">
+NiftyLoad=function(){<br>
+Nifty("div#box","big");<br>
+}
+</p>
+<p>In order to make nifty corners work together with other script, you just have
+to use <code>NiftyLoad</code> instead of <code>window.onload</code>. Obviously
+the function could go even in an external file, the only important thing is that
+the two script blocks for nifty corners, as is the library and the page-centric
+calls, are the last two script blocks of head section of the page. The
+<code>NiftyLoad</code> function can also be used when nifty corners are the
+only script of the page, as is in any of the previous examples we've seen.</p>
+
+<h2>Troubleshooting and problem solving</h2>
+<p>While making Nifty Corners Cube I've tried to mantain the script as
+simple and robust as possible, and I hope to have inspired readersthrough
+the many example,.</p>
+<p>The examples was also a way to test cross-browser compatibility, but this
+doesn't mean one might never get problems.</p>
+<p>Even if javascript knowledge is not necessary, a working knowledge of
+CSS and HTML is, and it's also good practice to use always validate the
+code. If you do encounter problems, the first thing is to remove
+temporarily nifty corners and see if they persist. A general approach of
+development, that I've used on preparing the examples of this article, is
+getting the HTML and CSS entirely written before adding Nifty Corners to the
+page.</p>
+<p>Two features introduced in this version should simplify Nifty Corners usage.
+Colors are detected automatically, and could be changed in the CSS without
+the need to update the javascript calls. Padding, both vertical and horizontal,
+is now preserved. Especially for vertical padding, it's suggested to specify
+a pixel value at least equal to the size of the corners.</p>
+<p>The examples should be a good starting point: one thing to keep in mind
+is that in some case I've used ID, but if you'd need more than one element
+on a page you should use class or descendant selector, since an id in a page,
+according to HTML specification, should be unique.</p>
+
+<h2>Credits, licencing and download</h2>
+<p>I'd like to thanks David Lindquist for his help in getting things right in
+Safari. The idea of nifty columns was inspired by
+<a href="http://www.paulbellows.com/getsmart/balance_columns/">CSS balanced Columns</a>,
+a very clever way to get faux columns without background.</p>
+<p>Nifty Corners Cube are released under the <a href="http://www.gnu.org/copyleft/gpl.html">GNU GPL licence</a>
+and were published on the 22 March 2006 both in italian and english.</p>
+<p>The examples and code the code is available for <a href="NiftyCube.zip">download</a>. Enjoy!</p>
+		<!-- Codice Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-272662-1");
+pageTracker._setDomainName(".html.it");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+		<!-- Codice Google Analytics -->
+
+</body>
+</html>

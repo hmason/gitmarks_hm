@@ -1,0 +1,564 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>instant.js (javascript instant image effect)</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-language" content="en">
+	<link rel="icon" href="favicon.ico" type="image/ico">
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+	<link rel="bookmark" type="text/html" title="instant.js" href="http://www.netzgesta.de/instant/">
+	<meta name="Author" lang="en" content="instant.netzgesta.de - Christian Effenberger">	<meta name="Publisher" lang="en" content="www.netzgesta.de">	<meta name="Copyright" lang="en" content="www.netzgesta.de - Christian Effenberger">	<meta name="Generator" lang="en" content="Christian Effenberger">
+	<meta name="Robots" lang="en" content="index, follow">	<meta name="revisit-after" content="7 days">
+	<meta http-equiv="imagetoolbar" content="no">
+	<meta name="Description" lang="en" content="instant.js 2.4 allows you to add an instant picture effect (including tilt) to images on your webpages through unobtrusive javascript">
+	<meta name="Keywords" lang="en" content="instant.js, images, tilt, shading, shadow, polaroid effect, instant image, unobtrusive javascript, image effect, IE, Mozilla, Firefox, Opera, Safari">
+	<meta http-equiv="expires" content="Tue, 10 Aug 2010 10:00:00 GMT">
+    <meta name="DC.date.created" content="2007-06-14 12:00:00">
+    <meta name="DC.date.modified" content="2010-08-10 12:00:00">
+	<meta name="Date" content="2010-08-10T12:00:00+01:00:00">
+	<meta http-equiv="Content-Script-Type" content="text/javascript">
+	<script type="text/javascript" src="../cvi/scripts/projectmenu.js"></script>
+	<script type="text/javascript" src="../cvi/scripts/accordion.js"></script>
+	<script type="text/javascript" src="cvi_text_lib.js"></script>
+	<script type="text/javascript" src="instant.js"></script>
+	<meta http-equiv="Content-Style-Type" content="text/css">
+	<style type="text/css">
+		.demo { float: left; padding: 10px; }
+		.logo { float: left; margin: 0 1em 1em 0; position: relative; width: 400px; height: 120px; }
+	</style>
+	<link rel="stylesheet" type="text/css" media="all" href="../cvi/scripts/prj.css">
+	<link rel="stylesheet" type="text/css" href="../cvi/scripts/overlay.css" />
+	<link rel="stylesheet" type="text/css" href="../cvi/scripts/accordion.css">
+	<link rel="stylesheet" type="text/css" media="print" href="../cvi/scripts/prt.css">
+<!--[if lt IE 8]>
+	<link rel="stylesheet" type="text/css" media="all" href="../cvi/scripts/prj_ie.css">
+<![endif]-->
+<!--[if IE]>
+	<link rel="stylesheet" type="text/css" href="../cvi/scripts/overlay_ie.css" />
+	<link rel="stylesheet" type="text/css" href="../cvi/scripts/accordion_ie.css">
+	<link rel="stylesheet" type="text/css" media="print" href="../cvi/scripts/prt_ie.css">
+<![endif]-->
+<!--[if lt IE 7]>
+	<script type="text/javascript" src="../cvi/scripts/fixed.js"></script>
+	<style type="text/css">
+		.png { visibility: hidden; behavior: url(../cvi/scripts/iepngfix2.htc); }
+	</style>
+<![endif]-->
+</head>
+<body>
+<div class="page">
+	<div class="tr">
+		<div class="td lp s14"></div>
+		<div class="td cp">
+			<span class="pd"><img src="../cvi/images/header/small.png" width="45" height="30" title="Canvas|Vml|Image effects" class="unsaveable png" border="0" alt="CVI" /></span>		
+			<span class="pc">
+			<noscript>
+				<form name="lst" id="lst" method="post" action="../cvi/project.php">
+					<select name="id" id="id" title="navigation" size="1">
+						<option id="home" value="cvi" selected="selected">cvi: home</option>
+						<option id="lab" value="lab">cvi: lab</option>
+						<option id="dev" value="dev">cvi: dev</option>
+						<option id="js0" value="loupe">loupe.js</option>
+						<option id="js1" value="shiftzoom">shiftzoom.js</option>
+						<option id="js2" value="snapfit">snapfit.js</option>
+						<option id="js3" value="busy">busy.js</option>
+						<option id="js4" value="mapper">mapper.js</option>
+						<option id="js5" value="slided">slided.js</option>
+						<option id="js6" value="glossy">glossy.js</option>
+						<option id="js7" value="corner">corner.js</option>
+						<option id="js8" value="transm">transm.js</option>
+						<option id="js9" value="gauge">gauge.js</option>
+						<option id="js10" value="filmed">filmed.js</option>
+						<option id="js11" value="instant">instant.js</option>
+						<option id="js12" value="curl">curl.js</option>
+						<option id="js13" value="sphere">sphere.js</option>
+						<option id="js14" value="bevel">bevel.js</option>
+						<option id="js15" value="edge">edge.js</option>
+						<option id="js16" value="reflex">reflex.js</option>
+						<option id="js17" value="tripleb">tripleb.js</option>
+					</select>
+					<input type="submit" id="bt" name="bt" title="jump to named page" value="GO">
+				</form>
+			</noscript>
+			</span>
+			<span class="pr"></span>		
+		</div>
+		<div class="td rp s14"></div>
+	</div>
+</div>
+<div id="replace"></div>
+<noscript><div id="guru" title="By this you can recognize the Amiga fan!"><div><strong>Guru Meditation</strong> - With deactivated JavaScript: Images stay unmodified!</div></div></noscript>
+
+<div class="logo"><a class="nip" href="instant.zip" title="download instant.js">
+<img class="instant itiltright" style="position:absolute; left:0px; z-index:4;" src="images/in.jpg" width="90" height="120" border="0" alt="IN">
+<img class="instant itiltleft" style="position:absolute; left:80px; z-index:2;" src="images/st.jpg" width="100" height="120" border="0" alt="ST">
+<img class="instant itiltright" style="position:absolute; left:160px; z-index:3;"src="images/an.jpg" width="100" height="120" border="0" alt="AN">
+<img class="instant itiltleft" style="position:absolute; left:250px; z-index:1;"src="images/t.jpg" width="80" height="120" border="0" alt="T.">
+<img class="instant itiltright" style="position:absolute; left:320px;"src="images/js.jpg" width="80" height="120" border="0" alt="js">
+</a></div>
+<div class="text">
+<strong><span class="uc">instant</span>.js 2.4</strong> allows you to add an instant picture effect (including tilt) to images on your webpages (alternatively: <a class="lk" href="../slided/" title="image slides">slided.js</a>  or <a class="lk" href="../filmed/" title="image strips">filmed.js</a>).
+<p></p>
+It works in all the major browsers - Mozilla Firefox 1.5+, Opera 9+, Safari and IE6+. On older browsers, it'll degrade and your visitors won't notice a thing.<br>
+<small><a class="lk" href="http://lab.netzgesta.de/" title="showcase">CVI-lab</a>: Get a fast impression of the effects and their illustration qualities.</small>
+</div>
+<p style="clear: left;"></p>
+
+<h2 id="do_demo" class="toggle">Demonstration</h2>
+<div id="demo" class="inlet">
+<p style="clear: left">Shows some of the things <a class="lk" href="instant.zip" title="download zip">instant.js</a> does.<small><br><br>First image with class = "<tt>instant itiltleft icolorFFFCE9 ishadow40 historical</tt>", next image with class = "<tt>instant nocorner itxtalt</tt>" and next two images with class = "<tt>instant itxtalt</tt>". All other images with class = "<tt>instant</tt>" only...</small></p>
+<div class="demo"><img class="instant ishadow40 itiltleft icolorFFFCE9 historical" src="images/historical.jpg" width="400" height="400" border="0" title="onClick event" onClick="alert('Instant dimension '+this.width+'x'+this.height);" alt=""></div>
+<div class="demo"><img class="instant itxtalt nocorner" src="images/girl.jpg" width="160" height="160" border="0" title="onClick event" onClick="alert('ALT=\''+this.alt+'\'');" alt="A beautiful girl">
+<br><img class="instant itxtalt itxtcol003399" src="images/girl.jpg" width="120" height="120" border="0" title="onClick event" onClick="alert('ID='+this.id);" id="girl_image" alt="A beautiful girl">
+<br><img class="instant itxtalt itxtcol666666" src="images/girl.jpg" width="80" height="80" border="0" title="tooltip support" alt="A beautiful girl">
+</div>
+<p style="clear: left;"></p>
+<img class="instant itiltleft" src="images/example.jpg" width="300" height="202" border="0" alt="">&nbsp;
+<img class="instant" src="images/example.jpg" width="300" height="202" border="0" alt="">
+<p style="clear: left;"></p>
+<img class="instant" src="images/what.jpg" width="240" height="120" border="0" alt="">&nbsp;
+<img class="instant preserve" src="images/test.jpg" width="170" height="140" border="0" alt="">&nbsp;
+<img class="instant" src="images/what.png" width="180" height="140" border="0" alt="">
+<p style="clear: left;"><small><em>Images used are copyrighted and are used for demonstration only.</em></small></p>
+</div>
+
+<h2 id="do_setting" class="toggle">Setting Up</h2>
+<div id="setting" class="inlet">
+<p>Download <a class="lk" href="instant.zip" title="download zip">instant.js</a> and include it into your webpage.</p>
+<p><code>// only if you want to use the annotation feature...
+<br />&lt;script type="text/javascript" src="<tt>cvi_text_lib.js</tt>"&gt;&lt;/script&gt;
+<br />// ...else this one only...
+<br />&lt;script type="text/javascript" src="<tt>instant.js</tt>"&gt;&lt;/script&gt;
+</code></p>
+</div>
+
+<h2 id="do_using" class="toggle">Using It</h2>
+<div id="using" class="inlet">
+<p>To get the instant picture effect just add a class="<tt>instant</tt>" to the image <em>(minimum dimension: 64x64)</em>.</p>
+</div>
+
+<h2 id="do_classes" class="toggle">Classes</h2>
+<div id="classes" class="inlet">
+<ul>
+<li>Initialisation class "<tt>instant</tt>"</li>
+<li><small><em>vary the shadow by adding ishadow followed by the desired <b>opacity</b> in percent:</em></small><br>
+Shadow opacity class "<tt>ishadow</tt>" - min=0 max=100 default=33</li>
+<li><small><em>vary the frame by adding icolor followed by the desired <b>color</b> as hex:</em></small><br>
+Frame color class "<tt>icolor</tt>" - min=000000 max=ffffff default=f0f4ff</li>
+<li><small><em>vary the tilt direction by adding one of the following:</em></small><br>
+Tilt direction class "<tt>itiltleft</tt>" or "<tt>itiltnone</tt>" or "<tt>itiltright</tt>"<br>
+by default "instant.js" cycles through [left|none|right].</li>
+<li><small><em>prevent the shading by adding noshading:</em></small><br>
+Shading off class "<tt>noshading</tt>"</li>
+<li><small><em>vary the border design by adding historical:</em></small><br>
+Frayed border class "<tt>historical</tt>"</li>
+<li><small><em>prevent quadratic corner by adding nocorner:</em></small><br>
+Round corner class "<tt>nocorner</tt>"</li>
+<li><small><em>preserve the image aspect ratio by adding preserve:</em></small><br>
+Image aspectratio class "<tt>preserve</tt>"</li>
+<li><small><em>vary the annotation text by adding itxtcol followed by the desired <b>color</b> as hex:</em></small><br>
+Text color class "<tt>itxtcol</tt>" - min=000000 max=ffffff default=000000</li>
+<li><small><em>get the text from <b>alt</b> attribute by adding itxtalt:</em></small><br>
+Text selection class "<tt>itxtalt</tt>"</li>
+<li><small><em>get the text from <b>title</b> attribute by adding itxttitle:</em></small><br>
+Text selection class "<tt>itxttitle</tt>"</li>
+</ul>
+</div>
+
+<h2 id="do_scripting" class="toggle">Scripting lib</h2>
+<div id="scripting" class="inlet">
+<p>If you want flexibility, use "<b>cvi_instant_lib.js</b>" instead of "<b>instant.js</b>". 
+You can make your images respond to user actions (e.g. changing one or more options when the image is hovered over).</p>
+<dl>
+	<dt><strong>Set</strong> defaults using Javascript</dt>
+	<dd>
+		<code>
+		cvi_instant.defaultTilt = 'none'; <tt>//STR  'n|l|r'-'none|left|right'</tt><br>
+		cvi_instant.defaultShade = 33; <tt>//INT  0-100 (% opacity)</tt><br>
+		cvi_instant.defaultShadow = 33; <tt>//INT  0-100 (% opacity)</tt><br>
+		cvi_instant.defaultColor = '#f0f4ff'; <tt>//STR '#000000'-'#ffffff'</tt><br>
+		cvi_instant.defaultNoshade = false; <tt>//BOOLEAN</tt><br>
+		cvi_instant.defaultNocorner = false; <tt>//BOOLEAN</tt><br>
+		cvi_instant.defaultHistorical = false; <tt>//BOOLEAN</tt><br>
+		cvi_instant.defaultPreserve = false; <tt>//BOOLEAN</tt><br>
+		</code>
+		<strong>If</strong> <b>cvi_text_lib.js</b> is loaded also...<br>
+		<code>
+		cvi_instant.defaultText = ''; <tt>//STR</tt><br>
+		cvi_instant.defaultTextcolor = '#000000'; <tt>//STR '#000000'-'#ffffff'</tt><br>
+		cvi_instant.defaultFontattr = [100,100,100]; <tt>//OBJ [1-200==weight, 10-400==width, 10-1000==space]</tt><br>
+		</code>
+		<strong>If</strong> <b>cvi_filter_lib.js</b> is loaded also...<br>
+		<code>
+		cvi_instant.defaultFilter = null; <tt>//OBJ  [{f='grayscale'},{f='emboss', s:1}...]</tt>
+		</code>
+  		<p></p>
+	</dd>
+	<dt><strong>Add</strong> images using Javascript</dt>
+  	<dd>
+  		<code>cvi_instant.add(<tt>image</tt>, <tt>options</tt>);</code><br><small>
+		<tt>image</tt> should be an image element: document.getElementById(<b>"myimg"</b>)<br>
+		<tt>options</tt> can contain one or more values: {<tt>tilt</tt>: <b>value</b>, <tt>shadow</tt>: <b>value</b>, <tt>shade</tt>: <b>value</b>, <tt>color</tt>: <b>value</b>, <tt>noshade</tt>: <b>value</b>, <tt>nocorner</tt>: <b>value</b>, <tt>historical</tt>: <b>value</b>, <tt>preserve</tt>: <b>value</b>, <tt>text</tt>: <b>value</b>, <tt>textcolor</tt>: <b>value</b>, <tt>fontattr</tt>: [<b>value</b>,<b>value</b>,<b>value</b>], <tt>filter</tt>: <b>value</b> }</small>
+		<dl><dt>Examples:</dt>
+		<dd>
+			<code>
+			cvi_instant.add(document.getElementById(<b>"myimg"</b>), { <tt>shadow</tt>: <b>75</b>, <tt>shade</tt>: <b>10</b> });<br>
+			&lt;img onLoad="cvi_instant.add(<b>this</b>, { <tt>shadow</tt>: <b>75</b>, <tt>shade</tt>: <b>10</b> });" ...&gt;
+			</code>
+  		</dd></dl>
+  		<p></p>
+  	</dd>
+	<dt><strong>Modify</strong> images using Javascript</dt>
+  	<dd>
+  		<code>cvi_instant.modify(<tt>image</tt>, <tt>options</tt>);</code><br>
+  		<small>If the image has already an effect but a <tt>option</tt> value has changed, the effect will be changed accordingly.</small><br>
+		<dl><dt>Example:</dt>
+		<dd>
+			<code>cvi_instant.modify(document.getElementById(<b>"myimg"</b>), { <tt>tilt</tt>: <b>"left"</b> });</code>
+  		</dd></dl>
+		<p></p>
+  	</dd>
+	<dt><strong>Remove</strong> effect from an image using Javascript</dt>
+	<dd>
+		<code>cvi_instant.remove(<tt>image</tt>);</code>
+  		<p></p>
+	</dd>
+</dl>
+</div>
+
+<h2 id="do_support" class="toggle">Support libs</h2>
+<div id="support" class="inlet">
+<p>If you are using the more flexible "<b>cvi_instant_lib.js</b>" instead of "<b>instant.js</b>", 
+you'll get access to additional features by the following support libraries <em>(part of distribution)</em>:</p>
+<ul>
+<li><b>cvi_text_lib.js</b> supports text capabilities. <small>[<i><a class="lk" title="Text capability WYSIWYG-Editor" href="http://www.netzgesta.de/dev/text/demo/">WYSIWYG-Editor</a></i>]</small><br />
+<small><i>Provides multiple master single line stroke text capability for Canvas and VML (identical representation)</i></small>.
+</li>
+<br />
+<li><b>cvi_filter_lib.js</b> supports image filtering capabilities. <small>[<i><a class="lk" title="Filter capability WYSIWYG-Editor" href="http://lab.netzgesta.de/">WYSIWYG-Editor</a></i>] [<i><a class="lk" title="CVI-Filter Home-Page" href="http://filter.netzgesta.de/">Home-Page</a></i>]</small><br />
+<small><i>Provides image filter capability for Canvas (only if getImageData/setImageData is supported)</i></small>.<br />
+<br />
+<code>filter : [{<tt>#1 filter options</tt>},{<tt>#2 filter options</tt>}...];</code>
+<dt><code><tt>options</tt> &nbsp; e.g. {<b>f</b>: '<tt>contrast</tt>', <b>s</b>: <tt>1.5</tt> }</code></dt>
+<dd>
+	<code><b>f</b> == STRING <b>filter name</b> e.g. "invert" Default: <tt>null</tt> <em>(required)</em><pre>
+     "<tt>anaglyph</tt>"<sup>1.7</sup> Creates a 3D anaglyph from a single image [no args]
+     "<tt>invert</tt>"<sup>1.0</sup> Reverses all colors of the image [no args]
+     "<tt>invertalpha</tt>"<sup>1.0</sup> Reverses the transparency of the image [no args]
+     "<tt>grayscale</tt>"<sup>1.0</sup> Converts the image into grayscale [no args]
+     "<tt>solarize</tt>"<sup>1.0</sup> Solarizes the image by negating the colors [no args]
+     "<tt>sepia</tt>"<sup>1.0</sup> Applies the well-known sepia coloring to the image [no args]
+     "<tt>threshold</tt>"<sup>1.0</sup> Converts the image to black&white (s<1 == darker and s>1 == brighter)
+     "<tt>posterize</tt>"<sup>1.4</sup> Posterizes the image by quantizing each channel to a limited number of levels
+     "<tt>tritone</tt>"<sup>1.5</sup> Applies 3 colors for low|mid|high range according to the brightness of the image
+     "<tt>mixrgb</tt>"<sup>1.5</sup> Mixes the RGB channels with the other two channels
+     "<tt>exposure</tt>"<sup>1.4</sup> Simulates changing the exposure of the image
+     "<tt>gamma</tt>"<sup>1.0</sup> Standard gamma correction (s<1 == darker and s>1 == brighter)
+     "<tt>brightness</tt>"<sup>1.0</sup> Change brightness (s<1 == darker and s>1 == brighter)
+     "<tt>contrast</tt>"<sup>1.0</sup> Change contrast (s<1 == lower and s>1 == higher)
+     "<tt>adjustrgba</tt>"<sup>1.0</sup> Adjust the red & green & blue & alpha channel of the image (s == [r,g,b,a])
+     "<tt>adjusthsba</tt>"<sup>1.0</sup> Adjust hue & saturation & brightness & alpha channel of the image (s == [h,s,b,a])
+     "<tt>adjustyuva</tt>"<sup>1.6</sup> Adjust luminance & blue–yellow chrominance & red–cyan chrominance & alpha channel of the image (s == [y,u,v,a])
+     "<tt>colorkey</tt>"<sup>1.6</sup> Set alpha to 0 if pixel color values are higher than min and lower than max rgb color
+     "<tt>chromakey</tt>"<sup>1.6</sup> Set alpha to 0 if pixel hue & saturation & brightness matches
+     "<tt>smooth</tt>"<sup>1.3</sup> Smoothes the image (result is similar to bluring)
+     "<tt>spinblur</tt>"<sup>1.2</sup> Blurs by rotating the centered image
+     "<tt>zoomblur</tt>"<sup>1.2</sup> Blurs by zooming the centered image
+     "<tt>motionblur</tt>"<sup>1.2</sup> Blurs by moving the image to a defined direction
+     "<tt>outline</tt>"<sup>1.5</sup> Creates grayscaled outline images by different operators (e.g. sobel, prewitt...).
+     "<tt>convolve</tt>"<sup>1.0</sup> Use your own 3x3 matrix via option m=[[n,n,n],[n,n,n],[n,n,n]]
+     "<tt>blur</tt>"<sup>1.0</sup> Bluring the image by (in build and extendable cvi_matrix object) convolution
+     "<tt>median</tt>"<sup>1.0</sup> Smoothes grainy images by (in build and extendable cvi_matrix object) convolution
+     "<tt>sharpen</tt>"<sup>1.0</sup> Makes image sharper by (in build and extendable cvi_matrix object) convolution
+     "<tt>sharper</tt>"<sup>1.0</sup> Makes image even sharper by (in build and extendable cvi_matrix object) convolution
+     "<tt>bumplt</tt>"<sup>1.0</sup> Embosses the image by (in build and extendable cvi_matrix object) convolution
+     "<tt>bumpbr</tt>"<sup>1.0</sup> ... </pre></code>
+	<code><b>s</b> == FLOAT/OBJECT <b>multiplier(s)</b>  e.g. 0-255 Defaults to... <em>(optional)</em> </tt><pre>
+     <tt>1        </tt> if f=="<tt>zoomblur</tt>|<tt>spinblur</tt>" Distance (px)
+     <tt>1        </tt> if f=="<tt>smooth</tt>" Radius (px 1-10)
+     <tt>1        </tt> if f=="<tt>posterize</tt>" Number of levels (1-16)
+     <tt>1        </tt> if f=="<tt>threshold</tt>" Multiplier of 127 (0-2)
+     <tt>1        </tt> if f=="<tt>brightness</tt>|<tt>contrast</tt>|<tt>gamma</tt>|<tt>exposure</tt>" Multiplier of existing value (0-255)
+     <tt>[1,0]    </tt> if f=="<tt>motionblur</tt>" Distance (px) and angle (0-360)
+     <tt>[auto,0] </tt> if f=="<tt>convolve</tt>" or m!=null. Divisor of convolution result (-1==auto), 
+               useable for normalization and bias (0-255) for brightness addition
+     <tt>[1,0,    </tt> if f=="<tt>outline</tt>" Divisor of convolution result, bias (0-255) 
+     <tt>  'name']</tt> and operator ('sobel'|'scharr'|'prewitt'|'kirsh'|'roberts') 
+     <tt>[1,1,1,1]</tt> if f=="<tt>adjustrgba</tt>" red, green, blue, alpha. Multipliers of existing values (0-255)
+     <tt>[1,1,1,1]</tt> if f=="<tt>adjusthsba</tt>" hue, saturation, brightness, alpha. Multiply existing values (0-255)
+     <tt>[1,1,1,1]</tt> if f=="<tt>adjustyuva</tt>" luminance, blue–yellow chrominance, red–cyan chrominance, alpha. Multiply existing values (0-255)
+     <tt>[0,0,0,0,0]</tt>  f=="<tt>chromakey</tt>" hue (0-360) and hue tolerance, min saturation, min brightness, max brightness (0-100)
+     <tt>[[0,0,0],</tt> if f=="<tt>colorkey</tt>" equals rgb min and rgb max triplet (0-255)
+     <tt> [0,0,0]]</tt> 
+     <tt>[[1,1,1],</tt> if f=="<tt>mixrgb</tt>" Mix into r, g, b with...
+     <tt> [1,1,1]]</tt> ...bluegreen, redblue, greenred as triplets [0-255,0-255,0-255]
+     <tt>[[0,0,0],</tt> if f=="<tt>tritone</tt>" low|mid|high range colors as...
+     <tt> [0,0,0],</tt> ...rgb triplets [0-255,0-255,0-255]
+     <tt> [0,0,0]]</tt> </pre></code>
+	<code><b>m</b> == OBJECT <b>kernel matrix</b>  e.g. [[n,n,n],[n,n,n],[n,n,n]] Default: <tt>null</tt> <em>(optional)</em> </code><br />
+</dd>
+<p><br/></p>
+</li>
+<li><b>cvi_istack_lib.js</b> supports image stack capabilities. <small>[<i><a class="overlay lWOn lk" title="istack Example-Demo" href="istack.html">Example-Demo</a></i>]</small><br />
+<small><i>Provides fading image stacks for Images and CVI Effects</i></small>.
+
+<dl>
+	<dt>Set defaults</dt>
+  	<dd>
+		<code>cvi_istack.<b>defaultImagearray</b>&nbsp;= <tt>null</tt>; //OBJ e.g.  [{source:'image.jpg'}]</code><br />
+		<code>cvi_istack.<b>defaultMainwidth</b>&nbsp; = <tt>128</tt>; //INT 80-n (px width) </code><br />
+		<code>cvi_istack.<b>defaultMainheight</b> = <tt>128</tt>; //INT 80-n (px height)</code><br />
+		<code>cvi_istack.<b>defaultPlayframes</b> = <tt>20</tt>; //INT 1-100 equals frames to fade (* 30 milliseconds)</code><br />
+		<code>cvi_istack.<b>defaultPlaydelay</b>&nbsp; = <tt>5000</tt>; //INT 1000-n equals milliseconds (1/1000)</code><br />
+		<code>cvi_istack.<b>defaultLoadtimeout</b>= <tt>3000</tt>;	//INT 1000-n equals milliseconds (1/1000)</code><br />
+		<code>cvi_istack.<b>defaultNoiefade</b> &nbsp; = <tt>false</tt>;//BOOLEAN IE's Alpha filter produces rough edges</code><br />
+		<code>cvi_istack.<b>defaultPlayscript</b> = <tt>''</tt>; //STRING e.g. 'cvi_bevel'|'cvi_corner'|'cvi_curl'|'cvi_edge'|'cvi_glossy'|<br />
+		'cvi_instant'|'cvi_reflex'|'cvi_slide'|'cvi_sphere'|'cvi_strip'</code><br />
+  		<p></p>
+		<em><small><b>imagearray</b> supports <tt>source</tt> <em>(required)</em> and <tt>options</tt> <em>(optional)</em>.</small></em>
+  		<p></p>
+	</dd>
+	<dt>Add stack</dt>
+  	<dd>
+  		<code>cvi_istack.add(<tt>element</tt>, <tt>options</tt>);</code><br />
+		<dl><dt><code><tt>element</tt>&nbsp; == div element</code></dt></dl>
+		<dl><dt><code><tt>options</tt> &nbsp;e.g. {<b>mainwidth</b>: <tt>128</tt>, <b>mainheight</b>: <tt>128</tt>, ...}</code></dt>
+		<dd>
+			<code><b>imagearray</b>&nbsp;== OBJ Default: <tt>null</tt></code><br />
+			<code><b>mainwidth</b>&nbsp; == INT <tt>32</tt> - <tt>n</tt> Default: <tt>128</tt></code><br />
+			<code><b>mainheight</b> == INT <tt>32</tt> - <tt>n</tt> Default: <tt>128</tt></code><br />
+			<code><b>playframes</b> == INT <tt>1</tt> - <tt>100</tt> Default: <tt>20</tt></code><br />
+			<code><b>playdelay</b>&nbsp; == INT <tt>1000</tt> - <tt>n</tt> Default: <tt>5000</tt></code><br />
+			<code><b>loadtimeout</b>== INT <tt>1000</tt> - <tt>n</tt> Default: <tt>3000</tt></code><br />
+			<code><b>noiefade</b> &nbsp; == BOL <tt>true</tt> or <tt>false</tt> Default: <tt>false</tt></code><br />
+			<code><b>playscript</b> == STR Default: <tt>''</tt></code><br />
+  		</dd></dl>
+		<dl><dt><em><small><b>Advices:</b> All images should have the same aspect ratio like the stack object.<br />
+		cvi_slide and cvi_strip creates generally 1:1 objects (using the larger dimension),<br />
+		cvi_sphere creates generally 1:1 objects (using the smaller dimension) and<br />
+		cvi_reflex creates objects with additional height (for the reflection).</small></em><br />
+		<em><small><b>Hint:</b> By adding a stack to a div element, the former content of the element will be overwritten.</small></em></dt></dl>
+  		<p></p>
+  	</dd>
+	<dt>Get some informations</dt>
+	<dd>
+		<code><tt>FLOAT</tt> &nbsp;= cvi_istack.version;</code><br />
+		<code><tt>STRING</tt> = cvi_istack.released;</code>
+  		<p></p>
+	</dd>
+	<dt>Play stack</dt>
+	<dd>
+		<code>cvi_istack.play(<tt>element</tt>);</code>
+  		<p></p>
+	</dd>
+	<dt>Pause stack</dt>
+	<dd>
+		<code>cvi_istack.pause(<tt>element</tt>);</code>
+  		<p></p>
+	</dd>
+	<dt>Remove stack</dt>
+	<dd>
+		<code>cvi_istack.remove(<tt>element</tt>);</code>
+  		<p></p>
+	</dd>
+	<dt>Example</dt>
+	<dd>
+  		<pre>
+&lt;script type="text/javascript"&gt;
+&lt;!--
+	var photos = new Array();
+	photos = [
+		{source:'images/fire.jpg', options:'{tilt:"l",text:"fire"}' },
+		{source:'images/jeans.jpg', options:'{tilt:"r",text:"jeans"}' },		{source:'images/rose.jpg', options:'{tilt:"l",text:"rose"}' },		{source:'images/swirl.jpg', options:'{tilt:"r",text:"swirl"}' },		{source:'images/fruits.jpg', options:'{tilt:"l",text:"fruits"}' },		{source:'images/heart.jpg' }	];
+	
+	function init_ImageStack() {
+		cvi_instant.defaultPreserve=true;
+		cvi_instant.defaultTilt='left';
+		cvi_instant.defaultFontattr= [100,100,100];
+		cvi_istack.add(document.getElementById('wrapper_div'),{
+			imagearray: photos,
+			mainwidth: 200,
+			mainheight: 200,
+			playdelay: 3000,
+			playscript: 'cvi_instant',
+			noiefade: true
+		});
+	}
+	
+	if(window.attachEvent) {
+		window.attachEvent("onload", init_ImageStack);
+	}else {
+		window.addEventListener("load", init_ImageStack, false);
+	}
+--&gt;
+&lt;/script&gt;
+  		</pre>
+	</dd>
+</dl>
+</li>
+</ul>
+</div>
+
+<h2 id="do_why" class="toggle">Why use Javascript Instant Image?</h2>
+<div id="why" class="inlet">
+<ul>
+<li>Fast and easy to implement. Just add class="<tt>instant</tt>" to the image and your good to go.</li>
+<li>Don't need to spend time in an image editor creating an Polaroid<sup>&trade;</sup> image effect.<br>
+<small><i>*Polaroid is a trademark of Polaroid Corporation</i></small>.</li>
+<li>Works really well with forum avatars. Doesn't require additional server work.</li>
+<li>It's dead easy to change the attributes of the images.</li>
+<li>Free of charge use on non-commercial and private web sites.</li>
+</ul>
+<p>In older browsers, the script degrades and your visitors won't notice a thing.</p>
+</div>
+
+<h2 id="do_download" class="toggle">Download</h2>
+<div id="download" class="inlet">
+<p>Please read the <a class="overlay lWOn lk" title="Netzgestade Non-commercial Software License Agreement" href="../cvi/LICENSE.html">License</a> before you download <a class="lk" href="instant.zip">instant.js 2.4</a></p>
+</div>
+
+<h2 id="do_faq" class="toggle">F.A.Q.</h2>
+<div id="faq" class="inlet">
+<p>Please read the <a class="overlay lWOn lk" title="F.A.Q. (Frequently Asked Questions)" href="../cvi/faq.php">Frequently Asked Questions</a> before you <a class="overlay lWOn lk" title="Contact the autor" href="../cvi/contact.php">contact</a> the author.</p>
+</div>
+
+<h2 id="do_history" class="toggle">History</h2>
+<div id="history" class="inlet">
+<p>
+Version 2.4<ul><li>Added support for Internet Explorer 9</li></ul>
+Version 2.3<ul><li>Extended distribution. Added the support libs "<b>cvi_filter_lib.js</b>" and "<b>cvi_istack_lib.js</b>"</li></ul>
+Version 2.21<ul><li>IE8 modifications</li></ul>
+Version 2.2<ul><li>Added frayed border support</li></ul>
+Version 2.1<ul><li>Added round corner support</li></ul>
+Version 2.0<ul><li>Added text annotation support</li></ul>
+Version 1.7<ul><li>Changed algorithm for calculating border width</li></ul>
+Version 1.6<ul><li>Added better shading support for Internet Explorer</li></ul>
+Version 1.5<ul><li>Added support to preserve image aspect ratio</li></ul>
+Version 1.4<ul><li>Added scriptable lib version <b>cvi_instant_lib.js</b></li></ul>
+Version 1.3<ul><li>Added soft shadow support for IE</li><li>Added <tt>noshading</tt> class</li></ul>
+Version 1.2<ul><li>Added support for img attributes:<br><tt>id alt title src onclick</tt></li></ul>
+Version 1.12<ul><li>IE bug fixing</li></ul>
+Version 1.11<ul><li>Changed minimum dimension to 64x64</li></ul>
+Version 1.1<ul><li>Added support for Internet Explorer 6/7</li></ul>
+Version 1.0<ul><li>Initial Release</li></ul></p>
+</div>
+
+<h2 id="do_cedits" class="toggle">Credits</h2>
+<div id="cedits" class="inlet">
+<p>The inspiration for the script came from <a class="lk" href="http://rmagick.rubyforge.org/Polaroid/polaroid.html">polaroid.rb</a>.</p>
+</div>
+
+<h2 id="do_contact" class="toggle">Contact</h2>
+<div id="contact" class="inlet">
+<p>Please leave any comments at this <a class="overlay lWOn lk" title="Contact the author" href="../cvi/contact.php">contact formular</a>.</p>
+</div>
+
+<h2 id="do_license" class="toggle">License</h2>
+<div id="license" class="inlet">
+<p><span class="uc">instant</span>.js and cvi_instant_lib.js are distributed under the <a class="overlay lWOn lk" title="Netzgestade Non-commercial Software License Agreement" href="../cvi/LICENSE.html">Netzgestade Non-commercial Software License Agreement</a>. 
+<br>License permits free of charge use on non-commercial and private web sites only under special conditions <em>(as described in the license)</em>.
+This license equals neither "<span style="text-decoration: line-through;">open source</span>" nor "<span style="text-decoration: line-through;">public domain</span>".
+There are also <a class="overlay lWOn lk" title="Contact the author" href="../cvi/contact.php">Commercial Software Licenses</a> available.
+<h6>YOU AGREE TO ALL CONDITIONS OF THIS LICENCE AGREEMENT CONCERNING THE USE OF THE SOFTWARE BY ACCEPTING THIS LICENCE.
+<br>IF YOU DO NOT AGREE TO ALL CONDITIONS OF THIS AGREEMENT, YOU SHALL NOT INSTALL THE SOFTWARE, OR USE IT IN OTHER WAYS.</h6>
+</p>
+</div>
+
+<h2 id="do_projects" class="toggle">Other Projects</h2>
+<div id="projects" class="inlet"><ul class="ml">
+<li class="mt"><img src="../cvi/images/icons/cvi.png" border="0" alt="cvi" />&nbsp;&nbsp;<a class="lk" href="http://cvi.netzgesta.de/"><big><strong>home</strong></big></a> &nbsp;</li>
+<li class="mt"><img src="../cvi/images/icons/dev.png" border="0" alt="dev" />&nbsp;&nbsp;<a class="lk" href="http://dev.netzgesta.de/"><big><strong>developer</strong></big></a> &nbsp;</li>
+<li class="mt"><img src="../cvi/images/icons/lab.png" border="0" alt="lab" />&nbsp;&nbsp;<a class="lk" href="http://lab.netzgesta.de/"><big><strong>laboratory</strong></big></a> &nbsp;</li>
+<li class="ml"><img src="../cvi/images/icons/loupe.png" border="0" alt="loupe.js" />&nbsp;&nbsp;<a class="lk" href="http://loupe.netzgesta.de/"><big><strong>loupe.js</strong></big></a><br /><small>Simulates an authentic looking magnifying glass! The script allows you to add a loupe for magnifying (inc. start viewpoint) to an image on your webpage. Requires <b>no</b> plugin/extension but one external resource image!</small></li>
+<li class="ml"><img src="../cvi/images/icons/shiftzoom.png" border="0" alt="shiftzoom.js" />&nbsp;&nbsp;<a class="lk" href="http://shiftzoom.netzgesta.de/"><big><strong>shiftzoom.js</strong></big></a><br /><small>Supports zoom & pan functionality! The library allows you to add/remove zoom and pan functionality to oversized images on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/snapfit.png" border="0" alt="snapfit.js" />&nbsp;&nbsp;<a class="lk" href="http://snapfit.netzgesta.de/"><big><strong>snapfit.js</strong></big></a><br /><small>Supports jigsaw puzzle functionality! The script allows you to add jigsaw puzzles with individual options to images on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/busy.png" border="0" alt="busy.js" />&nbsp;&nbsp;<a class="lk" href="http://busy.netzgesta.de/"><big><strong>busy.js</strong></big></a><br /><small>Supports native spinner animations! The library allows you to add/remove loading indicators to the viewport and to block-level elements on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/mapper.png" border="0" alt="mapper.js" />&nbsp;&nbsp;<a class="lk" href="http://mapper.netzgesta.de/"><big><strong>mapper.js</strong></big></a><br /><small>Emulates native area highlighting! The script allows you to add automatic area highlighting to image maps on your webpages (inc. export to SVG). Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/slided.png" border="0" alt="slided.js" />&nbsp;&nbsp;<a class="lk" href="http://slided.netzgesta.de/"><big><strong>slided.js</strong></big></a><br /><small>Simulates a slide frame look including gradients! The script allows you to add individual colors, shadings and shadows to images on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/glossy.png" border="0" alt="glossy.js" />&nbsp;&nbsp;<a class="lk" href="http://glossy.netzgesta.de/"><big><strong>glossy.js</strong></big></a><br /><small>Simulates a glossy shaded and beveled button look! The script allows you to add individual corners, shadings and shadows to images on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/corner.png" border="0" alt="corner.js" />&nbsp;&nbsp;<a class="lk" href="http://corner.netzgesta.de/"><big><strong>corner.js</strong></big></a><br /><small>Simulates a whole bunch of image effects! The script allows you to add individual corners, shadings and shadows to images on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/transm.png" border="0" alt="transm.js" />&nbsp;&nbsp;<a class="lk" href="http://transm.netzgesta.de/"><big><strong>transm.js</strong></big></a><br /><small>Supports programmable image transitions! Features 113 transitions, 32 tweenings, individual corners, overlay graphics and event actions. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/gauge.png" border="0" alt="gauge.js" />&nbsp;&nbsp;<a class="lk" href="http://gauge.netzgesta.de/"><big><strong>gauge.js</strong></big></a><br /><small>Supports programmable gauges! The script allows you to add gauges (with shading and reflection) to your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/filmed.png" border="0" alt="filmed.js" />&nbsp;&nbsp;<a class="lk" href="http://filmed.netzgesta.de/"><big><strong>filmed.js</strong></big></a><br /><small>Simulates a film strip look including reflection! The script allows you to add individual colors, shining and shadows to images on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/curl.png" border="0" alt="curl.js" />&nbsp;&nbsp;<a class="lk" href="http://curl.netzgesta.de/"><big><strong>curl.js</strong></big></a><br /><small>Simulates a page curl image effect! The script allows you to add curls with individual paperback color, shadow opacity and size to images on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/sphere.png" border="0" alt="sphere.js" />&nbsp;&nbsp;<a class="lk" href="http://sphere.netzgesta.de/"><big><strong>sphere.js</strong></big></a><br /><small>Simulates a spherical image effect! The script allows you to add an spherical picture effect with individual zooming, shading, shining, transparency and colors to images on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/bevel.png" border="0" alt="bevel.js" />&nbsp;&nbsp;<a class="lk" href="http://bevel.netzgesta.de/"><big><strong>bevel.js</strong></big></a><br /><small>Simulates a whole bunch of image effects! The script allows you to add bevels with individual glowing, shading and shining to images on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/edge.png" border="0" alt="edge.js" />&nbsp;&nbsp;<a class="lk" href="http://edge.netzgesta.de/"><big><strong>edge.js</strong></big></a><br /><small>Simulates masked image edges! The script allows you to add individual masks (inc. inbuilt mask) to images on your webpages. Requires <b>no</b> plugin/extension but zero or more external mask images!</small></li>
+<li class="ml"><img src="../cvi/images/icons/reflex.png" border="0" alt="reflex.js" />&nbsp;&nbsp;<a class="lk" href="http://reflex.netzgesta.de/"><big><strong>reflex.js</strong></big></a><br /><small>Simulates a Cover Flow<sup>&trade;</sup> image effect! The script allows you to add individual borders, tiltings and reflections to images on your webpages. Requires <b>no</b> plugin/extension or any other external resource! <small><i>*Cover Flow is a trademark of Apple Inc.</i></small></small></li>
+<li class="ml"><img src="../cvi/images/icons/tripleb.png" border="0" alt="tripleb.js" />&nbsp;&nbsp;<a class="lk" href="http://tripleb.netzgesta.de/"><big><strong>tripleb.js</strong></big></a><br /><small>Simulates the CSS 3 beautifying features border-radius, box-shadow and background-gradient on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+</ul></div>
+
+<div class="foot">
+	<div class="tr">
+		<div class="td lf s13"></div>
+		<div class="td cf">
+			<span class="ft">
+				<a href="http://instant.netzgesta.de/" title="Current subdomain" class="wt"><strong>instant.netzgesta.de</strong></a> &copy; 2010 by <a class="overlay title lWOn wt" title="Contact the Author" href="../cvi/contact.php">Christian Effenberger</a>
+			</span>
+			<span class="bm">
+<a class="nop" href="http://www.netzgesta.de/cvi/rss/" title="Get feed" target="_blank">
+<img class="png" src="../cvi/images/icons/feed.png" border="0" width="16" height="16" alt="feed" /></a>
+&nbsp;<a class="nop" href="http://twitter.com/home?status=http://www.netzgesta.de/instant/" title="Bookmark this page on twitter.com" target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/twitter.png" border="0" width="16" height="16" alt="twitter" /></a>
+&nbsp;<a class="nop" href="http://www.facebook.com/sharer.php?u=http://www.netzgesta.de/instant/&amp;t=instant.js" title="Bookmark this page on facebook.com" target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/facebook.png" border="0" width="16" height="16" alt="facebook" /></a>
+&nbsp;<a class="nop" href="http://www.myspace.com/index.cfm?fuseaction=postto&amp;u=http://www.netzgesta.de/instant/&amp;t=instant.js" title="Bookmark this page on myspace.com" target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/myspace.png" border="0" width="16" height="16" alt="myspace" /></a>
+&nbsp;<a class="nop" href="http://del.icio.us/post?url=http://www.netzgesta.de/instant/&amp;title=instant.js" title="Bookmark this page on del.icio.us." target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/delicious.png" border="0" width="16" height="16" alt="delicious" /></a>
+&nbsp;<a class="nop" href="http://digg.com/submit?phase=2&amp;url=http://www.netzgesta.de/instant/&amp;title=instant.js" title="Digg this page on digg.com." target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/digg.png" border="0" width="16" height="16" alt="digg" /></a>
+&nbsp;<a class="nop" href="http://reddit.com/submit?url=http://www.netzgesta.de/instant/&amp;title=instant.js" title="Submit this page on reddit.com." target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/reddit.png" border="0" width="16" height="16" alt="reddit" /></a>
+&nbsp;<a class="nop" href="http://ma.gnolia.com/bookmarklet/add?url=http://www.netzgesta.de/instant/&amp;title=instant.js" title="Submit this page on ma.gnolia.com." target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/magnoliacom.png" border="0" width="16" height="16" alt="magnoliacom" /></a>
+&nbsp;<a class="nop" href="http://www.newsvine.com/_tools/seed&amp;save?u=http://www.netzgesta.de/instant/&amp;h=instant.js" title="Submit this page on newsvine.com." target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/newsvine.png" border="0" width="16" height="16" alt="newsvine" /></a>
+&nbsp;<a class="nop" href="http://www.furl.net/storeIt.jsp?u=http://www.netzgesta.de/instant/&amp;t=instant.js" title="Submit this page on furl.net." target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/furl.png" border="0" width="16" height="16" alt="furl" /></a>
+&nbsp;<a class="nop" href="http://www.google.com/bookmarks/mark?op=add&amp;bkmk=http://www.netzgesta.de/instant/&amp;title=instant.js" title="Bookmark this page on Google." target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/google.png" border="0" width="16" height="16" alt="google" /></a>
+&nbsp;<a class="nop" href="http://myweb2.search.yahoo.com/myresults/bookmarklet?u=http://www.netzgesta.de/instant/&amp;t=instant.js" title="Bookmark this page on Yahoo." target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/yahoo.png" border="0" width="16" height="16" alt="yahoo" /></a>
+&nbsp;<a class="nop" href="http://www.blinklist.com/index.php?Action=Blink/addblink.php&amp;Description=instant.js&amp;Name=instant.js&amp;Url=http://www.netzgesta.de/instant/" title="Bookmark this page on Blinklist." target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/blinklist.png" border="0" width="16" height="16" alt="blinklist" /></a>
+&nbsp;<a class="nop" href="http://www.mister-wong.de/index.php?action=addurl&amp;bm_url=http://www.netzgesta.de/instant/&amp;bm_description=instant.js" title="Bookmark this page on Mister-Wong." target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/wong.png" border="0" width="16" height="16" alt="mister-wong" /></a>
+			</span>
+		</div>
+		<div class="td rf s13"></div>
+	</div>
+</div>
+<script type="text/javascript">
+<!--
+var cvi_nme = new Array();
+var cvi_ttl = new Array();
+var path = "../cvi/";
+var inop = '';
+cvi_nme[0] = "loupe"; cvi_ttl[0] = "add a loupe (magnifier) to images";
+cvi_nme[1] = "shiftzoom"; cvi_ttl[1] = "zoom & pan functionality for oversized images";
+cvi_nme[2] = "snapfit"; cvi_ttl[2] = "add puzzle to images";
+cvi_nme[3] = "busy"; cvi_ttl[3] = "loading indicator for block-level elements";
+cvi_nme[4] = "mapper"; cvi_ttl[4] = "area highlighting for image maps";
+cvi_nme[5] = "slided"; cvi_ttl[5] = "add slide frames and shadow to images";
+cvi_nme[6] = "glossy"; cvi_ttl[6] = "add glossy shading and shadow to images";
+cvi_nme[7] = "corner"; cvi_ttl[7] = "add corners (and also shading and shadow) to images";
+cvi_nme[8] = "transm"; cvi_ttl[8] = "add image transitions to block-level elements";
+cvi_nme[9] = "gauge"; cvi_ttl[9] = "add programmable gauges to pages";
+cvi_nme[10] = "filmed"; cvi_ttl[10] = "add film strip and shadow to images";
+cvi_nme[11] = "instant"; cvi_ttl[11] = "add instant picture effect (including tilt) to images";
+cvi_nme[12] = "curl"; cvi_ttl[12] = "add page curl to images";
+cvi_nme[13] = "sphere"; cvi_ttl[13] = "add sphere effect to images";
+cvi_nme[14] = "bevel"; cvi_ttl[14] = "add bevels to images";
+cvi_nme[15] = "edge"; cvi_ttl[15] = "add edge masks to images";
+cvi_nme[16] = "reflex"; cvi_ttl[16] = "add cover flow to images";
+cvi_nme[17] = "tripleb"; cvi_ttl[17] = "add radius, shadow and gradient to block-level elements";
+buildMenus(0);
+addAccordion(0);
+-->
+</script>
+<script type="text/javascript" src="../cvi/scripts/overlay.js"></script>
+<script type="text/javascript" src="../cvi/scripts/unsaveable.js"></script>
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<title>terrill.ca | Vertical Bar Graphs using CSS and PHP</title>
+	<meta name="description" content="" />
+	<link rel="stylesheet" type="text/css" href="/styles/pretty_15.css" />
+	<link rel="stylesheet" type="text/css" href="pretty.css" />
+	<script src="graph.js" type="text/javascript"></script>
+	<script src="/mint/?js" type="text/javascript"></script>
+</head>
+<body class="bar">
+	<div id="about">
+		<h2><a href="/">terrill.ca</a></h2>
+		<ul id="nav">
+			<li ><a href="/">Blog</a><a class="rss" href="rss.php"><img src="/images/v4/rss.gif" /></a></li>
+			<li ><a href="/about/">About</a></li>
+			<li id="selected"><a href="/projects/">Projects</a></li>
+			<li ><a href="/archives/">Archives</a></li>
+		</ul>
+		
+		
+		<div style="float:right; margin-top:400px; padding-top:100px;background:url(/images/posts/sorter_promo.gif) top left no-repeat;">Like this tutorial? You might also enjoy my <a href="http://www.terrill.ca/sorting/">Javascript Table Sorter</a></div>
+		
+	</div>
+	<div id="main_content_full">
+		<h1>Vertical Bar Graphs with CSS and PHP</h1>
+
+		<span style="float:right; padding:1em;">
+		<script type="text/javascript">
+		digg_url = 'http://digg.com/design/Vertical_Bar_Graphs_with_CSS_and_PHP';
+		</script>
+		<script src="http://digg.com/tools/diggthis.js" type="text/javascript"></script>
+		</span>
+				
+		<p>Inspired by: <a href="http://meyerweb.com/eric/css/edge/bargraph/demo-table.html">Eric Meyer</a>, and necessity.</p>
+
+		<p>Who wants to use Excel to make a new graph each week? Using CSS and PHP you can create attractive bar graphs (yes, even the stacked kind) that are always up to date.</p>
+		
+		<ul>
+			<li><a href="#example">Example Implementation</a></li>
+			<li><a href="#print_list">Creating the list with PHP</a></li>
+			<li><a href="#basic_styles">Styling the graph with CSS</a></li>
+			<li><a href="#advanced_styles">Advanced Styles</a></li>
+		</ul>
+		
+		<h3 id="example">First, an Example</h3>
+		<p>Change the graph style: <span class="faux_link" onclick="switchGraph('bar')">Bar</span> | <span class="faux_link" onclick="switchGraph('line')">Line</span> | <span class="faux_link" onclick="switchGraph('dots')">Points</span> | <span class="faux_link" onclick="switchGraph('depthBar')">3D Bar</span>
+		<ul class="TGraph">
+				<li class="p1" style="height: 57px; left: 0px;" title="Today, 6 Feb 2007"><p>57</p></li>
+				<li class="p2" style="height: 27px; left: 0px;" title="Today, 6 Feb 2007"><p>27</p></li>
+				<li class="p3" style="height: 17px; left: 0px;" title="Today, 6 Feb 2007"><p>17</p></li>
+				
+				<li class="p1" style="height: 144px; left: 40px;" title="Monday, 5 Feb 2007"><p>144</p></li>
+				<li class="p2" style="height: 74px; left: 40px;" title="Monday, 5 Feb 2007"><p>74</p></li>
+				<li class="p3" style="height: 54px; left: 40px;" title="Monday, 5 Feb 2007"><p>54</p></li>
+				
+				<li class="p1" style="height: 153px; left: 80px;" title="Sunday, 4 Feb 2007"><p>153</p></li>
+				<li class="p2" style="height: 93px; left: 80px;" title="Sunday, 4 Feb 2007"><p>93</p></li>
+				<li class="p3" style="height: 73px; left: 80px;" title="Sunday, 4 Feb 2007"><p>73</p></li>
+				
+				<li class="p1" style="height: 152px; left: 120px;" title="Saturday, 3 Feb 2007"><p>152</p></li>
+				<li class="p2" style="height: 92px; left: 120px;" title="Saturday, 3 Feb 2007"><p>92</p></li>
+				<li class="p3" style="height: 68px; left: 120px;" title="Saturday, 3 Feb 2007"><p>68</p></li>
+				
+				<li class="p1" style="height: 152px; left: 160px;" title="Friday, 2 Feb 2007"><p>152</p></li>
+				<li class="p2" style="height: 92px; left: 160px;" title="Friday, 2 Feb 2007"><p>92</p></li>
+				<li class="p3" style="height: 72px; left: 160px;" title="Friday, 2 Feb 2007"><p>72</p></li>
+				
+				<li class="p1" style="height: 160px; left: 200px;" title="Thursday, 1 Feb 2007"><p>160</p></li>
+				<li class="p2" style="height: 100px; left: 200px;" title="Thursday, 1 Feb 2007"><p>100</p></li>
+				<li class="p3" style="height: 58px; left: 200px;" title="Thursday, 1 Feb 2007"><p>58</p></li>
+				
+				<li class="p1" style="height: 155px; left: 240px;" title="Wednesday, 31 Jan 2007"><p>155</p></li>
+				<li class="p2" style="height: 90px; left: 240px;" title="Wednesday, 31 Jan 2007"><p>90</p></li>
+				<li class="p3" style="height: 50px; left: 240px;" title="Wednesday, 31 Jan 2007"><p>50</p></li>
+				
+				<li class="p1" style="height: 150px; left: 280px;" title="Tuesday, 30 Jan 2007"><p>150</p></li>
+				<li class="p2" style="height: 80px; left: 280px;" title="Tuesday, 30 Jan 2007"><p>80</p></li>
+				<li class="p3" style="height: 62px; left: 280px;" title="Tuesday, 30 Jan 2007"><p>62</p></li>
+				
+				<li class="p1" style="height: 157px; left: 320px;" title="Monday, 29 Jan 2007"><p>157</p></li>
+				<li class="p2" style="height: 87px; left: 320px;" title="Monday, 29 Jan 2007"><p>87</p></li>
+				<li class="p3" style="height: 70px; left: 320px;" title="Monday, 29 Jan 2007"><p>70</p></li>
+				
+				<li class="p1" style="height: 167px; left: 360px;" title="Sunday, 28 Jan 2007"><p>167</p></li>
+				<li class="p2" style="height: 97px; left: 360px;" title="Sunday, 28 Jan 2007"><p>97</p></li>
+				<li class="p3" style="height: 66px; left: 360px;" title="Sunday, 28 Jan 2007"><p>66</p></li>
+			
+				<li class="p1" style="height: 180px; left: 400px;" title="Saturday, 27 Jan 2007"><p>180</p></li>
+				<li class="p2" style="height: 110px; left: 400px;" title="Saturday, 27 Jan 2007"><p>110</p></li>
+				<li class="p3" style="height: 92px; left: 400px;" title="Saturday, 27 Jan 2007"><p>92</p></li>
+				
+				<li class="p1" style="height: 180px; left: 440px;" title="Friday, 26 Jan 2007"><p>180</p></li>
+				<li class="p2" style="height: 110px; left: 440px;" title="Friday, 26 Jan 2007"><p>110</p></li>
+				<li class="p3" style="height: 95px; left: 440px;" title="Friday, 26 Jan 2007"><p>95</p></li>
+				
+				<li class="p1" style="height: 192px; left: 480px;" title="Thursday, 25 Jan 2007"><p>192</p></li>
+				<li class="p2" style="height: 122px; left: 480px;" title="Thursday, 25 Jan 2007"><p>122</p></li>
+				<li class="p3" style="height: 91px; left: 480px;" title="Thursday, 25 Jan 2007"><p>91</p></li>
+				
+				<li class="p1" style="height: 190px; left: 520px;" title="Wednesday, 24 Jan 2007"><p>190</p></li>
+				<li class="p2" style="height: 126px; left: 520px;" title="Wednesday, 24 Jan 2007"><p>126</p></li>
+				<li class="p3" style="height: 95px; left: 520px;" title="Wednesday, 24 Jan 2007"><p>95</p></li>
+				
+				<li class="p1" style="height: 183px; left: 560px;" title="Tuesday, 23 Jan 2007"><p>183</p></li>
+				<li class="p2" style="height: 130px; left: 560px;" title="Tuesday, 23 Jan 2007"><p>130</p></li>
+				<li class="p3" style="height: 95px; left: 560px;" title="Tuesday, 23 Jan 2007"><p>95</p></li>
+		</ul>
+		
+		<h3 id="print_list">Creating the List, using PHP</h3>
+		<p>We need to create a simple list, with three parameters on each &lt;li&gt; tag. Nesting is not required.</p>
+		<ol>
+			<li><strong>height:</strong> The height of that individual bar in pixels or <em>em</em>.</li>
+			<li><strong>left:</strong> The y-axis or horizontal offset for that bar group.</li>
+			<li><strong>class</strong>(optional): So we can style individual data sets.</li>
+		</ol>
+		<h4 class="code_title">1.0 Desired HTML </h4>
+<pre><code>
+&lt;ul class=&quot;barGraph&quot;&gt;  				
+	&lt;li class=&quot;p1&quot; style=&quot;height: 57px; left: 0px;&quot;&gt;57&lt;/li&gt;
+	&lt;li class=&quot;p2&quot; style=&quot;height: 27px; left: 0px;&quot;&gt;27&lt;/li&gt;
+	&lt;li class=&quot;p3&quot; style=&quot;height: 17px; left: 0px;&quot;&gt;17&lt;/li&gt;
+	
+	&lt;li class=&quot;p1&quot; style=&quot;height: 99px; left: 40px;&quot;&gt;99&lt;/li&gt; 
+	&lt;li class=&quot;p2&quot; style=&quot;height: 74px; left: 40px;&quot;&gt;74&lt;/li&gt;
+	&lt;li class=&quot;p3&quot; style=&quot;height: 54px; left: 40px;&quot;&gt;54&lt;/li&gt;
+	
+	...
+	
+&lt;/ul&gt;  
+</code></pre>
+		
+		
+	
+		
+		
+		<p>You won't always have an appropriate height value to display, in which case you will need to scale the data relative to your desired graph height. This code walks through the process.</p>
+		
+		<h4 class="code_title">1.1 Printing the HTML list using PHP</h4>
+<pre><code>
+function printGraph()
+{
+	$days = array();
+	$xOffset = 0;
+	$xIncrement = 40; // width of bars
+	$graphHeight = 500; // target height of graph
+	$maxResult = 1;
+	$scale = 1;
+	
+	// Database Connection Information
+	
+	// Connect to and select the database
+	
+	// Get the data and find max values
+	$result = mysql_query($query);
+	if (!$result) die(&quot;no results available!&quot;);
+	
+	while($row = mysql_fetch_assoc($result)) {
+		$days[$row['date']] = array( &quot;P1&quot; =&gt; $row['priority1']
+			, &quot;P2&quot; =&gt; $row['priority2']
+			, &quot;P3&quot; =&gt; $row['priority3']);
+	
+		//Check if this column is the largest
+		$total = $row['total'];
+		if($maxResult &lt; $total) $maxResult = $total;
+	}
+	mysql_free_result($result);
+	
+	// Set the scale
+	$scale = $graphHeight / $maxResult;
+	
+	echo '&lt;ul class=&quot;TGraph&quot;&gt;';
+	
+	foreach($days as $date =&gt; $values){
+		// Reverse sort the array
+		arsort($values);
+		
+		foreach($values as $priority =&gt; $num){ 
+			// Scale the height to fit in the graph
+			$height = ($num*$scale);
+			
+			// Print the Bar
+			echo &quot;&lt;li class='$priority' style='height: &quot;.$height.&quot;px; left: &quot;.$xOffset.&quot;px;' title='$date'&gt;$num&lt;br /&gt;$priority&lt;/li&gt;&quot;;
+		}
+		// Move on to the next column
+		$xOffset = $xOffset + $xIncrement;
+	}
+	echo '&lt;/ul&gt;';
+}
+</code></pre>
+
+
+		<h3 id="basic_styles">Styling the graph with CSS</h3>
+		<p>Once you've got your list printed, it is time to turn it into a bar graph. To get you started, <em>Figure 2.0</em> contains the minimum styles needed to complete the transformation. 
+		<h4 class="code_title">2.0 Basic Bar Graph</h4>
+<pre><code>
+.verticalBarGraph {
+	border-bottom: 1px solid #FFF;
+	height: 200px;
+	margin: 0;
+	padding: 0;
+	position: relative;
+	}
+	
+.verticalBarGraph li {
+	border: 1px solid #555;
+	border-bottom: none;
+	bottom: 0;
+	list-style:none;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	text-align: center;
+	width: 39px;
+	}
+</code></pre>
+		
+
+		<h3 id="advanced_styles">Adding some Style</h3>
+		<p>Figures 2.1 through 2.3 show the styles used on the example implementation above. There are endless possibilities are endless, these are just a few ideas. Please feel free to <a href="/contact.php">share your creations</a> with me, I would be delighted to see them.</p>
+		<h4 class="code_title">2.1 Fancy Bar Graph</h4>
+<pre><code>
+.barGraph {
+	background: url(images/horizontal_grid_line_50_pixel.png) bottom left;
+	border-bottom: 3px solid #333;
+	font: 9px Helvetica, Geneva, sans-serif;
+	height: 200px;
+	margin: 1em 0;
+	padding: 0;
+	position: relative;
+	}
+	
+.barGraph li {
+	background: #666 url(images/bar_50_percent_highlight.png) repeat-y top right;
+	border: 1px solid #555;
+	border-bottom: none;
+	bottom: 0; 
+	color: #FFF;
+	margin: 0; 
+	padding: 0 0 0 0;
+	position: absolute;
+	list-style: none;
+	text-align: center;
+	width: 39px;
+	}
+	
+.barGraph li.p1{ background-color:#666666 }
+.barGraph li.p2{ background-color:#888888 }
+.barGraph li.p3{ background-color:#AAAAAA }
+</code></pre>
+
+		<h4 class="code_title">2.2 Faux Line Graph</h4>
+<pre><code>
+.fauxLineGraph {
+	background: url(images/horizontal_line_2.png) bottom left;
+	border-bottom: 3px solid #333; 
+	font: 9px Helvetica, Geneva, sans-serif;
+	height: 200px;
+	margin: 1em 0; 
+	padding: 0;
+	position: relative; 
+	}
+.fauxLineGraph li {
+	border-top: 3px solid #555; 
+	border-bottom: none; 
+	color: #000;
+	bottom: 0; 
+	list-style: none;
+	margin: 0; 
+	padding: 0 0 0 0;
+	position: absolute; 
+	text-align: center; 
+	width: 39px; 
+	}
+
+.fauxLineGraph li.p1{ 
+	background: url(images/blue_shadow.png) repeat-x top right;
+	border-color: #4E536B; 
+	}
+.fauxLineGraph li.p2{ 
+	background: url(images/red_shadow.png) repeat-x top right; 
+	border-color: #355B31;
+	}
+.fauxLineGraph li.p3{ 
+	background: url(images/yellow_shadow.png) repeat-x top right; 
+	border-color: #88262B;
+	}
+</code></pre>
+
+
+		<h4 class="code_title">2.3 Dotted Graph</h4>
+<pre><code>
+.pointGraph {
+	background: url(images/horizontal_line_2.png) bottom left;
+	border-bottom: 3px solid #333; 
+	font: 9px Helvetica, Geneva, sans-serif;
+	height: 200px;
+	margin: 1em 0; 
+	padding: 0;
+	position: relative; 
+	}
+.pointGraph li {
+	border-bottom: none; 
+	bottom: 0; 
+	color: #000;
+	margin: 0; 
+	padding: 15px 0 0 0;
+	list-style: none;
+	position: absolute; 
+	text-align: center; 
+	width: 39px; 
+	}
+
+.pointGraph li.p1{ background: url(images/nav_step_1.png) no-repeat top center;}
+.pointGraph li.p2{ background: url(images/nav_step_4.png) no-repeat top center; }
+.pointGraph li.p3{ background: url(images/nav_step_6.png) no-repeat top center; }
+</code></pre>
+
+	</div>
+</body>
+</html>

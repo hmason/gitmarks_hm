@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>JavaScript Map API comparison</title>
+<meta name="description" content="In this post I'll compare performance and developer friendliness of JavaScript mapping APIs and dissect choices made by each platform that may affect your website." />
+<meta name="author" content="Niall Kennedy" />
+<meta name="application-name" content="Niall Kennedy's Weblog" />
+<meta name="viewport" content="width=780" />
+<meta name="generator" content="Movable Type Pro 5.04" />
+
+<meta name="og:type" content="article" /><meta name="og:title" content="JavaScript Map API comparison" /><meta name="og:url" content="http://www.niallkennedy.com/blog/2007/08/map-api-comparison.html" />
+<meta name="og:site_name" content="Niall Kennedy's Weblog" />
+<meta name="og:latitude" content="37.776142" />
+<meta name="og:longitude" content="-122.41293" />
+<meta name="og:locality" content="San Francisco" />
+<meta name="og:region" content="CA" />
+<meta name="og:postal-code" content="94103" />
+<meta name="og:country-name" content="USA" />
+<meta name="geo.position" content="37.776142,-122.41293" />
+<meta name="geo.placename" content="San Francisco, California" />
+<meta name="geo.region" content="US-CA" />
+<link rel="author" href="/about/" title="About Niall Kennedy" />
+<meta name="fb:admins" content="506640398" />
+<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="http://s.niallkennedy.com/favicon-stacked.ico" sizes="16x16 24x24 32x32 48x48" />
+<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="http://s.niallkennedy.com/favicon.ico" sizes="16x16" />
+<link rel="icon" type="image/png" href="http://s.niallkennedy.com/icon.png" sizes="16x16" />
+<link rel="icon" type="image/png" href="http://s.niallkennedy.com/icon24.png" sizes="24x24" />
+<link rel="icon" type="image/png" href="http://s.niallkennedy.com/icon32.png" sizes="32x32" />
+<link rel="icon apple-touch-icon" type="image/png" href="http://s.niallkennedy.com/icon57.png" sizes="57x57" />
+<link rel="icon" type="image/png" href="http://s.niallkennedy.com/icon64.png" sizes="64x64" />
+<link rel="icon apple-touch-icon" type="image/png" href="http://s.niallkennedy.com/icon72.png" sizes="72x72" />
+<link rel="icon apple-touch-icon" type="image/png" href="http://s.niallkennedy.com/icon114.png" sizes="114x114" />
+<link rel="icon" type="image/png" href="http://s.niallkennedy.com/icon128.png" sizes="128x128" />
+<link rel="icon apple-touch-startup-image" type="image/png" href="http://s.niallkennedy.com/startup.png" sizes="320x460" />
+<link rel="stylesheet" type="text/css" href="http://s.niallkennedy.com/css/design-min.css" media="screen, projection" />
+
+<link rel="apple-touch-icon" type="image/png" href="http://s.niallkennedy.com/icon57.png" />
+<link rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/us/" />
+<link rel="search" type="application/opensearchdescription+xml" href="http://www.niallkennedy.com/blog/opensearch.xml" title="Search Niall Kennedy's Weblog" />
+<link rel="alternate" type="application/atom+xml" href="map-api-comparison.atom" title="Entry and comments" />
+
+<link rel="alternate" type="application/atom+xml" title="All entries" href="http://www.niallkennedy.com/blog/index.atom" />
+<link rel="archives" href="http://www.niallkennedy.com/blog/" title="Niall Kennedy's Weblog" />
+
+
+<link rel="prev" href="http://www.niallkennedy.com/blog/2007/07/wordcamp-2007-dinner.html" title="WordCamp 2007 kickoff dinner" /><link rel="next" href="http://www.niallkennedy.com/blog/2007/08/apple-my-itunes-widgets.html" title="Apple My iTunes widgets" />
+<script type="text/javascript">if(window.top !== window.self){setTimeout(function(){window.top.location.href=window.self.location.href;},1);window.self.onload=function(evt){window.top.location.href=window.self.location.href}}</script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2/build/yuiloader-dom-event/yuiloader-dom-event.js"></script>
+</head>
+<body id="blog">
+<div id="frame" class="hfeed">
+<header><div id="header">
+<div id="nav-link"><a href="http://www.niallkennedy.com/blog/"></a></div>
+<hgroup><h1 id="title">JavaScript Map API comparison</h1>
+<h2 id="subtitle">In this post I'll compare performance and developer friendliness of JavaScript mapping APIs and dissect choices made by each platform that may affect your website.</h2></hgroup>
+<h4 id="subscribe"><a href="http://www.niallkennedy.com/blog/index.atom" type="application/atom+xml" rel="alternate">Feed</a></h4>
+</div></header>
+<div id="maincontent">
+<div class="post hentry"><article>
+<header><div class="date"><time pubdate datetime="2007-08-04T00:21:58Z"><abbr class="month" title="August">Aug</abbr><span class="day">03</span></time></div><!-- google_ad_section_start -->
+<h2 class="posttitle entry-title">JavaScript Map API comparison</h2></header>
+
+  <ul class="categories"><li><a href="http://www.niallkennedy.com/blog/programming/" rel="tag">Programming</a>/<a href="http://www.niallkennedy.com/blog/programming/web-services/" rel="tag">Web services</a></li></ul>
+
+  <div class="body entry-content">
+  <p>Mapping <abbr title="Application Programming Interface">API</abbr>s are some of the most popular data services on the web today. If you've ever visited a restaurant website, taken your car in for service or browsed a mash-up you've probably come across interactive and static map images powered by Google, Yahoo, Microsoft, or <abbr>AOL</abbr>. In this post I'll compare performance and developer friendliness of JavaScript mapping <abbr>API</abbr>s and dissect choices made by each platform that may affect your website.</p>
+
+<div style="text-align:center"><a href="http://www.niallkennedy.com/code/maps/"><img alt="Maps API comparison" src="http://files.niallkennedy.com/public/images/maps-api.png" width="430" height="274" /></a></div>
+
+<p>I chose my office location in San Francisco's South Park district as a basis of comparison. The area has large buildings, small alleys, one-way streets, and newly constructed roads and bridges. Each map is a 400-pixel square centered on my office using <abbr title="latitude">lat</abbr>/<abbr title="longitude">long</abbr> coordinates and marked with each service's default marker. I specified a small zoom control and no marker events for quick and minimal interaction across platforms. This simple test is my attempt to recreate what a flower shop, mechanic, or other business might place on their website to help visitors add context to an address.</p>
+
+<h3 id="map-performance">Performance</h3>
+
+<p>Every time you add a widget or other external feature to your website you are handing over part of your web page experience and performance to a third party. The responsiveness and total page load of these external services is one way obsessive geeks tune and tweak their sites for optimal performance. Let's take a look at how the major mapping players performed.</p>
+
+<table style="width:90%" id="mapstats">
+<caption>Map API performance</caption>
+<thead>
+<tr><th scope="col">Provider</th><th scope="col">Render (<abbr title="seconds">s</abbr>)</th><th scope="col">Size (<abbr title="kilobytes">KB</abbr>)</th><th scope="col">Files</th><th scope="col">Memory (<abbr title="megabytes">MB</abbr>)</th></tr>
+</thead>
+<tbody>
+<tr><td scope="row"><a href="http://www.niallkennedy.com/code/maps/yahoo.html" title="Yahoo! Maps API example">Yahoo!</a></td><td style="text-align:right">3.05</td><td style="text-align:right">207</td><td style="text-align:right">24</td><td style="text-align:right">13.43</td></tr>
+<tr><td scope="row"><a href="http://www.niallkennedy.com/code/maps/google.html" title="Google Maps API example">Google</a></td><td style="text-align:right">3.18</td><td style="text-align:right">223</td><td style="text-align:right">27</td><td style="text-align:right">19.8</td></tr>
+<tr><td scope="row"><a href="http://www.niallkennedy.com/code/maps/winlive.html" title="Microsoft Virtual Earth API example">Microsoft</a></td><td style="text-align:right">3.65</td><td style="text-align:right">236</td><td style="text-align:right">20</td><td style="text-align:right">13.9</td></tr>
+</tbody>
+</table>
+
+<p>Yahoo! offered the fastest performance, the smallest total download, and the smallest memory footprint in my tests. Microsoft's maps took a half-second longer to download and display than either of its competitors. Google had the highest total file count due to its mapping tile behavior.</p>
+
+<h4>Measurement Method</h4>
+
+<p>Map <abbr>API</abbr> performance was measured using <a href="http://www.mozilla.com/firefox/">Mozilla Firefox</a> and <a href="http://getfirebug.com/net.html">Firebug network monitoring</a> using a first-generation <a href="http://www.apple.com/macbookpro/">Apple MacBook Pro</a> connected to the Internet over cafe Wi-Fi in San Francisco. I restarted Firefox for each of the three performance tests and requested each service with a clean cache.</p>
+
+<h3>Closer look</h3>
+
+<p>If you take a closer look at each of the <abbr>API</abbr>s the performance impacts and general <abbr>API</abbr> design begin make a lot more sense. Increasing your domain count allows more parallel downloads but will also require a new <abbr title="Domain Name Service">DNS</abbr> lookup for each new domain.</p>
+
+<h4>Google Maps <abbr>API</abbr> 2.84</h4>
+
+<p>Google served its 27 files from six separate domains. Google placed 16 map files in my browser, covering a 4096 pixel square to deliver my 400 pixel square window, or 10 times the total requested area. If a site visitor clicks and drags your map they will not have to load another tile as they explore the immediate vicinity.</p>
+
+<h4>Yahoo! Maps <abbr>API</abbr> 3.7</h4>
+
+<p>Yahoo! Maps utilize the <abbr title="Yahoo User Interface">YUI</abbr> JavaScript library to interact with the page and handle new events. They are using old beta versions of <abbr>YUI</abbr> 2.0 libraries <a href="http://developer.yahoo.com/yui/dom/" title="YUI DOM utility"><abbr title="Document Object Model">DOM</abbr></a>, <a href="http://developer.yahoo.com/yui/event/" title="YUI Event utility">Event</a>, <a href="http://developer.yahoo.com/yui/dragdrop/" title="YUI Drag and Drop Utility">Drag and Drop</a>, and <a href="http://developer.yahoo.com/yui/animation/" title="YUI Animation utility">Animation</a>.</p>
+
+<p>Yahoo! served files from 4 domains including 9 map tiles. Yahoo! adds a map scale to each page, adding a few more images and functions to your total page load.</p>
+
+<h4>Windows Live Local Search Maps Virtual Earth <abbr>API</abbr> 5.0</h4>
+
+<p>Microsoft uses its <a href="http://asp.net/ajax/">ASP.net Ajax</a> ("Atlas") JavaScript libraries inside of your map view. The Virtual Earth <abbr>API</abbr> adds files and features you never asked for such as <abbr>CSS</abbr> files for traffic conditions and extra images typically used in its Dashboard interface.</p>
+
+<p>Microsoft rendered its map using only 6 tiles covering a 1500 pixel square, or about 4 times the requested map window.</p>
+
+<h3>Quick notes</h3>
+
+<p>My mapping test was a quick experiment to measure the strengths and weaknesses of various developer platforms and services. You can view <a href="http://www.niallkennedy.com/code/maps/" title="Mapping API test suite">my full test suite</a> and alter each comparison for your own needs.</p>
+
+<p>All of the mapping <abbr>API</abbr> providers offered similar street data but differentiated itself with add-ons and overlays.</p>
+
+<dl>
+<dt>Best developer site</dt>
+<dd><div style="text-align:center"><img alt="Virtual Earth Interactive SDK" src="http://files.niallkennedy.com/public/images/vesdk.png" width="129" height="98" /></div><p>Microsoft's <a href="http://dev.live.com/virtualearth/sdk/">Virtual Earth Interactive <abbr title="Software Development Kit">SDK</abbr></a> was the best-designed site for new map developers. I was able to easily browse examples, view each example on a live map, view source code, and dive deeper into each method's full documentation when needed. Microsoft helps upgraders quickly figure out what's new with a special call-out at the bottom of their dashboard.</p></dd>
+<dt>Best use of color</dt>
+<dd>Yahoo! Maps include color-coded neighborhoods, green parks, and dark blue water. The bright red freeways draw attention away from my points of interest. Yahoo! color-codes some building outlines but it's unclear how someone might decipher a pink office building or orange hotel.</dd>
+<dt>Best buildings</dt>
+<dd><div style="text-align:center"><img alt="ATT Park Virtual Earth" src="http://files.niallkennedy.com/public/images/attpark-map.png" height="127" width="191" /></div><p>Microsoft provided the best identification of major buildings in my tests. Their map showed the outline AT&amp;T Park, a baseball stadium home to the San Francisco Giants, and not just the plot of land.</p></dd>
+<dt>Best map design</dt>
+<dd>I prefer Google's map markers over the talk bubbles, pushpins, kites, and stars used by other services. Google's placement and size of street names was the easiest to read in my tests. Street names are repeated every few blocks so you're never too far away from the proper context.</dd>
+</dl>
+
+<p>I tried the <a href="http://www.mapquest.com/features/main.adp?page=developer_tools_oapi">MapQuest Open <abbr>API</abbr> beta</a> but found the documentation and learning process extremely frustrating. The MapQuest <abbr>API</abbr> provided no live drag events in my testing and seemed to prefer surrounding your map in a colored navigation frame and web form. MapQuest may be the current mapping leader, but its <abbr>API</abbr> is far behind the large web portals.</p>
+
+<p>I like the ideals behind the <a href="http://openstreetmap.org/">OpenStreetMap</a> but its United States coverage is almost non-existant.</p>
+
+<h3>Summary</h3>
+
+<p>Google Maps continues to dominate the mapping <abbr>API</abbr> space but there are some viable alternatives. Yahoo! and Microsoft may have an advantage bundling maps and other <abbr>API</abbr>s with their freely available JavaScript, Flash, and Silverlight libraries and frameworks while Google adds advanced features such as street-level views and Google Gadget <abbr title="information">info</abbr> windows.</p>
+
+<p>I'm glad big Internet portals are spending millions of dollars for online mapping supremacy I can easily integrate in my web applications. The mapping <abbr>API</abbr> space changes at least once every 6 months but I am still satisfied with my choice of <a href="http://startupsearch.org/map/company/">Google Maps on Startup Search</a>.</p>
+  
+  <!-- google_ad_section_end -->
+  </div>
+
+  <footer><ul class="meta">
+  <li class="time">Posted <time class="published" pubdate datetime="2007-08-04T00:21:58Z">on August  3, 2007 at  5:21<span class="suffix">PM</span></time></li>
+  <li class="time post-update">Updated at <time class="updated" datetime="2007-08-06T23:40:11Z"> 4:40<span class="suffix">PM</span></time></li>
+  <li class="permalink"><a href="http://www.niallkennedy.com/blog/2007/08/map-api-comparison.html" rel="bookmark">Permalink</a></li>
+  <li class="comments"><a href="http://www.niallkennedy.com/blog/2007/08/map-api-comparison.html#comments" rel="replies">Comments <strong>[4]</strong></a></li>
+  <li class="author vcard">By <a class="fn n url uid" href="/about/"><span class="given-name">Niall</span> <span class="family-name">Kennedy</span></a>, a <span class="title">web technologist</span> from <address class="adr"><span class="locality">San Francisco</span>, <span class="region">California</span>, <span class="country-name">United States</span></address></li>
+</ul></footer>
+
+</article></div>
+<!-- google_ad_section_start(weight=ignore) -->
+<div id="comments" class="robots-nocontent">
+    
+        
+    <h2>4 Comments</h2>
+    <p class="smaller">Commentary on <a href="#maincontent"><strong>"JavaScript Map API comparison"</strong></a>:</p>
+    <p class="smaller"><a type="application/atom+xml" rel="alternate" href="map-api-comparison.atom" title="JavaScript Map API comparison comments">Subscribe to new comments</a></p>
+    <ol id="readercomments">
+        
+        <li class="hentry readercomment" id="comment76669"><article>
+<header><p class="posted"><span class="vcard author"> <span class="fn entry-title"><a title="http://highearthorbit.com/" href="http://highearthorbit.com/" rel="nofollow">Andrew Turne</a></span></span> on <time class="updated published" pubdate datetime="2007-08-08T12:35:30Z">August  8, 2007 at  5:35 <span class="suffix">AM</span></time> wrote: <a rel="bookmark" href="http://www.niallkennedy.com/blog/2007/08/map-api-comparison.html#comment76669" title="Link to comment 76669">#</a></p></header>
+<div class="entry-content"><p>Of course, you could use <a href="http://mapstraction.com" rel="nofollow">Mapstraction</a>, write your map interface once, and then just switch to the map provider that you like the design/interface/loading speed of.</p></div></article>
+</li>
+
+        
+    
+        
+        <li class="hentry readercomment" id="comment77757"><article>
+<header><p class="posted"><span class="vcard author"> <span class="fn entry-title">Julian Skeels</span></span> on <time class="updated published" pubdate datetime="2007-08-17T10:17:31Z">August 17, 2007 at  3:17 <span class="suffix">AM</span></time> wrote: <a rel="bookmark" href="http://www.niallkennedy.com/blog/2007/08/map-api-comparison.html#comment77757" title="Link to comment 77757">#</a></p></header>
+<div class="entry-content"><p>And don't forget the <a href="http://www.multimap.com/openapi/" rel="nofollow">Multimap API</a>!</p></div></article>
+</li>
+
+        
+    
+        
+        <li class="hentry readercomment" id="comment77777"><article>
+<header><p class="posted"><span class="vcard author"> <span class="fn entry-title"><a title="http://emad.fano.us/blog/" href="http://emad.fano.us/blog/" rel="nofollow">emad</a></span></span> on <time class="updated published" pubdate datetime="2007-08-17T15:35:54Z">August 17, 2007 at  8:35 <span class="suffix">AM</span></time> wrote: <a rel="bookmark" href="http://www.niallkennedy.com/blog/2007/08/map-api-comparison.html#comment77777" title="Link to comment 77777">#</a></p></header>
+<div class="entry-content"><p>too many tiles = more HTTP connections = a longer wait time for users.</p>
+<p>serving from multiple domains/subdomains is a means to get around browser limitations that limit simultaneous downloads from the same domain/subdomain. this, too, is done for better performance for the user</p><p>also, lets not forget the quality of data by each...how often the aerial photos are taken, how accurate the geocoder is, etc.  Remember that some providers (such as google) uses different sources for maps api versus maps.google.com (licensing requirements, etc) and many of the features on their site are not built into the maps (i.e. 3D buildings)</p><p>One big thing that could get me to stop using an API is when that API starts showing advertisements on maps I am using on my sites.</p></div></article>
+</li>
+
+        
+    
+        
+        <li class="hentry readercomment" id="comment78851"><article>
+<header><p class="posted"><span class="vcard author"> <span class="fn entry-title"><a title="http://www.linking.to/GoogleTools/" href="http://www.linking.to/GoogleTools/" rel="nofollow">George</a></span></span> on <time class="updated published" pubdate datetime="2007-08-26T01:53:20Z">August 25, 2007 at  6:53 <span class="suffix">PM</span></time> wrote: <a rel="bookmark" href="http://www.niallkennedy.com/blog/2007/08/map-api-comparison.html#comment78851" title="Link to comment 78851">#</a></p></header>
+<div class="entry-content"><p>Great review, thanks.</p><p>I am a user, not a developer as you can see from my URL.</p><p>If anyone does that again, which mapping option allows anyone to show half a dozen locations that can be briefly annotated.</p><p>Thanks, George</p></div></article>
+</li>
+
+        
+    </ol>
+        
+    
+    <section><div class="comments-open yui-skin-sam" id="comments-open">
+  <header><h2 class="comments-open-header">Add a comment</h2></header>
+  <div class="comments-open-content">
+  <p class="comments-open-moderated">Some comments may be placed in a moderation queue to ensure topical relevancy. You may <a href="/about/contact.html" rel="nofollow">contact author Niall Kennedy</a> directly if you prefer to comment privately.</p>
+  <form method="post" action="http://www.niallkennedy.com/fcgi-bin/mt-comments.cgi" id="comments-form">
+  <fieldset id="comments-fields">
+    <input type="hidden" name="static" value="1" />
+    <input type="hidden" name="entry_id" value="1781" />
+    <input type="hidden" name="__lang" value="en" />
+    <div id="name-email">
+      <p><label for="comment-author">Name:</label><br /><input required id="comment-author" name="author" size="30" value="" /></p>
+      <p><label for="comment-email">E-mail Address:</label> <em>(not published)</em><br /><input required type="email" id="comment-email" name="email" size="30" value="" /></p>
+    </div>
+
+    <p><label for="comment-url"><abbr title="Uniform Resource Locator">URL</abbr>:</label><br /><input type="url" id="comment-url" name="url" size="30" value="" /></p>
+
+    <p id="comments-open-text"><label for="comment-text">Comment: <em>(you may use <abbr title="Hypertext Markup Language">HTML</abbr> elements for style and citations)</em></label><br /><textarea required id="comment-text" name="text" rows="10" cols="30"></textarea></p>
+
+    <div id="comments-open-footer">
+    <input type="image" accesskey="v" name="preview" id="comment-preview" src="http://s.niallkennedy.com/css/images/preview.gif" alt="preview comment" width="74" height="30" />&nbsp;<input type="image" name="post" accesskey="s" id="comment-post" src="http://s.niallkennedy.com/css/images/postcomment.gif" alt="Post comment" width="137" height="30" />
+    
+    </div>
+  </fieldset>
+  </form>
+  </div>
+    </div></section>
+
+
+</div>
+
+
+</div>
+  <div id="sidecontent">
+    <address><p class="about author vcard"><a rel="author" href="/about/" title="About Niall Kennedy" class="url uid"><img class="photo" src="http://s.niallkennedy.com/img/headshot.jpg" alt="Niall Kennedy" height="80" width="63" /></a> <strong><span class="fn"><span class="given-name">Niall</span> <span class="family-name">Kennedy</span></span> is a <span class="title">web technologist</span></strong> in <span class="adr" title="37.775802,-122.412874"><span class="locality">San Francisco</span>, <span class="region">California</span> in the <span class="country-name">United States</span></span>.  I am very interested in the world of... <a href="/about/" title="About Niall Kennedy">MORE &#187;</a></p></address>
+<section><header><h4 id="search-header"><strong>Search</strong> this weblog:</h4></header>
+<div class="sidebarbox">
+  <form id="sitesearch" method="get" action="http://www.niallkennedy.com/fcgi-bin/mt-search.cgi">
+    <div>
+    <input type="hidden" name="IncludeBlogs" value="1" />
+    <input type="search" id="search" name="search" accesskey="4" required />
+    <input type="image" id="searchsubmit" name="submit" alt="Submit search" src="http://s.niallkennedy.com/css/images/search.gif" width="82" height="30" />
+    </div>
+  </form>
+</div></section><section><header><h4><strong>Subscribe:</strong></h4></header>
+<div class="sidebarbox">
+<ul id="subscribe-list"><li id="directfeed"><a id="webfeed" rel="alternate" type="application/atom+xml" href="http://www.niallkennedy.com/blog/index.atom" title="Web feed">Subscribe to new posts</a></li></ul>
+</div></section><section><header><h4><strong>Recently Popular</strong></h4></header>
+<div class="sidebarbox">
+  <nav><ol class="feature">
+    <li><a href="http://www.niallkennedy.com/blog/2008/11/twitter-front-end-rewrite.html">Rewriting Twitter for web best practices</a></li>
+    <li><a href="http://www.niallkennedy.com/blog/2008/09/google-chrome.html">The story behind Google Chrome</a></li>
+    <li><a href="http://www.niallkennedy.com/blog/2008/04/google-app-engine.html">Google App Engine for developers</a></li>
+    <li><a href="http://www.niallkennedy.com/blog/2008/02/browser-history-sniff.html">Sniff browser history for improved user experience</a></li>
+    <li><a href="http://www.niallkennedy.com/blog/2008/01/data-portability-authentication-authorization.html">Data Portability, Authentication, and Authorization</a></li>
+    </ol></nav>
+</div></section><section><header><h4><strong>Archives:</strong> Popular Categories</h4></header>
+<div class="sidebarbox">
+<nav><ol>
+  <li><a href="http://www.niallkennedy.com/blog/software/social/widgets/" title="Widget development, widget ecosystem">Widgets</a></li>
+  <li><a href="http://www.niallkennedy.com/blog/programming/" title="Exciting new web application development">Programming</a></li>
+  <li><a href="http://www.niallkennedy.com/blog/business/" title="Web business and management">Business</a></li>
+  <li><a href="http://www.niallkennedy.com/blog/software/feed_aggregators/" title="Atom and RSS aggregation and distribution">Feed Aggregators</a></li>
+  <li><a href="http://www.niallkennedy.com/blog/search/" title="web search, multimedia search, and personal search solutions">Search</a></li>
+</ol></nav>
+</div></section>
+
+    
+  </div>
+    <footer><div id="footer"><strong>&#xA9; 2010 Niall Kennedy.</strong>  <a href="http://creativecommons.org/licenses/by-nc/3.0/us/" rel="license"><abbr title="Creative Commons">CC</abbr> Attribution Non-Commercial</a>.</div></footer>
+</div>
+<script type="text/javascript">
+YAHOO.util.Get.script('http:\/\/s.niallkennedy.com\/js\/site.js',{onSuccess:function(){NiallKennedy.setSearchInput('search');READERSNIFF.run();NiallKennedy.setEmailInput('comment-email');NiallKennedy.setURLInput('comment-url');}});
+YAHOO.util.Get.script('http:\/\/www.google-analytics.com\/ga.js',{onSuccess:function(){var pageTracker=_gat._getTracker('UA-20169016-1');pageTracker._trackPageview()}})
+</script>
+</body>
+</html>

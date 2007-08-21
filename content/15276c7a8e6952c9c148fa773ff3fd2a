@@ -1,0 +1,213 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Brad's Thoughts on the Social Graph</title>
+  <META HTTP-EQUIV='content-type' CONTENT='text/html; charset=utf-8'>
+<style type='text/css'>
+body {
+  margin-left: 5em;
+  max-width: 40em;
+  font-size: 110%;
+  line-height: 130%;
+  font-family: Georgia;
+}
+h1 {
+  line-height: 130%;
+}
+p {
+  margin-top: 0.5em;
+}
+h2 {
+  font-variant: small-caps;
+}
+ol ol { list-style-type: lower-alpha; }
+#authors { padding-bottom: 1em; }
+ol li { margin-top: 0.75em; }
+ol.toc li { margin-top: 0; }
+ul li { margin-top: 0.75em; }
+a.plink:visited, a.plink { color: #aaa; }
+blockquote { font-style: italic; }
+q { font-style: italic; }
+</style>
+</head>
+<body>
+
+<h1>Thoughts on the Social Graph</h1>
+
+<div id='authors'>
+Brad Fitzpatrick, <a href="mailto:brad@danga.com">brad@danga.com</a>, <i>author</i><br/>
+David Recordon, <a href="mailto:recordond@gmail.com">recordond@gmail.com</a>, <i>collaborator, editor</i><br/>
+2007-08-17
+</div>
+
+<center>
+<img src="gluey.png" width='270' height='255' alt='Glue your friends together!' title='Glue your friends together!' />
+</center>
+
+<p>I've been thinking a lot about the social graph for awhile now:  aggregating the graph, decentralization, social network portability, etc.</p>
+
+<p>If you've seen me at any conference recently, I probably talked your ear off about it.  I've gotten good at my verbal/visual presentations, showing <a href="social-graph.pdf">my slides</a>, pictures of graphs, and adapting my delivery to you based on your background, facial expressions, questions, etc.  This is all a lot harder to do in a blog post where the audience is so diverse, so I've been lazily putting it off.  I was also afraid that if I left anything out, I'd get flooded with comments like <q>But what about __________?  Clearly then all you say is wrong.</q>  But it's time I braindump this, so here goes....</p>
+
+<p>First off, before I explain what I've prototyped so far, and what I want to build (or see built) next, let me declare the problem statement, as I see it, and the underlying assumptions I've been making:</p>
+
+<ol class="toc">
+<li><a href='#problem'>Problem Statement</a></li>
+<li><a href='#goals'>Goals</a></li>
+<li><a href='#non-goals'>Non-Goals</a></li>
+<li><a href='#assumptions'>Assumptions</a></li>
+<li><a href='#devstatus'>Development Status</a></li>
+<li><a href='#future'>Future</a></li>
+<li><a href='#howhelp'>How You Can Help</a></li>
+<li><a href='#conclusion'>Conclusion</a></li>
+<li><a href='#related'>Related Work</a></li>
+</ol>
+
+<h2><a name='problem'>Problem Statement:</a>
+<a class='plink' href="#problem">&#x00b6;</a></h2>
+
+<p>There are an increasing number of new "social applications" as well as traditional application which either require the "social graph" or that could provide better value to users by utilizing information in the social graph.  What I mean by "social graph" is a the global mapping of everybody and how they're related, as <a href='http://en.wikipedia.org/wiki/Social_graph'>Wikipedia describes</a> and I talk about in more detail later.  Unfortunately, there doesn't exist a single social graph (or even multiple which interoperate) that's comprehensive and decentralized.  Rather, there exists hundreds of disperse social graphs, most of dubious quality and many of them walled gardens.</p>
+
+<p>Currently if you're a new site that needs the social graph (e.g. <a href="http://www.dopplr.com/">dopplr.com</a>) to provide one fun & useful feature (e.g. where are your friends traveling and when?), then you face a much bigger problem then just implementing your main feature. You also have to have usernames, passwords (or hopefully you use OpenID instead), a way to invite friends, add/remove friends, and the list goes on.  So generally you have to ask for email addresses too, requiring you to send out address verification emails, etc.  Then lost username/password emails.  etc, etc.  If I had to declare the problem statement succinctly, it'd be: <b>People are getting sick of registering and re-declaring their friends on every site.</b>, but also: <b>Developing "Social Applications" is too much work</b>.</p>
+
+<p>Facebook's answer seems to be that the world should just all be Facebook apps.  While Facebook is an amazing platform and has some amazing technology, there's a lot of hesitation in the developer / "Web 2.0" community about being slaves to Facebook, dependent on their continued goodwill, availability, future owners, not changing the rules, etc.  That hesitation I think is well-founded.  A centralized "owner" of the social graph is bad for the Internet.  I'm not saying anybody should ban Facebook, though!  Far from it.  It's a great product, and I love it, but the graph needs to exist outside of Facebook.  MySpace also has a lot of good data, but not all of it.  Likewise LiveJournal, Digg, Twitter, Zooomr, Pownce, Friendster, Plaxo, the list goes on.  More important is that any one of these sites shouldn't own it; nobody/everybody should.  It should just <i>exist</i>.</p>
+
+
+<h2><a name='goals'>Goals:</a>
+<a class='plink' href="#goals">&#x00b6;</a></h2>
+
+<ol>
+
+<li><a name='goals-asset' /><b>Ultimately make the social graph a community asset</b>, utilizing the data from all the different sites, but not depending on any company or organization as "the" central graph owner. <a class='plink' href="#goals-asset">&#x00b6;</a>
+  <ol>
+   <li><a name='goals-nonprofit' /><b>Establish a non-profit and open source software</b> (with copyrights held by the non-profit) which collects, merges, and redistributes the graphs from all other social network sites into one global aggregated graph. This is then made available to other sites (or users) via both public APIs (for small/casual users) and downloadable data dumps, with an update stream / APIs, to get iterative updates to the graph (for larger users)</li>
+
+   <li>While the non-profit's servers and databases will initially be centralized, <b>ensure that the design is such that others can run their own instances, sharing data with each other</b>.  Think '<a href="http://en.wikipedia.org/wiki/Git_(software)">git</a>', not '<a href="http://en.wikipedia.org/wiki/Subversion_(software)">svn</a>'.  Then whose APIs/servers you use is up to you, as a site owner.  Or run your own instance. <a class='plink' href="#goals-nonprofit">&#x00b6;</a></li>
+  </ol>
+</li>
+
+<li><a name='goals-devs'/><b>For developers</b> who don't want to do their own graph analysis from the raw data, the following high-level APIs should be provided: <a class='plink' href="#goals-devs">&#x00b6;</a>
+
+<ol>
+<li><b>Node Equivalence</b>, given a single node, say "brad on LiveJournal", return all equivalent nodes:  "brad" on LiveJournal, "bradfitz" on Vox, and 4caa1d6f6203d21705a00a7aca86203e82a9cf7a (my FOAF mbox_sha1sum).  See <a href="social-graph.pdf">the slides</a> for more info.</li>
+<li><b>Edges out and in, by node</b>.  Find all outgoing edges (where edges are equivalence claims, equivalence truths, friends, recommendations, etc).  Also find all incoming edges.</li>
+<li><b>Find all of a node's aggregate friends from all equivalent nodes, expand all those friends' equivalent nodes, and then filter on destination node type.</b>  This combines steps 1 and 2 and 1 in one call.  For instance, <q>Given 'brad' on LJ, return me all of Brad's friends, from all of his equivalent nodes, if those [friend] nodes are either 'mbox_sha1sum' or 'Twitter' nodes.</q>
+<li><b>Find missing friends of a node.</b>  Given a node, expand all equivalent nodes, find aggregate friends, expand them, and then report any missing edges.  This is the "let the user sync their social networking sites" API.  It lets them know if they were friends with somebody on Friendster and they didn't know they were both friends on MySpace, they might want to be.</li>
+</ol>
+
+<p>But more generally, for developers, enabling new kinds of apps we haven't been able to think of yet.</p>
+
+</li> <!-- /for developers -->
+
+<li><a name='goals-enduser'/><b>For end-users:</b> <a class='plink' href="#goals-enduser">&#x00b6;</a>
+    <ol>
+    <li><a name='goals-find' />A user should then be able to log into a social application (e.g. dopplr.com) for the first time, ideally but not necessarily with <a href="http://openid.net/">OpenID</a>, and be presented with a dialog like, <blockquote>"Hey, we see from public information elsewhere that you already have 28 friends already using dopplr, shown below with rationale about why we're recommending them (what usernames they are on other sites).  Which do you want to be friends with here?  Or click 'select-all'."</blockquote>  Also every so often while you're using the site dopplr lets you know if friends that you're friends with elsewhere start using the site and prompts you to be friends with them.  All without either of you re-inviting/re-adding each other on dopplr... just because you two already declared your relationship publicly somewhere else.  <b>Note:</b> some sites have started to do things like this, in ad-hoc hacky ways (entering your LJ username to get your other LJ friends from FOAF, or entering your email username/password to get your address book), but none in a beautiful, comprehensive way.<a class='plink' href="#goals-find">&#x00b6;</a></li>
+
+    <li><a name='goals-tools' />Deliver end-user tools (likely a browser add-on) to let users manage their social networks (whether the sites have cooperative APIs or not), syncing them with each other, or doing whatever they'd like, but according to the user's own policies.  While the tools will most likely add the most value with uncooperative sites, it must always be clear to users what is happening so that no one is ever tricked.  More on this later... <a class='plink' href="#goals-tools">&#x00b6;</a></li>
+
+   <li><a name='goals-userportable' />Make graph data as portable as documents are on a personal computer.  (though likely never using the word 'graph' to end-users) <a class='plink' href="#goals-userportable">&#x00b6;</a></li>
+    
+</ol></li> <!-- for end users -->
+
+</ol> <!-- goals -->
+
+
+<h2><a name='non-goals'>Non-Goals:</a>
+<a class='plink' href="#non-goals">&#x00b6;</a></h2>
+
+<ol>
+<li><a name='non-goals-replacefb' />The goal is <b>not</b> to replace Facebook.  In fact, most people I've talked to love Facebook, just want a bit more of their already-public data to be more easily accessible, and want to mitigate site owners' fears about any single data/platform lock-in.  Early talks with Facebook about participating in this project have been incredibly promising. <a class='plink' href="#non-goals-replacefb">&#x00b6;</a></li>
+
+<li><a name='non-goals-buildsite' />The goal is <b>not</b> to build a social networking site or anything that's fun for the end-user.  Rather, the goal is to build the guts that allow a thousand new social applications to bloom, like Dopplr, etc.  <q>Do one thing and do it well</q>.  It will be most powerful to instead merge little isolated social graphs into one big social graph and spread it far and wide, for all to enjoy. <a class='plink' href="#non-goals-buildsite">&#x00b6;</a></li></li>
+
+<li><a name='non-goals-replaceplaxo' />The goal is <b>not</b> to replace Plaxo.<a class='plink' href="#non-goals-replaceplaxo">&#x00b6;</a></li></li>
+
+<li><a name='non-goals-replaceblank' />The goal is <b>not</b> to replace __________.<a class='plink' href="#non-goals-replaceblank">&#x00b6;</a></li></li>
+
+</ol>
+
+
+<h2><a name='assumptions'>Assumptions:</a>
+<a class='plink' href="#assumptions">&#x00b6;</a></h2>
+
+<ol>
+<li><a name='assumptions-publiconly' />The social graph contains a combination of public nodes, private nodes, public edges, and private edges.  The focus is only on public data for now, as that's all you can spray around the net freely to other parties.  While focusing on public data doesn't solve 100% of the problem, it does solve, say, 90% of the problem at 10% of the complexity.  Private data can be added later, perhaps at a higher layer.  For now, only public data. <a class='plink' href="#assumptions-publiconly">&#x00b6;</a>
+</li>
+
+<li><a name='assumptions-focusfriends' />In addition, the focus is primarily on friend data, not data like photos (see <a href="http://www.movemydata.org/">movemydata.org</a>), and not Date of Birth, Hometown, Interests, etc.  There are plans on how to model a lot of that public non-content, non-friend profile data in the graph, and the plan is do that later, but that's definitely Phase Two.
+<a class='plink' href="#assumptions-focusfriends">&#x00b6;</a></li>
+
+<li><a name='assumptions-sitetypes' />There are both cooperative sites and uncooperative sites.  Almost universally every small site I've talked to wants to cooperate, realizing their graphs are incomplete and that's not their speciality... they just need the social graph to do their thing. They don't care where it comes from and they don't mind contributing their relatively small amount of data to making the global shared graph better.  Uncooperative sites, on the other hand, are the ones that are already huge and either see value in their ownership of the graph or are just large enough to be apathetic on this topic.  Please note that "uncooperative" doesn't mean "actively fighting it", but rather that they might just not prioritize supporting this.  In any case, it must (and will) work with both types of sites over time. <a class='plink' href="#assumptions-sitetypes">&#x00b6;</a>
+</li>
+
+<li><a name='assumptions-wontswitch' />The world won't switch en masse to anybody's "social networking interop protocol", pet XML format, etc.  It simply won't happen.  This must all work supporting any and all ways of data collection, change notification, etc.  Cute new protocols and XML/YAML/JSON formats for cooperative sites will help (and have already started to be deployed with a few early cooperative sites), but by and large, most sites won't be cooperative at first, and some (e.g. MySpace) might not ever ever support this.  This is going to happen one site at a time and without everybody speaking the same protocols.  That said, this project will use open standards, microformats, etc in all data that is republished in, say, widgets (for those users who like widgets) <a class='plink' href="#assumptions-wontswitch">&#x00b6;</a></li>
+
+<li><a name='assumptions-dontcare' />Most users don't care about XML, protocols, standards, data formats, centralization vs decentralization, silos, lock-in, etc.  You, the reader of this document, are not a normal user.  To reach the normal users, we must provide them value:  some functionality, ease, bling, utility that they can't get elsewhere.  Good data begets users, and users begets good data.  There are a bunch of ideas on how to bootstrap this cycle.  More on that later, but fortunately a lot of the good data is already publicly accessible via good APIs and open data formats. <a class='plink' href="#assumptions-dontcare">&#x00b6;</a></li>
+
+<li><a name='assumptions-addons' />Requiring browser add-ons or other end-user downloads is a nonstarter.  This all must run primarily on the web.  Some functionality for some (uncooperative) sites will require a browser plugin, but most won't. <a class='plink' href="#assumptions-addons">&#x00b6;</a></li>
+
+<li><a name='assumptions-browsers' />While a browser add-on most likely will be used to facilitate friending/defriending and data acquisition on the user's behalf for certain uncooperative sites, their browser must never be used (thus their IP address and user-agent string) to gather and report data that isn't theirs.  For instance, collecting their friends on a site like MySpace (if they configure it to) is okay, but scraping their friends-of-friends isn't cool because that isn't <i>their</i> data.  It's either those friends' data or MySpace's... definitely not the user who downloaded the add-on. <a class='plink' href="#assumptions-browsers">&#x00b6;</a></li>
+
+<li><a name='assumptions-dontsync' />It's recognized that users don't always want to auto-sync their social networks.  People use different sites in different ways, and a "friend" on one site has a very different meaning of a "friend" on another.  The goal is to just provide sites and users the raw data, and they can use it to implement whatever policies they want.
+<a class='plink' href="#assumptions-dontsync">&#x00b6;</a></li>
+
+</ol>
+
+<h2><a name='devstatus'/>Development Status:</a>
+<a class='plink' href="#devstatus">&#x00b6;</a></h2>
+
+As of 2007-08-16, a lot of the above has already been prototyped:
+<ol>
+<li>got the data to 5 large social networks, modeled them in the graph</li>
+<li>prototyped working implementations of the APIs above (lot of room for performance optimizations, caching, and parallelism, but wanted to get correctness first)</li>
+  <ol>
+    <li>Was able to find all my missing LiveJournal and Vox friends, based on my relationships elsewhere.</li>
+  </ol>
+<li>start of a Firefox plug-in to work with MySpace</li>
+<li>start of a website to let users declare extra public nodes, node equivalences, and relationships that aren't otherwise automatically picked up (website to include fun stats and widgets, as enticement for users to go there, as well as browser add-on downloads, to sync different sites, if they choose to do that)</li>
+
+<li>...</li>
+
+</ol>
+
+<h2><a name='future'/>Future:
+<a class='plink' href="#future">&#x00b6;</a></h2>
+
+<p>David Recordon has <a href="http://daveman692.livejournal.com/310424.html">announced that he's going to SixApart</a>, largely to work on this sort of stuff.  Plaxo is also doing interesting stuff in this regard.  Eventually companies will build free and paid services atop this data, like trust/reputation APIs, which will help Movable Type & Wordpress bloggers with identifying comment spam (once you have an OpenID-authenticated comment, you have a node, but then use the APIs to find out if that node is <q>good</q>).
+</p>
+
+<p>In any case, a lot of people are working on this lately, and taking different approaches.  It's quite likely that multiple groups will converge to work on this together, similar to how many groups got together to work on OpenID.</p>
+
+<h2><a name='howhelp'/>How You Can Help:
+<a class='plink' href="#howhelp">&#x00b6;</a></h2>
+
+
+<p>You run a social networking site and have some node/edge (user/friend) data, or want to beta test some of the APIs?  Get in touch... <a href="http://groups.google.com/group/social-network-portability">join the Google Group</a>.</p>
+
+<p>End-user who wants to try out the non-techy website and tools?  You're here early.  :)  Limited beta access for testers will be announced later, by whoever ends up building this.</p>
+
+<h2><a name='conclusion'/>Conclusion:
+<a class='plink' href="#conclusion">&#x00b6;</a></h2>
+
+<p>I'm excited about this.  Start thinking about how you can take advantage of stuff like this.  It's going to be cool.</p>
+
+<h2><a name='related'/>Related & Semi-Related Work
+<a class='plink' href="#related">&#x00b6;</a></h2>
+<ul>
+<li><a href="http://adactio.com/journal/1328">http://adactio.com/journal/1328</a> - Jeremy Keith seems to be into this all too, perhaps with a slightly different approach.  That's good.  This needs to be attacked from a dozen angles.</li>
+<li><a href="http://microformats.org/wiki/social-network-portability">http://microformats.org/wiki/social-network-portability</a> - wiki rounding up people's thoughts.  seems microformat-focused?  Not sure.  I maintain that everybody adopting one format or API at once isn't going to work.  I don't want to build something for just geeks, but for all users, working with popular sites today.</li>
+<li><a href="http://movemydata.org/">http://movemydata.org/</a> -- desktop software to download your photos, sync them to other photo sites, etc.  more desktop- and content-focused than this.</li>
+<li><a href="http://www.wired.com/software/webservices/news/2007/08/open_social_net">http://www.wired.com/software/webservices/news/2007/08/open_social_net</a> -- even Wired is sick of the silos</li>
+</ul>
+
+<h2>Want to comment?</h2>
+<p>
+Leave your comments <a href="http://brad.livejournal.com/2338553.html">on this post</a>, if you'd like.  Or <a href="http://groups.google.com/group/social-network-portability">join the Google Group</a>, which David created.</p>
+
+<script type="text/javascript">
+digg_url = "http://radar.oreilly.com/archives/2007/08/opening_up_the.html";
+</script>
+<script src="http://digg.com/tools/diggthis.js" type="text/javascript"></script>
+
+
+</body>
+</html>

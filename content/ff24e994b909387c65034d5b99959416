@@ -1,0 +1,456 @@
+<html>
+
+<!-- ------------------------------------------------- -->
+<!--  SCHILLMANIA! - DHTML ARKANOID PROJECT V1.2 BETA  -->
+<!-- ------------------------------------------------- -->
+<!--                                                   -->
+<!-- -- [ ABOUT ] ------------------------------------ -->
+<!--                                                   -->
+<!-- Created in 2002. Pardon the occasional deviance   -->
+<!-- from the W3C standards we've all grown to love ;) -->
+<!--                                                   -->
+<!-- An attempt at recreating the classic arcade game  -->
+<!-- entirely in the browser using DHTML (HTML/CSS/JS) -->
+<!-- Developed and tested on a 433-MHz Intel Celeron   -->
+<!--                                                   -->
+<!-- ---[ RECENT CHANGES ]---------------------------- -->
+<!--                                                   -->
+<!-- VERSION 1.2a - 07/2007                            -->
+<!--  * Added basic Apple iPhone support! (v1.0)       -->
+<!--                                                   -->
+<!-- VERSION 1.2 - 02/2007                             -->
+<!--  * Updated timeout to interval-based animation    -->
+<!--  * Added XHR ("ajax"), updating JS load technique -->
+<!--  * Added URL hash bookmarking for user levels     -->
+<!--  * Added support for Safari + Opera, IE 7 tweaks  -->
+<!--  * Fixed event handling - drag+drop, mouse move   -->
+<!--    under Firefox, Safari, Opera                   -->
+<!--  * Fixed broken/cached image preload case         -->
+<!--  * Made preload optional (doesn't deny launch)    -->
+<!--  * Fixed visual overflow on laser, exit sequence  -->
+<!--                                                   -->
+<!-- VERSION 1.1 - 2003                                -->
+<!--  * Help/About section added                       -->
+<!--  * Sound/SFX support for Mozilla (finally)        -->
+<!--  * Improved error handling for browsers w/o flash -->
+<!--                                                   -->
+
+<!-- VERSION 1.0B                                      -->
+
+<!--  * Mozilla compatible! (tested on win32 so far)   -->
+<!--  * Ball speed-up bug fixed (now works properly)   -->
+<!--  * jsLoad() bug fix                               -->
+<!--  * Laser powerup "no warp" (event handling) fixed -->
+<!--  * Icon replacement of text-based top menu/"nav"  -->
+<!--  * Filtering of inappropriate/suggestive levels   -->
+<!--  ..(Yes, even with a 13x20 grid you get the idea) -->
+<!--  * Various other corrections/improvements         -->
+<!--                                                   -->
+<!-- VERSION 0.995A                                    -->
+<!--  * Highscore tracking (top 10) implemented        -->
+<!--  * Level browser "preview" image/generator added  -->
+<!--  * All original arcade levels (minus bosses) done -->
+<!--  * "Iterations/second" counter added to top menu  -->
+<!--  * Removal of pop-up window requirement           -->
+
+<!--  * Browser resize handling (game auto-centering)  -->
+<!--  * Game pause / "home" link added to console      -->
+
+<!--                                                   -->
+<!-- ---[ GENERAL DISCLAIMER STUFF ]------------------ -->
+<!--                                                   -->
+<!-- Not responsible for headaches, lost time or loss  -->
+<!-- of productivity, girlfriends etc. as a result of  -->
+<!-- trying to make sense of this code! .. It is bad!  -->
+<!-- However, feedback is appreciated as always!       -->
+<!--                                                   -->
+<!-- ---[ MISCELLANEOUS ] ---------------------------- -->
+<!--                                                   -->
+<!-- Comments, questions etc: email "s" at this domain -->
+
+<head>
+<title>DHTML Arkanoid V1.2B | Schillmania!</title>
+
+<meta name="language" content="en-us" />
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+<meta name="description" content="On display: DHTML Arkanoid, an attempt at recreating the classic Arkanoid entirely in Javascript. The creative and technical work of Scott Schiller, also known as 'Schill'." />
+<meta name="keywords" content="Scott Schiller, Schill, Schillmania, experimental web design, dhtml arkanoid, dhtml breakout, javascript arkanoid, javascript breakout" />
+<meta name="robots" content="all" />
+<meta name="author" content="Scott Schiller" />
+<meta name="copyright" content="Copyright (C) 1997 onwards, Scott Schiller" />
+<base href="http://www.schillmania.com/arkanoid/" />
+<link rel="stylesheet" type="text/css" href="arkanoid.css" />
+<style type="text/css">
+/* apple iPhone (at least r1.0? :D) doesn't do document.onmousedown. Therefore, fake it with a stub element. */
+#iphonetarget {
+ position:absolute;
+ left:0px;
+ bottom:0px;
+ height:64px;
+ margin-left:32px;
+ width:400px;
+ background:transparent;
+ border:none;
+}
+#iphonetarget:active {
+ background:transparent;
+}
+#iphonetarget:focus {
+ outline:none;
+}
+#iphone-note {
+ position:absolute;
+ left:70px;
+ top:-64px;
+}
+</style>
+<script type="text/javascript" src="highscores.js"></script>
+<script type="text/javascript" src="arkanoid-v1.2b.js"></script>
+<!--
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+<script type="text/javascript">
+_uacct = "UA-3081630-2";
+if (typeof urchinTracker != 'undefined') urchinTracker();
+</script>
+-->
+<script type="text/javascript" src="/common/stats.js"></script>
+</head>
+
+<body>
+
+<div id="arkanoidContainer">
+
+ <img id="bg1" src="image/bg_left.gif" alt="" class="hidden" />
+
+ <div id="bg2" class="hidden">
+  <img src="image/bg_top.gif" alt="" class="absLeftTop" />
+  <div id="topBar">
+  <!-- status / highscore etc. goes here -->
+  <div id="topBarControls" class="vAlignTop"><img src="image/btn_divider.gif" alt="" style="margin-left:5px" /><img id="o_sfx" src="image/sfx_1.gif" onclick="options.toggleOption(this,'sfx')" title="In-game Sound Effects | Click to toggle." class="button" style="position:absolute;top:0px;margin-left:8px;margin-top:4px;display:none" /></div>
+  </div>
+ </div>
+
+ <img id="bg3" src="image/bg_right.gif" alt="" class="hidden" />
+</div>
+
+<div id="initContainer"><span style="font-family:Tahoma, Verdana;font-size:48px;color:#dddddd;line-height:45px">INITIALIZING</span> <img src="image/ohlookitsgottabeajax.gif" alt="Loading" style="width:32px;height:32px"><br /><span class="smallText" style="color:#999999;display:none">&nbsp;PLEASE WAIT . . .</span></div>
+<div id="mainContainer">
+ <div id="iphone-note"></div>
+ <div style="position:absolute;left:64px;top:-60px">
+  <div id="preStart0" /></div>
+  <img id="preBall0" src="image/ball_static.gif" alt="" onmouseover="setStart(0,1)" onmouseout="setStart(0,0)" onclick="launch()" />
+ </div>
+
+ <div style="position:absolute;left:108px;top:-60px">
+  <img id="preBall1" src="image/ball_static.gif" alt="" onmouseover="setStart(1,1)" onmouseout="setStart(1,0)" onclick="launch('levelBrowser')" style="margin-top:17px" />
+
+ </div>
+ <div style="position:absolute;left:152px;top:-60px">
+  <img id="preBall2" src="image/ball_static.gif" alt="" onmouseover="setStart(2,1)" onmouseout="setStart(2,0)" onclick="launch('levelEditor')" style="margin-top:17px" />
+ </div>
+ <img id="prePaddle" src="image/paddle_static.gif" alt="" />
+ <img id="pre0" src="image/preload_0.gif" alt="" title="Preload not working?&#10;Click to bypass." onclick="preloadComplete()" class="button" />
+
+ <img id="pre1" src="image/preload_1.gif" alt="" />
+ <img id="ohlookitsgottabeajax" src="image/ohlookitsgottabeajax.gif" alt="Loading..." style="position:absolute;right:32px;top:101px" />
+ <!--<img id="pre2" src="image/preload_2.gif" alt="" />-->
+
+ <br />
+
+ <div id="mainCopy">
+ <h1 class="allCaps">SCHILLMANIA! | DHTML Arkanoid Version 1.2 Beta</h1>
+ <div class="allCaps">
+
+  This is an attempt at recreating the classic "Arkanoid" in Object-Oriented<br />
+  Javascript/DHTML. Updated February 2007, supports Firefox, Opera + Safari.<br />
+ </div>
+
+ <br />
+
+ <b style="letter-spacing:1px" class="allCaps">Technical Requirements / Supported Browsers</b><br />
+
+ <li>HARDWARE: 800x600 screen/sound card/decent CPU (designed on a Celeron-433)</li>
+
+ <li>SOFTWARE: Supported browser/Flash 5.0 (DHTML-driven SFX support)</li>
+ <br />
+
+ <table border="0" cellpadding="0" cellspacing="0" style="width:385px;margin-top:3px">
+
+ <tr>
+  <td align="center" style="width:40px;height:40px;padding:3px"><img src="image/ie_0.gif" alt="Internet Explorer 5.0+ | Best overall speed." /></td>
+  <td align="center" style="width:40px;padding:3px"><img src="image/mozilla_0.gif" alt="Mozilla/Phoenix | Second-best choice." /></td>
+  <td align="center" style="width:40px;padding:3px"><img src="image/netscape_0.gif" alt="Netscape 6 | Slow, but works!" /></td>
+
+  <td align="center" style="width:40px;padding:3px"><img src="image/win32_0.gif" alt="Win98/2000/XP | Use IE 6+ on 2K or XP for best results."></td>
+  <td style="padding:5px">Designed and tested on these browsers under Win98/Win2K/WinXP/Mac OSX (where applicable)</td>
+ </tr>
+ <tr>
+
+  <td align="center">IE 5.0</td>
+  <td align="center">Moz. 1.0</td>
+  <td align="center">NS 6.0</td>
+
+  <td align="center">Win32</td>
+  <td>&nbsp;</td>
+ </tr>
+ </table>
+
+ <br />
+
+ <b style="letter-spacing:1px">UPDATED BROWSER SUPPORT, 2007:</b><br />
+ <li>Apple iPhone (hardware v1.0)</li>
+ <li>Safari 1.3.2</li>
+ <li>Opera 9</li>
+
+ <br />
+
+ <b style="letter-spacing:1px" class="allCaps">Known bugs/issues</b><br />
+
+ <li>Occasional "undeclared/undefined" Javascript errors</li>
+ <li>Laser fire "misses" on right side</li>
+
+ <li>Left field margin slightly off</li>
+ <br />
+
+ <b style="letter-spacing:1px" class="allCaps">To do</b><br />
+
+ <li>Bug fixes, code improvements etc.</li>
+ <li><s>SFX support for Mozilla</s> (done)</li>
+
+ <li><s>All original levels</s> (done)</li>
+ <li><s>Highscore tracking</s> (done)</li>
+
+ <br />
+ <br />
+ <span id="aboutLinks" class="smallText">Code and images by Scott Schiller | <a href="http://www.schillmania.com" title="schillmania.com: the personal, experimental dhtml playground of Scott Schiller" target="_blank">Experimental DHTML playground</a> | <a href="http://www.scottschiller.com" title="Scott Schiller - Technical Work and Experience Portfolio site" target="_blank">Technical Portfolio</a></span>
+
+ </div>
+</div>
+
+<div id="aboutArkanoid" class="arkanoidContainer">
+ <h1>ABOUT ARKANOID</h1>
+ <div>Arkanoid was one of the first "Breakout"-style games, to the best of my knowledge. It was very popular in the 80's, and I remember playing it when I was younger. The arcade game was pretty hard to play too, because you had to use a paddle to control the .. paddle.. or maybe it was just because I was around 6 years old at the time ;)</div>
+ <div style="margin-top:3px">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px">
+  <tr>
+
+   <td width="100%" valign="top"><div style="text-align:justify;margin-right:4px;margin-top:3px">Some time in 1988 my family got an 8-MHz 8088 PC, and I got a copy of "Arkanoid: Revenge Of DOH" on a 5 1/4" floppy from a friend.. ah, the good old says of casual floppy-based file sharing. Anyways, needless to say I logged my fair share of time playing that game. It had all the features I remembered from the arcade game, and also included a level editor. When I started working on this DHTML rendition of Arkanoid, I remembered how cool the editor feature was and made a point of adding one in. One thing I do remember omitting is the ability to select which bricks hold power-ups (the PC version let you do this), but I figured it was minor enough that it wouldn't be missed if left out ;) Aside from that, almost everything else is there.</div></td>
+   <td><img src="image/help/arkanoid_screenshot.gif" alt="Screenshot from Arkanoid: Revenge Of DOH" width="223" height="256" /></td>
+
+  </tr>
+  </table>
+ </div>
+
+ <h1>BASICS</h1>
+ <p><span>HOW TO PLAY</span>: Click to launch the ball, then keep it alive by bouncing it back at the bricks. Destroy bricks for points and power-ups. To pass the level, you must eliminate all "destroyable" bricks.</p>
+
+ <h1 style="margin-top:8px">BRICK TYPES</h1>
+
+ <p>Arkanoid has various types of bricks which make up the levels; each brick has an associated hit count and point value. These have been recreated from the original game as closely as possible. Some bricks have special behaviors associated with them (for example, the "not destroyable" condition - where the brick does not need to be destroyed in order to finish the level.) These behaviors are listed in the "special notes" section of the description.</p>
+
+ <table id="brickTable" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top:8px;margin-bottom:12px">
+ <!-- Tables are still bad. -->
+ <!-- This is tabular data, however.. sort of ;) -->
+
+ <tr>
+
+  <td class="aboutItem"><div><img src="image/brick/gold.gif" id="aboutBrickGold" alt="Gold (click to demo hit)" onclick="if(this.alt)this.alt='Gold';if(!this.active){this.active=1;this.src='image/brick/gold_1.gif';setTimeout('with(document.getElementById(\'aboutBrickGold\')){src=\'image/brick/gold.gif\';active=0}',750)}" class="button" /><br /></div></td>
+  <td><div class="aboutItemCopy"><span>GOLD</span><br />Hits: Unlimited<br />Point value: 500<br /><div>SPECIAL NOTES</div><br />- Not counted as a "destroyable" brick<br />- Indestructible (with the exception of the Mega ball)<br /></div></td>
+
+ </tr>
+
+ <tr>
+  <td colspan="2" style="font-size:1px;height:8px"></td>
+
+ </tr>
+
+ <tr>
+  <td class="aboutItem"><div><img src="image/brick/funky.gif" id="aboutBrickFunky" alt="Funky (click to demo hit)" onclick="if(this.alt)this.alt='Funky';help.brickDemo(this.id)" class="button" /></div></td>
+  <td><div class="aboutItemCopy"><span>FUNKY</span><br />Hits: 2<br />Point value: 50<br /><div>SPECIAL NOTES</div><br />- Not counted as a "destroyable" brick<br />- Respawns 3 seconds after being destroyed<br />- Hit count increases to 3 at level 10, then to 4 at level 20<br />- I couldn't think of a very good name for this one, hence "Funky" :)</div></td>
+
+ </tr>
+
+ <tr>
+  <td colspan="2" style="font-size:1px;height:8px"></td>
+ </tr>
+
+ <tr>
+  <td class="aboutItem"><div><img src="image/brick/grey.gif" alt="Grey" /></div></td>
+  <td><div class="aboutItemCopy"><span>GREY</span><br />Hits: 2<br />Point value: 50<br /><div>SPECIAL NOTES</div><br />- Hit count increases to 3 at level 10, then to 4 at level 20</div></td>
+
+ </tr>
+
+ </table>
+  
+ <h1>POWER-UPS</h1>
+ <p>Note: The capsule styles are derived from the original game, but the names may be slightly different. (I had to guess what the full name was.) The "Frequency" rating is a percentage of how often you can expect to get that particular capsule. It is based on Math.random() however, so expect mixed results.</p>
+ <p style="margin-bottom:5px">Power-ups are mutually exclusive, meaning that you can only have one power-up effect at a time - they cannot be combined.</p>
+
+ <table id="capTable" border="0" cellpadding="0" cellspacing="0" width="100%">
+
+ <tr>
+  <td class="aboutItem"><div><img src="image/capsule/b.gif" alt="Bypass level" /></div></td>
+  <td><div class="aboutItemCopy"><span>BYPASS</span>: Allows you to exit the current level without having to destroy all of the usual bricks. You can choose to keep playing also, and you won't die if all balls are lost.<br /><div>Frequency: Low - 2%</div></div></td>
+ </tr>
+
+ <tr>
+  <td colspan="2" style="font-size:1px;height:8px"></td>
+
+ </tr>
+
+ <tr>
+  <td class="aboutItem"><div><img src="image/capsule/c.gif" alt="Catch" /></div></td>
+  <td><div class="aboutItemCopy"><span>CATCH</span>: Makes balls "stick" to the paddle on contact, and release (all at once) on the next mouse click.<br /><div>Frequency: Average - 2%</div></div></td>
+ </tr>
+
+ <tr>
+
+  <td colspan="2" style="font-size:1px;height:8px"></td>
+ </tr>
+
+ <tr>
+  <td class="aboutItem"><div><img src="image/capsule/d.gif" alt="Disrupt (Disruption)" /></div></td>
+  <td><div class="aboutItemCopy"><span>DISRUPT</span>: Spawns eight additional balls. The spawn occurs from the highest ball on the screen at the time.<br /><div>Frequency: Average - 10%</div></div></td>
+ </tr>
+
+ <tr>
+  <td colspan="2" style="font-size:1px;height:8px"></td>
+ </tr>
+
+ <tr>
+  <td class="aboutItem"><div><img src="image/capsule/e.gif" alt="Extend" /></div></td>
+  <td><div class="aboutItemCopy"><span>EXTEND</span>: Extends the paddle by 50%, making it easier to hit balls. Unlike some versions of Arkanoid, Extend only works once (ie. getting an Extend 2 or more times in a row will not make the paddle larger)<br /><div>Frequency: Average - 10%</div></div></td>
+
+ </tr>
+
+ <tr>
+  <td colspan="2" style="font-size:1px;height:8px"></td>
+ </tr>
+
+ <tr>
+  <td class="aboutItem"><div><img src="image/capsule/i.gif" alt="Intelligent Shadow" /></div></td>
+  <td><div class="aboutItemCopy"><span>INTELLIGENT SHADOW</span>: Officially named T for "Tail" in the original, this was renamed to avoid confusion. This power-up creates a trailing "shadow" that follows the paddle, and can bounce balls just the same as the paddle. The refraction is different though, so beware!<br /><div>Frequency: Average - 10%</div></div></td>
+
+ </tr>
+
+ <tr>
+  <td colspan="2" style="font-size:1px;height:8px"></td>
+ </tr>
+
+ <tr>
+  <td class="aboutItem"><div><img src="image/capsule/l.gif" alt="Laser" /></div></td>
+  <td><div class="aboutItemCopy"><span>LASER</span>: Gives the paddle laser-firing ability. Two "turrets" appear on the paddle with this power-up, and lasers are fired on every mouse click. A laser does the same amount of brick damage that a ball does, but you have the advantage of aim-and-fire with the lasers.<br /><div>Frequency: Average - 10%</div></div></td>
+
+ </tr>
+
+ <tr>
+  <td colspan="2" style="font-size:1px;height:8px"></td>
+ </tr>
+
+ <tr>
+  <td class="aboutItem"><div><img src="image/capsule/m.gif" alt="Mega" /></div></td>
+  <td><div class="aboutItemCopy"><span>MEGA</span>: Transforms all active balls to blue "Mega" balls, which rip through any and all bricks without bouncing. They do speed up as through they bounced every time they hit a brick though, so be ready for some fast-moving balls if you get this power-up.<br /><div>Frequency: Low - 3%</div></div></td>
+
+ </tr>
+
+ <tr>
+  <td colspan="2" style="font-size:1px;height:8px"></td>
+ </tr>
+
+ <tr>
+  <td class="aboutItem"><div><img src="image/capsule/n.gif" alt="Node" /></div></td>
+  <td><div class="aboutItemCopy"><span>NODE</span>: Similar to Disrupt, but creates three respawning balls. That is, the highest ball respawns (creating "nodes") until there are three balls on the screen. Keep at least one alive, and it will spawn two more to bring the total back to three. Watch out for quick speeding up though, as the spawned balls inherit the speed of their parent!<br /><div>Frequency: Average - 10%</div></div></td>
+
+ </tr>
+
+ <tr>
+  <td colspan="2" style="font-size:1px;height:8px"></td>
+ </tr>
+
+ <tr>
+  <td class="aboutItem"><div><img src="image/capsule/p.gif" alt="Player" /></div></td>
+  <td><div class="aboutItemCopy"><span>PLAYER</span>: "Free life" by any other name. This power-up does not give the paddle any special powers, but as it is a power-up it will reset any other power-up effect - although a free life may be more important than a temporary power-up anyways, depending on how you play :)<br /><div>Frequency: Low - 2%</div></div></td>
+
+ </tr>
+
+ <tr>
+  <td colspan="2" style="font-size:1px;height:8px"></td>
+ </tr>
+
+ <tr>
+  <td class="aboutItem"><div><img src="image/capsule/r.gif" alt="Restrict" /></div></td>
+  <td><div class="aboutItemCopy"><span>RESTRICT</span>: This power-up has both a good and a bad side to it. On the upside, any points you earn will be doubled before being added to your total score. On the downside, the paddle is reduced to 2/3 of its original size, making it harder to keep the ball going. (This power-up capsule is noticeably smaller as a reminder, also.) Definitely handy if you're going for a highscore, although you might not live as long!<br /><div>Frequency: Average - 10%</div></div></td>
+
+ </tr>
+
+ <tr>
+  <td colspan="2" style="font-size:1px;height:8px"></td>
+ </tr>
+
+ <tr>
+  <td class="aboutItem"><div><img src="image/capsule/s.gif" alt="Slow" /></div></td>
+  <td><div class="aboutItemCopy"><span>SLOW</span>: Slows down all active balls by 33% of their current speed or to a predefined minimum speed, whichever is higher.<br /><div>Frequency: Average - 10%</div></div></td>
+
+ </tr>
+
+ <tr>
+  <td colspan="2" style="font-size:1px;height:8px"></td>
+ </tr>
+
+ <tr>
+  <td class="aboutItem"><div><img src="image/capsule/t.gif" alt="Twin" /></div></td>
+  <td><div class="aboutItemCopy"><span>TWIN</span>: Splits the paddle into two slightly-smaller twin paddles - overall slightly larger than the Extend power-up, but there is a risk of losing the ball in the gap through the middle. The angle at which the twin paddles reflect is also slightly different than the others.<br /><div>Frequency: Average - 10%</div></div></td>
+
+ </tr>
+
+ </table>
+
+ <br />
+
+ <h1>GAME CONTROLS</h1>
+ <p><span>MOUSE</span>: Paddle/game navigation control (Left-click for using some power-ups)<br /><span>SPACE BAR</span>: Game pause/resume shortcut (Applicable only when playing a game)</p>
+
+ <p>The primary game controls are icons located at the top left. They allow you to switch between arcade game, level browse and edit modes. Additionally, there are icons for showing the highscores list and this help page.</p>
+
+ <h1 style="margin-top:12px">MISCELLANEOUS</h1>
+
+ <div style="margin-left:5px;margin-top:5px" class="aboutCopy">
+  <p><span>WHO</span><br /><a href="http://www.scottschiller.com" target="_blank">Scott Schiller</a>: Web Developer, wannabe-comedian, all-around-geek</p>
+  <p><span>WHAT</span><br /><a href="http://www.schillmania.com" target="_blank">SCHILLMANIA!</a>: Experimental DHTML design, focusing on interactive applications</p>
+
+  <p><span>WHERE</span><br />Canada</p>
+  <p><span>WHY</span><br />Why DHTML? .. Client-side animation and Object-Oriented Programming is cool.</p>
+  <p><span>WHEN</span><br />October 2002 - January 2003</p>
+ </div>
+
+</div>
+
+<div style="position:absolute;left:-706px;top:-706px;width:1px;height:1px">
+<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" id="f0" width="1" height="1">
+ <param name="movie" value="null.swf">
+ <param name="quality" value="high">
+ <param name="bgcolor" value="#ffffff">
+ <embed id="f0moz" name="f0moz" src="arkanoid_audio.swf" width="1" height="1" play="false" loop="false" quality="high" scale="showall" pluginspage="http://www.macromedia.com/go/flashplayer"></embed>
+</object>
+
+<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" id="f1" width="1" height="1">
+ <param name="movie" value="splash_audio.swf">
+ <param name="quality" value="high">
+
+ <param name="bgcolor" value="#ffffff">
+ <embed id="f1moz" name="f1moz" src="splash_audio.swf" width="1" height="1" play="false" loop="false" quality="high" scale="showall" pluginspage="http://www.macromedia.com/go/flashplayer"></embed>
+</object>
+</div>
+
+<!-- reinvigorate -->
+<script type="text/javascript" src="http://include.reinvigorate.net/re_.js"></script>
+<!--
+<script type="text/javascript">if (typeof re_ != 'undefined') re_("23057-9k04pp853q");</script>
+-->
+<script>
+try {
+reinvigorate.track("23057-9k04pp853q");
+} catch(err) {}
+</script>
+</body>
+</html>

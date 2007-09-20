@@ -1,0 +1,609 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+<HEAD>
+	<meta http-equiv='Content-type' content='text/html;charset=UTF-8' />
+	<TITLE>Xobni - Outlook Plugin to Search People, Email, and Attachments Instantly</TITLE>
+	<meta NAME="description" CONTENT="Xobni is an Outlook plugin that helps you search and organize your inbox. Download Xobni's Outlook plugin instantly.">
+	<meta NAME="title" CONTENT="Xobni - Outlook Plugin to Search People, Email, and Attachments Instantly">
+	<link rel='stylesheet' href='/csscache/1291147037/styles/global.css' type='text/css'>
+
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js"></script>
+
+	<script language="javascript">
+		function toggleclass(theClass){
+			$('#verbose').toggle();
+		}
+	</script>
+	<script src="/javascripts/jquery.base64.min.js"></script>
+	<script src="/javascripts/jquery.json-2.2.min.js"></script>
+	<link rel="shortcut icon" href="/favicon.ico">
+	<link rel="alternate" type="application/rss+xml" title="Xobni: take back your inbox RSS Feed" href="http://www.xobni.com/blog/feed/" />
+	<style>
+	body {
+		background-position: center 490px;
+	}
+	#header {
+		background: #557eb0 url('http://swift.xobni.com/images/structure/homepageaug10/header_bg.gif') no-repeat center bottom;
+	}
+	#headertabs .selected {
+		background-position: 0px 0px;
+	}
+	#homesplash {
+		height: 420px;
+		background: #557eb0 url('http://swift.xobni.com/images/structure/homepageaug10/home_bg.gif') repeat-x left bottom;
+	}
+	#homeinner {
+		width: 850px;
+		margin: 0 auto;
+	}
+	#homebillboard {
+		width: 550px;
+		height: 400px;
+		float: left;
+		margin: 20px 0 0 0;
+		overflow: hidden;
+		background-image: none;
+	}
+	.homebillboardscreens {
+		width: 550px;
+		height: 1200px;
+		
+	}
+	#homebillboard h1 {
+		font-size: 30px;
+	}
+	#homebillboard h2 {
+		margin-top: 18px;
+		font: normal 18px/24px Calibri, Helvetica, Arial, sans-serif;
+	}
+	#homebillboard p strong {
+		font-weight: bold;
+	}
+	.homebillboarddesc {
+		width: 550px;
+		height: 400px;
+		top: 0px;
+		left: 0px;
+		background: url('http://swift.xobni.com/images/structure/homepageaug10/home_products_splash.gif') no-repeat 0px 0px;
+		cursor: pointer;
+	}
+	.homebillboarddesc cite {
+		white-space: nowrap;
+		color: #a6d5ed;
+	}
+	#homebillboard_outlook {
+		display: none;
+	}
+	#homebillboard_plus {
+		background-position: 0px -400px;
+	}
+	#homebillboard_mobile {
+		background-position: 0px -800px;
+		display: none;
+	}
+	#homebillboard_outlook h1 {
+		padding-top: 190px;
+		width: 420px;
+	}
+	#homebillboard_outlook h2 {
+		width: 300px;
+	}
+	#homebillboard_plus {
+		position: relative;
+	}
+	#homebillboard_plus h1 {
+		position: absolute;
+		left: 270px;
+		top: 120px;
+		font-size: 36px;
+	}
+	#homebillboard_plus h2 {
+		font-size: 18px;
+		position: absolute;
+		left: 270px;
+		top: 180px;
+		width: 270px;
+	}
+	#homebillboard_mobile {
+		text-align: center;
+		width: 550px;
+	}
+	#homebillboard_mobile h1 {
+		font-size: 35px;
+		margin-top: 10px;
+	}
+	#homebillboard_mobile p {
+		font-size: 24px;
+		margin-top: 10px;
+	}
+	#homeproducts {
+		width: 300px;
+		height: 400px;
+		margin: 20px 0 0 0;
+		float: left;
+		text-align: left;
+		background: url('http://swift.xobni.com/images/structure/homepageaug10/home_products_bg.gif') no-repeat left bottom;
+		color: #a6d5ed;
+	}
+	.homeproduct {
+		height: 118px;
+		border-bottom: solid 1px #699bd9;
+		margin-left: 12px;
+		background: url('http://swift.xobni.com/images/structure/homepageaug10/home_product_hover.jpg') no-repeat left -390px;
+		padding-top: 12px;
+	}
+	.homeproduct.hover, .homeproduct.primary {
+		color: white;
+		cursor: pointer;
+	}
+	.homeproduct.outlook.hover {
+		background-position: 0px 0px;
+	}
+	.homeproduct.plus.hover {
+		background-position: 0px -130px;
+	}
+	.homeproduct.mobile.hover {
+		background-position: 0px -260px;
+	}
+	.homeproduct h2 {
+		font-size: 138.5%;
+		font-weight: bold;
+		padding-top: 6px;
+	}
+	.homeproduct a {
+		color: #93c0dc;
+		text-decoration: none;
+	}
+	.homeproduct.hover a, .homeproduct.primary a {
+		color: white;
+	}
+	.homeproduct h2 a small {
+		margin-left: 6px;
+	}
+	.homeproduct .homeicon {
+		background: url('http://swift.xobni.com/images/structure/homepageaug10/home_products_icons.gif') no-repeat 0px 6px;
+		padding: 6px 0 0 42px;
+		margin-left: 6px;
+	}
+	.homeproduct:hover .homeicon, .homeproduct.primary .homeicon {
+		background-position: -300px 6px;
+	}
+	.homeproduct.plus .homeicon {
+		background-position: 0px -124px;
+	}
+	.homeproduct.plus:hover .homeicon {
+		background-position: -300px -124px;
+	}
+	.homeproduct.mobile .homeicon {
+		background-position: 0px -254px;
+	}
+	.homeproduct.mobile:hover .homeicon {
+		background-position: -300px -254px;
+	}
+	.homeproduct .homectas {
+		margin-top: 12px;
+	}
+	.homeproduct a.homecta, .homeproduct a.homecta span {
+		background: #add5ed url('http://swift.xobni.com/images/structure/homepageaug10/home_btn_cta.gif') no-repeat left top;
+		display: block;
+		display: inline-block;
+		cursor: pointer;
+	}
+	.homeproduct a.homecta {
+		height: 36px;
+		color: #355775;
+		margin-right: 12px;
+	}
+	.homeproduct a.homecta span {
+		background-position: right top;
+		margin-left: 6px;
+		font: normal 16px/16px Calibri, Helvetica, Arial, sans-serif;
+		padding: 9px 12px 0px 6px;
+		height: 27px;
+		font-weight: bold;
+	}
+	.homeproduct.hover a.homecta, .homeproduct.primary a.homecta {
+		background-position: left bottom;
+	}
+	.homeproduct.hover a.homecta span, .homeproduct.primary a.homecta span {
+		color: #355775;
+		background-position: right bottom;
+	}
+	.homeproduct a.homelearnmore {
+		color: #84afcf;
+		font-family: Calibri, Helvetica, Arial, sans-serif;
+	}
+	.homeproduct.hover a.homelearnmore {
+		text-decoration: underline;
+		color: white;
+	}
+	#main {
+		background: #ffffff url('http://swift.xobni.com/images/structure/homepageaug10/home_main_bg.gif') no-repeat left top;
+		padding-bottom: 60px;
+	}
+	#main a {
+		font-weight: bold;
+	}
+	.homemaincol, .homeenterprise {
+		width: 250px;
+		float: left;
+		padding: 30px 12px;
+		color: #355775;
+	}
+	.homeenterprise {
+		padding: 140px 12px 0 12px;
+		width: 257px;
+		margin-left: 14px;
+		background: url('http://swift.xobni.com/images/structure/homepageaug10/enterprise_bg.gif') no-repeat 3px top;
+	}
+	.homemaincol h3, .homeenterprise h3 {
+		font-size: 123.1%;
+		font-weight: bold;
+		color: #77abd4;
+	}
+	.homemaincol a, .homeenterprise a {
+		text-decoration: none;
+	}
+	.homemaincol a:hover, .homeenterprise a:hover {
+		text-decoration: underline;
+	}
+	.homemaincol blockquote {
+		margin-top: 30px;
+	}
+	.homemaincol cite {
+		color: #77abd4;
+	}
+	#hometweets a {
+		font-weight: normal;
+	}
+	.productupdate {
+		background-position: left top;
+		background-repeat: no-repeat;
+		padding: 12px 0 18px 100px;
+		margin-top: 24px;
+		min-height: 90px;
+		cursor: pointer;
+	}
+	.productupdate strong {
+		font-weight: bold;
+	}
+	.productupdate.box {
+		background-image: url('http://swift.xobni.com/images/structure/homepageaug10/news_box.gif');
+	}
+	.productupdate.gadgets {
+		background-image: url('http://swift.xobni.com/images/structure/homepageaug10/news_gadgets.gif');
+	}
+	.productupdate.huddle {
+		background-image: url('http://swift.xobni.com/images/structure/homepageaug10/news_huddle.gif');
+	}
+	.homeenterprise p { 
+		margin-top: 12px;
+	}
+	.homeenterprise blockquote {
+		color: #5494c8;
+		font: normal 16px/21px Georgia;
+		text-align: center;
+		padding: 24px 0px;
+		margin: 24px 0 0 0;
+		border-top: solid 1px #c9e0ed;
+		border-bottom: solid 1px #c9e0ed;
+	}
+	.homeenterprise blockquote cite {
+		display: block;
+		text-align: right;
+		color: #355775;
+		font: normal 12px Calibri, Arial, sans-serif;
+		margin-top: 12px;
+	}
+	.twtr-widget {
+		margin-top: 12px;
+		font-family: Helvetica, Arial, sans-serif !important;
+		font-size: 13px;
+	}
+	.twtr-widget p {
+		line-height: 1.6em !important;
+	}
+	.twtr-hd, .twtr-ft {
+		display: none;
+	}
+	.twtr-timeline {
+		height: auto !important;
+	}
+</style>
+</HEAD>
+<BODY>
+
+
+	
+	<div id="header">
+				<div id="headerinner">
+					<ul id="headertabs">
+						<li id="header_home"><a href="/">Home</a></li><li class=""><a href="/download" id="header_download" class="">Download</a></li><li class=""><a href="/products" id="header_products" class="enablepulldown">Products</a></li><li class=""><a href="/enterprise" id="header_enterprise" class="enablepulldown">Enterprise</a></li><li class=""><a href="/learnmore/video" id="header_videos" class="">Videos</a></li><li class=""><a href="/press/testimonials" id="header_testimonials" class="">Testimonials</a></li><li class=""><a href="/developer" id="header_developers" class="">Developers</a></li></ul>
+					<div id="auxheader">
+						<div id="auxheaderinner">
+                            
+							<a href='/account/'>Log In</a>
+							<a id="header_partners" href="/partners">Partners</a>
+							<a href="/about">Company Info</a>
+							<a href="/support">Support</a>
+							<a href="/blog">Blog</a>
+						</div>
+					</div>
+				<div class="pulldownmenu preload"><!----></div>
+				</div>
+			   </div>
+			   
+				
+
+<div id="homesplash">
+	<div id="homeinner">
+		<div id="homebillboard" class="none">
+			<div class="homebillboardscreens">
+				<div id="homebillboard_outlook" class="homebillboarddesc" onclick="location.href='/download';">
+					<h1>Take control of your inbox.</h1>
+					<h2 style="margin-left: 80px;">&quot;Xobni for Outlook includes a blazing fast email search tool.&quot; <cite>&mdash;CNET Downloads, 7/14/2009</cite></h2>
+					<h2>Now available for Outlook 2010.</h2>
+				</div>
+				<div id="homebillboard_plus" class="homebillboarddesc">
+					<h1>Xobni Plus</h1>
+					<h2>&quot;Xobni is a must-have Outlook <nobr>plug-in</nobr>. <img src="http://swift.xobni.com/images/structure/homepageaug10/plus_4outof5stars.gif" width=83 height=13 border=0 /> &quot; <cite>&mdash;PC Magazine (Editor's Choice),<br />&nbsp;&nbsp;&nbsp;&nbsp;8/17/2010</cite></h2>
+				</div>
+				<div id="homebillboard_mobile" class="homebillboarddesc">
+					<h1>All your contacts. All the time.</h1>
+					<h2>&quot;In my opinion, Xobni is one of the few 'absolutely must have' apps for BlackBerry.&quot; <cite>&mdash;Crackberry, Adam Zeis, 3/16/2010</cite></h2>
+				</div>
+			</div>
+		</div>
+		<div id="homeproducts">
+			<div class="homeproduct outlook" onclick="location.href='/learnmore';">
+				<div class="homeicon">
+					<h2><a href="/learnmore" rel="outlook">Xobni for Outlook</a></h2>
+					<h3>Lightning-fast search &amp; profile creation.</h3>
+					<div class="homectas">
+						<a href="/download"  onClick="recordClicksOnPage(this, 'click', '/homepage/homeproducts/xobnifree'); return false;" class="homecta primary"><span>Get Free</span></a> <a href="/learnmore" class="homelearnmore">Learn More</a>
+					</div>
+				</div>
+			</div>
+			<div class="homeproduct plus primary" onclick="location.href='/plus';">
+				<div class="homeicon">
+					<h2><a href="#" rel="plus">Xobni Plus <small><strike style="font-weight: normal;">$49.95</strike>&nbsp;&nbsp;$29.95</small></a></h2>
+					<h3>Xobni for Outlook with premium features.</h3>
+					<div class="homectas">
+						<a href="/order" onClick="recordClicksOnPage(this, 'click', '/homepage/homeproducts/xobniplus'); return false;" class="homecta"><span>Buy Now</span></a> <a href="/plus" class="homelearnmore">Learn More</a>
+					</div>
+				</div>
+			</div>
+			<div class="homeproduct mobile" onclick="location.href='/mobile';" style="border-bottom: none;">
+				<div class="homeicon">
+					<h2><a href="#" rel="mobile">Xobni Mobile <small><strike style="font-weight: normal;">$9.99</strike>&nbsp;&nbsp;$1.99</small></a></a></h2>
+					<h3>New! Get Xobni on your BlackBerry.</h3>
+					<div class="homectas">
+						<a href="/order/blackberry" onClick="recordClicksOnPage(this, 'click', '/homepage/homeproducts/xobnimobile'); return false;" class="homecta"><span>Buy Now</span></a> <a href="/mobile" class="homelearnmore">Learn More</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<br class="cl" />
+	</div>
+	<br class="cl" />
+</div>
+<div id="main">
+	<div class="homemaincol">
+		<h3>Favorite Tweets</h3>
+		
+		<script src="http://widgets.twimg.com/j/2/widget.js"></script>
+		<script>
+		new TWTR.Widget({
+		  version: 2,
+		  type: 'faves',
+		  rpp: 4,
+		  interval: 6000,
+		  title: '',
+		  subject: '',
+		  width: 250,
+		  height: 500,
+		  theme: {
+		    shell: {
+		      background: '#ffffff',
+		      color: '#ffffff'
+		    },
+		    tweets: {
+		      background: '#ffffff',
+		      color: '#355775',
+		      links: '#0066cc'
+		    }
+		  },
+		  features: {
+		    scrollbar: false,
+		    loop: false,
+		    live: true,
+		    hashtags: true,
+		    timestamp: true,
+		    avatars: true,
+		    behavior: 'all'
+		  }
+		}).render().setUser('xobni').start();
+		</script>
+		<blockquote>
+			<a href="/press/testimonials">More testimonials</a>
+		</blockquote>
+	</div>
+	<div class="homemaincol">
+		<h3>Product Updates</h3>
+		<div class="productupdate huddle" style="margin-top: 0;" onclick="location.href='/huddle-outlook';">
+			<p style="margin-top: 5px;">Bring <strong>Huddle</strong> into Xobni for Outlook to share files, tasks, and ideas with your contacts. <a href="/huddle-outlook">Learn more</a></p>
+		</div>
+		<div class="productupdate gadgets" onclick="location.href='/developer';">
+			<p>Xobni's <strong>Developer Preview</strong> now allows you to build your own applications in Outlook. <a href="/developer">Learn more</a></p>
+		</div>
+	</div>
+	<div class="homeenterprise">
+		<h3><a href="/enterprise">Xobni Enterprise</a></h3>
+		<p>Leverage the power of Xobni to connect your organization and improve productivity on any device. Manage deployments to ensure privacy and flexibility. <a href="/enterprise">Learn more</a></p>
+		<p>Contact us at (877) 899-6264, or <a href="/enterprise/contact">request more information</a>.</p>
+		<blockquote>
+			"Xobni's 'all in one' functionality makes a real impact on my productivity."
+			<cite>&mdash;Accenture Consultant</cite>
+		</blockquote>
+	</div>
+	<br class="cl" />
+</div>
+
+<script type="text/javascript">
+	$('div.homeproduct').hover(function() {
+		var product = $(this).find("a").attr("rel");
+		$(this).addClass("hover");
+		if (product != "plus") {
+			$('#homebillboard_plus').hide();
+			$('#homebillboard_' + product).fadeIn("fast");
+			$('div.plus').removeClass("primary");
+		}
+		
+	}, function() {
+		$(this).removeClass("hover");
+		var product = $(this).find("a").attr("rel");
+		if (product != "plus") {
+			// testing plus
+			$('.homebillboarddesc').hide();
+			$('#homebillboard_plus').fadeIn("fast");
+		}
+	});
+	$('div#homesplash').bind("mouseleave", function() {
+		$('div.plus').addClass("primary");
+	});
+
+</script>
+<!--script type="text/javascript" src="http://api.twitter.com/1/favorites/xobni.json?callback=Twitter.saveTweets"></script-->
+
+
+	
+	
+	
+	
+	<div id="main_footer">
+<div id="cloudfooter">
+	<div class="footergroup">
+		<h3>Company Info</h3>
+		<ul>
+			<li><a href="/about">About</a></li>
+			<li><a href="/press">News Room</a></li>
+			<li><a href="/about/jobs">Jobs</a></li>
+			<li><a href="/about/opensource">Open Source</a></li>
+			<li><a href="/about/contact">Contact</a></li>
+		</ul>
+	</div>
+	<div class="footergroup">
+		<h3>Partner with Xobni</h3>
+		<ul>
+			<li><a href="/partners">Overview</a></li>
+			<li><a href="/partners/partners_content">Content Partners</a></li>
+		</ul>
+	</div>
+	<div class="footergroup">
+		<h3>Legal</h3>
+		<ul>
+			<li><a href="/legal/trademarks">Trademarks</a></li>
+			<li><a href="/legal/privacy">Privacy Policy</a></li>
+			<li><a href="/legal/license">EULA</a></li>
+			<li><a href="/legal/tos">Terms of Service</a></li>
+		</ul>
+	</div>
+	<div class="footercolophon">
+		<span id="footer_language">Language: <span>English</span></span><br /><br />
+		Copyright ©2006-2010 Xobni Corporation.<br />
+		All rights reserved.<br /><br />
+		539 Bryant St, Suite 402 <br />San Francisco, CA 94107<br />
+	</div>
+	<br class="cl" />
+</div>
+</div>
+
+<div id="menu_language" class="pulldownmenu">
+	<div class="pulldowncontents">
+        <a href='/?lc=en'>English</a><a href='/?lc=de'>Deutsch</a><a href='/?lc=fr'>Francais</a>
+	</div>
+</div>
+
+<div id="menu_products" class="pulldownmenu " style="display:none; width:320px;"><div class="pulldowncontents">				<a href="/learnmore/"  onClick="recordClicksOnPage(this, 'click', '/homepage/productmenu/free'); return false;" id="menu_product_outlook"><h3>Xobni for Outlook (Free)</h3>The world's most popular Outlook plugin</a>
+				<a href="/learnmore/plus/"  onClick="recordClicksOnPage(this, 'click', '/homepage/productmenu/plus'); return false;" id="menu_product_plus"><h3>Xobni Plus for Outlook</h3>Xobni for Outlook with premium features</a>
+				<a href="/learnmore/mobile/"  onClick="recordClicksOnPage(this, 'click', '/homepage/productmenu/mobilebb'); return false;" id="menu_product_mobile"><h3>Xobni Mobile</h3>The best address book for your BlackBerry</a>
+				<a href="/learnmore/one/"  onClick="recordClicksOnPage(this, 'click', '/homepage/productmenu/xobnione'); return false;" id="menu_product_one"><h3>Xobni One</h3>Keep your contacts up-to-date everywhere</a>
+				</div><div class="pulldownmenucap"><!----></div></div>
+<div id="menu_enterprise" class="pulldownmenu " style="display:none; width:200px;"><div class="pulldowncontents">
+				<a href="/enterprise/">Overview</a>
+				<a href="/enterprise/sales_professionals">Sales Professionals</a>
+				<a href="/enterprise/mobile_professionals">Mobile Professionals</a>
+				<a href="/enterprise/salesforce_extension">Salesforce.com Gadget</a>
+				<a href="/enterprise/sharepoint_extension">SharePoint Gadget</a>
+				<a href="/enterprise/case_studies">Case Studies</a>
+				<a href="/enterprise/sign_up">Request More Info</a>
+				<a href="/enterprise/solutions_providers">Solutions Providers</a>
+			</div><div class="pulldownmenucap"><!----></div></div>
+
+<script type="text/javascript">
+	// enable the menus in the headers, footer
+	$("#header a.enablepulldown, #footer_language").hover(function() {
+		var location = $(this).attr("id").split("_")[0];
+		var id = $(this).attr("id").split("_")[1];
+		if (location == "footer") {
+			var x = $(this).children("span").position().left - 2;
+			var y = $(this).position().top + $(this).outerHeight(true);
+		} else {
+			var x = $(this).offset().left - 8;
+			var y = $(this).offset().top + $(this).outerHeight(true);
+		}
+		$("#menu_" + id).css({
+			left: x,
+			top: y,
+			display: "block"
+		});
+	}, function() {
+		var id = $(this).attr("id").split("_")[1];
+		setTimeout(function() {	
+			if (!$("#menu_" + id).data("hover")) {
+				$("#menu_" + id).data("hover", false);
+	   			$("#menu_" + id).hide();
+	   		}
+	   	}, 100);
+	});
+	$("div.pulldownmenu").data("hover", false);
+	$("div.pulldownmenu").hover(function() {
+		$(this).data("hover", true);
+		$(this).show();
+	}, function() {
+		$(this).data("hover", false);
+		$(this).hide();
+	});
+	
+</script>
+
+<!--****************ANALYTICS****************-->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+	var pageTracker = _gat._getTracker("UA-3641125-1");
+	pageTracker._initData();
+	pageTracker._trackPageview();
+</script>
+
+
+
+<script type="text/javascript">
+	function recordClicksOnPage(link, type, action) {
+  		try {
+    			pageTracker._trackEvent(type, action);
+    			if (link && link.href) {
+	    			setTimeout('document.location = "' + link.href + '"', 50);
+	    		}
+  		}
+		catch(err) { }
+	}
+</script>
+
+<!--****************ANALYTICS****************-->
+
+</BODY>
+</HTML>
+	

@@ -1,0 +1,1644 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<title>nextthing.org  &raquo; Fun With HTTP Headers</title>
+
+<meta name="generator" content="WordPress 3.0.1" /> <!-- leave this for stats -->
+
+<link rel="stylesheet" href="http://www.nextthing.org/wordpress/wp-content/themes/mine2_0/style.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="http://www.nextthing.org/wordpress/wp-content/themes/mine2_0/print.css" type="text/css" media="print" />
+<link rel="alternate" type="application/rss+xml" title="nextthing.org RSS Feed" href="http://www.nextthing.org/feed" />
+<link rel="pingback" href="http://www.nextthing.org/wordpress/xmlrpc.php" />
+
+<link rel="alternate" type="application/rss+xml" title="nextthing.org &raquo; Fun With HTTP Headers Comments Feed" href="http://www.nextthing.org/archives/2005/08/07/fun-with-http-headers/feed" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.nextthing.org/wordpress/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.nextthing.org/wordpress/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='nextthing.org' href='http://www.nextthing.org' />
+<link rel='start' title='Hello World, and Happy 4th =)' href='http://www.nextthing.org/archives/2002/07/04/hello-world-and-happy-4th' />
+<link rel='prev' title='A Few Upgrades' href='http://www.nextthing.org/archives/2005/07/16/a-few-upgrades' />
+<link rel='next' title='Rolling Garfield Ninja Turtles' href='http://www.nextthing.org/archives/2006/10/26/rolling-garfield-ninja-turtles' />
+<meta name="generator" content="WordPress 3.0.1" />
+<link rel='canonical' href='http://www.nextthing.org/archives/2005/08/07/fun-with-http-headers' />
+<link rel='shortlink' href='http://www.nextthing.org/?p=20' />
+</head>
+<body>
+<div id="page">
+
+<div id="header">
+  <h1><a href="http://www.nextthing.org/">nextthing.org</a></h1>
+  <h2>by Andrew Wooster</h2>
+</div>
+<hr />
+
+	<div id="content" class="widecolumn">
+    
+  
+		<div class="navigation">
+			<div class="alignleft">&laquo; <a href="http://www.nextthing.org/archives/2005/07/16/a-few-upgrades" rel="prev">A Few Upgrades</a></div>
+			<div class="alignright"><a href="http://www.nextthing.org/archives/2006/10/26/rolling-garfield-ninja-turtles" rel="next">Rolling Garfield Ninja Turtles</a> &raquo;</div>
+		</div>
+
+		<div class="post" id="post-20">
+			<h2><a href="http://www.nextthing.org/archives/2005/08/07/fun-with-http-headers" rel="bookmark" title="Permanent Link: Fun With HTTP Headers">Fun With HTTP Headers</a></h2>
+
+			<div class="entry">
+				<h4>Introduction</h4>
+<p>Like any good web developer, I have a tendency to poke around at people&#8217;s web sites to see if I can figure out how they&#8217;re implemented. After poking at enough sites, I started noticing that people were putting some weird and interesting stuff in their HTTP headers. So, a couple of weeks ago, I decided to actually go out and see what I could find by scrounging around in HTTP headers in the wild. A header safari, if you will. These are the results of my hunt.<a id="more-20"></a></p>
+<h4>Headers?</h4>
+<p>HTTP is the protocol used to transmit data on what we know as &#8220;the web&#8221;. At the beginning of every server response on the web, there&#8217;s a bit of text like:</p>
+<pre class="http-header">
+HTTP/1.1 200 OK
+Content-Type: text/html
+Connection: close
+</pre>
+<p>The top line specifies the protocol version of HTTP and a response code (200 in this case) used to indicate the outcome of a request. Following that are a bunch of lines that should consist of a field name (like &#8220;Connection&#8221;), followed by a colon, and then followed by a value (like &#8220;close&#8221; or &#8220;keep-alive&#8221;). These lines of text are the HTTP response headers. Immediately after the headers is a blank line, followed by the content of the message, such as the text of a web page or the data of an image file.</p>
+<h4>Technical Mumbo Jumbo</h4>
+<p>Want to examine the headers of a site for yourself? Try curl:</p>
+<pre class="http-header">
+curl -i http://www.nextthing.org/
+</pre>
+<p>In the output of the above the first few lines are the headers, then there are a couple of line breaks, and then the body. If you just want to see the headers, and not the body, use the -I option instead of -i. Be forewarned, however, that some servers return different headers in this case, as curl will be requesting the data using a <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4">HEAD</a> request rather than a <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">GET</a> request.</p>
+<p>What I did to gather all of these headers was very similar. First, I downloaded an <a href="http://rdf.dmoz.org/">RDF dump</a> of the Open Directory Project&#8217;s directory, and pulled out every URL from that file. Then, I stuck all of the domain names of these URL&#8217;s in a big database. A simple multithreaded Python script was used to download all of the index pages of these URL&#8217;s using <a href="http://pycurl.sourceforge.net/">PycURL</a> and stick the headers and page contents in a database. When that was done, I had a database with 2,686,155 page responses and 23,699,737 response headers. The actual downloading of all of this took about a week.</p>
+<p>This is, of course, not anywhere near a comprehensive survey of the web. <a href="http://news.netcraft.com/">Netcraft</a> received responses from 70,392,567 sites in its August 2005 web survey, so I hit around 3.8% of them. Not bad, but I&#8217;m sure there&#8217;s a lot of interesting stuff I&#8217;m missing.</p>
+<h4>Obligatory Mention of Long Tail</h4>
+<p>First of all, yes, HTTP headers form something like a <a href="http://en.wikipedia.org/wiki/Long_Tail">long tail</a>:</p>
+<p><img src="/blog/images/header_longtail.png" alt="Graph of log(frequency) over rank of headers" /></p>
+<p>In particular, hapax legomena (one-offs) make up over half of the headers found. I expected this. Unfortunately for me, however, a lot of the really interesting stuff is over on that long flat section of the long tail. Which means I spent a lot of time poring over one-offs looking for interesting stuff. Weee.</p>
+<p>It&#8217;s a good thing I&#8217;m easily amused.</p>
+<h4>Off with Her Headers</h4>
+<p>I found 891 instances of:</p>
+<pre class="http-header">X-Pad-For-Netscrape-Bug: 0123456789</pre>
+<p>Which brought back memories of the days when Netscape was reviled by developers the world &#8217;round, and had not yet achieved its ultimate (albeit posthumous) glory with Firefox. It&#8217;s nice to know comments by frustrated engineers have such a long half-life on the Internet. There are a few variants on this header:</p>
+<pre class="http-header">
+X-Pad: avoid browser bug
+XX-Pad: Padding
+aheader: WOULDN'T YOU LIKE TO KNOW!
+X-BrowserAlignment: problem
+</pre>
+<p>Similarly, people are still <a href="http://sakura.jjog.org/">blocking</a> Microsoft&#8217;s Dumb Tags:</p>
+<pre class="http-header">
+X-MS-Smart-Tags: We have nothing to do with them.
+X-Meta-MSSmartTagsPreventParsing: TRUE
+</pre>
+<p>Speaking of Microsoft, apparently the IIS team felt the need to advertise the domain of the site the user was accessing in every page request:</p>
+<pre class="http-header">
+Server: Microsoft-IIS/5.0
+jvc.org: jvc.org
+</pre>
+<p>How completely and utterly unnecessary&#8230;</p>
+<p>They&#8217;re not the only ones, though. WebObjects <a href="http://store.apple.com/1-800-MY-APPLE/WebObjects/AppleStore/">powered</a> <a href="http://ww2.aaa.com/scripts/WebObjects.dll/ZipCode.woa/wa/route">sites</a> spit out:</p>
+<pre class="http-header">
+HTTP/1.1 200 Apple
+</pre>
+<p>Go team!</p>
+<p>This cute header is courtesy of <a href="http://caudium.net/">Caudium</a>, a webserver written partially in <a href="http://pike.ida.liu.se/">Pike</a>:</p>
+<pre class="http-header">X-Got-Fish: Yes</pre>
+<p>The webmaster of <a href="http://www.kfki.hu/">www.kfki.hu</a> should be commended for being on the bleeding edge, both using Caudium <em>and</em> including lots of <a href="http://dublincore.org/">Dublin Core</a> metadata in the headers. Although, 32 headers seems a bit much, which is why I&#8217;m not going to show them all:</p>
+<pre class="http-header">
+DC.Subject: physics
+DC.Type: organizational homepage
+SCHEMA.DCTERMS: http://purl.org/dc/terms/
+X-Got-Fish: Yes
+</pre>
+<p>Contrary to popular belief, there <em>are</em> people out there using Smalltalk on the web. Two of them. <a href="http://www.eranova.si/">One</a> Smalltalk software company running a web server written in Smalltalk, and <a href="http://www.esug.org/">another</a>:</p>
+<pre class="http-header">
+Server: Swazoo 0.9 (Columbus)
+X-WIKI-ENGINE: SmallWiki 1.0
+CACHE-CONTROL: no-cache
+X-WIKI-COPYRIGHT: Software Composition Group, University of Berne, 2003
+</pre>
+<p>running a Smalltalk user&#8217;s group web site with a <a href="http://smallwiki.unibe.ch/smallwiki/">wiki</a> written on Smalltalk on a <a href="http://sourceforge.net/projects/swazoo/">web server</a> written in, you guessed it: Smalltalk. Cool.</p>
+<p>And, of course, it wouldn&#8217;t be the Internet without an appearance by a BOFH:</p>
+<pre class="http-header">
+X-BOFH: http://www.xxxxx.de/bofh/xxxxxx.html</a>
+</pre>
+<p>The actual URL it points to has been obscured to protect the guilty, and a <a href="/blog/cache/bofh_edited.html">local mirror</a> provided in its stead.</p>
+<h4>Missed Cneonctions</h4>
+<p>This header:</p>
+<pre class="http-header">Cneonction: close</pre>
+<p>and its variant:</p>
+<pre class="http-header">nnCoection: close</pre>
+<p>were two of the headers which first spurred my interest in HTTP headers. </p>
+<p>imdb.com, amazon.com, gamespy.com, and google.com have all at various times used these or similar misspellings of connection, and I&#8217;m not by any means the first to have noticed. My first thought was that this was just a typo. After more consideration, however, I now believe this is something done by a hackish hardware load balancer trying to &#8220;remove&#8221; the connection close header when proxying for an internal server. That way, the connection can be held open and images can be transmitted through the same TCP connection, while the backend web server doesn&#8217;t need to be modified at all. It just closes the connection and moves on to the next request. Ex-coworker and <a href="http://www.cs.hmc.edu/">Mudd</a> alumus jra has a similar <a href="http://blog.nella.org/archives/2003/08/google_cant_spe_1.html">analysis</a>. </p>
+<p>Another data point which would back this up is the Oracle9iAS Web Cache <a href="http://www.bisnis.com">rewriting</a>:</p>
+<pre class="http-header">Connection: close</pre>
+<p>as </p>
+<pre class="http-header">
+yyyyyyyyyy: close
+Connection: Keep-Alive
+</pre>
+<p>Headers with &#8220;X-Cnection: close&#8221; appear to be the result of a similar trick.</p>
+<p>One ISP/web host is kind enough to include their web address and phone number in every request to any of their hosted servers:</p>
+<pre class="http-header">
+Phone: (888) 817-8323
+Web: www.wgn.net
+</pre>
+<p>This is just super-awesome. I once spent a good hour trying to find a technical contact for a certain monstrous job site to tell them their servers had been compromised and were displaying the following message to visitors:</p>
+<blockquote style="color:red;font-face:Times New Roman, times, serif;"><p>
+You are being sniffed by Carnivore.<br />
+Your nation is secure.</p>
+<p>&#8230;&#8230;&#8230;&#8230;..OCR IS WATCHING YOU&#8230;&#8230;&#8230;&#8230;..</p>
+<p>Content-type: text/html
+</p>
+</blockquote>
+<p>The message, funnily enough, was being relayed by modifying the HTTP headers.</p>
+<h4>C is for Cookie</h4>
+<p>Cookies 2 were defined in <a href="http://www.faqs.org/rfcs/rfc2965.html">RFC 2965</a>, way back in October of 2000. As far as I know, Opera is the only browser in widespread use to support them. It&#8217;s sad, really, as the <a href="http://wp.netscape.com/newsref/std/cookie_spec.html">original cookie spec</a> that Netscape came up with is kind of lame. Specifically, Netscape&#8217;s spec defines the expiration as a date, which is vulnerable to clock skew on the user&#8217;s system making the cookie expire early. The Cookies-2 spec, on the other hand, <a href="http://www.meyersound.com/">uses</a> a max-age attribute, specifying the lifetime of the cookie in seconds:</p>
+<pre class="http-header">
+Set-Cookie2: Meyer_Sound_777=68.126.233.177.1122451925660461; path=/; max-age=1209600; domain=.meyersound.com; version=1
+</pre>
+<p>There are also Comment and CommentURL fields which explain what the cookie is for, but I have yet to find a header which uses them. *sigh* On the other hand, I did find 518 Set-Cookie2 headers, which, while miniscule compared to the 764,976 SetCookie headers I received, is more than I expected. It looks like software written by <a href="http://www.sun.com/">Sun</a> is responsible for most of these.</p>
+<p>A bunch of servers spit out:</p>
+<pre class="http-header">shmget() failed: No space left on device</pre>
+<p>Doh! Time to cycle some log files.</p>
+<p><a href="http://www.hixie.ch/specs/pingback/pingback-0.9.2">Pingback</a> discovery headers like this show up a lot (2370 times):</p>
+<pre class="http-header">X-Pingback: http://www.nextthing.org/wordpress/xmlrpc.php</pre>
+<p>I don&#8217;t even know what to say to this, found at <a href="http://ebrain.ecnext.com/">ebrain.ecnext.com</a>:</p>
+<pre class="http-header">
+HTTP/1.1 200 OK
+Date: Sun, 24 Jul 2005 18:39:54 GMT
+Server: Apache
+<META HTTP-EQUIV="Set-Cookie" CONTENT="cust_id=59955231; path=/; domain=ebrain.ecnext.com; expires=Mon, 01-Jan-2011 00: 00:00 GMT">
+<META HTTP-EQUIV="Set-Cookie" CONTENT="cust_session=7/24/2005  14: 39:54; path=/; domain=ebrain.ecnext.com; expires=Sun 24-Jul-2005  19:9:54">
+Transfer-Encoding: chunked
+Content-Type: text/html; charset=ISO-8859-1
+</pre>
+<p>At least they&#8217;re not alone, as <a href="http://www.charlottesweb.hungerford.org/">www.charlottesweb.hungerford.org</a> will keep them company:</p>
+<pre class="http-header">
+Turn off Pictures Popup Toolbar in IE 6.0: <meta http-equiv="imagetoolbar" content="no" />
+</pre>
+<p>And <a href="http://www.station.lu/">www.station.lu</a>:</p>
+<pre class="http-header">
+XHTML: &lt;!DOCTYPE html PUBLIC"-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
+</pre>
+<p>The list goes onâ€¦</p>
+<p>The <a href="http://www.coralcdn.org/">Coral Content Distribution Network</a> has been getting some buzz lately, so I was interested to see some </p>
+<pre class="http-header">X-Coral-Control: redirect-home</pre>
+<p>headers show up.  This header is used to tell Coral that if Coral can&#8217;t handle the load of requests for cached copies of your page, it <a href="http://www.cs.nyu.edu/pipermail/coral-users/2005-March/000225.html">should</a> redirect these requests back to your site.</p>
+<p>Why anyone would think to themselves, &#8220;Gee, if a massively scalable caching service running on hundreds of geographically distributed computers can&#8217;t handle the load of people wanting to look at my site, I&#8217;ll just have them bounce people back at me&#8221;, I don&#8217;t know. Masochism perhaps?</p>
+<p>Speaking of P2P technologies, I was interested to run across a KaZaA server:</p>
+<pre class="http-header">
+HTTP/1.0 404 Not Found
+X-Kazaa-Username: anonymous_user
+X-Kazaa-Network: KaZaA
+X-Kazaa-IP: xx.xx.xx.xx:1348
+X-Kazaa-SupernodeIP: xx.xx.xx.x:3699
+</pre>
+<p>It looked like it was running on someone&#8217;s DVR. Anyone have any pointers as to what software does that?</p>
+<p>Along the same lines, <a href="http://euclidian.com/">haha</a>:</p>
+<pre class="http-header">
+X-Kaza-Username: hrosen
+X-Kaza-Network: RIAA
+X-Kaza-IP: 146.82.174.12:80
+X-Kaza-SupernodeIP: 68.163.90.12:80
+X-Disclaimer: All Your Base Are Belong To Us
+X-Pizza-Phone: 961.1.351904
+</pre>
+<p>They&#8217;re not even the only ones using &#8220;X-Disclaimer&#8221;, a bunch of <a href="http://www.philippines.hvu.nl/">other</a> <a href="http://www.dehorst.nl/">sites</a> do too:</p>
+<pre class="http-header">
+X-Disclaimer: The local sysadmins have *nothing* to do with the content of this server.
+</pre>
+<p>It looks like <a href="http://www.tuxgames.com/">Tux Games</a> is trying to extend the <a href="http://www.cs.hmc.edu/~awooster/joke_rfcs.html">venerable</a> <a href="http://www.faqs.org/rfcs/rfc1097.html">RFC 1097</a> to the web:</p>
+<pre class="http-header">
+X-Subliminal: You want to buy as many games as you can afford
+</pre>
+<p>Personally, I would&#8217;ve gone for: &#8220;X-Superliminal: Hey you, buy some games!&#8221;.</p>
+<p>I&#8217;m sure <a href="http://www.pcca.com/">these kind folks</a> would be first adopters:</p>
+<pre class="http-header">
+X-Cotton: The Fabric of Our Lives
+</pre>
+<p><a href="http://uwe-disch.de/">This person</a> wants to make their opinion known, so here it is:</p>
+<pre class="http-header">
+Veto: Usage of server response for statistics and advertising is disagreed!
+</pre>
+<p>To which I say: Take off every &#8216;zig&#8217;!! You know what you doing.</p>
+<h4>Robot Rock</h4>
+<p>I&#8217;d never really paid much attention to the <a href="http://www.w3.org/Search/9605-Indexing-Workshop/ReportOutcomes/Spidering.txt">Robots</a> header:</p>
+<pre class="http-header">
+ROBOTS: index,follow,cache
+</pre>
+<p>as it&#8217;s mostly used to disable indexing of a page and is intended to be used in a <a href="http://www.w3.org/TR/REC-html40/struct/global.html#edef-META">meta tag</a> in the HTML itself, not in the HTTP headers.</p>
+<p>However, it seems Google has <a href="http://www.i18nguy.com/markup/metatags.html">added</a> a new <a href="http://www.google.com/remove.html">NOARCHIVE attribute</a>, so let&#8217;s see who&#8217;s using it in their headers rather than in the meta tags like Google specifies.</p>
+<p>It looks like the Singapore-based &#8220;<a href="http://www.ministryofpets.com/">Ministry of Pets</a>&#8221; doesn&#8217;t want to be cached, as does the <a href="http://www.pcc.usp.br/">Civil Engineering department</a> at SÃ£o Paulo Polytechnic University, the realtime-3d software company <a href="http://www.multigen.com/">MultiGen Paradigm</a>, Swiss handicraft company <a href="http://www.heimatwerk.ch/">Schweizer Heimatwerk</a>, a Swiss <a href="http://www.kitesailing.ch/">kitesailing</a> site, the <a href="http://www.ragincajun.com/">Ragin&#8217; Cajun Cafe</a> in Hermosa Beach, CA, the London-based <a href="http://www.bouncingfish.com/">BouncingFish</a> web consultancy, and the French financial paper <a href="http://www.latribune.fr/">La Tribune</a>. That&#8217;s it.</p>
+<p>BouncingFish even goes so far as to use an additional GOOGLEBOT header:</p>
+<pre class="http-header">
+GOOGLEBOT: NOCACHE
+</pre>
+<p>How many of these sites are not being cached by Google? Zero. Which just goes to show that one shouldn&#8217;t just expect mix-and-matching of specs to work.</p>
+<p>Along the same vein, I don&#8217;t think the first two headers below will work as <a href="http://www.jerusalemshots.com/en">expected</a>:</p>
+<pre class="http-header">
+X-Meta-ROBOTS: ALL
+X-Meta-Revisit-After: 1 days
+Robots: INDEX, FOLLOW
+</pre>
+<p>Except, possibly, in spiders using Perl&#8217;s <a href="http://search.cpan.org/search?module=HTML::HeadParser">HTML::HeadParser</a> module. And, of course, we&#8217;ve already seen that the third header probably won&#8217;t work, either.</p>
+<p>While I&#8217;m on the subject of Google&#8230; all Blogspot <a href="http://bombrman.blogspot.com/">sites</a> spit out:</p>
+<pre class="http-header">
+test: %{HOSTNAME}e
+</pre>
+<p>So Blogger folks, whatcha doin&#8217;?</p>
+<h4>It&#8217;s Funny, Laugh</h4>
+<p>The fine folks at <a href="http://www.basement.com.au/">www.basement.com.au</a> want to make it clear that:</p>
+<pre class="http-header">Mickey-Mouse: Does_Not_Live_Here</pre>
+<p>Some people have a lot of fun with headers, as seen <a href="http://www.scriptworld.kh-webcenter.de/">here</a>:</p>
+<pre class="http-header">
+Limerick: There was a young fellow named Fisher
+Limerick: Who was fishing for fish in a fissure,
+Limerick: When a cod, with a grin,
+Limerick: Pulled the fisherman in
+Limerick: Now they're fishing the fissure for Fisher.
+</pre>
+<p><a href="http://schmooze.hunter.cuny.edu:8888/">This</a> is the only ascii art I found:</p>
+<pre class="http-header">
+&lt;!--
+Content-type: text/html
+*************************************************************************
+*                     Welcome to schMOOze University                    *
+*                                                                       *
+*   ==&gt; To connect to an existing player type:  CONNECT NAME PASSWORD   *
+*   ==&gt; To connect as a guest type:             CONNECT GUEST           *
+*                                                                       *
+*************************************************************************
+*            all text is copyrighted by the various authors             *
+*    TIME FLIES LIKE AN ARROW              FRUIT FLIES LIKE A BANANA    *
+*                                  ***                                  *
+*                          *                 *                          *
+*                    *                             *                    *
+*                *                                     *                *
+*             *                                           *             *
+*           *                         (__)                  *           *
+*          *                          (OO)                   *          *
+*          *              ____________ /                     *          *
+*          *            /|            /                      *          *
+*          *          /  | |------ | |                       *          *
+*          *        *    | |^^     | |                       *          *
+*          *             ^ ^       ^ ^                       *          *
+************                                                 ************
+
+Nobody is connected.
+--&gt;
+&lt;HTML&gt;
+&lt;HEAD&gt;
+  &lt;TITLE&gt;Welcome to schMOOze!&lt;/TITLE&gt;
+&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=iso-8859-1&quot;&gt;&lt;/HEAD&gt;
+&lt;meta http-equiv=&quot;refresh&quot; content=&quot;0;URL=http://schmooze.hunter.cuny.edu/&quot;&gt;
+&lt;/BODY&gt;&lt;/HTML&gt;
+</pre>
+<p>and it had me puzzled, until I realized it&#8217;s a telnet server, and the above is a really clever hack to redirect browsers towards HTML-land.</p>
+<p>This made me <a href="http://www.icm-computer.co.uk/">laugh</a>:</p>
+<pre class="http-header">
+X-Powered-By: Intravenous Caffeine Drips
+X-kluged-by: Nick, Mic, Ash, Andy
+X-munged-by: The powers that be
+X-Sanity-Provided-By: Ashleigh
+</pre>
+<p>Apparently the site has an <a href="http://www.altorego.co.uk/">alter-ego</a>, as well.</p>
+<p><a href="http://www.wrestlingdb.com/">www.wrestlingdb.com</a> has some interesting headers. A few requests gets:</p>
+<pre class="http-header">
+X-Stone-Cold-Steve-Austin: And that's the bottom line, cause Stone Cold says so.
+X-Mick-Foley: Have a nice day!
+X-Ric-Flair: To be the man, WHOOO!, you've got to beat the man.
+X-Rock: If you smell what The Rock is cooking.
+X-Booker-T: Can you dig it, SUCKAAAA?
+X-Kurt-Angle: It's true, it's DAMN true.
+X-Hurricane: Stand Back! There's a Hurricane Coming Through!
+X-Kane: FREAKS RULE!
+</pre>
+<p>which is about as entertaining as watching a real wrestling match.</p>
+<h4>Totally Ellet</h4>
+<p>Just so everyone knows, <a href="http://goliath.frostburg.edu">Frostburg</a> students are so totally leet, they don&#8217;t even need to spell it correctly:</p>
+<pre class="http-header">
+Owned And Operted By FSU Computer Club: 31137
+</pre>
+<p>Speaking of which, apparently some guy named <a href="http://www.animanga.nu/">morris</a> would like his visitors to know that he 0wnzor$ them:</p>
+<pre class="http-header">
+X-You-Are-Owned-By: morris
+</pre>
+<p>Not sure where that box you rooted and are browsing the web from is located? Never fear, <a href="http://www.mobileparty.net/">mobileparty.net</a> will tell you:</p>
+<pre class="http-header">
+X-Detected-Country: US
+</pre>
+<p>And, for those who were wondering, the <a href="http://www.texarkanapolice.net/">Texarkana Police</a> are the world&#8217;s finest, at least in the HTTP headers department:</p>
+<pre class="http-header">
+TEXPOLICE: LAW_ENFORCEMENTS_FINEST
+</pre>
+<p><a href="http://blogger.xs4all.nl/">These nederlanders</a> are representin&#8217; for the westside:</p>
+<pre class="http-header">
+X-Side: : WESTSIDE-FOR-LIFE
+</pre>
+<p>Western Europe, that is. Jaaa.</p>
+<p>Speaking of furriners, anyone care to <a href="http://www.apae.it/serv/core.s3">translate</a>:</p>
+<pre class="http-header">
+X-Sarrazin-Says: Ciccio, lascia perdere, e' un blowfish a 448 bit.
+</pre>
+<p><a href="http://www.gleitschirm-faq.de/">Similarly</a>:</p>
+<pre class="http-header">
+X-beliebig: Dieser Header dient der allgemeinen Verwirrung =:)
+X-Gleitschirmfliegen: macht Spaaaasss!
+</pre>
+<p>Going back to my discussion on standards, <a href="http://evenco.pt/">localizing</a> headers that are used to actually do stuff is a bad idea:</p>
+<pre class="http-header">
+Ultima ModificaÃ§Ã£o: Thu, 28 Jul 2005 15:12:07 GMT
+</pre>
+<h4>ObRef</h4>
+<p>The <a href="http://www.housedems.com/">Democrats</a> called, they want you to know they found their sense of humor:</p>
+<pre class="http-header">
+X-Dubya: You teach a child to read and he or her will be able to pass a literacy test.
+</pre>
+<p>Make sure to hit it a few times for optimum goodness:</p>
+<pre class="http-header">
+X-Dubya: We're in for a long struggle, and I think Texans understand that. And so do Americans.
+X-Dubya: Africa is a nation that suffers from incredible disease.
+X-Dubya: We're making the right decisions to bring the solution to an end.
+X-Dubya: Families is where our nation finds hope, where wings take dream.
+</pre>
+<p>In the politics <a href="http://www.monkeyfist.com/">vein</a>:</p>
+<pre class="http-header">
+X-Powered-By: MonkeyMag 0.02.01, (c) Niel Bornstein and Kendall Clark
+X-Shout-Out: No Power Without Accountability
+X-Mos-Defology: Speech is my hammer//Bang the world into shape//Now let it fall
+X-American-Leftist-Salute: Doing Woody's Work!
+X-Billy-Braggage: Sun, Sea, Socialism!
+</pre>
+<p>Yes! <a href="http://www.fer.hr/">Someone</a> just made my day. I love Al Bundy quotes:</p>
+<pre class="http-header">
+X-Bundy: Here we have 3 of the seven dwarfs, puffy, crabby and horny.
+X-Bundy: You know I never danced unless it was gonna get some sex for me.
+X-Bundy: I blame it on TV myself.
+X-Bundy: To know me is to love me.
+</pre>
+<p>I was disappointed in the lack of mention of mules, donkeys, or garden gnomes, but at least llamas, mice, and loons are well represented:</p>
+<pre class="http-header">
+X-Llamas-Version: 2.0
+</pre>
+<p>From: <cite><a href="http://www.teevee.org/">www.teevee.org</a></cite></p>
+<pre class="http-header">
+X-Favourite-Animal: Mouse
+</pre>
+<p>From: <cite><a href="http://www.kingssing.de/">www.kingssing.de</a></cite></p>
+<pre class="http-header">
+X-Loons-Version: 1.5.1
+</pre>
+<p>From: <cite><a href="http://www.eod.com/">www.eod.com</a></cite></p>
+<p>Speaking of strange characters, apparently the Wicked Witch of the West and Spongebob Squarepants cohabitate at <a href="http://www.harbor-club.com/">www.harbor-club.com</a>:</p>
+<pre class="http-header">
+X-Wicked-Witch: West
+X-Spongebob: Squarepants!
+</pre>
+<p>Who knew?!</p>
+<p>As if we needed further proof that the soft underbelly of the Internet is full of cults, slowly corrupting the moral fabric of society, I present:</p>
+<pre class="http-header">
+X-SAVIOUR: BOB_DOBBS
+</pre>
+<p>From the looks of things, <a href="http://www.subgenius.com/">Living Slack Master</a> Bob Dobbs is giving Jesus a run for his money among Oregonian <a href="http://pioneerfurniture.com/">carpenters</a> and their <a href="http://www.prisedesign.com/">web designers</a>. They <a href="http://en.wikipedia.org/wiki/Church_of_the_SubGenius">join</a> such luminaries as R. Crumb, Devo, and Bruce Cambell.</p>
+<p>And if you thought <em>that</em> was an obscure meme, try <a href="http://www.raidionsystems.com/">this</a> on for size:</p>
+<pre class="http-header">
+X-Lerfjhax: Extra yummy
+</pre>
+<p>When I first saw an <a href="http://www.cantonese.sheik.co.uk/">X-Han</a> header, I thought for sure the contents would be &#8220;Shot first!&#8221;, but instead I found something more <a href="http://www.us.imdb.com/title/tt0070034/">obscure</a>:</p>
+<pre class="http-header">
+X-Han: 'I look forward to a tournament  of  truly  epic  proportions.'
+</pre>
+<p>While we&#8217;re on pop culture <a href="http://randomfoo.net/">allusions</a>:</p>
+<pre class="http-header">
+X-Powered-By: Twine
+X-Towelie: You wanna get high?
+</pre>
+<p>And it would be difficult to be more obscure than <a href="http://www.track7.org/">this</a>:</p>
+<pre class="http-header">
+X-Sven: look out for the fruits of life
+</pre>
+<p>Finally, old school Mac-diehards should <a href="http://www.bungie.net/">appreciate</a>:</p>
+<pre class="http-header">
+X-Blam: Frog blast the vent core!
+</pre>
+<h4>Connection: close</h4>
+<p>Back when I was interviewing for an internship at <a href="http://www.tellme.com/">Tellme Networks</a>, <a href="http://web.archive.org/web/20001118103200/http://www.tellme.com/">they had</a> a comment buried on their homepage that said:</p>
+<pre class="http-header">
+  &lt;!-- (c) Copyright 2000 Tellme Networks. --&gt;
+  &lt;!--
+   If you're looking at our HTML source, you're exactly the person
+   who should send us your resume. We recently redesigned our site;
+   Tell us all about how you would make it better and better yet,
+   if you have an illustrious career of web-hacking, drop us an email
+   at jobs@tellme.com.
+  --&gt;
+</pre>
+<p>I thought this was just way awesome. However, if I was disappointed when they removed that comment, I&#8217;m even more disappointed to report that I have yet to find a single HTTP header offering me a cool job. What&#8217;s wrong with you people?! I&#8217;m supposed to be able to find anything on the Internet!</p>
+<p>I was, at least, <a href="http://the.taoofmac.com/space/">thanked</a> for my efforts, <em>and</em> I found the answer to life, the universe, and everything!</p>
+<pre class="http-header">
+X-Thank-You: for bothering to look at my HTTP headers
+X-Answer: 42
+</pre>
+<p>You&#8217;re welcome! And thank you all, for making the Internet so interesting!</p>
+
+				
+				<p class="postmetadata alt">
+					<small>
+						This entry was posted
+						 
+						on Sunday, August 7th, 2005 at 11:26 PM						and is filed under <a href="http://www.nextthing.org/categories/general" title="View all posts in General" rel="category tag">General</a>, <a href="http://www.nextthing.org/categories/programming" title="View all posts in Programming" rel="category tag">Programming</a>.
+						You can follow any responses to this entry through the <a href='http://www.nextthing.org/archives/2005/08/07/fun-with-http-headers/feed'>RSS 2.0</a> feed. 
+
+													You can <a href="#respond">leave a response</a>, or <a href="http://www.nextthing.org/archives/2005/08/07/fun-with-http-headers/trackback" rel="trackback">trackback</a> from your own site.
+
+						
+					</small>
+				</p>
+
+			</div>
+		</div>
+
+	
+<!-- You can start editing here. -->
+<div id="comment-container">
+	<h3 id="comments">88 Responses to &#8220;Fun With HTTP Headers&#8221;</h3> 
+
+	<ol class="commentlist">
+
+	
+		<li class="alt" id="comment-1502">
+			<cite><a href='http://dekstop.de/weblog/' rel='external nofollow' class='url'>mardoeb</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1502" title="">August 8th, 2005 at 2:34 PM</a> </small>
+
+			<p>Man that is entertaining! I&#8217;m still reading, but thought that I should quickly translate this:</p>
+<blockquote><p>X-beliebig: Dieser Header dient der allgemeinen Verwirrung =:)<br />
+X-Gleitschirmfliegen: macht Spaaaasss!</p></blockquote>
+<p>&#8230;before I forget it.</p>
+<p>&#8220;X-beliebig&#8221; is a wordplay that can&#8217;t be translated without destroying the joke: &#8220;beliebig&#8221; means &#8220;arbitrary&#8221;, but is often prefixed with &#8220;x-&#8221; in informal German to illustrate the arbitrariness. so &#8220;x-beliebig&#8221; means something to the effect of &#8220;very arbitrary&#8221;.</p>
+<blockquote><p>X-beliebig: This header is here to create general confusion =:)<br />
+X-Paragliding: is fuuuuuun!</p></blockquote>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1503">
+			<cite><a href='http://www.cs.hmc.edu/~awooster/' rel='external nofollow' class='url'>Andrew</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1503" title="">August 8th, 2005 at 4:27 PM</a> </small>
+
+			<p>Cool, thanks for the translation!</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1504">
+			<cite><a href='http://www.sblorgh.org/' rel='external nofollow' class='url'>PkerUNO</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1504" title="">August 8th, 2005 at 4:55 PM</a> </small>
+
+			<p><i>X-Sarrazin-Says: Ciccio, lascia perdere, e&#8217; un blowfish a 448 bit.</i></p>
+<p>Translated literally, &#8220;ciccio&#8221; means fat &#8211; but in colloquial Italian, it means more something like &#8220;hey, you&#8221;. So the message says &#8220;Hey you, just leave it, it&#8217;s a 448-bit blowfish&#8221;. I think it&#8217;s mean to discourage you from trying to crack something. <img src='http://www.nextthing.org/wordpress/wp-includes/images/smilies/icon_smile.gif' alt=':)' class='wp-smiley' /> </p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1505">
+			<cite><a href='http://randomdude.com/blog/' rel='external nofollow' class='url'>Dustin Quasar Sacks</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1505" title="">August 8th, 2005 at 8:03 PM</a> </small>
+
+			<p>Haha, this was awesome, very cool.</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1506">
+			<cite><a href='http://www.ilovejackdaniels.com' rel='external nofollow' class='url'>Dave Child</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1506" title="">August 9th, 2005 at 1:56 AM</a> </small>
+
+			<p>Nice! Any chance of a follow up with entertaining and idiotic meta tags?</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1507">
+			<cite><a href='http://www.track7.org/' rel='external nofollow' class='url'>misterhaan</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1507" title="">August 9th, 2005 at 5:46 AM</a> </small>
+
+			<p>you made my day by proving to me that at least one person saw my x-sven header <img src='http://www.nextthing.org/wordpress/wp-includes/images/smilies/icon_smile.gif' alt=':)' class='wp-smiley' />   i enjoyed the rest of your post as well!</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1509">
+			<cite>Mike</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1509" title="">August 9th, 2005 at 1:27 PM</a> </small>
+
+			<p>My personal favorite is the X-Bender header on Slashdot. Arguably more fun than Slashdot itself these days.</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1510">
+			<cite><a href='http://blog.joshlewis.org' rel='external nofollow' class='url'>Josh</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1510" title="">August 10th, 2005 at 12:12 AM</a> </small>
+
+			<p>Sweet post, Andrew! Very entertaining and impressive. Must&#8217;ve taken a long time to write.</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1511">
+			<cite><a href='http://marcelkoonstra.iconrate.net/blog/2005/08/10/http-headers/' rel='external nofollow' class='url'>Marcel&#8217;s webblog &raquo; Blog Archive &raquo; HTTP Headers</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1511" title="">August 10th, 2005 at 3:06 AM</a> </small>
+
+			<p>[...] <a href="http://www.nextthing.org/archives/2005/08/07/fun-with-http-headers" rel="nofollow">http://www.nextthing.org/archives/2005/08/07/fun-with-http-headers</a> [...]</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1512">
+			<cite>Brent Vukmer</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1512" title="">August 10th, 2005 at 11:02 AM</a> </small>
+
+			<p>Re: Smalltalk on the Web &#8211; if you&#8217;re at all interested in that, check out  <a href="http://seaside.st" rel="nofollow">Seaside</a>, if you haven&#8217;t already.</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1513">
+			<cite><a href='http://www.housedems.com' rel='external nofollow' class='url'>Bryan H</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1513" title="">August 10th, 2005 at 12:00 PM</a> </small>
+
+			<p>Andrew,</p>
+<p>I noticed this post in our referrer logs for HouseDems.com.</p>
+<p>Good find on our George W. Bush quote randomizer!  It was inspired by Slashdot.  We did it with a PHP auto_prepend.</p>
+<p>-Bryan</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1514">
+			<cite><a href='http://feedsky.blogbus.com/logs/2005/08/1352245.html' rel='external nofollow' class='url'>??????</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1514" title="">August 11th, 2005 at 2:30 AM</a> </small>
+
+			<p><strong>Http Header </strong></p>
+<p>Fun With HTTP HeadersIntroductionLike any good web developer, I have a tendency to poke around at people’s web sites to see if I can figure out how they’re implemented. After poking at enough sites, I started noticing that people were putting some &#8230;</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1515">
+			<cite><a href='http://blog.doofsmack.com/?p=10' rel='external nofollow' class='url'>doof.blog &raquo; Blog Archive &raquo; Fun with HTTP Headers</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1515" title="">August 13th, 2005 at 2:58 PM</a> </small>
+
+			<p>[...] Andrew Wooster’s nextthing.org » Fun With HTTP Headers [...]</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1516">
+			<cite><a href='http://www.phk.ca/2005/08/13/fun-with-http-headers-2/' rel='external nofollow' class='url'>PHk &raquo; Fun With HTTP Headers</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1516" title="">August 13th, 2005 at 7:06 PM</a> </small>
+
+			<p>[...] Thanks to GeekGrrl for this gem. I downloaded Python and PyCurl just to try it out. I&#8217;ll let ya know how it goes. Andrew Wooster’s nextthing.org » Fun With HTTP Headers Similarly, people are still blocking Microsoft’s Dumb Tags:  X-MS-Smart-Tags: We have nothing to do with them. X-Meta-MSSmartTagsPreventParsing: TRUE [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1518">
+			<cite><a href='http://blog.schatenseite.de/archives/2005/08/14/suchspiel-auf-der-schatenseite/' rel='external nofollow' class='url'>Die Schatenseite: Weblog &raquo; Suchspiel auf der Schatenseite</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1518" title="">August 14th, 2005 at 9:52 AM</a> </small>
+
+			<p>[...] Inspiriert hat mich dazu übrigens vielleicht der Artikel Fun With HTTP Headers, den ich letzte Tage gelesen habe. Fast schon krank, wofür sich manche Leute beim Besuch von Webseiten interessieren&#8230; [...]</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1519">
+			<cite><a href='http://www.55rueplumet.com/2005/08/14/delicious-5/' rel='external nofollow' class='url'>Rue Plumet &raquo; del.icio.us bookmarks for this week</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1519" title="">August 14th, 2005 at 7:11 PM</a> </small>
+
+			<p>[...] Fun With HTTP Headers Tagged as: cool random web [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1520">
+			<cite><a href='http://www.to2100.idv.tw/?p=638' rel='external nofollow' class='url'>潛艦 | http://to2100.idv.tw , Network Lab＠FreeBSD . &raquo; 一些有趣的 HTTP Headers</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1520" title="">August 15th, 2005 at 8:51 AM</a> </small>
+
+			<p>[...] Andrew Wooster’s nextthing.org &raquo; Fun With HTTP Headers [...]</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1521">
+			<cite><a href='http://m.mongers.org/' rel='external nofollow' class='url'>Morten Liebach</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1521" title="">August 16th, 2005 at 11:32 AM</a> </small>
+
+			<p>The easy way to get the headers, and only the headers, is <code>curl --head</code> or <code>lynx -head</code>.  You always have lynx.</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1522">
+			<cite><a href='http://loadaveragezero.com/' rel='external nofollow' class='url'>Douglas Clifton</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1522" title="">August 16th, 2005 at 9:49 PM</a> </small>
+
+			<p>This is terrific stuff. I&#8217;ve heard of and seen many of these, but you&#8217;ve put together a really entertaining list here. Hell, most end users don&#8217;t look at the source code to Web pages, let alone know what happens at the protocol level. Nice work!</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1523">
+			<cite><a href='http://denial.thcdzine.info/?p=3' rel='external nofollow' class='url'>DENiAL Blog &raquo; Blog Archive &raquo; Headers explained</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1523" title="">August 17th, 2005 at 1:29 AM</a> </small>
+
+			<p>[...] read more&nbsp;|&nbsp;digg story [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1525">
+			<cite>Matt</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1525" title="">August 17th, 2005 at 5:46 AM</a> </small>
+
+			<p>Slashdot hands out Futurama quotes with every page (but not the images) in the form of X-Fry or X-Bender headers, for instance:</p>
+<p><code>X-Fry: I learned how to handle delicate social situations from a little show called "Three's Company."</code></p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1526">
+			<cite>Anonymous</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1526" title="">August 17th, 2005 at 7:49 AM</a> </small>
+
+			<p>Check out <a href="http://livehttpheaders.mozdev.org/" rel="nofollow">http://livehttpheaders.mozdev.org/</a> for viewing headers in firefox while browsing.  It&#8217;s a lot easier than curl.</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1527">
+			<cite><a href='http://rr.latenightpc.com/wp/' rel='external nofollow' class='url'>Rob</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1527" title="">August 17th, 2005 at 12:39 PM</a> </small>
+
+			<p>Okay Andrew, good read, but what does this one mean?<br />
+X-The-REAL-Answer: 47<br />
+Btw, I use the Firefox web developer toolbar extension for viewing headers.</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1528">
+			<cite><a href='http://www.emasoft.net/index.php?p=293' rel='external nofollow' class='url'>Emasoft.net &raquo; Blog Archive &raquo; Ueberman&#8217;s sleep</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1528" title="">August 18th, 2005 at 12:09 AM</a> </small>
+
+			<p>[...] L&#8217;altro giorno stavo girando per la rete e studiando un po&#8217; di teoria sugli HTTP Headers quando mi sono imbattuto nel Ueberman&#8217;s sleep. L&#8217;idea e&#8217; quella di dormire nello stesso modo di Leonardo DaVinci. Per me e&#8217; stata un&#8217;assoluta novita&#8217;: ma a quanto pare alcuni miei amici ne erano a conoscenza&#8230; Il grande genio infatti riposava solamente grazie a delle pennichelle ridotte di una ventina di minuti ca, intervallate da periodi di veglia di 4h. Un rapido calcolo vi fara&#8217; capire che dormiva ogni giorno 2h. [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1529">
+			<cite><a href='http://nonstatquo.org' rel='external nofollow' class='url'>blobby</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1529" title="">August 18th, 2005 at 4:24 AM</a> </small>
+
+			<p>omg p30pl3 with too much time on their hands.</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1530">
+			<cite><a href='http://incoherentbabble.com/2005/08/18/the-things-you-stumble-upon-online/' rel='external nofollow' class='url'>Incoherent Babble &raquo; Blog Archive &raquo; The Things you Stumble Upon Online</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1530" title="">August 18th, 2005 at 11:21 AM</a> </small>
+
+			<p>[...] It&#8217;s amazing some of the things you can stumble upon online. For instance, I stumbled upon this post this morning, which takes us on a tour of crazy HTTP Headers across the &#8216;net. Very interesting indeed. I&#8217;d also never have thought about using the DMOZ database as a starting point. [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1531">
+			<cite><a href='http://inluminent.com/2005/08/21/http-header-fun/' rel='external nofollow' class='url'>HTTP Header Fun at inluminent</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1531" title="">August 21st, 2005 at 8:46 PM</a> </small>
+
+			<p>[...] HTTP Header Fun &#8211; Ha!&nbsp;&nbsp;&nbsp;#&nbsp;&nbsp;&nbsp;&nbsp; [...]</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1532">
+			<cite><a href='http://www.cxlogic.com/' rel='external nofollow' class='url'>Rob Rix</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1532" title="">August 22nd, 2005 at 12:17 AM</a> </small>
+
+			<p>Okay, now that&#8217;s just too cool. Inspirational, too (:</p>
+<p>Well done, Andrew, and thanks.</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1533">
+			<cite><a href='http://www.kubieziel.de/blog/?p=204' rel='external nofollow' class='url'>Qbi&#8217;s Weblog &raquo; Spa? mit HTTP-Headern</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1533" title="">August 23rd, 2005 at 10:29 AM</a> </small>
+
+			<p>[...] Surfen bedeutet f?r die meisten, einen Link anzuklicken oder die Adresse einzugeben und die Ergebnisse im Browser anzuschauen. Doch dabei entgeht dem Nutzer vieles. Im konkreten Falle n?mlich die HTTP-Header. Andrew Wooster hat die Header von 2,7 Millionen Seiten ausgewertet und steiss dabei auf sehr interessante Ergebnisse. Es fanden sich Telefonnummern (Phone: (888) 817-8323), subliminale Botschaften (X-Subliminal: You want to buy as many games as you can afford) und anderen Nettigkeiten. Die Seite ist unbedingt sehenswert! [...]</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1534">
+			<cite><a href='http://hhv-rheinklang.de' rel='external nofollow' class='url'>Alexander</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1534" title="">August 23rd, 2005 at 2:53 PM</a> </small>
+
+			<blockquote cite="#"><p>
+X-The-REAL-Answer: 47
+</p></blockquote>
+<p>Read the book &#8220;The Hitch Hikers Guide to the Galaxy&#8221; (or see movie),<br />
+Short description:<br />
+The ultimate answer.</p>
+<p>BTW: I modified <a href="http://brockal.br.funpic.de" title="my testing site" rel="nofollow">brockal.funpic.de</a> a little bit after I read this article <img src='http://www.nextthing.org/wordpress/wp-includes/images/smilies/icon_smile.gif' alt=':-)' class='wp-smiley' /> </p>
+<p>Alexander</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1535">
+			<cite><a href='http://moongate.org/?p=175' rel='external nofollow' class='url'>moongate.org &raquo; Blog Archive &raquo; Cyberfun</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1535" title="">August 24th, 2005 at 8:00 AM</a> </small>
+
+			<p>[...] Ya, some sysadmins have a lot of fun. Andrew Wooster has blogged on his analysis of strange http headers, including webservers that send out ascii art! That&#8217;s pretty intersting. And of course, you already know the Strange NIST Time Server and Star Wars. [...]</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1536">
+			<cite><a href='http://blog.seriot.ch/?p=178' rel='external nofollow' class='url'>blog.seriot.ch &raquo; Blog Archive &raquo; Les en-têtes HTTP</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1536" title="">August 28th, 2005 at 2:48 PM</a> </small>
+
+			<p>[...] Pour en savoir plus sur les découvertes de Andrew Wooster, rendez-vous sur son site. [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1537">
+			<cite><a href='http://ka.wordpress.com/2005/09/06/fun-with-http-headers/' rel='external nofollow' class='url'>Ka &raquo; Fun with http headers</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1537" title="">September 6th, 2005 at 4:50 AM</a> </small>
+
+			<p>[...] Andrew digs headers [...]</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1538">
+			<cite><a href='http://blogs.linux.ie/xeer/2005/09/06/fun-with-http-headers/' rel='external nofollow' class='url'>Holy Shmoly! :: Fun With HTTP Headers</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1538" title="">September 6th, 2005 at 8:17 AM</a> </small>
+
+			<p>[...] It&#8217;s funny what people put in their HTTP headers these days! (via)   Related Stories (fun, http, headers) [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1539">
+			<cite><a href='http://redsheep.de/blog/?p=9' rel='external nofollow' class='url'>Benjamin Schweizer: blog &raquo; Blog Archive &raquo; Cyberfun</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1539" title="">September 6th, 2005 at 6:08 PM</a> </small>
+
+			<p>[...] Ya, some sysadmins have a lot of fun. Andrew Wooster has blogged on his analysis of strange http headers, including webservers that send out ascii art! That&#8217;s pretty intersting. And of course, you already know the Strange NIST Time Server and Star Wars. [...]</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1545">
+			<cite><a href='http://windycitymike.com/2005/09/25/links-for-2005-09-25/' rel='external nofollow' class='url'>Musings of a Chicagoan &raquo; Blog Archive &raquo; links for 2005-09-25</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1545" title="">September 25th, 2005 at 8:34 AM</a> </small>
+
+			<p>[...] Andrew Wooster: &#8220;After poking at enough sites, I started noticing that people were putting some weird and interesting stuff in their HTTP headers. So, a couple of weeks ago, I decided to actually go out and see what I could find by scrounging around in HT (tags: interesting funny geekery) [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1565">
+			<cite><a href='http://bravo5.org/blog' rel='external nofollow' class='url'>blalor</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1565" title="">October 19th, 2005 at 6:50 PM</a> </small>
+
+			<p>Damn.  The dang darn Dems have done gone ASP!</p>
+<p><code>  Date: Thu, 20 Oct 2005 01:47:16 GMT<br />
+  Server: Microsoft-IIS/6.0<br />
+  X-Powered-By: ASP.NET<br />
+  X-AspNet-Version: 1.1.4322<br />
+</code></p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1570">
+			<cite><a href='http://spy98.bitshifters.net/archives/fun-with-http-headers/' rel='external nofollow' class='url'>Spy98&#8217;s Weblog &raquo; Blog Archive &raquo; Fun with HTTP headers.</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1570" title="">December 2nd, 2005 at 2:33 AM</a> </small>
+
+			<p>[...] You wouldn&#8217;t believe the tremedous fun it is to check out other websites HTTP header information. After finding Andrew Wooster&#8217;s original article about idiocy and fun in HTTP headers, I went out to check some sites out for myself. And you should too! So you should start with Andrew&#8217;s Blog too. [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1574">
+			<cite><a href='http://mathrick.org/blog/?p=60' rel='external nofollow' class='url'>Fun, fun, fun at Mathrick no PATANKO PRESS!</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1574" title="">December 29th, 2005 at 5:13 PM</a> </small>
+
+			<p>[...] Here.      // Used for showing and hiding user information in the comment form function ShowUtils() { document.getElementById(&#8220;authorinfo&#8221;).style.display = &#8220;&#8221;; document.getElementById(&#8220;showinfo&#8221;).style.display = &#8220;none&#8221;; document.getElementById(&#8220;hideinfo&#8221;).style.display = &#8220;&#8221;; } function HideUtils() { document.getElementById(&#8220;authorinfo&#8221;).style.display = &#8220;none&#8221;; document.getElementById(&#8220;showinfo&#8221;).style.display = &#8220;&#8221;; document.getElementById(&#8220;hideinfo&#8221;).style.display = &#8220;none&#8221;; } [...]</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1576">
+			<cite><a href='http://tag-strategia.com/blog/?p=25' rel='external nofollow' class='url'>tag-strategia.com &raquo; PHP Bugs, Headers, and Such</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1576" title="">January 10th, 2006 at 10:35 AM</a> </small>
+
+			<p>[...] I then examined the HTTP headers, and compared them with a working file. (It&#8217;s off-topic for this post, but I stumbled across this while Googling for solutions. If you&#8217;re a geek and want to see some fun headers in the wild, visit Fun With HTTP Headers.) [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1577">
+			<cite><a href='http://www.rootbug.net' rel='external nofollow' class='url'>lolj</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1577" title="">January 10th, 2006 at 9:09 PM</a> </small>
+
+			<p>i had the crazyes one on my old site <img src='http://www.nextthing.org/wordpress/wp-includes/images/smilies/icon_razz.gif' alt=':P' class='wp-smiley' /> </p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1595">
+			<cite>Erik Brandsberg</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1595" title="">April 24th, 2006 at 2:32 PM</a> </small>
+
+			<p>On the mispeled connection header, if you notice the positions of the characters replaced, you will find that the packet tcp &amp; IP checksum won&#8217;t be modified with the rearrangement, which allows for higher performance when attempting to remove the header.  And yes, I do know what company makes the hardware that does this.</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1599">
+			<cite>Randy</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1599" title="">May 15th, 2006 at 12:58 PM</a> </small>
+
+			<p>Ok i have a simple question ( Aleast i hope its simple)</p>
+<p>Wht is a Robot Header in a nut shell?</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1651">
+			<cite><a href='http://paruwo.click2.de/wordpress/?p=5' rel='external nofollow' class='url'>Crazy Teuton &raquo; Blog Archive &raquo; Software ain&#8217;t funny?</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1651" title="">May 29th, 2006 at 6:21 AM</a> </small>
+
+			<p>[...] Ever tried apt-get moo within your debian? If you think that the result is funny you should consult Andrew&#8217;s blog entry &#8220;Fun with HTTP Headers&#8221; or the Unix Error Messages Page. Have fun. [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1661">
+			<cite>Digitalsine</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1661" title="">June 30th, 2006 at 4:07 PM</a> </small>
+
+			<p>Never thought about headers until I viewed your site. Great stuff!</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-1752">
+			<cite><a href='http://www.alldesignnews.org/designs/headers-explained/' rel='external nofollow' class='url'>Designs &raquo; Headers explained</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1752" title="">August 31st, 2006 at 6:15 AM</a> </small>
+
+			<p>[...] here is an in-depth analysis of how headers work, and other design and technical nuances of headers.read more&nbsp;|&nbsp;digg story [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-2522">
+			<cite><a href='http://eschew.org/blog/?p=232' rel='external nofollow' class='url'>eschew / links for 2007-02-21</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-2522" title="">February 21st, 2007 at 4:23 PM</a> </small>
+
+			<p>[...] nextthing.org Â» Fun With HTTP Headers (tags: analysis statistics internet http) [...]</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-2598">
+			<cite><a href='http://www.nextthing.org/archives/2007/03/12/robotstxt-adventure' rel='external nofollow' class='url'>nextthing.org &raquo; robots.txt Adventure</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-2598" title="">March 12th, 2007 at 11:58 PM</a> </small>
+
+			<p>[...] Last October I got bored and set my spider loose on the robots.txt files of the world. Having had a good deal of positive feedback on my HTTP Headers survey, I had decided to poke around in robots.txt files and see what sorts of interesting things I could find. [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-4990">
+			<cite><a href='http://www.latenightpc.com/blog/' rel='external nofollow' class='url'>Rob</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-4990" title="">April 27th, 2007 at 7:10 PM</a> </small>
+
+			<p>If it&#8217;d been 42 that&#8217;d be obvious. Something like<br />
+X-Thursdays: Never could get the hang of Thursdays<br />
+might be a little more obscure <img src='http://www.nextthing.org/wordpress/wp-includes/images/smilies/icon_wink.gif' alt=';-)' class='wp-smiley' /> </p>
+<p>And yes, Han shot first and that&#8217;s the way it was meant to be.</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-6157">
+			<cite><a href='http://www.blairdee.info/?p=209' rel='external nofollow' class='url'>BlairDee.info &raquo; Headers explained</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-6157" title="">May 22nd, 2007 at 9:45 AM</a> </small>
+
+			<p>[...] read moreÂ |Â digg story [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-9917">
+			<cite><a href='http://pensador.org' rel='external nofollow' class='url'>Pensador</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-9917" title="">August 2nd, 2007 at 10:28 AM</a> </small>
+
+			<p>That was a very interesting, instructive yet entertaining readâ€”thank you!</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-9926">
+			<cite><a href='http://blog.futtta.be' rel='external nofollow' class='url'>futtta</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-9926" title="">August 4th, 2007 at 4:07 AM</a> </small>
+
+			<p>concerning the cool job-offerings in http-headers; check out the wordpress.com-site, they have a header that reads:</p>
+<p>&#8220;X-hacker	If you&#8217;re reading this, you should visit automattic.com/jobs and apply to join the fun, mention this header.&#8221;</p>
+<p>good luck with your applications guys! <img src='http://www.nextthing.org/wordpress/wp-includes/images/smilies/icon_wink.gif' alt=';-)' class='wp-smiley' /> </p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-9929">
+			<cite><a href='http://immike.net' rel='external nofollow' class='url'>Mike Malone</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-9929" title="">August 5th, 2007 at 12:34 PM</a> </small>
+
+			<p>Awesome post! I was all prepared to post the automattic job offer header, but futtta beat me to it. Damn.</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-10067">
+			<cite><a href='http://www.dir.vc' rel='external nofollow' class='url'>msolution</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-10067" title="">September 2nd, 2007 at 1:03 PM</a> </small>
+
+			<p>Interesting read, searching for something stumbled here,<br />
+glad i did <img src='http://www.nextthing.org/wordpress/wp-includes/images/smilies/icon_biggrin.gif' alt=':D' class='wp-smiley' /> </p>
+<p>thanx.<br />
+M.</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-10082">
+			<cite><a href='http://www.dir.vc' rel='external nofollow' class='url'>Rahul</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-10082" title="">September 3rd, 2007 at 12:58 PM</a> </small>
+
+			<p>just got inspired and added some <img src='http://www.nextthing.org/wordpress/wp-includes/images/smilies/icon_biggrin.gif' alt=':D' class='wp-smiley' /> </p>
+<p>Rahul.</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-10088">
+			<cite>SRJ</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-10088" title="">September 5th, 2007 at 4:46 AM</a> </small>
+
+			<p>Thanks a TON!</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-10253">
+			<cite><a href='http://www.egorych.com' rel='external nofollow' class='url'>egorych</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-10253" title="">September 23rd, 2007 at 10:31 AM</a> </small>
+
+			<p>An incredible article. I like it very much. It took me an hour to read! May be I&#8217;ll translate it too&#8230;</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-10256">
+			<cite><a href='http://davemee.com/dump/27/' rel='external nofollow' class='url'>Dave&#8217;s Dump &raquo; Blog Archive &raquo; links for 2007-09-24</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-10256" title="">September 23rd, 2007 at 6:30 PM</a> </small>
+
+			<p>[...] nextthing.org Â» Fun With HTTP Headers X-Favourite-Animal: Mouse (tags: analysis http headers response web survey internet www research) [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-10263">
+			<cite><a href='http://blog.elisehuard.be/?p=156' rel='external nofollow' class='url'>Links on a fickle monday</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-10263" title="">September 24th, 2007 at 12:01 PM</a> </small>
+
+			<p>[...] Interesting web surveys: robots.txt and http headers (via Simon Willison). [...]</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-10445">
+			<cite><a href='http://welborn.blogspot.com/' rel='external nofollow' class='url'>James Welborn</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-10445" title="">October 26th, 2007 at 9:03 AM</a> </small>
+
+			<p>I&#8217;d like to see these headers (Maybe next time I run my own server):</p>
+<p>X-Men: Wolverine<br />
+X-Factor: Was a better book<br />
+X-Force: Allred&#8217;s run rocked</p>
+<p>Yes, I am a geek.</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-11140">
+			<cite>Guillaume Pagnard</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-11140" title="">February 29th, 2008 at 10:13 AM</a> </small>
+
+			<p>I noticed a funny typo in the headers sent by <a href="http://www.ibm.com" rel="nofollow">http://www.ibm.com</a><br />
+Note the &#8216;Kp-eeAlive&#8217; instead of &#8216;Keep-Alive&#8217;.<br />
+Does anyone know if it&#8217;s really a typo or if it was intended ?<br />
+In the later case, what for ? to trick proxy ?</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-11148">
+			<cite><a href='http://n3rd.tv/2007/09/03/episode-0x29/' rel='external nofollow' class='url'>n3rd.tv &raquo; Blog Archive &raquo; Episode 0&#215;29</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-11148" title="">March 12th, 2008 at 7:55 AM</a> </small>
+
+			<p>[...] Fun met HTTP-header [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-11302">
+			<cite>Anonymous</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-11302" title="">May 5th, 2008 at 9:12 AM</a> </small>
+
+			<p>&#8216;Kp-eeAlive&#8217; makes a lot of sense for MS IE6 when using SSL as it does not support it properly. HTTP POST requests used for logins and uploads usually fail so one may want to disable keep alives.</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-17139">
+			<cite><a href='http://www.mattiasgeniar.be/humor/there-are-http-headers-and-then-there-are-http-headers/' rel='external nofollow' class='url'>There Are HTTP Headers, And Then There Are HTTP Headers | Mattias Geniar</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-17139" title="">August 28th, 2008 at 11:11 AM</a> </small>
+
+			<p>[...] at ways to add fancy headers for this server as well &#8230; <img src='http://www.nextthing.org/wordpress/wp-includes/images/smilies/icon_smile.gif' alt=':-)' class='wp-smiley' />  You can read more about it on this Fun With HTTP Headers article!   Share and Enjoy:I&#8217;m not writing this blog to get rich &#8211; but because I like it. So if you [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-17313">
+			<cite><a href='http://h.chrismeller.com/the-things-you-stumble-upon-online' rel='external nofollow' class='url'>The Things you Stumble Upon Online - Habari</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-17313" title="">August 30th, 2008 at 1:39 PM</a> </small>
+
+			<p>[...] amazing some of the things you can stumble upon online. For instance, I stumbled upon this post this morning, which takes us on a tour of crazy HTTP Headers across the &#8216;net. Very [...]</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-20052">
+			<cite><a href='http://www.zustandsforschung.de/index.php/die-x-header/' rel='external nofollow' class='url'>Die X-Header &raquo; Zustandsforschung</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-20052" title="">November 5th, 2008 at 5:09 AM</a> </small>
+
+			<p>[...] manchen Sites scheinen da auch echt merkwürdige Sachen drinzustehen. Unter dem Titel Fun With HTTP Headers hat jemand mal getestet, was für Sachen in diesen Headern manchmal drinstehen. Gefunden hat er [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-20181">
+			<cite><a href='http://www.developers.org.ua/archives/max/2007/08/03/weekly-linkdump-87/' rel='external nofollow' class='url'>Weekly linkdump #91 - max - блог разработчиков</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-20181" title="">November 9th, 2008 at 11:14 AM</a> </small>
+
+			<p>[...] Fun With HTTP Headers &#8212; о сколько есть открытий чудных, для тех кто знает curl [...]</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-24970">
+			<cite><a href='http://carlos.bueno.org' rel='external nofollow' class='url'>Aristus</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-24970" title="">February 11th, 2009 at 8:35 AM</a> </small>
+
+			<p>the &#8220;Cneonction: close&#8221; thing is a quirk of Netscaler loadbalancers. It&#8217;s done to nullify any &#8220;Connection: close&#8221; headers the webserver spits out, as the Netscaler wants to manage it better. It&#8217;s scrambled instead of removed so that it doesn&#8217;t have to regenerate packets (length is the same) and it&#8217;s scrambled semi-randomly so that people don&#8217;t just assume it&#8217;s a misspelling and add compatibility for it.</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-24979">
+			<cite><a href='http://tav.espians.com' rel='external nofollow' class='url'>tav</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-24979" title="">February 11th, 2009 at 9:35 AM</a> </small>
+
+			<p>Andrew, thank you for taking the time to do this &#8212; especially for trawling through to find the interesting bits and pieces!!</p>
+<p>Perhaps you could throw the dump of the Headers up somewhere and a pseudo-digg-clone with +1 could be setup to collectively identify other interesting headers?</p>
+<p>Anyways, just a thought&#8230; Keep up the interesting finds!</p>
+<p>&#8211;<br />
+tav</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-24985">
+			<cite>Chris</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-24985" title="">February 11th, 2009 at 11:30 AM</a> </small>
+
+			<p>Awesome, thanks for the great read!</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-25003">
+			<cite>Jeff</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-25003" title="">February 11th, 2009 at 2:56 PM</a> </small>
+
+			<p>FYI &#8211; CoralCDN rejects a lot of its traffic due to bandwidth limits on the experimental network test bed it runs on (PlanetLab). The header allows sites to use CoralCDN without worrying that it might silently reject its traffic.</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-25005">
+			<cite><a href='http://bridgehosting.net' rel='external nofollow' class='url'>seo wales</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-25005" title="">February 11th, 2009 at 3:00 PM</a> </small>
+
+			<p>&#8220;X-I-Am-Le-Tired: Fine, take a nap.&#8221;</p>
+<p>Glad to see you&#8217;re taking part too. Checked you out using firebug (FF addon), the webdeveloper toolbar also allows headers to be checked. FWIW.</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-25025">
+			<cite><a href='http://twitter.com/cosmicvent' rel='external nofollow' class='url'>Minhajuddin</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-25025" title="">February 11th, 2009 at 7:14 PM</a> </small>
+
+			<p>Andrew, This is one of the most entertaining and informative posts I have read in a long term. Thanks for investing the time to give us this good stuff <img src='http://www.nextthing.org/wordpress/wp-includes/images/smilies/icon_biggrin.gif' alt=':D' class='wp-smiley' /> </p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-25043">
+			<cite><a href='http://ericalexander.org/wordpress/2009/02/11/links-20090211/' rel='external nofollow' class='url'>[root@EGA]# &raquo; Blog Archive &raquo; links - 20090211</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-25043" title="">February 11th, 2009 at 10:41 PM</a> </small>
+
+			<p>[...] of Religion Map Fun With HTTP Headers Why We&#8217;re Probably in For a Long Recession How to write a Linux virus in 5 easy steps How I Built a [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-25055">
+			<cite>Ovidiu Curcan</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-25055" title="">February 12th, 2009 at 1:41 AM</a> </small>
+
+			<p>curl -s -I slashdot.org | grep -e &#8220;Bender\|Fry\|Leela&#8221; | sed &#8216;s/X-//&#8217;</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-25058">
+			<cite>Ovidiu Curcan</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-25058" title="">February 12th, 2009 at 2:09 AM</a> </small>
+
+			<p>Stupid curly quotes. <img src='http://www.nextthing.org/wordpress/wp-includes/images/smilies/icon_smile.gif' alt=':)' class='wp-smiley' /> </p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-25060">
+			<cite>Aaron Davies</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-25060" title="">February 12th, 2009 at 2:34 AM</a> </small>
+
+			<p>shorter, and working (modulo wordpress screwing with the quotes&#8230;.)</p>
+<p>curl -sI slashdot.org|egrep &#8216;Bender|Fry|Leela&#8217;|cut -b3-</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-25061">
+			<cite>Aaron Davies</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-25061" title="">February 12th, 2009 at 2:35 AM</a> </small>
+
+			<p>and yep, it wrecked the quotes. stupid wordpress. if i want curly quotes, i&#8217;ll damn well type them&#8211;it&#8217;s easy on my mac.</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-25062">
+			<cite><a href='http://www.cs.hmc.edu/~awooster/' rel='external nofollow' class='url'>Andrew</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-25062" title="">February 12th, 2009 at 2:40 AM</a> </small>
+
+			<p>Hah, yeah, I have nothing but bad things to say about WordPress and its munging of my text. *sigh*</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-26316">
+			<cite><a href='http://chfizio.ru' rel='external nofollow' class='url'>Николай</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-26316" title="">February 28th, 2009 at 1:59 PM</a> </small>
+
+			<p>Эх&#8230;, а я тут за свои годы, как-то привык ко всему этому, даже внимания на это не обращаю <img src='http://www.nextthing.org/wordpress/wp-includes/images/smilies/icon_smile.gif' alt=':)' class='wp-smiley' />  Вы тоже привыкнете со временем <img src='http://www.nextthing.org/wordpress/wp-includes/images/smilies/icon_smile.gif' alt=':)' class='wp-smiley' /> </p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-26519">
+			<cite><a href='http://slightlycreepedout.co.uk' rel='external nofollow' class='url'>Frank</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-26519" title="">March 5th, 2009 at 9:44 AM</a> </small>
+
+			<p>Ah, this was well worth a read.</p>
+<p>Gave me a few good laughs at times, and reminded me of the time I was reading through the Amazon.com source code to check on something I thought might have been a bug, to realise that the very bottom line was &#8220;<!-- MEOW -->&#8220;.</p>
+<p>Seriously, go check it.</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-26520">
+			<cite><a href='http://slightlycreepedout.co.uk' rel='external nofollow' class='url'>Frank</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-26520" title="">March 5th, 2009 at 9:49 AM</a> </small>
+
+			<p>Apologies, I forgot that would HTML comment itself out. </p>
+<p>[!-- MEOW --]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-27910">
+			<cite><a href='http://quarkblog.org/2009/03/24/funny-http-headers-in-slashdot/' rel='external nofollow' class='url'>QuarkBlog &raquo; Blog Archive &raquo; Funny HTTP headers in Slashdot</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-27910" title="">March 24th, 2009 at 8:27 AM</a> </small>
+
+			<p>[...] You can find some information about uncommon HTTP headers here. [...]</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-31693">
+			<cite><a href='http://www.ktorium.com/blog/?p=6' rel='external nofollow' class='url'>Amazon&#8217;s hidden spelling mistake &laquo; KTORIUM</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-31693" title="">June 17th, 2009 at 4:08 PM</a> </small>
+
+			<p>[...] out this is probably intentional &#8211; this post and this message claim that the header is changed by some load-balancing service, overriding the [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-31711">
+			<cite><a href='http://www2.orourkes.us:11080/blog/2009/06/18/https-dissected/' rel='external nofollow' class='url'>Computer Ramblings &raquo; Blog Archive &raquo; HTTPS Dissected</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-31711" title="">June 18th, 2009 at 12:00 PM</a> </small>
+
+			<p>[...] reply that includes a non-descriptive &#8220;Server: Server&#8221; header and a misspelled &#8220;Cneonction: close&#8221; header coming from Amazon&#8217;s load [...]</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-35668">
+			<cite><a href='http://www.eparter.com/2009/09/https%e8%bf%9e%e6%8e%a5%e6%9c%80%e5%88%9d%e7%9a%84%e8%8b%a5%e5%b9%b2%e6%af%ab%e7%a7%92.html' rel='external nofollow' class='url'>HTTPS连接最初的若干毫秒 | 洋葱圈</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-35668" title="">September 25th, 2009 at 5:45 PM</a> </small>
+
+			<p>[...] 这是一个普通的HTTP返回消息，它包含一个非描述性“Server: Server”HTTP头和一个来自Amazon负载均衡器的“Cneonction: close”头，显然拼写有误。 [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-36191">
+			<cite>David Jimenez</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-36191" title="">October 12th, 2009 at 10:44 AM</a> </small>
+
+			<p>Very interesting read. Thanks! You are right on with the misspelled connection header. LB hardware does it, connection and content-length headers are commonly modified.</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-38124">
+			<cite>Kapil Gonge</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-38124" title="">November 23rd, 2009 at 12:55 AM</a> </small>
+
+			<p>Interesting&#8230;<br />
+Thanks <img src='http://www.nextthing.org/wordpress/wp-includes/images/smilies/icon_smile.gif' alt=':-)' class='wp-smiley' /> </p>
+<p>Had lot of fun with headers  <img src='http://www.nextthing.org/wordpress/wp-includes/images/smilies/icon_wink.gif' alt=';-)' class='wp-smiley' /> </p>
+
+		</li>
+
+	
+	
+	</ol>
+
+ 
+
+
+<h3 id="respond">Leave a Reply</h3>
+
+
+<form action="http://www.nextthing.org/wordpress/wp-comments-post.php" method="post" id="commentform">
+
+
+<p><input type="text" name="author" id="author" value="" size="22" tabindex="1" />
+<label for="author"><small>Name </small></label></p>
+
+<p><input type="text" name="email" id="email" value="" size="22" tabindex="2" />
+<label for="email"><small>Mail (will not be published) </small></label></p>
+
+<p><input type="text" name="url" id="url" value="" size="22" tabindex="3" />
+<label for="url"><small>Website</small></label></p>
+
+<p>
+  Please spell "reed" backwards:
+  <input type="text" name="comment_turing" id="comment_turing" tabindex="4" />
+  <small>(required)</small>
+</p>
+<!--<p><small><strong>XHTML:</strong> You can use these tags: &lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;strike&gt; &lt;strong&gt; </small></p>-->
+
+<p><textarea name="comment" id="comment" cols="100%" rows="10" tabindex="4"></textarea></p>
+
+<p><input name="submit" type="submit" id="submit" tabindex="5" value="Submit Comment" />
+<input type="hidden" name="comment_post_ID" value="20" />
+</p>
+
+</form>
+
+<p>
+<br />
+</p>
+</div>
+
+
+
+
+
+	
+	</div>
+
+<hr />
+<div id="footer">
+	<p>
+		nextthing.org is proudly powered by 
+		<a href="http://wordpress.org/" rel="nofollow">WordPress</a>
+		<br /><a href="feed:http://www.nextthing.org/feed">Entries (RSS)</a>
+		and <a href="feed:http://www.nextthing.org/comments/feed">Comments (RSS)</a>.
+		<br />&#169;2006 Andrew Wooster
+		<!-- 15 queries. 0.353 seconds. -->
+	</p>
+</div>
+</div>
+
+
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-523190-1";
+urchinTracker();
+</script>
+
+</body>
+</html>
+<!-- http://www.nextthing.org --><a href="http://opcaca.com">Popular Online Store with the Best OEM Software</a> run quarkxpress on two computers <a href="http://google.com">google</a> microsoft office 2007 small business trial 

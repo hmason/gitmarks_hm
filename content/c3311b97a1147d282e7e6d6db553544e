@@ -1,0 +1,1587 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
+ 
+<html> 
+ 
+<head> 
+<script type="text/javascript" src="http://static.typepad.com/.shared:v20101216.02-0-g8ba2d3f:typepad:en_us/js/yui/yahoo-dom-event.js,/js/sixatrack-loader.js"></script>
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['t2._setAccount', 'UA-225723-36']);
+		_gaq.push(['t2._setDomainName', 'none']);
+		_gaq.push(['t2._setAllowLinker', true]);
+        _gaq.push(['t2._setCustomVar', 1, 'Blog', '6a0120a85dcdae970b0128776faab5970c', 3]);
+		_gaq.push(['t2._trackPageview']);
+
+		(function() {
+		  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+<title>Coding Horror: A Visual Explanation of SQL Joins</title> 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+<link rel="stylesheet" href="http://www.codinghorror.com/blog/styles-site.css" type="text/css" /> 
+<link rel="stylesheet" href="http://www.codinghorror.com/blog/styles-site-mobile.css" type="text/css" media="handheld" /> 
+<link rel="stylesheet" href="http://www.codinghorror.com/blog/styles-site-print.css" type="text/css" media="print" /> 
+<link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/codinghorror/" /> 
+<link rel="start" href="/blog/" title="Home" /> 
+<link rel="canonical" href="http://www.codinghorror.com/blog/2007/10/a-visual-explanation-of-sql-joins.html">
+
+
+
+<link rel="prev" href="http://www.codinghorror.com/blog/2007/10/a-lesson-in-control-simplicity.html" title="A Lesson in Control Simplicity" />
+
+<link rel="next" href="http://www.codinghorror.com/blog/2007/10/mouse-ballistics.html" title="Mouse Ballistics" />
+
+
+<script type="text/javascript"> 
+var TPApp = {};
+TPApp.app_uri = "http://www.typepad.com/";
+</script> 
+<script type="text/javascript" src="http://static.typepad.com/.shared:v25.4:typepad:en_us/js/yui/yahoo-dom-event.js"></script> 
+<script type="text/javascript" src="http://static.typepad.com/.shared:v25.4:typepad:en_us/js/app/thumbnail-gallery-min.js"></script> 
+<script type="text/javascript" src="http://static.typepad.com/.shared:v25.4:typepad:en_us/js/app/flyouts.js"></script>
+
+<link rel="shortcut icon" href="/favicon.ico" /> 
+
+</head>
+
+<body>
+	
+
+<div class="blog"> 
+
+<div style="float:left; "> 
+<a href="http://www.codinghorror.com/blog/"><img src="http://www.codinghorror.com/blog/images/coding-horror-official-logo-small.png" alt="I &lt;3 Steve McConnell" border="0" height="91" width="100"></a>*
+</div> 
+<div style="float:left; margin-top:10px;"> 
+<a href="http://www.codinghorror.com/blog/"><img alt="Coding Horror" src="http://www.codinghorror.com/blog/images/coding-horror-text.png" border="0" height="25" width="275"></a><br/> 
+<span class="description">programming and human factors<br/>by Jeff Atwood</span> 
+</div> 
+
+
+<div style="float:right; margin-top:20px;" id="searchbox"> 
+<form method="get" action="http://www.google.com/custom" target="_top"> 
+<input type="hidden" name="domains" value="www.codinghorror.com"></input> 
+<label for="sbi" style="display: none">Enter your search terms</label> 
+<input type="text" name="q" size="31" maxlength="255" value="" id="sbi"></input> 
+<label for="sbb" style="display: none">Submit search form</label> 
+<input type="submit" name="sa" value="Search" id="sbb"></input><br/> 
+<input type="radio" name="sitesearch" value="" id="ss0"></input> 
+<label for="ss0" title="Search the Web">Web</label></td> 
+<input type="radio" name="sitesearch" value="www.codinghorror.com" checked id="ss1"></input> 
+<label for="ss1" title="Search www.codinghorror.com">Coding Horror</label> 
+<input type="hidden" name="client" value="pub-6424649804324178"></input> 
+<input type="hidden" name="forid" value="1"></input> 
+<input type="hidden" name="ie" value="ISO-8859-1"></input> 
+<input type="hidden" name="oe" value="ISO-8859-1"></input> 
+<input type="hidden" name="safe" value="active"></input> 
+<input type="hidden" name="cof" value="GALT:#0066CC;GL:1;DIV:#FFFFFF;VLC:A2427C;AH:center;BGC:FFFFFF;LBGC:FFFFFF;ALC:666666;LC:666666;T:000000;GFNT:0066CC;GIMP:0066CC;LH:50;LW:344;L:http://www.codinghorror.com/blog/images/codinghorror-search-logo1.png;S:http://www.codinghorror.com/blog/;FORID:1"></input> 
+<input type="hidden" name="hl" value="en"></input> 
+</form> 
+</div> 
+
+</div> 
+<br clear="all"> 
+
+<div id="container"> 
+ 
+<div class="blog"> 
+
+<h2 class="date">Oct 11, 2007</h2> 
+
+<div class="blogbody"> 
+
+<h3 class="title"><a href="http://www.codinghorror.com/blog/2007/10/a-visual-explanation-of-sql-joins.html" class="title-link">A Visual Explanation of SQL Joins</a></h3> 
+
+<p>
+I thought Ligaya Turmelle&#39;s <a href="http://www.khankennels.com/blog/index.php/archives/2007/04/20/getting-joins">post on SQL joins</a> was a great primer for novice developers. Since SQL joins <i>appear</i> to be set-based, the use of <a href="http://en.wikipedia.org/wiki/Venn_diagram">Venn diagrams</a> to explain them seems, at first blush, to be a natural fit. However, like the commenters
+    to her post, I found that the Venn diagrams didn&#39;t quite match the <a href="http://en.wikipedia.org/wiki/Join_(SQL)">
+        SQL join syntax</a>
+    reality in my testing.<p>
+        I love the concept, though, so let&#39;s see if we can make it work. Assume we have the following two tables. <strong>Table A</strong> is on the left, and 
+    <strong>Table B</strong> is on the right. We&#39;ll populate them with four records each.
+<p>
+<pre>id name       id  name
+-- ----       --  ----
+1  <font color="red">Pirate</font>     1   Rutabaga
+2  Monkey     2   <font color="red">Pirate</font>
+3  <font color="red">Ninja</font>      3   Darth Vader
+4  Spaghetti  4   <font color="red">Ninja</font></pre>
+<p>
+Let&#39;s join these tables by the name field in a few different ways and see if we can get a conceptual match to those nifty Venn diagrams.
+<p>
+<table cellpadding="6" cellspacing="4" width="900">
+<tr>
+<td>
+<pre>SELECT * FROM TableA
+<b>INNER JOIN</b> TableB
+ON TableA.name = TableB.name
+
+id  name       id   name
+--  ----       --   ----
+1   Pirate     2    Pirate
+3   Ninja      4    Ninja
+</pre>
+<p>
+    <strong>Inner join</strong>
+    produces only the set of records that match in both Table A and Table B.<p>
+</p></p></td>
+<td>
+<img alt="Venn diagram of SQL inner join" border="0" class="at-xid-6a0120a85dcdae970b012877702708970c" height="329" src="http://codinghorror.typepad.com/.a/6a0120a85dcdae970b012877702708970c-pi" width="502" />
+</td>    
+</tr>
+    <tr>
+        <td>
+<pre>SELECT * FROM TableA
+<b>FULL OUTER JOIN</b> TableB
+ON TableA.name = TableB.name
+
+id    name       id    name
+--    ----       --    ----
+1     Pirate     2     Pirate
+2     Monkey     <font color="gray">null</font>  <font color="gray">null</font>
+3     Ninja      4     Ninja
+4     Spaghetti  <font color="gray">null</font>  <font color="gray">null</font>
+<font color="gray">null</font>  <font color="gray">null</font>       1     Rutabaga       
+<font color="gray">null</font>  <font color="gray">null</font>       3     Darth Vader
+</pre>
+<p>
+    <strong>Full outer join</strong> produces the set of all records in Table A and
+    Table B, with matching records from both sides where available. If there is no match,
+    the missing side will contain null.</p>
+        </td>
+        <td>
+<img alt="Venn diagram of SQL cartesian join" border="0" class="at-xid-6a0120a85dcdae970b012877702725970c" height="329" src="http://codinghorror.typepad.com/.a/6a0120a85dcdae970b012877702725970c-pi" width="502" /></td>
+    </tr>
+<tr> 
+<td>
+<p>
+<pre>SELECT * FROM TableA
+<b>LEFT OUTER JOIN</b> TableB
+ON TableA.name = TableB.name
+
+id  name       id    name
+--  ----       --    ----
+1   Pirate     2     Pirate
+2   Monkey     <font color="gray">null</font>  <font color="gray">null</font>
+3   Ninja      4     Ninja
+4   Spaghetti  <font color="gray">null</font>  <font color="gray">null</font>
+</pre>
+<p>
+    <strong>Left outer join</strong> produces a complete set of records from Table A, with the matching records
+    (where available) in Table B. If there is no match, the right side will contain null.</p>
+</p></td>   
+<td>
+
+<img alt="Venn diagram of SQL left join" border="0" class="at-xid-6a0120a85dcdae970b01287770273e970c" height="329" src="http://codinghorror.typepad.com/.a/6a0120a85dcdae970b01287770273e970c-pi" width="502" />
+</td>
+</tr>
+    <tr>
+        <td>
+<pre>SELECT * FROM TableA
+LEFT OUTER JOIN TableB
+ON TableA.name = TableB.name
+<strong>WHERE TableB.id IS null</strong>
+
+id  name       id     name
+--  ----       --     ----
+2   Monkey     <font color="gray">null</font>   <font color="gray">null</font>
+4   Spaghetti  <font color="gray">null</font>   <font color="gray">null</font>
+</pre>
+<p>
+To produce the set of records only in Table A, but not in Table B, we perform the same
+    left outer join, then <strong>exclude the records we don&#39;t want from the right side via
+        a where clause</strong>.</p>
+        </td>
+        <td>
+<img alt="join-left-outer.png" border="0" class="at-xid-6a0120a85dcdae970b012877702754970c" height="329" src="http://codinghorror.typepad.com/.a/6a0120a85dcdae970b012877702754970c-pi" width="502" /></td>
+    </tr>
+    <tr>
+        <td>
+<pre>SELECT * FROM TableA
+FULL OUTER JOIN TableB
+ON TableA.name = TableB.name
+<strong>WHERE TableA.id IS null 
+OR TableB.id IS null
+</strong>
+id    name       id    name
+--    ----       --    ----
+2     Monkey     <font color="gray">null</font>  <font color="gray">null</font>
+4     Spaghetti  <font color="gray">null</font>  <font color="gray">null</font>
+<font color="gray">null</font>  <font color="gray">null</font>       1     Rutabaga
+<font color="gray">null</font>  <font color="gray">null</font>       3     Darth Vader
+</pre>        
+<p>
+    To produce the set of records unique to Table A and Table B, we perform the same full outer join,
+    then <strong>exclude the records we don&#39;t want from both sides via a where clause</strong>.</p>
+        </td>
+        <td>
+<img alt="join-outer.png" border="0" class="at-xid-6a0120a85dcdae970b012877702769970c" height="329" src="http://codinghorror.typepad.com/.a/6a0120a85dcdae970b012877702769970c-pi" width="502" /></td>
+    </tr>
+
+</table>
+    <p>
+        There&#39;s also a cartesian product or <strong>cross join</strong>, which as far as
+        I can tell, can&#39;t be expressed as a Venn diagram:</p>
+<pre>SELECT * FROM TableA
+<b>CROSS JOIN</b> TableB
+</pre>        
+        
+    <p>
+        This joins &quot;everything to everything&quot;, resulting in 4 x 4 = 16 rows, far more than we
+        had in the original sets. If you do the math, you can see why this is a <em>very</em>
+        dangerous join to run against large tables.</p>
+<p>
+<script type="text/javascript">google_ad_client = &quot;pub-6424649804324178&quot;;google_ad_slot = &quot;8324348970&quot;;google_ad_width = 728;google_ad_height = 90;</script><script src="http://pagead2.googlesyndication.com/pagead/show_ads.js" type="text/javascript"></script>
+<p></p></p></p></p></p></p></p>
+
+
+
+ 
+ 
+<div class="posted">Posted by Jeff Atwood &nbsp;&nbsp; <script src="http://technorati.com/linkcount" type="text/javascript"></script><a class="tr-linkcount" href="http://technorati.com/search/http://www.codinghorror.com/blog/2007/10/a-visual-explanation-of-sql-joins.html?sub=nscosmos">View blog reactions</a></div> 
+ 
+
+<div style="float:left;">&laquo; <a href="http://www.codinghorror.com/blog/2007/10/a-lesson-in-control-simplicity.html">A Lesson in Control Simplicity</a></div> 
+
+
+
+<div style="float:right;"><a href="http://www.codinghorror.com/blog/2007/10/mouse-ballistics.html">Mouse Ballistics</a> &raquo;</div> 
+
+
+</div> 
+
+
+
+
+<div class="comments-head"><a name="comments"></a>Comments</div> 
+
+
+
+<div class="comments-body shawn_wheatley"> 
+<p>Funny, I just explained this to a co-worker in the same manner earlier in the week. I guess it never dawned on me that others may have never thought about joins in terms of these diagrams. Good post, Jeff!</p>
+<span class="comments-post" style="margin-left:20px">Shawn Wheatley on October 12, 2007  2:14 AM</span> 
+</div> 
+
+
+
+<div class="comments-body capdog"> 
+<p>Hey Jeff, thanks for the great blog - I thoroughly enjoy reading every single one of your posts. </p>
+
+<p>Even though I often am familiar with the concepts you talk of, I find the simple manner in which you break down the issues is always a great refresher.</p>
+
+<p>Keep up the great work.</p>
+<span class="comments-post" style="margin-left:20px">capdog on October 12, 2007  2:32 AM</span> 
+</div> 
+
+
+
+<div class="comments-body hacktick"> 
+<p>linked from join (SQL) en wikipedia to your blog entry ... your post is much better (or simplistic) than the techtalk on that wikipedia entry ;-)</p>
+<span class="comments-post" style="margin-left:20px">hacktick on October 12, 2007  3:00 AM</span> 
+</div> 
+
+
+
+<div class="comments-body weeble"> 
+<p>The post is much simpler than the Wikipedia entry because it omits all the non-trivial cases. All of these examples assume that each entry in table A will be matched by the join predicate to at most one entry in table B, and vice-versa.</p>
+<span class="comments-post" style="margin-left:20px">Weeble on October 12, 2007  3:35 AM</span> 
+</div> 
+
+
+
+<div class="comments-body brad"> 
+<p>I&#39;m not even sophisticated enough to use databases anymore (my career as a developer has devolved), but when I was, 99% of the time I used inner joins and just thought of it as the data common to both tables.  <br />
+Every now and then I wanted some data that didn&#39;t fit that kind of join and I&#39;d do a left outer join to get the data that was &quot;left out&quot;.</p>
+<span class="comments-post" style="margin-left:20px">Brad on October 12, 2007  3:47 AM</span> 
+</div> 
+
+
+
+<div class="comments-body gints_plivna"> 
+<p>Speaking about Oracle (+) syntax and LEFT/RIGHT [OUTER] JOIN syntax there is a difference. And it is nicely described here<br />
+<a href="http://www.oreillynet.com/pub/a/network/2002/10/01/whatsinacondition.html" rel="nofollow">http://www.oreillynet.com/pub/a/network/2002/10/01/whatsinacondition.html</a></p>
+
+<p>Speaking about ANSI syntax where everyone has to explicitly say to make CROSS JOIN to get Cartesian product at least in Oracle it is not true, using stupid (at least to my mind) NATURAL JOIN clause one can easily get CROSS JOIN and also JOIN on such columns he never thought it really is. I&#39;ve blogged about it here<br />
+<a href="http://gplivna.blogspot.com/2007/10/natural-joins-are-evil-motto-if-you.html" rel="nofollow">http://gplivna.blogspot.com/2007/10/natural-joins-are-evil-motto-if-you.html</a><br />
+Don&#39;t know wehether it is just Oracle specific or as per ANSI SQL standard.</p>
+
+<p>Speaking about INNNER JOINS as a Cartesian product and then eliminating all unnecessary rows, at least the real mechanics in Oracle is absolutely different, there are following possibilities for doing them:<br />
+NESTED LOOPS (OUTER)<br />
+HASH JOIN (OUTER)<br />
+MERGE JOIN (OUTER)<br />
+and for Cartesian product it uses MERGE JOIN CARTESIAN, and that&#39;s when usually the real trouble (filling temp) starts ;)<br />
+The real choice among Nested loops, hash join or merge join at least depends on data, statistics, available memory for a session, explicitly given available memory for hash joins or merge joins (btw there is possibility to give for one but not for other), system workload, hints, initialization parameters allowing ceratain join types (at least for hash joins) and probably something other :)</p>
+<span class="comments-post" style="margin-left:20px">Gints Plivna on October 12, 2007  3:51 AM</span> 
+</div> 
+
+
+
+<div class="comments-body dt"> 
+<p>Hi Jeff, </p>
+
+<p>I think your illustrations make one BIG assumption: Table A and Table B contain unique rows. If either table contained duplicate matching records, then the whole Venn diagram will not hold (the cardinality of the sets will not add up). I am afraid this visual explanation will lead some to think that you can use SQL joins to do filter operations which shouldn&#39;t be done this way. </p>
+
+<p>Although it&#39;s nice attempt to explain SQL joins, overall I think it is misleading.</p>
+
+<p>-dt</p>
+<span class="comments-post" style="margin-left:20px">dt on October 12, 2007  3:57 AM</span> 
+</div> 
+
+
+
+<div class="comments-body alex_chamberlain"> 
+<p>One of the worst three months of my CS training was a class ostensibly on database theory which was really a boot-camp in SQL syntax, taught by a Johnny-one-note professor who thought SQL and RDMSs were the greatest invention of mankind.</p>
+
+<p>This experience turned me off databases for 15 years until one day in the shower I realized that joins were analogous to set theory, in a rough way.  (Yes they are, all you naysayers!  &quot;Give me everything that&#39;s there AND there&quot; or &quot;Give me everything that&#39;s there OR there&quot; may not handle all the possible inputs, but it&#39;s a good jumping off point for explaining &quot;inner&quot; and &quot;outer.&quot;  And who came up with that stupid, arbitrary terminology anyway?)</p>
+
+<p>I still think SQL is an awful language, though, and relational databases are an ugly hack mandated by hardware limitations trumping elegant design.  OLAP &quot;cubes&quot; are so clearly a better solution---so intuitively clear and obvious---the natural generalization to higher dimensions of the flat-file database.</p>
+<span class="comments-post" style="margin-left:20px">Alex Chamberlain on October 12, 2007  4:09 AM</span> 
+</div> 
+
+
+
+<div class="comments-body kevin"> 
+<p>To me, a Cartesian Product would be best illustrated by both circles being blank.</p>
+
+<p>Granted, all the SQL gurus will probably spit feathers at my outrageous suggestion, but for me, it&#39;s a beautifully simple method of explaining simple joins and I&#39;ll be using it in me technical documentation!</p>
+
+<p>Thanks for this article, Jeff.</p>
+<span class="comments-post" style="margin-left:20px">Kevin on October 12, 2007  4:12 AM</span> 
+</div> 
+
+
+
+<div class="comments-body steve"> 
+<p>Jeff, you are _the_ master of well crafted blog posts that sometimes don&#39;t say much, but somehow gather scads of inane comments!  This one and the previous post (on exercise) are great examples.</p>
+
+<p>Now, not all of your posts are in this category, thank God!  But I&#39;m watching you...</p>
+<span class="comments-post" style="margin-left:20px">Steve on October 12, 2007  4:25 AM</span> 
+</div> 
+
+
+
+<div class="comments-body catto"> 
+<p>Hey Now Jeff,<br />
+These diagrams make me think of when learning of classic boolean logic.<br />
+Coding Horror Fan,<br />
+Catto</p>
+<span class="comments-post" style="margin-left:20px">Catto on October 12, 2007  4:37 AM</span> 
+</div> 
+
+
+
+<div class="comments-body andreas_krey"> 
+<p>Well, the database practitioner rejoice, and the set relationists cringe.</p>
+
+<p>There is only one join, which is the cross product (each row of the first table concatenated to each row of the second table). The INNER JOIN example only discards some rows by the where clause, otherwise it is (or should be) the same as the CROSS JOIN. The outer join is a hack that isn&#39;t very firmly rooted in relational algebra.</p>
+<span class="comments-post" style="margin-left:20px">Andreas Krey on October 12, 2007  4:47 AM</span> 
+</div> 
+
+
+
+<div class="comments-body jang"> 
+<p>Nice Jeff, thank you so much for this post!</p>
+
+<p>I always got confused with JOINS and how they work, that&#39;s one of these things that are hard to be expained in a book or a manual.</p>
+
+<p>But these diagrams make it pretty clear, they are great!</p>
+<span class="comments-post" style="margin-left:20px">jan.g on October 12, 2007  5:10 AM</span> 
+</div> 
+
+
+
+<div class="comments-body mike_woodhouse"> 
+<p>Don&#39;t forget EXCEPT! Which was (and additionally still is) MINUS in Oracle. For years I think Oracle was the only RDBMS that implemented it and I had, in nearly 20 years, used it all of, oh, once. Until last week, when I used it the second time.</p>
+
+<p>It&#39;s the same as your fourth example: instead of</p>
+
+<p>SELECT * FROM TableA<br />
+LEFT OUTER JOIN TableB<br />
+ON TableA.name = TableB.name<br />
+WHERE TableB.id IS null</p>
+
+<p>we can say</p>
+
+<p>SELECT * FROM TableA<br />
+MINUS<br />
+SELECT * FROM TableB</p>
+
+<p>(I used the old Oracle operator - it&#39;s more expressive to my eyes)</p>
+
+<p>Not every platform implements the operator yet: MySQL (which I just checked) doesn&#39;t, for example. MS SQL Server 2005 does. SQLIte? Hang on ...  yup, that works in v3 at least.</p>
+<span class="comments-post" style="margin-left:20px">Mike Woodhouse on October 12, 2007  5:21 AM</span> 
+</div> 
+
+
+
+<div class="comments-body kg"> 
+<p>Very strange. In my &quot;Database Management&quot; class at Arizona State University - a student asked about Join&#39;s and my professor said &quot;I never use them. Just stick with the WHERE syntax&quot;. </p>
+
+<p>This was a more theoretical course though. We spent FAR more time in relational algebra / calculus and algorithms for ensuring atomic transactions than we did in more practical stuff like database normalization.</p>
+
+<p>Hmm... lots of people say the theoretical stuff is a waste of time. For me, well, I almost became a math major instead of CS, so I find the theoretical stuff more interesting.</p>
+<span class="comments-post" style="margin-left:20px">KG on October 12, 2007  5:21 AM</span> 
+</div> 
+
+
+
+<div class="comments-body joske"> 
+<p>If you don&#39;t user any join-feature and just do &quot;select * from TableA, TableB&quot;, you have your cross-join.</p>
+<span class="comments-post" style="margin-left:20px">joske on October 12, 2007  5:26 AM</span> 
+</div> 
+
+
+
+<div class="comments-body david"> 
+<p>Venn diagrams.</p>
+
+<p>wow, so simple, so obvious; how come I haven&#39;t seen this anywhere else?</p>
+<span class="comments-post" style="margin-left:20px">david on October 12, 2007  5:42 AM</span> 
+</div> 
+
+
+
+<div class="comments-body rock"> 
+<p>Hi Jeff<br />
+that&#39;s an nice diagram and a new way of presenting the sql join function. </p>
+<span class="comments-post" style="margin-left:20px">Rock on October 12, 2007  5:47 AM</span> 
+</div> 
+
+
+
+<div class="comments-body buggyfunbunny"> 
+<p>Yet another case of the blind leading the blind (down the blind alley of ignorance and arrogance); the original, BTW.  At least you made and attempt to fix it up.  But reading all those &quot;now I get it&quot; comments, makes it clearer why Yahoos like GW Bush get away with bald faced lies.  &quot;People believe what they want to believe, when it makes no sense at all&quot;/Mellencamp.</p>
+
+<p>Now we&#39;ll have another gaggle of folks running around fawning on Ambler and Fowler.  Gad.  The Horror, the Horror.</p>
+<span class="comments-post" style="margin-left:20px">BuggyFunBunny on October 12, 2007  6:22 AM</span> 
+</div> 
+
+
+
+<div class="comments-body chris"> 
+<p>Thanks to this I&#39;m now skipping merrily down the path of BOM management and stock control, rather than flicking furiously through Teach-yourself books, thanks</p>
+<span class="comments-post" style="margin-left:20px">Chris on October 12, 2007  6:36 AM</span> 
+</div> 
+
+
+
+<div class="comments-body cocobear"> 
+<p>I like it<br />
+thanks for your work.</p>
+<span class="comments-post" style="margin-left:20px">cocobear on October 12, 2007  6:42 AM</span> 
+</div> 
+
+
+
+<div class="comments-body rasmus"> 
+<p>Excellent post.</p>
+
+<p>Everyone who has followed (and passed) a computer science beginner course should be able to understand this.</p>
+<span class="comments-post" style="margin-left:20px">Rasmus on October 12, 2007  6:45 AM</span> 
+</div> 
+
+
+
+<div class="comments-body cr"> 
+<p>It&#39;s important to note that when joining two tables on non-indexed columns most databases perform the equivalent of a cross join and then weed out the rows that don&#39;t match the join/where criteria.  While this doesn’t really impact the query results, it has a big impact on query performance.</p>
+
+<p>In MySql you can run: explain my query to determine if the query is using indexes and review performance of all your queries.</p>
+<span class="comments-post" style="margin-left:20px">CR on October 12, 2007  6:59 AM</span> 
+</div> 
+
+
+
+<div class="comments-body wombat"> 
+<p>Perfect timing. I just had a new project thrown on my desk that will require working with SQL - something I know little about and have avoided. Terms that have glazed my eyes in weeks past suddenly make sense.</p>
+<span class="comments-post" style="margin-left:20px">Wombat on October 12, 2007  7:13 AM</span> 
+</div> 
+
+
+
+<div class="comments-body matt_wigdahl"> 
+<p>dt is 100% right.  You really need a disclaimer that indicates that your set diagrams only hold when there is at best a one-to-one correspondence between join criteria values in the tables.</p>
+
+<p>The second you have two or three pirates in one of the tables (an _extremely_ common real-world scenario, probably much more common than the simplified case you show here) your Venn diagrams break down.</p>
+<span class="comments-post" style="margin-left:20px">Matt Wigdahl on October 12, 2007  7:29 AM</span> 
+</div> 
+
+
+
+<div class="comments-body thomas_borzecki"> 
+<p>What a great way to explain JOINs, I&#39;m certain there are thousands of students that would benefit from this... a picture is truly worth a thousand words ( especially in cases like this ).</p>
+<span class="comments-post" style="margin-left:20px">Thomas Borzecki on October 12, 2007  7:38 AM</span> 
+</div> 
+
+
+
+<div class="comments-body joe_beam"> 
+<p>I always use left outer joins and never really liked the right outer join. Is there anytime they are useful? It always seems bass ackwards to use a right outer join. </p>
+
+<p>Of course other developers use visual query designers which use right outer joins...</p>
+<span class="comments-post" style="margin-left:20px">Joe Beam on October 12, 2007  7:39 AM</span> 
+</div> 
+
+
+
+<div class="comments-body ricardo"> 
+<p>Is it just me or Oracle&#39;s syntax is much simpler than that? Like:</p>
+
+<p>select * from TableA, TableB<br />
+where TableA.Name = TableB.Name</p>
+
+<p>I&#39;m familiar with both, both I always liked that one better.</p>
+<span class="comments-post" style="margin-left:20px">Ricardo on October 12, 2007  7:48 AM</span> 
+</div> 
+
+
+
+<div class="comments-body jay_r_wren"> 
+<p>Jeff, </p>
+
+<p>This is great for those SQL types that didn&#39;t take a set theory, relational calculus or even discrete math in college.</p>
+
+<p>I&#39;d love to see you visualize a cross product :)</p>
+<span class="comments-post" style="margin-left:20px">Jay R. Wren on October 12, 2007  7:57 AM</span> 
+</div> 
+
+
+
+<div class="comments-body matt_wigdahl"> 
+<p>Ricardo, that syntax is pre-ANSI.  Most databases still support it but the advantages of the INNER JOIN, etc. syntax are: it makes the queries more portable across databases; it allows separation of the join criteria from the filter criteria, which improves readability; and allows full outer joins without syntactic hacks.</p>
+
+<p>Another huge benefit is that if you want to do a CROSS (Cartesian) JOIN, and usually you don&#39;t, you have to call it out specifically.  In the old syntax, if you screwed up the WHERE clause you could get wildly huge resultsets due to inadvertent Cartesian joins.</p>
+<span class="comments-post" style="margin-left:20px">Matt Wigdahl on October 12, 2007  8:02 AM</span> 
+</div> 
+
+
+
+<div class="comments-body ed_kenny"> 
+<p>Joe Beam, </p>
+
+<p>The only use I have found for RIGHT OUTER is when i&#39;m too lazy to reorder my query. ;-) Other then that it makes more sense to use only one type. </p>
+
+<p>I use LEFT JOIN too, as do my company.</p>
+
+<p>I agree with other responses here Jeff, while it&#39;s a really nice simple way to represent joins, it doesn&#39;t handle many to many or one to many very well and let&#39;s not talk about malformed joins. </p>
+
+<p>It&#39;s a good primer, but should perhaps contain a warning.</p>
+<span class="comments-post" style="margin-left:20px">Ed Kenny on October 12, 2007  8:08 AM</span> 
+</div> 
+
+
+
+<div class="comments-body jeff_atwood"> 
+<p>The commenters pointing out that the diagrams break down in case of multiple and or duplicate results, are absolutely right. I was actually thinking of joins along the primary key, which tends to be unique by definition, although the examples are not expressed that way.</p>
+
+<p>Like the cartesian or cross product, anything that results in more rows than you originally started with does absolutely breaks the whole venn diagram concept. So keep that in mind.</p>
+<span class="comments-post" style="margin-left:20px">Jeff Atwood on October 12, 2007  8:11 AM</span> 
+</div> 
+
+
+
+<div class="comments-body wyatt"> 
+<p>Except that venn diagrams explain set logic, and SQL Joins have very little to do with set logic.</p>
+
+<p>Scary how many people are agreeing with this.</p>
+<span class="comments-post" style="margin-left:20px">Wyatt on October 12, 2007  8:29 AM</span> 
+</div> 
+
+
+
+<div class="comments-body matt"> 
+<p>Actually, I&#39;ve always been a bit shaky on joins myself. I always have to look them up any time I need to using a join that isn&#39;t a standard filtered cross product. But seeing this visual guide has really helped me to grasp it much better. I just went back and read the Wikipedia entry for joins and it makes complete sense to me now. Before seeing this visual representation I might have just glazed over when reading the Wikipedia article.</p>
+
+<p>So even if they aren&#39;t exactly right having a visual representation has really helped me to understand what is going on. </p>
+
+<p>Thanks!</p>
+<span class="comments-post" style="margin-left:20px">Matt on October 12, 2007  8:29 AM</span> 
+</div> 
+
+
+
+<div class="comments-body joshua"> 
+<p>A nice trick is you can write arbitrary filters in the ON clause of the join. I use this when writing truly awful joins or when I need the left join with an already filtered table.</p>
+<span class="comments-post" style="margin-left:20px">Joshua on October 12, 2007  9:17 AM</span> 
+</div> 
+
+
+
+<div class="comments-body jeffrey_benner"> 
+<p>From one Jeff to another, this is a brilliant essay on a simple topic - simple but vexing to newbies. I am a DB2 DBA, and explaining outer joins to the newbie developers I encounter constantly will be much easier with materials like this. Thanks, keep it coming.</p>
+<span class="comments-post" style="margin-left:20px">Jeffrey Benner on October 12, 2007  9:25 AM</span> 
+</div> 
+
+
+
+<div class="comments-body jeff"> 
+<p>I have never seen such a good illustration of SQL joins.  Good work.</p>
+<span class="comments-post" style="margin-left:20px">Jeff on October 12, 2007  9:28 AM</span> 
+</div> 
+
+
+
+<div class="comments-body sven_groot"> 
+<p>I must agree that while the diagrams are a fairly good illustrations of what happens with a join, they&#39;re not Venn diagrams in the strict sense because that&#39;s just not what&#39;s happening. What the first diagram says to me is that you get all records that are both in set A and set B (aka intersection). That&#39;s just not true. You get a set of new records, that are neither in set A nor in set B, but they contain a combination of the attributes of both sets.</p>
+
+<p>Aaron G: joins are conceptually a special case of the cartesian product. How the database server actually computes them is another matter entirely.</p>
+
+<p>Conceptually, in relational algebra, an inner join is a cross product followed by a selection on the join condition. That&#39;s a terribly inefficient way to compute it, but conceptually, that&#39;s what it is.</p>
+<span class="comments-post" style="margin-left:20px">Sven Groot on October 12, 2007 10:09 AM</span> 
+</div> 
+
+
+
+<div class="comments-body lachlan_mcd"> 
+<p>The morons running my database fundamentals class at my university thought that teaching the Cartesian product as a method of joining, then filtering the results, was a valid alternative to the insanely simple inner join. So many poor students are going to have a hard time in the industry as a result.</p>
+<span class="comments-post" style="margin-left:20px">Lachlan McD on October 12, 2007 10:21 AM</span> 
+</div> 
+
+
+
+<div class="comments-body powerlord"> 
+<p>Jon Raynor:<br />
+Out of curiosity, but what databases other than Oracle support + for joins?</p>
+
+<p>Anyway, I prefer the &quot;TableA a INNER JOIN TableB b ON a.something = b.somethingelse&quot; syntax over &quot;TableA a, TableB b WHERE a.something = b.somethingelse&quot;</p>
+
+<p>(Most DBs also support &quot;USING(something)&quot; instead of &quot;ON a.something = b.something&quot; if the columns have the same name)</p>
+
+<p>Many DBs will throw an error if I accidently omit the ON statement instead of giving me a cross join that I didn&#39;t want.  I imagine that the query parser would also parse it faster, as I specify up front which type of join I&#39;m doing; the query parser doesn&#39;t have to figure it out.</p>
+<span class="comments-post" style="margin-left:20px">Powerlord on October 12, 2007 10:31 AM</span> 
+</div> 
+
+
+
+<div class="comments-body philihp"> 
+<p>Jeff,</p>
+
+<p>I like how you can regurgitate another author&#39;s content, and get away with it.</p>
+<span class="comments-post" style="margin-left:20px">Philihp on October 12, 2007 10:45 AM</span> 
+</div> 
+
+
+
+<div class="comments-body steve"> 
+<p>Big deal, SQL finally caught up with the 1980&#39;s.  Used a very fine DBMS and language, NOMAD2, on mainframes that did this stuff but only much better and more thoroughly.<br />
+</p>
+<span class="comments-post" style="margin-left:20px">Steve on October 12, 2007 10:58 AM</span> 
+</div> 
+
+
+
+<div class="comments-body ligaya_turmelle"> 
+<p>nicely done. Though I do have to admit to finding it humorous that what started out as a fast, dirty way to try to clarify to someone (on an IRC channel) why they were getting the wrong information for a join now has others correcting and linking to me.</p>
+<span class="comments-post" style="margin-left:20px">Ligaya Turmelle on October 12, 2007 10:59 AM</span> 
+</div> 
+
+
+
+<div class="comments-body barry"> 
+<p>Bindun!</p>
+
+<p><a href="http://www.khankennels.com/blog/index.php/archives/2007/04/20/getting-joins/" rel="nofollow">http://www.khankennels.com/blog/index.php/archives/2007/04/20/getting-joins/</a></p>
+
+<p>Nice post though ;)</p>
+<span class="comments-post" style="margin-left:20px">Barry on October 12, 2007 11:04 AM</span> 
+</div> 
+
+
+
+<div class="comments-body revmike"> 
+<p>&quot;I was under the impression that INNER JOINs use a hash match internally (in fact, I&#39;m quite certain of this). CROSS JOINs obviously don&#39;t. Therefore I don&#39;t see how it&#39;s reasonable to say that an IJ is just a special case of the CJ. I suppose in bread-and-butter set theory, where there&#39;s no notion of a hash or an index, this could work, but this is the world of CS, where the clean academic solution is almost never the most practical one. The IJ you speak of is the naivest possible algorithm, only used when there are no indexes (and if you&#39;re designing databases without any indexes, well... stop designing databases).&quot;  -- Aaron G</p>
+
+<p>An IJ is defined as being the equivalent of a filtered CJ.  The fact that this would not be a reasonable implementation does not make a difference.</p>
+
+<p>IJs are ABSOLUTELY NOT implemented exclusively with hash algorithms. Sort merge algorithms and nested loop algorithms are used frequently.</p>
+<span class="comments-post" style="margin-left:20px">RevMike on October 12, 2007 11:10 AM</span> 
+</div> 
+
+
+
+<div class="comments-body michael_chermside"> 
+<p>Jeff:</p>
+
+<p>Nice illustration. I think your example would be minutely more readable if the left-hand table had an ID column containing values 1,2,3,4 (as it does) but the right-hand table had an ID column containing values A,B,C,D (instead of numbers). It just makes that tiny bit easier to tell  what&#39;s what by avoiding the two similar-looking-but-different columns.</p>
+<span class="comments-post" style="margin-left:20px">Michael Chermside on October 12, 2007 12:04 PM</span> 
+</div> 
+
+
+
+<div class="comments-body jeff_flowers"> 
+<p>Very nice article. I use a Sqlite database (via the command line) to manage my database of comics and this would have been a very nice thing to have when I started out. Hopefully, this will help people in grasping SQL joins.</p>
+<span class="comments-post" style="margin-left:20px">Jeff Flowers on October 12, 2007 12:07 PM</span> 
+</div> 
+
+
+
+<div class="comments-body shog9"> 
+<p>I love it. The grumpy comments, that is. Plenty of complaints that this is too simplistic a view to be useful, nary a link to anything meatier. </p>
+
+<p>And SQL-addicts wonder why everyone else who has to deal with RDBS jumps at the first library that lets them treat them as anything other than RDBS...</p>
+
+<p>(just finished re-working a big fat chunk of code originally written to pull all tables into memory and iteratively query, join, and sort them - even an ultra-simplistic understanding would have done someone a ton of good)</p>
+<span class="comments-post" style="margin-left:20px">Shog9 on October 12, 2007 12:11 PM</span> 
+</div> 
+
+
+
+<div class="comments-body will_dieterich"> 
+<p>The Oracle (+), actually predates Oracle&#39;s usage, was because when implemented there was ANSI no outer join syntax.<br />
+In Oracle 8, they added the ANSI syntax.  No one should be using the old syntax so hopfully you will not being seeing it out in the wide.</p>
+<span class="comments-post" style="margin-left:20px">will dieterich on October 12, 2007 12:17 PM</span> 
+</div> 
+
+
+
+<div class="comments-body speedmaster"> 
+<p>Very helpful, thanks!!!</p>
+<span class="comments-post" style="margin-left:20px">Speedmaster on October 12, 2007  1:04 PM</span> 
+</div> 
+
+
+
+<div class="comments-body andrew"> 
+<p>While this is an interesting example of these kinds of join, I have found that in practice I almost never need anything other than left/inner join.  10 years of practice, and it&#39;s not the worlds most complicated sql most of the time, but there it is.  Thank GOD that stupid thing didn&#39;t illustrate &quot;RIGHT&quot; joins too!</p>
+
+<p>The first &quot;left outer join&quot; is the same as just &quot;left join&quot;.  The second one is the same as well, just put &quot;b.id is null&quot; in the where.  And please don&#39;t anyone tell me that the optimizer isn&#39;t going to figure that out (or do the same thing with the outer.)  Well, maybe it won&#39;t if it is MySQL, but thats why you don&#39;t use that.</p>
+
+<p>Die &quot;outer&quot;, die!</p>
+<span class="comments-post" style="margin-left:20px">Andrew on October 12, 2007  1:12 PM</span> 
+</div> 
+
+
+
+<div class="comments-body shawn_wildermuth"> 
+<p>Excellent visual representation. This should help the novice see a concrete picture in their mind of the different joins.  While LINQ isn&#39;t quite set based (but close) these same visualizations would work there too.</p>
+<span class="comments-post" style="margin-left:20px">Shawn Wildermuth on October 13, 2007  3:40 AM</span> 
+</div> 
+
+
+
+<div class="comments-body mandar"> 
+<p>Excellent article.</p>
+
+<p>Thanks a lot.</p>
+
+<p>can you write something similar for indexes.</p>
+
+<p>mpunaskar at gmail dot com<br />
+</p>
+<span class="comments-post" style="margin-left:20px">Mandar on October 13, 2007  5:30 AM</span> 
+</div> 
+
+
+
+<div class="comments-body david_ginger"> 
+<p>Something you may or may not know. . . .</p>
+
+<p>During the late 70&#39;s Maths was re-packaged to include </p>
+
+<p>Venn Diagrams<br />
+Matrices</p>
+
+<p>and so on, <br />
+with the idea of preparing for the coming of computers.<br />
+At least in England that happened...</p>
+
+<p><br />
+What they teach now is hard for me to determine, as most victims of the educational system can not count out the correct change in a shop.</p>
+<span class="comments-post" style="margin-left:20px">David Ginger on October 13, 2007  7:08 AM</span> 
+</div> 
+
+
+
+<div class="comments-body will_harris"> 
+<p>Wow man, your design is stellar.  Content is great too...you&#39;ve got a new reader.</p>
+<span class="comments-post" style="margin-left:20px">Will Harris on October 13, 2007  8:40 AM</span> 
+</div> 
+
+
+
+<div class="comments-body terry_smith"> 
+<p>Holy crap this is WAY over due! I&#39;ve read TONS of SQL books and NONE of them had this simple diagram!</p>
+<span class="comments-post" style="margin-left:20px">Terry Smith on October 13, 2007  9:33 AM</span> 
+</div> 
+
+
+
+<div class="comments-body tokes"> 
+<p>I think the Cartesian equation or Cross Product in Venn Diagram form would be both circles combining to form a sphere.</p>
+<span class="comments-post" style="margin-left:20px">Tokes on October 13, 2007  9:35 AM</span> 
+</div> 
+
+
+
+<div class="comments-body smackfu"> 
+<p>Interesting.  I find joins to be pretty obvious personally.  Fundamentally, you have two sets of rows, and you&#39;re matching them up by some criteria.  In an inner join, you only take rows that match up.  In a left outer join, you take all the ones from the left, plus the ones from the right that match.  In a right outer join, the opposite.  If you have multiple matches, you take all possible combinations of them.</p>
+<span class="comments-post" style="margin-left:20px">smackfu on October 13, 2007 10:00 AM</span> 
+</div> 
+
+
+
+<div class="comments-body mitchell_hashimoto"> 
+<p>Thank you! I&#39;ve been using SQL for so long and have many books on SQL and I have never seen such simple examples. I love it!</p>
+<span class="comments-post" style="margin-left:20px">Mitchell Hashimoto on October 13, 2007 10:36 AM</span> 
+</div> 
+
+
+
+<div class="comments-body steve"> 
+<p>The reason many people who do DB development have such a inadequate understanding of this simple topic is because the SQL language is an inadequate tool to try to absorb it from.  So, if you never were taught this in school or on the job, it&#39;s kind of a surprise.</p>
+
+<p>Some DBMS&#39; has syntax with more descriptive verbs (e.g., &#39;Merge&#39;, &#39;Subset&#39;, &#39;Reject&#39;), and Venn diagrams as well in the vendor documentation.</p>
+
+<p>SQL 2005 is an improvement over 2000.  But the sad fact is is many people learn about relational algebra by writing SQL statements.</p>
+
+<p>A less pretty version of much of what Jeff is saying can be found here:</p>
+
+<p><a href="http://db.grussell.org/section010.html" rel="nofollow">http://db.grussell.org/section010.html</a><br />
+</p>
+<span class="comments-post" style="margin-left:20px">Steve on October 13, 2007 11:21 AM</span> 
+</div> 
+
+
+
+<div class="comments-body matt"> 
+<p>With all respect to Jeff Atwood, beware if you&#39;ve read this post and think, &quot;wow, that&#39;s easy -- why did noone explain it like that before?&quot; Well, there&#39;s a reason why so many SQL tutorials and books don&#39;t use these diagrams -- they&#39;re an inadequate explanation of what database joins are all about. </p>
+
+<p>Joins are indeed analogous to set operations, but it is only an analogy. Understand what&#39;s really going on, or you will get burned when you actually have to use the things.</p>
+<span class="comments-post" style="margin-left:20px">Matt on October 13, 2007 11:48 AM</span> 
+</div> 
+
+
+
+<div class="comments-body robcromar"> 
+<p>Very nice first post on the subject. I think many of the comments are valid and I think it would be good to continue this as a series that builds up the more complex issues of SQL joins.  </p>
+
+<p>I, who learned this stuff the hard way, really apprecieate these primers! </p>
+<span class="comments-post" style="margin-left:20px">RobCromar on October 13, 2007  1:18 PM</span> 
+</div> 
+
+
+
+<div class="comments-body steve"> 
+<p>If only someone had explained SQL to me like this when I started... great blog.</p>
+<span class="comments-post" style="margin-left:20px">Steve on October 13, 2007  1:38 PM</span> 
+</div> 
+
+
+
+<div class="comments-body vlad"> 
+<p>Great stuff,</p>
+
+<p>thanks<br />
+</p>
+<span class="comments-post" style="margin-left:20px">Vlad on October 14, 2007  3:05 AM</span> 
+</div> 
+
+
+
+<div class="comments-body raveman"> 
+<p>very cool visualisation, please do more of that</p>
+<span class="comments-post" style="margin-left:20px">raveman on October 14, 2007  7:44 AM</span> 
+</div> 
+
+
+
+<div class="comments-body wesley_tanaka"> 
+<p>the problem with venn diagrams is that a rdbms table is not the same thing as a set.</p>
+<span class="comments-post" style="margin-left:20px">Wesley Tanaka on October 14, 2007  8:37 AM</span> 
+</div> 
+
+
+
+<div class="comments-body andy"> 
+<p>Great visual explanation.  I&#39;ve added that to my list of reference bookmarks for when I (often) forget the nature of each SQL join type.</p>
+<span class="comments-post" style="margin-left:20px">Andy on October 15, 2007  2:22 AM</span> 
+</div> 
+
+
+
+<div class="comments-body waterbreath"> 
+<p>You&#39;re right Jeff.</p>
+
+<p>This is a useful explanation, as far as getting people to understand joins in terms of something they already understand (rudimentary set theory).  However, it should be made clear that this is not what is meant by the statement that &quot;the relational database model is based on set theory&quot;.  For a long time, I thought I understood that statement because I had this Venn-diagram understanding of joins.</p>
+
+<p>Joins do not map directly to the basic additive operations of set theory (union, intersect, difference), which create new sets by way of simply including or excluding elements of other sets.  There are ways to get those in SQL, but it involves chaining UNION and MINUS statements.</p>
+
+<p>Joins, rather, are mapping operations, which create new sets by taking an element from each set, according to a set of rules, and lumping them together in a new element for the new set that is actually itself a small set containing the original two elements from the other sets.</p>
+
+<p>If A is an additive set operation (representable by a Venn diagram), then the result of A on sets X and Y is a set of members of X and Y.</p>
+
+<p>A(X, Y) = {x1, y1, x2, x3, y4, y5, ...}</p>
+
+<p>In database terms, each element of the resulting set is simply a row from either X or Y.</p>
+
+<p>In real-world terms, it&#39;s like sorting jelly beans.  Throw them all into a bucket, through a sieve.  The sieve eliminates all but the appropriate shaped ones, but what gets through is still what you started with: an assortment of jellybeans.</p>
+
+<p>If B is a mapping set operation (representable by a line-drawing matching question), then the result of B on sets X and Y is a set of sets each containing a member from X and a member of Y.</p>
+
+<p>B(X, Y) = {{x1,y1}, {x2,y2}, {x3,y3}, ...}</p>
+
+<p>In database terms, each element of the resulting set is a new type of row that is a lumping together of a row from X and a row from Y.</p>
+
+<p>In real-world terms, an example would be taking a bucket of oranges and a bucket of apples, and pulling out pairs of one of each that are the same size, putting the pairs together in little bags, and then putting those bags into a third bucket.  You don&#39;t get a bucket of apples and oranges.  You get a bucket of pairs of an apple and an orange.</p>
+
+<p>Looking at it this way, it should be reasonably easy to see that there is a fundamental difference between joins and the simple union/intersect/difference set operations.</p>
+<span class="comments-post" style="margin-left:20px">WaterBreath on October 15, 2007  5:40 AM</span> 
+</div> 
+
+
+
+<div class="comments-body cloud9ine"> 
+<p>&quot;Except that venn diagrams explain set logic, and SQL Joins have very little to do with set logic.</p>
+
+<p>Scary how many people are agreeing with this.<br />
+Wyatt on October 12, 2007 07:29 AM &quot;</p>
+
+<p>My thoughts exactly!</p>
+<span class="comments-post" style="margin-left:20px">cloud9ine on October 15, 2007  5:58 AM</span> 
+</div> 
+
+
+
+<div class="comments-body jf"> 
+<p>Jeff, this is great!  How about visually explaining why you have SELECT all the columns you are GROUP-ing by?  I always have a hard time explaining that one to people!</p>
+<span class="comments-post" style="margin-left:20px">JF on October 15, 2007  8:39 AM</span> 
+</div> 
+
+
+
+<div class="comments-body robin_day"> 
+<p>I&#39;m afraid this concept is misleading on the reasons mentioned by Sven Groot.</p>
+
+<p>The result of a join is not those items in table A and those items in table B, it is a &quot;joined&quot; combination of the two. The diagrams you have drawn are set diagrams and are created in SQL using the set operators UNION and INTERSECT.</p>
+
+<p>Joins are a completely different concept which I believe are best explained using just the table outputs you have above without adding the incorrect venn diagrams.</p>
+
+<p>JF, the explanation behind SELECT and GROUP BY can be described simply.</p>
+
+<p>SELECT COUNT(*) FROM People<br />
+-- This will return a count of 100 people</p>
+
+<p>SELECT EyeColour, COUNT(*) FROM People GROUP BY EyeColour<br />
+-- This will return Blue 20, Green 50, Brown 30</p>
+
+<p>SELECT COUNT(*) FROM People GROUP BY EyeColour<br />
+-- This will return 20, 50, 30 whilst this contains the counts that you are looking for, they are useless as there is no relation to each count and what the represent.</p>
+<span class="comments-post" style="margin-left:20px">Robin Day on October 15, 2007 10:53 AM</span> 
+</div> 
+
+
+
+<div class="comments-body james_maida"> 
+<p>Assuming Pirate and Ninja are identical records in both tables, the very first thing that came to mind as what result I would want when I join Tables A  B was </p>
+
+<p>Pirate<br />
+Monkey<br />
+Ninja<br />
+Spaghetti<br />
+Rutabaga<br />
+Darth Vader</p>
+
+<p>This seems to be the intuitive meaning of join. Venn&#39;s don&#39;t work.<br />
+</p>
+<span class="comments-post" style="margin-left:20px">james maida on October 15, 2007 12:09 PM</span> 
+</div> 
+
+
+
+<div class="comments-body daniel"> 
+<p> This is a very likable article,I personally really like the way you&#39;ve done this...</p>
+<span class="comments-post" style="margin-left:20px">Daniel on October 16, 2007 11:01 AM</span> 
+</div> 
+
+
+
+<div class="comments-body dad"> 
+<p>It never ceases to amaze me how many folks become &quot;experts&quot; on a technical topic once somebody takes the time to write about one.</p>
+
+<p>I give props to the author of the article presented here. I needed to understand this information, and it was put to me visually in a way I could parse quite easily.</p>
+
+<p>As for the folks dissecting this article, nit-picking even the premise, I ask that you please write a better one, and post the link instead of complaining. I will then drop by and pick it apart out of professional discourtesy.</p>
+
+<p>Thanks.</p>
+<span class="comments-post" style="margin-left:20px">Dad on October 18, 2007 11:48 AM</span> 
+</div> 
+
+
+
+<div class="comments-body barfo_rama"> 
+<p>The Cartesian product of 2 sets is the set of all combinations of ordered pairs which can be produced from the elements of both sets.  So the Venn representation would look like two piles of poker chips next to each other, each pile numbering the number of data points in the other bottom chip.</p>
+<span class="comments-post" style="margin-left:20px">Barfo Rama on October 19, 2007  1:25 PM</span> 
+</div> 
+
+
+
+<div class="comments-body leon"> 
+<p>Thanks for this great Tutorial :) <br />
+</p>
+<span class="comments-post" style="margin-left:20px">Leon on October 22, 2007 10:58 AM</span> 
+</div> 
+
+
+
+<div class="comments-body satheesh"> 
+<p>Nice way to explain things in joins. By seeing the example nobody cannot forget joins.</p>
+
+<p>Keep it up. Hope you will publish many more article which will be useful to all.</p>
+
+<p>Thanks,<br />
+Satheesh.</p>
+<span class="comments-post" style="margin-left:20px">Satheesh on October 27, 2007 11:49 AM</span> 
+</div> 
+
+
+
+<div class="comments-body cheesecakes_like_me"> 
+<p>I really hate you. I have no recollection of you raping my wife but I still hate you.</p>
+<span class="comments-post" style="margin-left:20px">Cheesecakes Like Me on October 28, 2007  9:45 AM</span> 
+</div> 
+
+
+
+<div class="comments-body brian"> 
+<p>thanks for this, I am in a class for crystal reports and I showed many and it helped them<br />
+</p>
+<span class="comments-post" style="margin-left:20px">Brian on October 30, 2007  9:28 AM</span> 
+</div> 
+
+
+
+<div class="comments-body jax"> 
+<p>nice quick lesson on joins. This is exactly what i wanted.</p>
+<span class="comments-post" style="margin-left:20px">Jax on October 31, 2007 11:25 AM</span> 
+</div> 
+
+
+
+<div class="comments-body martin"> 
+<p>Great explanation of the basics of inner and outer joins.<br />
+I&#39;ll be referring it often and passing it on.<br />
+Also very brave to raise anything here as not 100% perfect equals rubbish</p>
+
+<p>Martin</p>
+<span class="comments-post" style="margin-left:20px">Martin on November  2, 2007  5:21 AM</span> 
+</div> 
+
+
+
+<div class="comments-body ghislain"> 
+<p>Very simple, I&#39;am always confused up with sql operations, but I understand better with simple diagrams like yours.<br />
+Thks again for this nice job.</p>
+<span class="comments-post" style="margin-left:20px">Ghislain on November  7, 2007  3:36 AM</span> 
+</div> 
+
+
+
+<div class="comments-body luke"> 
+<p>Thank god for Venn diagrams! Good job mate.</p>
+<span class="comments-post" style="margin-left:20px">Luke on November 13, 2007  8:19 AM</span> 
+</div> 
+
+
+
+<div class="comments-body clay"> 
+<p>Wow!  Terrific tutorial.  I&#39;ve never understood JOINS beyond the concept of them.  Thank you for demystifying!</p>
+
+<p>Clay</p>
+<span class="comments-post" style="margin-left:20px">Clay on November 13, 2007  8:52 AM</span> 
+</div> 
+
+
+
+<div class="comments-body james_printer"> 
+<p>Thank you so much for making this available. Cheers from the UK</p>
+<span class="comments-post" style="margin-left:20px">James Printer on November 14, 2007  2:54 AM</span> 
+</div> 
+
+
+
+<div class="comments-body suresh"> 
+<p>VERY GOOD EXAMPLE, PLZ SEND A FEW EXAMPLE TO EMAIL ID .<br />
+my id is suresh_worldcom@yahoo.co.in</p>
+<span class="comments-post" style="margin-left:20px">suresh on November 15, 2007  7:09 AM</span> 
+</div> 
+
+
+
+<div class="comments-body guidomarcel"> 
+<p>One helpful step to understand complex queries to indent the subqueries. This can be done automatically with this free SQL Formatter at <a href="http://www.sqlinform.com" rel="nofollow">http://www.sqlinform.com</a></p>
+<span class="comments-post" style="margin-left:20px">GuidoMarcel on November 22, 2007 11:45 AM</span> 
+</div> 
+
+
+
+<div class="comments-body aruna"> 
+<p>this is awesome..</p>
+<span class="comments-post" style="margin-left:20px">Aruna on December  2, 2007  3:00 AM</span> 
+</div> 
+
+
+
+<div class="comments-body derek"> 
+<p>This article is great! A picture is worth a thousand words, and your pictures have helped me to understand SQL joins. Thanks.</p>
+<span class="comments-post" style="margin-left:20px">Derek on December  7, 2007 11:46 AM</span> 
+</div> 
+
+
+
+<div class="comments-body hennie"> 
+<p>Hey that was a CLEAR explanation ... just started up with sqlite<br />
+and didnt get why i was not getting the selection i wanted. </p>
+
+<p>Now i do!</p>
+<span class="comments-post" style="margin-left:20px">Hennie on December  8, 2007  9:05 AM</span> 
+</div> 
+
+
+
+<div class="comments-body inquisitor"> 
+<p>how do you join two columns together and get one column in a query.  For EX: i have lastname and firstname columns in a table.  i want to join these two columns together and get lastname and firstname in one column ??</p>
+<span class="comments-post" style="margin-left:20px">Inquisitor on December 13, 2007 12:15 PM</span> 
+</div> 
+
+
+
+<div class="comments-body gurmeet"> 
+<p>Good job.</p>
+<span class="comments-post" style="margin-left:20px">Gurmeet on January  2, 2008  9:45 AM</span> 
+</div> 
+
+
+
+<div class="comments-body a_net_developers_blog"> 
+<p>Although I&#39;m familiar with the topic, I still like your nice and easy way of explaining things, nice work.</p>
+<span class="comments-post" style="margin-left:20px">A .NET Developer's Blog on January  6, 2008  9:35 AM</span> 
+</div> 
+
+
+
+<div class="comments-body shall"> 
+<p>This was a GREAT explanation.  I am working with a junior DBA and this has helped tremendously.  I will have to go back and read some of your other blogs.</p>
+
+<p>AWESOME JOB!!!!!</p>
+<span class="comments-post" style="margin-left:20px">SHALL on January  8, 2008  8:58 AM</span> 
+</div> 
+
+
+
+<div class="comments-body oracletubecom"> 
+<p><br />
+There is a query builder tool that comes with oracle apex. Check it out.</p>
+<span class="comments-post" style="margin-left:20px">OracleTube.com on January 16, 2008 10:44 AM</span> 
+</div> 
+
+
+
+<div class="comments-body gints_plivna"> 
+<p>As someone suggested to created something themselves and then criticize ;) I&#39;ve tried to describe relationships among various join types using ER diagramm here:<br />
+<a href="http://gplivna.blogspot.com/2008/01/sql-join-types-im-studying-bit-sql.html" rel="nofollow">http://gplivna.blogspot.com/2008/01/sql-join-types-im-studying-bit-sql.html</a><br />
+All comments welcome!</p>
+<span class="comments-post" style="margin-left:20px">Gints Plivna on January 25, 2008  2:43 AM</span> 
+</div> 
+
+
+
+<div class="comments-body prajeesh"> 
+<p>It&#39;s a great way to explain things....<br />
+thanks</p>
+<span class="comments-post" style="margin-left:20px">Prajeesh on February  9, 2008  5:05 AM</span> 
+</div> 
+
+
+
+<div class="comments-body andy"> 
+<p>Thanks for this Jeff, was struggling a bit with the concept but you&#39;ve made it clear enough that even I can get my head around it :)</p>
+<span class="comments-post" style="margin-left:20px">Andy on February 18, 2008  5:29 AM</span> 
+</div> 
+
+
+
+<div class="comments-body julie_mcbrien"> 
+<p>Awesome!</p>
+<span class="comments-post" style="margin-left:20px">Julie McBrien on March  4, 2008 10:09 AM</span> 
+</div> 
+
+
+
+<div class="comments-body arcond"> 
+<p>I really have to hand it to you Jeff, the way you break things down is just great.  I read the blogs every time you post one.  This one in particular came in handy just the other day.  Our QA team was having trouble understanding what was going on in the database and we developers would send them queries to run to find the data they needed.  The QA team has a rudimentary understanding of SQL, but couldn&#39;t quite grasp joins.  I sent a link to this article to our lead QA, and now your article is firmly posted on her cube wall for reference.  Just wanted to say thank you for the blogs!</p>
+<span class="comments-post" style="margin-left:20px">Arcond on March 11, 2008  8:56 AM</span> 
+</div> 
+
+
+	
+
+
+	
+<p>
+
+
+
+
+
+<a href="http://www.codinghorror.com/blog/2007/10/a-visual-explanation-of-sql-joins/comments/page/2/#comments"><span class="pager-label">More comments</span><span class="chevron">&#187;</span></a>
+
+</p>
+
+
+
+
+<a name="endcomments"></a> 
+
+
+
+<style>
+textarea {
+ 	width : 600px;
+	font-size : 14px;
+	}
+#comment-author,
+#comment-email,
+#comment-url {
+	font-size : 14px;
+	padding : 3px;
+	width : 350px;
+	}
+</style>
+
+
+<!-- comment form -->
+<div id="atp-comments">
+	<div id="comment-preview" class="hiddenBox">
+		<h3 id="header-verify-comment" class="comments-header hiddenBox">Verify your Comment</h3>
+		<h3 id="header-preview-comment" class="comments-header hiddenBox">Previewing your Comment</h3>
+		<div class="comments-content">
+			<div class="comment">
+				<div id="comment-preview-content" class="comment-content">
+				</div>
+				<p class="comment-footer">
+					Posted by:
+					<span id="comment-preview-author"></span>&nbsp;|&nbsp;<span id="comment-preview-datetime"></span>
+				</p>
+			</div>
+		</div>
+	</div>
+	<div id="comment-preview-confirmation" class="hiddenBox yellowBox">
+		<p>This is only a preview. Your comment has not yet been posted.</p>
+		<form id="comment-preview-form"
+			method="post"
+			onsubmit="atpComments.interceptPost(commentFormNum); return false;">
+			<input type="submit" name="post" id="comment-confirm-post" value="&nbsp;Post&nbsp;" onclick="atpComments.interceptPost(commentFormNum); return false;"/>
+			<input type="submit" name="edit" id="comment-edit" value="&nbsp;&nbsp;Edit&nbsp;&nbsp;" onclick="atpComments.previewOnly(commentFormNum, 2); return false;"/>
+			<span id="previewFormSpinner" class="hiddenBox"><img src="/.shared/images/spinner.gif" alt="Working..." /></span>
+		</form>
+	</div>
+	<div id="comment-error" class="hiddenBox redBox">
+		Your comment could not be posted. Error type: <span id="comment-error-msg"></span>
+	</div>
+	<div id="comment-complete" class="hiddenBox yellowGreenBox">
+		Your comment has been posted. <a href="javascript:void 0;" onclick="window.location.hash='#comment-form';window.location.reload(false)">Post another comment</a>
+	</div>
+	<div id="comment-captcha" class="hiddenBox yellowBox">
+		<div id="captchaText">
+			<p id="captchaFailMsg" class="captchaErrorText hiddenBox">The letters and numbers you entered did not match the image. Please try again.</p>
+			<p>As a final step before posting your comment, enter the letters and numbers you see in the image below. This prevents automated programs from posting comments.</p>
+			<p><span id="comment-captcha-viewalt">Having trouble reading this image? <a href="#comment-captcha" onClick="atpComments.generateCaptcha(commentFormNum);">View an alternate.</a></span></p>
+		</div>
+		<p class=""><img id="captchaImg" /></p>
+		<form id="comment-captcha-form"
+			method="post"
+			onsubmit="atpComments.submitWithCaptcha(commentFormNum); return false;">
+			<input type="hidden" name="captcha_chal" id="comment-captcha-chal" value="" />
+			<p>
+				<input id="comment-captcha-text" name="captcha_text" size="10" />
+			</p>
+			<p>
+				<input type="submit" name="continue" id="captcha-continue" value="&nbsp;Continue&nbsp;" />
+				<span id="captchaFormSpinner" class="commentSpinner hiddenBox"><img src="/.shared/images/spinner.gif" alt="Working..." /></span>
+			</p>
+		</form>
+	</div>
+	<div id="primary-comment-form" class="comment-form">
+		<form id="comment-form"
+			method="post">
+			<input type="hidden" name="entry_xid" id="comment-entry-xid" value="6a0120a85dcdae970b0128777026fd970c" />
+			<div class="comments-open">
+				<h2 class="comments-open-header" id="comment-title">Post a comment</h2>
+				<div id="comments-open-content" class="comments-open-content">
+					
+
+					
+						<p id="comments-open-login" style="display: none;">
+							
+								To comment, please <a href="https://www.typekey.com/t/typekey/login?v=1.0&t=1fe4f294c10f343bf0ff9bf2f79911387cb0e3bb&lang=en_US&_return=http%3A%2F%2Fwww.codinghorror.com%2Fblog%2F2007%2F10%2Fa-visual-explanation-of-sql-joins.html&_portal=typepad">sign in</a> using TypePad, Twitter, Facebook or OpenID.
+							
+							
+						</p>
+
+						<p id="comments-open-logout" style="display: none;">
+							You are currently signed in as
+							<span id="commenter-name">(nobody)</span>.
+							<a href="http://www.codinghorror.com/.services/sitelogout?to=https%3A%2F%2Fwww.typekey.com%2Ft%2Ftypekey%2F%3F__mode%3Dlogout%26_return%3Dhttp%253A%252F%252Fwww.codinghorror.com%252Fblog%252F2007%252F10%252Fa-visual-explanation-of-sql-joins.html">Sign Out</a>
+						</p>
+					
+						<div id="comments-open-text" style="display:none;">
+							<textarea id="comment-text" name="text" rows="10" cols="30" onkeyup="atpComments.maxTextArea(this, 64000);"></textarea>
+							<p class="comments-open-subtext">
+								(You can use HTML tags like &lt;b&gt; &lt;i&gt; and &lt;ul&gt; to style your text.URLs automatically linked.)
+							</p>
+						</div>
+						<div id="comments-open-data" style="display:none;">
+							<p>Your Information</p>
+							<p>
+							
+								(Name is required. Email address will not be displayed with the comment.)
+							
+							
+							</p>
+							<p>
+								<input id="comment-author" at:default="Name" name="author" size="30" value="Name" onfocus="if(this.value==this.getAttribute('at:default')) this.value='';"  onBlur="if(this.value=='') this.value=this.getAttribute('at:default');" class="grayText"/>
+								<label for="comment-author" id="comment-author-error" class="comment-error hiddenBox">Name is required to post a comment</label>
+							</p>
+							<p>
+								<input id="comment-email" at:default="Email Address" name="email" size="30" value="Email Address" onfocus="if(this.value==this.getAttribute('at:default')) this.value='';"  onBlur="if(this.value=='') this.value=this.getAttribute('at:default');" class="grayText"/>
+								<label for="comment-email" id="comment-email-error" class="comment-error hiddenBox">Please enter a valid email address</label>
+							</p>
+							<p>
+								<input id="comment-url" at:default="Web Site URL" name="url" size="30" value="Web Site URL" onfocus="if(this.value==this.getAttribute('at:default')) this.value='';"  onBlur="if(this.value=='') this.value=this.getAttribute('at:default');" class="grayText"/>
+								<label for="comment-url" id="comment-url-error" class="comment-error hiddenBox">Invalid URL</label>
+							</p>
+						</div>
+				</div>
+				<div id="comments-open-footer" class="comments-open-footer" style="display:none;">
+					<input type="submit" name="post" id="comment-post-button" value="&nbsp;Post&nbsp;" onclick="atpComments.interceptPost(commentFormNum); return false;" disabled="true" />
+					<input type="submit" name="preview" id="comment-preview-button" value="&nbsp;Preview&nbsp;" onclick="atpComments.previewOnly(commentFormNum, 1); return false;" disabled="true" />
+					<span id="commentEntryFormSpinner" class="commentSpinner hiddenBox"><img src="/.shared/images/spinner.gif" alt="Working..." /></span>
+				</div>
+			</div>
+		</form>
+		<noscript>
+			
+			<p>This weblog only allows comments from registered TypeKey users. To comment, please enable JavaScript so you can sign into TypeKey.</p>
+			
+			
+		</noscript>
+	</div>
+</div>
+
+
+
+
+
+
+
+
+</div> 
+ 
+<table width="100%"> 
+<tr> 
+<td align="left" width=50> 
+</td> 
+<td align="right" width="*"><span style="font-size:70%">Content (c) 2009 <A href="http://www.codinghorror.com/blog/archives/000021.html">Jeff Atwood</A>. Logo image used with permission of the author. (c) 1993 Steven C. McConnell. All Rights Reserved.</span></td></tr> 
+</table> 
+ 
+</div> 
+
+<div id="links"> 
+ 
+
+
+<div class="sidetitle">Newer &raquo;</div>
+<div class="side">
+<a href="http://www.codinghorror.com/blog/2007/10/mouse-ballistics.html">Mouse Ballistics</a>
+</div>
+
+
+
+<div class="sidetitle">&laquo; Older</div> 
+<div class="side">
+<a href="http://www.codinghorror.com/blog/2007/10/a-lesson-in-control-simplicity.html">A Lesson in Control Simplicity</a>
+</div> 
+
+ 
+<p></p> 
+<p></p> 
+<p></p> 
+<div class="side"> 
+<a href="http://www.codinghorror.com/blog/">Home</a> 
+<p></p> 
+<p></p> 
+<a href="http://www.codinghorror.com/blog/archives.html">Browse All Posts</a> 
+<p></p> 
+<p></p> 
+<p></p> 
+
+ 
+
+<div class="welovecodinghorror"> 
+[ad] <a href="http://www.red-gate.com/products/ants_performance_profiler/version_6_new_features.htm?utm_source=codinghorr&utm_medium=textad&utm_term=4396&utm_content=app6release&utm_campaign=antsperformanceprofiler" rel="nofollow">NEW: ANTS Performance Profiler 6</a> &hellip; Attach to running process&hellip; SQL profiling&hellip; Command-line profiling&hellip; Silverlight profiling&hellip;  <a href="http://www.red-gate.com/products/ants_performance_profiler/version_6_new_features.htm?utm_source=codinghorr&utm_medium=textad&utm_term=4396&utm_content=app6release&utm_campaign=antsperformanceprofiler" rel="nofollow">Find out more</a>.
+</div> 
+ 
+<div class="welovecodinghorror"> 
+[ad] Tired of endless code review emails? Ditch the emails - try peer code review with <a href="http://codecollab.com/" rel="nofollow">Code Collaborator</a>. Also learn tips and tricks with <a href="http://www.codereviewbook.com/?howheard=Coding+Horror" rel="nofollow">this free book</a>.
+</div> 
+ 
+<div class="welovecodinghorror"> 
+[ad] You've maxed out your machine. Now upgrade your career. <a href="http://careers.stackoverflow.com/">Stack Overflow Careers</a> helps the world's top developers get noticed by the world's top employers.
+</div>
+
+<!-- [ad] Got a cool product for developers? Advertise it on Coding Horror! mailto:jatwood@codinghorror.com?subject=Advertising Contact me for rates. --> 
+
+
+<p></p>
+
+<a href="http://stackexchange.com">
+<img src="http://stackexchange.com/users/flair/febfb8783f6f4215932346d15d62ac7d.png" width="208" height="58" alt="profile for Jeff Atwood on Stack Exchange, a network of free, community-driven Q&A sites" title="profile for Jeff Atwood on Stack Exchange, a network of free, community-driven Q&A sites">
+</a>
+
+<p></p>
+
+<div class="sidetitle">Resources</div> 
+<div class="side"> 
+<b><a href="/blog/2004/02/recommended-reading-for-developers.html">Recommended Reading</a></b><br /> 
+<b><a href="http://stackoverflow.com">stackoverflow.com</a></b><br/> 
+<b><a href="http://serverfault.com">serverfault.com</a></b><br/> 
+<b><a href="http://superuser.com">superuser.com</a></b><br/> 
+<img src="/favicon.ico" width="16" height="16" style="vertical-align:middle;border:0">&nbsp;&nbsp;<a href="/blog/2004/02/about-me.html">About Me</a> 
+</div> 
+
+
+
+
+
+<div class="syndicate"> 
+<img src="http://feeds.feedburner.com/~fc/codinghorror?bg=EEEEEE&amp;fg=111111&amp;anim=0" height="26" width="88" style="border:0" alt="Count of RSS readers" /> 
+<br/> 
+<a href="http://my.statcounter.com/project/standard/stats.php?project_id=2600027&guest=1">Traffic Stats</a> 
+<br/> 
+<br/> 
+<a href="http://feeds.feedburner.com/codinghorror" rel="alternate" type="application/rss+xml"><img src="http://www.feedburner.com/fb/images/pub/feed-icon16x16.png" width=16 height=16 alt="" style="vertical-align:middle;border:0"/>&nbsp;Subscribe in a reader</a> 
+<br/> 
+<a href="http://www.feedburner.com/fb/a/emailverifySubmit?feedId=74729"><img src="/blog/images/mail.png" width=16 height=16 alt="" style="vertical-align:middle;border:0"/>&nbsp;Subscribe via email</a> 
+</div> 
+
+
+
+</div> 
+</div> 
+ 
+<script> 
+x=window.document.getElementsByTagName('div'); for(var i = 0; i < x.length; i++) { if (x[i].className == "comments-body") { if (x[i].innerHTML.search(/jeff atwood<\/a>/i) != -1) { x[i].style.backgroundColor = "#FFECC7"; } } }
+</script> 
+ 
+<script type="text/javascript" language="javascript"> 
+var sc_project=2600027; 
+var sc_invisible=0; 
+var sc_partition=25; 
+var sc_security="dcff5548"; 
+</script> 
+ 
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script> 
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img  src="http://c26.statcounter.com/counter.php?sc_project=2600027&java=0&security=dcff5548&invisible=0" alt="web metrics" border="0"></a> </noscript> 
+ 
+<!-- Start Quantcast tag -->
+<script type="text/javascript" src="http://edge.quantserve.com/quant.js"></script>
+<script type="text/javascript">_qoptions = { tags:"typepad.extended" }; _qacct="p-fcYWUmj5YbYKM"; quantserve();</script>
+<noscript>
+<a href="http://www.quantcast.com/p-fcYWUmj5YbYKM" target="_blank"><img src="http://pixel.quantserve.com/pixel/p-fcYWUmj5YbYKM.gif?tags=typepad.extended" style="display: none" border="0" height="1" width="1" alt="Quantcast"/></a>
+</noscript>
+<!-- End Quantcast tag -->
+</body> 
+</html>
+
+<script type="text/javascript">
+var captchaImgAttempts = 0;
+var allowAnonComments = '0';
+var registrationRequired = 1;
+var registrationOptional = 0;
+var emailRequired = 0;
+var useAvatars = 0;
+
+var showSignInMessaging = 0;
+var jsonURL = "/.services/json-rpc";
+
+var captchaSrc = "/.services/captcha?code_encrypted=";
+var alertCommentCannotBeBlank = "You can not leave an empty comment. Please enter some text in the Comment field.";
+var alertEditingExpired = "Sorry, you're no longer allowed to edit this comment. You may have taken too much time before submitting your edit or someone may have already replied to it.";
+
+var alertAuthorCannotBeBlank = "Name must not be blank.";
+var alertEmailCannotBeBlank = "Email Address must not be blank.";
+var alertAuthorAndEmailCannotBeBlank = "Name and email address are both required!";
+var alertEmailIsInvalid = "The Email Address you entered is invalid. Please enter a valid email address.";
+var alertUnauthorizedAction = "The comments on this post are closed.";
+var msgPostReplyTo = "Reply to ";  
+var msgInReplyTo = "In reply to ";
+var msgPostAComment = "Post a comment ";
+var atpCommentsPath = "/.shared/js/atpcomments_yui.js?v=5";
+var hasChanged = 0;
+var hostName = ".codinghorror.com";
+var tp_comment_token = "1292856396-b035937f83bd290fb26beb2ac68099a68e1aa0b6:mPZFJ5BkGKMqq51I";
+
+var isPage = 0;
+var blog_xid = "6a0120a85dcdae970b0128776faab5970c";
+var xid = "";
+var injectCode = '<div id=\"comment-preview\" class=\"hiddenBox\">\n\t<h3 id=\"header-verify-comment\" class=\"comments-header hiddenBox\">Verify your Comment<\/h3>\n    <h3 id=\"header-preview-comment\" class=\"comments-header hiddenBox\">Previewing your Comment<\/h3>\n\t<div class=\"comments-content\">\n\t\t<div class=\"comment\">\n\t\t\t<div id=\"comment-preview-content\" class=\"comment-content\">\n\t\t\t<\/div>\n\t\t\t<p class=\"comment-footer\">\n\t\t\t\tPosted by: \n\t\t\t\t<span id=\"comment-preview-author\"><\/span>&nbsp;|&nbsp;<span id=\"comment-preview-datetime\"><\/span>\n\t\t\t<\/p>\n\t\t<\/div>\n\t<\/div>\n<\/div>\n<div id=\"comment-preview-confirmation\" class=\"hiddenBox yellowBox\">\n    <p>This is only a preview. Your comment has not yet been posted.<\/p>\n   \t<form id=\"comment-preview-form\"\n   \t\tmethod=\"post\"\n   \t\tonsubmit=\"atpComments.interceptPost(); return false;\">\n\t\t<input type=\"submit\" name=\"post\" id=\"comment-confirm-post\" value=\"&nbsp;Post&nbsp;\" onclick=\"atpComments.interceptPost(); return false;\"/>\t\t    \n\t\t<input type=\"submit\" name=\"edit\" id=\"comment-edit\" value=\"&nbsp;&nbsp;Edit&nbsp;&nbsp;\" onclick=\"atpComments.previewOnly(2); return false;\"/>\n        <span id=\"previewFormSpinner\" class=\"hiddenBox\"><img src=\"/.shared/images/spinner.gif\" alt=\"Working...\" /><\/span>\n\t<\/form>\n<\/div>\n<div id=\"comment-error\" class=\"hiddenBox redBox\">\t    \n   Your comment could not be posted. Error type: <span id=\"comment-error-msg\"><\/span> \n<\/div>\t\n<div id=\"comment-complete\" class=\"hiddenBox yellowGreenBox\">\n    Your comment has been posted. <a href=\"javascript:void 0;\" onclick=\"window.location.hash=\'#comment-form\';window.location.reload(false)\">Post another comment<\/a>\n<\/div>\t\n<div id=\"comment-captcha\" class=\"hiddenBox yellowBox\">\t\n    <div id=\"captchaText\">\n\t    <p id=\"captchaFailMsg\" class=\"captchaErrorText hiddenBox\">The letters and numbers you entered did not match the image. Please try again.<\/p>\t    \t        \n\t    <p>As a final step before posting your comment, enter the letters and numbers you see in the image below. This prevents automated programs from posting comments.<\/p>\n\t    <p><span id=\"comment-captcha-viewalt\">Having trouble reading this image? <a href=\"#comment-captcha\" onClick=\"atpComments.generateCaptcha();\">View an alternate.<\/a><\/span><\/p>\n    <\/div>\n    <p class=\"\"><img id=\"captchaImg\" /><\/p>\t\t\n    <form id=\"comment-captcha-form\" \n\t\t  method=\"post\"\n\t\t  onsubmit=\"atpComments.submitWithCaptcha(); return false;\">\n\t\t<input type=\"hidden\" name=\"captcha_chal\" id=\"comment-captcha-chal\" value=\"\" />\n        <p>\n\t        <input id=\"comment-captcha-text\" name=\"captcha_text\" size=\"10\" />\n        <\/p>\n        <p>\n            <input type=\"submit\" name=\"continue\" id=\"captcha-continue\" value=\"&nbsp;Continue&nbsp;\" />\n            <span id=\"captchaFormSpinner\" class=\"commentSpinner hiddenBox\"><img src=\"/.shared/images/spinner.gif\" alt=\"Working...\" /><\/span>\n        <\/p>\n    <\/form>\n<\/div>\n'; 
+var entryPermalink = "http://www.codinghorror.com/blog/2007/10/a-visual-explanation-of-sql-joins.html";
+var inlineReply = document.createElement("div");
+var commentFooterLinks;
+var commentHeader;
+var commentReplyXID;
+var commentReplyAuthor;
+var commentReplyComplete;
+var inlineReplyLoaded = 0;
+var commentFormNum = undefined; /* Deprecated but still exists in advanced template sets, so must be defined */
+
+function xidToCommentPermalink (entryUrl, xid) {
+    return entryUrl + "?cid=" + xid + "#comment-" + xid;
+}
+
+
+/* Deprecated advanced template functions */
+function handleSubmit() { return true; };
+function handleChange() { return true; };
+</script>
+<script type="text/javascript" src="/.shared/js/yui/yuiloader-beta-min.js"></script>
+<script type="text/javascript" src="/.shared/js/atpcomments.js?v=5"></script>
+
+
+
+ 
+
+<!-- Blogside Toolbar -->
+<script type="text/javascript">
+    var TPToolbar = {
+        src:   "http://www.typepad.com/services/toolbar?blog_id=6a0120a85dcdae970b0128776faab5970c&asset_id=6a0120a85dcdae970b0128777026fd970c&atype=Individual&to=http%3A%2F%2Fwww.codinghorror.com%2Fblog%2F2007%2F10%2Fa-visual-explanation-of-sql-joins.html&autofollowed=0",
+        asset_xid: "6a0120a85dcdae970b0128777026fd970c",
+    
+        bookmarklet_uri: "http://static.typepad.com/.shared/js/qp/loader-combined-min.js"
+    };
+    var TYPEPAD___bookmarklet_domain = "http://www.typepad.com/";
+</script>
+<script type="text/javascript" src="/.shared/js/toolbar/blogside-toolbar-combined-min.js"></script>
+<!-- End Blogside Toolbar -->
+<!-- Begin comScore Tag -->
+<script>
+document.write(unescape("%3Cscript src='" + (document.location.protocol == "https:" ? "https://sb" : "http://b") + ".scorecardresearch.com/beacon.js'%3E%3C/script%3E"));
+</script>
+<script>
+COMSCORE.beacon({
+  c1: 2,
+  c2: "6035669",
+  c3: "",
+  c4: "http://www.codinghorror.com/blog/2007/10/a-visual-explanation-of-sql-joins.html",
+  c5: "",
+  c6: "",
+  c15: ""
+});
+</script>
+<noscript>
+  <img src="http://b.scorecardresearch.com/b?c1=2&c2=6035669&c3=&c4=http%3A%2F%2Fwww.codinghorror.com%2Fblog%2F2007%2F10%2Fa-visual-explanation-of-sql-joins.html&c5=&c6=&c15=&cv=1.3&cj=1" style="display:none" width="0" height="0" alt="" />
+</noscript>
+<!-- End comScore Tag -->
+<!-- ph=1 -->

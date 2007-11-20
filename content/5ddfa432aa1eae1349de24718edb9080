@@ -1,0 +1,312 @@
+
+
+
+
+	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+
+	<html lang="en">
+	<head>
+		<link rel="SHORTCUT ICON" href="http://linuxcommand.org/favicon.ico">
+
+		<title>LinuxCommand.org: Learning the shell.</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="keywords" content="Linux bash shell programming tutorials">
+		<meta name="description" content="Learn the Linux command line">
+		<meta name="author" content="William Shotts, Jr.">
+		<meta name="copyright" content="Copyright 2000-2010, William Shotts, Jr.">
+		<link rel="stylesheet" type="text/css" href="linuxcommand2.css">
+	</head>
+
+	<body>
+	<a name="top"></a>
+		<table class="page" summary="This table is used for graphic layout.">
+			<tr>
+				<td>
+					<div class="colorblock"></div>
+				</td>
+				<td>
+					<div class="body">
+					<img src="images/learning_the_shell.jpg" alt="Title graphic">
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td valign="top">
+		<div class="navbar">
+			<ul>
+				<li><a href="index.php">LinuxCommand</a></li>
+				<li><a href="learning_the_shell.php">Learning&nbsp;the&nbsp;shell</a></li>
+				<li><a href="writing_shell_scripts.php">Writing&nbsp;shell&nbsp;scripts</a></li>
+				<li><a href="script_library.php">Script library</a></li>
+				<li><a href="superman_pages.php">SuperMan pages</a></li>
+				<li><a href="who_what_where_why.php">Who, What, Where, Why</a></li>
+			</ul>
+			<hr noshade>
+			<ul>
+				<li><a href="http://lcorg.blogspot.com">Tips, News And Rants</a></li>
+			</ul>
+		</div>
+	
+				</td>
+				<td>
+					<div class="body">
+		<div class="pagenav">
+			<p class="right"><a
+			href="index.php">Previous</a> | <a
+			href="learning_the_shell.php#contents">Contents</a> | <a
+			href="lts0010.php">Next</a></p>
+		</div>
+<h1>Why bother?</h1>
+
+<p>Why do you need to learn the command line
+anyway? Well, let me tell you a story. Not long ago
+we had a problem where I used to work. There was a shared
+drive on one of our file servers that kept getting
+full. I won't mention that this legacy operating
+system did not support user quotas; that's another
+story. But the server kept getting full and
+stopping people from working. One of the software
+engineers in our company spent the better part of a
+day writing a C++ program that would look through the
+directories of all the users and add up the space they were
+using and make a listing of the results. Since I was
+forced to use the legacy OS while I was on the job,
+I installed <a href=
+"http://www.cygwin.com/">a version of
+the bash shell that works on it.</a> When I heard
+about the problem, I realized I could do all the
+work this engineer had done with this single
+line:</p>
+
+<pre>
+du -s * | sort -nr &gt; $HOME/space_report.txt
+</pre>
+
+<p>Graphical user interfaces (GUIs) are helpful for
+many tasks, but they are not good for all tasks. I
+have long felt that most computers today do not
+use electricity. They instead seem to be powered by the
+"pumping" motion of the mouse! Computers were
+supposed to free us from manual labor, but how many
+times have you performed some task you felt sure
+the computer should be able to do?  You ended up
+doing the work by tediously working the mouse.
+Pointing and clicking, pointing and clicking.</p>
+
+<p>I once heard an author remark that when you are
+a child you use a computer by looking at the
+pictures. When you grow up, you learn to read and
+write. Welcome to Computer Literacy 101. Now let's
+get to work.</p>
+
+<h2><a name="contents">Contents</a></h2>
+
+<ol>
+	<li>
+		<a href="lts0010.php">What is "the shell"?</a>
+
+
+		<ol>
+		<li><a href="lts0010.php#xterm">What's an
+		xterm, gnome-terminal, konsole,
+		etc.?</a></li>
+
+		<li><a href="lts0010.php#starting">Starting
+		a Terminal</a></li>
+
+		<li><a href="lts0010.php#testing">Testing
+		the Keyboard</a></li>
+
+		<li><a href="lts0010.php#using">Using the
+		Mouse</a></li>
+		</ol>
+	</li>
+
+	<li>
+		<a href="lts0020.php">Navigation</a>
+
+		<ol>
+		<li><a href="lts0020.php#file">File System
+		Organization</a></li>
+
+		<li><a href="lts0020.php#pwd">pwd</a></li>
+
+		<li><a href="lts0020.php#cd">cd</a></li>
+		</ol>
+	</li>
+
+	<li>
+		<a href="lts0030.php">Looking Around</a>
+
+		<ol>
+		<li><a href="lts0030.php#ls">ls</a></li>
+
+		<li><a href="lts0030.php#less">less</a></li>
+
+		<li><a href="lts0030.php#file">file</a></li>
+		</ol>
+	</li>
+
+	<li>
+		<a href="lts0040.php">A Guided Tour</a>
+
+		<ol>
+		<li><a href="lts0040.php#root">/</a></li>
+
+		<li><a href=
+		"lts0040.php#boot">/boot</a></li>
+
+		<li><a href="lts0040.php#etc">/etc</a></li>
+
+		<li><a href="lts0040.php#bin">/bin,
+		/usr/bin</a></li>
+
+		<li><a href="lts0040.php#sbin">/sbin,
+		/usr/sbin</a></li>
+
+		<li><a href="lts0040.php#usr">/usr</a></li>
+
+		<li><a href=
+		"lts0040.php#local">/usr/local</a></li>
+
+		<li><a href="lts0040.php#var">/var</a></li>
+
+		<li><a href="lts0040.php#lib">/lib</a></li>
+
+		<li><a href=
+		"lts0040.php#home">/home</a></li>
+
+		<li><a href=
+		"lts0040.php#root_home">/root</a></li>
+
+		<li><a href="lts0040.php#tmp">/tmp</a></li>
+
+		<li><a href="lts0040.php#dev">/dev</a></li>
+
+		<li><a href=
+		"lts0040.php#proc">/proc</a></li>
+
+		<li><a href="lts0040.php#mnt">/mnt</a></li>
+		</ol>
+	</li>
+
+	<li>
+		<a href="lts0050.php">Manipulating Files</a>
+
+		<ol>
+		<li><a href=
+		"lts0050.php#wildcards">Wildcards</a></li>
+
+		<li><a href="lts0050.php#cp">cp</a></li>
+
+		<li><a href="lts0050.php#mv">mv</a></li>
+
+		<li><a href="lts0050.php#rm">rm</a></li>
+
+		<li><a href=
+		"lts0050.php#mkdir">mkdir</a></li>
+		</ol>
+	</li>
+
+	<li>
+		<a href="lts0060.php">I/O Redirection</a>
+
+		<ol>
+		<li><a href=
+		"lts0060.php#standard_output">Standard
+		Output</a></li>
+
+		<li><a href=
+		"lts0060.php#standard_input">Standard
+		Input</a></li>
+
+		<li><a href=
+		"lts0060.php#pipes">Pipes</a></li>
+
+		<li><a href=
+		"lts0060.php#filters">Filters</a></li>
+		</ol>
+	</li>
+
+	<li>
+		<a href="lts0070.php">Permissions</a>
+
+		<ol>
+		<li><a href=
+		"lts0070.php#file_permissions">File
+		permissions</a></li>
+
+		<li><a href=
+		"lts0070.php#chmod">chmod</a></li>
+
+		<li><a href=
+		"lts0070.php#directory_permissions">Directory
+		permissions</a></li>
+
+		<li><a href="lts0070.php#su">Becoming the
+		superuser for a short while</a></li>
+
+		<li><a href="lts0070.php#chown">Changing
+		file ownership</a></li>
+
+		<li><a href="lts0070.php#chgrp">Changing
+		group ownership</a></li>
+		</ol>
+	</li>
+
+	<li>
+		<a href="lts0080.php">Job Control</a>
+
+		<ol>
+		<li><a href=
+		"lts0080.php#practical_example">A practical
+		example</a></li>
+
+		<li><a href=
+		"lts0080.php#in_the_background">Putting a
+		program in the background</a></li>
+
+		<li><a href=
+		"lts0080.php#listing_your_processes">Listing
+		your processes</a></li>
+
+		<li><a href=
+		"lts0080.php#killing_a_process">Killing a
+		process</a></li>
+
+		<li><a href="lts0080.php#more_about_kill">A
+		little more about kill</a></li>
+		</ol>
+	</li>
+</ol>
+
+
+		<div class="pagenav">
+			<p class="right"><a
+			href="index.php">Previous</a> | <a
+			href="learning_the_shell.php#contents">Contents</a> | <a
+			href="#top">Top</a> | <a
+			href="lts0010.php">Next</a></p>
+		</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td>
+	<div class="body">
+		<hr noshade>
+		<p class="fineprint">
+		&copy; 2000-2010,
+		<a href="mailto:bshotts@users.sourceforge.net">William E. Shotts, Jr.</a>
+		Verbatim copying and distribution of this entire article is
+		permitted in any medium, provided this copyright notice is preserved.</p>
+	
+		<p class="fineprint">Linux&reg; is a registered trademark of Linus Torvalds.</p>
+	</div>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>

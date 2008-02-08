@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 1//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<style type="text/css">
+  body{
+    font-family:arial,sans-serif;
+    color:#000;
+    background:#ccc;
+    text-align:center;
+    font-size:90%;
+  }
+  #body{
+    width:36em;
+    margin:2em auto;
+    padding:2em;
+    color:#000;
+    background:#fff;
+    text-align:left;
+  }
+  pre{
+    overflow:auto;
+    font-size:110%;
+    background:#eee;
+    border:1px solid #999;
+    padding:.5em;
+  }
+  p,li{
+    padding-bottom:.5em;line-height:1.3em;
+  }
+  pre span{
+    font-weight:bold;
+    color:#666;
+  }
+  pre strong{
+    color:#060;
+  }
+  iframe.codeexample{
+    display:block;
+    width:100%;
+    border:1px solid #363;
+  }
+  h1,h2{
+    font-family:Georgia,Serif;
+    margin-bottom:.5em;
+    border-bottom:1px solid #999;
+    color:#030;
+  }
+  h2{
+    color:#666;
+    font-size:120%;
+  }
+  a{color:#369;}
+  a.codeexample{
+    color:#333;
+    font-weight:bold;
+  }
+  
+</style>
+<title>Displaying source code with Ajax</title>
+</head>
+<body>
+  <div id="body">
+  <h1>Displaying source code with Ajax</h1>
+  <p>I am right now writing a lot of tutorials for a massive online training course on web development. One of my main annoyances is that you need to maintain the demo code in two sections: the source code itself and the articles you put it in. Furthermore you also need to encode HTML entities add line numbers and highlight parts of the code. Normally I'd do that with a PHP solution, but for this course we wanted all to be in HTML and working offline. That's why I took jQuery (which allows for non-HTTP Ajax) and came up with the Ajax Code Display script.</p>
+  <h2>Using Ajax Code Display</h2>
+  <p>In order to use the script simply put jQuery and the script in your  document. Doesn't matter if you put it on the top or the bottom:</p>
+
+  <pre><code>
+&#60;script src=&#34;jquery-1.2.2.pack.js&#34;&#62;&#60;/script&#62;
+&#60;script src=&#34;ajaxcodedisplay.js&#34;&#62;&#60;/script&#62;    
+  </code></pre>
+
+<p>Once that is done, all you need to have a code example in your article is to add a link with the class "codeexample". The script then fires off an Ajax request, gets the document the link points to, replaces the special characters and adds line numbers. The following code in your HTML creates the code example below it:</p>
+
+<pre><code>&lt;p&gt;&lt;a href=&quot;ordered.html&quot;
+class=&quot;codeexample&quot;
+&gt;ordered.html&lt;/a&gt;&lt;/p&gt;</code></pre>
+
+<p><a href="ordered.html" class="codeexample">ordered.html</a></p>
+
+<h2>Only showing certain lines of code</h2>
+<p>One thing you'll always have to do in tutorials is to show only parts of a bigger script to explain a certain section. You can do this with this script by providing a special class with a range of lines to show. The following examples illustrate how to use it:</p>
+
+<pre><code>&lt;p&gt;&lt;a href=&quot;ordered.html&quot;
+class=&quot;codeexample lines[1,5,9-14,18-19]&quot;
+&gt;ordered.html (lines 1, 5, 9 to 14 and 18 to 19)&lt;/a&gt;&lt;/p&gt;</code></pre>
+
+<p><a href="ordered.html" class="codeexample lines[1,5,9-14,18-19]">ordered.html (lines 1, 5, 9 to 14 and 18 to 19)</a></p>
+
+<pre><code>&lt;p&gt;&lt;a href=&quot;ordered.html&quot;
+class=&quot;codeexample lines[10-15]&quot;
+&gt;ordered.html (lines 10 to 15)&lt;/a&gt;&lt;/p&gt;</code></pre>
+
+<p><a href="ordered.html" class="codeexample lines[10-15]">ordered.html (lines 10 to 15)</a></p>
+
+<pre><code>&lt;p&gt;&lt;a href=&quot;ordered.html&quot;
+class=&quot;codeexample lines[5,8,9]&quot;
+&gt;ordered.html (lines 5, 8 and 9)&lt;/a&gt;&lt;/p&gt;</code></pre>
+
+<p><a href="ordered.html" class="codeexample lines[5,8,9]">ordered.html (lines 5,8 and 9)</a></p>
+
+<p>Notice that the scripts adds dividers [...] between blocks when there is a difference of more than one.</p>
+
+<h2>Highlighting certain lines</h2>
+
+<p>Highlighting code lines works the same was as cutting down on lines to show, just with a different class:</p>
+
+<pre><code>&lt;p&gt;&lt;a href=&quot;ordered.html&quot;
+class=&quot;codeexample lines[10-15] highlight[10,12,14-15]&quot;
+&gt;ordered.html (lines 10 to 15)&lt;/a&gt;&lt;/p&gt;</code></pre>
+
+<p><a href="ordered.html" class="codeexample lines[10-15] highlight[10,12,14-15]">ordered.html (lines 10 to 15)</a></p>
+
+<h2>Providing a live preview</h2>
+
+<p>The last feature I thought useful is to be able to provide a live preview in an iframe. The following link has a class called "dodisplay" and will show the code in an IFRAME below the link when you click it. Clicking the link again will hide the frame.</p>
+
+<pre><code>&lt;p&gt;&lt;a href=&quot;ordered.html&quot;
+class=&quot;codeexample dodisplay highlight[10,12,14-15]&quot;
+&gt;ordered.html (click to show output)&lt;/a&gt;&lt;/p&gt;</code></pre>
+
+<p><a href="ordered.html" class="codeexample dodisplay highlight[10,12,14-15]">ordered.html (click to show output)</a></p>
+
+<h2>Styling</h2>
+<p>The code generated is a PRE element with the class "codeexample" and a CODE element inside. Highlighted lines are surrounded by STRONG elements and the line numbers are spans followed by a tab. Go nuts in your CSS.</p>
+
+<h2>Licensing and Download</h2>
+
+<p>The code is licensed with <a rel="license" href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>, which means you can use and modify it but you need to say you had it from me.</p>
+<ul>
+  <li><a href="ajaxcodedisplay.js">Download ajaxcodedisplay.js (minified)</a></li> 
+  <li><a href="ajaxcodedisplay-src-commented.js">Download ajaxcodedisplay-src-commented.js (full source with comments)</a></li>
+  <li><a href="http://jqueryjs.googlecode.com/files/jquery-1.2.2.pack.js">Download jQuery.js (packed from googlecode)</a></li>
+</ul>
+<p>If you like this and have any questions, please drop me a line on the blog post about <a href="http://www.wait-till-i.com/2008/01/28/code-tutorials-for-lazy-people-with-ajax-code-display/">Ajax Code Display</a>.</p>
+</div>
+<p id="foot">All work by Christian Heilmann, <a rel="license" href="http://creativecommons.org/licenses/by/3.0/">some rights reserved</a>.</p>
+
+<script src="jquery-1.2.2.pack.js"></script>
+<script src="ajaxcodedisplay.js"></script>
+<script type="text/javascript"><!--
+google_ad_client = "pub-6730206592365449";
+google_ad_width = 728;
+google_ad_height = 90;
+google_ad_format = "728x90_as";
+google_color_border = "CCCCCC";
+google_color_bg = "FFFFFF";
+google_color_link = "000000";
+google_color_url = "666666";
+google_color_text = "333333";
+//--></script>
+<script type="text/javascript"
+ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+
+</script>
+</div>
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+<!--
+var sc_project=968400;
+var sc_invisible=1;
+var sc_partition=3;
+var sc_security="55a9fb8f";
+//-->
+</script>
+
+<script type="text/javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><a href="http://www.statcounter.com/" target="_blank"><img src="http://c4.statcounter.com/counter.php?sc_project=968400&amp;java=0&amp;security=55a9fb8f&amp;invisible=1" alt="simple hit counter" border="0"></a> </noscript>
+<!-- End of StatCounter Code -->
+</body>
+</html>

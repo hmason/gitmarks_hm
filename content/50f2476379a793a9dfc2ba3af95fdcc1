@@ -1,0 +1,657 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"   "http://www.w3.org/TR/html4/strict.dtd">
+<html dir="ltr" lang="en-US">
+
+<head profile="http://gmpg.org/xfn/11">
+  <meta name="google-site-verification" content="7UIOcPeYAlcY_kvDb9v_RE_Pzf7TfIv7zCSjK3SLT-w" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title> &raquo; Five things to do to a script before handing it over to the next developer - Christian Heilmann&#039;s blog &#8211; Wait till I come!</title>
+<script type="text/javascript">google_ad_client = "pub-6730206592365449";google_ad_width = 468;google_ad_height = 60;
+google_ad_format = "468x60_as";google_color_border = "CCCCCC";google_color_bg = "FFFFFF";google_color_link = "000000";
+google_color_url = "666666";google_color_text = "333333";</script>
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.2/build/reset-fonts-grids/reset-fonts-grids.css">
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.2/build/base/base-min.css">
+
+<link rel="stylesheet" href="http://www.wait-till-i.com/wp-content/themes/yuiminimal/style.css" type="text/css" media="screen" />
+
+<link rel="alternate" type="application/rss+xml" title="Christian Heilmann&#039;s blog &#8211; Wait till I come! RSS Feed" href="http://www.wait-till-i.com/feed/" />
+<link rel="pingback" href="http://www.wait-till-i.com/xmlrpc.php" />
+
+<link rel="alternate" type="application/rss+xml" title="Christian Heilmann&#039;s blog - Wait till I come! &raquo; Five things to do to a script before handing it over to the next developer Comments Feed" href="http://www.wait-till-i.com/2008/02/07/five-things-to-do-to-a-script-before-handing-it-over-to-the-next-developer/feed/" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.wait-till-i.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.wait-till-i.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='Christian Heilmann&#039;s blog &#8211; Wait till I come!' href='http://www.wait-till-i.com/' />
+<link rel='start' title='Blogs away!' href='http://www.wait-till-i.com/2005/01/27/blogs-away/' />
+<link rel='prev' title='The video of my presentation at the Flashforum Konferenz is live' href='http://www.wait-till-i.com/2008/02/06/the-video-of-my-presentation-at-the-flashforum-konferenz-is-live/' />
+<link rel='next' title='The joys and perils of working for a large corporation' href='http://www.wait-till-i.com/2008/02/09/the-joys-and-perils-of-working-for-a-large-corporation/' />
+<meta name="generator" content="WordPress 3.0.1" />
+<link rel='canonical' href='http://www.wait-till-i.com/2008/02/07/five-things-to-do-to-a-script-before-handing-it-over-to-the-next-developer/' />
+<link rel='shortlink' href='http://www.wait-till-i.com/?p=538' />
+<style>#chris{-moz-position:relative;display:inline}</style>
+</head>
+<body>
+<div id="doc2" class="yui-t6">
+  <div id="bd">
+    <div id="yui-main">
+      <div class="yui-b" id="content"><div id="pad">
+        
+  			
+
+	
+
+		<div class="post" id="post-538">
+			<h1>Five things to do to a script before handing it over to the next developer</h1>
+
+			<div class="entry">
+					<p>Let&#8217;s face fact folks: not too many developers plan their JavaScripts. Instead we quickly write something that works, and submit it. We come up with variable and function names as we go along and in the end know that we&#8217;ll never have to see this little bit of script ever again.</p>
+
+	<p>The problems start when we do see our script again, or we get scripts from other developers, that were built the same way. That&#8217;s why it is good to keep a few extra steps in mind when it comes to saying &#8220;this is done, I can go on&#8221;.</p>
+
+	<p>Let&#8217;s say the job was to add small link to every <span class="caps">DIV</span> in a document with the class <code>collapsible</code> that would show and hide the <span class="caps">DIV</span>. The first thing to do would be to use a library to get around the issues of cross-browser event handling. Let&#8217;s not concentrate on that for the moment but go for oldschool onevent handlers as we&#8217;re talking about different things here. Using a module pattern we can create functionality like that with a few lines of code:</p>
+
+
+<pre><code>
+collapser = function(){
+var secs = document.getElementsByTagName('div');
+for(var i=0;i&lt;secs.length;i++){
+if(secs[i].className.indexOf('collapsible')!==-1){
+var p = document.createElement('p');
+var a = document.createElement('a');
+a.setAttribute('href','#');
+a.onclick = function(){
+var sec = this.parentNode.nextSibling;
+if(sec.style.display = 'none'){
+sec.style.display = 'block';
+this.firstChild.nodeValue = 'collapse'
+} else {
+sec.style.display = 'none';
+this.firstChild.nodeValue = 'expand'
+}
+return false;
+};
+a.appendChild(document.createTextNode('expand'));
+p.appendChild(a);
+secs[i].style.display = 'none';
+secs[i].parentNode.insertBefore(p,secs[i]);
+}
+}
+}();
+</code></pre>
+
+
+	<p>This is already rather clean (I am sure you&#8217;ve seen innerHTML solutions with javascript: links) and unobtrusive, but there are some things that should not be there.</p>
+
+	<h3>Step 1: Remove look and feel</h3>
+
+	<p>The first thing to do is not to manipulate the style collection in JavaScript but leave the look and feel to where it belongs: the <span class="caps">CSS</span>. This allows for ease of skinning and changing the way of hiding the sections without having to mess around in the JavaScript. We can do this by assigning a <span class="caps">CSS</span> class and removing it:</p>
+
+<pre><code>collapser = function(){
+var secs = document.getElementsByTagName('div');
+for(var i=0;i&lt;secs.length;i++){
+if(secs[i].className.indexOf('collapsible')!-1){
+secs[i].className += &#8217; &#8217; + &#8216;collapsed&#8217;;
+var p = document.createElement(&#8216;p&#8217;);
+var a = document.createElement(&#8216;a&#8217;);
+a.setAttribute(&#8216;href&#8217;,&#8217;#&#8217;);
+a.onclick = function(){
+var sec = this.parentNode.nextSibling;
+if(sec.className.indexOf(&#8216;collapsed&#8217;)!==-1){
+sec.className = sec.className.replace(&#8217; collapsed&#8217;,&#8217;&#8216;);
+this.firstChild.nodeValue = &#8216;collapse&#8217;
+} else {
+sec.className += &#8217; &#8217; + &#8216;collapsed&#8217;;
+this.firstChild.nodeValue = &#8216;expand&#8217;
+}
+return false;
+}
+a.appendChild(document.createTextNode(&#8216;expand&#8217;));
+p.appendChild(a);
+secs[i].parentNode.insertBefore(p,secs[i]);
+}
+}
+}();</code></pre>
+
+	<h3>Step 2: Remove obvious speed issues</h3>
+
+	<p>There are not many issues in this script, but two things are obvious: the for loop reads out the length attribute of the secs collection on every iteration and we create the same anonymous function for each link to show and hide the section. Caching the length in another variable and creating a named function that gets re-used makes more sense:</p>
+
+<pre><code>
+collapser = function(){
+var secs = document.getElementsByTagName('div');
+for(var i=0,j=secs.length;i&lt;j;i++){
+if(secs[i].className.indexOf('collapsible')!==-1){
+secs[i].className += ' ' + 'collapsed';
+var p = document.createElement('p');
+var a = document.createElement('a');
+a.setAttribute('href','#');
+a.onclick = toggle;
+a.appendChild(document.createTextNode('expand'));
+p.appendChild(a);
+secs[i].parentNode.insertBefore(p,secs[i]);
+}
+}
+function toggle(){
+var sec = this.parentNode.nextSibling;
+if(sec.className.indexOf('collapsed')!==-1){
+sec.className = sec.className.replace(' collapsed','');
+this.firstChild.nodeValue = 'collapse'
+} else {
+sec.className += ' ' + 'collapsed';
+this.firstChild.nodeValue = 'expand'
+}
+return false;
+}
+}();
+</code></pre>
+
+	<h3>Step 3: Removing every label and name from the functional code</h3>
+
+	<p>This makes a lot of sense in terms of maintenance. Of course it is easy to do a quick search + replace when the label names or class names have to change, but it is not really necessary. By moving everything human readable into an own config object you won&#8217;t have to hunt through the code and suffer search + replace errors, but instead keep all the changing bits and bobs in one place:</p>
+
+<pre><code>
+collapser = function(){
+var config = {
+indicatorClass : 'collapsible',
+collapsedClass : 'collapsed',
+collapseLabel : 'collapse',
+expandLabel : 'expand'
+}
+var secs = document.getElementsByTagName('div');
+for(var i=0,j=secs.length;i&lt;j;i++){
+if(secs[i].className.indexOf(config.indicatorClass)!==-1){
+secs[i].className += ' ' + config.collapsedClass;
+var p = document.createElement('p');
+var a = document.createElement('a');
+a.setAttribute('href','#');
+a.onclick = toggle;
+a.appendChild(document.createTextNode(config.expandLabel));
+p.appendChild(a);
+secs[i].parentNode.insertBefore(p,secs[i]);
+}
+}
+function toggle(){
+var sec = this.parentNode.nextSibling;
+if(sec.className.indexOf(config.collapsedClass)!==-1){
+sec.className = sec.className.replace(' ' + config.collapsedClass,'');
+this.firstChild.nodeValue = config.collapseLabel
+} else {
+sec.className += ' ' + config.collapsedClass;
+this.firstChild.nodeValue = config.expandLabel
+}
+return false;
+}
+}();
+</code></pre>
+
+	<h3>Step 4: Use human-readable variable and method names</h3>
+
+	<p>This is probably the most useful step when it comes to increasing the maintainability of your code. Sure, during development <code>sec</code> made a lot of sense, but doesn&#8217;t <code>section</code> make it easier to grasp what is going on? What about <code>a</code>, and especially when it needs to be changed to a button later on? Will the maintainer rename it to <code>button</code>?</p>
+
+<pre><code>
+collapser = function(){
+var config = {
+indicatorClass : 'collapsible',
+collapsedClass : 'collapsed',
+collapseLabel : 'collapse',
+expandLabel : 'expand'
+}
+var sections = document.getElementsByTagName('div');
+for(var i=0,j=sections.length;i&lt;j;i++){
+if(sections[i].className.indexOf(config.indicatorClass) !== -1){
+sections[i].className += ' ' + config.collapsedClass;
+var paragraph = document.createElement('p');
+var trigger = document.createElement('a');
+trigger.setAttribute('href','#');
+trigger.onclick = toggleSection;
+trigger.appendChild(document.createTextNode(config.expandLabel));
+paragraph.appendChild(trigger);
+sections[i].parentNode.insertBefore(paragraph,sections[i]);
+}
+}
+function toggleSection(){
+var section = this.parentNode.nextSibling;
+if(section.className.indexOf(config.collapsedClass) !== -1){
+section.className = section.className.replace(' ' + config.collapsedClass,'');
+this.firstChild.nodeValue = config.collapseLabel
+} else {
+section.className += ' ' + config.collapsedClass;
+this.firstChild.nodeValue = config.expandLabel
+}
+return false;
+}
+}();
+</code></pre>
+
+	<h3>Step 5: Comment, sign and possibly eliminate the last remaining clash with other scripts</h3>
+
+	<p>The last step is to add comments where they are really needed, give your name and date (so people can ask questions and know when this was done), and to be really safe we can even get rid of the name of the script and keep it an anonymous pattern.</p>
+
+<pre><code>
+//  Collapse and expand section of the page with a certain class
+//  written by Christian Heilmann, 07/01/08
+(function(){
+
+// Configuration, change CSS class names and labels here
+var config = {
+indicatorClass : 'collapsible',
+collapsedClass : 'collapsed',
+collapseLabel : 'collapse',
+expandLabel : 'expand'
+}
+
+var sections = document.getElementsByTagName('div');
+for(var i=0,j=sections.length;i&lt;j;i++){
+if(sections[i].className.indexOf(config.indicatorClass)!==-1){
+sections[i].className += ' ' + config.collapsedClass;
+var paragraph = document.createElement('p');
+var triggerLink = document.createElement('a');
+triggerLink.setAttribute('href','#');
+triggerLink.onclick = toggleSection;
+triggerLink.appendChild(document.createTextNode(config.expandLabel));
+paragraph.appendChild(triggerLink);
+sections[i].parentNode.insertBefore(paragraph,sections[i]);
+}
+}
+function toggleSection(){
+var section = this.parentNode.nextSibling;
+if(section.className.indexOf(config.collapsedClass)!==-1){
+section.className = section.className.replace(' ' + config.collapsedClass,'');
+this.firstChild.nodeValue = config.collapseLabel
+} else {
+section.className += ' ' + config.collapsedClass;
+this.firstChild.nodeValue = config.expandLabel
+}
+return false;
+}
+})();
+</code></pre>
+
+	<p>All very obvious things, and I am sure we&#8217;ve all done them before, but let&#8217;s be honest: how often do we forget them and how often do you have to alter code where it&#8217;d have been nice if someone had taken these steps?</p>
+
+	<p>[tags]bestpractice,javascript,maintenance,code,cleaning,refactoring,playingnice,webdevtrick[/tags]</p>
+ 
+								<p>Tags: <a href="http://www.wait-till-i.com/tag/bestpractice/" rel="tag">bestpractice</a>, <a href="http://www.wait-till-i.com/tag/cleaning/" rel="tag">cleaning</a>, <a href="http://www.wait-till-i.com/tag/code/" rel="tag">code</a>, <a href="http://www.wait-till-i.com/tag/javascript/" rel="tag">javascript</a>, <a href="http://www.wait-till-i.com/tag/maintenance/" rel="tag">maintenance</a>, <a href="http://www.wait-till-i.com/tag/playingnice/" rel="tag">playingnice</a>, <a href="http://www.wait-till-i.com/tag/refactoring/" rel="tag">refactoring</a></p>
+        <div id="adspace"><script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script></div>
+
+<iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.wait-till-i.com%2F2008%2F02%2F07%2Ffive-things-to-do-to-a-script-before-handing-it-over-to-the-next-developer%2F&amp;layout=standard&amp;show-faces=true&amp;width=450&amp;action=like&amp;colorscheme=dark" scrolling="no" frameborder="0" allowTransparency="true" style="border:none; overflow:hidden; width:450px; height:30px; padding-top:8px"></iframe>
+
+				<p class="postmetadata alt">
+					<small>
+						This entry was posted
+												on Thursday, February 7th, 2008 at 1:15 am						and is filed under <a href="http://www.wait-till-i.com/category/general/" title="View all posts in General" rel="category tag">General</a>, <a href="http://www.wait-till-i.com/category/bestpractice/" title="View all posts in bestpractice" rel="category tag">bestpractice</a>, <a href="http://www.wait-till-i.com/category/cleaning/" title="View all posts in cleaning" rel="category tag">cleaning</a>, <a href="http://www.wait-till-i.com/category/code/" title="View all posts in code" rel="category tag">code</a>, <a href="http://www.wait-till-i.com/category/javascript/" title="View all posts in javascript" rel="category tag">javascript</a>, <a href="http://www.wait-till-i.com/category/maintenance/" title="View all posts in maintenance" rel="category tag">maintenance</a>, <a href="http://www.wait-till-i.com/category/playingnice/" title="View all posts in playingnice" rel="category tag">playingnice</a>, <a href="http://www.wait-till-i.com/category/refactoring/" title="View all posts in refactoring" rel="category tag">refactoring</a>.
+						You can follow any responses to this entry through the <a href='http://www.wait-till-i.com/2008/02/07/five-things-to-do-to-a-script-before-handing-it-over-to-the-next-developer/feed/'>RSS 2.0</a> feed.
+
+													Both comments and pings are currently closed.
+
+						
+					</small>
+				</p>
+
+
+
+
+			</div>
+		</div>
+
+
+	
+<div id="disqus_thread">
+					<div id="dsq-content">
+			<ul id="dsq-comments">
+					<li id="dsq-comment-7023">
+					<div id="dsq-comment-header-7023" class="dsq-comment-header">
+						<cite id="dsq-cite-7023">
+	http://www.openjs.com/							<span id="dsq-author-user-7023">Binny V A</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7023" class="dsq-comment-body">
+						<div id="dsq-comment-message-7023" class="dsq-comment-message"><p>Use a javascript library rather than trusting on your own homebrew solutions. Of course, this is not something to be done before turning it over &#8211; but a decision that should be made at the beginning. But still, the next developer will thank you for it.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-7025">
+					<div id="dsq-comment-header-7025" class="dsq-comment-header">
+						<cite id="dsq-cite-7025">
+								<span id="dsq-author-user-7025">bugrain</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7025" class="dsq-comment-body">
+						<div id="dsq-comment-message-7025" class="dsq-comment-message"><p>Some good tips there, essentially an exercise in good design for more reasons that just those outlined above.</p>
+<p>&#8220;...not too many developers plan their JavaScripts&#8230;&#8221;</p>
+<p>In my experience, this is because JavaScript was not treated as a serious language. Thankfully, the world is changing.</p>
+<p>&#8220;...add comments where they are really needed, give your name and date&#8230;&#8221;</p>
+<p>or even better, use a version control system that records this information.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-7026">
+					<div id="dsq-comment-header-7026" class="dsq-comment-header">
+						<cite id="dsq-cite-7026">
+	http://www.satedproductions.com							<span id="dsq-author-user-7026">Michael Thompson</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7026" class="dsq-comment-body">
+						<div id="dsq-comment-message-7026" class="dsq-comment-message"><p>Step 6: Use whitespace extensively and consistently.</p>
+<p>Toss an extra line or two between functions, loops or variable declarations. Indent like you&#8217;re writing Python.</p>
+<p>An improperly spaced/tabbed (spaces if you&#8217;re a ninja) block of code squished atop other improperly spaced/tabbed code is a true sign of an inconsiderate coder. If you&#8217;re going to be handing your work off to someone else you need to be sure that they can read the code. For the same reason you might update variable names to be a bit more human-friendly, so should you use whitespace.</p>
+<p>Also, if you&#8217;re using a text editor in Windows, be sure to save the file in a non-Windows standard to avoid those damned ^M&#8217;s at the end of each line.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-7028">
+					<div id="dsq-comment-header-7028" class="dsq-comment-header">
+						<cite id="dsq-cite-7028">
+	http://www.timkadlec.com							<span id="dsq-author-user-7028">Tim Kadlec</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7028" class="dsq-comment-body">
+						<div id="dsq-comment-message-7028" class="dsq-comment-message"><p>Excellent post! Like you said, obvious things that we&#8217;ve all done before at some point, but definitely worth being reminded about.</p>
+<p>I also agree with Michael &#8211; use whitespace consistently. Indentation can go a long way towards making code more readable and usable.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-7032">
+					<div id="dsq-comment-header-7032" class="dsq-comment-header">
+						<cite id="dsq-cite-7032">
+	http://stevenclark.com.au							<span id="dsq-author-user-7032">Steven Clark</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7032" class="dsq-comment-body">
+						<div id="dsq-comment-message-7032" class="dsq-comment-message"><p>Top advice&#8230; maintainability and having the next person pick up the code and not be out in the cold is essential software engineering.</p>
+<p>Above all else it makes for an efficient business process (rather than a bedroom black art).</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-7037">
+					<div id="dsq-comment-header-7037" class="dsq-comment-header">
+						<cite id="dsq-cite-7037">
+								<span id="dsq-author-user-7037">Ward</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7037" class="dsq-comment-body">
+						<div id="dsq-comment-message-7037" class="dsq-comment-message"><p>Sweet post! Gotta love the homebrew sleight : ) in the first comment by good ol Binny.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-7039">
+					<div id="dsq-comment-header-7039" class="dsq-comment-header">
+						<cite id="dsq-cite-7039">
+	http://pixelwareinc.com							<span id="dsq-author-user-7039">Eric Anderson</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7039" class="dsq-comment-body">
+						<div id="dsq-comment-message-7039" class="dsq-comment-message"><p>The problem with the refactoring without using a library is that using a library would completely change the code. Here is my version using prototype (although I am sure you can do similar or better stuff with JQuery, <span class="caps">YUI</span>, Dojo or whatever your favorite flavor is):</p>
+<p>Event.observe(window, &#8216;dom:loaded&#8217;, function() {<br />
+$$(&#8216;div.collapsible&#8217;).each(function(div) {<br />
+var trigger = (new Element(&#8216;a&#8217;)).update(&#8216;expand&#8217;);<br />
+div.insert({before: new Element(&#8216;p&#8217;).update(trigger)}).hide();<br />
+trigger.observe(&#8216;click&#8217;, function(event) {<br />
+div.toggle();<br />
+trigger.update(div.visible() ? &#8216;collapse&#8217;, &#8216;expand&#8217;);<br />
+event.stop();<br />
+});<br />
+});<br />
+});</p>
+<p>This is just off the top of my head so it has not be tested for performance, memory leaks or even correctness.</p>
+<p>I know you are just using your code as a demonstration of your techniques. My only point is that using a library will greatly affect how your code is structured. A few things I did differently:</p>
+<ul>
+<li>I left the style code in the JavaScript. The reason is because collapsing and showing are a functional aspect not style aspect. You just happen to be using <span class="caps">CSS</span> to implement that functionality. If you removed the <span class="caps">CSS </span>(which should be ok since it is just style) then you loose the functionality (collapsing and hiding). What skinning would you want to do? Now if you had other styles issues (maybe gray out a collapsed item or something) then sure add and remove a class name is fine.</li>
+</ul>
+<ul>
+<li>Put the whole thing in the <span class="caps">DOM</span> content loaded event so that it will be automatically executed when the page loads. This way the JS can stay in a JavaScript file in the header (where it should be) and not be forced to be placed at the bottom of a page.</li>
+</ul>
+<ul>
+<li>Left the labels inline. If I had a large script then I &#8220;might&#8221; put them in some sort of config but the best thing to do is just avoid a large script. That is the advantage with using a library from the start. It keeps the script small enough that you don&#8217;t need things like config.</li>
+</ul>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-7040">
+					<div id="dsq-comment-header-7040" class="dsq-comment-header">
+						<cite id="dsq-cite-7040">
+	http://www.linkedin.com/pub/2/b81/531							<span id="dsq-author-user-7040">Alan Liang</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7040" class="dsq-comment-body">
+						<div id="dsq-comment-message-7040" class="dsq-comment-message"><p>I think all code should be written with maintainability and readability in mind at all times, especially if it is in the team&#8217;s repository. I don&#8217;t believe it is feasible to do the above tasks you mentioned every time you need to pass on your work. This incurs wasted time. I especially do not think it is a good idea to strip away code optimizations so that it is easier for the next developer to understand the code. The next person will realize the speed optimization themselves and will eventually modify the code regardless. Basically, my argument is that the amount of time spent on the things you&#8217;ve stated is much more than the amount of time it takes for the developer to understand the code without modifications. I believe developers should be smart enough to do that.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-7042">
+					<div id="dsq-comment-header-7042" class="dsq-comment-header">
+						<cite id="dsq-cite-7042">
+								<span id="dsq-author-user-7042">Jason Leveille</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7042" class="dsq-comment-body">
+						<div id="dsq-comment-message-7042" class="dsq-comment-message"><p>I just want to thank you for posting articles such as these.  I am constantly looking for best practices and what you have described I see as very elegant and human.  Getting into the habit of developing this way may incur some additional time up front, but once the habit is established the long term gains in productivity and maintainability will likely far outweigh any initial time cost.</p>
+<p>Again, thanks.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-7043">
+					<div id="dsq-comment-header-7043" class="dsq-comment-header">
+						<cite id="dsq-cite-7043">
+								<span id="dsq-author-user-7043">shyam</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7043" class="dsq-comment-body">
+						<div id="dsq-comment-message-7043" class="dsq-comment-message"><p>mismatched quotes in line no. 11 on the first code snippet</p>
+<p>if(sec.style.display = none'){</p>
+<p>&lt;strong&gt;Edit&lt;/strong&gt; Good catch, this was actually the WordPress Textile plugin as it consider = to be an aligned ==.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-7045">
+					<div id="dsq-comment-header-7045" class="dsq-comment-header">
+						<cite id="dsq-cite-7045">
+								<span id="dsq-author-user-7045">Steve Streza</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7045" class="dsq-comment-body">
+						<div id="dsq-comment-message-7045" class="dsq-comment-message"><p>As a professional JavaScipt developer, I just want to point out that for performance reasons, you should be using innerHTML instead of document.createElement.</p>
+<p><a href="http://ajaxian.com/archives/benchmark-dom-vs-innerhtml" rel="nofollow">http://ajaxian.com/archives/benchmark-dom-vs-innerhtml</a></p>
+<p>Regarding libraries like jQuery, Dojo, etc., please. If you&#8217;re doing simple little one-off scripts, don&#8217;t use a library. It slows down your web site load, and can drive traffic away. If you absolutely do need their functionality (like, say, for jQuery&#8217;s animation), go for it. But something like this is overkill for a framework.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-7047">
+					<div id="dsq-comment-header-7047" class="dsq-comment-header">
+						<cite id="dsq-cite-7047">
+								<span id="dsq-author-user-7047">Chris</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7047" class="dsq-comment-body">
+						<div id="dsq-comment-message-7047" class="dsq-comment-message"><p>Steve, yes and no, I&#8217;d be very careful with truisms and developing with premature optimization. I got contacted by Apple that on the iPhone things might actually look the other way around and I will do some testing of that hypothesis soon.</p>
+<p>To me innerHTML is dangerous for maintenance as it assumes the developer knows <span class="caps">HTML</span> as much as the <span class="caps">DOM</span>.</p>
+<p>You see it with <span class="caps">CMS</span>: you allow people to edit <span class="caps">HTML</span> and you will get mismatched tags, deprecated tags and mixing of presentation and structure galore.</p>
+<p>While creating elements with the <span class="caps">DOM</span> might be marginally slower it actually leaves you with a trail of what you have done and you can access each element and child you created. It also means your code will be valid and working markup as the browser generates it for you. I&#8217;ve blogged about this here in the past and <a href="/2006/04/18/innerhtml-vs-dom-pot-noodles-vs-real-cooking/" rel="nofollow">made my points there</a>.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-7049">
+					<div id="dsq-comment-header-7049" class="dsq-comment-header">
+						<cite id="dsq-cite-7049">
+	http://jonathanaquino.com							<span id="dsq-author-user-7049">Jonathan Aquino</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7049" class="dsq-comment-body">
+						<div id="dsq-comment-message-7049" class="dsq-comment-message"><p>I like the tip about signing your work. I read a similar thing in The Pragmatic Programmer.</p>
+<p>[Jon Aquino 2008-02-08]</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-7074">
+					<div id="dsq-comment-header-7074" class="dsq-comment-header">
+						<cite id="dsq-cite-7074">
+	http://frode.danielsen.net							<span id="dsq-author-user-7074">Frode Danielsen</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7074" class="dsq-comment-body">
+						<div id="dsq-comment-message-7074" class="dsq-comment-message"><p>A lot of good tips in this article! I doubt you considered this a perfect and polished example all the way through, mostly a demonstration of the actual tips. But I&#8217;d like to point out one thing that caught my eye. Wouldn&#8217;t it be better to leave out <span class="caps">DOM</span> dependencies from the trigger function? I mean, in a larger code base you&#8217;d never be 100% sure the link and it&#8217;s container paragraph would always be the previous sibling of the section div. Maybe the section div had another class, which some other JavaScript hooked up against and also generated a previous sibling of the div, eschewing your paragraph and trigger link.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-16237">
+					<div id="dsq-comment-header-16237" class="dsq-comment-header">
+						<cite id="dsq-cite-16237">
+	http://www.puremango.co.uk							<span id="dsq-author-user-16237">Howard Yeend</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-16237" class="dsq-comment-body">
+						<div id="dsq-comment-message-16237" class="dsq-comment-message"><p>Excellent article, I especially like Step 3 &#8211; if only every script kept commonly changed things all in one place and separated the logic from the details like that.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-16247">
+					<div id="dsq-comment-header-16247" class="dsq-comment-header">
+						<cite id="dsq-cite-16247">
+	http://kentbrewster.com							<span id="dsq-author-user-16247">Kent Brewster</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-16247" class="dsq-comment-body">
+						<div id="dsq-comment-message-16247" class="dsq-comment-message"><p>Great advice here, especially the bits about abstracting out labels and using human-readable variable names.</p>
+<p>Lately I&#8217;ve been building larger and larger project and what&#8217;s repeatedly saved me is this: I make sure everything passes JSLint set on the Good Parts.  No globals; no ++ or&#8212;; not more than one var statement per function.  JSLint is here:</p>
+<p><a href="http://jslint.com" rel="nofollow">http://jslint.com</a></p>
+<p>... if you&#8217;re interested.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-16250">
+					<div id="dsq-comment-header-16250" class="dsq-comment-header">
+						<cite id="dsq-cite-16250">
+								<span id="dsq-author-user-16250">Chris</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-16250" class="dsq-comment-body">
+						<div id="dsq-comment-message-16250" class="dsq-comment-message"><p>Yeah I keep pimping jSLint &#8211; I keep forgetting about it as I am using the TextMate bundle <a href="http://andrewdupont.net/2006/10/03/js-tools-textmate-bundle-updated/" rel="nofollow">http://andrewdupont.net/2006/10/03/js-tools-textmate-bundle-updated/</a> and it becomes second nature.</p>
+</div>
+					</div>
+				</li>
+				</ul>
+		</div>
+	</div>
+
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+<script type="text/javascript">
+	var disqus_url = 'http://www.wait-till-i.com/2008/02/07/five-things-to-do-to-a-script-before-handing-it-over-to-the-next-developer/ ';
+	var disqus_identifier = '538 http://www.wait-till-i.com/2008/02/07/five-things-to-do-to-a-script-before-handing-it-over-to-the-next-developer/';
+	var disqus_container_id = 'disqus_thread';
+	var disqus_domain = 'disqus.com';
+	var disqus_shortname = 'christianheilmannsblog';
+	var disqus_title = "Five things to do to a script before handing it over to the next developer";
+		var disqus_config = function () {
+	    var config = this; // Access to the config object
+
+	    /* 
+	       All currently supported events:
+	        * preData — fires just before we request for initial data
+	        * preInit - fires after we get initial data but before we load any dependencies
+	        * onInit  - fires when all dependencies are resolved but before dtpl template is rendered
+	        * afterRender - fires when template is rendered but before we show it
+	        * onReady - everything is done
+	     */
+
+		config.callbacks.preData.push(function() {
+			// clear out the container (its filled for SEO/legacy purposes)
+			document.getElementById(disqus_container_id).innerHTML = '';
+		});
+				config.callbacks.onReady.push(function() {
+			// sync comments in the background so we don't block the page
+			DISQUS.request.get('?cf_action=sync_comments&post_id=538');
+		});
+			};
+	var facebookXdReceiverPath = 'http://www.wait-till-i.com/wp-content/plugins/disqus-comment-system/xd_receiver.htm';
+</script>
+
+<script type="text/javascript">
+	var DsqLocal = {
+		'trackbacks': [
+		],
+		'trackback_url': "http:\/\/www.wait-till-i.com\/2008\/02\/07\/five-things-to-do-to-a-script-before-handing-it-over-to-the-next-developer\/trackback\/"	};
+</script>
+
+<script type="text/javascript">
+(function() {
+	var dsq = document.createElement('script'); dsq.type = 'text/javascript';
+	dsq.async = true;
+	dsq.src = 'http://' + disqus_shortname + '.' + disqus_domain + '/embed.js?pname=wordpress&pver=2.50';
+	(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+
+	
+	</div>
+      </div>
+    </div>
+    <div class="yui-b" id="sb">
+      <div id="pageslist">
+        <div id="head">
+        <a href="http://www.wait-till-i.com/">Christian Heilmann&#039;s blog &#8211; Wait till I come!</a>
+        <div class="description">For a better web with more professional jobs &#8211; can talk, will travel</div>
+      </div>
+
+      <form method="get" id="searchform" action="http://www.wait-till-i.com/">
+<div><input type="text" value="" name="s" id="s" />
+<input type="submit" id="searchsubmit" value="Search" />
+</div>
+</form>
+
+      <ul>
+        <li><a href="http://wait-till-i.com">Home</a></li>
+        <li class="page_item page-item-595"><a href="http://www.wait-till-i.com/about-this/" title="About this">About this</a></li>
+<li class="page_item page-item-592"><a href="http://www.wait-till-i.com/archives/" title="Archives">Archives</a></li>
+<li class="page_item page-item-597"><a href="http://www.wait-till-i.com/books/" title="My Books">My Books</a></li>
+<li class="page_item page-item-634"><a href="http://www.wait-till-i.com/talks-and-conference-participation/" title="Talks and Conference Participation">Talks and Conference Participation</a></li>
+<li class="page_item page-item-593"><a href="http://www.wait-till-i.com/want-me-to-talk/" title="Want me to talk?">Want me to talk?</a></li>
+        <li class="ext"><a href="http://slideshare.net/cheilmann">Presentations</a></li>
+        <li class="ext"><a href="http://icant.co.uk">Articles</a></li>
+        <li class="ext"><a href="http://flickr.com/codepo8">Photos</a></li>
+        <li class="ext"><a href="http://del.icio.us/codepo8">Bookmarks</a></li>
+        <li class="ext"><a href="http://www.google.com/reader/shared/07479231772993841072">Reading</a></li>
+        <li class="ext"><a href="http://twitter.com/codepo8">Twitter</a></li>
+      </ul>
+
+  <a href="http://www.wait-till-i.com/feed/"><img src="/fox.png" alt="Subscribe to RSS" style="border:none;display:block;margin:10px auto"></a>
+
+
+<a href="http://350.brighterplanet.com/"><img src="http://350.brighterplanet.com/images/badges/BP_badge_180x201.jpg" alt="Brighter Planet's 350 Challenge" /></a>
+
+<div id="dopplr-blog-badge-for-chrisheilmann"><script type="text/javascript" src="http://www.dopplr.com/blogbadge/script/db67cb2de03d1a6ae524a643c8cb0704?div-id=dopplr-blog-badge-for-chrisheilmann"></script></div>
+
+
+<ul><li> <a href="http://www.medifasthealth.org/">Medifast Health & Weight Loss Program</a> </li>
+<li> <a href="http://www.waspbarcode.com/printers/">Label Barcode Printer</a> </li>
+</ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="ft">
+  <address class="vcard">
+  <a class="url org" href="http://wait-till-i.com/">Christian Heilmann&#039;s blog &#8211; Wait till I come!</a> is the blog of <span class="fn">Christian Heilmann</span> <a class="email" href="mailto:onlinetoolsorg@gmail.com">onlinetoolsorg@gmail.com</a>, a <span class="title">developer evangelist</span> living and working in <span class="adr"><span class="locality">London</span>, <span class="country-name">England</span></span>. <a href="http://feeds.technorati.com/contacts/wait-till-i.com">Download vcard</a>.
+  </address>
+  <p>Feed me, Seymour:  
+  <a href="http://www.wait-till-i.com/feed/">Entries (RSS)</a> and <a href="http://christianheilmannsblog.disqus.com/latest.rss">Comments (RSS)</a>.
+  <!-- 30 queries. 1.329 seconds. -->
+  </p>
+
+</div>
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+<!-- 
+var sc_project=710446; 
+var sc_partition=5; 
+var sc_security="6acf09a2"; 
+var sc_invisible=1; 
+//-->
+</script>
+
+<script type="text/javascript" src="http://www.statcounter.com/counter/counter_xhtml.js"></script><noscript><div class="statcounter"><a class="statcounter" href="http://www.statcounter.com/"><img class="statcounter" src="http://c6.statcounter.com/counter.php?sc_project=710446&amp;java=0&amp;security=6acf09a2&amp;invisible=1" alt="counter" /></a></div></noscript>
+<!-- End of StatCounter Code -->
+</html>
+<!-- Dynamic page generated in 1.255 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2010-10-01 13:09:54 -->
+<!-- super cache -->

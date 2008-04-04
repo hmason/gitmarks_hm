@@ -1,0 +1,364 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta name="KEYWORDS" content="eeendividualarchivetag" />
+<title>Lemonodor: Protecting Journalistic Integrity Algorithmically</title>
+
+<link rel="stylesheet" href="/styles-site.css" type="text/css" />
+
+<script type="text/javascript" language="javascript">
+<!--
+
+var HOST = 'lemonodor.com';
+
+// Copyright (c) 1996-1997 Athenia Associates.
+// http://www.webreference.com/js/
+// License is granted if and only if this entire
+// copyright notice is included. By Tomer Shiran.
+
+function setCookie (name, value, expires, path, domain, secure) {
+    var curCookie = name + "=" + escape(value) + ((expires) ? "; expires=" + expires.toGMTString() : "") + ((path) ? "; path=" + path : "") + ((domain) ? "; domain=" + domain : "") + ((secure) ? "; secure" : "");
+    document.cookie = curCookie;
+}
+
+function getCookie (name) {
+    var prefix = name + '=';
+    var c = document.cookie;
+    var nullstring = '';
+    var cookieStartIndex = c.indexOf(prefix);
+    if (cookieStartIndex == -1)
+        return nullstring;
+    var cookieEndIndex = c.indexOf(";", cookieStartIndex + prefix.length);
+    if (cookieEndIndex == -1)
+        cookieEndIndex = c.length;
+    return unescape(c.substring(cookieStartIndex + prefix.length, cookieEndIndex));
+}
+
+function deleteCookie (name, path, domain) {
+    if (getCookie(name))
+        document.cookie = name + "=" + ((path) ? "; path=" + path : "") + ((domain) ? "; domain=" + domain : "") + "; expires=Thu, 01-Jan-70 00:00:01 GMT";
+}
+
+function fixDate (date) {
+    var base = new Date(0);
+    var skew = base.getTime();
+    if (skew > 0)
+        date.setTime(date.getTime() - skew);
+}
+
+function rememberMe (f) {
+    var now = new Date();
+    fixDate(now);
+    now.setTime(now.getTime() + 365 * 24 * 60 * 60 * 1000);
+    setCookie('mtcmtauth', f.author.value, now, '', HOST, '');
+    setCookie('mtcmtmail', f.email.value, now, '', HOST, '');
+    setCookie('mtcmthome', f.url.value, now, '', HOST, '');
+}
+
+function forgetMe (f) {
+    deleteCookie('mtcmtmail', '', HOST);
+    deleteCookie('mtcmthome', '', HOST);
+    deleteCookie('mtcmtauth', '', HOST);
+    f.email.value = '';
+    f.author.value = '';
+    f.url.value = '';
+}
+
+//-->
+</script>
+
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-137136-1";
+urchinTracker();
+</script>
+
+</head>
+
+<body>
+
+<div id="banner">
+<a href="http://lemonodor.com" style="text-decoration: none; font-family:verdana, arial, sans-serif; color:#FFF; font-size:20px; font-weight:normal; background: rgb(234,222,0); text-transform:uppercase; letter-spacing: .2em;">Lemonodor</a><br />
+<span class="description">A mostly Lisp weblog by John Wiseman</span>
+</div>
+
+<!--
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/"
+         xmlns:dc="http://purl.org/dc/elements/1.1/">
+<rdf:Description
+    rdf:about="http://lemonodor.com/archives/2008/02/protecting_journalistic_integrity_algorithmically.html"
+    trackback:ping="http://www.lemonodor.com/mt/mt-tb.cgi/1138"
+    dc:title="Protecting Journalistic Integrity Algorithmically"
+    dc:identifier="http://lemonodor.com/archives/2008/02/protecting_journalistic_integrity_algorithmically.html"
+    dc:subject="AI/Robotics"
+    dc:description=" A couple years ago, when Reuters photographer Adnan Hajj got in trouble for some really bad Photoshopping, I fantasized about adapting Evolution Robotics&apos; object recognition technology and using it to automatically screen news photos for suspicious alterations. It turns..."
+    dc:creator="jjwiseman"
+    dc:date="2008-02-26T15:43:39-08:00" />
+</rdf:RDF>
+-->
+
+
+<div class="container">
+
+<div class="blog">
+
+<div id="menu">
+<a href="http://lemonodor.com/archives/2008/02/ethics_in_lethal_robots.html">&laquo; Ethics in Lethal Robots</a> |
+
+<a href="http://lemonodor.com/">Main</a>
+| <a href="http://lemonodor.com/archives/2008/03/chris_anderson_uav_videos.html">Chris Anderson UAV Videos &raquo;</a>
+
+</div>
+
+</div>
+
+
+<div class="blog">
+
+<div class="date">February 26, 2008</div>	
+
+<div class="blogbody">
+
+<span class="title">Protecting Journalistic Integrity Algorithmically</span>
+
+
+
+
+<p>
+A couple years ago, when <a href="http://en.wikipedia.org/wiki/Adnan_Hajj_photographs_controversy">Reuters photographer Adnan Hajj got in trouble</a> for some really bad Photoshopping, I fantasized about adapting Evolution Robotics' <a href="http://www.evolution.com/core/ViPR/">object recognition technology</a> and using it to automatically screen news photos for suspicious alterations.
+</p>
+
+<p>
+It turns out you don't need something as advanced as VIPR to detect simple cloning/stamping.  <a href="http://www.jgc.org/blog/2008/02/tonight-im-going-to-write-myself-aston.html">John Graham-Cumming recently posted code</a> to detect &ldquo;copy-move forgery,&rdquo; based on a <a href="http://www.ws.binghamton.edu/fridrich/Research/copymove.pdf">paper by Jessica Fridrich, David Soukal and Jan Luk&#225;&#353;</a>.
+</p>
+
+<p>
+<a href="http://lemonodor.com/code/copymove.zip">Copymove.zip</a> contains Graham-Cumming's code, with a few modifications: I implemented the (big) speedup mentioned in <a href="http://www.jgc.org/blog/2008/02/tonight-im-going-to-write-myself-aston.html#c7450164910597912842">this comment</a>, and I changed it so the code only outputs the single final image containing all copied blocks, instead of multiple output images.
+</p>
+
+
+<p>
+The algorithm is pretty good at detecting the alterations in Adnan Hajj's photos.  On the left are Hajj's altered photos. On the right are the results of running the images through copymove.c, with red and blue squares showing the cloned sections.
+</p>
+
+<p>
+<img src="http://lemonodor.com/images/hajj-beirut.jpg" alt="smoking beirut by adnan hajj" title="smoking beirut by adnan hajj" />
+<img src="http://lemonodor.com/images/hajj-beirut-copy-move.jpg" alt="smoking beirut by adnan hajj with cloning highlighted" title="smoking beirut by adnan hajj with cloning highlighted" />
+</p>
+
+<p>
+The plume of smoke on the left side of the above photo was pretty obviously cloned, and caught by copymove.  The plume on the right has some cloning too, and supposedly some buildings have been cloned.
+</p>
+
+<p>
+<img src="http://lemonodor.com/images/hajj-f16-flares.jpg" alt="f16 dropping flares by adnan hajj" title="f16 dropping flares by adnan hajj" />
+<img src="http://lemonodor.com/images/hajj-f16-flares-copy-move.jpg" alt="f16 dropping flares by adnan hajj, with cloning highlighted" title="f16 dropping flares by adnan hajj, with cloning highlighted" />
+</p>
+
+<p>
+The jet in this photo dropped one flare, and Hajj copied it to create two more.  The bands on the top and bottom might be an artifact of the image, or its processing, or the copymove algorithm.
+</p>
+
+<p>
+The image below is from a 2004 campaign ad for George Bush.  &ldquo;President Bush's campaign acknowledged Thursday that it had doctored a photograph used in a television commercial and said the ad will be re-edited and reshipped to TV stations.&rdquo;
+</p>
+
+<p>
+<img src="http://lemonodor.com/images/bush-whatever-it-takes.jpg" alt="we need more clone soldiers" title="we need more soldiers clone" />
+<img src="http://lemonodor.com/images/bush-whatever-it-takes-copymove.jpg" alt="TERMINATE CLONES" title="TERMINATE CLONES" />
+</p>
+
+<p>
+Copymove seems to have correctly identified the clones in the crowd.
+</p>
+
+<p>
+What about this magical hovering woodchuck?
+</p>
+
+<p>
+<img src="http://lemonodor.com/images/hoverchuck.jpg" alt="hovering woodchuck" title="hovering woodchuck" />
+<img src="http://lemonodor.com/images/hoverchuck-copymove.jpg" alt="i remember when i found out there were no levitating woodchucks" title="i remember when i found out there were no levitating woodchucks" />
+</p>
+
+<p>
+Looks like another assault on photojournalistic integrity by someone with a stubby-little-legs-remover tool.
+</p>
+
+<p>
+Unfortunately copymove isn't quite ready to be run on every AP and Reuters photo.  The program takes two parameters, a &ldquo;quality&rdquo; (blurring) factor and a threshold.  I used a quality of 10 and threshold of 20 for most of the images above, but those values don't work for all images.  Some images (especially anything with a blurry background) are filled with false positives no matter what settings are used.  And finally, I couldn't find an RSS or atom feed containing high quality news photos. (are there any?)
+</p>
+
+<p>
+<b>Later</b>: I accidentally uploaded an old version of the code.  I've updated the zip file with the right version.
+</p>
+
+<a name="more"></a>
+
+
+<span class="posted">Posted by jjwiseman at February 26, 2008 03:43 PM<br /></span>
+
+</div>
+
+
+
+<div class="comments-head"><a name="comments"></a>Comments</div>
+
+<a name="c22559"></a><div class="comments-body">
+<p>I have access to apimages.ap.org from campus, and while they don't have an RSS feed, they do have a stream of all news photos from the Associated Press wire. The terms of service explicitly preclude and crawling or scraping, but depending on how serious you are about this, I'm sure they'd be happy to sell you a data feed.</p>
+<span class="comments-post">Posted by: Andrew on <a href="#c22559">February 26, 2008 05:46 PM</a></span>
+</div>
+<a name="c22560"></a><div class="comments-body">
+<p>For what it's worth, Dave Winer's FlickrFan uses photo feeds from AP. </p>
+<span class="comments-post">Posted by: Ehud on <a href="#c22560">February 26, 2008 06:08 PM</a></span>
+</div>
+<a name="c22561"></a><div class="comments-body">
+<p>Very cool!  Can you run it on the image in <a href="http://arstechnica.com/news.ars/post/20080226-chinese-media-apologizes-for-photoshopped-antelope.html">this story about the Chinese antelope</a>?</p>
+<span class="comments-post">Posted by: Michael H. on <a href="#c22561">February 26, 2008 06:46 PM</a></span>
+</div>
+<a name="c22564"></a><div class="comments-body">
+<p>Mike, here it is with quality 5, threshold 30:</p>
+
+<p><a href="http://lemonodor.com/images/chinese-antelope.jpg">http://lemonodor.com/images/chinese-antelope.jpg</a></p>
+
+<p>The copy-move detection algorithm doesn't really work for the splicing together of elements from different images.  I ran a bunch of photoshop contest entries through it and they just don't typically use a lot of cloning.</p>
+<span class="comments-post">Posted by: <a title="http://lemonodor.com/" href="http://www.lemonodor.com/mt/mt-comments.cgi?__mode=red;id=22564">John Wiseman</a> on <a href="#c22564">February 26, 2008 08:44 PM</a></span>
+</div>
+<a name="c22565"></a><div class="comments-body">
+<p>Ehud, I actually played with FlickrFan a bit hoping to use its feeds.  I think it might have used an AP feed at one time but I only saw a feed from a French news agency.  I did experiment with that a bit,  but FlickrFan is kind of ugly, and it seems to have been designed to make it difficult to figure out the feed URLS[1].</p>
+
+<p>[1] <a href="http://eyeonwiner.org/archives/2008/is-flickrfans-ap-feed-proprietary-rss">http://eyeonwiner.org/archives/2008/is-flickrfans-ap-feed-proprietary-rss</a></p>
+<span class="comments-post">Posted by: <a title="http://lemonodor.com/" href="http://www.lemonodor.com/mt/mt-comments.cgi?__mode=red;id=22565">John Wiseman</a> on <a href="#c22565">February 26, 2008 08:50 PM</a></span>
+</div>
+<a name="c22566"></a><div class="comments-body">
+<p>Great post, great blog!</p>
+<span class="comments-post">Posted by: <a title="http://machine-human.com" href="http://www.lemonodor.com/mt/mt-comments.cgi?__mode=red;id=22566">machinehuman</a> on <a href="#c22566">February 26, 2008 09:33 PM</a></span>
+</div>
+<a name="c22571"></a><div class="comments-body">
+<p>Great post.  I'm glad that my code proved useful and I love to see these results.</p>
+<span class="comments-post">Posted by: <a title="http://www.jgc.org/" href="http://www.lemonodor.com/mt/mt-comments.cgi?__mode=red;id=22571">John Graham-Cumming</a> on <a href="#c22571">February 26, 2008 10:37 PM</a></span>
+</div>
+<a name="c22572"></a><div class="comments-body">
+<p>I guessed that is the case... It's a shame though.</p>
+<span class="comments-post">Posted by: Ehud on <a href="#c22572">February 26, 2008 10:46 PM</a></span>
+</div>
+<a name="c22603"></a><div class="comments-body">
+<p>Aww, no evidence of copied antelope?  That's a shame.</p>
+<span class="comments-post">Posted by: Michael H. on <a href="#c22603">February 27, 2008 03:26 PM</a></span>
+</div>
+<a name="c22630"></a><div class="comments-body">
+<p><br />
+"Whatever it takes". ........</p>
+
+<p>Of course, this all-inclusive slogan also includes the violation of U.S. federal criminal statutes. </p>
+<span class="comments-post">Posted by: K. Fligmore  on <a href="#c22630">February 28, 2008 12:35 PM</a></span>
+</div>
+<a name="c24208"></a><div class="comments-body">
+<p>Is there a Windows version of this code I can run?</p>
+<span class="comments-post">Posted by: Lisp Idiot on <a href="#c24208">March 25, 2008 07:05 AM</a></span>
+</div>
+<a name="c24346"></a><div class="comments-body">
+<p>@Lisp Idiot:  I downloaded John's file, and it's just pure C, and the Makefile looks like it should be easy to translate to Visual C++.  Looking at this Free Image library he references, that's Windows, Linux, and MacOSX.  </p>
+<span class="comments-post">Posted by: Michael H. on <a href="#c24346">March 27, 2008 07:19 PM</a></span>
+</div>
+<a name="c24644"></a><div class="comments-body">
+<p>Great ,Really Great</p>
+<span class="comments-post">Posted by: <a title="http://yuhao600.blogbus.com/" href="http://www.lemonodor.com/mt/mt-comments.cgi?__mode=red;id=24644">YuHao</a> on <a href="#c24644">April  2, 2008 07:02 AM</a></span>
+</div>
+<a name="c24709"></a><div class="comments-body">
+<p>Great work!  I'll give it a try later.  It's midnight here. :)</p>
+<span class="comments-post">Posted by: <a title="http://tropicaljeepney.wordpress.com" href="http://www.lemonodor.com/mt/mt-comments.cgi?__mode=red;id=24709">Kit</a> on <a href="#c24709">April  4, 2008 09:31 AM</a></span>
+</div>
+<a name="c24816"></a><div class="comments-body">
+<p>Wow</p>
+<span class="comments-post">Posted by: <a title="http://www.redmediacrm.com" href="http://www.lemonodor.com/mt/mt-comments.cgi?__mode=red;id=24816">Dave Q</a> on <a href="#c24816">April  6, 2008 03:45 PM</a></span>
+</div>
+<a name="c25304"></a><div class="comments-body">
+<p>Try it on all those holocaust pictures.</p>
+<span class="comments-post">Posted by: puttputt on <a href="#c25304">April 14, 2008 05:05 PM</a></span>
+</div>
+<a name="c25383"></a><div class="comments-body">
+<p>I gave it a try, that is pretty cool.  Sometimes it's hard to get quality/threshold right.  The version now outputs multiple images, as well as the final.  Do you have the version that only outputs final?</p>
+<span class="comments-post">Posted by: <a title="http://hook.freetxp.com" href="http://www.lemonodor.com/mt/mt-comments.cgi?__mode=red;id=25383">anthony</a> on <a href="#c25383">April 16, 2008 12:33 PM</a></span>
+</div>
+<a name="c25584"></a><div class="comments-body">
+<p>@puttputt:<br />
+Don't worry...Those holocaust pictures were doctored BEFORE photoshop...So we'll never find out how many MORE people were really in those photos...</p>
+
+<p>You've managed to say the stupidest thing I've ever heard on any blog...That's truly amazing.</p>
+<span class="comments-post">Posted by: Adolf on <a href="#c25584">April 19, 2008 08:19 AM</a></span>
+</div>
+<a name="c25773"></a><div class="comments-body">
+<p>Anthony, if you just comment out lines 490->493 in copymove.c, only the final image is created</p>
+<span class="comments-post">Posted by: Cambell  on <a href="#c25773">April 22, 2008 03:20 PM</a></span>
+</div>
+<a name="c25774"></a><div class="comments-body">
+<p>Anthony, if you just comment out lines 490->493 in copymove.c, only the final image is created</p>
+<span class="comments-post">Posted by: Cambell  on <a href="#c25774">April 22, 2008 03:22 PM</a></span>
+</div>
+<a name="c25831"></a><div class="comments-body">
+<p>dude, put in a captcha instead of making people type list - it's bad UI technique (and it's still easily programatically fuck-with-able. Anyway - the holocaust remark really is the dumbest thing I've ever read; what did he even mean? Great software, btw.</p>
+<span class="comments-post">Posted by: <a title="http://sikanrong.com" href="http://www.lemonodor.com/mt/mt-comments.cgi?__mode=red;id=25831">sikanrong</a> on <a href="#c25831">April 23, 2008 03:00 PM</a></span>
+</div>
+<a name="c26353"></a><div class="comments-body">
+<p>great article</p>
+<span class="comments-post">Posted by: <a title="http://www.thepandaplace.com" href="http://www.lemonodor.com/mt/mt-comments.cgi?__mode=red;id=26353">Panda Bears</a> on <a href="#c26353">April 30, 2008 07:36 AM</a></span>
+</div>
+<a name="c26355"></a><div class="comments-body">
+<p>Photoshop changed our lives</p>
+<span class="comments-post">Posted by: <a title="http://3dgamebabes.blogspot.com" href="http://www.lemonodor.com/mt/mt-comments.cgi?__mode=red;id=26355">sexy gamer</a> on <a href="#c26355">April 30, 2008 08:23 AM</a></span>
+</div>
+
+
+
+
+<div class="comments-head">Post a comment</div>
+
+<div class="comments-body">
+<form method="post" action="http://www.lemonodor.com/mt/mt-comments.cgi" name="comments_form" onsubmit="if (this.bakecookie.checked) rememberMe(this)">
+<input type="hidden" name="static" value="1" />
+<input type="hidden" name="entry_id" value="1580" />
+
+Name:<br />
+<input name="author" /><br /><br />
+
+Email Address:<br />
+<input name="email" /><br /><br />
+
+URL:<br />
+<input name="url" /><br /><br />
+
+<label for="favoritemouse">What is this weblog about? <b><font color="red">Required!</font></b></label><br />
+<input id="favoritemouse" name="favoritemouse" /><br />
+Unless you answer this question, your comment will be classified as spam and will not be posted.<br />
+(I'll give you a hint: the answer is &ldquo;lisper&rdquo;.)<br /><br />
+
+Comments:<br />
+<textarea name="text" rows="10" cols="50"></textarea><br /><br />
+
+<input type="checkbox" name="bakecookie" />Remember info?<br /><br />
+
+<input type="submit" name="preview" value="&nbsp;PREVIEW&nbsp;" />
+<input type="submit" name="post" value="&nbsp;POST&nbsp;" /><br /><br />
+
+<input type="button" onclick="forgetMe(this.form)" value="FORGET PERSONAL INFORMATION" />
+</form>
+
+<script type="text/javascript" language="javascript">
+<!--
+document.comments_form.email.value = getCookie("mtcmtmail");
+document.comments_form.author.value = getCookie("mtcmtauth");
+document.comments_form.url.value = getCookie("mtcmthome");
+//-->
+</script>
+
+
+</div>
+</div>
+</div>
+</body>
+</html>

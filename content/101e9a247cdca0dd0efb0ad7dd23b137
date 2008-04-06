@@ -1,0 +1,1702 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
+ 
+<html> 
+ 
+<head> 
+<script type="text/javascript" src="http://static.typepad.com/.shared:v20101216.02-0-g8ba2d3f:typepad:en_us/js/yui/yahoo-dom-event.js,/js/sixatrack-loader.js"></script>
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['t2._setAccount', 'UA-225723-36']);
+		_gaq.push(['t2._setDomainName', 'none']);
+		_gaq.push(['t2._setAllowLinker', true]);
+        _gaq.push(['t2._setCustomVar', 1, 'Blog', '6a0120a85dcdae970b0128776faab5970c', 3]);
+		_gaq.push(['t2._trackPageview']);
+
+		(function() {
+		  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+<title>Coding Horror: Setting up Subversion on Windows</title> 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+<link rel="stylesheet" href="http://www.codinghorror.com/blog/styles-site.css" type="text/css" /> 
+<link rel="stylesheet" href="http://www.codinghorror.com/blog/styles-site-mobile.css" type="text/css" media="handheld" /> 
+<link rel="stylesheet" href="http://www.codinghorror.com/blog/styles-site-print.css" type="text/css" media="print" /> 
+<link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/codinghorror/" /> 
+<link rel="start" href="/blog/" title="Home" /> 
+<link rel="canonical" href="http://www.codinghorror.com/blog/2008/04/setting-up-subversion-on-windows.html">
+
+
+
+<link rel="prev" href="http://www.codinghorror.com/blog/2008/04/mousing-surface-theory.html" title="Mousing Surface Theory" />
+
+<link rel="next" href="http://www.codinghorror.com/blog/2008/04/help-name-our-website.html" title="Help Name Our Website" />
+
+
+<script type="text/javascript"> 
+var TPApp = {};
+TPApp.app_uri = "http://www.typepad.com/";
+</script> 
+<script type="text/javascript" src="http://static.typepad.com/.shared:v25.4:typepad:en_us/js/yui/yahoo-dom-event.js"></script> 
+<script type="text/javascript" src="http://static.typepad.com/.shared:v25.4:typepad:en_us/js/app/thumbnail-gallery-min.js"></script> 
+<script type="text/javascript" src="http://static.typepad.com/.shared:v25.4:typepad:en_us/js/app/flyouts.js"></script>
+
+<link rel="shortcut icon" href="/favicon.ico" /> 
+
+</head>
+
+<body>
+	
+
+<div class="blog"> 
+
+<div style="float:left; "> 
+<a href="http://www.codinghorror.com/blog/"><img src="http://www.codinghorror.com/blog/images/coding-horror-official-logo-small.png" alt="I &lt;3 Steve McConnell" border="0" height="91" width="100"></a>*
+</div> 
+<div style="float:left; margin-top:10px;"> 
+<a href="http://www.codinghorror.com/blog/"><img alt="Coding Horror" src="http://www.codinghorror.com/blog/images/coding-horror-text.png" border="0" height="25" width="275"></a><br/> 
+<span class="description">programming and human factors<br/>by Jeff Atwood</span> 
+</div> 
+
+
+<div style="float:right; margin-top:20px;" id="searchbox"> 
+<form method="get" action="http://www.google.com/custom" target="_top"> 
+<input type="hidden" name="domains" value="www.codinghorror.com"></input> 
+<label for="sbi" style="display: none">Enter your search terms</label> 
+<input type="text" name="q" size="31" maxlength="255" value="" id="sbi"></input> 
+<label for="sbb" style="display: none">Submit search form</label> 
+<input type="submit" name="sa" value="Search" id="sbb"></input><br/> 
+<input type="radio" name="sitesearch" value="" id="ss0"></input> 
+<label for="ss0" title="Search the Web">Web</label></td> 
+<input type="radio" name="sitesearch" value="www.codinghorror.com" checked id="ss1"></input> 
+<label for="ss1" title="Search www.codinghorror.com">Coding Horror</label> 
+<input type="hidden" name="client" value="pub-6424649804324178"></input> 
+<input type="hidden" name="forid" value="1"></input> 
+<input type="hidden" name="ie" value="ISO-8859-1"></input> 
+<input type="hidden" name="oe" value="ISO-8859-1"></input> 
+<input type="hidden" name="safe" value="active"></input> 
+<input type="hidden" name="cof" value="GALT:#0066CC;GL:1;DIV:#FFFFFF;VLC:A2427C;AH:center;BGC:FFFFFF;LBGC:FFFFFF;ALC:666666;LC:666666;T:000000;GFNT:0066CC;GIMP:0066CC;LH:50;LW:344;L:http://www.codinghorror.com/blog/images/codinghorror-search-logo1.png;S:http://www.codinghorror.com/blog/;FORID:1"></input> 
+<input type="hidden" name="hl" value="en"></input> 
+</form> 
+</div> 
+
+</div> 
+<br clear="all"> 
+
+<div id="container"> 
+ 
+<div class="blog"> 
+
+<h2 class="date">Apr  5, 2008</h2> 
+
+<div class="blogbody"> 
+
+<h3 class="title"><a href="http://www.codinghorror.com/blog/2008/04/setting-up-subversion-on-windows.html" class="title-link">Setting up Subversion on Windows</a></h3> 
+
+<p>
+When it comes to readily available, free source control, I don&#39;t think you can do better than <a href="http://subversion.tigris.org/">Subversion</a> at the moment. I&#39;m not necessarily <i>advocating</i> Subversion; there are plenty of other great source control systems out there -- but few can match the ubiquity and relative simplicity of Subversion. Beyond that, source control is source control, as long as you&#39;re <a href="http://www.codinghorror.com/blog/archives/000660.html">not using Visual SourceSafe</a>. And did I mention that Subversion is ... free?
+<p>
+Allow me to illustrate how straightforward it is to <b>get a small Subversion server and client going on Windows</b>. It&#39;ll take all of 30 minutes, tops, I promise. And that&#39;s assuming you read slowly.
+<p>
+The first thing we&#39;ll do is <a href="http://subversion.tigris.org/servlets/ProjectDocumentList?folderID=91">download the latest Subversion Windows binary installer</a>. At the time of writing, that&#39;s 1.46. I recommend overriding the default install path and going with something shorter:
+<p>
+<pre>
+c:\svn\
+</pre>
+<p>
+Note that the installer adds <code>c:\svn\bin</code> to your path, so you can launch a command prompt and start working with it immediately. Let&#39;s create our first source repository, which is effectively a system path.
+<p>
+<pre>
+svnadmin create &quot;c:\svn\repository&quot;
+</pre>
+<p>
+Within that newly created folder, uncomment the following lines in the <b>conf/svnserve.conf</b> file by removing the pound character from the start of each line:
+<p>
+<pre>
+anon-access = none
+auth-access = write
+password-db = passwd
+</pre>
+<p>
+Next, add some users to the <b>conf/passwd</b> file. You can uncomment the default harry and sally users to play with, or add your own:
+<p>
+<pre>
+harry = harryssecret
+sally = sallyssecret
+</pre>
+<p>
+As of Subversion 1.4, you can easily <b>install Subversion as a Windows service</b>, so it&#39;s always available. Just issue the following command:
+<p>
+<pre>
+sc create svnserver binpath= &quot;c:\svn\bin\svnserve.exe --service -r c:\svn\repository&quot; 
+displayname= &quot;Subversion&quot; depend= Tcpip start= auto
+</pre>
+<p>
+It&#39;s set to auto-start so it will start up automatically when the server is rebooted, but it&#39;s not running yet. Let&#39;s fix that:
+<p>
+<pre>
+net start svnserver
+</pre>
+<p>
+Note that the service is running under the <b>Local System account</b>. Normally, this is OK, but if you plan to <a href="http://mckechney.com/SubversionNotifyForWindows">implement any Subversion hook scripts</a> later, you may want to switch the service identity to an Administrator account with more permissions. This is easy enough to do through the traditional Windows services GUI.
+<p>
+<img alt="Subversion service screenshot" border="0" class="at-xid-6a0120a85dcdae970b0120a86dd441970b" height="348" src="http://codinghorror.typepad.com/.a/6a0120a85dcdae970b0120a86dd441970b-pi" width="559" />
+<p>
+Now let&#39;s verify that things are working locally by adding a root-level folder in source control for our new project, aptly named <b>myproject</b>. 
+<p>
+<pre>
+set SVN_EDITOR=c:\windows\system32\notepad.exe
+svn mkdir svn://localhost/myproject
+</pre>
+<p>
+It&#39;s a little weird when running locally on the server, as Subversion will pop up a copy of Notepad with a place for us to enter commit comments. Every good programmer <i>always</i> comments their source control actions, right?
+<p>
+<img alt="Subversion local commit, notepad comment" border="0" class="at-xid-6a0120a85dcdae970b0120a86dd466970b" height="232" src="http://codinghorror.typepad.com/.a/6a0120a85dcdae970b0120a86dd466970b-pi" width="451" />
+<p>
+Enter whatever comment you like, then save and close Notepad. You&#39;ll be prompted for credentials at this point; ignore the prompt for Administrator credentials and press enter. Use the credentials you set up earlier in the <code>conf/passwd</code> file. If everything goes to plan, you should be rewarded with a &quot;committed revision 1&quot; message.
+<p>
+<pre>
+svn mkdir svn://localhost/myproject
+Authentication realm: &lt;svn://localhost:3690&gt;
+Password for &#39;Administrator&#39;: [enter]
+Authentication realm: &lt;svn://localhost:3690&gt;
+Username: sally
+Password for &#39;sally&#39;: ************
+
+Committed revision 1.
+</pre>
+<p>
+Congratulations! You just checked your first change into source control!
+<p>
+We specified <code>svn://</code> as the prefix to our source control path, which means we&#39;re using the native Subversion protocol. The <b>Subversion protocol operates on TCP port 3690</b>, so be sure to poke an appropriate hole in your server&#39;s firewall, otherwise clients won&#39;t be able to connect.
+<p>
+Now that the server&#39;s good to go, let&#39;s <b>turn our attention to the client</b>. Most people use <a href="http://tortoisesvn.net">TortoiseSVN</a> to interact with Subversion. <a href="http://tortoisesvn.net/downloads">Download the latest 32-bit or 64-bit Windows client</a> (1.4.8.12137 as of this writing) and install it. The installer will tell you to reboot, but you don&#39;t have to.
+<p>
+Now create a project folder somewhere on your drive. I used <code>c:\myproject</code>. Tortoise isn&#39;t a program so much as a shell extension. To interact with it, you right click in Explorer. Once you&#39;ve created the project folder, right click in it and select &quot;SVN Checkout...&quot;
+<p>
+<img alt="Tortoise &#39;SVN Checkout...&#39;" border="0" class="at-xid-6a0120a85dcdae970b0120a86dd47e970b" height="345" src="http://codinghorror.typepad.com/.a/6a0120a85dcdae970b0120a86dd47e970b-pi" width="424" />
+<p>
+Type <code>svn://servername/myproject/</code> for the repository URL and click OK.
+<p>
+<img alt="Tortoise checkout dialog" border="0" class="at-xid-6a0120a85dcdae970b0120a86dd495970b" height="313" src="http://codinghorror.typepad.com/.a/6a0120a85dcdae970b0120a86dd495970b-pi" width="456" />
+<p>
+Tortoise now associates the <code>c:\myproject</code> folder with the <code>svn://servername/myproject</code> path in source control. Anything you do on your local filesystem path (well, most things-- there are <a href="http://www.knowing.net/PermaLink,guid,ee63456a-a44f-4799-b30a-3abf6ba3ccb9.aspx">some edge conditions that can get weird</a>) can be checked back in to source control.
+<p>
+There&#39;s a standard convention in Subversion to <a href="http://svnbook.red-bean.com/en/1.4/svn.reposadmin.planning.html">start with the &quot;TTB folders&quot; at the root of any project</a>:
+<p>
+<blockquote>
+Because Subversion uses regular directory copies for branching and tagging (see <a href="http://svnbook.red-bean.com/en/1.4/svn.branchmerge.html">Chapter 4, Branching and Merging</a>), the Subversion community recommends that you choose a repository location for each project root -- the &quot;top-most&quot; directory which contains data related to that project -- and then create three subdirectories beneath that root: <b>trunk</b>, meaning the directory under which the main project development occurs; <b>branches</b>, which is a directory in which to create various named branches of the main development line; <b>tags</b>, which is a collection of tree snapshots that are created, and perhaps destroyed, but never changed.
+</blockquote>
+<p>
+Of course, <a href="http://www.codinghorror.com/blog/archives/000968.html">none of this means your developers will actually <i>understand</i> branching and merging</a>, but as responsible Subversion users, let&#39;s dutifully add the TTB folders to our project. Note that we can batch up as many changes as we want and check them all in atomically as one unit. Once we&#39;re done, right click the folder and select &quot;SVN Commit...&quot;
+<p>
+<img alt="Tortoise &#39;SVN Commit...&#39;" border="0" class="at-xid-6a0120a85dcdae970b0120a86dd4b6970b" height="360" src="http://codinghorror.typepad.com/.a/6a0120a85dcdae970b0120a86dd4b6970b-pi" width="468" />
+<p>
+In the commit dialog, indicate that yes, we do want to check in these files, and we <i>always</i> enter a checkin comment-- right? right?
+<p>
+<img alt="Tortoise Commit dialog" border="0" class="at-xid-6a0120a85dcdae970b0120a86dd4e6970b" height="482" src="http://codinghorror.typepad.com/.a/6a0120a85dcdae970b0120a86dd4e6970b-pi" width="458" />
+<p>
+You&#39;ll have to enter your server credentials here, but Tortoise will offer to conveniently cache them for you. Once the commit completes, note that the files show up in the shell with source control icon overlays:
+<p>
+<img alt="Tortoise folder with source control icon overlays" border="0" class="at-xid-6a0120a85dcdae970b0120a86dd52a970b" height="248" src="http://codinghorror.typepad.com/.a/6a0120a85dcdae970b0120a86dd52a970b-pi" width="468" />
+<p>
+And now we&#39;re done. Well, almost. There are a few settings in Tortoise you need to pay special attention to. Right click and select &quot;TortoiseSVN, Settings&quot;.
+<p>
+<ol>
+<li>See that hidden &quot;.svn&quot; folder? These folders are where Subversion puts its hidden metadata schmutz so it can keep track of what you&#39;re doing in the local filesystem and resolve those changes with the server. The default naming convention of these folders unfortunately conflicts with some fundamental ASP.NET assumptions. If you&#39;re an ASP.NET 1.x developer, you need to switch the hidden folders from <b>&quot;.svn&quot; to &quot;_svn&quot; format</b>, which is on the General options page. This hack is <a href="http://blog.dotsmart.net/2008/02/19/moving-on-from-svn_asp_dot_net_hack/">no longer necessary in ASP.NET 2.0 or newer</a>.
+<p>
+<li>I&#39;ll never understand why, but by default, Tortoise tries to <b>apply source control overlays across every single folder and drive on your system</b>. This can lead to some <a href="http://monk.thelonio.us/post/A-Tortoise-Tip-and-Hotfix-Help.aspx">odd, frustrating file locking problems</a>. Much better to let Tortoise know that it should <i>only</i> work its shell magic on specific folders. Set this via &quot;Icon Overlays&quot;; look for the exclude and include paths. I set the exclude path to everything, and the include path to only my project folder(s).
+<p>
+<img alt="tortoise exclude and include paths" border="0" class="at-xid-6a0120a85dcdae970b0120a86dd55c970b" height="100" src="http://codinghorror.typepad.com/.a/6a0120a85dcdae970b0120a86dd55c970b-pi" width="418" />
+</p></li></p></li></ol>
+<p>
+Unfortunately, since Tortoise is a shell extension, setting changes may mean you need to reboot. You can try terminating and restarting explorer.exe, but I&#39;ve had mixed results with that.
+<p>
+And with that, we&#39;re done. <b>You&#39;ve successfully set up a Subversion server and client</b>. A modern client-server source control system inside 30 minutes -- not bad at all. As usual, this is only intended as the gentlest of introductions; I encourage you to check out the <a href="http://svnbook.red-bean.com/">excellent Subversion documentation</a> for more depth.
+<p>
+I find Subversion to be an excellent, modern source control system. Any minor deficiencies it has (and there are a few, to be clear) are more than made up by its ubiquity, relative simplicity, and robust community support. In the interests of equal time, however, I should mention that some influential developers -- <a href="http://www.youtube.com/watch?v=4XpnKHJAok8">most notably Linus Torvalds</a> -- <b><i>hate</i> Subversion and view it as an actual evil</b>. There&#39;s an emerging class of <a href="http://en.wikipedia.org/wiki/Distributed_revision_control">distributed revision control</a> that could eventually supercede existing all the centralized source control systems like Subversion, Vault, Team System, and Perforce.
+<p>
+I&#39;m skeptical. I&#39;ve met precious few developers that really understood the versioning concepts in the simple centralized source control model. I have only the vaguest of hopes that these developers will be able to wrap their brains around the <i>vastly</i> more complicated and powerful model of distributed source control. It took <a href="http://www.codinghorror.com/blog/archives/000686.html">fifteen years for centralized source control usage</a> to become mainstream, so a little patience is always advisable.
+<p>
+<script type="text/javascript">google_ad_client = &quot;pub-6424649804324178&quot;;google_ad_slot = &quot;8324348970&quot;;google_ad_width = 728;google_ad_height = 90;</script><script src="http://pagead2.googlesyndication.com/pagead/show_ads.js" type="text/javascript"></script>
+<p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p>
+
+
+
+ 
+ 
+<div class="posted">Posted by Jeff Atwood &nbsp;&nbsp; <script src="http://technorati.com/linkcount" type="text/javascript"></script><a class="tr-linkcount" href="http://technorati.com/search/http://www.codinghorror.com/blog/2008/04/setting-up-subversion-on-windows.html?sub=nscosmos">View blog reactions</a></div> 
+ 
+
+<div style="float:left;">&laquo; <a href="http://www.codinghorror.com/blog/2008/04/mousing-surface-theory.html">Mousing Surface Theory</a></div> 
+
+
+
+<div style="float:right;"><a href="http://www.codinghorror.com/blog/2008/04/help-name-our-website.html">Help Name Our Website</a> &raquo;</div> 
+
+
+</div> 
+
+
+
+
+<div class="comments-head"><a name="comments"></a>Comments</div> 
+
+
+
+<div class="comments-body alex"> 
+<p>I believe the distributed vs centralized source control system debate all revolves around the working environment that the developers use.   The various features of distributed source control systems that &quot;are great&quot; that have been mentioned -- like the ability to have multiple repositories for test vs development vs each person, etc, that&#39;s not the providence of a distributed source control system, it&#39;s a feature of a good source control system with good branching support.  I do that in Perforce all the time -- development vs test vs release, with occasional labeling.</p>
+
+<p>I believe that developers like Linus and other Linux developers operate in a more disconnected, more distributed environment than, well, anyone has in the past.  A single repository doesn&#39;t make any sense for them, which, well of course means that every source control system that existed in the past doesn&#39;t work for them.  Like all good software developers, the went off to write their own tool.  </p>
+
+<p>The one feature that they really get is the ability to run disconnected from a server and still commit, which is nice, but not always required for all developers.</p>
+
+<p>However, I worry that, for projects that don&#39;t actually need a distributed system, like say, a &quot;group of people in a single office working on software&quot;, I worry that a distributed source control system would just be a excuse for people to follow bad team development patterns.  Sure, they&#39;d all have change control for their own checkins, but I rue when &quot;merge day&quot; appears and everyone breaks each other&#39;s code.  </p>
+
+<p>I&#39;d also add that a centralized source repository makes it easy to meet other business (not necessarily development-centric) requirements -- single point for backups, long term tracking of code, configuration control, etc etc.</p>
+
+<p>I use Perforce at work.  I like it.  I have seen continual additions of features in the 3 years I&#39;ve been using it, I&#39;ve had excellent support, and the only time I would think of using anything else is if I had no money and multiple developers, at which point I&#39;d probably use Subversion.</p>
+<span class="comments-post" style="margin-left:20px">ALex on April  6, 2008  2:42 AM</span> 
+</div> 
+
+
+
+<div class="comments-body dude"> 
+<p>The fact that you think dvc systems are somehow _more_ complicated than the original centralized model amusingly proves your own point, but not how you intended.</p>
+
+<p>The real reason we&#39;ll be stuck with subversion for years to come is that most mediocre developers wont take the time to learn new tools and new ways of doing things, and therefore will never grok distributed version control.</p>
+
+<p>Codemonkeys ftw, unfortunately.</p>
+<span class="comments-post" style="margin-left:20px">dude on April  6, 2008  2:52 AM</span> 
+</div> 
+
+
+
+<div class="comments-body alexei"> 
+<p>HI, with this notepad popup when you commit something - did you try to specify -m flag with a message eg svn commit -m &quot;test&quot;? atleast, on unix it takes care of that. </p>
+<span class="comments-post" style="margin-left:20px">alexei on April  6, 2008  2:56 AM</span> 
+</div> 
+
+
+
+<div class="comments-body nicholas_wright"> 
+<p>&quot;When it comes to readily available, free source control, I don&#39;t think you can do better than Subversion at the moment.&quot;</p>
+
+<p>Except by using the much superior Git.</p>
+<span class="comments-post" style="margin-left:20px">Nicholas Wright on April  6, 2008  2:56 AM</span> 
+</div> 
+
+
+
+<div class="comments-body scott_cowan"> 
+<p>I did a post about setting up SVN without a server that you&#39;ll find helpful.</p>
+
+<p><a href="http://www.sleepoverrated.com/2008/04/06/GuerillaDevelopmentSetupSourceControlIn60Seconds.aspx" rel="nofollow">http://www.sleepoverrated.com/2008/04/06/GuerillaDevelopmentSetupSourceControlIn60Seconds.aspx</a></p>
+
+<p>I recommend people use VisualSVN Server too it gives you https easily</p>
+<span class="comments-post" style="margin-left:20px">Scott Cowan on April  6, 2008  3:21 AM</span> 
+</div> 
+
+
+
+<div class="comments-body chakrit"> 
+<p>how about <a href="http://bazaar-vcs.org/?" rel="nofollow">http://bazaar-vcs.org/?</a></p>
+
+<p>svn was single-central-repo model source control</p>
+
+<p>I&#39;d prefer something more distributed</p>
+<span class="comments-post" style="margin-left:20px">chakrit on April  6, 2008  3:40 AM</span> 
+</div> 
+
+
+
+<div class="comments-body ben_l"> 
+<p>I really like SVN plugin for Visual Studio integration by PushOK software. It&#39;s cheaper than VisualSVN ($29.99) and its a MSSCCI provider, so it uses the same source control window that comes with VS.  Plus all MSSCCI aware applications will automatically just work.</p>
+
+<p><a href="http://www.pushok.com/soft_svn.php" rel="nofollow">http://www.pushok.com/soft_svn.php</a></p>
+<span class="comments-post" style="margin-left:20px">Ben L on April  6, 2008  3:43 AM</span> 
+</div> 
+
+
+
+<div class="comments-body jeff_atwood"> 
+<p> I rue when &quot;merge day&quot; appears and everyone breaks each other&#39;s code. </p>
+
+<p>I watched the rest of Linus&#39; talk at <a href="http://www.youtube.com/watch?v=4XpnKHJAok8" rel="nofollow">http://www.youtube.com/watch?v=4XpnKHJAok8</a> . Git *enforces* per-developer personality-driven p2p branches. This is great for ego-driven people like Linus who have a lot of power, fame, and personality. That makes sense. :)</p>
+
+<p>I&#39;m really intrigued by Linus&#39; claim that merging becomes extraordinarily simple in Git. He&#39;s absolutely right about that-- the problem with branches isn&#39;t the branching, it&#39;s the merging.</p>
+
+<p>Still, I&#39;m unclear why merging would be inherently &quot;easy&quot;, except for trivial diffs where there&#39;s no overlap in the lines that were edited. It seems the tooling could be improved on the SVN side to make this happen, if that&#39;s all he&#39;s referring to.</p>
+
+<p>The social aspects of distributed source control are pretty compelling, though. It &quot;works more like people work&quot; is arguably true.</p>
+<span class="comments-post" style="margin-left:20px">Jeff Atwood on April  6, 2008  3:44 AM</span> 
+</div> 
+
+
+
+<div class="comments-body ilici"> 
+<p>I&#39;ve tried to introduce Subversion at work, to replace Visual Source Safe. Our problem is however that we deal with Microsoft Reporting Services reports. A change to a report will usually restructure the whole file, shuffling bits and pieces around and creating total pain when merging. Not to mention that reports can get quite big (5000-6000 lines) and it annoys me greatly that subversion inserts it&#39;s &#39; 1.2&#39; merge tags into them.</p>
+
+<p>Exclusive locks are, I think, the better option in these cases. Is there anything I could do to subversion to make my life easier when dealing with these cases?</p>
+<span class="comments-post" style="margin-left:20px">Ilici on April  6, 2008  4:20 AM</span> 
+</div> 
+
+
+
+<div class="comments-body paulg"> 
+<p>I guess it all depends on what type of software you are trying to control. At a previous employer our code was mostly binary files. Although IT hated it we had little trouble with VSS. And SVN was a nightmare. Just that one experience soured my opinion towards &quot;free&quot; open-source software almost irrepairably.</p>
+<span class="comments-post" style="margin-left:20px">PaulG. on April  6, 2008  4:39 AM</span> 
+</div> 
+
+
+
+<div class="comments-body jeff_hawkins"> 
+<p>One nice thing about Git is that it does not leave .svn turds in all you directories.</p>
+<span class="comments-post" style="margin-left:20px">Jeff Hawkins on April  6, 2008  4:43 AM</span> 
+</div> 
+
+
+
+<div class="comments-body alex"> 
+<p>Setting up svn in Apache is more complicated, especially under Windows. Still a great article! :)</p>
+<span class="comments-post" style="margin-left:20px">Alex on April  6, 2008  5:02 AM</span> 
+</div> 
+
+
+
+<div class="comments-body czajnik"> 
+<p>Have you tried any distributed source control? I&#39;ve recently switched from Subversion to Mercurial, and I&#39;m very happy about the change. </p>
+
+<p>The most important reason was the ability to clone the repository to my laptop, do some checkins there (without network access, on a plain, train, etc.) and resync with just one command when I&#39;m back home. Distributed model seems cool even for a single developer :)</p>
+
+<p>Also I don&#39;t like the way Subversion deals with branches and tags (i.e. by &quot;cheap copy&quot;). It simply doesn&#39;t work well for me, e.g. if one checkouts a repository with many tagged and branched versions, the workspace becomes much bigger than it should be. To avoid it, one needs to selectively checkout parts of the repository, I find it quite annoying. <br />
+</p>
+<span class="comments-post" style="margin-left:20px">Czajnik on April  6, 2008  5:05 AM</span> 
+</div> 
+
+
+
+<div class="comments-body tim_almond"> 
+<p>Has anyone tried any of the Visual Studio.net plugins for Subversion?</p>
+<span class="comments-post" style="margin-left:20px">Tim Almond on April  6, 2008  5:10 AM</span> 
+</div> 
+
+
+
+<div class="comments-body john_fiala"> 
+<p>&quot;One nice thing about Git is that it does not leave .svn turds in all you directories.&quot;</p>
+
+<p>That&#39;s a good point - I&#39;ve really gotten used to (in linux) typing rm -rf `find . -type d -name .svn` to clean out a chunk of code so it&#39;s ready to share.</p>
+
+<p>Is there an easy way to do the same on the windows command line?</p>
+
+<p>(That aside, thanks for the tutorial.  I&#39;m a big fan of svn in general, and that looks very useful.)</p>
+<span class="comments-post" style="margin-left:20px">John Fiala on April  6, 2008  5:14 AM</span> 
+</div> 
+
+
+
+<div class="comments-body diego"> 
+<p>&quot;I&#39;ve met precious few developers that really understood the versioning concepts in the simple centralized source control model. &quot;</p>
+
+<p>Probably a lot of them VS.Microsoft devs? Brought up with Visual BASIC and SourceSafe. I understand why they wouldn&#39;t understand.</p>
+<span class="comments-post" style="margin-left:20px">Diego on April  6, 2008  5:18 AM</span> 
+</div> 
+
+
+
+<div class="comments-body jibbers42"> 
+<p>@Tim Almond</p>
+
+<p>I use AnkSVN. It works great as a simple indicator of changed files within the IDE, but it seems bit clunky to actually use beyond the Diff and Add commands, IMHO.</p>
+
+<p>I stick to TortoiseSVN for all other needs.</p>
+<span class="comments-post" style="margin-left:20px">Jibbers42 on April  6, 2008  5:19 AM</span> 
+</div> 
+
+
+
+<div class="comments-body xtremeed"> 
+<p>Sorry if I seem to not understand something, but if you&#39;re going to use TortoiseSVN anyway, why not simply right-click on a folder and select &quot;TortoiseSVN-Create Repository Here...&quot;?  I have done this multiple times, and have had no issues whatsoever.</p>
+<span class="comments-post" style="margin-left:20px">XTremeEd on April  6, 2008  5:20 AM</span> 
+</div> 
+
+
+
+<div class="comments-body martin_liesn"> 
+<p>Local System account is actually not a limited account. It has EXTREMLY high access to your local machine, but no access across the network.</p>
+<span class="comments-post" style="margin-left:20px">Martin Liesn on April  6, 2008  5:24 AM</span> 
+</div> 
+
+
+
+<div class="comments-body jeff_atwood"> 
+<p> Setting up svn in Apache is more complicated,</p>
+
+<p>What does that get us? Some kind of web UI? Use of port 80?</p>
+
+<p> clone the repository to my laptop, do some checkins there (without network access, on a plain, train, etc.) and resync with just one command when I&#39;m back home. </p>
+
+<p>What is the difference between what you describe, and working traditionally offline, then checking in when you get back into the office? If a &quot;checkin&quot; occurs on your local machine, and nobody else in the world knows about it.. did it really happen? Maybe I&#39;m not understanding the distinction here. I still need to watch the rest of Linus Torvalds&#39; presentation on this topic ( <a href="http://www.youtube.com/watch?v=4XpnKHJAok8" rel="nofollow">http://www.youtube.com/watch?v=4XpnKHJAok8</a> ) </p>
+
+<p> Also I don&#39;t like the way Subversion deals with branches and tags</p>
+
+<p>True, that part is a little ghetto-- you shouldn&#39;t be able to check a change into a &quot;tag&quot;, but you can. The tag is sort of an illusion-cum-convention in Subversion; it&#39;s really a branch.</p>
+
+<p>There is no perf penalty for creating hundreds of branches, though. They&#39;re only ultra-lightweight pointers until a change occurs under that branch. </p>
+
+<p> Has anyone tried any of the Visual Studio.net plugins for Subversion?</p>
+
+<p>No, I haven&#39;t. But there are two that I know of:</p>
+
+<p><a href="http://ankhsvn.open.collab.net/" rel="nofollow">http://ankhsvn.open.collab.net/</a><br />
+<a href="http://www.visualsvn.com/" rel="nofollow">http://www.visualsvn.com/</a></p>
+
+<p>This is sort of a religious issue. Some developers believe source control should *never* be done inside the IDE, and I&#39;ve started to see their point after dealing with the many, many bugs in the Team Explorer Visual Studio integration point of Team System.</p>
+<span class="comments-post" style="margin-left:20px">Jeff Atwood on April  6, 2008  5:24 AM</span> 
+</div> 
+
+
+
+<div class="comments-body andrew"> 
+<p>@Tim:</p>
+
+<p>We looked into SVN plugins when we moved to SubVersion last year, and after trying a few we found VisualSVN (<a href="http://www.visualsvn.com/)" rel="nofollow">http://www.visualsvn.com/)</a> to be the clear winner - VERY nice integration with Solution Explorer, and context menus to quickly find out a current file&#39;s history, or diff between two versions, etc.</p>
+
+<p>It may be a little pricey for some at $49 a seat, but I definitely think it&#39;s worth the money.  Hope that helps  :o)</p>
+<span class="comments-post" style="margin-left:20px">Andrew on April  6, 2008  5:29 AM</span> 
+</div> 
+
+
+
+<div class="comments-body christophe_thiriot"> 
+<p> clone the repository to my laptop, do some checkins there (without network access, on a plain, train, etc.) and resync with just one command when I&#39;m back home.</p>
+
+<p>What is the difference between what you describe, and working traditionally offline, then checking in when you get back into the office? If a &quot;checkin&quot; occurs on your local machine, and nobody else in the world knows about it.. did it really happen?</p>
+
+<p>The difference is that you can keep a trace of the different checkins you did and you can go back when you want on your local repository. And then you can checkin to the main repository in the end.</p>
+<span class="comments-post" style="margin-left:20px">Christophe Thiriot on April  6, 2008  5:43 AM</span> 
+</div> 
+
+
+
+<div class="comments-body shash"> 
+<p> Setting up svn in Apache is more complicated,<br />
+ What does that get us? Some kind of web UI? Use of port 80?</p>
+
+<p>Well, it can get you per-directory permissions, a web UI (to browse at least) and a few other things. I&#39;ve got it setup on our Linux server, and it hosts to (mostly) Windows clients.</p>
+
+<p>Ankh is nice, but somehow it feels rather clunky. I stick to Tortoise, or the command line for anything substantial. On Linux, I use either kdesvn or the command line.</p>
+
+<p>I&#39;d still like to switch to a distributed VCS if only for my own convenience, but too many people don&#39;t even grok basic branching and tagging... It&#39;d be torture on them.</p>
+<span class="comments-post" style="margin-left:20px">shash on April  6, 2008  5:45 AM</span> 
+</div> 
+
+
+
+<div class="comments-body pragmatig"> 
+<p><a href="http://svn1clicksetup.tigris.org/" rel="nofollow">http://svn1clicksetup.tigris.org/</a> - 1clicksetup, all i need for my svn happiness, server+client</p>
+<span class="comments-post" style="margin-left:20px">pragmatig on April  6, 2008  6:00 AM</span> 
+</div> 
+
+
+
+<div class="comments-body stephen_darlington"> 
+<p> What is the difference between what you describe, and working traditionally offline,<br />
+ then checking in when you get back into the office?</p>
+
+<p>I think this comes down to your philosophy if when to commit your code. Personally I like to make fairly small, incremental changes. I find that this helps when you make a mistake and need to back-track and, more importantly, when you need to merge into another branch.</p>
+
+<p>With subversion you can&#39;t really do this without having your own local repository in addition to the central one. This gets messy.</p>
+<span class="comments-post" style="margin-left:20px">Stephen Darlington on April  6, 2008  6:32 AM</span> 
+</div> 
+
+
+
+<div class="comments-body jacques_pyrat"> 
+<p>Great tutorial !</p>
+
+<p>could you do the same tutorial for installing and configuring trac on windows...</p>
+<span class="comments-post" style="margin-left:20px">Jacques PYRAT on April  6, 2008  6:32 AM</span> 
+</div> 
+
+
+
+<div class="comments-body alex"> 
+<p>What does that get us? Some kind of web UI? Use of port 80?</p>
+
+<p>Many organisations don&#39;t allow to open any ports except for the standard 80, 443, etc.<br />
+And screw web UI, we&#39;ve got Trac for that :)</p>
+<span class="comments-post" style="margin-left:20px">Alex on April  6, 2008  6:35 AM</span> 
+</div> 
+
+
+
+<div class="comments-body nicolas"> 
+<p>@Nicholas Wright: If you *want* it centralized, SVN is the best you can find. There are other dozen open source SCM software but they&#39;re all distributed.<br />
+</p>
+<span class="comments-post" style="margin-left:20px">Nicolas on April  6, 2008  6:38 AM</span> 
+</div> 
+
+
+
+<div class="comments-body nicolas"> 
+<p>@John Fiala: &quot;svn export&quot; is what you need.</p>
+<span class="comments-post" style="margin-left:20px">Nicolas on April  6, 2008  6:39 AM</span> 
+</div> 
+
+
+
+<div class="comments-body damian"> 
+<p><a href="http://www.visualsvn.com/server/" rel="nofollow">http://www.visualsvn.com/server/</a>  - simple setup for svn + apache and it&#39;s sweet</p>
+<span class="comments-post" style="margin-left:20px">Damian on April  6, 2008  6:43 AM</span> 
+</div> 
+
+
+
+<div class="comments-body nicolas"> 
+<p>@Ilici: use exclusive locks, *or* find a tool that would merge them correctly.</p>
+<span class="comments-post" style="margin-left:20px">Nicolas on April  6, 2008  6:43 AM</span> 
+</div> 
+
+
+
+<div class="comments-body jeremy"> 
+<p>We&#39;ve used Subversion for nearly four years and are on the whole very happy with it (~16 developers, plus QA, plus other groups using it for non-source code files). The biggest limitation we&#39;ve hit is the rather poor tooling related to merges, though it seems svn 1.5 will have considerable improvements here.</p>
+
+<p>We found setting up the repository to use Apache as the server indispensable to permit browsing of checked in files. We don&#39;t use this as much for source code as for other documents (specs, certain test data, etc.). It makes for easy integration to wiki pages, for example, and also makes it easy to for people to &quot;check out&quot; (peruse) specific directories/files (e.g. spreadsheets, Word docs) without _checking them out_. If the repository purely serviced development needs we likely wouldn&#39;t leverage this as much, though I&#39;ve found it useful to quickly look at code in branches/tagged versions that I don&#39;t have active in my workspace.</p>
+
+<p>Most of our development is in Java and we make use of the Subclipse Eclipse plug-in, though I personally just prefer to handle svn tasks outside the IDE. We also have used Ankh for our VStudio/C++ work and it seemed to work reasonably well.</p>
+
+<p>Although we don&#39;t have a distributed development team, an advantage I can imagine to distributed version control, where needed, is actual revision support locally. If I were doing substantive development work without more or less constant access to the repository I would want something more than the file system and the IDE&#39;s &quot;local history&quot; feature for revision control. This is a key difference I see between just &quot;working offline&quot; and having revision control support locally. Linus pitches this as one of the chief requirements a distributed revision control system is meant to address. </p>
+
+<p>Clearly the needs of a large and largely uncontrolled distributed project are quite different than the needs of traditionally managed teams (&quot;uncontrolled&quot; in the sense that anyone can join and start tinkering, even if official versions go back through some approval process). Linus claims that until he used BitKeeper he didn&#39;t even believe that revision control was necessary or useful, which I find quite revealing either about how he likes to work or the type of work he&#39;s done or both. <br />
+</p>
+<span class="comments-post" style="margin-left:20px">Jeremy on April  6, 2008  6:44 AM</span> 
+</div> 
+
+
+
+<div class="comments-body mantas"> 
+<p>I always thought that &quot;SYSTEM&quot; is the *most* powerful account...</p>
+<span class="comments-post" style="margin-left:20px">Mantas on April  6, 2008  6:44 AM</span> 
+</div> 
+
+
+
+<div class="comments-body florian_potschka"> 
+<p>I agree, <a href="http://svn1clicksetup.tigris.org/" rel="nofollow">http://svn1clicksetup.tigris.org/</a> is a great way to get started  with SVN.</p>
+
+<p>Alternatives for a Windows subversion-server:<br />
+ * <a href="http://www.assembla.com/" rel="nofollow">http://www.assembla.com/</a> Web hosted workspace with SVN, wiki (TRAC), chat,  and much more (free for personal use)<br />
+ * <a href="http://buildix.thoughtworks.com/" rel="nofollow">http://buildix.thoughtworks.com/</a> Live-cd or ubuntu-install with SVN, project management, Cruise Control for continuous integration and TRAC as a wiki and bug-tracker</p>
+
+<p>As clients I recommend TortoiseSVN or the well done subclipse plugin for Eclipse (<a href="http://subclipse.tigris.org/)." rel="nofollow">http://subclipse.tigris.org/).</a></p>
+
+<p><br />
+ Setting up SVN in Apache is more complicated,<br />
+ What does that get us? Some kind of web UI? Use of port 80?</p>
+
+<p>Yes, with the apache integration you are able to browse your repository with a web interface. FishEye (<a href="http://www.atlassian.com/software/fisheye/)" rel="nofollow">http://www.atlassian.com/software/fisheye/)</a> is another great (but commercial) web UI for CVS and SVN. TRAC (as mentioned above) also has a integrated repository browser.</p>
+<span class="comments-post" style="margin-left:20px">Florian Potschka on April  6, 2008  6:44 AM</span> 
+</div> 
+
+
+
+<div class="comments-body awh"> 
+<p>A lot of Svn users are moving to Git. I haven&#39;t tried it myself, but I thought I&#39;d mention it, since this is the first blog posting I&#39;ve read in a long time promoting the old hotness ;-)<br />
+</p>
+<span class="comments-post" style="margin-left:20px">awh on April  6, 2008  6:45 AM</span> 
+</div> 
+
+
+
+<div class="comments-body mantas"> 
+<p>by the way, is it just me or does your CAPTCHA always display the word &quot;orange&quot;?</p>
+<span class="comments-post" style="margin-left:20px">Mantas on April  6, 2008  6:46 AM</span> 
+</div> 
+
+
+
+<div class="comments-body vincent"> 
+<p>Jeff, I agree with you about distributed source control that it is not easy to see the difference with centralized source control. I tried Mercurial for some time and had the same issues.</p>
+
+<p>Actually, this if often a misunderstanding of what a source control system is. I think all programmers will agree with me that source control system allows:<br />
+- to work on a common source code ;<br />
+- to keep an history of the changes ;<br />
+- to back up your work.</p>
+
+<p>The order I choose is intentionnal, this is the way people understand source control. First I can share with others, then I save history, and then I feel safe because my code base lives in a secured server.</p>
+
+<p>With distributed source control, the goal is primarily to keep an history of the changes. Sharing the code is secondary. Backing it up is not even a feature.</p>
+
+<p>The trick is that history is not the source control feature that is the most used. Just compare the number of update/commits on the last revision with the number of updates on older revision. Mainly, working with a source control is just updating on the morning and commiting before leaving. Browsing through history is not a daily activity.</p>
+
+<p>That is why it is so confusing to switch to distributed source control. With distributed source control, history is the main thing. They considered this feature so important that they allow you to browse your history while being offline. You can share with others later.</p>
+
+<p>There is some advantage to that. First, this is much harder to break the build. You don&#39;t have to push untested code or quick and dirty fix &quot;just to save them&quot; because you can save the history locally, do all the testing another day, and finally merge the whole history back with others.</p>
+
+<p>Merge are easier too. With SubVersion, when a conflict occurs, you MUST resolve it before commiting your changes. But you may not understand the conflict and you really really don&#39;t have time to fix that right now. Because distributed source control keeps a whole repository locally, merging is not mandatory when a conflict occurs. You can keep the two versions and choose to resolve the conflict later. Or even ask the programmer that introduced the conflict to fix it.</p>
+
+<p>That being said, I do think that all these software got the problem wrong. What I really want is my computer to keep an history of all the change I do, silently, without having to choose whenever I need an history point. </p>
+
+<p>SubVersion or Mercurial both think that I am smart enough to know when I need to save my changes. They are wrong. I am dumb, an idiot. When I write a function, deletes it, quit my editor, and then want my function back, I am an idiot. An idiot in need of a really smart software to keep track of my all my changes.</p>
+
+<p>(Sorry for the long post and any english mistakes.)</p>
+<span class="comments-post" style="margin-left:20px">Vincent on April  6, 2008  6:48 AM</span> 
+</div> 
+
+
+
+<div class="comments-body manoj"> 
+<p>Well just in time.. I very recently adopted Subversion for our project. It was just the right choice for our team size(about 3 :)).. Even though the way it manages some aspect of source control differenlty, it was sure very easy to install and work with in Windows. The way in which it shows the status of files in windows explorer through icon overlay is a nice littel useful feature.</p>
+<span class="comments-post" style="margin-left:20px">Manoj on April  6, 2008  6:48 AM</span> 
+</div> 
+
+
+
+<div class="comments-body mattman206"> 
+<p>I also use VisualSVN Server.  It&#39;s free and lets you set up a repository that&#39;s slightly different than what described here.</p>
+
+<p>1) It uses Apache on Windows, and automatically creates an SSL (self-signed) certificate for you, so you can run it over HTTPS. (By doing it the way described in this article, you have no encryption -- everything is out in the open)<br />
+2) It stores the password in hashes, not plaintext, by using the Apache htpasswd authentication mechanisms. <br />
+3) It uses SVN authz files, which allow you have _granular_ control over a user&#39;s permissions for each directory inside each repository. And it provides the ability to control this in the GUI.</p>
+
+<p>It has a great graphical interface, too. It&#39;s an MMC snapin, so it really makes it feel like it&#39;s a honest-to-goodness Windows service.</p>
+
+<p>And did I mention that it&#39;s free? :)<br />
+</p>
+<span class="comments-post" style="margin-left:20px">mattman206 on April  6, 2008  6:51 AM</span> 
+</div> 
+
+
+
+<div class="comments-body patrick"> 
+<p>Subversion is a great utility and surprisingly simple as well on Unix/Linux. Highly recommended!</p>
+
+<p>Cheers.</p>
+<span class="comments-post" style="margin-left:20px">Patrick on April  6, 2008  6:52 AM</span> 
+</div> 
+
+
+
+<div class="comments-body andreas_krey"> 
+<p>&quot;If a &quot;checkin&quot; occurs on your local machine, and nobody else in the world knows about it.. did it really happen?&quot;</p>
+
+<p>Well, that&#39;s the point. You can hack your feature locally, even use git to transfer between different machines, and the upstream does only need to know your complete feature patch, not the history to there.</p>
+
+<p>Conversely it is also useful to review the history when offline. Granted, truly offline places are getting scarce.</p>
+
+<p>And I indeed don&#39;t want every developer to wrap its head around distributed version control right now. Fortunately the git people seemingly are integrating a CVS server so you can offer boths models at the same time.</p>
+<span class="comments-post" style="margin-left:20px">Andreas Krey on April  6, 2008  6:55 AM</span> 
+</div> 
+
+
+
+<div class="comments-body matt"> 
+<p>Bro - all this echo and no mention of Visual SVN server?</p>
+
+<p><a href="http://www.visualsvn.com/server/" rel="nofollow">http://www.visualsvn.com/server/</a></p>
+<span class="comments-post" style="margin-left:20px">Matt on April  6, 2008  6:58 AM</span> 
+</div> 
+
+
+
+<div class="comments-body josh"> 
+<p>Great timing Jeff thank you very much. Our software project (final year uni) is underway and our supervisor asked if we needed any tools installed on our drive. I brought up Subversion. The rest of my team have no idea what source control is. I have never used source control before, although I&#39;ve done some reading. I figure it&#39;s a good time to get practising with real life tools for when we finally graduate and enter the work force.</p>
+
+<p>Source control has not been mentioned or taught in any of our classes, or even recommended in our project assignment. It&#39;s thanks to reading this blog many articles ago I leart of the greatness of SC.</p>
+
+<p>Cheers again.</p>
+<span class="comments-post" style="margin-left:20px">`Josh on April  6, 2008  7:14 AM</span> 
+</div> 
+
+
+
+<div class="comments-body jang"> 
+<p>For all Eclipse users try this plugin: Subclipse<br />
+I&#39;ve been using TortoiseSVN, too, but Subclispe integrates seamlessly into the IDE, which is pretty nice.</p>
+
+<p><a href="http://subclipse.tigris.org/" rel="nofollow">http://subclipse.tigris.org/</a></p>
+<span class="comments-post" style="margin-left:20px">jan.g on April  6, 2008  7:26 AM</span> 
+</div> 
+
+
+
+<div class="comments-body hseyin_tfekilerli"> 
+<p>Ruby on Rails Moving Source Repository to Git:<br />
+<a href="http://blog.wired.com/monkeybites/2008/04/ruby-on-rails-m.html" rel="nofollow">http://blog.wired.com/monkeybites/2008/04/ruby-on-rails-m.html</a></p>
+<span class="comments-post" style="margin-left:20px">Hseyin Tfekilerli on April  6, 2008  7:26 AM</span> 
+</div> 
+
+
+
+<div class="comments-body nij"> 
+<p>Another fan of PushOK here - I&#39;ve used Ankh before that and seen VisualSvn, and IMHO the PushOK software really beats them because of the MSSCCI integration. In English, that means you can check in a new project and not worry that it is also going to check in the dll&#39;s and pdb&#39;s and so on.</p>
+
+<p>The only thing that I&#39;ve noticed that PushOK will do (on a multi-file check-in on a multi-project solution) is commit each project to a separate revision number. If you check in using Tortoise from the solution root, you get it all in one revision number.</p>
+
+<p>PushOk also supply a piece of software to monitor file changes if e.g. you use Tortoise to update files. It is designed to fix the mismatch between MS Locked-check-out development and SVN&#39;s unlocked, everyone checks-out files (then potential merges on commit). It is a little flaky, however... but this has proven an issue with Ankh and VisualSvn too.</p>
+
+<p>Nij</p>
+<span class="comments-post" style="margin-left:20px">Nij on April  6, 2008  7:33 AM</span> 
+</div> 
+
+
+
+<div class="comments-body sean_tierney"> 
+<p>Jeff, there&#39;s an easier way to get SVN running and it gives you an integrated Trac instance as a bonus: download the free Trac/SVN JumpBox here- <br />
+<a href="http://www.jumpbox.com/app/trac" rel="nofollow">http://www.jumpbox.com/app/trac</a></p>
+
+<p>It sets up in under a minute.  You can use it without registering. And the other benefit is it&#39;s a self-contained, portable artifact that you can leave behind with a client when you finish a project. </p>
+
+<p>sean</p>
+<span class="comments-post" style="margin-left:20px">Sean Tierney on April  6, 2008  7:35 AM</span> 
+</div> 
+
+
+
+<div class="comments-body nicholas_piasecki"> 
+<p>I just wanted to mention that those spaces after the equal signs in the sc command for creating the Windows service are REQUIRED. Kind of a weird looking command, if you ask me; guess it has to do with how it parses input from the command line.</p>
+
+<p>I remember I wasted a good 20 minutes on that one the first time I was installing Subversion a few years ago.</p>
+<span class="comments-post" style="margin-left:20px">Nicholas Piasecki on April  6, 2008  7:36 AM</span> 
+</div> 
+
+
+
+<div class="comments-body anthony_roy"> 
+<p>I&#39;ve used subversion for years - I have the server on a linux box running behind apache. Advantages of running behind Apache? </p>
+
+<p>1) As another said, it&#39;s easy to set up permissions per-repository, or to have multiple access groups for a repositiory. For me this isn&#39;t the main reason (though of course I do serve the svn repos password protected over ssh) for using Apache.</p>
+
+<p>2) This is my main reason - I can access my repositories from any computer with web access, so reduces dramatically any need to carry files around on a key drive.<br />
+</p>
+<span class="comments-post" style="margin-left:20px">Anthony Roy on April  6, 2008  7:42 AM</span> 
+</div> 
+
+
+
+<div class="comments-body fudge"> 
+<p>Don&#39;t install crap into the system drive root.</p>
+<span class="comments-post" style="margin-left:20px">fudge on April  6, 2008  7:54 AM</span> 
+</div> 
+
+
+
+<div class="comments-body piyo"> 
+<p> &quot;If a &quot;checkin&quot; occurs on your local machine, and nobody else in the world knows about it.. did it really happen?&quot;</p>
+
+<p>From what I got from Linus&#39;s video, there&#39;s a lot more to the &quot;offline in an airplane&quot; scenario. You can have for example, a local feature being tested for two weeks in your own little test bed/testing department, then when its ready, merge it to the &quot;main&quot; repository. You&#39;ll be able to say, we have this feature and we have been tweaking (local committing) and testing it solidly for two weeks, etc etc. There&#39;s some more distributed SCM advantages explained there, such as having the test department having their own repository, expanding your trust sphere when merging by reducing your trusted merge vectors (linux kernel dev talk), merging is more importanting than branching, etc. Provocative ideas.</p>
+
+<p>I doubt the human factor, but it sounds very technically enticing.</p>
+
+<p>Linus&#39;s intense hatred towards centralized SCM (and not specifically Subversion, I hope) is In My Opinion (IMO), the view that it is slowing the software development process progress.</p>
+
+<p> promoting the old hotness ;-)</p>
+
+<p>Yeah, Subversion is the old &quot;black&quot; for me, ever since the 1.0.x days. Very dependable. Backups are totally easy (svnadmin dump repository  onefile and you are done) and easy to understand. Also TortoiseSVN really is a great visual client. I always set up my Windows based SVN servers via Apache 2.x, because typing svn:// in emails just gets weird looks. I don&#39;t know how to install those fancy HTML interfaces, though. Seems I&#39;ll need to check out my options again.</p>
+
+<p>I&#39;m moving towards git, myself. I have a number of personal projects on it. The recent news that Ruby on Rails is moving to git from Subversion, as well as git public mirror repositories of GNU projects is also encouraging. The unofficial windows port, msysgit is usable if you like the command-line. Plus it comes with git-svn, a tool that bridges the gap between a Subversion server and git client, so you don&#39;t have to change your server infrastructure (?) right away.</p>
+
+<p>Groking merging history is still difficult for me. Luckily there are some visual tools. For example (javascript required):<br />
+<a href="http://repo.or.cz/git-browser/by-commit.html?r=git.git" rel="nofollow">http://repo.or.cz/git-browser/by-commit.html?r=git.git</a></p>
+
+<p>Still, git feels a little wobbly on the Windows platform (core.autocrlf :-( ), so I&#39;m keeping my Subversion around for a little while longer.</p>
+<span class="comments-post" style="margin-left:20px">piyo on April  6, 2008  7:57 AM</span> 
+</div> 
+
+
+
+<div class="comments-body kevin_dente"> 
+<p>Another advantage of using Apache is that you can configure it to use Windows Authentication (or LDAP), rather than maintaining separate user name and password lists.</p>
+<span class="comments-post" style="margin-left:20px">Kevin Dente on April  6, 2008  7:58 AM</span> 
+</div> 
+
+
+
+<div class="comments-body michael_c_neel"> 
+<p>VisualSVN is worth the money, sits on top of tortoise so you have source control in and out of the IDE.</p>
+
+<p>There is also a free VisualSVN server for windows which will setup SVN w/Apache and provide a GUI management tool.  It also handles using windows/active directory accounts for logins.</p>
+<span class="comments-post" style="margin-left:20px">Michael C. Neel on April  6, 2008  8:07 AM</span> 
+</div> 
+
+
+
+<div class="comments-body james_justin_harrell"> 
+<p>WHAT?! Recommending starting with Subversion, in 2008?! WHAT WHAT WHAT?!!!</p>
+
+<p>Even for my extremely simple needs (no merging or splitting, just a straight line of modifications), Git has been vastly easier than SVN. It is much better at handling deleted and new files, and it is much better at realizing when files have been renamed or moved, even when they&#39;ve also been modified greatly. SVN whimpers and cries from these things.</p>
+
+<p>If you&#39;ve only used CVS/SVN all your life, maybe sticking with it could be a good idea (for now). But if you&#39;re just starting out, it would be wiser IMO to go with something more modern. Why take on outdated baggage if you don&#39;t have too?</p>
+<span class="comments-post" style="margin-left:20px">James Justin Harrell on April  6, 2008  8:12 AM</span> 
+</div> 
+
+
+
+<div class="comments-body david_w"> 
+<p>A few comments:</p>
+
+<p>* You set up the standard svnserve daemon. This is great for just your machine, but should not be used for multiple users. I use svnserve for my projects at home, but I prefer to use either svn+ssh or http under Apache. Of course, this makes it much more difficult to setup under Windows since Windows does not include ssh (and all clients need it) and Apache can be tricky to setup under Windows. This is one place where both Mac and Linux beats Windows. Linux and the Mac comes standard with Apache, ssh, and Subversion. Nothing to download. Nothing to install.</p>
+
+<p>* Many sites put branching under their project instead of the root of the server. This just makes more sense, and it is something that is mentioned in the official Subversion book. For example: svn://svnserver/FooProj/trunk instead of svn://svnserver/trunk/FooProj.</p>
+
+<p>* Developers really like the way Subversion branches because branches are visible and it is easy to compare one version from another. Perforce also uses the same method for branching. At first, I was very leery of that. In  all of the other version control systems I used, branches were internal to the file. You checked out the file and specified the branch you want. However, developers (especially ones that never used version control) like the visible branching system better.</p>
+
+<p>* Tags (Labels) are a problems with Subversion because, as you mentioned, someone could checkout a tag and make modifications. I have a checkin hook that does some nice security functions. It is similar to the one that comes with Subversion, but mine also allows you to create groups, make sure attributes are set on particular files, and prevents people from messing up tags. You can create a tag, but you can&#39;t checkout the code off a tag and check it back in.</p>
+
+<p>* One good thing about Tags and Subversion: Tags are not needed as they are on most version control systems. Subversion doesn&#39;t version files, it versions the entire source tree. Every checkin you do modifies the entire source tree. You talk about build 1238 which is the 1,238th revision of the source tree. That means you don&#39;t need to label every build. You only need to label releases.</p>
+
+<p>* Seeing you set your editor to Notepad has made you lose a great deal of respect in my eyes. No developer should ever use Notepad for any purpose whatsoever. There are many excellent free line editors out there that don&#39;t munge your files.</p>
+
+<p>* Why use Apache? Because Apache can be setup as secure, you can use Port 80 which is normally allowed through firewalls, and Apache has a better security system than svnserve. I usually setup my Subversion server to use Apache. You can even use SSL certificates (https) which allows you to do work without setting up a VPN.</p>
+
+<p>* I am not a fan of &quot;Git&quot; because it doesn&#39;t do several things I consider important in source control. It is popular because the Linux team uses it. However, the Linux team does things very differently from most development organizations. What Git really allows is you to turn your checkout into another repository. For example, I do a checkout from the Git repository, then I can modify the code and do checkins and checkouts on my local machine. I can use branches, etc. When I am done, I check in my final changes back into the main Git repository. Even better, I could actually allow other people to do checkins and checkouts from my repository. So, I can checkout from the main GIT repository, then setup a GIT server on my system and allow my team to use the GIT repository on my system. Once we are finished, I can check everything back into the main GIT repository. Very neat trick. You can use SVK which is a Subversion add on that does a similar trick.</p>
+
+<p>* I recommend that you take a look at Perforce. It is a commercial source control system, but you can use it for free for personal projects since you&#39;re allowed two users and five clients. (Users can have multiple clients which are just views into the repository). It is easier to setup than Subversion on Windows, and comes with its own built in GUI. In fact, two GUIs. One is p4win which is a Windows only GUI. The other is p4v which is a standard GUI that works across all versions of Perforce (Unix, Linux, Mac, and Windows).</p>
+
+<p>* Yes, there are many commercial systems out there, but the advantage of open source version control is quite simple: I don&#39;t have any licensing issues. I don&#39;t have to track who has what license, I don&#39;t need a license key, and I don&#39;t have to get some bureaucrat in accounting to approve a new license whenever our department gets another developer. Plus, it is easy to justify the &quot;expense&quot; when it costs the company nothing to use.</p>
+<span class="comments-post" style="margin-left:20px">David W. on April  6, 2008  8:15 AM</span> 
+</div> 
+
+
+
+<div class="comments-body ralph"> 
+<p>We use Trac with our SVN server, so management occasionally uses the log for themselves and for generating activity reports for clients. Since a few developers never seem to want to detail their changes, we use a pre-commit hook to reject commits without comments. The hook requires grep.exe from the GnuWin32 project. Blog formatting may make this look ugly, but just toss this into pre-commit.bat in the &quot;hooks&quot; directory of your repository (edit paths accordingly):</p>
+
+<p>@echo off<br />
+rem Add path to Subversion executable<br />
+set path=%path%;c:\Program Files\Subversion\bin</p>
+
+<p>rem Add path to grep.exe<br />
+set path=%path%;C:\Program Files\GnuWin32\bin</p>
+
+<p>SVNLOOK.exe log -t &quot;%2&quot; &quot;%1&quot; | grep.exe &quot;[a-zA-Z0-9]&quot;  nul || exit 1</p>
+
+<p>exit 0 </p>
+<span class="comments-post" style="margin-left:20px">Ralph on April  6, 2008  8:34 AM</span> 
+</div> 
+
+
+
+<div class="comments-body joe"> 
+<p>To integrate SVN with Visual Studio, I use something like this, which is completely free: <a href="http://garrys-brain.blogspot.com/2006/11/visual-studio-2005-and-tortoisesvn.html" rel="nofollow">http://garrys-brain.blogspot.com/2006/11/visual-studio-2005-and-tortoisesvn.html</a><br />
+It actually integrates with TortoiseSVN, not SVN itself. But it works well enough for me. </p>
+
+<p>For VS2003, which is what I use most, I set up a bunch of &quot;External Tools&quot; commands that point to TortoiseSvn. I have one for &quot;Diff&quot;, &quot;Log&quot;, &quot;Update&quot;, Commit&quot;, and probably others. Then I just add them to the toolbar. You can even add the matching TortoiseSVN icons to the buttons if you want. </p>
+
+<p>In a nutshell, no need to buy anything to integreate SVN into Visual Studio - it&#39;s super easy.</p>
+<span class="comments-post" style="margin-left:20px">Joe on April  6, 2008  8:46 AM</span> 
+</div> 
+
+
+
+<div class="comments-body x"> 
+<p>You should try mercurial one day.</p>
+<span class="comments-post" style="margin-left:20px">X on April  6, 2008  8:48 AM</span> 
+</div> 
+
+
+
+<div class="comments-body rob"> 
+<p>+1 on visualSVN, it absolutely rocks. Not having your SCC available inside the IDE , is like having custard cremes without the custard.</p>
+
+<p>Aside #1 - there is a fully integrated installer for Apache+SVN on the VisualSVN site.</p>
+
+<p>Aside #2 - I&#39;ve got a 500GB Synology NAS box, with the SVN client installed on it, its perfect, requires no PC and just sits on your network serving away. Ideal for small teams that want a self contained SCC box. I detail the SVN setup on my blog, here</p>
+
+<p><a href="http://runtothehills.org/rob/archives/25" rel="nofollow">http://runtothehills.org/rob/archives/25</a></p>
+
+<p>although i did that well over a year ago, so the NAS box firmware may have changed (though i&#39;m still getting comments that everything is ok.)<br />
+Cheers!<br />
+Rob</p>
+<span class="comments-post" style="margin-left:20px">Rob on April  6, 2008  8:51 AM</span> 
+</div> 
+
+
+
+<div class="comments-body bernard"> 
+<p>For source control on my personal project (as in, I&#39;m the only one who accesses the repository), I&#39;ve found Git to blow SVN away (for my purposes). The main reason, is because it is distributed, I don&#39;t have to set up a repository on my local machine. I love how easy branching is. But like I said, this is only my experience - I have no idea how SCMs or DSCMs scale up.</p>
+<span class="comments-post" style="margin-left:20px">Bernard on April  6, 2008  9:00 AM</span> 
+</div> 
+
+
+
+<div class="comments-body james_manning"> 
+<p>Just to reiterate the previous comment, *please* correct the blog post, as Local System is effectively root == can do anything locally.  Local *Service* (yes, the names are unfortunately very similar) is a very restricted account.</p>
+
+<p><a href="http://msdn2.microsoft.com/en-us/library/ms677973(VS.85).aspx" rel="nofollow">http://msdn2.microsoft.com/en-us/library/ms677973(VS.85).aspx</a></p>
+
+<p>One advantage of running under the LocalSystem account is that the service has complete unrestricted access to local resources. This is also the disadvantage of LocalSystem because a LocalSystem service can do things that would bring down the entire system.</p>
+
+<p><a href="http://msdn2.microsoft.com/en-us/library/ms684188(VS.85).aspx" rel="nofollow">http://msdn2.microsoft.com/en-us/library/ms684188(VS.85).aspx</a></p>
+
+<p>[LocalService] has minimum privileges on the local computer and presents anonymous credentials on the network.</p>
+<span class="comments-post" style="margin-left:20px">James Manning on April  6, 2008  9:10 AM</span> 
+</div> 
+
+
+
+<div class="comments-body allan_n"> 
+<p>SVK (<a href="http://svk.bestpractical.com)" rel="nofollow">http://svk.bestpractical.com)</a> is a good free utility for SVN for distributed teams or individuals.  Allows individuals or branch offices to host their own mirror of the SVN repository.  Works really well for branch offices because it really reduces the bandwidth used for otherwise redundant bits transfered by multiple users.  Also provides a built-in distributed backup. :)  </p>
+<span class="comments-post" style="margin-left:20px">Allan N on April  6, 2008  9:13 AM</span> 
+</div> 
+
+
+
+<div class="comments-body tim_costello"> 
+<p>Does anyone know of a svn plugin (like ankh) that works in sql server 2005 (or 2008)?  I have heard that ankh works in the bi tools but I&#39;m specifically hoping to find something that works in the sql server management studio.</p>
+<span class="comments-post" style="margin-left:20px">Tim Costello on April  6, 2008  9:34 AM</span> 
+</div> 
+
+
+
+<div class="comments-body craig_k"> 
+<p>@Tim</p>
+
+<p>I second the recommendation for VisualSVN.  I couldn&#39;t even get Ankh to work, but have been using VisualSVN for months and am very happy with it.  Plus it leverages Tortoise so you don&#39;t have to learn a completely new UI for the same things.</p>
+<span class="comments-post" style="margin-left:20px">Craig K. on April  6, 2008  9:36 AM</span> 
+</div> 
+
+
+
+<div class="comments-body brett"> 
+<p>&quot;I&#39;m skeptical. I&#39;ve met precious few developers that really understood the versioning concepts in the simple centralized source control model.&quot;</p>
+
+<p>That speaks a lot to the kind of people you choose to work with.  The concept of working with someone who doesn&#39;t understand an appreciate distributed version control systems is just... wow.  (And I&#39;m not an old grey-beard or MIT Ph. D, I&#39;m a kid a couple years out of a Java School)</p>
+<span class="comments-post" style="margin-left:20px">Brett on April  6, 2008  9:39 AM</span> 
+</div> 
+
+
+
+<div class="comments-body tim_costello"> 
+<p>@craig<br />
+Are you using VisualSVN in SQL (Management Studio) or in Visual Studio?</p>
+<span class="comments-post" style="margin-left:20px">Tim Costello on April  6, 2008  9:42 AM</span> 
+</div> 
+
+
+
+<div class="comments-body robert"> 
+<p>I&#39;ve been using Subversion for a couple of years on an ASP.NET 2.0 project.  I do not host the server myself, however, although it is easy to do.  I use www.cvsdude.com (I am not affiliated with this company) and it is awesome.  I&#39;m automatically backed up off-site and I can manage user permissions, modules, etc. through a nice web interface.    There&#39;s also a nice web view of all of the repositories for doing diffs, history, etc.  I&#39;ll gladly pay a monthly fee to avoid any potential headaches with running my own server...  </p>
+<span class="comments-post" style="margin-left:20px">Robert on April  6, 2008  9:50 AM</span> 
+</div> 
+
+
+
+<div class="comments-body patrick_sulliva"> 
+<p>Has Git support for windows/Cygwin improved any?  I&#39;ve considered trying it for personal projects since everyone has had so many good things to say about it&#39;s branch/merge/tracking model.  </p>
+
+<p>But since I still work in windows land and afaik Git support for it is still crap, I&#39;ve been looking more towards Mercurial for my DVCS needs, though I haven&#39;t started on a new project recently so haven&#39;t properly implemented one on my systems &quot;properly&quot; yet, though hg is on my laptop waiting for use ;).</p>
+<span class="comments-post" style="margin-left:20px">Patrick Sulliva on April  6, 2008  9:57 AM</span> 
+</div> 
+
+
+
+<div class="comments-body torkel"> 
+<p>For poeople who want a place to put some personal code I can recommend assembla.com. They allow 500MB of free subversion hosting, which is the most I have seen of any free svn hosting service. They also have a Trac integration which is nice. </p>
+<span class="comments-post" style="margin-left:20px">Torkel on April  6, 2008 10:22 AM</span> 
+</div> 
+
+
+
+<div class="comments-body rfunk"> 
+<p>I (and my team) switched from CVS to SVN about three years ago.  Now I&#39;m considering switching to either git or Mercurial.  Anybody just starting to use SVN now is well behind the curve.</p>
+
+<p>The cool thing about a distributed code control system is that it has all the capabilities of a centralized system, PLUS the ability to do commits and branches and history without talking to the server.  Sure, projects like the Linux kernel depend on it since they&#39;re inherently decentralized, but even centralized projects can benefit from being able to work without contacting the server.</p>
+
+<p>Of course, I&#39;m strongly in the &quot;commit each conceptual change&quot; school of thought, rather than the &quot;commit each day&#39;s work&quot; school of thought.  It&#39;s important to me to see the steps along the way, and to be able to undo those steps individually.  I use the commit history constantly, as well as the annotate/blame facility.</p>
+
+<p>Also, Subversion&#39;s merge capabilities are painful to work with, while git and mercurial are designed to make merging easy.  It&#39;s great that Subversion made branching easy, but it&#39;s nearly useless when merging a branch back to the trunk is such a pain.  And even reverting a change is more painful in Subversion than it really should be.</p>
+
+<p>Jeff, you may be interested in these links:</p>
+
+<p>A guy who&#39;d earlier explained why a href=&quot;http://ww2.samhart.com/node/47&quot;all distributed version control systems suck/a switches from Subversion to Mercurial:  <a href="http://ww2.samhart.com/node/49" rel="nofollow">http://ww2.samhart.com/node/49</a></p>
+
+<p>Happenings in the version control system world (cvs, svn, mercurial/hg, bzr, git, as of March 1 2008): <a href="http://blogs.gnome.org/newren/2008/03/01/happenings-in-the-vcs-world/" rel="nofollow">http://blogs.gnome.org/newren/2008/03/01/happenings-in-the-vcs-world/</a></p>
+<span class="comments-post" style="margin-left:20px">rfunk on April  6, 2008 10:38 AM</span> 
+</div> 
+
+
+
+<div class="comments-body brian_knoblauch"> 
+<p>After working with subversion for awhile now, I understand exactly why Linus has that opinion...  I&#39;ve come to the conclusion that subversion may sometimes be worse than no source control.</p>
+<span class="comments-post" style="margin-left:20px">Brian Knoblauch on April  6, 2008 10:42 AM</span> 
+</div> 
+
+
+
+<div class="comments-body joe"> 
+<p>I set up Subversion on Windows 2003 about a year ago.  I also had a Fedora VM (in VMWare Server) running Subversion on the same machine.  I tested both from a client computer running Tortoise.  The Fedora version ran faster.  It was disgusting how much slower SVN was on Windows compared to Linux.  Small commits were about the same speed, but large checkouts and updates were much slower on Windows.  Another developer ended up discovering the same thing in his testing.</p>
+
+<p>I don&#39;t know if this is an intrinsic problem with Windows (doubt it), or a problem with the SVN binaries for Windows (prolly).  We ended up running SVN out of a VM.  </p>
+
+<p>There are two remote backup strategies that can be used with this scenario (that we considered).  First, one can simply back up the entire VM to the remote backup device.  The second strategy is to use NFS or an SMB share in the VM to backup just the SVN repository directories in the VM to the remote backup device.  The nice thing about the first method is that it is very easy to stand-up an SVN server when an emergency strikes, or just to stand up a backup when needed.  VMs are so easy to use anymore, and VMWare Server is free.  You can even download a very light-weight Linux/Subversion &quot;appliance&quot; VM image from VMWare.  Some food for thought when setting up SVN.  </p>
+
+<p>Oh, and I loved using Subversion.  I have used VSS (oh my god), Vault and CVS, and Subversion is better than all of them.  I am back in CVS land now, which is also a very good repository.</p>
+<span class="comments-post" style="margin-left:20px">Joe on April  6, 2008 11:00 AM</span> 
+</div> 
+
+
+
+<div class="comments-body ajo_paul"> 
+<p>Subversion is a great tool. If a server setup is what you are looking for then running it atop a linux box will do higher justice. For windows there&#39;s Virtual SVN for server setup <a href="http://www.visualsvn.com/download.html" rel="nofollow">http://www.visualsvn.com/download.html</a></p>
+
+<p>OpenSource Rocks!</p>
+<span class="comments-post" style="margin-left:20px">Ajo Paul on April  6, 2008 11:09 AM</span> 
+</div> 
+
+
+
+<div class="comments-body velkymx"> 
+<p>Thank for the great post. Its a great help!!! Love the blog.</p>
+
+<p>VX</p>
+<span class="comments-post" style="margin-left:20px">VelkyMX on April  6, 2008 11:20 AM</span> 
+</div> 
+
+
+
+<div class="comments-body rich"> 
+<p>SVN really screwed up tags. They should be mnemonics for revisions, like they were in CVS, or like the magic revision name &quot;HEAD&quot; is. So instead of:</p>
+
+<p>svn diff --summarize $REPO/tags/some_random_tag $REPO/trunk</p>
+
+<p>You could do:</p>
+
+<p>svn diff --summarize -r some_random_tag $REPO/trunk</p>
+
+<p>It appear a small difference, but it is conceptually much cleaner. You also wouldn&#39;t be able to accidentally tag just part of trunk, which is possible now with the copy cop-out.</p>
+
+<p>Meh.</p>
+<span class="comments-post" style="margin-left:20px">Rich on April  6, 2008 11:27 AM</span> 
+</div> 
+
+
+
+<div class="comments-body rfunk"> 
+<p>I forgot to mention a big reason I&#39;m considering switching from Subversion to a distributed system.  Often one of us will embark on a set of changes that will break things until done and tested.  The right way to do this would be to start a branch, but as I mentioned before, merging is painful in Subversion.  It&#39;s certainly scary enough that the rest of my team doesn&#39;t want to touch it.</p>
+
+<p>So one of two things happens:  either they go ahead and commit as they go, breaking things for everyone else, or they don&#39;t commit anything until they&#39;re finished, so there&#39;s no history of what they&#39;re doing.</p>
+
+<p>With a distributed system, branching and merging would be trivially easy, and everyone could make their private changes locally, then push up to the shared server when they think everything is good.  And no history is lost.</p>
+<span class="comments-post" style="margin-left:20px">rfunk on April  6, 2008 11:29 AM</span> 
+</div> 
+
+
+
+<div class="comments-body scott_hanselman"> 
+<p>With respect, this seems years too late. ;) <a href="http://svn1clicksetup.tigris.org/" rel="nofollow">http://svn1clicksetup.tigris.org/</a> solved this in September of 2005. Not to mention VisualSVN Server.</p>
+<span class="comments-post" style="margin-left:20px">Scott Hanselman on April  6, 2008 11:30 AM</span> 
+</div> 
+
+
+
+<div class="comments-body luke_hoersten"> 
+<p>I&#39;ve actually spoken with SVN developer Brian Fitzpatrick, and he said that SVN will indeed be getting distributed features similar to “the Mercurial model.”</p>
+
+<p>Learning DRCSs is easy and as simple as watching a few Google Tech Talks (Google being a SVN user themselves with Google Code):</p>
+
+<p><a href="http://humani.st/learning-distributed-revision-control-systems/" rel="nofollow">http://humani.st/learning-distributed-revision-control-systems/</a></p>
+
+<p>Distributed revision control is simple. It&#39;s just a repository of non-distributed repositories. &quot;Push&quot; and &quot;pull&quot; are essentially the only two new commands to merge between repositories. Everything else is the same as SVN (of course this is a wild simplification).</p>
+<span class="comments-post" style="margin-left:20px">Luke Hoersten on April  6, 2008 11:39 AM</span> 
+</div> 
+
+
+
+<div class="comments-body reimar"> 
+<p>For those interested, my reasons for using git are (though I usually use it with git-svn with the main repository in SVN):<br />
+- everyone has the full history of the project always.<br />
+ - This makes searching for the cause of a regression and some other things easy even when offline.<br />
+ - Especially for OpenSource projects it also means it is near impossible to loose your history (there are thousands of backups).<br />
+- I can have branches with hacks that are not suitable to be published and the merging with new features from the main branch usually works quite well.<br />
+- Even though I have the full history, it uses less disk space and is faster than SVN (having to do manual compaction occasionally is a bit annoying though)<br />
+- For reading it works just fine over plain http without anything special (so I only need ordinary web space to publish it), and writing works well via ssh. So all you need for a fully functional, public repository is web space and a shell account - something e.g. every student, at least around here, has.</p>
+<span class="comments-post" style="margin-left:20px">Reimar on April  6, 2008 11:55 AM</span> 
+</div> 
+
+
+
+<div class="comments-body trial_blazer"> 
+<p>thanks! man really interesting and educating article.</p>
+<span class="comments-post" style="margin-left:20px">trial blazer on April  6, 2008 12:05 PM</span> 
+</div> 
+
+
+
+<div class="comments-body tcliu"> 
+<p>I use Subversion and have done so for the past three years. I have taken a look at GIT, but since I&#39;m spoiled with TortoiseSVN I haven&#39;t really seen any reason to switch.</p>
+
+<p>GIT is much more advanced, and branching/merging in SVN is clearly not what the thing was built for.</p>
+
+<p>But in a case of &quot;worse is better&quot;, I stick with SVN. It does everything I need and I can easily convince myself that I don&#39;t need anything it doesn&#39;t supply.</p>
+<span class="comments-post" style="margin-left:20px">tcliu on April  6, 2008 12:17 PM</span> 
+</div> 
+
+
+
+<div class="comments-body alex"> 
+<p>I am glad that there are many individual developers who download Git and say &quot;it works great for me&quot;.   The first job of any source control tool should be to make sure that no source ever gets lost, and secondly, that you have the tools you need to go back and figure out what the hell you broke.</p>
+
+<p>However, like I said above, the second stage of source control is when you start using the tools to interact with other developers, and, if you&#39;re, err... lucky?, non-developers.  Git seems to work quite well for the anarcho-meritocracy of open source development.  No need to worry about angry &quot;Core Team&quot; developers withholding commit access here!  </p>
+
+<p>Now, a more traditional development environment though, I&#39;m really thinking Git lacks the &quot;management&quot; features of other tools.  Of course it does, that&#39;s the whole point!  </p>
+<span class="comments-post" style="margin-left:20px">ALex on April  6, 2008 12:33 PM</span> 
+</div> 
+
+
+
+<div class="comments-body ben"> 
+<p>I don&#39;t think it&#39;s possible to have a context-free debate about source control: it&#39;s very dependent on what platform/languages/tools you are using, the development environment, the development process (if there is one) etc.</p>
+
+<p>I haven&#39;t used AccuRev (<a href="http://www.accurev.com/webinars/20061004_scm_accurev45.html)" rel="nofollow">http://www.accurev.com/webinars/20061004_scm_accurev45.html)</a> in production, but it looks like it rocks to me. </p>
+
+<p>Now I just need to persuade management to fork out the bucks!</p>
+<span class="comments-post" style="margin-left:20px">Ben on April  6, 2008 12:42 PM</span> 
+</div> 
+
+
+
+<div class="comments-body john_s"> 
+<p>VisualSVN + VisualSVN Server FTW. The server even lets you do Windows authentication with the latest version.</p>
+<span class="comments-post" style="margin-left:20px">John S. on April  6, 2008 12:45 PM</span> 
+</div> 
+
+
+
+<div class="comments-body shawn_oster"> 
+<p>I think every developer that sets up a svn a few times ends up writing the exact blog post you just did Jeff :)  I know I did a few months back and there are dozens out there that read almost exactly like this one.  Of course the only difference betweens yours and others is that you probably have a few more eyeballs on it and getting the source control word out there for every developer is key.</p>
+
+<p>Personally I love svn and set it up on my Windows Home Server, which makes a great repository server.  Couple that with how easy it is to integrate with all the CI servers out there and it&#39;s a winner.</p>
+<span class="comments-post" style="margin-left:20px">Shawn Oster on April  6, 2008  1:00 PM</span> 
+</div> 
+
+
+
+<div class="comments-body pete"> 
+<p>I have just given this a go I have been thinking about source control for a while but not got round to it as I am one of just 2 developers usually working on separate applications. However obviously the advantage is you make a mistake or need some old code back that you removed you have it.</p>
+
+<p>I successfully setup this on my home computer my question now is, if I install subversion at work and tortoiseSVN can I just copy the repository directory to work and use and update it. Then take it back home replacing the old one and repeat as I go.</p>
+
+<p>I regularly take my work home and can&#39;t map a network drive or anything like that to share between the two. Alternatively is there somewhere on the net I could store it.</p>
+
+<p>Thanks in advance. </p>
+<span class="comments-post" style="margin-left:20px">pete on April  6, 2008  1:08 PM</span> 
+</div> 
+
+
+
+<div class="comments-body pete"> 
+<p>Also I have several different folders in different locations should I use a separate repository for each of these. For instance I have visual studio 2008, ms access apps, visual basic 6 apps, documents. Or is there a better way.</p>
+<span class="comments-post" style="margin-left:20px">pete on April  6, 2008  1:12 PM</span> 
+</div> 
+
+
+
+<div class="comments-body chris_brandsma"> 
+<p>Yes, all that is great (I use Visual Svn Server to make the server installation more palletable for the groups I consult for), but I have one question:</p>
+
+<p>What is the purpose of ascii-RickRoll.txt?</p>
+
+<p>Wait, I already saw the music video.  Don&#39;t make me relive the 80s.</p>
+<span class="comments-post" style="margin-left:20px">Chris Brandsma on April  6, 2008  1:14 PM</span> 
+</div> 
+
+
+
+<div class="comments-body nicolas"> 
+<p>I have been using SVN happily for a long time. It&#39;s what CVS should have always been (revision number per file? WTF).</p>
+
+<p>I still don&#39;t see the point of distributed SCMs. I guess I will keep staying away from them until I see the need. For now, they feel like a solution for a problem I don&#39;t have (just like almost all C++ features *used* to be, to me).<br />
+</p>
+<span class="comments-post" style="margin-left:20px">Nicolas on April  6, 2008  1:26 PM</span> 
+</div> 
+
+
+
+<div class="comments-body nicolas"> 
+<p>Heck, even branches looked to me like a disorganized way to work, until one day I needed one, and I got enlightened :) Maybe some day the same will happen with distributed source control...<br />
+</p>
+<span class="comments-post" style="margin-left:20px">Nicolas on April  6, 2008  1:27 PM</span> 
+</div> 
+
+
+
+<div class="comments-body fernando"> 
+<p>Just read the article, and set up SVN+Tortoise for my future development works. Fantastic stuff. =)</p>
+
+<p>A word of warning, though: Jeff, you might want to re-check your link to the Tortoise site, since it&#39;s missing the last T. I woke up thinking slow (blonde-girl-slow, actually), and I refreshed like five times before figuring out the domain was .net and not just .ne like it&#39;s posted. =p</p>
+
+<p>Still, cheers on the awesome work.</p>
+<span class="comments-post" style="margin-left:20px">Fernando on April  6, 2008  1:28 PM</span> 
+</div> 
+
+
+
+<div class="comments-body mike"> 
+<p>Is nobody going to comment on ascii-rickroll.txt?</p>
+<span class="comments-post" style="margin-left:20px">Mike on April  6, 2008  1:41 PM</span> 
+</div> 
+
+
+
+<div class="comments-body duncan_smart"> 
+<p>Not wishing to be a nitpicker... but regarding &quot;If you&#39;re an ASP.NET developer, you need to switch the hidden folders from &quot;.svn&quot; to &quot;_svn&quot; format, which is on the General options page.&quot;</p>
+
+<p>That was only for *Visual Studio* 2003 and earlier: a href=&quot;http://blog.dotsmart.net/2008/02/19/moving-on-from-svn_asp_dot_net_hack/&quot;http://blog.dotsmart.net/2008/02/19/moving-on-from-svn_asp_dot_net_hack//a</p>
+<span class="comments-post" style="margin-left:20px">Duncan Smart on April  6, 2008  1:45 PM</span> 
+</div> 
+
+
+
+<div class="comments-body vinzent_hoefler"> 
+<p>&quot;What is the difference between what you describe, and working traditionally offline, then checking in when you get back into the office?&quot;</p>
+
+<p>I think they call that change management. ;)</p>
+
+<p>Generally it gives you more control. I tend to make checkins in a way so that I can apply single patches in the trunk or in some particular branch.<br />
+Try sorting out all those little changes for several unrelated things - which easily happen even on a short two day business trip - when your back in the office and you&#39;ll understand.</p>
+
+<p>Unwritten rule for me is one check in - one change. This makes all those little bugs I might have introduced much more traceable.</p>
+<span class="comments-post" style="margin-left:20px">Vinzent Hoefler on April  6, 2008  1:47 PM</span> 
+</div> 
+
+
+
+<div class="comments-body ted"> 
+<p> 1) Tightly controlled development will remain the providence of centrally managed source control.</p>
+
+<p> You can still centrally manage source code with Git.</p>
+
+<p>Quite. There&#39;s nothing stopping anyone from using Git just like Subversion. There&#39;s even a module for using it with Subversion repositories. </p>
+
+<p>What Git buys you is more options. That&#39;s the thing that got me so jazzed about it.</p>
+<span class="comments-post" style="margin-left:20px">T.E.D. on April  7, 2008  2:09 AM</span> 
+</div> 
+
+
+
+<div class="comments-body jeff_atwood"> 
+<p> With respect, this seems years too late. ;) <a href="http://svn1clicksetup.tigris.org/" rel="nofollow">http://svn1clicksetup.tigris.org/</a> solved this in September of 2005. </p>
+
+<p>I saw that, but then I saw the latest package was January 2007 -- so I assumed it was out of date. Is it normal not to have a release in 14 months?</p>
+
+<p>Also, be sure to read Bill de hra&#39;s excellent response to this post:</p>
+
+<p><a href="http://www.dehora.net/journal/2008/04/06/what-a-dvcs-gets-you-maybe/" rel="nofollow">http://www.dehora.net/journal/2008/04/06/what-a-dvcs-gets-you-maybe/</a></p>
+<span class="comments-post" style="margin-left:20px">Jeff Atwood on April  7, 2008  2:10 AM</span> 
+</div> 
+
+
+
+<div class="comments-body joe_beam"> 
+<p>Source_Control = &quot;YAWN&quot;<br />
+</p>
+<span class="comments-post" style="margin-left:20px">Joe Beam on April  7, 2008  3:05 AM</span> 
+</div> 
+
+
+
+<div class="comments-body jim_cooper"> 
+<p><br />
+Subversion is OK as a VCS, although I find it a bit clumsy in some areas.</p>
+
+<p>The big problem with it is the clients - I have never found a good one. The best is the Subclipse plugin for Eclipse, IMO, although I prefer a standalone client. Clients integrated into IDEs have a habit of being too helpful :-)</p>
+
+<p>TortoiseSVN is a PITA. It shows the wrong view. I can already see the files on my computer, thanks very much. What I need in a VCS client is the ability to see what&#39;s in the repository, what branch I&#39;m in, file history etc at the same time as seeing what I&#39;ve changed on my machine (which is the least important view in some ways). The only way to get that sort of thing in TortoiseSVN is painful and clunky.</p>
+
+<p>Unless something is checked in, it doesn&#39;t exist in the project. The repository is where you build release versions from, where your continuous integration gets its code, and so on. So management of that is key. I want to see what&#39;s happening to it, and with TortoiseSVN, that&#39;s too difficult and too poorly done.</p>
+<span class="comments-post" style="margin-left:20px">Jim Cooper on April  7, 2008  3:50 AM</span> 
+</div> 
+
+
+
+<div class="comments-body copyer"> 
+<p>a href=&quot;http://blogs.vertigosoftware.com/teamsystem/archive/2006/01/16/Setting_up_a_Subversion_Server_under_Windows.aspx&quot;http://blogs.vertigosoftware.com/teamsystem/archive/2006/01/16/Setting_up_a_Subversion_Server_under_Windows.aspx/a</p>
+<span class="comments-post" style="margin-left:20px">copyer on April  7, 2008  4:11 AM</span> 
+</div> 
+
+
+
+<div class="comments-body jorge_diaz_tambley"> 
+<p>I use RapidSVN as a client, up to now the best (as I don&#39;t only develop in one ide and don&#39;t like tortoise&#39;s funny icons)</p>
+
+<p>Regards</p>
+<span class="comments-post" style="margin-left:20px">Jorge Diaz Tambley on April  7, 2008  4:12 AM</span> 
+</div> 
+
+
+	
+
+
+	
+<p>
+
+
+
+
+
+<a href="http://www.codinghorror.com/blog/2008/04/setting-up-subversion-on-windows/comments/page/2/#comments"><span class="pager-label">More comments</span><span class="chevron">&#187;</span></a>
+
+</p>
+
+
+
+
+<a name="endcomments"></a> 
+
+
+
+<style>
+textarea {
+ 	width : 600px;
+	font-size : 14px;
+	}
+#comment-author,
+#comment-email,
+#comment-url {
+	font-size : 14px;
+	padding : 3px;
+	width : 350px;
+	}
+</style>
+
+
+<!-- comment form -->
+<div id="atp-comments">
+	<div id="comment-preview" class="hiddenBox">
+		<h3 id="header-verify-comment" class="comments-header hiddenBox">Verify your Comment</h3>
+		<h3 id="header-preview-comment" class="comments-header hiddenBox">Previewing your Comment</h3>
+		<div class="comments-content">
+			<div class="comment">
+				<div id="comment-preview-content" class="comment-content">
+				</div>
+				<p class="comment-footer">
+					Posted by:
+					<span id="comment-preview-author"></span>&nbsp;|&nbsp;<span id="comment-preview-datetime"></span>
+				</p>
+			</div>
+		</div>
+	</div>
+	<div id="comment-preview-confirmation" class="hiddenBox yellowBox">
+		<p>This is only a preview. Your comment has not yet been posted.</p>
+		<form id="comment-preview-form"
+			method="post"
+			onsubmit="atpComments.interceptPost(commentFormNum); return false;">
+			<input type="submit" name="post" id="comment-confirm-post" value="&nbsp;Post&nbsp;" onclick="atpComments.interceptPost(commentFormNum); return false;"/>
+			<input type="submit" name="edit" id="comment-edit" value="&nbsp;&nbsp;Edit&nbsp;&nbsp;" onclick="atpComments.previewOnly(commentFormNum, 2); return false;"/>
+			<span id="previewFormSpinner" class="hiddenBox"><img src="/.shared/images/spinner.gif" alt="Working..." /></span>
+		</form>
+	</div>
+	<div id="comment-error" class="hiddenBox redBox">
+		Your comment could not be posted. Error type: <span id="comment-error-msg"></span>
+	</div>
+	<div id="comment-complete" class="hiddenBox yellowGreenBox">
+		Your comment has been posted. <a href="javascript:void 0;" onclick="window.location.hash='#comment-form';window.location.reload(false)">Post another comment</a>
+	</div>
+	<div id="comment-captcha" class="hiddenBox yellowBox">
+		<div id="captchaText">
+			<p id="captchaFailMsg" class="captchaErrorText hiddenBox">The letters and numbers you entered did not match the image. Please try again.</p>
+			<p>As a final step before posting your comment, enter the letters and numbers you see in the image below. This prevents automated programs from posting comments.</p>
+			<p><span id="comment-captcha-viewalt">Having trouble reading this image? <a href="#comment-captcha" onClick="atpComments.generateCaptcha(commentFormNum);">View an alternate.</a></span></p>
+		</div>
+		<p class=""><img id="captchaImg" /></p>
+		<form id="comment-captcha-form"
+			method="post"
+			onsubmit="atpComments.submitWithCaptcha(commentFormNum); return false;">
+			<input type="hidden" name="captcha_chal" id="comment-captcha-chal" value="" />
+			<p>
+				<input id="comment-captcha-text" name="captcha_text" size="10" />
+			</p>
+			<p>
+				<input type="submit" name="continue" id="captcha-continue" value="&nbsp;Continue&nbsp;" />
+				<span id="captchaFormSpinner" class="commentSpinner hiddenBox"><img src="/.shared/images/spinner.gif" alt="Working..." /></span>
+			</p>
+		</form>
+	</div>
+	<div id="primary-comment-form" class="comment-form">
+		<form id="comment-form"
+			method="post">
+			<input type="hidden" name="entry_xid" id="comment-entry-xid" value="6a0120a85dcdae970b0120a86dd42e970b" />
+			<div class="comments-open">
+				<h2 class="comments-open-header" id="comment-title">Post a comment</h2>
+				<div id="comments-open-content" class="comments-open-content">
+					
+
+					
+						<p id="comments-open-login" style="display: none;">
+							
+								To comment, please <a href="https://www.typekey.com/t/typekey/login?v=1.0&t=69209c2581a604941f2f4cc8ecf71ba63b38036d&lang=en_US&_return=http%3A%2F%2Fwww.codinghorror.com%2Fblog%2F2008%2F04%2Fsetting-up-subversion-on-windows.html&_portal=typepad">sign in</a> using TypePad, Twitter, Facebook or OpenID.
+							
+							
+						</p>
+
+						<p id="comments-open-logout" style="display: none;">
+							You are currently signed in as
+							<span id="commenter-name">(nobody)</span>.
+							<a href="http://www.codinghorror.com/.services/sitelogout?to=https%3A%2F%2Fwww.typekey.com%2Ft%2Ftypekey%2F%3F__mode%3Dlogout%26_return%3Dhttp%253A%252F%252Fwww.codinghorror.com%252Fblog%252F2008%252F04%252Fsetting-up-subversion-on-windows.html">Sign Out</a>
+						</p>
+					
+						<div id="comments-open-text" style="display:none;">
+							<textarea id="comment-text" name="text" rows="10" cols="30" onkeyup="atpComments.maxTextArea(this, 64000);"></textarea>
+							<p class="comments-open-subtext">
+								(You can use HTML tags like &lt;b&gt; &lt;i&gt; and &lt;ul&gt; to style your text.URLs automatically linked.)
+							</p>
+						</div>
+						<div id="comments-open-data" style="display:none;">
+							<p>Your Information</p>
+							<p>
+							
+								(Name is required. Email address will not be displayed with the comment.)
+							
+							
+							</p>
+							<p>
+								<input id="comment-author" at:default="Name" name="author" size="30" value="Name" onfocus="if(this.value==this.getAttribute('at:default')) this.value='';"  onBlur="if(this.value=='') this.value=this.getAttribute('at:default');" class="grayText"/>
+								<label for="comment-author" id="comment-author-error" class="comment-error hiddenBox">Name is required to post a comment</label>
+							</p>
+							<p>
+								<input id="comment-email" at:default="Email Address" name="email" size="30" value="Email Address" onfocus="if(this.value==this.getAttribute('at:default')) this.value='';"  onBlur="if(this.value=='') this.value=this.getAttribute('at:default');" class="grayText"/>
+								<label for="comment-email" id="comment-email-error" class="comment-error hiddenBox">Please enter a valid email address</label>
+							</p>
+							<p>
+								<input id="comment-url" at:default="Web Site URL" name="url" size="30" value="Web Site URL" onfocus="if(this.value==this.getAttribute('at:default')) this.value='';"  onBlur="if(this.value=='') this.value=this.getAttribute('at:default');" class="grayText"/>
+								<label for="comment-url" id="comment-url-error" class="comment-error hiddenBox">Invalid URL</label>
+							</p>
+						</div>
+				</div>
+				<div id="comments-open-footer" class="comments-open-footer" style="display:none;">
+					<input type="submit" name="post" id="comment-post-button" value="&nbsp;Post&nbsp;" onclick="atpComments.interceptPost(commentFormNum); return false;" disabled="true" />
+					<input type="submit" name="preview" id="comment-preview-button" value="&nbsp;Preview&nbsp;" onclick="atpComments.previewOnly(commentFormNum, 1); return false;" disabled="true" />
+					<span id="commentEntryFormSpinner" class="commentSpinner hiddenBox"><img src="/.shared/images/spinner.gif" alt="Working..." /></span>
+				</div>
+			</div>
+		</form>
+		<noscript>
+			
+			<p>This weblog only allows comments from registered TypeKey users. To comment, please enable JavaScript so you can sign into TypeKey.</p>
+			
+			
+		</noscript>
+	</div>
+</div>
+
+
+
+
+
+
+
+
+</div> 
+ 
+<table width="100%"> 
+<tr> 
+<td align="left" width=50> 
+</td> 
+<td align="right" width="*"><span style="font-size:70%">Content (c) 2009 <A href="http://www.codinghorror.com/blog/archives/000021.html">Jeff Atwood</A>. Logo image used with permission of the author. (c) 1993 Steven C. McConnell. All Rights Reserved.</span></td></tr> 
+</table> 
+ 
+</div> 
+
+<div id="links"> 
+ 
+
+
+<div class="sidetitle">Newer &raquo;</div>
+<div class="side">
+<a href="http://www.codinghorror.com/blog/2008/04/help-name-our-website.html">Help Name Our Website</a>
+</div>
+
+
+
+<div class="sidetitle">&laquo; Older</div> 
+<div class="side">
+<a href="http://www.codinghorror.com/blog/2008/04/mousing-surface-theory.html">Mousing Surface Theory</a>
+</div> 
+
+ 
+<p></p> 
+<p></p> 
+<p></p> 
+<div class="side"> 
+<a href="http://www.codinghorror.com/blog/">Home</a> 
+<p></p> 
+<p></p> 
+<a href="http://www.codinghorror.com/blog/archives.html">Browse All Posts</a> 
+<p></p> 
+<p></p> 
+<p></p> 
+
+ 
+
+<div class="welovecodinghorror"> 
+[ad] <a href="http://www.red-gate.com/products/ants_performance_profiler/version_6_new_features.htm?utm_source=codinghorr&utm_medium=textad&utm_term=4396&utm_content=app6release&utm_campaign=antsperformanceprofiler" rel="nofollow">NEW: ANTS Performance Profiler 6</a> &hellip; Attach to running process&hellip; SQL profiling&hellip; Command-line profiling&hellip; Silverlight profiling&hellip;  <a href="http://www.red-gate.com/products/ants_performance_profiler/version_6_new_features.htm?utm_source=codinghorr&utm_medium=textad&utm_term=4396&utm_content=app6release&utm_campaign=antsperformanceprofiler" rel="nofollow">Find out more</a>.
+</div> 
+ 
+<div class="welovecodinghorror"> 
+[ad] Tired of endless code review emails? Ditch the emails - try peer code review with <a href="http://codecollab.com/" rel="nofollow">Code Collaborator</a>. Also learn tips and tricks with <a href="http://www.codereviewbook.com/?howheard=Coding+Horror" rel="nofollow">this free book</a>.
+</div> 
+ 
+<div class="welovecodinghorror"> 
+[ad] You've maxed out your machine. Now upgrade your career. <a href="http://careers.stackoverflow.com/">Stack Overflow Careers</a> helps the world's top developers get noticed by the world's top employers.
+</div>
+
+<!-- [ad] Got a cool product for developers? Advertise it on Coding Horror! mailto:jatwood@codinghorror.com?subject=Advertising Contact me for rates. --> 
+
+
+<p></p>
+
+<a href="http://stackexchange.com">
+<img src="http://stackexchange.com/users/flair/febfb8783f6f4215932346d15d62ac7d.png" width="208" height="58" alt="profile for Jeff Atwood on Stack Exchange, a network of free, community-driven Q&A sites" title="profile for Jeff Atwood on Stack Exchange, a network of free, community-driven Q&A sites">
+</a>
+
+<p></p>
+
+<div class="sidetitle">Resources</div> 
+<div class="side"> 
+<b><a href="/blog/2004/02/recommended-reading-for-developers.html">Recommended Reading</a></b><br /> 
+<b><a href="http://stackoverflow.com">stackoverflow.com</a></b><br/> 
+<b><a href="http://serverfault.com">serverfault.com</a></b><br/> 
+<b><a href="http://superuser.com">superuser.com</a></b><br/> 
+<img src="/favicon.ico" width="16" height="16" style="vertical-align:middle;border:0">&nbsp;&nbsp;<a href="/blog/2004/02/about-me.html">About Me</a> 
+</div> 
+
+
+
+
+
+<div class="syndicate"> 
+<img src="http://feeds.feedburner.com/~fc/codinghorror?bg=EEEEEE&amp;fg=111111&amp;anim=0" height="26" width="88" style="border:0" alt="Count of RSS readers" /> 
+<br/> 
+<a href="http://my.statcounter.com/project/standard/stats.php?project_id=2600027&guest=1">Traffic Stats</a> 
+<br/> 
+<br/> 
+<a href="http://feeds.feedburner.com/codinghorror" rel="alternate" type="application/rss+xml"><img src="http://www.feedburner.com/fb/images/pub/feed-icon16x16.png" width=16 height=16 alt="" style="vertical-align:middle;border:0"/>&nbsp;Subscribe in a reader</a> 
+<br/> 
+<a href="http://www.feedburner.com/fb/a/emailverifySubmit?feedId=74729"><img src="/blog/images/mail.png" width=16 height=16 alt="" style="vertical-align:middle;border:0"/>&nbsp;Subscribe via email</a> 
+</div> 
+
+
+
+</div> 
+</div> 
+ 
+<script> 
+x=window.document.getElementsByTagName('div'); for(var i = 0; i < x.length; i++) { if (x[i].className == "comments-body") { if (x[i].innerHTML.search(/jeff atwood<\/a>/i) != -1) { x[i].style.backgroundColor = "#FFECC7"; } } }
+</script> 
+ 
+<script type="text/javascript" language="javascript"> 
+var sc_project=2600027; 
+var sc_invisible=0; 
+var sc_partition=25; 
+var sc_security="dcff5548"; 
+</script> 
+ 
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script> 
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img  src="http://c26.statcounter.com/counter.php?sc_project=2600027&java=0&security=dcff5548&invisible=0" alt="web metrics" border="0"></a> </noscript> 
+ 
+<!-- Start Quantcast tag -->
+<script type="text/javascript" src="http://edge.quantserve.com/quant.js"></script>
+<script type="text/javascript">_qoptions = { tags:"typepad.extended" }; _qacct="p-fcYWUmj5YbYKM"; quantserve();</script>
+<noscript>
+<a href="http://www.quantcast.com/p-fcYWUmj5YbYKM" target="_blank"><img src="http://pixel.quantserve.com/pixel/p-fcYWUmj5YbYKM.gif?tags=typepad.extended" style="display: none" border="0" height="1" width="1" alt="Quantcast"/></a>
+</noscript>
+<!-- End Quantcast tag -->
+</body> 
+</html>
+
+<script type="text/javascript">
+var captchaImgAttempts = 0;
+var allowAnonComments = '0';
+var registrationRequired = 1;
+var registrationOptional = 0;
+var emailRequired = 0;
+var useAvatars = 0;
+
+var showSignInMessaging = 0;
+var jsonURL = "/.services/json-rpc";
+
+var captchaSrc = "/.services/captcha?code_encrypted=";
+var alertCommentCannotBeBlank = "You can not leave an empty comment. Please enter some text in the Comment field.";
+var alertEditingExpired = "Sorry, you're no longer allowed to edit this comment. You may have taken too much time before submitting your edit or someone may have already replied to it.";
+
+var alertAuthorCannotBeBlank = "Name must not be blank.";
+var alertEmailCannotBeBlank = "Email Address must not be blank.";
+var alertAuthorAndEmailCannotBeBlank = "Name and email address are both required!";
+var alertEmailIsInvalid = "The Email Address you entered is invalid. Please enter a valid email address.";
+var alertUnauthorizedAction = "The comments on this post are closed.";
+var msgPostReplyTo = "Reply to ";  
+var msgInReplyTo = "In reply to ";
+var msgPostAComment = "Post a comment ";
+var atpCommentsPath = "/.shared/js/atpcomments_yui.js?v=5";
+var hasChanged = 0;
+var hostName = ".codinghorror.com";
+var tp_comment_token = "1292855600-0d7a1bcb641c71586666c47df2a706b1aff4d388:qE9Q8bVG6wlBw6pU";
+
+var isPage = 0;
+var blog_xid = "6a0120a85dcdae970b0128776faab5970c";
+var xid = "";
+var injectCode = '<div id=\"comment-preview\" class=\"hiddenBox\">\n\t<h3 id=\"header-verify-comment\" class=\"comments-header hiddenBox\">Verify your Comment<\/h3>\n    <h3 id=\"header-preview-comment\" class=\"comments-header hiddenBox\">Previewing your Comment<\/h3>\n\t<div class=\"comments-content\">\n\t\t<div class=\"comment\">\n\t\t\t<div id=\"comment-preview-content\" class=\"comment-content\">\n\t\t\t<\/div>\n\t\t\t<p class=\"comment-footer\">\n\t\t\t\tPosted by: \n\t\t\t\t<span id=\"comment-preview-author\"><\/span>&nbsp;|&nbsp;<span id=\"comment-preview-datetime\"><\/span>\n\t\t\t<\/p>\n\t\t<\/div>\n\t<\/div>\n<\/div>\n<div id=\"comment-preview-confirmation\" class=\"hiddenBox yellowBox\">\n    <p>This is only a preview. Your comment has not yet been posted.<\/p>\n   \t<form id=\"comment-preview-form\"\n   \t\tmethod=\"post\"\n   \t\tonsubmit=\"atpComments.interceptPost(); return false;\">\n\t\t<input type=\"submit\" name=\"post\" id=\"comment-confirm-post\" value=\"&nbsp;Post&nbsp;\" onclick=\"atpComments.interceptPost(); return false;\"/>\t\t    \n\t\t<input type=\"submit\" name=\"edit\" id=\"comment-edit\" value=\"&nbsp;&nbsp;Edit&nbsp;&nbsp;\" onclick=\"atpComments.previewOnly(2); return false;\"/>\n        <span id=\"previewFormSpinner\" class=\"hiddenBox\"><img src=\"/.shared/images/spinner.gif\" alt=\"Working...\" /><\/span>\n\t<\/form>\n<\/div>\n<div id=\"comment-error\" class=\"hiddenBox redBox\">\t    \n   Your comment could not be posted. Error type: <span id=\"comment-error-msg\"><\/span> \n<\/div>\t\n<div id=\"comment-complete\" class=\"hiddenBox yellowGreenBox\">\n    Your comment has been posted. <a href=\"javascript:void 0;\" onclick=\"window.location.hash=\'#comment-form\';window.location.reload(false)\">Post another comment<\/a>\n<\/div>\t\n<div id=\"comment-captcha\" class=\"hiddenBox yellowBox\">\t\n    <div id=\"captchaText\">\n\t    <p id=\"captchaFailMsg\" class=\"captchaErrorText hiddenBox\">The letters and numbers you entered did not match the image. Please try again.<\/p>\t    \t        \n\t    <p>As a final step before posting your comment, enter the letters and numbers you see in the image below. This prevents automated programs from posting comments.<\/p>\n\t    <p><span id=\"comment-captcha-viewalt\">Having trouble reading this image? <a href=\"#comment-captcha\" onClick=\"atpComments.generateCaptcha();\">View an alternate.<\/a><\/span><\/p>\n    <\/div>\n    <p class=\"\"><img id=\"captchaImg\" /><\/p>\t\t\n    <form id=\"comment-captcha-form\" \n\t\t  method=\"post\"\n\t\t  onsubmit=\"atpComments.submitWithCaptcha(); return false;\">\n\t\t<input type=\"hidden\" name=\"captcha_chal\" id=\"comment-captcha-chal\" value=\"\" />\n        <p>\n\t        <input id=\"comment-captcha-text\" name=\"captcha_text\" size=\"10\" />\n        <\/p>\n        <p>\n            <input type=\"submit\" name=\"continue\" id=\"captcha-continue\" value=\"&nbsp;Continue&nbsp;\" />\n            <span id=\"captchaFormSpinner\" class=\"commentSpinner hiddenBox\"><img src=\"/.shared/images/spinner.gif\" alt=\"Working...\" /><\/span>\n        <\/p>\n    <\/form>\n<\/div>\n'; 
+var entryPermalink = "http://www.codinghorror.com/blog/2008/04/setting-up-subversion-on-windows.html";
+var inlineReply = document.createElement("div");
+var commentFooterLinks;
+var commentHeader;
+var commentReplyXID;
+var commentReplyAuthor;
+var commentReplyComplete;
+var inlineReplyLoaded = 0;
+var commentFormNum = undefined; /* Deprecated but still exists in advanced template sets, so must be defined */
+
+function xidToCommentPermalink (entryUrl, xid) {
+    return entryUrl + "?cid=" + xid + "#comment-" + xid;
+}
+
+
+/* Deprecated advanced template functions */
+function handleSubmit() { return true; };
+function handleChange() { return true; };
+</script>
+<script type="text/javascript" src="/.shared/js/yui/yuiloader-beta-min.js"></script>
+<script type="text/javascript" src="/.shared/js/atpcomments.js?v=5"></script>
+
+
+
+ 
+
+<!-- Blogside Toolbar -->
+<script type="text/javascript">
+    var TPToolbar = {
+        src:   "http://www.typepad.com/services/toolbar?blog_id=6a0120a85dcdae970b0128776faab5970c&asset_id=6a0120a85dcdae970b0120a86dd42e970b&atype=Individual&to=http%3A%2F%2Fwww.codinghorror.com%2Fblog%2F2008%2F04%2Fsetting-up-subversion-on-windows.html&autofollowed=0",
+        asset_xid: "6a0120a85dcdae970b0120a86dd42e970b",
+    
+        bookmarklet_uri: "http://static.typepad.com/.shared/js/qp/loader-combined-min.js"
+    };
+    var TYPEPAD___bookmarklet_domain = "http://www.typepad.com/";
+</script>
+<script type="text/javascript" src="/.shared/js/toolbar/blogside-toolbar-combined-min.js"></script>
+<!-- End Blogside Toolbar -->
+<!-- Begin comScore Tag -->
+<script>
+document.write(unescape("%3Cscript src='" + (document.location.protocol == "https:" ? "https://sb" : "http://b") + ".scorecardresearch.com/beacon.js'%3E%3C/script%3E"));
+</script>
+<script>
+COMSCORE.beacon({
+  c1: 2,
+  c2: "6035669",
+  c3: "",
+  c4: "http://www.codinghorror.com/blog/2008/04/setting-up-subversion-on-windows.html",
+  c5: "",
+  c6: "",
+  c15: ""
+});
+</script>
+<noscript>
+  <img src="http://b.scorecardresearch.com/b?c1=2&c2=6035669&c3=&c4=http%3A%2F%2Fwww.codinghorror.com%2Fblog%2F2008%2F04%2Fsetting-up-subversion-on-windows.html&c5=&c6=&c15=&cv=1.3&cj=1" style="display:none" width="0" height="0" alt="" />
+</noscript>
+<!-- End comScore Tag -->
+<!-- ph=1 -->

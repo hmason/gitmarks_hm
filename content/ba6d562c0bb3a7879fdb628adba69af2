@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Installing Django on Leopard (Mac OS 10.5)</title>
+	<link rel="openid.server" href="http://www.myopenid.com/server">
+	<link rel="openid.delegate" href="http://robhudson.myopenid.com/">
+	<link rel="openid2.local_id" href="http://robhudson.myopenid.com">
+	<link rel="openid2.provider" href="http://www.myopenid.com/server">
+	<meta http-equiv="X-XRDS-Location" content="http://www.myopenid.com/xrds?username=robhudson.myopenid.com">
+	<link rel="stylesheet" href="http://s3.amazonaws.com/cogit8-org/css/style.min.css?v42c95ee6" type="text/css" media="screen" charset="utf-8">
+	<link rel="alternate" type="application/atom+xml" title="Atom" href="/feeds/blog/">
+</head>
+<body id="home">
+	<div id="header" class="clearfix">
+		<div class="container_12">
+			<div class="grid_4">
+				<h1><a href="/">rob.cogit8.org</a></h1>
+			</div>
+			<div class="grid_8">
+				<ul id="nav">
+					<li><a href="/blog/" class="button">Blog</a></li>
+					<li><a href="/links/" class="button">Links</a></li>
+					<li><a href="/tracks/" class="button">Music</a></li>
+					<li><a href="/photos/" class="button">Photos</a></li>
+					<li><a href="/contact/" class="button">Contact</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div id="main_content" class="clearfix">
+		<div class="container_12">
+			
+<div class="grid_8 blog">
+	<h2>Installing Django on Leopard (Mac OS 10.5)</h2>
+	<p>I wrote these step-by-step instructions for my work for our new Mac desktop machines.  I'm posting here as well in the case that they're useful...
+</p>
+
+<h2>MacPorts</h2>
+<p>Get MacPorts with the version 10.5 in it:
+</p>
+<div class="codehilite"><pre>http://svn.macosforge.org/repository/macports/downloads/MacPorts-1.5.0/MacPorts-1.5.0-10.5.dmg
+</pre></div>
+<p>Install it, and follow this command line history...
+</p>
+<p>First check if Macports has any updates...
+</p>
+<div class="codehilite"><pre><span class="nv">$ </span>sudo port selfupdate
+</pre></div>
+
+<h2>Python</h2>
+<p>Install Python 2.4 with readline support.  I chose Python 2.4 because it's the default in MacPorts when installed other libraries...
+</p>
+<div class="codehilite"><pre><span class="nv">$ </span>sudo port install readline
+<span class="nv">$ </span>sudo port install python24
+<span class="nv">$ </span>sudo port install py-readline
+</pre></div>
+<p>Now update the python symlink in your path to point to the Macports Python...
+</p>
+<div class="codehilite"><pre><span class="nv">$ </span><span class="nb">cd</span> /usr/bin
+<span class="nv">$ </span>sudo rm python <span class="c"># This is just a symlink, don&#39;t worry</span>
+<span class="nv">$ </span>sudo ln -s /opt/local/bin/python2.4 python
+</pre></div>
+
+<h2>MySQL</h2>
+<p>Next get MySQL, the server variant, and install the default databases...
+</p>
+<div class="codehilite"><pre><span class="nv">$ </span>sudo port install mysql5 +server
+<span class="nv">$ </span>sudo launchctl load -w /Library/LaunchDaemons/org.macports.mysql5.plist 
+<span class="nv">$ </span>sudo -u mysql /opt/local/bin/mysql_install_db5
+</pre></div>
+<p>With MySQL and Python installed you can now install the Python MySQL libraries.
+</p>
+<div class="codehilite"><pre><span class="nv">$ </span>sudo port install py-mysql
+</pre></div>
+
+<h2>Subversion (Optional)</h2>
+<p>Subversion is only needed if you want to get Django from the repository and update occasionally.  See the official Django documentation on <a href="http://docs.djangoproject.com/en/dev/topics/install/#install-the-django-code">How to Install Django</a> for other options.
+</p>
+<p>Subversion comes with Leopard, and you can verify you have it on your system...
+</p>
+<div class="codehilite"><pre><span class="nv">$ </span>svn --version
+</pre></div>
+<p>If for some reason the above does not work, or you require a newer version, you can optionally install subversion via MacPorts...
+</p>
+<div class="codehilite"><pre><span class="nv">$ </span>sudo port install subversion
+</pre></div>
+
+<h2>Django</h2>
+<p>I keep a sandbox directory in my home directory for anything I check out...
+</p>
+<div class="codehilite"><pre><span class="nv">$ </span>mkdir ~/sandbox
+<span class="nv">$ </span><span class="nb">cd</span> ~/sandbox
+<span class="nv">$ </span>svn co http://code.djangoproject.com/svn/django/trunk/ django_trunk
+<span class="nv">$ </span>svn co http://code.djangoproject.com/svn/django/tags/releases/1.0 django-1.0
+</pre></div>
+<p>With Django checked out we need to link it into our Python path.  I like to link it rather than installing it so I can run and test against multiple versions of Django just by updating the symlink.
+</p>
+<p>Find where our site-packages directory is:
+</p>
+<div class="codehilite"><pre><span class="go">$ python</span>
+<span class="go">Python 2.4.4 (#1, Nov¬† 9 2007, 10:35:45) </span>
+<span class="go">[GCC 4.0.1 (Apple Inc. build 5465)] on darwin</span>
+<span class="go">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">import</span> <span class="nn">sys</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span>
+<span class="go">[&#39;&#39;, &#39;/opt/local/Library/Frameworks/Python.framework/Versions/2.4/lib/python24.zip&#39;, &#39;/opt/local/Library/Frameworks/Python.framework/Versions/2.4/lib/python2.4&#39;, &#39;/opt/local/Library/Frameworks/Python.framework/Versions/2.4/lib/python2.4/plat-darwin&#39;, &#39;/opt/local/Library/Frameworks/Python.framework/Versions/2.4/lib/python2.4/plat-mac&#39;, &#39;/opt/local/Library/Frameworks/Python.framework/Versions/2.4/lib/python2.4/plat-mac/lib-scriptpackages&#39;, &#39;/opt/local/Library/Frameworks/Python.framework/Versions/2.4/lib/python2.4/lib-tk&#39;, &#39;/opt/local/Library/Frameworks/Python.framework/Versions/2.4/lib/python2.4/lib-dynload&#39;, &#39;/opt/local/Library/Frameworks/Python.framework/Versions/2.4/lib/python2.4/site-packages&#39;, &#39;/opt/local/lib/python2.4/site-packages&#39;]</span>
+</pre></div>
+<p>From here you can see the last path is our site-packages path.   So we go there and symlink our checked-out version of Django in.  By changing this symlink you can effectively test on multiple versions of Django. We'll be symlinking version 1.0...
+</p>
+<div class="codehilite"><pre><span class="nv">$ </span><span class="nb">cd</span> /opt/local/lib/python2.4/site-packages
+<span class="nv">$ </span>sudo ln -s ~/sandbox/django-1.0/django django
+<span class="nv">$ </span>sudo ln -s ~/sandbox/django-1.0/django/bin/django-admin.py /opt/local/bin/django-admin.py
+</pre></div>
+<p>I often use Textile or Markdown so we can install those as well...
+</p>
+<div class="codehilite"><pre><span class="nv">$ </span>sudo port install py-setuptools
+<span class="nv">$ </span>sudo port install py-textile
+<span class="nv">$ </span>sudo port install py-markdown
+</pre></div>
+<p>That's it! You're now set up for Django. Go code.
+</p>
+
+<h2>Updates</h2>
+<ul>
+ <li>
+     Dec 11, 2007: Added symlink to django-admin.py to the path.
+ </li>
+
+ <li>
+     Feb 6, 2008: Updated to include building readline which may have caused some Python bus errors, as reported in the comments on this <a href="http://www.lovelysystems.com/batlogg/2007/11/16/getting-the-lovely-zope-environment-python-postgresql-mysql-working-on-leopard/">blog post</a>.  Building readline before Python has cleared up bus errors we were seeing on our Leopard development machines.
+ </li>
+
+ <li>
+     Oct 25, 2008: Updated to remove the py-mysql driver bug which is now fixed.
+ </li>
+
+ <li>
+     Oct 30, 2008: Updated to note that Subversion is optional (both in terms of installing it and in terms of getting Django installed).  Also updated to <code>svn co</code> the 1.0 version.
+ </li>
+</ul>
+</div>
+<div class="grid_3 prefix_1">
+	<h2>About this entry</h2><p><span class="key">Date Posted:</span><br>
+		November 14th 2007 at 3:11:00 PM
+	</p><p><span class="key">Tagged:</span><br><a href="/tag/django/">django</a>, 
+		
+			<a href="/tag/mac os x/">mac os x</a></p><p><span class="key">Previous Entry:</span><br><a href="/blog/2007/Sep/17/django-development-using-git/">Django Development Using git</a></p><p><span class="key">Next Entry:</span><br><a href="/blog/2007/Dec/10/django-week-review-dec3-dec92007/">Django Week in Review,  Dec 3 - Dec 9, 2007</a></p>
+</div>
+
+		</div>
+	</div>
+	
+	<div id="comments" class="clearfix">
+		<div class="container_12">
+			<div class="grid_12">
+				<h2>Comments</h2>
+				<div id="disqus_thread"></div>
+				<script type="text/javascript" src="http://disqus.com/forums/cogit8/embed.js"></script>
+				<noscript>
+					<a href="http://cogit8.disqus.com/?url=ref">View the forum thread.</a>
+				</noscript>
+				<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+			</div>
+		</div>
+	</div>
+
+	<div id="footer" class="clearfix">
+		<div class="container_12">
+			<div class="grid_4">
+				<p>
+					<strong>My name is Rob Hudson</strong>.  I am a web developer in Eugene, OR, and 
+					I develop using Python, Django, and other tools that provide for rapid development,
+					fast iterations, and beautiful software architecture.  This is my personal website.
+				</p>
+			</div>
+			<div class="grid_4">
+				<p>
+					This website is a collection of <a href="/blog/">Blog Entries</a> plus items from 
+					other sites such as 
+					<a rel="me nofollow" href="http://delicious.com/robhudson">Delicious</a>,
+					<a rel="me nofollow" href="http://www.flickr.com/photos/95363333@N00/">Flickr</a>,
+					and <a rel="me nofollow" href="http://www.last.fm/user/robhudson/">Last.fm</a>.
+					Check out the <a href="/blog/archive/">blog entry archive</a> or the <a href="/feeds/">list of feeds</a> available.
+				</p>
+			</div>
+			<div class="grid_4">
+				<ul>
+					<li><a rel="me nofollow" href="http://www.linkedin.com/in/robhudson">LinkedIn</a></li>
+					<li><a rel="me nofollow" href="http://www.twitter.com/robhudson">Twitter</a></li>
+					<li><a rel="me nofollow" href="http://djangopeople.net/robhudson/">DjangoPeople</a></li>
+					<li><a rel="me nofollow" href="http://97bottles.com/people/robhudson/">97bottles</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-4955974-2']);
+	  _gaq.push(['_trackPageview']);
+	  (function() {
+	    var ga = document.createElement('script');
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    ga.setAttribute('async', 'true');
+	    document.documentElement.firstChild.appendChild(ga);
+	  })();
+	</script>
+
+</body>
+</html>

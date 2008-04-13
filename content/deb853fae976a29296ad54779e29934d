@@ -1,0 +1,490 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html dir="ltr" xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://www.google.com/2005/gml/b" xmlns:data="http://www.google.com/2005/gml/data" xmlns:expr="http://www.google.com/2005/gml/expr">
+<head>
+
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+<link href='http://feeds2.feedburner.com/nihilogic' rel='alternate' title='Nihilogic - Main blog' type='application/rss+xml'/>
+<link href='http://feeds2.feedburner.com/nihilogic_games' rel='alternate' title='JavaScript Gaming' type='application/rss+xml'/>
+<link href='http://feeds2.feedburner.com/nihilogic_links' rel='alternate' title='Nihilogic - Links' type='application/rss+xml'/>
+
+<link href="/blog/styles_common.css" rel="stylesheet" type="text/css">
+<link href="/blog/styles_labs.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-3940914-2";
+</script>
+<script type="text/javascript" src="http://www.google-analytics.com/ga.js"></script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-3940914-2");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+
+
+<link href='/labs/external/SyntaxHighlighter/Styles/SyntaxHighlighter.css' rel='stylesheet' type='text/css'/>
+<script src='/labs/external/SyntaxHighlighter/Scripts/syntax.js' type='text/javascript'></script>
+
+
+
+<meta name="description" content="A small JavaScript library that lets you save a HTML5 Canvas element as an image file. Formats supported are PNG, BMP and JPEG.">
+
+<script src="base64.js" type="text/javascript"></script>
+<script src="canvas2image.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+
+// setup our test canvas
+// and a simple drawing function
+window.onload = function() {
+
+	var bMouseIsDown = false;
+	
+	var oCanvas = document.getElementById("thecanvas");
+	var oCtx = oCanvas.getContext("2d");
+
+	var iWidth = oCanvas.width;
+	var iHeight = oCanvas.height;
+
+	oCtx.fillStyle = "rgb(255,255,255)";
+	oCtx.fillRect(0,0,iWidth,iHeight);
+
+	oCtx.fillStyle = "rgb(255,0,0)";
+	oCtx.fillRect(20,20,30,30);
+
+	oCtx.fillStyle = "rgb(0,255,0)";
+	oCtx.fillRect(60,60,30,30);
+
+	oCtx.fillStyle = "rgb(0,0,255)";
+	oCtx.fillRect(100,100,30,30);
+
+	oCtx.beginPath();
+	oCtx.strokeStyle = "rgb(255,0,255)";
+	oCtx.strokeWidth = "4px";
+
+	oCanvas.onmousedown = function(e) {
+		bMouseIsDown = true;
+		iLastX = e.clientX - oCanvas.offsetLeft + (window.pageXOffset||document.body.scrollLeft||document.documentElement.scrollLeft);
+		iLastY = e.clientY - oCanvas.offsetTop + (window.pageYOffset||document.body.scrollTop||document.documentElement.scrollTop);
+	}
+	oCanvas.onmouseup = function() {
+		bMouseIsDown = false;
+		iLastX = -1;
+		iLastY = -1;
+	}
+	oCanvas.onmousemove = function(e) {
+		if (bMouseIsDown) {
+			var iX = e.clientX - oCanvas.offsetLeft + (window.pageXOffset||document.body.scrollLeft||document.documentElement.scrollLeft);
+			var iY = e.clientY - oCanvas.offsetTop + (window.pageYOffset||document.body.scrollTop||document.documentElement.scrollTop);
+			oCtx.moveTo(iLastX, iLastY);
+			oCtx.lineTo(iX, iY);
+			oCtx.stroke();
+			iLastX = iX;
+			iLastY = iY;
+		}
+	}
+
+	function showDownloadText() {
+		document.getElementById("buttoncontainer").style.display = "none";
+		document.getElementById("textdownload").style.display = "block";
+	}
+
+	function hideDownloadText() {
+		document.getElementById("buttoncontainer").style.display = "block";
+		document.getElementById("textdownload").style.display = "none";
+	}
+
+	function convertCanvas(strType) {
+		if (strType == "PNG")
+			var oImg = Canvas2Image.saveAsPNG(oCanvas, true);
+		if (strType == "BMP")
+			var oImg = Canvas2Image.saveAsBMP(oCanvas, true);
+		if (strType == "JPEG")
+			var oImg = Canvas2Image.saveAsJPEG(oCanvas, true);
+
+		if (!oImg) {
+			alert("Sorry, this browser is not capable of saving " + strType + " files!");
+			return false;
+		}
+
+		oImg.id = "canvasimage";
+
+		oImg.style.border = oCanvas.style.border;
+		oCanvas.parentNode.replaceChild(oImg, oCanvas);
+
+		showDownloadText();
+	}
+
+	function saveCanvas(pCanvas, strType) {
+		var bRes = false;
+		if (strType == "PNG")
+			bRes = Canvas2Image.saveAsPNG(oCanvas);
+		if (strType == "BMP")
+			bRes = Canvas2Image.saveAsBMP(oCanvas);
+		if (strType == "JPEG")
+			bRes = Canvas2Image.saveAsJPEG(oCanvas);
+
+		if (!bRes) {
+			alert("Sorry, this browser is not capable of saving " + strType + " files!");
+			return false;
+		}
+	}
+
+	document.getElementById("savepngbtn").onclick = function() {
+		saveCanvas(oCanvas, "PNG");
+	}
+	document.getElementById("savebmpbtn").onclick = function() {
+		saveCanvas(oCanvas, "BMP");
+	}
+	document.getElementById("savejpegbtn").onclick = function() {
+		saveCanvas(oCanvas, "JPEG");
+	}
+
+	document.getElementById("convertpngbtn").onclick = function() {
+		convertCanvas("PNG");
+	}
+	document.getElementById("convertbmpbtn").onclick = function() {
+		convertCanvas("BMP");
+	}
+	document.getElementById("convertjpegbtn").onclick = function() {
+		convertCanvas("JPEG");
+	}
+
+	document.getElementById("resetbtn").onclick = function() {
+		var oImg = document.getElementById("canvasimage");
+		oImg.parentNode.replaceChild(oCanvas, oImg);
+
+		hideDownloadText();
+	}
+
+}
+</script>
+
+
+<title>Nihilogic : Canvas2Image : Saving Canvas data to image file</title>
+
+<style>
+
+#cse-search-box input[type="submit"] {
+  font-family : Trebuchet MS, sans-serif;
+  background-color: #20282A; color: #d1d1d1; font-weight:bold; border: 1px solid #747E7F;
+}
+
+#cse-search-box input[type="text"] {
+  font-family : Trebuchet MS, sans-serif;
+  height : 16px;
+  position : relative;
+  top : 1px;
+}
+
+</style>
+
+</head><body>
+
+<div id="outer-wrapper">
+
+  <div id="wrap2">
+    <div id="header-wrapper">
+      <div class="header section" id="header">
+        <div class="widget Header" id="Header1">
+          <div id="header-inner">
+
+
+<div id='search-div'>
+<!--
+<form action='/search' id='searchthis' method='get' style='display:inline; align: right;'>
+<input id='search-box' name='q' onfocus='javascript:document.getElementById("search-box").value="";' size='25' style='background-color: #20282a; color: #f1f1f1; border: 1px solid #747E7F; padding: 1px;' type='text' value='Search...'/>
+<input id='search-btn' style='background-color: #20282A; color: #d1d1d1; font-weight:bold; border: 1px solid #747E7F;/' type='submit' value='>>'/>
+</form>
+-->
+
+
+
+<form action="http://www.nihilogic.dk/search/" id="cse-search-box">
+  <div>
+    <input type="hidden" name="cx" value="partner-pub-1046056391772134:td1iby-dodc" />
+    <input type="hidden" name="cof" value="FORID:10" />
+    <input type="hidden" name="ie" value="ISO-8859-1" />
+    <input type="text" name="q" size="24" />
+    <input type="submit" name="sa" value="Search" />
+  </div>
+</form>
+<script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=cse-search-box&amp;lang=en"></script> 
+
+</div>
+
+<div class='titlewrapper'>
+<span class='title'>
+<a href='http://blog.nihilogic.dk/'>
+<img alt='Nihilogic header image' id='header-title-image' src='/blog/header_title_labs.png'/>
+</a>
+</span>
+</div>
+
+
+<div class='descriptionwrapper'>
+	<div class='description'>
+		<span class='title-subtitle'>
+			Quietly messing up the intertubes
+		</span>
+		<div class='topmenuwrapper'>
+			<span class='topmenuitem'>
+				<a class='topmenulink' href='http://blog.nihilogic.dk/' title='Blog'>Blog</a>
+			</span>
+			<span class='topmenuitem'>
+				<a class='topmenulink' href='http://www.javascriptgaming.com/' title='JavaScript Web Games'>Games</a>
+			</span>
+			<span class='topmenuitem'>
+				<a class='topmenulink' href='http://www.nihilogic.dk/labs/' title='JavaScript/Canvas/DHTML experiments'>Labs</a>
+			</span>
+			<span class='topmenuitem'>
+				<a class='topmenulink' href='http://blog.nihilogic.dk/2000/01/archive.html' title='Archive of previous posts'>Archive</a>
+			</span>
+			<span class='topmenuitem'>
+				<a class='topmenulink' href='http://blog.nihilogic.dk/2000/01/about.html' title='About me and this blog'>About</a>
+			</span>
+			<span class='topmenuitem'>
+				<a class='topmenulink' href='http://blog.nihilogic.dk/2000/01/subscribe.html' title='Subscribe to feeds'><img src='http://www.nihilogic.dk/blog/feed-icon16x16.png' style='float:left;margin-left:5px;margin-right:-5px;'/>Subscribe</a>
+			</span>
+		</div>
+	</div>
+</div>
+
+
+
+          </div>
+        </div> 
+
+      </div>
+    </div>
+    <div id="content-wrapper">
+
+      <div id="main-wrapper">
+
+
+<div style="float:right;width:250px;height:600px;margin-top:25px;margin-right:-5px;text-align:center;">
+<!--
+<a href='http://www.cipix.nl/#pagina=1203' rel='nofollow' target='_blank'><img src='http://www.nihilogic.dk/blog/ads/banner_vacature.gif' style='margin-top:5px;'/></a>
+<br/><br/>
+-->
+<script type="text/javascript"><!--
+google_ad_client = "pub-1046056391772134";
+/* Labs - right sidebar, 200x200, created 5/13/09 */
+google_ad_slot = "9964579052";
+google_ad_width = 200;
+google_ad_height = 200;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+<div style="width:125px;display:inline-block;margin-top:10px;text-align:center;">
+
+<script type="text/javascript">
+Vertical1239056 = false;
+ShowAdHereBanner1239056 = false;
+RepeatAll1239056 = false;
+NoFollowAll1239056 = false;
+BannerStyles1239056 = new Array(
+    "a{display:block;font-size:11px;color:#888;font-family:verdana,sans-serif;margin:0 4px 10px 0;text-align:center;text-decoration:none;overflow:hidden;}",
+    "img{border:0;clear:right;}",
+    "a.adhere{color:#666;font-weight:bold;font-size:12px;border:1px solid #ccc;background:#e7e7e7;text-align:center;}",
+    "a.adhere:hover{border:1px solid #999;background:#ddd;color:#333;}"
+);
+document.write(unescape("%3Cscript src='"+document.location.protocol+"//s3.buysellads.com/1239056/1239056.js?v="+Date.parse(new Date())+"' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</div>
+
+<br/>
+<br/>
+<div style="text-align:center;color:#f1f1f1;font-size:90%;">
+Hosting by<br/>
+<a href="http://www.knownhost.com/affiliate/idevaffiliate.php?id=445">KnownHost</a>
+</div>
+
+</div>
+
+
+        <div class="main section" id="main" style="width:670px;overflow:visible;">
+
+
+          <div class="widget Blog" id="Blog1" style="width:670px;">
+            <div class="blog-posts hfeed">
+              <div class="post hentry uncustomized-post-template">
+                <h3 class="post-title entry-title">
+                  Canvas2Image : Saving Canvas data to image file                </h3>
+                <div class="post-body entry-content">
+
+<!-- google_ad_section_start -->
+
+
+
+Comments? <a href="http://blog.nihilogic.dk/2008/04/saving-canvas-data-to-image-file.html">Visit the blog</a>
+<br/><br/>
+<div class="textblob">
+This is a small library that lets you easily save a HTML5 canvas element as an imagefile.<br/>
+Files needed: <a href="canvas2image.js">canvas2image.js</a>, <a href="base64.js">base64.js</a><br/>
+<br/>
+Draw on the canvas with the pretty boxes below using the mouse, then click the "Convert" buttons to convert it to a downloadable image - or the "Save" buttons to download the image file directly.
+</div>
+<br/>
+
+<canvas width="200" height="200" style="border:1px solid black;" id="thecanvas"></canvas>
+
+<br/><br/>
+<div id="textdownload" style="display:none;font-style:italic;">Now you can right click and download the image<br/>
+<input type="button" id="resetbtn" value="Reset">
+</div>
+
+<div id="buttoncontainer" style="display:block;">
+<input type="button" id="savepngbtn" value="Save PNG">
+<input type="button" id="convertpngbtn" value="Convert to PNG">
+<br/>
+<input type="button" id="savebmpbtn" value="Save BMP">
+<input type="button" id="convertbmpbtn" value="Convert to BMP">
+<br/>
+<input type="button" id="savejpegbtn" value="Save JPEG">
+<input type="button" id="convertjpegbtn" value="Convert to JPEG">
+
+</div>
+<br/>
+<div class="textblob">
+Using the HTML5 canvas element, you can create all sorts of cool graphics client-side on the fly using Javascript.
+However, the canvas image cannot (in all browsers) simply be saved to disk as any other image.
+<br/>
+Luckily there is a neat function on the the canvas object called toDataURL().
+This functions encodes the image data as a base64 encoded PNG file and returns 
+it as a <a href="http://en.wikipedia.org/wiki/Data:_URI_scheme" target="_blank">data: URI</a>.
+<br/>
+
+<pre name="code" class="javascript">
+var strDataURI = oCanvas.toDataURL();
+// returns "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACt..."
+</pre>
+
+Other formats than PNG are supported by some browsers by adding an argument to the toDataURL() call containing the mime type of the format you want.
+
+<pre name="code" class="javascript">
+var strDataURI = oCanvas.toDataURL("image/jpeg");
+// returns "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAA..."
+</pre>
+
+It looks like Opera and Safari only supports PNG, while Firefox supports at least PNG and JPEG.<br/>
+<br/>
+Now, Using that data string, we can stick it in an &lt;img&gt; element or we can serve it directly to the 
+browser and force it to download the image by replacing the mimetype.
+<br/>
+That is basically what this little library does. The following functions are provided:
+<pre name="code" class="javascript">
+
+/*
+ * Canvas2Image.saveAsXXXX = function(oCanvasElement, bReturnImgElement, iWidth, iHeight) { ... }
+ */
+
+var oCanvas = document.getElementById("thecanvas");
+
+Canvas2Image.saveAsPNG(oCanvas);  // will prompt the user to save the image as PNG.
+
+Canvas2Image.saveAsJPEG(oCanvas); // will prompt the user to save the image as JPEG. 
+                                  // Only supported by Firefox.
+
+Canvas2Image.saveAsBMP(oCanvas);  // will prompt the user to save the image as BMP.
+
+
+// returns an <img> element containing the converted PNG image
+var oImgPNG = Canvas2Image.saveAsPNG(oCanvas, true);   
+
+// returns an <img> element containing the converted JPEG image (Only supported by Firefox)
+var oImgJPEG = Canvas2Image.saveAsJPEG(oCanvas, true); 
+                                                       
+// returns an <img> element containing the converted BMP image
+var oImgBMP = Canvas2Image.saveAsBMP(oCanvas, true); 
+
+
+// all the functions also takes width and height arguments. 
+// These can be used to scale the resulting image:
+
+// saves a PNG image scaled to 100x100
+Canvas2Image.saveAsPNG(oCanvas, false, 100, 100);
+
+</pre>
+
+So, you may have noticed the saveAsBMP function. Since BMP is not supported by any of the browsers (and I felt like wasting an afternoon), 
+BMP support has been added by utilizing the getImageData() method, which enabled us to read raw pixel data from the canvas.<br/>
+<br/>
+Using this data, we can set up a BMP file structure (which is really simple compared to most other image formats), base64 encode everything and create our own data: URI.
+<br/><br/>
+The getImageData() method is only available in Firefox, the latest Opera and Safari using the latest <a href="http://nightly.webkit.org/">WebKit nightly</a>.
+For larger images, it can take several seconds to encode the image to BMP, but for smaller canvases, it seems fine and fast.
+</div>
+<br/><br/>
+
+Issues and compatibility
+<ul>
+	<li>Only works in canvas-enabled browsers (that means no IE).
+	<li>With Safari, you might need use the convert option and right click the image and select "save as" in order to save it.
+	<li>It would be really neat if somehow a filename could be attached to the data, but I've found no way to do that. For now, you have to specify the filename yourself.
+	<li>Since btoa() is only supported in Firefox, I've implemented base64 encoding using <a href="base64.js">these functions</a> made by Masanao Izumo
+</ul>
+
+
+<br />
+<br />
+For more info and comments, <a href="http://blog.nihilogic.dk/2008/04/saving-canvas-data-to-image-file.html">visit the blog</a> where you can also read about other JavaScript experiments.
+<br/>
+<br/>
+
+<!-- google_ad_section_end -->
+
+
+
+                </div>
+
+                <div class="post-footer">
+
+                </div>
+
+              </div>
+
+            </div>
+
+          <!-- google_ad_section_end -->
+
+          </div>
+        </div>
+      </div>
+
+<div style="width:670px;height:100px;text-align:center;">
+
+
+</div>
+
+    </div>
+    <div class="clear" style="height:50px;">&nbsp;</div>
+
+
+  </div>
+
+
+
+  <div style='color:#888;padding-left:25px;font-size:10px;'><br/><br/>
+  Copyright 2008-2009 Jacob Seidelin - <a href='http://www.nihilogic.dk/blog/privacy_policy.txt' style='color:#888;'>Privacy Policy</a> - 
+Some icons by <a href='http://www.icontexto.com' rel='nofollow' style='color:#888;' target='_blank'>Bruno Maia, IconTexto</a>
+  </div>
+
+</div>
+</div>
+<!-- end outer-wrapper -->
+<script type='text/javascript'>
+if (dp && dp.SyntaxHighlighter) {
+
+    dp.SyntaxHighlighter.ClipboardSwf = "http://www.nihilogic.dk/labs/external/SyntaxHighlighter/Scripts/clipboard.swf"; 
+    dp.SyntaxHighlighter.BloggerMode();
+    dp.SyntaxHighlighter.HighlightAll("code"); 
+}
+</script>
+<script src="http://72182.hittail.com/mlt.js" type="text/javascript"></script>
+</body></html>

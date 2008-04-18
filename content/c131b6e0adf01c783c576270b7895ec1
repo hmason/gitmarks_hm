@@ -1,0 +1,378 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"   "http://www.w3.org/TR/html4/strict.dtd">
+<html dir="ltr" lang="en-US">
+
+<head profile="http://gmpg.org/xfn/11">
+  <meta name="google-site-verification" content="7UIOcPeYAlcY_kvDb9v_RE_Pzf7TfIv7zCSjK3SLT-w" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title> &raquo; Hacking SlideShare&#8217;s embed adding a preview and be a lot shorter and readable - Christian Heilmann&#039;s blog &#8211; Wait till I come!</title>
+<script type="text/javascript">google_ad_client = "pub-6730206592365449";google_ad_width = 468;google_ad_height = 60;
+google_ad_format = "468x60_as";google_color_border = "CCCCCC";google_color_bg = "FFFFFF";google_color_link = "000000";
+google_color_url = "666666";google_color_text = "333333";</script>
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.2/build/reset-fonts-grids/reset-fonts-grids.css">
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.2/build/base/base-min.css">
+
+<link rel="stylesheet" href="http://www.wait-till-i.com/wp-content/themes/yuiminimal/style.css" type="text/css" media="screen" />
+
+<link rel="alternate" type="application/rss+xml" title="Christian Heilmann&#039;s blog &#8211; Wait till I come! RSS Feed" href="http://www.wait-till-i.com/feed/" />
+<link rel="pingback" href="http://www.wait-till-i.com/xmlrpc.php" />
+
+<link rel="alternate" type="application/rss+xml" title="Christian Heilmann&#039;s blog - Wait till I come! &raquo; Hacking SlideShare&#8217;s embed adding a preview and be a lot shorter and readable Comments Feed" href="http://www.wait-till-i.com/2008/04/17/hacking-slideshare-embed/feed/" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.wait-till-i.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.wait-till-i.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='Christian Heilmann&#039;s blog &#8211; Wait till I come!' href='http://www.wait-till-i.com/' />
+<link rel='start' title='Blogs away!' href='http://www.wait-till-i.com/2005/01/27/blogs-away/' />
+<link rel='prev' title='Example of an unobtrusive, lazy-loading badge using the Twitter API' href='http://www.wait-till-i.com/2008/04/11/example-of-an-unobtrusive-lazy-loading-badge-using-the-twitter-api/' />
+<link rel='next' title='Fencing in the habitat &#8211; doing things right and getting the accessibility wrong' href='http://www.wait-till-i.com/2008/04/26/fencing-in-the-habitat-doing-things-right-and-getting-the-accessibility-wrong/' />
+<meta name="generator" content="WordPress 3.0.1" />
+<link rel='canonical' href='http://www.wait-till-i.com/2008/04/17/hacking-slideshare-embed/' />
+<link rel='shortlink' href='http://www.wait-till-i.com/?p=570' />
+<style>#chris{-moz-position:relative;display:inline}</style>
+</head>
+<body>
+<div id="doc2" class="yui-t6">
+  <div id="bd">
+    <div id="yui-main">
+      <div class="yui-b" id="content"><div id="pad">
+        
+  			
+
+	
+
+		<div class="post" id="post-570">
+			<h1>Hacking SlideShare&#8217;s embed adding a preview and be a lot shorter and readable</h1>
+
+			<div class="entry">
+					<p><strong>Edit:</strong> <del>There is a bug in the script (see comments) but somehow Googlecode does not allow me to edit my own file. I will fix it once I got around that issue.</del><ins>The bug reported in the comments is now fixed, sadly enough I also had to re-write the converter as Google code does not allow me to replace an older version of a download (or is there a trick?). The new file is called <code>previewer2.js</code></ins></p>
+
+	<p>As readers of this blog know, I am a big fan of <a href="http://slideshare.net" title="">SlideShare</a> as a distribution platform for my presentation slides. However, there are some things that annoy me about it.</p>
+
+	<p>One of them is the rather verbose embed code SlideShare offers you:</p>
+
+<pre><code>
+&lt;div style="width:425px;text-align:left" id="__ss_335941"&gt;
+&lt;object style="margin:0px" width="425" height="355"&gt;
+&lt;param name="movie" value="http://static.slideshare.net/swf/ssplayer2.swf?doc=highlandflingbadgesnew-1207296687342384-9"/&gt;
+&lt;param name="allowFullScreen" value="true"/&gt;
+&lt;param name="allowScriptAccess" value="always"/&gt;
+&lt;embed src="http://static.slideshare.net/swf/ssplayer2.swf?doc=highlandflingbadgesnew-1207296687342384-9" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="425" height="355"&gt;&lt;/embed&gt;
+&lt;/object&gt;
+&lt;div style="font-size:11px;font-family:tahoma,arial;height:26px;padding-top:2px;"&gt;&lt;a href="http://www.slideshare.net/?src=embed"&gt;&lt;img src="http://static.slideshare.net/swf/logo_embd.png" style="border:0px none;margin-bottom:-5px" alt="SlideShare"/&gt;&lt;/a&gt;
+| &lt;a href="http://www.slideshare.net/cheilmann/building-badges-for-distribution-335941?src=embed" title="View 'Building Badges for distribution' on SlideShare"&gt;View&lt;/a&gt; |
+&lt;a href="http://www.slideshare.net/upload?src=embed"&gt;Upload your own&lt;/a&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+	<p>That is quite a mouthful and the main issue is that when you use several slide embeds in one document, you&#8217;ll slow down the rendering of your page as each of these Flash embeds need to be instantiated and tries to pre-cache the first three slides from S3.</p>
+
+	<p>I&#8217;ve analyzed the code a bit, added some other info I found in the <span class="caps">RSS</span> feed and came up with a small JavaScript that embeds slides in a different way. All you need there is the following code:</p>
+
+<pre><code>
+&lt;div class="slideshare"&gt;
+&lt;a href="http://www.slideshare.net/cheilmann/building-badges-for-distribution-335941#highlandflingbadgesnew-1207296687342384-9"&gt;View 'Building Badges for distribution' on SlideShare&lt;/a&gt;
+&lt;script src="http://chrisslidesharehacks.googlecode.com/files/previewer2.js"&gt;&lt;/script&gt;
+&lt;/div&gt;
+</code></pre>
+
+	<p>This gives slideshare the same <span class="caps">SEO</span> link love but is a lot less to add. Instead of the full slide include, you&#8217;ll get a preview image you can click that gets replaced with the flash movie. The following are examples:</p>
+
+	<p><div class="slideshare"><a href="http://www.slideshare.net/cheilmann/taming-the-browser-with-the-yui-dom-component?src=embed#taming-the-browser-with-the-yui-dom-component-1197036200156260-4">View &#8216;Taming the browser with the <span class="caps">YUI </span>Dom Component&#8217; on SlideShare</a><script src="http://chrisslidesharehacks.googlecode.com/files/previewer2.js"></script></div></p>
+
+	<p><div class="slideshare"><a href="http://www.slideshare.net/cheilmann/successful-teams-follow-standards?src=embed#successful-teams-follow-standards-1195202309989789-2">View &#8216;Successful Teams follow Standards&#8217; on SlideShare</a><script src="http://chrisslidesharehacks.googlecode.com/files/previewer2.js"></script></div></p>
+
+	<p>Now, in order to convert one to the other you could do it by hand, or use the <a href="http://icant.co.uk/sandbox/slideshareconverter.html" title="">slideshare embed converter</a> or install the <a href="http://chrisslidesharehacks.googlecode.com/files/slideshareshortener.user.js" title="">Greasemonkey script</a></p>
+
+	<p>So far this is a hack, but I talked to <a href="http://www.jonathanboutelle.com/" title="">Jonathan Boutelle</a> about it yesterday night at the San Francisco JavaScript meetup and he is happy to pursue this idea further. My wishlist:</p>
+
+	<ul>
+		<li>A larger preview image</li>
+		<li>A rest <span class="caps">API</span> call that gives me this information in a readable manner</li>
+	</ul>
+ 
+								<p>Tags: <a href="http://www.wait-till-i.com/tag/embed/" rel="tag">embed</a>, <a href="http://www.wait-till-i.com/tag/hack/" rel="tag">hack</a>, <a href="http://www.wait-till-i.com/tag/lazyload/" rel="tag">lazyload</a>, <a href="http://www.wait-till-i.com/tag/slideshare/" rel="tag">slideshare</a>, <a href="http://www.wait-till-i.com/tag/unobtrusive/" rel="tag">unobtrusive</a></p>
+        <div id="adspace"><script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script></div>
+
+<iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.wait-till-i.com%2F2008%2F04%2F17%2Fhacking-slideshare-embed%2F&amp;layout=standard&amp;show-faces=true&amp;width=450&amp;action=like&amp;colorscheme=dark" scrolling="no" frameborder="0" allowTransparency="true" style="border:none; overflow:hidden; width:450px; height:30px; padding-top:8px"></iframe>
+
+				<p class="postmetadata alt">
+					<small>
+						This entry was posted
+												on Thursday, April 17th, 2008 at 11:26 pm						and is filed under <a href="http://www.wait-till-i.com/category/embed/" title="View all posts in embed" rel="category tag">embed</a>, <a href="http://www.wait-till-i.com/category/hack/" title="View all posts in hack" rel="category tag">hack</a>, <a href="http://www.wait-till-i.com/category/lazyload/" title="View all posts in lazyload" rel="category tag">lazyload</a>, <a href="http://www.wait-till-i.com/category/slideshare/" title="View all posts in slideshare" rel="category tag">slideshare</a>, <a href="http://www.wait-till-i.com/category/unobtrusive/" title="View all posts in unobtrusive" rel="category tag">unobtrusive</a>.
+						You can follow any responses to this entry through the <a href='http://www.wait-till-i.com/2008/04/17/hacking-slideshare-embed/feed/'>RSS 2.0</a> feed.
+
+													Both comments and pings are currently closed.
+
+						
+					</small>
+				</p>
+
+
+
+
+			</div>
+		</div>
+
+
+	
+<div id="disqus_thread">
+					<div id="dsq-content">
+			<ul id="dsq-comments">
+					<li id="dsq-comment-7503">
+					<div id="dsq-comment-header-7503" class="dsq-comment-header">
+						<cite id="dsq-cite-7503">
+	http://jonokane.com							<span id="dsq-author-user-7503">jono!</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7503" class="dsq-comment-body">
+						<div id="dsq-comment-message-7503" class="dsq-comment-message"><p>Excellent work &#8211; including .js which takes care of the rendering is a much more elegant way to handle the particulars of a .swf embed, imo&#8230;. at least until the <span class="caps">HTML5</span> spec becomes more solid. :P Also, I like the request for larger thumbs &#8211; maybe an option: lg or sm, kinda like the way the flickr stream incl works. Cheers!</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-7517">
+					<div id="dsq-comment-header-7517" class="dsq-comment-header">
+						<cite id="dsq-cite-7517">
+	http://camskene.com							<span id="dsq-author-user-7517">Cameron Skene</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7517" class="dsq-comment-body">
+						<div id="dsq-comment-message-7517" class="dsq-comment-message"><p>With Asterix on board there&#8217;s no stopping us!</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-7535">
+					<div id="dsq-comment-header-7535" class="dsq-comment-header">
+						<cite id="dsq-cite-7535">
+	http://hanblog.info							<span id="dsq-author-user-7535">Rik</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7535" class="dsq-comment-body">
+						<div id="dsq-comment-message-7535" class="dsq-comment-message"><p>This script is not working with more than one Slideshow, like in this example. The script replaces s with the last embed on the page.</p>
+<p>Here is a little fix :</p>
+<p> &#8211;          var flash = &#8216;&#8217;;<br />
++          container.flash = &#8216;&#8217;;<br />
+container.onclick = function(){<br />
+var replace = document.createElement(&#8216;div&#8217;);<br />
+this.parentNode.insertBefore(replace,this); &#8211;            replace.innerHTML = flash;<br />
++            replace.innerHTML = this.flash;</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-7543">
+					<div id="dsq-comment-header-7543" class="dsq-comment-header">
+						<cite id="dsq-cite-7543">
+								<span id="dsq-author-user-7543">Chris</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7543" class="dsq-comment-body">
+						<div id="dsq-comment-message-7543" class="dsq-comment-message"><p>@rik can you tell me in which browser? This works fine here in this blog post on Firefox+Safari+Opera/Mac.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-7547">
+					<div id="dsq-comment-header-7547" class="dsq-comment-header">
+						<cite id="dsq-cite-7547">
+	http://performance.survol.fr/							<span id="dsq-author-user-7547">Eric</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7547" class="dsq-comment-body">
+						<div id="dsq-comment-message-7547" class="dsq-comment-message"><p>Not working with Firefox 3b / Mac. If I click on the 2 previews, js loads 2 times the same flash.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-7548">
+					<div id="dsq-comment-header-7548" class="dsq-comment-header">
+						<cite id="dsq-cite-7548">
+	http://hanblog.info							<span id="dsq-author-user-7548">Rik</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7548" class="dsq-comment-body">
+						<div id="dsq-comment-message-7548" class="dsq-comment-message"><p>In every browser. Click on the first Slideshare here (Taming the browser with the <span class="caps">YUI </span>Dom Component) and you&#8217;ll see the last Slideshare (Successful Teams follow Standards).</p>
+<p>This is because the variable flash contains the last embed when the onclick event is fired.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-7549">
+					<div id="dsq-comment-header-7549" class="dsq-comment-header">
+						<cite id="dsq-cite-7549">
+	http://hanblog.info							<span id="dsq-author-user-7549">Rik</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7549" class="dsq-comment-body">
+						<div id="dsq-comment-message-7549" class="dsq-comment-message"><p>By the way, this script can&#8217;t work on <span class="caps">IE6</span> since it uses indexOf()</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-7556">
+					<div id="dsq-comment-header-7556" class="dsq-comment-header">
+						<cite id="dsq-cite-7556">
+	http://www.lireo.com							<span id="dsq-author-user-7556">Deborah</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7556" class="dsq-comment-body">
+						<div id="dsq-comment-message-7556" class="dsq-comment-message"><p>I can confirm, using Firefox 2.0.0.14 under Windows XP and Windows Vista, that the second Slideshare displays when you click on the first Slideshare.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-7866">
+					<div id="dsq-comment-header-7866" class="dsq-comment-header">
+						<cite id="dsq-cite-7866">
+								<span id="dsq-author-user-7866">katrin</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-7866" class="dsq-comment-body">
+						<div id="dsq-comment-message-7866" class="dsq-comment-message"><p>thanks for this valuable post &#8211; do you have any idea where to get a converter that converts pdf and ppt into flash like the one from slieshare &#8211; the server is too slow and I just want to get my own files on my blog without the slideshare logo! I would really appreciate a reply</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-8667">
+					<div id="dsq-comment-header-8667" class="dsq-comment-header">
+						<cite id="dsq-cite-8667">
+	http://www.imrpesquisa.com							<span id="dsq-author-user-8667">Marcelo</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-8667" class="dsq-comment-body">
+						<div id="dsq-comment-message-8667" class="dsq-comment-message"><p>Doesn&#8217;t work with new presentations (different embed code). =(</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-9609">
+					<div id="dsq-comment-header-9609" class="dsq-comment-header">
+						<cite id="dsq-cite-9609">
+	http://www.huyng.com							<span id="dsq-author-user-9609">Huy</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-9609" class="dsq-comment-body">
+						<div id="dsq-comment-message-9609" class="dsq-comment-message"><p>Hey, I&#8217;ve been dealing with this same problem. Too many presentations on one page caused my user&#8217;s computers to crash&#8230;</p>
+<p>Because of this, I&#8217;ve created a small utility to embed SlideShare presentations as an image thumbnail and a link in place of their usual Flash player. Here&#8217;s the link to this utility:</p>
+<p><a href="http://www.huyng.com/apps/liteshare.htm" rel="nofollow">http://www.huyng.com/apps/liteshare.htm</a></p>
+</div>
+					</div>
+				</li>
+				</ul>
+		</div>
+	</div>
+
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+<script type="text/javascript">
+	var disqus_url = 'http://www.wait-till-i.com/2008/04/17/hacking-slideshare-embed/ ';
+	var disqus_identifier = '570 http://www.wait-till-i.com/2008/04/17/hacking-slideshare-embed/';
+	var disqus_container_id = 'disqus_thread';
+	var disqus_domain = 'disqus.com';
+	var disqus_shortname = 'christianheilmannsblog';
+	var disqus_title = "Hacking SlideShare&#8217;s embed adding a preview and be a lot shorter and readable";
+		var disqus_config = function () {
+	    var config = this; // Access to the config object
+
+	    /* 
+	       All currently supported events:
+	        * preData — fires just before we request for initial data
+	        * preInit - fires after we get initial data but before we load any dependencies
+	        * onInit  - fires when all dependencies are resolved but before dtpl template is rendered
+	        * afterRender - fires when template is rendered but before we show it
+	        * onReady - everything is done
+	     */
+
+		config.callbacks.preData.push(function() {
+			// clear out the container (its filled for SEO/legacy purposes)
+			document.getElementById(disqus_container_id).innerHTML = '';
+		});
+				config.callbacks.onReady.push(function() {
+			// sync comments in the background so we don't block the page
+			DISQUS.request.get('?cf_action=sync_comments&post_id=570');
+		});
+			};
+	var facebookXdReceiverPath = 'http://www.wait-till-i.com/wp-content/plugins/disqus-comment-system/xd_receiver.htm';
+</script>
+
+<script type="text/javascript">
+	var DsqLocal = {
+		'trackbacks': [
+		],
+		'trackback_url': "http:\/\/www.wait-till-i.com\/2008\/04\/17\/hacking-slideshare-embed\/trackback\/"	};
+</script>
+
+<script type="text/javascript">
+(function() {
+	var dsq = document.createElement('script'); dsq.type = 'text/javascript';
+	dsq.async = true;
+	dsq.src = 'http://' + disqus_shortname + '.' + disqus_domain + '/embed.js?pname=wordpress&pver=2.50';
+	(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+
+	
+	</div>
+      </div>
+    </div>
+    <div class="yui-b" id="sb">
+      <div id="pageslist">
+        <div id="head">
+        <a href="http://www.wait-till-i.com/">Christian Heilmann&#039;s blog &#8211; Wait till I come!</a>
+        <div class="description">For a better web with more professional jobs &#8211; can talk, will travel</div>
+      </div>
+
+      <form method="get" id="searchform" action="http://www.wait-till-i.com/">
+<div><input type="text" value="" name="s" id="s" />
+<input type="submit" id="searchsubmit" value="Search" />
+</div>
+</form>
+
+      <ul>
+        <li><a href="http://wait-till-i.com">Home</a></li>
+        <li class="page_item page-item-595"><a href="http://www.wait-till-i.com/about-this/" title="About this">About this</a></li>
+<li class="page_item page-item-592"><a href="http://www.wait-till-i.com/archives/" title="Archives">Archives</a></li>
+<li class="page_item page-item-597"><a href="http://www.wait-till-i.com/books/" title="My Books">My Books</a></li>
+<li class="page_item page-item-634"><a href="http://www.wait-till-i.com/talks-and-conference-participation/" title="Talks and Conference Participation">Talks and Conference Participation</a></li>
+<li class="page_item page-item-593"><a href="http://www.wait-till-i.com/want-me-to-talk/" title="Want me to talk?">Want me to talk?</a></li>
+        <li class="ext"><a href="http://slideshare.net/cheilmann">Presentations</a></li>
+        <li class="ext"><a href="http://icant.co.uk">Articles</a></li>
+        <li class="ext"><a href="http://flickr.com/codepo8">Photos</a></li>
+        <li class="ext"><a href="http://del.icio.us/codepo8">Bookmarks</a></li>
+        <li class="ext"><a href="http://www.google.com/reader/shared/07479231772993841072">Reading</a></li>
+        <li class="ext"><a href="http://twitter.com/codepo8">Twitter</a></li>
+      </ul>
+
+  <a href="http://www.wait-till-i.com/feed/"><img src="/fox.png" alt="Subscribe to RSS" style="border:none;display:block;margin:10px auto"></a>
+
+
+<a href="http://350.brighterplanet.com/"><img src="http://350.brighterplanet.com/images/badges/BP_badge_180x201.jpg" alt="Brighter Planet's 350 Challenge" /></a>
+
+<div id="dopplr-blog-badge-for-chrisheilmann"><script type="text/javascript" src="http://www.dopplr.com/blogbadge/script/db67cb2de03d1a6ae524a643c8cb0704?div-id=dopplr-blog-badge-for-chrisheilmann"></script></div>
+
+
+<ul><li> <a href="http://www.medifasthealth.org/">Medifast Health & Weight Loss Program</a> </li>
+<li> <a href="http://www.waspbarcode.com/printers/">Label Barcode Printer</a> </li>
+</ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="ft">
+  <address class="vcard">
+  <a class="url org" href="http://wait-till-i.com/">Christian Heilmann&#039;s blog &#8211; Wait till I come!</a> is the blog of <span class="fn">Christian Heilmann</span> <a class="email" href="mailto:onlinetoolsorg@gmail.com">onlinetoolsorg@gmail.com</a>, a <span class="title">developer evangelist</span> living and working in <span class="adr"><span class="locality">London</span>, <span class="country-name">England</span></span>. <a href="http://feeds.technorati.com/contacts/wait-till-i.com">Download vcard</a>.
+  </address>
+  <p>Feed me, Seymour:  
+  <a href="http://www.wait-till-i.com/feed/">Entries (RSS)</a> and <a href="http://christianheilmannsblog.disqus.com/latest.rss">Comments (RSS)</a>.
+  <!-- 30 queries. 1.132 seconds. -->
+  </p>
+
+</div>
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+<!-- 
+var sc_project=710446; 
+var sc_partition=5; 
+var sc_security="6acf09a2"; 
+var sc_invisible=1; 
+//-->
+</script>
+
+<script type="text/javascript" src="http://www.statcounter.com/counter/counter_xhtml.js"></script><noscript><div class="statcounter"><a class="statcounter" href="http://www.statcounter.com/"><img class="statcounter" src="http://c6.statcounter.com/counter.php?sc_project=710446&amp;java=0&amp;security=6acf09a2&amp;invisible=1" alt="counter" /></a></div></noscript>
+<!-- End of StatCounter Code -->
+</html>
+<!-- Dynamic page generated in 1.075 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2010-10-01 13:07:20 -->
+<!-- super cache -->

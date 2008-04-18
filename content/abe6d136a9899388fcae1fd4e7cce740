@@ -1,0 +1,309 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>busy.js (javascript loading indicators)</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-language" content="en">
+	<link rel="icon" href="favicon.ico" type="image/ico">
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+	<link rel="bookmark" type="text/html" title="busy.js" href="http://www.netzgesta.de/busy/">
+	<meta name="Author" lang="en" content="busy.netzgesta.de - Christian Effenberger">	<meta name="Publisher" lang="en" content="www.netzgesta.de">	<meta name="Copyright" lang="en" content="www.netzgesta.de - Christian Effenberger">	<meta name="Generator" lang="en" content="Christian Effenberger">
+	<meta name="Robots" lang="en" content="index, follow">	<meta name="revisit-after" content="7 days">
+	<meta http-equiv="imagetoolbar" content="no">
+	<meta name="Description" lang="en" content="cvi_busy_lib.js 1.3 allows you to add/remove loading indicators to html elements (or viewport) on your webpages through unobtrusive javascript">
+	<meta name="Keywords" lang="en" content="cvi_busy_lib.js, library, overlay, spinner, loading indicator, unobtrusive javascript, IE, Mozilla, Firefox, Opera, Safari">
+	<meta http-equiv="expires" content="Tue, 10 Aug 2010 10:00:00 GMT">
+    <meta name="DC.date.created" content="2007-09-15 12:00:00">
+    <meta name="DC.date.modified" content="2010-08-10 12:00:00">
+	<meta name="Date" content="2010-08-10T12:00:00+01:00:00">
+	<meta http-equiv="imagetoolbar" content="no">
+	<meta http-equiv="Content-Script-Type" content="text/javascript">
+	<script type="text/javascript" src="../cvi/scripts/projectmenu.js"></script>
+	<script type="text/javascript" src="../cvi/scripts/accordion.js"></script>
+	<script type="text/javascript" src="../glossy/glossy.js"></script>
+	<meta http-equiv="Content-Style-Type" content="text/css">
+	<style type="text/css">
+		.demo { float: left; padding: 16px; text-align: center;}
+		.logo { float: left; margin: 0 1em 1em 0; position: relative; width: 400px; height: 150px; }
+	</style>
+	<link rel="stylesheet" type="text/css" media="all" href="../cvi/scripts/prj.css" />
+	<link rel="stylesheet" type="text/css" href="../cvi/scripts/overlay.css" />
+	<link rel="stylesheet" type="text/css" href="../cvi/scripts/accordion.css" />
+	<link rel="stylesheet" type="text/css" media="print" href="../cvi/scripts/prt.css" />
+<!--[if lt IE 8]>
+	<link rel="stylesheet" type="text/css" media="all" href="../cvi/scripts/prj_ie.css" />
+<![endif]-->
+<!--[if IE]>
+	<link rel="stylesheet" type="text/css" href="../cvi/scripts/overlay_ie.css" />
+	<link rel="stylesheet" type="text/css" href="../cvi/scripts/accordion_ie.css" />
+	<link rel="stylesheet" type="text/css" media="print" href="../cvi/scripts/prt_ie.css" />
+<![endif]-->
+<!--[if lt IE 7]>
+	<script type="text/javascript" src="../cvi/scripts/fixed.js"></script>
+	<style type="text/css">
+		.png { visibility: hidden; behavior: url(../cvi/scripts/iepngfix2.htc); }
+	</style>
+<![endif]-->
+</head>
+<body>
+<div class="page">
+	<div class="tr">
+		<div class="td lp s14"></div>
+		<div class="td cp">
+			<span class="pd"><img src="../cvi/images/header/small.png" width="45" height="30" title="Canvas|Vml|Image effects" class="unsaveable png" border="0" alt="CVI" /></span>		
+			<span class="pc">
+			<noscript>
+				<form name="lst" id="lst" method="post" action="../cvi/project.php">
+					<select name="id" id="id" title="navigation" size="1">
+						<option id="home" value="cvi" selected="selected">cvi: home</option>
+						<option id="lab" value="lab">cvi: lab</option>
+						<option id="dev" value="dev">cvi: dev</option>
+						<option id="js0" value="loupe">loupe.js</option>
+						<option id="js1" value="shiftzoom">shiftzoom.js</option>
+						<option id="js2" value="snapfit">snapfit.js</option>
+						<option id="js3" value="busy">busy.js</option>
+						<option id="js4" value="mapper">mapper.js</option>
+						<option id="js5" value="slided">slided.js</option>
+						<option id="js6" value="glossy">glossy.js</option>
+						<option id="js7" value="corner">corner.js</option>
+						<option id="js8" value="transm">transm.js</option>
+						<option id="js9" value="gauge">gauge.js</option>
+						<option id="js10" value="filmed">filmed.js</option>
+						<option id="js11" value="instant">instant.js</option>
+						<option id="js12" value="curl">curl.js</option>
+						<option id="js13" value="sphere">sphere.js</option>
+						<option id="js14" value="bevel">bevel.js</option>
+						<option id="js15" value="edge">edge.js</option>
+						<option id="js16" value="reflex">reflex.js</option>
+						<option id="js17" value="tripleb">tripleb.js</option>
+					</select>
+					<input type="submit" id="bt" name="bt" title="jump to named page" value="GO">
+				</form>
+			</noscript>
+			</span>
+			<span class="pr"></span>		
+		</div>
+		<div class="td rp s14"></div>
+	</div>
+</div>
+<div id="replace"></div>
+<noscript><div id="guru" title="By this you can recognize the Amiga fan!"><div><strong>Guru Meditation</strong> - With deactivated JavaScript: Images stay unmodified!</div></div></noscript>
+
+<div class="logo"><a class="nip" href="busy.zip" title="download busy.js">
+<img class="glossy" src="images/busy.jpg" border="0" alt="busy">
+</a></div>
+<div class="text">
+<strong><span class="uc">busy</span>.js 1.3</strong> 
+allows you to add/remove loading indicators to html elements (or viewport) on your webpages (inc. overlay color & transparency). It uses unobtrusive javascript to keep your code clean. Requires no plugin/extension or any other external resource!
+<p></p>
+It works in all the major browsers - Mozilla Firefox 1.5+, Opera 9+, Safari and IE6+. On older browsers, it'll degrade to simple quadratic shapes.<br/>
+</div>
+<p style="clear: left;"></p>
+
+<h2 id="do_demo" class="toggle">Demonstration</h2>
+<div id="demo" class="inlet">
+<p>Click to see what <a class="lk" href="busy.zip" title="download zip">cvi_busy_lib.js</a> can do.<p>
+<div class="demo"><a href="click.html" class="overlay lWOn nip" title="cvi_busy_lib.js: Click Demo"><img class="glossy" src="images/click.jpg" alt="click" width="200" height="200" border="0"><br/>Clickable <b>Demo</b></a></div>
+<div class="demo"><a href="demo.html" class="overlay lWOn nip" title="cvi_busy_lib.js: Ajax Demo"><img class="glossy" src="images/auto.jpg" alt="ajax" width="200" height="200" border="0"><br/>AJAX <b>Demo</b></a></div>
+<div class="demo"><a href="demo/" class="overlay lWOn nip" title="cvi_busy_lib.js: WYSIWYG Demo"><img class="glossy" src="images/demo.jpg" alt="demo" width="200" height="200" border="0"><br/>WYSIWYG <b>Demo</b></a></div>
+<p style="clear: left;"></p>
+</div>
+
+<h2 id="do_setting" class="toggle">Setting Up</h2>
+<div id="setting" class="inlet">
+<p>Download <a class="lk" href="busy.zip" title="download zip">cvi_busy_lib.js</a> and include it into your webpage.</p>
+<p><code>&lt;script type="text/javascript" src="<tt>cvi_busy_lib.js</tt>"&gt;&lt;/script&gt;</code></p>
+</div>
+
+<h2 id="do_using" class="toggle">Using It</h2>
+<div id="using" class="inlet">
+<dl>
+	<dt>Add overlay to element</dt>
+  	<dd>
+  		<code><b>ctrl</b> = getBusyOverlay(<tt>parent</tt>[, <tt>overlay</tt>[, <tt>busy</tt>]]);</code><br/>
+		<dl><dt><code><tt>parent</tt>&nbsp; == element to add the overlay to or <tt>"viewport"</tt></code></dt></dl>
+		<dl><dt><code><tt>overlay</tt>&nbsp; &nbsp; &nbsp; e.g. {<b>color</b>: <tt>'black'</tt>, <b>opacity</b>: <tt>0.5</tt>, ...}</code></dt>
+		<dd>
+			<code><b>color</b> &nbsp; == STRING <tt>'black'</tt> or <tt>'#000000'</tt> or <tt>'rgb(0,0,0)'</tt> Default: <tt>'white'</tt></code><br/>			<code><b>opacity</b> == FLOAT <tt>0.0</tt> - <tt>1.0</tt> Default: <tt>0</tt></code><br/>			<code><b>text</b> &nbsp;&nbsp;  == STRING e.g. <tt>'loading'</tt> Default: <tt>''</tt></code><br/>			<code><b>style</b> &nbsp;  == STRING e.g. <tt>'color: black;'</tt> or <tt>'my_text_class'</tt> Default: <tt>''</tt></code>  		</dd></dl>
+		<dl><dt><code><tt>busy</tt> &nbsp; &nbsp; &nbsp; &nbsp; e.g. {<b>color</b>: <tt>'#000'</tt>, <b>size</b>: <tt>32</tt>, ...}</code></dt>
+		<dd>
+			<code><b>color</b> &nbsp; == STRING <tt>'#000000'</tt> or <tt>'#000'</tt> Default: <tt>'#000'</tt></code><br/>			<code><b>size</b> &nbsp;&nbsp; == INT <tt>16</tt> - <tt>512</tt> Default: <tt>32</tt></code><br/>			<code><b>type</b> &nbsp;&nbsp; == STRING <tt>'circle|oval|polygon|rectangle|tube'</tt> or <tt>'c|o|p|r|t'</tt> Default: <tt>'tube'</tt></code><br/>			<code><b>iradius</b> == INT <tt>6</tt> - <tt>254</tt> Default: <tt>8</tt></code><br/>			<code><b>weight</b>&nbsp; == INT <tt>1</tt> - <tt>254</tt> Default: <tt>3</tt></code><br/>			<code><b>count</b> &nbsp; == INT <tt>5</tt> - <tt>36</tt> Default: <tt>12</tt></code><br/>			<code><b>speed</b> &nbsp; == INT <tt>30</tt> - <tt>1000</tt> Default: <tt>96</tt></code><br/>			<code><b>minopac</b> == FLOAT <tt>0.0</tt> - <tt>0.5</tt> Default: <tt>0.25</tt></code>  		</dd></dl>
+  		<p></p>
+  	</dd>
+	<dt>Edit overlay text</dt>
+	<dd>
+		<code><b>ctrl</b>.settext(<tt>STRING</tt>);</code>
+  		<p></p>
+	</dd>
+	<dt>Remove overlay from element</dt>
+	<dd>
+		<code><b>ctrl</b>.remove();</code>
+  		<p></p>
+	</dd>
+	<dt>Examples</dt>
+	<dd>
+		<code>if(typeof $=='undefined') {function $(v) {return(document.getElementById(v));}}</code><br/>
+  		<code><b>ctrl</b> = getBusyOverlay(<tt>"viewport"</tt>);</code><br/>
+  		<code><b>ctrl</b> = getBusyOverlay(<tt>$('box')</tt>);</code><br/>
+  		<code><b>ctrl</b> = getBusyOverlay(<tt>$('box')</tt>, {<b>opacity</b>:<tt>0.5</tt>});</code><br/>
+  		<code><b>ctrl</b> = getBusyOverlay(<tt>$('box')</tt>, {}, {<b>size</b>:<tt>16</tt>});</code><br/>
+  		<code><b>ctrl</b> = getBusyOverlay(<tt>$('box')</tt>, {<b>color</b>:<tt>'blue'</tt>, <b>opacity</b>:<tt>0.25</tt>}, {<b>type</b>:<tt>'oval'</tt>});</code><br/>
+  		<code><b>ctrl</b>.settext('Ready...!');</code><br/>
+  		<code><b>ctrl</b>.remove();</code><br/>
+  		<code>try {<b>ctrl</b>.remove(); delete <b>ctrl</b>;} catch(e) {}</code><br/>
+  		<code>if(typeof(<b>ctrl</b>)=='object') {<b>ctrl</b>.remove(); <b>ctrl</b>="";}</code><br/>
+  		<p></p>
+	</dd>
+</dl>
+</div>
+
+<h2 id="do_why" class="toggle">Why use Javascript cvi_busy_lib?</h2>
+<div id="why" class="inlet">
+<ul>
+<li>Fast and easy to implement (perfect for ajax applications).</li>
+<li>Don't need to spend time in an image editor creating gif animations.</li>
+<li>Very flexible by multiple (optional) parameters for individual styles.</li>
+<li>Get always a proper loading indicator independently of parent elements style.</li>
+<li>Includes a bunch of (built in) shape designs.</li>
+<li>Moves the DOM tree up to find the next parent block-level element.</li>
+<li>Freezes the parent element visual (overlay) and technical (mouse events).</li>
+<li>Works with html elements even if (moz/webkit)-border-radius is activated.</li>
+<li>It's dead easy to add or remove the loading indicator to/from an html element.</li>
+<li>Free of charge use on non-commercial and private web sites.</li>
+</ul>
+<p>In older browsers, the script degrades to simple quadratic shapes.</p>
+</div>
+
+<h2 id="do_download" class="toggle">Download</h2>
+<div id="download" class="inlet">
+<p>Please read the <a class="overlay lWOn lk" title="Netzgestade Non-commercial Software License Agreement" href="../cvi/LICENSE.html">License</a> before you download <a class="lk" href="busy.zip">busy.zip 1.3</a></p>
+</div>
+
+<h2 id="do_faq" class="toggle">F.A.Q.</h2>
+<div id="faq" class="inlet">
+<p>Please read the <a class="overlay lWOn lk" title="F.A.Q. (Frequently Asked Questions)" href="../cvi/faq.php">Frequently Asked Questions</a> before you <a class="overlay lWOn lk" title="Contact the autor" href="../cvi/contact.php">contact</a> the author.</p>
+</div>
+
+<h2 id="do_history" class="toggle">History</h2>
+<div id="history" class="inlet">
+<p>Version 1.3<ul><li>Added support for Internet Explorer 9</li></ul></p>
+<p>Version 1.21<ul><li>Added modifications for Internet Explorer 8</li></ul></p>
+<p>Version 1.2<ul><li>Added overlay text editing support</li></ul></p>
+<p>Version 1.1<ul><li>Added viewport support</li></ul></p>
+<p>Version 1.0<ul><li>Initial release</li></ul></p>
+</div>
+
+<h2 id="do_contact" class="toggle">Contact</h2>
+<div id="contact" class="inlet">
+<p>Please leave any comments at this <a class="overlay lWOn lk" title="Contact the author" href="../cvi/contact.php">contact formular</a>.</p>
+</div>
+
+<h2 id="do_license" class="toggle">License</h2>
+<div id="license" class="inlet">
+<p>cvi_busy_lib.js is distributed under the <a class="overlay lWOn lk" title="Netzgestade Non-commercial Software License Agreement" href="../cvi/LICENSE.html">Netzgestade Non-commercial Software License Agreement</a>. 
+<br/>License permits free of charge use on non-commercial and private web sites only under special conditions <em>(as described in the license)</em>.
+This license equals neither "<span style="text-decoration: line-through;">open source</span>" nor "<span style="text-decoration: line-through;">public domain</span>".
+There are also <a class="overlay lWOn lk" title="Contact the author" href="../cvi/contact.php">Commercial Software Licenses</a> available.
+<h6>YOU AGREE TO ALL CONDITIONS OF THIS LICENCE AGREEMENT CONCERNING THE USE OF THE SOFTWARE BY ACCEPTING THIS LICENCE.
+<br/>IF YOU DO NOT AGREE TO ALL CONDITIONS OF THIS AGREEMENT, YOU SHALL NOT INSTALL THE SOFTWARE, OR USE IT IN OTHER WAYS.</h6>
+</p>
+</div>
+
+<h2 id="do_projects" class="toggle">Other Projects</h2>
+<div id="projects" class="inlet"><ul class="ml">
+<li class="mt"><img src="../cvi/images/icons/cvi.png" border="0" alt="cvi" />&nbsp;&nbsp;<a class="lk" href="http://cvi.netzgesta.de/"><big><strong>home</strong></big></a> &nbsp;</li>
+<li class="mt"><img src="../cvi/images/icons/dev.png" border="0" alt="dev" />&nbsp;&nbsp;<a class="lk" href="http://dev.netzgesta.de/"><big><strong>developer</strong></big></a> &nbsp;</li>
+<li class="mt"><img src="../cvi/images/icons/lab.png" border="0" alt="lab" />&nbsp;&nbsp;<a class="lk" href="http://lab.netzgesta.de/"><big><strong>laboratory</strong></big></a> &nbsp;</li>
+<li class="ml"><img src="../cvi/images/icons/loupe.png" border="0" alt="loupe.js" />&nbsp;&nbsp;<a class="lk" href="http://loupe.netzgesta.de/"><big><strong>loupe.js</strong></big></a><br /><small>Simulates an authentic looking magnifying glass! The script allows you to add a loupe for magnifying (inc. start viewpoint) to an image on your webpage. Requires <b>no</b> plugin/extension but one external resource image!</small></li>
+<li class="ml"><img src="../cvi/images/icons/shiftzoom.png" border="0" alt="shiftzoom.js" />&nbsp;&nbsp;<a class="lk" href="http://shiftzoom.netzgesta.de/"><big><strong>shiftzoom.js</strong></big></a><br /><small>Supports zoom & pan functionality! The library allows you to add/remove zoom and pan functionality to oversized images on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/snapfit.png" border="0" alt="snapfit.js" />&nbsp;&nbsp;<a class="lk" href="http://snapfit.netzgesta.de/"><big><strong>snapfit.js</strong></big></a><br /><small>Supports jigsaw puzzle functionality! The script allows you to add jigsaw puzzles with individual options to images on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/mapper.png" border="0" alt="mapper.js" />&nbsp;&nbsp;<a class="lk" href="http://mapper.netzgesta.de/"><big><strong>mapper.js</strong></big></a><br /><small>Emulates native area highlighting! The script allows you to add automatic area highlighting to image maps on your webpages (inc. export to SVG). Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/slided.png" border="0" alt="slided.js" />&nbsp;&nbsp;<a class="lk" href="http://slided.netzgesta.de/"><big><strong>slided.js</strong></big></a><br /><small>Simulates a slide frame look including gradients! The script allows you to add individual colors, shadings and shadows to images on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/glossy.png" border="0" alt="glossy.js" />&nbsp;&nbsp;<a class="lk" href="http://glossy.netzgesta.de/"><big><strong>glossy.js</strong></big></a><br /><small>Simulates a glossy shaded and beveled button look! The script allows you to add individual corners, shadings and shadows to images on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/corner.png" border="0" alt="corner.js" />&nbsp;&nbsp;<a class="lk" href="http://corner.netzgesta.de/"><big><strong>corner.js</strong></big></a><br /><small>Simulates a whole bunch of image effects! The script allows you to add individual corners, shadings and shadows to images on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/transm.png" border="0" alt="transm.js" />&nbsp;&nbsp;<a class="lk" href="http://transm.netzgesta.de/"><big><strong>transm.js</strong></big></a><br /><small>Supports programmable image transitions! Features 113 transitions, 32 tweenings, individual corners, overlay graphics and event actions. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/gauge.png" border="0" alt="gauge.js" />&nbsp;&nbsp;<a class="lk" href="http://gauge.netzgesta.de/"><big><strong>gauge.js</strong></big></a><br /><small>Supports programmable gauges! The script allows you to add gauges (with shading and reflection) to your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/filmed.png" border="0" alt="filmed.js" />&nbsp;&nbsp;<a class="lk" href="http://filmed.netzgesta.de/"><big><strong>filmed.js</strong></big></a><br /><small>Simulates a film strip look including reflection! The script allows you to add individual colors, shining and shadows to images on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/instant.png" border="0" alt="instant.js" />&nbsp;&nbsp;<a class="lk" href="http://instant.netzgesta.de/"><big><strong>instant.js</strong></big></a><br /><small>Simulates an instant picture look including tilt! The script allows you to add individual colors, tiltings and shadows to images on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/curl.png" border="0" alt="curl.js" />&nbsp;&nbsp;<a class="lk" href="http://curl.netzgesta.de/"><big><strong>curl.js</strong></big></a><br /><small>Simulates a page curl image effect! The script allows you to add curls with individual paperback color, shadow opacity and size to images on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/sphere.png" border="0" alt="sphere.js" />&nbsp;&nbsp;<a class="lk" href="http://sphere.netzgesta.de/"><big><strong>sphere.js</strong></big></a><br /><small>Simulates a spherical image effect! The script allows you to add an spherical picture effect with individual zooming, shading, shining, transparency and colors to images on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/bevel.png" border="0" alt="bevel.js" />&nbsp;&nbsp;<a class="lk" href="http://bevel.netzgesta.de/"><big><strong>bevel.js</strong></big></a><br /><small>Simulates a whole bunch of image effects! The script allows you to add bevels with individual glowing, shading and shining to images on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+<li class="ml"><img src="../cvi/images/icons/edge.png" border="0" alt="edge.js" />&nbsp;&nbsp;<a class="lk" href="http://edge.netzgesta.de/"><big><strong>edge.js</strong></big></a><br /><small>Simulates masked image edges! The script allows you to add individual masks (inc. inbuilt mask) to images on your webpages. Requires <b>no</b> plugin/extension but zero or more external mask images!</small></li>
+<li class="ml"><img src="../cvi/images/icons/reflex.png" border="0" alt="reflex.js" />&nbsp;&nbsp;<a class="lk" href="http://reflex.netzgesta.de/"><big><strong>reflex.js</strong></big></a><br /><small>Simulates a Cover Flow<sup>&trade;</sup> image effect! The script allows you to add individual borders, tiltings and reflections to images on your webpages. Requires <b>no</b> plugin/extension or any other external resource! <small><i>*Cover Flow is a trademark of Apple Inc.</i></small></small></li>
+<li class="ml"><img src="../cvi/images/icons/tripleb.png" border="0" alt="tripleb.js" />&nbsp;&nbsp;<a class="lk" href="http://tripleb.netzgesta.de/"><big><strong>tripleb.js</strong></big></a><br /><small>Simulates the CSS 3 beautifying features border-radius, box-shadow and background-gradient on your webpages. Requires <b>no</b> plugin/extension or any other external resource!</small></li>
+</ul></div>
+
+<div class="foot">
+	<div class="tr">
+		<div class="td lf s13"></div>
+		<div class="td cf">
+			<span class="ft">
+				<a href="http://busy.netzgesta.de/" title="Current subdomain" class="wt"><strong>busy.netzgesta.de</strong></a> &copy; 2010 by <a class="overlay title lWOn wt" title="Contact the Author" href="../cvi/contact.php">Christian Effenberger</a>
+			</span>
+			<span class="bm">
+<a class="nop" href="http://www.netzgesta.de/cvi/rss/" title="Get feed" target="_blank">
+<img class="png" src="../cvi/images/icons/feed.png" border="0" width="16" height="16" alt="feed" /></a>
+&nbsp;<a class="nop" href="http://twitter.com/home?status=http://www.netzgesta.de/busy/" title="Bookmark this page on twitter.com" target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/twitter.png" border="0" width="16" height="16" alt="twitter" /></a>
+&nbsp;<a class="nop" href="http://www.facebook.com/sharer.php?u=http://www.netzgesta.de/busy/&amp;t=busy.js" title="Bookmark this page on facebook.com" target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/facebook.png" border="0" width="16" height="16" alt="facebook" /></a>
+&nbsp;<a class="nop" href="http://www.myspace.com/index.cfm?fuseaction=postto&amp;u=http://www.netzgesta.de/busy/&amp;t=busy.js" title="Bookmark this page on myspace.com" target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/myspace.png" border="0" width="16" height="16" alt="myspace" /></a>
+&nbsp;<a class="nop" href="http://del.icio.us/post?url=http://www.netzgesta.de/busy/&amp;title=busy.js" title="Bookmark this page on del.icio.us." target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/delicious.png" border="0" width="16" height="16" alt="delicious" /></a>
+&nbsp;<a class="nop" href="http://digg.com/submit?phase=2&amp;url=http://www.netzgesta.de/busy/&amp;title=busy.js" title="Digg this page on digg.com." target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/digg.png" border="0" width="16" height="16" alt="digg" /></a>
+&nbsp;<a class="nop" href="http://reddit.com/submit?url=http://www.netzgesta.de/busy/&amp;title=busy.js" title="Submit this page on reddit.com." target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/reddit.png" border="0" width="16" height="16" alt="reddit" /></a>
+&nbsp;<a class="nop" href="http://ma.gnolia.com/bookmarklet/add?url=http://www.netzgesta.de/busy/&amp;title=busy.js" title="Submit this page on ma.gnolia.com." target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/magnoliacom.png" border="0" width="16" height="16" alt="magnoliacom" /></a>
+&nbsp;<a class="nop" href="http://www.newsvine.com/_tools/seed&amp;save?u=http://www.netzgesta.de/busy/&amp;h=busy.js" title="Submit this page on newsvine.com." target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/newsvine.png" border="0" width="16" height="16" alt="newsvine" /></a>
+&nbsp;<a class="nop" href="http://www.furl.net/storeIt.jsp?u=http://www.netzgesta.de/busy/&amp;t=busy.js" title="Submit this page on furl.net." target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/furl.png" border="0" width="16" height="16" alt="furl" /></a>
+&nbsp;<a class="nop" href="http://www.google.com/bookmarks/mark?op=add&amp;bkmk=http://www.netzgesta.de/busy/&amp;title=busy.js" title="Bookmark this page on Google." target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/google.png" border="0" width="16" height="16" alt="google" /></a>
+&nbsp;<a class="nop" href="http://myweb2.search.yahoo.com/myresults/bookmarklet?u=http://www.netzgesta.de/busy/&amp;t=busy.js" title="Bookmark this page on Yahoo." target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/yahoo.png" border="0" width="16" height="16" alt="yahoo" /></a>
+&nbsp;<a class="nop" href="http://www.blinklist.com/index.php?Action=Blink/addblink.php&amp;Description=busy.js&amp;Name=busy.js&amp;Url=http://www.netzgesta.de/busy/" title="Bookmark this page on Blinklist." target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/blinklist.png" border="0" width="16" height="16" alt="blinklist" /></a>
+&nbsp;<a class="nop" href="http://www.mister-wong.de/index.php?action=addurl&amp;bm_url=http://www.netzgesta.de/busy/&amp;bm_description=busy.js" title="Bookmark this page on Mister-Wong." target="_blank" rel="nofollow">
+<img class="png" src="../cvi/images/bookmarks/wong.png" border="0" width="16" height="16" alt="mister-wong" /></a>
+			</span>
+		</div>
+		<div class="td rf s13"></div>
+	</div>
+</div>
+<script type="text/javascript">
+<!--
+var cvi_nme = new Array();
+var cvi_ttl = new Array();
+var path = "../cvi/";
+var inop = '';
+cvi_nme[0] = "loupe"; cvi_ttl[0] = "add a loupe (magnifier) to images";
+cvi_nme[1] = "shiftzoom"; cvi_ttl[1] = "zoom & pan functionality for oversized images";
+cvi_nme[2] = "snapfit"; cvi_ttl[2] = "add puzzle to images";
+cvi_nme[3] = "busy"; cvi_ttl[3] = "loading indicator for block-level elements";
+cvi_nme[4] = "mapper"; cvi_ttl[4] = "area highlighting for image maps";
+cvi_nme[5] = "slided"; cvi_ttl[5] = "add slide frames and shadow to images";
+cvi_nme[6] = "glossy"; cvi_ttl[6] = "add glossy shading and shadow to images";
+cvi_nme[7] = "corner"; cvi_ttl[7] = "add corners (and also shading and shadow) to images";
+cvi_nme[8] = "transm"; cvi_ttl[8] = "add image transitions to block-level elements";
+cvi_nme[9] = "gauge"; cvi_ttl[9] = "add programmable gauges to pages";
+cvi_nme[10] = "filmed"; cvi_ttl[10] = "add film strip and shadow to images";
+cvi_nme[11] = "instant"; cvi_ttl[11] = "add instant picture effect (including tilt) to images";
+cvi_nme[12] = "curl"; cvi_ttl[12] = "add page curl to images";
+cvi_nme[13] = "sphere"; cvi_ttl[13] = "add sphere effect to images";
+cvi_nme[14] = "bevel"; cvi_ttl[14] = "add bevels to images";
+cvi_nme[15] = "edge"; cvi_ttl[15] = "add edge masks to images";
+cvi_nme[16] = "reflex"; cvi_ttl[16] = "add cover flow to images";
+cvi_nme[17] = "tripleb"; cvi_ttl[17] = "add radius, shadow and gradient to block-level elements";
+buildMenus(0);
+addAccordion(0);
+-->
+</script>
+<script type="text/javascript" src="../cvi/scripts/overlay.js"></script>
+<script type="text/javascript" src="../cvi/scripts/unsaveable.js"></script>
+</body>
+</html>

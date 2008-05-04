@@ -1,0 +1,1336 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Create a mirror of a website with Wget | FOSSwire</title>
+<link rel="stylesheet" type="text/css" href="http://files.fosswire.com/site/css/master.css" title="fosswire" media="all" />
+<link rel="SHORTCUT ICON" href="http://files.fosswire.com/favicon.ico" />
+<link rel="alternate" type="application/rss+xml" title="FOSSwire RSS 2.0" href="http://feeds.feedburner.com/fosswire" />
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/swfobject/2.1/swfobject.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-312387-5']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<meta name="google-site-verification" content="lGp3KHoSdvC5rqACSxiSmwxUDCpOIQkS7IFpPwjtPdU" />
+<meta name="google-site-verification" content="rNu5zdyuL7X4tvy-MzFgHsUxZXkzF4V5-5MXtEZsXeM" />
+</head>
+<body>
+<div id="header">
+    <h1><a href="/">FOSSwire</a></h1>
+    
+    <div id="ad">
+    <script type="text/javascript">
+    google_ad_client = "pub-1216909943898805";
+    google_ad_slot = "4718841779";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    </script>
+    <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
+    </div>
+    
+    
+</div>
+
+<div id="content">
+
+
+
+
+
+
+
+<div id="posts" class="hfeed">
+<div class="hentry entry" id="post-388">
+<h2 class="entry-title"><a href="">Create a mirror of a website with Wget</a></h2>
+<ul class="meta">
+    <li class="date"><abbr class="published" title="2008-04-21 17:55:37">April 21, 2008</abbr></li>
+    <li class="auth"><img class="avatar" src="http://www.gravatar.com/avatar/45266ec596a8acb0905a065dbe7ed453?s=44&amp;d=identicon" alt="Avatar for peter" height="44" width="44" /><address class="vcard author">
+    <a class="url fn" href="/users/peter/">Peter<br/>Upfold</a></address></li>
+    <li><a href="#comments">37 Comment(s)</a></li>
+</ul>
+
+<div class="entry-content">
+<p>GNU's wget command line program for downloading is very popular, and not without reason. While you can use it simply to retrieve a single file from a server, it is much more powerful than that and offers many more features.</p>
+
+<p>One of the more advanced features in wget is the mirror feature. This allows you to create a complete local copy of a website, including any stylesheets, supporting images and other support files. All the (internal) links will be followed and downloaded as well (and their resources), until you have a complete copy of the site on your local machine.</p>
+
+<p>In its most basic form, you use the mirror functionality like so:</p>
+
+<p><code>$ wget -m <em>http://www.example.com/</em></code></p>
+
+<p>There are several issues you might have with this approach, however.</p>
+
+<!-- ~~~ -->
+
+
+<p>First of all, it's not very useful for local browsing, as the links in the pages themselves still point to the real URLs and not your local downloads. What that means is that, if, say, you downloaded <strong>http://www.example.com/</strong>, the link on that page to <strong>http://www.example.com/page2.html</strong> would still point to example.com's server and so would be a right pain if you're trying to browse your local copy of the site while being offline for some reason.</p>
+
+<p>To fix this, you can use the <strong>-k</strong> option in conjunction with the mirror option:</p>
+
+<p><code>$ wget -mk <em>http://www.example.com/</em></code></p>
+
+<p>Now, that link I talked about earlier will point to the relative <strong>page2.html</strong>. The same happens with all images, stylesheets and resources, so you should be able to now get an authentic offline browsing experience.</p>
+
+<p>There's one other major issue I haven't covered here yet - bandwidth. Disregarding the bandwidth you'll be using on your connection to pull down a whole site, you're going to be putting some strain on the remote server. You should think about being kind and reduce the load on them (and you) especially if the site is small and bandwidth comes at a premium. Play nice.</p>
+
+<p>One of the ways in which you can do this is to deliberately slow down the download by placing a delay between requests to the server.</p>
+
+<p><code>$ wget -mk -w 20 <em>http://www.example.com/</em></code></p>
+
+<p>This places a delay of 20 seconds between requests. Replace that number, and optionally you can add a suffix of <strong>m</strong> for minutes, <strong>h</strong> for hours, and <strong>d</strong> for ... yes, days, if you want to slow down the mirror even further.</p>
+
+<p>Now if you want to make a backup of something, or download your favourite website for viewing when you're offline, you can do so with wget's mirror feature. To delve even further into this, check out wget's man page (<strong>man wget</strong>) where there are further options, such as random delays, setting a custom user agent, sending cookies to the site and lots more.</p>
+
+
+
+
+</div>
+
+<div id="about-author">
+<img class="avatar" src="http://www.gravatar.com/avatar/45266ec596a8acb0905a065dbe7ed453?s=65&amp;d=identicon" alt="Avatar for peter" height="65" width="65" />
+<span class="author"><a href="/users/peter/">
+Peter Upfold</a>
+ -
+<a href="http://peter.upfold.org.uk/">http://peter.upfold.org.uk/</a>
+
+</span><p>Peter Upfold is a technology enthusiast from the UK. Peter’s interest in Linux stems back to 2003, when curiosity got the better of him and he began using SUSE 9.0. Now he runs Linux Mint 9 on the desktop, runs a CentOS-based web server from home for his personal website and dabbles in all sorts of technology things across the Windows, Mac and open source worlds.</p>
+</div>
+
+<div id="post-misc">
+<ul id="tags">
+    
+    <li><a href="/post/tips-tutorials/"><strong>Tips &amp; Tutorials</strong></a></li>
+    
+    <li><a href="/post/cli/">CLI</a></li>
+    
+    <li><a href="/post/gnu/">GNU</a></li>
+    
+    <li><a href="/post/linux/">Linux</a></li>
+    
+    <li><a href="/post/tutorials/">tutorials</a></li>
+    
+    <li><a href="/post/command-line/">command line</a></li>
+    
+    <li><a href="/post/client/">client</a></li>
+    
+    <li><a href="/post/beginner/">beginner</a></li>
+    
+    <li><a href="/post/download/">download</a></li>
+    
+    <li><a href="/post/wget/">wget</a></li>
+    
+</ul>
+<ul id="share">
+    <li><script type="text/javascript">digg_url='http://fosswire.com/post/2008/04/create-a-mirror-of-a-website-with-wget/';digg_skin='compact';</script>
+    <script src="http://digg.com/tools/diggthis.js" type="text/javascript"></script></li>
+    <li><script type="text/javascript" src="http://www.reddit.com/button.js?t=1"></script></li>
+    <li><a href="http://www.fsdaily.com/submit?url=http%3A%2F%2Ffosswire.com%2Fpost%2F2008%2F04%2Fcreate-a-mirror-of-a-website-with-wget%2F&title=Create%20a%20mirror%20of%20a%20website%20with%20Wget" title="Submit this to FSDaily">
+    <img src="http://files.fosswire.com/site/images/fsdaily_submit.png" alt="FSDaily" style="border:0px;" />
+    </a></li>
+</ul><br class="clear" />
+</div>
+</div>
+</div>
+
+
+<h3 class="talkbc">
+<a href="/">Home</a> &raquo; <a href="/post/">Articles</a> &raquo;
+</h3>
+
+<a name="comments"></a>
+<h2><strong>Discussion:</strong> Create a mirror of a website with Wget</h2>
+
+
+<script type="text/javascript">
+//comment replies
+$(document).ready(function(){
+    $('a.replylink').click(function(e){
+        e.preventDefault();
+        src = $(this).attr('href').replace('#reply-', '');
+        reply_user = $('#comment-user-'+src).text().replace(/^\s+|\s+$/g,"")
+        $.get('/comments/raw/'+src+'/', function(data){
+            reply = "[" + reply_user + " said](#c" + src + "):\n\n"
+            reply += "> " + data.replace(/\n/g, "\n> ") + "\n\n";
+            $('#reply-area').val($('#reply-area').val() + reply).focus();
+        });
+    });
+});
+</script>
+
+
+<ol class="talkthread">
+
+
+
+    
+        <li class="comment alt">
+        <div class="ttmeta">
+        <h3><span id="comment-user-1473">rsync</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/cc6150f23588c6bfe727c8361ee6c9d7?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-1473" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1473" href="#c1473">#</a>
+		Posted on <strong>22 April 2008</strong> at <strong>02:38 PM</strong>
+	</div>
+	<p>rsync is a far more reasonable and well-suited tool for this purpose. Using the right tool for the right job is a key to being a better admin.
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    <li class="trackback"><!--  -->
+    <div class="ttmeta">
+    <h3><a href="http://www.fsdaily.com/EndUser/Create_a_mirror_of_a_website_with_Wget" rel="nofollow">fsdaily.com</a></h3>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1474" href="#c1474">#</a>
+		Posted on <strong>22 April 2008</strong> at <strong>02:48 PM</strong>
+	</div>
+	<p>&lt;strong&gt;Story added...&lt;/strong&gt;
+</p>
+<p>This story has been submitted to fsdaily.com! If you think this story should be read by the free software community, come vote it up and discuss it here:
+</p>
+<p>http://www.fsdaily.com/EndUser/Create_a_mirror_of_a_website_with_Wget...
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        <li class="comment alt">
+        <div class="ttmeta">
+        <h3><span id="comment-user-1472">Kyle</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/c431477589ede548cc7f809f549b0cdf?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-1472" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1472" href="#c1472">#</a>
+		Posted on <strong>22 April 2008</strong> at <strong>03:07 PM</strong>
+	</div>
+	<p>rsync is used for backing up a file system when you have ssh access to it.  wget on the other hand can be used on any public website even if you dont have ssh/ftp access.
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        <li class="comment ">
+        <div class="ttmeta">
+        <h3><span id="comment-user-1466">Shiv</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/0ee145918e2c184c3f766233ca3936b5?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-1466" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1466" href="#c1466">#</a>
+		Posted on <strong>22 April 2008</strong> at <strong>03:19 PM</strong>
+	</div>
+	<p>Awesome Tip !
+   It is very good for web developers who want to develop a similar kind of website.
+</p>
+<p>Thanks for the post.
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        <li class="comment alt">
+        <div class="ttmeta">
+        <h3><span id="comment-user-1470">Stuart</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/c761df57fefa9d9361694929167cd9de?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-1470" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1470" href="#c1470">#</a>
+		Posted on <strong>22 April 2008</strong> at <strong>03:48 PM</strong>
+	</div>
+	<p>@Shiv: remember, the author(s) of the website you're downloading has copyright over the <em>design</em>, including whatever code or markup powers it.  Copyright does NOT just cover content!
+</p>
+<p>So changing all the content but keeping the exact same layout and code may, in some cases, be an infringement that leads to somebody getting angry and asking you to remove your all-too-similar website.
+</p>
+<p>Of course, if the design is very common, this probably doesn't apply, or if the site design is open-sourced, e.g. Wordpress.
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    <li class="trackback"><!--  -->
+    <div class="ttmeta">
+    <h3><a href="http://ikteroak.blogsome.com/2008/04/22/egizu-zure-webgunearen-segurtasun-kopia-bat-wget-ekin-3/" rel="nofollow">IKTeroak :: Egizu zure webgunearen segurtasun kopi</a></h3>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1471" href="#c1471">#</a>
+		Posted on <strong>22 April 2008</strong> at <strong>05:11 PM</strong>
+	</div>
+	<p>[...] FOSSwire gunean wget komandoaren erabilera azaltzen dute zerbitzari batean duzun webgune baten kopia bat zure ekipora ekartzeko. Tutorial txiki honen bitartez zure web orriaren CSS fitxategiak, irudiak eta bestelako fitxategiak gorde ahal izango dituzu lokalean, barne lotura guztiak errespetatzen direlarik. Prozesuan kontutan hartu beharreko hainbat xehetasun ere oso modu garbian egiten dira. [...] 
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        <li class="comment alt">
+        <div class="ttmeta">
+        <h3><span id="comment-user-1467">E</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/e9f70d3dcc643f628ceaaddcdfde6b66?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-1467" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1467" href="#c1467">#</a>
+		Posted on <strong>22 April 2008</strong> at <strong>05:24 PM</strong>
+	</div>
+	<p>This is only good if you want to make the end result static. If your site is a true dynamic site running something like PHP and you run these commands you only end up with a static representation of the site as it was at that time. It's not a true mirror. This is only good if you want to mirror static content like downloads or pictures to another site.
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        <li class="comment ">
+        <div class="ttmeta">
+        <h3><span id="comment-user-1468">Simon Hibbs</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/f1340809bc5256fb324be57bb88b88a9?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-1468" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1468" href="#c1468">#</a>
+		Posted on <strong>22 April 2008</strong> at <strong>06:18 PM</strong>
+	</div>
+	<p>httrack is more feature complete for web site mirroring, but also more complex.
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        <li class="comment alt">
+        <div class="ttmeta">
+        <h3><span id="comment-user-1460">Todd</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/a62c3a5378c16611c97c2bc8e77ed954?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-1460" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1460" href="#c1460">#</a>
+		Posted on <strong>22 April 2008</strong> at <strong>08:44 PM</strong>
+	</div>
+	<p>Another valuable option is -np for no parent.  Say you just want to mirror http://example.com/subfolder/. by default wget will mirror http://example.com/subfolder/ and go up to the parent folder (example.com in this case) and grab everything there.  So the final command that I usually use on sites:
+</p>
+<p>wget -mk -w 20 -np http://example.com/subfolder/
+</p>
+<p>Also look into the screen command so you can "background" this and check on the status every so often.
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    <li class="trackback"><!--  -->
+    <div class="ttmeta">
+    <h3><a href="http://www.techblogger.org/2008/04/22/create-a-local-website-mirror-with-wget-linux-tip/" rel="nofollow">Create a Local Website Mirror with Wget [Linux Tip</a></h3>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1461" href="#c1461">#</a>
+		Posted on <strong>22 April 2008</strong> at <strong>10:14 PM</strong>
+	</div>
+	<p>[...] is both considerate and wise. Hit the link for details on using wget for offline website access. Create a mirror of a website with Wget [...] 
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        <li class="comment alt">
+        <div class="ttmeta">
+        <h3><span id="comment-user-1464">Paul William Tenny</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/9cc9dba6ea7d9b41418f8b95f420a15d?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-1464" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1464" href="#c1464">#</a>
+		Posted on <strong>22 April 2008</strong> at <strong>10:58 PM</strong>
+	</div>
+	<p>You probably want -N if you intend on doing subsequent mirrors, it'll only refresh local copies of files if the remote version is newer.
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    <li class="trackback"><!--  -->
+    <div class="ttmeta">
+    <h3><a href="http://bingu.net/blog/241/create-a-mirror-of-a-website-with-wget/" rel="nofollow">用wget创建网站的镜像 - 冰古blog</a></h3>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1477" href="#c1477">#</a>
+		Posted on <strong>23 April 2008</strong> at <strong>05:28 AM</strong>
+	</div>
+	<p>[...] 更详细，请访问FOSSwire  Tags: linux, shell, SSH, wget    You can follow any responses to this entry through the RSS 2.0 [...] 
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        <li class="comment alt">
+        <div class="ttmeta">
+        <h3><span id="comment-user-1475">Zhenyi</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/b88df983899df1afa7827f9ec79dbdb8?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-1475" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1475" href="#c1475">#</a>
+		Posted on <strong>23 April 2008</strong> at <strong>11:59 AM</strong>
+	</div>
+	<p>... Mirror the whole internet
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    <li class="trackback"><!--  -->
+    <div class="ttmeta">
+    <h3><a href="http://fosswire.com/2008/04/23/more-advanced-wget-usage/" rel="nofollow">FOSSwire &amp;raquo; More advanced wget usage</a></h3>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1476" href="#c1476">#</a>
+		Posted on <strong>23 April 2008</strong> at <strong>05:25 PM</strong>
+	</div>
+	<p>[...] recently covered how to make a mirror of a website with GNU&amp;#8217;s wget command line program and in the comments of that post there were several [...] 
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        <li class="comment alt">
+        <div class="ttmeta">
+        <h3><span id="comment-user-1478">Sharjeel Sayed</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/1719ab16a691200a763b4de03fadc965?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-1478" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1478" href="#c1478">#</a>
+		Posted on <strong>24 April 2008</strong> at <strong>05:26 AM</strong>
+	</div>
+	<p>Any idea how we can use this to mirror del.icio.us ?
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    <li class="trackback"><!--  -->
+    <div class="ttmeta">
+    <h3><a href="http://www.syncexp.com/wp/gadgets/create-a-local-website-mirror-with-wget-linux-tip-4_236" rel="nofollow">Create a Local Website Mirror with Wget [Linux Tip</a></h3>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1469" href="#c1469">#</a>
+		Posted on <strong>25 April 2008</strong> at <strong>03:18 PM</strong>
+	</div>
+	<p>[...] is both considerate and wise. Hit the link for details on using wget for offline website access. Create a mirror of a website with Wget [...] 
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    <li class="trackback"><!-- alt -->
+    <div class="ttmeta">
+    <h3><a href="http://0ddn1x.wordpress.com/2008/04/25/mirror-sites-with-wget/" rel="nofollow">Mirror sites with wget &amp;laquo; 0ddn1x: tricks with</a></h3>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1479" href="#c1479">#</a>
+		Posted on <strong>25 April 2008</strong> at <strong>05:35 PM</strong>
+	</div>
+	<p>[...] Mirror sites with&amp;nbsp;wget Filed under: Linux &amp;#8212; 0ddn1x @ 2008-04-25 17:35:03 +0000   http://fosswire.com/2008/04/21/create-a-mirror-of-a-website-with-wget/ [...] 
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        <li class="comment ">
+        <div class="ttmeta">
+        <h3><span id="comment-user-1480">xajckop</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/7c63e3ccd95f5deb9b88aff11ee32442?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-1480" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1480" href="#c1480">#</a>
+		Posted on <strong>30 April 2008</strong> at <strong>01:25 PM</strong>
+	</div>
+	<p>Serbian version of that tip added to my blog.
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    <li class="trackback"><!-- alt -->
+    <div class="ttmeta">
+    <h3><a href="http://my.donews.com/dupola/2008/05/09/links-for-2008-05-08/" rel="nofollow">links from dupola&amp;#8217;s bookmarks.&amp;raquo; Blog A</a></h3>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1462" href="#c1462">#</a>
+		Posted on <strong>08 May 2008</strong> at <strong>04:36 PM</strong>
+	</div>
+	<p>[...] FOSSwire » Create a mirror of a website with Wget (tags: wget putty ssh) [...] 
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    <li class="trackback"><!--  -->
+    <div class="ttmeta">
+    <h3><a href="http://dupola.wordpress.com/2008/05/09/links-for-2008-05-08/" rel="nofollow">links for 2008-05-08 &amp;laquo; dupola&amp;#8217;s weblog</a></h3>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1463" href="#c1463">#</a>
+		Posted on <strong>08 May 2008</strong> at <strong>04:37 PM</strong>
+	</div>
+	<p>[...] FOSSwire » Create a mirror of a website with Wget (tags: wget putty ssh)   Possibly related posts: (automatically generated)links for 2008-04-05links for 2008-03-07    Posted by dupola Filed in bookmarks [...] 
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        <li class="comment alt">
+        <div class="ttmeta">
+        <h3><span id="comment-user-1465">Jan from fish forum</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/26ef9c8915f3d459fd3108952c88e6fa?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-1465" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1465" href="#c1465">#</a>
+		Posted on <strong>06 June 2008</strong> at <strong>04:06 PM</strong>
+	</div>
+	<p>E is right, if your site is dynamic, then you will get files such as something.php?this=that . This won't work unless your mirror server serves php files as HTML ones.
+</p>
+<p>So in order to mirror a dynamic website it is necessary to move databases. I am not sure if wget is suitable for this purpose since there is different access to databases than to public folders with website's content.
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        <li class="comment ">
+        <div class="ttmeta">
+        <h3><span id="comment-user-1481">r3d3ye</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/de84c7a3e985690583c3bfccca164a2d?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-1481" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1481" href="#c1481">#</a>
+		Posted on <strong>26 June 2008</strong> at <strong>12:16 PM</strong>
+	</div>
+	<p>https://:8043
+</p>
+<p>Does anyone tried using "wget" in mirroring this kind of URL?
+   Sites with web certificate and different web port (in this case 8043).
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    <li class="trackback"><!-- alt -->
+    <div class="ttmeta">
+    <h3><a href="http://mizine.de/linux/lokale-kopie-einer-webseite-mit-wget/" rel="nofollow">Lokale Kopie einer Webseite mit wget</a></h3>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1483" href="#c1483">#</a>
+		Posted on <strong>10 July 2008</strong> at <strong>03:24 PM</strong>
+	</div>
+	<p>[...] Diese Variante eignet sich also dafür eine webseite lokal abzulegen um offline zu browsen. [via fosswire] &amp;nbsp;Tags:browse, browsen, get, holen, komplett, Kopie, lokal, Mirror, sichern, speichern, Tip, [...] 
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    <li class="trackback"><!--  -->
+    <div class="ttmeta">
+    <h3><a href="http://homolibere.info/articles/sozdanie-zerkala-website-s-pomoshhyu-wget/" rel="nofollow">Homolibere &amp;raquo; Blog Archive &amp;raquo; Создание з</a></h3>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1485" href="#c1485">#</a>
+		Posted on <strong>27 August 2008</strong> at <strong>08:20 AM</strong>
+	</div>
+	<p>[...] с FOSSwire переведено [...] 
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        <li class="comment alt">
+        <div class="ttmeta">
+        <h3><span id="comment-user-1482">touranaga</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/1717d3023eca645e4068aa457f3dcb69?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-1482" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1482" href="#c1482">#</a>
+		Posted on <strong>16 September 2008</strong> at <strong>08:32 AM</strong>
+	</div>
+	<p>where does wget saves mirrors
+</p>
+<p>note that i'm new in linux so dont mad at me
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        <li class="comment ">
+        <div class="ttmeta">
+        <h3><span id="comment-user-1484">Peter</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/45266ec596a8acb0905a065dbe7ed453?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-1484" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1484" href="#c1484">#</a>
+		Posted on <strong>16 September 2008</strong> at <strong>08:34 AM</strong>
+	</div>
+	<p>@touranaga - It should save them in whatever folder you ran wget from.
+</p>
+<p>So if you just opened up a terminal and did it straight from there, they should be in your home folder, under a directory of the website address (for example /home/yourname/fosswire.com).
+</p>
+<p>If you moved into a different directory with cd, then the mirrors will be placed there.
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        <li class="comment alt">
+        <div class="ttmeta">
+        <h3><span id="comment-user-1486">touranaga</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/1717d3023eca645e4068aa457f3dcb69?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-1486" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1486" href="#c1486">#</a>
+		Posted on <strong>16 September 2008</strong> at <strong>08:49 AM</strong>
+	</div>
+	<p>a found them its localy save wget make new folder for each mirror you save, but there is an option to no to make folder, in man wget
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        <li class="comment ">
+        <div class="ttmeta">
+        <h3><span id="comment-user-1487">touranaga</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/1717d3023eca645e4068aa457f3dcb69?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-1487" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1487" href="#c1487">#</a>
+		Posted on <strong>16 September 2008</strong> at <strong>08:50 AM</strong>
+	</div>
+	<p>Thank you Peter
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    <li class="trackback"><!-- alt -->
+    <div class="ttmeta">
+    <h3><a href="http://cbrueggenolte.de/?p=103" rel="nofollow">Carstens Blog &amp;raquo; links for 2009-01-17</a></h3>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c1488" href="#c1488">#</a>
+		Posted on <strong>17 January 2009</strong> at <strong>03:04 PM</strong>
+	</div>
+	<p>[...] FOSSwire » Create a mirror of a website with Wget (tags: free tutorial programming web tips howto linux download tools wget mirror website internet utilities shell commandline ubuntu commands backup) [...] 
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        <li class="comment ">
+        <div class="ttmeta">
+        <h3><span id="comment-user-3268">spiny norman</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/53c449a50172952d0179abf2ed2bb674?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-3268" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c3268" href="#c3268">#</a>
+		Posted on <strong>22 May 2009</strong> at <strong>02:21 PM</strong>
+	</div>
+	<p>"if your site is dynamic, then you will get files such as something.php?this=that . This won't work unless your mirror server serves php files as HTML ones. So in order to mirror a dynamic website it is necessary to move databases."
+</p>
+<p>Wrong.  Wget will convert all the "index.php?x=34" or whatever  to HTML files if you use the right options.   You get a startic snapshot of the site at that moment, as was mentioned, but it works.  RTFM.
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        <li class="comment alt">
+        <div class="ttmeta">
+        <h3><span id="comment-user-3417">Tim Jeffries</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/503e8a8620e4b559fdd4aad846367a6f?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-3417" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c3417" href="#c3417">#</a>
+		Posted on <strong>07 June 2009</strong> at <strong>12:13 PM</strong>
+	</div>
+	<p>Is there any way to use this command from Mac OS X? I'm being told that the command isn't found ... :-(
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        
+        <li class="comment staff"><!--  -->
+        
+        <div class="ttmeta">
+        <h3>
+        <a id="comment-user-3418" href="/users/peter/">
+        Peter Upfold</a></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/45266ec596a8acb0905a065dbe7ed453?s=65&amp;d=identicon" height="65" width="65" />
+        
+    
+    <div>
+    <div id="reply"><a href="#reply-3418" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c3418" href="#c3418">#</a>
+		Posted on <strong>07 June 2009</strong> at <strong>12:21 PM</strong>
+	</div>
+	<p><a href="#c3417">Tim Jeffries said</a>:
+</p>
+<blockquote><p>Is there any way to use this command from Mac OS X? I'm being told that the command isn't found ... :-(
+</p>
+</blockquote><p>curl ships with Mac OS X, but wget unfortunately does not. You can either <a href="http://www.asitis.org/installing-wget-for-mac-os-x">compile it yourself</a> or there is a pre-built version in a zip archive available at <a href="http://www.statusq.org/archives/2008/07/30/1954/">the Status-Q blog</a>. In the latter case, you can simply copy the wget binary in that zip archive to /usr/local/bin, or anywhere else in your PATH.
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        <li class="comment alt">
+        <div class="ttmeta">
+        <h3><span id="comment-user-3419">Tim Jeffries</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/503e8a8620e4b559fdd4aad846367a6f?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-3419" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c3419" href="#c3419">#</a>
+		Posted on <strong>07 June 2009</strong> at <strong>01:12 PM</strong>
+	</div>
+	<p>Thanks Peter. I realise I'm probably asking super stupid questions. It's been a long time since I've done any serious work at the command line and even when I did it was always wise to get someone to look over my shoulder.
+</p>
+<p>I managed to install it and get it to work on OS X. It's such a great tool. I'm wondering if you know why it wouldn't work on a Blogger blog. The command works fine on my work website (http://www.urbanseed.org/) but I can't seem to get it to work with an old blog of mine I'm trying to archive so I can happily remove it. http://www.afootinbothplaces.blogspot.com/
+</p>
+<p>Thanks again.
+   Tim.
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        <li class="comment ">
+        <div class="ttmeta">
+        <h3><span id="comment-user-3524">Morgel</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/477fab9681067ce9ebb0c3313f9e5eff?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-3524" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c3524" href="#c3524">#</a>
+		Posted on <strong>22 June 2009</strong> at <strong>11:05 AM</strong>
+	</div>
+	<p>I use this method (It is taken from this post http://www.sysadmin.md/how-to-retrieve-entire-site-via-command-line-using-wget.html):
+</p>
+<p>wget -rkpNl5 www.sysadmin.md
+</p>
+<p>-r — Retrieve recursively
+</p>
+<p>-k — Convert the links in the document to make them suitable for local viewing
+</p>
+<p>-p — Download everything (inlined images, sounds, and referenced stylesheets)
+</p>
+<p>-N — Turn on time-stamping
+</p>
+<p>-l5 — Specify recursion maximum depth level 5
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        <li class="comment alt">
+        <div class="ttmeta">
+        <h3><span id="comment-user-3525">Morgel</span>
+        <em>(guest)</em></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/477fab9681067ce9ebb0c3313f9e5eff?s=65&amp;d=identicon" height="65" width="65" />
+    
+    <div>
+    <div id="reply"><a href="#reply-3525" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c3525" href="#c3525">#</a>
+		Posted on <strong>22 June 2009</strong> at <strong>11:06 AM</strong>
+	</div>
+	<p>Strange formatting. Please edit above post :(
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+
+    
+        
+        <li class="comment ">
+        
+        <div class="ttmeta">
+        <h3>
+        <a id="comment-user-4240" href="/users/StefanLasiewski/">
+        StefanLasiewski</a></h3>
+        <img class="avatar" src="http://www.gravatar.com/avatar/004b564509d336a8312d07aea0d4e31e?s=65&amp;d=identicon" height="65" width="65" />
+        
+    
+    <div>
+    <div id="reply"><a href="#reply-4240" class="button replylink">Quote</a></div>
+    </div>
+    </div>
+
+
+<div class="ttpost">
+	<div class="ttmeta-more">
+		<a name="c4240" href="#c4240">#</a>
+		Posted on <strong>08 September 2009</strong> at <strong>09:02 PM</strong>
+	</div>
+	<p>Morgel: Some of those options are redundant, and are already included as the --mirror option.
+</p>
+	<br class="clear" />
+</div>
+<br class="clear" />
+</li>
+
+</ol>
+
+<ol class="talkthread">
+
+<li class="alt post-reply">
+<form name="replyform" action="/comments/post/" method="POST"><div style='display:none'><input type='hidden' name='csrfmiddlewaretoken' value='dca3459554171950172b43c3841982de' /></div>
+<div class="ttmeta">
+
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    <input type="text" id="name" name="name" value="Name" />
+    
+    
+    <input type="text" id="email" name="email" value="Email" />
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+<a href="/accounts/signin/">Sign In with OpenID</a>
+
+</div>
+<div class="ttpost">
+
+
+    <input type="hidden" name="content_type" value="content.contentitem" id="id_content_type" />
+
+
+
+    <input type="hidden" name="object_pk" value="388" id="id_object_pk" />
+
+
+
+    <input type="hidden" name="timestamp" value="1292855547" id="id_timestamp" />
+
+
+
+    <input type="hidden" name="security_hash" value="7d6614ec830ba85f65aa0b1c1ffaa00b3b439428" id="id_security_hash" />
+
+
+
+    
+    
+    
+
+
+
+    
+    
+    
+
+
+
+    
+    
+    
+
+
+
+    
+    
+    
+    <textarea id="reply-area" name="comment" cols="58" rows="20"></textarea>
+    
+
+
+
+    
+    <p style="display:none;"><input type="text" name="honeypot" id="id_honeypot" /></p>
+    
+    
+    
+
+
+</div>
+<div class="clear"><input type="submit" name="submit" value="Reply" /></div>
+</form>
+</li>
+</ol>
+
+<h3 class="talkbc talkbcbottom">
+<a href="/">Home</a> &raquo; <a href="/post/">Articles</a> &raquo;
+<a href="">Create a mirror of a website with Wget</a>
+</h3>
+
+
+
+</div>
+
+
+<div id="side">
+    <div class="user">
+        <div>
+            
+            
+
+
+<h3>Sign In</h3>
+<form name="openid_signin" action="/accounts/signin/" method="post"><div style='display:none'><input type='hidden' name='csrfmiddlewaretoken' value='dca3459554171950172b43c3841982de' /></div>
+<input type="text" value="http://" name="openid_url" id="login-input" />
+<input type="submit" value="Continue" name="submit" id="login-submit" />
+<ul id="login-providers"></ul>
+</form>
+
+<script type="text/javascript">
+var providers = new Array();
+providers['openid'] = 'http://'
+providers['google'] = 'https://www.google.com/accounts/o8/id'
+providers['yahoo'] = 'http://yahoo.com'
+providers['launchpad'] = 'http://login.launchpad.net'
+
+$(document).ready(function(){
+    for(p in providers){
+        btn = $('<li id="oidb-'+p+'">'+p+'</li>');
+        btn.appendTo('#login-providers');
+        btn.css('background-image', 'url(http://files.fosswire.com/site/images/openid/'+p+'.png)');
+    }
+    $('#oidb-openid').css('background-position', '0px 0px');
+    // events
+    $('#login-providers li').live('click', function(){
+        $('#login-providers li').css('background-position', '16px 0px');
+        $(this).css('background-position', '0px 0px');
+        $('#login-input').val(providers[$(this).text()]);
+        if($(this).text() == 'openid'){
+            $('#login-input').css('color', '#000').focus()
+        }else{
+            $('#login-input').css('color', '#444');
+            $('#login-submit').focus()
+        }
+    });
+    $('#login-input').focus(function(){
+        $('#login-providers li').css('background-position', '16px 0px');
+        $('#oidb-openid').css('background-position', '0px 0px');
+        $(this).css('color', '#000');
+    });
+});
+</script>
+
+
+
+            
+        </div>
+    </div>
+    
+    <div id="subscribe">
+	Enjoy FOSSwire's content? Have it delivered!
+	<a id="subscribe2" href="http://feeds.feedburner.com/fosswire">Subscribe</a>
+	</div>
+
+    <div class="medrec">
+    <script type="text/javascript">
+    google_ad_client = "pub-1216909943898805";
+    google_ad_slot = "1775503251";
+    google_ad_width = 300;
+    google_ad_height = 250;
+    </script>
+    <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
+    </div>
+    
+    
+<ul id="catnav">
+    <li id="urhere"><a href="/">FOSSwire</a>
+    <ul>
+    <li><a href="/post/">All articles</a></li>
+    
+    <li><a href="/post/news/">News</a></li>
+    
+    <li><a href="/post/tips-tutorials/">Tips &amp; Tutorials</a></li>
+    
+    <li><a href="/post/games/">Games</a></li>
+    
+    <li><a href="/post/apps/">Applications</a></li>
+    
+    <li><a href="/post/programming/">Programming</a></li>
+    
+    </ul>
+    </li>
+    <!-- <li><a href="/talk/">Talk</a></li>
+    <li><a href="/submit/">Submissions</a></li> -->
+</ul>
+
+    
+    <form target="_blank" id="cse-search-box" action="http://www.google.com/cse"><div>
+    <input type="hidden" value="partner-pub-1216909943898805:1phf10-bdqa" name="cx"/>
+    <input type="hidden" value="ISO-8859-1" name="ie"/>
+    <input type="text" size="20" name="q" style="background: rgb(255, 255, 255) url(http://www.google.com/coop/intl/en/images/google_custom_search_watermark.gif) no-repeat scroll left center; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;"/>
+    <input type="submit" value="Search" name="sa"/>
+    </div></form>
+            
+    <script src="http://www.google.com/coop/cse/brand?form=cse-search-box&amp;lang=en" type="text/javascript"/></script>
+    
+    <ul id="follow">
+        <li style="margin: 10px 23px 0pt 0pt; overflow: hidden; width: 139px !important;"><h2>Follow us...</h2></li>
+        <li><a href="http://www.facebook.com/FOSSwire"><img alt="Facebook" src="http://files.fosswire.com/site/images/facebook.png"/></a></li>
+        <li style="margin-right: 9px;"><a href="http://identi.ca/fosswire"><img alt="Identi.ca" src="http://files.fosswire.com/site/images/identica.png"/></a></li>
+        <li><a href="http://twitter.com/fosswire"><img alt="Twitter" src="http://files.fosswire.com/site/images/twitter.png"/></a></li>
+        <br class="clear" />
+    </ul>
+    
+</div>
+
+
+
+<div id="footer">
+    <strong>&copy; 2006 - 2010 <a href="http://oratos.com/">Oratos Media</a>.</strong> <a href="/about/">About</a> | <a href="/policy/">Policies</a>
+    <div>FOSSwire is an Oratos Media property.
+    Content is made available under the <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA 3.0</a> license.</div>
+</div>
+
+<div class="medrec mrbottom">
+<script type="text/javascript">
+google_ad_client = "pub-1216909943898805";
+google_ad_slot = "3858672041";
+google_ad_width = 300;
+google_ad_height = 250;
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
+</div>
+
+<!-- Reinvigorate -->
+<script type="text/javascript" src="http://include.reinvigorate.net/re_.js"></script>
+<script type="text/javascript">re_("o3yvs-1n227n0wuy");</script>
+<!-- End -->
+
+<!-- Start Quantcast tag -->
+<script type="text/javascript" src="http://edge.quantserve.com/quant.js"></script>
+<script type="text/javascript">_qacct="p-2dohrLl91g0Kw";quantserve();</script>
+<noscript><a href="http://www.quantcast.com/p-2dohrLl91g0Kw" target="_blank"><img src="http://pixel.quantserve.com/pixel/p-2dohrLl91g0Kw.gif" style="display: none;" border="0" height="1" width="1" alt="Quantcast"/></a></noscript>
+<!-- End Quantcast tag -->
+
+</body>
+</html>

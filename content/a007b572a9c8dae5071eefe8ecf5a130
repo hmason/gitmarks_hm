@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head><title>Unobtrusive JavaScript with jQuery</title>
+<style type="text/css">
+body {
+  margin: 0;
+  padding: 1em;
+  font-family: helvetica, sans-serif;
+}
+h1 {
+    margin: 0;
+}
+</style>
+</head>
+<body>
+    <h1>Unobtrusive JavaScript with jQuery</h1>
+    <p>Simon Willison, 6th May 2008</p>
+    <p>Links and resources from a three hour tutorial presented at XTech 2008.</p>
+    <div style="width:425px;text-align:left" id="__ss_390708"><object style="margin:0px" width="425" height="355"><param name="movie" value="http://static.slideshare.net/swf/ssplayer2.swf?doc=unobtrusivejquery-1210086958470711-9"/><param name="allowFullScreen" value="true"/><param name="allowScriptAccess" value="always"/><embed src="http://static.slideshare.net/swf/ssplayer2.swf?doc=unobtrusivejquery-1210086958470711-9" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="425" height="355"></embed></object><div style="font-size:11px;font-family:tahoma,arial;height:26px;padding-top:2px;"><a href="http://www.slideshare.net/?src=embed"><img src="http://static.slideshare.net/swf/logo_embd.png" style="border:0px none;margin-bottom:-5px" alt="SlideShare"/></a> | <a href="http://www.slideshare.net/simon/unobtrusive-javascript-with-jquery?src=embed" title="View 'Unobtrusive JavaScript with jQuery' on SlideShare">View</a> | <a href="http://www.slideshare.net/upload?src=embed">Upload your own</a></div></div>
+    <p>Download PDF: <a href="http://files.simonwillison.net/2008/xtech-unobtrusive-jquery.pdf">xtech-unobtrusive-jquery.pdf</a> (3 MB)</p>
+    <p>Tools:</p>
+    <ul>
+        <li><a href="http://getfirebug.com/releases/">Firebug extension</a></li>
+        <li><a href="javascript:void(function(){var%20s=document.createElement('script');s.src='http://code.jquery.com/jquery-1.2.3.js';document.getElementsByTagName('head')[0].appendChild(s);}())">Insert jQuery</a> - bookmarklet, drag to your browser toolbar</li>
+        <li><a href="http://docs.jquery.com/">jQuery API docs</a></li>
+        <li><a href="http://visualjquery.com/">visualjquery.com</a></li>
+    </ul>
+    <p>Demos:</p>
+    <ol>
+        <li><a href="sidenote-js.html">Sidenote popup in JavaScript</a></li>
+        <li><a href="sidenote-jquery.html">Sidenote popup with jQuery</a></li>
+        <li><a href="http://24ways.org/examples/unobtrusively-mapping-microformats-with-jquery/restaurants-geo.html">Restaurant map with microformats</a> (<a href="http://24ways.org/2007/unobtrusively-mapping-microformats-with-jquery">accompanying article</a>)</li>
+        <li><a href="input-hint.html">labels.js with jQuery</a></li>
+        <li><a href="field-help.html">Inline form help</a></li>
+        <li><a href="http://natbat.net/simon/2008/xtech/">Head shaking login box</a></li>
+    </ol>
+    <p>Copy and paste demos:</p>
+    <ol>
+        <li><h4>Ajax enhanced sidenotes</h4>
+        <p>Paste the following code in to Firebug on the <a href="sidenote-jquery.html">sidenote popup page</a>.</p>
+        <pre><code>var $ = jQuery;
+$('a.sidenote').unbind().one('click', function() {
+    $('&lt;p /&gt;').load(this.href).appendTo(document.body);
+    // Make the link stop being a link
+    $(this).replaceWith($(this).contents());
+    return false;
+});
+var loading = $(
+   '&lt;img alt="loading" src="http://simonwillison.net/static/2008/loading.gif" /&gt;'
+).appendTo(document.body).hide()
+loading.ajaxStart(function() { $(this).show() });
+loading.ajaxStop(function() { $(this).hide() });
+        </code></pre>
+        </li>
+        <li><h4>XTech Atom feed news box</h4>
+        <p>Paste the following code in to Firebug on the <a href="http://2008.xtech.org/public/schedule/grid">XTech schedule page</a>.</p>
+        <pre><code>var $ = jQuery;
+var signup = $('div#en_sidebar div#signup.rhsbox'); 
+var news_box = $('&lt;div id="news_feed" class="rhsbox"&gt;&lt;/div&gt;'); 
+news_box.html(signup.html()); 
+news_box.find('div.box').empty(); 
+var ul = $('&lt;ul /&gt;'); 
+var feed_url = jQuery('link[type=application/atom+xml]').attr('href'); 
+jQuery.get(feed_url, function(xml) { 
+  var feed = jQuery(xml); 
+  feed.find('feed entry').each(function() { 
+    var title = $(this).find('title').text(); 
+    var link = $(this).find('link').attr('href'); 
+    var li = $('&lt;li&gt;&lt;a href="' + link + '"&gt;' + title + '&lt;/a&gt;&lt;/li&gt;'); 
+    li.appendTo(ul); 
+  }); 
+}); 
+ul.css('text-align', 'left').appendTo(news_box.find('div.box')); 
+news_box.insertBefore(signup); 
+        </code></pre>
+        </li>
+    </ol>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-1090368-1";
+urchinTracker();
+</script>
+</body>
+</html>

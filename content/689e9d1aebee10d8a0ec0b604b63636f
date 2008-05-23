@@ -1,0 +1,712 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Debugging Django</title>
+<link rel="alternate" type="application/atom+xml" title="Atom" href="http://feeds.simonwillison.net/swn-everything">
+<link rel="stylesheet" type="text/css" href="/static/css/all.css?r291">
+<script type="text/javascript" src="/static/js/all.js?r291"></script>
+
+
+<link rev="canonical" href="http://swtiny.eu/EZ1">
+
+</head>
+<body class="smallhead">
+
+<p class="smallhead-toolbar">
+    <a id="atomfeedlink" href="http://feeds.simonwillison.net/swn-everything" title="My Atom feed"><img class="feedicon" src="/static/css/img/feed-icon-14x14.png" width="14" height="14" alt="Feed"></a>
+    
+    <a href="/openid/" class="signin">Sign in with <img src="/static/css/img/openid-14x14.png" alt="OpenID" width="14" height="14"> OpenID</a>
+    
+</p>
+
+
+
+<div id="smallhead">
+  <h1><a href="/">Simon Willison’s Weblog</a></h1>
+</div><!-- #smallhead -->
+
+<div id="wrapper">
+<div id="primary">
+
+<div class="entry entryPage">
+
+
+<h2>Debugging Django</h2>
+<p>I gave a talk on Debugging Django applications at <a href="http://upcoming.yahoo.com/event/546918/">Monday’s inaugural meeting</a> of DJUGL, the London Django Users Group. I wanted to talk about something that wasn’t particularly well documented elsewhere, so I pitched the talk as “Bug Driven Development”—what happens when Test Driven Development goes the way of <a href="http://www.shipmentoffail.com/fails/2008/04/horse-vs-car-fail/">this unfortunate pony</a>.</p>
+
+The slides <a href="http://www.slideshare.net/simon/debugging-django/">are up on SlideShare</a>, but don’t provide quite enough context so I’m going to cover the tips in full here.
+
+<h4>Making the most of the error page</h4>
+
+<p>Django’s default error page is great—it provides a detailed traceback with local variables, lets you expand out the lines of code around the problem, provides a plain text exception suitable for e-mailing to colleagues and even a one-click button to send details to <a href="http://dpaste.com/">http://dpaste.com/</a> so you can go and talk about the error on IRC. It also serves the same purpose as <a href="http://www.php.net/phpinfo">phpinfo()</a>—it shows you your application’s settings, the GET, POST and COOKIE data from the request and the all important META fields assembled from the HTTP environment (great for remembering how to miss-spell HTTP_REFERER).</p>
+
+<p>Useful tip number one is that you can trigger the error page from any view just by adding the following line:</p>
+
+<pre><code class="python">assert False</code></pre>
+
+<p>You can serve up an expression with the assertion as well; it will be displayed at the top of the error page:</p>
+
+<pre><code class="python">assert False, request.GET</code></pre>
+
+<p>One particularly useful place to use this is when you are building a complex form. If you want to see the data that was submitted, drop an assert False in to the view that the form targets and use the error page to inspect the data.</p>
+
+<h4>Logging to the development server console</h4>
+
+<p>If you want to know what’s going on inside a view, the quickest way is to drop in a print statement. The development server outputs any print statements directly to the terminal; it’s the server-side alternative to a JavaScript alert().</p>
+
+<p>If you want to be a bit more sophisticated with your logging, it’s worth turning to Python’s logging module (part of the standard library). You can configure it in your settings.py:</p>
+
+<pre><code class="python">import logging
+logging.basicConfig(
+    level = logging.DEBUG,
+    format = '%(asctime)s %(levelname)s %(message)s',
+)</code></pre>
+
+<p>Then call it from any of your views:</p>
+
+<pre><code class="python">def my_view(request):
+    import logging
+    logging.debug("A log message")
+    ...</code></pre>
+
+<p>Again, this will log things to the terminal where the development server is running. If you want to log things to a file you can do so by extending the basicConfig call:</p>
+
+<pre><code class="python">logging.basicConfig(
+    level = logging.DEBUG,
+    format = '%(asctime)s %(levelname)s %(message)s',
+    filename = '/tmp/myapp.log',
+    filemode = 'w'
+)</code></pre>
+
+<p>You can then use <samp>tail -f /tmp/myapp.log</samp> to see log lines being appended to that file in real-time. This can be used in production as well as development.</p>
+
+<p>The above just scratches the surface of Python’s logging module; with a bit of <a href="http://docs.python.org/lib/module-logging.html" title="Loggingi facility for Python">digging around in the documentation</a> you can use it to rotate log files, send log messages over the network and even POST log events to an HTTP server somewhere.</p>
+
+<p>Often you find yourself dealing with an error that only occurs in certain circumstances—a function might be called from dozens of different places in your program but only runs in to trouble in a very specific case. You can use the <a href="http://docs.python.org/lib/module-traceback.html">traceback module</a> to log the current stack, which will allow you to tell how a function was called when something went wrong:</p>
+
+<pre><code class="python">import logging, traceback, pprint
+
+def my_buggy_function(arg):
+    ...
+    if error_condition:
+        stack = pprint.pformat(traceback.extract_stack())
+        logging.debug('An error occurred: %s' % stack)</code></pre>
+
+<p>The tuple returned by <code class="python">traceback.extract_stack()</code> includes line numbers, function names and paths to Python files so you can use it to reconstruct a good amount of information about your program.</p>
+
+<h4>Using the debugger</h4>
+
+<p>By far the most powerful weapon in my debugging toolkit is the Python debugger, <a href="http://docs.python.org/lib/module-pdb.html">pdb</a>. Again, this ships with the standard library so there’s nothing extra to install. pdb is a command line debugger (if you want a GUI options include <a href="http://sourceforge.net/projects/pyeclipse/">PyEclipse</a> and <a href="http://www.activestate.com/Products/komodo_ide/index.mhtml">Komodo</a>, but I haven’t used either myself). There are a bunch of ways to activate pdb, but the most straight forward is to simply drop the following line directly in to a Django view function:</p>
+
+<pre><code class="python">import pdb; pdb.set_trace()</code></pre>
+
+<p>If you try to load that page in your browser, the browser will hang—the page will appear to be loading extremely slowly. What’s actually happened is the developer server has paused execution and thrown up the pdb interface—you can switch over to your console and start interacting directly with the server mid view.</p>
+
+<p>Did I mention you should never, ever leave this on in production?</p>
+
+<p>So, you’ve got a hung development server and a pdb prompt. What can you do with it? The answer is pretty much anything. I won’t provide a full pdb tutorial here (<a href="http://www.onlamp.com/pub/a/python/2005/09/01/debugger.html">this is a good introduction</a>), but the commands I find most useful are the following:</p>
+
+<dl>
+    <dt>list</dt>
+    <dd>Shows the lines of source code around your current point of execution. You can run it multiple times to increase the amount of source code displayed.</dd>
+    <dt>n</dt>
+    <dd>Execute the next line</dd>
+    <dt>s</dt>
+    <dd>Same as n, but steps in to any functions that are called. You can quickly get lost in a twisty maze of code with this command, but that’s OK because...</dd>
+    <dt>r</dt>
+    <dd>Continues execution until the current function returns</dd>
+    <dt>u</dt>
+    <dd>Goes UP one level in the stack—so you can see the function that called the function you are currently in</dd>
+    <dt>d</dt>
+    <dd>Goes DOWN again</dd>
+    <dt>locals()</dt>
+    <dd>not a pdb command, but handy for seeing what’s in your current scope</dd>
+</dl>
+
+<p>The pdb docs have <a href="http://www.python.org/doc/current/lib/debugger-commands.html">a full list of commands</a>.</p>
+
+<p>The pdb prompt doubles up as a full Python interactive shell, so you can not only access variables but you can modify them, call functions and generally mess around with the internals of your application as much as you like, while it’s running. It’s kind of a poor man’s imitation of being a Smalltalk developer.</p>
+
+<p>Remember though, the whole time you’re messing around in pdb your browser is still stuck there, waiting for the HTTP request to come back. If you hit “c” (for continue) your application will kick in again, the request will be served and your browser will breathe a sigh of relief.</p>
+
+<p>Thankfully you don’t have to use pdb in a way that freezes your development server; it also works great in the interactive shell. If you’ve got a buggy function, one way to explore it is to run it interactively, then use the following idiom:</p>
+
+<pre><code class="python">&gt;&gt;&gt; def function_that_raises_an_exception():
+...   assert False
+... 
+&gt;&gt;&gt; function_that_raises_an_exception()
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+  File "&lt;stdin&gt;", line 2, in function_that_raises_an_exception
+AssertionError
+&gt;&gt;&gt; import pdb; pdb.pm()
+&gt; &lt;stdin&gt;(2)function_that_raises_an_exception()
+(Pdb)</code></pre>
+
+<p><code>pdb.pm()</code> stands for post-mortem, and is probably my favourite feature of the debugger—it lets you jump back in to debug the most recently raised exception, even if you hadn’t imported pdb at the time the exception was raised.</p>
+
+<p>One last pdb tip: you can use it to debug Python command line scripts such as Django’s custom <samp>./manage.py</samp> commands. The trick is to run the script like this:</p>
+
+<p><samp>python -i manage.py buggy_command</samp></p>
+
+<p>The <samp>-i</samp> argument causes Python to drop in to the interactive prompt after executing the script. If the script raised an exception, you can then use <code>pdb.pm()</code> to debug it.</p>
+
+<h4>Handling errors in production</h4>
+
+<p>Django’s default behaviour in production (that is, when the DEBUG setting is set to False) is to e-mail exception reports to anyone listed in the ADMINS section. You can also turn on e-mail reports on every 404 error with the SEND_BROKEN_LINK_EMAILS setting, which will send them to addresses in the MANAGERS setting. As far as I know these settings don’t do anything else—they’re a pretty ancient bit of Django.</p>
+
+<p>On a high traffic site you probably don’t want to be e-mailed on every server error. One neat alternative is David Cramer’s <a href="http://code.google.com/p/django-db-log/">django-db-log</a>, which logs exceptions to a database table. It cleverly uses an MD5 hash of the traceback to aggregate many reports of the same error. More importantly though, it acts as a really straight forward example of how to use Django middleware’s process_exception hook to roll your own error reporting. Take a look <a href="http://code.google.com/p/django-db-log/source/browse/trunk/djangodblog/__init__.py">at the code</a> to see how simple this is.</p>
+
+<h4>More useful middleware</h4>
+
+<p>In the talk I demoed a couple of other handy pieces of middleware. The first was the <a href="http://www.djangosnippets.org/snippets/727/">ProfilerMiddleware</a> (one of several profiling tools on <a href="http://www.djangosnippets.org/">Django Snippets</a>) which allows you to add <samp>?prof</samp> to the end of any URL to see the output of Python’s <a href="http://docs.python.org/lib/module-profile.html">cProfile module</a> run against that request. The second is one that I’ve just released: <a href="http://www.djangosnippets.org/snippets/766/">DebugFooter</a>, which adds a footer showing exactly which templates were loaded from where (handy for debugging complex template paths) as well as every executed SQL query and how long each one took.</p>
+
+<h4>Abusing the test client</h4>
+
+<p>A final tip for exploring your application interactively is to learn to use <a href="http://www.djangoproject.com/documentation/testing/">Django’s TestClient</a>. Although designed for use in unit tests, this tool is equally useful for use at the interactive prompt. It allows you to simulate an in-process request against your application from within your Python code. Here’s an example:</p>
+
+<pre><code class="python">&gt;&gt;&gt; from django.test.client import Client
+&gt;&gt;&gt; c = Client()
+&gt;&gt;&gt; response = c.get("/") # The homepage
+&gt;&gt;&gt; response
+&lt;django.http.HttpResponse object at 0x2300470&gt;
+&gt;&gt;&gt; print response
+Vary: Cookie
+Content-Type: text/html; charset=utf-8
+
+&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd"&gt;
+&lt;html&gt;
+...</code></pre>
+
+<p>The response object you get back is the <code class="python">HttpResponse</code> returned by the view, ready to be explored interactively.</p>
+
+<p>There’s another function from the unit testing tools that can help with interactively exploring an application: <code class="python">setup_test_environment()</code>. This function monkey-patches in some additional hooks used by the unit tests, including one that intercepts template render calls and adds information on them to the request object. Here’s an example:</p>
+
+<pre><code class="python">&gt;&gt;&gt; from django.test.utils import setup_test_environment
+&gt;&gt;&gt; setup_test_environment()
+&gt;&gt;&gt; from django.test.client import Client
+&gt;&gt;&gt; c = Client()
+&gt;&gt;&gt; response = c.get("/")
+&gt;&gt;&gt; response.template
+[&lt;django.template.Template object at 0x2723dd0&gt;,
+ &lt;django.template.Template object at 0x2723f30&gt;,
+ &lt;django.template.Template object at 0x273ee10&gt;]
+&gt;&gt;&gt; response.context
+[ list of Context objects ]</code></pre>
+
+<p>This allows you to explore not just the HTML returned by a view, but also the templates and contexts that were used to render it.</p>
+
+<h4>Your tips welcome</h4>
+
+<p>If you have any useful tips on debugging Django applications, please share them in the comments on this entry.</p>
+
+<div class="entryFooter">Posted <a href="/2008/May/22/">22nd May 2008</a> at 12:35 am</div>
+
+
+</div>
+
+</div> <!-- #primary -->
+
+<div id="secondary">
+
+<div class="metabox">
+<p>This is <strong>Debugging Django</strong> by Simon Willison, posted on <a href="/2008/May/22/">22nd May 2008</a>.</p>
+
+<p>Tagged <a href="/tags/debugging/" rel="tag">debugging</a>, <a href="/tags/django/" rel="tag">django</a>, <a href="/tags/djugl/" rel="tag">djugl</a>, <a href="/tags/middleware/" rel="tag">middleware</a>, <a href="/tags/talks/" rel="tag">talks</a></p>
+
+<p><script src="http://embed.technorati.com/linkcount" type="text/javascript"></script>
+<a href="http://technorati.com/search/http://simonwillison.net/2008/May/22/debugging/" rel="linkcount">View blog reactions</a></p>
+
+<p><strong>Next:</strong> <a href="/2008/Jun/24/openid/">The point of &quot;Open&quot; in OpenID</a></p>
+
+
+<p><strong>Previous:</strong> <a href="/2008/May/1/orm/">jQuery style chaining with the Django ORM</a></p>
+
+
+
+
+
+
+
+<div id="sidead">
+
+
+<script type="text/javascript"><!--
+google_ad_client = "pub-2620176238477590";
+google_ad_width = 250;
+google_ad_height = 250;
+google_ad_format = "250x250_as";
+google_ad_type = "text";
+google_ad_channel = "";
+google_color_border = "733a96";
+google_color_bg = "FFFFFF";
+google_color_link = "0000FF";
+google_color_text = "000000";
+google_color_url = "008000";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+</div>
+
+
+
+</div>
+
+</div> <!-- #secondary -->
+</div> <!-- #wrapper -->
+
+
+<h2 class="band">26 comments</h2>
+
+<div id="comment-wrapper">
+
+<div id="comments">
+
+
+
+
+
+<ol>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c39101">
+        
+    <p>Hi Simon, great post! One other option for a GUI python debugger is the free (and Free), crossplatform, totally awesome Winpdb: <a href="http://winpdb.org/" rel="nofollow">http://winpdb.org/</a></p>
+
+<p>You can run the GUI debugger on your laptop and debug python code running on the server (assuming you open the appropriate port).</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="https://login.launchpad.net/+id/LEHE4PK" rel="nofollow">Elliot Murphy</a></strong>
+       - 22nd May 2008 01:48 - <a href="/2008/May/22/debugging/#c39101" title="Permalink for comment 1">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c39102">
+        
+    I find ipython absolutely essential to Django development, including debugging (just type <code>%debug</code> right after an error). <code>./manage.py shell</code> will automatically pick up ipython if it's installed.
+
+    <p class="commentFooter">
+      
+        Ken Arnold
+       - 22nd May 2008 02:01 - <a href="/2008/May/22/debugging/#c39102" title="Permalink for comment 2">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c39103">
+        
+    <p>simon,</p>
+
+<p>i'm also talking middleware and referencing django-db-log tomorrow at the django-nyc inaugral meeting.</p>
+
+<p>very cool stuff here in your post!</p>
+
+<p>we'll be sharing our slides as well as posting a more detailed posts as well.</p>
+
+<p>we also have a presentation covering the new queryset refactor stuff.</p>
+
+<p>thanks again for the debugging stuff here, I'm better educated thanks to this post.</p>
+    <p class="commentFooter">
+      
+        <a href="http://blog.howiworkdaily.com" rel="nofollow">kevin</a>
+       - 22nd May 2008 02:07 - <a href="/2008/May/22/debugging/#c39103" title="Permalink for comment 3">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c39104">
+        
+    <p>Some interesting debugging tips there, thanks Simon.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://davidreynolds.me.uk/" rel="nofollow">David Reynolds</a></strong>
+       - 22nd May 2008 10:17 - <a href="/2008/May/22/debugging/#c39104" title="Permalink for comment 4">#</a></p>
+    </div></li>
+  
+    <li
+    class="simon"
+    
+    ><div class="comment" id="c39105">
+        
+    Just got a great tip from <a href="http://t-a-w.blogspot.com/">Tomasz</a> - if you turn on MySQL logging in your my.cnf file (just uncomment one line) you can tail -f the MySQL log file and watch your queries go past in real-time.
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://simonwillison.net/" rel="nofollow">Simon Willison</a></strong>
+       - 22nd May 2008 10:34 - <a href="/2008/May/22/debugging/#c39105" title="Permalink for comment 5">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c39106">
+        
+    <p>Simon,</p>
+
+<p>You managed to type all that up pretty quickly. Great talk, btw. :-) Looking forward to more djugling.</p>
+
+<p>And I told you I'd been stalking you for years. I found a comment on the Quasar usability post (27th Feb 2003!!!) LOL!</p>
+
+<p>Matt.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://mattsoutherden.pip.verisignlabs.com/" rel="nofollow">Matt Southerden</a></strong>
+       - 22nd May 2008 10:57 - <a href="/2008/May/22/debugging/#c39106" title="Permalink for comment 6">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c39107">
+        
+    <p>Another idea is to use werkzeug to have inline debugger directly on traceback page like pylons already had.</p>
+
+<p><a href="http://lucumr.pocoo.org/cogitations/2007/12/10/werkzeug-debugged-in-django/" rel="nofollow">http://lucumr.pocoo.org/cogitations/2007/12/10/wer kzeug-debugged-in-django/ </a></p>
+    <p class="commentFooter">
+      
+        Nick
+       - 22nd May 2008 11:03 - <a href="/2008/May/22/debugging/#c39107" title="Permalink for comment 7">#</a></p>
+    </div></li>
+  
+    <li
+    class="simon"
+    
+    ><div class="comment" id="c39108">
+        
+    I'm a bit terrified of the inline debugger hack, but I guess there's no harm in giving it a go. Note that as of <a href="http://code.djangoproject.com/changeset/7537">changeset 7537</a> you can use the DEBUG_PROPAGATE_EXCEPTIONS setting to cause Django not to handle exceptions itself, which should cause the werkzeug WSGI middleware to work without needing patches to Django.
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://simonwillison.net/" rel="nofollow">Simon Willison</a></strong>
+       - 22nd May 2008 11:55 - <a href="/2008/May/22/debugging/#c39108" title="Permalink for comment 8">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c39111">
+        
+    <p>There's also django-logging, &lt;<a href="http://code.google.com/p/django-logging/" rel="nofollow">http://code.google.com/p/django-logging/</a>&gt;. It has several useful features.</p>
+    <p class="commentFooter">
+      
+        C8E
+       - 22nd May 2008 14:15 - <a href="/2008/May/22/debugging/#c39111" title="Permalink for comment 9">#</a></p>
+    </div></li>
+  
+    <li
+    class="simon"
+    
+    ><div class="comment" id="c39112">
+        
+    <p>Django logging looks excellent - I hadn't seen that before (and in fact I think I've reinvented several parts of it poorly).</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://simonwillison.net/" rel="nofollow">Simon Willison</a></strong>
+       - 22nd May 2008 14:20 - <a href="/2008/May/22/debugging/#c39112" title="Permalink for comment 10">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c39115">
+        
+    <p>Great post!</p>
+    <p class="commentFooter">
+      
+        Beetle B.
+       - 22nd May 2008 16:24 - <a href="/2008/May/22/debugging/#c39115" title="Permalink for comment 11">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c39118">
+        
+    <p>Lovely. You've got a hell of a wiggle on, to get this out so soon. I knew when I was doing the wrong thing today that I should've checked here first, but that'll also teach me not to go to DJUGLs.</p>
+
+<p>Until this appeared on the Googledar the quickest solution I could find to implement simple logging was <a href="http://www.djangosnippets.org/snippets/16/">this Django snippet</a>. Owing to the problems described in the comments there, I was having to run <code>uniq</code> on the log file as every log entry was happening a dozen times.</p>
+
+<p>I'd completely forgotten about <code>pdb</code>. Popping out of Django in real time and poking round in the thread looks like a lot of fun.</p>
+
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://www.jpstacey.info/openid/" rel="nofollow">J-P Stacey</a></strong>
+       - 22nd May 2008 21:26 - <a href="/2008/May/22/debugging/#c39118" title="Permalink for comment 12">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c39120">
+        
+    <p>Any advice on keeping the template engine from silently swallowing exceptions? If I have a template like "{{ some_object.method_that_raises_an_exception }}" I just get an empty string and nothing in the logs. To see a traceback, I have to instantiate that object and call the method in a view. I know that I can set TEMPLATE_STRING_IF_INVALID to something other than "" to make it so I actually notice that something is wrong, but that still doesn't get me a traceback (and it tends to mess up the admin interface).</p>
+    <p class="commentFooter">
+      
+        <a href="http://thraxil.org/users/anders/" rel="nofollow">anders</a>
+       - 23rd May 2008 01:44 - <a href="/2008/May/22/debugging/#c39120" title="Permalink for comment 13">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c39121">
+        
+    <p>There is one and only one IDE for debugging django, and that is Wing. Seriously, check it out. graphical debugging with probe shell (click on the stack level and the python shell is instantly in that context.)</p>
+
+<p>Kicks Komodo's but.</p>
+    <p class="commentFooter">
+      
+        <a href="http://www.dougma.com" rel="nofollow">Doug Napoleone</a>
+       - 23rd May 2008 07:04 - <a href="/2008/May/22/debugging/#c39121" title="Permalink for comment 14">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c39122">
+        
+    <p>Great Post,</p>
+
+<p>Brings my debugging to a new height :)</p>
+    <p class="commentFooter">
+      
+        <a href="http://www.mellowmorning.com" rel="nofollow">Thierry Schellenbach</a>
+       - 23rd May 2008 08:46 - <a href="/2008/May/22/debugging/#c39122" title="Permalink for comment 15">#</a></p>
+    </div></li>
+  
+    <li
+    class="simon"
+    
+    ><div class="comment" id="c39125">
+        
+    <p>anders: that topic is under discussion on the developers mailing list at the moment:</p>
+
+<p><a href="http://groups.google.com/group/django-developers/browse_thread/thread/f323338045ac2e5e" rel="nofollow">http://groups.google.com/group/django-developers/b rowse_thread/thread/f323338045ac2e5e </a></p>
+
+<p>The trick is to improve error reports in the template language without breaking things for people who rely on the current "fail silently" behaviour.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://simonwillison.net/" rel="nofollow">Simon Willison</a></strong>
+       - 23rd May 2008 14:19 - <a href="/2008/May/22/debugging/#c39125" title="Permalink for comment 16">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c39130">
+        
+    <p>Nice talk and good to finally meet you in person! :)</p>
+    <p class="commentFooter">
+      
+        <a href="http://digitalconsumption.com" rel="nofollow">Charles Darke</a>
+       - 24th May 2008 01:33 - <a href="/2008/May/22/debugging/#c39130" title="Permalink for comment 17">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c39137">
+        
+    One thing which I've found very helpful is modifying the default backtrace page to generate links to the files when running on localhost - TextMate has <a href="http://blog.macromates.com/2007/the-textmate-url-scheme/">a URL protocol</a> which supports links to files and line numbers. It's not going to replace a real debugger but quite handy for fixing obvious stuff.
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://acdha.livejournal.com/" rel="nofollow">Chris Adams</a></strong>
+       - 24th May 2008 20:05 - <a href="/2008/May/22/debugging/#c39137" title="Permalink for comment 18">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c39223">
+        
+    <p>Python's logging module is excellent, but requires extra care when logging from multiple processes or servers. You need a way to distinguish requests and deal with concurrency issues.</p>
+
+<p>I wrote some middleware and hooks into the logging system for use with a log server like syslog. The <a href="http://www.fairviewcomputing.com/125/static/blog/files/2008/03/05/drlog.zip">code</a>   is described <a href="http://www.fairviewcomputing.com/blog/2008/03/05/django-request-logging/">here</a>.
+</p>
+
+    <p class="commentFooter">
+      
+        <a href="http://www.fairviewcomputing.com/" rel="nofollow">john</a>
+       - 31st May 2008 13:40 - <a href="/2008/May/22/debugging/#c39223" title="Permalink for comment 19">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c39359">
+        
+    <p>Very helpful article, but in fact I'm posting to test my OpenID. :)</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://kside.net/kristopher/" rel="nofollow">Kristopher Murata</a></strong>
+       - 11th June 2008 07:40 - <a href="/2008/May/22/debugging/#c39359" title="Permalink for comment 20">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c39365">
+        
+    <p>Great article. Wish I would have known these tips a long time ago!</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://www.ericholscher.com/" rel="nofollow">Eric</a></strong>
+       - 13th June 2008 03:36 - <a href="/2008/May/22/debugging/#c39365" title="Permalink for comment 21">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c40334">
+        
+    <p>I usually use these ways for debugging:</p>
+
+<p>1. Raising a warning at any view, form, or other python file:</p>
+
+<p>raise Warning, "message"</p>
+
+<p>(that is analogous to assert False)</p>
+
+<p>2. Importing modules in Python IDE, checking the output of the functions, modifying the source of the modules, reloading the module with reload() in the same IDE, and checking again:</p>
+
+<p>&gt;&gt;&gt; from mysite.apps.myapp import mymodule<br />    &gt;&gt;&gt; mymodule.test()<br />    Traceback (most recent call last):<br />    ...<br />    &gt;&gt;&gt; # editing mymodule.py<br />    &gt;&gt;&gt; reload(mymodule)<br />    &gt;&gt;&gt; mymodule.test()</p>
+
+<p>And I should really try the setup_test_environment().. Thanks for sharing your ways to  debug Django projects.</p>
+    <p class="commentFooter">
+      
+        <a href="http://djangotricks.blogspot.com/" rel="nofollow">Archatas</a>
+       - 22nd August 2008 13:54 - <a href="/2008/May/22/debugging/#c40334" title="Permalink for comment 22">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c41920">
+        
+    <p>Simon: just following up, this is now coming in very handy for us, as mod_wsgi raises errors whenever you print debugging to standard output.</p>
+
+<p>Incidentally, though:</p>
+
+<p>"see log lines being appended to that file in real-time"</p>
+
+<p>You probably want <code>filemode='a'</code> to <em>append</em> to logfiles; I kept getting truncated logfiles and it was <code>filemode='w'</code> that was doing it.</p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://www.jpstacey.info/openid/" rel="nofollow">J-P Stacey</a></strong>
+       - 24th October 2008 14:34 - <a href="/2008/May/22/debugging/#c41920" title="Permalink for comment 23">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c43397">
+        
+    <p>I haven't been able to locate information relevant to using Python assert statements in production site deployments, so I figured I'd ask here.</p><p>I tend to use assert() statements for documenting pre- and post-conditions (e.g., design-by-contract), plus things like loop invariants in my code.  However, due to the exhaustive nature of some of these assertions (often performing O(n<sup>2</sup>) checks on complex data structures), I'd really like the ability to turn these assertions off on a production deployment.  Performing a global search-and-replace operation for commenting or uncommenting these assertions is not practical.</p><p>Thus, are you aware of any means by which Django can be run such that -O or -OO can be sent to the Python interpreter?  Am I just searching for the wrong keywords on Google?</p>
+    <p class="commentFooter">
+      
+        <a href="http://www.falvotech.com/blog" rel="nofollow">Samuel A. Falvo II</a>
+       - 6th February 2009 23:54 - <a href="/2008/May/22/debugging/#c43397" title="Permalink for comment 24">#</a></p>
+    </div></li>
+  
+    <li
+    
+    
+    ><div class="comment" id="c50658">
+        
+    <p>Samuel: write your assertions as 'assert production or ...', thanks to lazy evaluation if 'production' is True, the assertions effectively will be turned off.</p>
+    <p class="commentFooter">
+      
+        Grzegorz Jakacki
+       - 17th September 2009 21:32 - <a href="/2008/May/22/debugging/#c50658" title="Permalink for comment 25">#</a></p>
+    </div></li>
+  
+    <li
+    
+    class="openid"
+    
+    ><div class="comment" id="c57654">
+        
+    <p>For anyone finding this later, replace:</p>
+
+<p>import pdb; pdb.set_trace()</p>
+
+<p>with:<br />import pudb; pudb.set_trace()</p>
+
+<p>and you get a visual debugger right there in the console.</p>
+
+<p>You need to grab it from PyPI first (sudo pip install pudb) and for Django do the same tiny hack as mentioned in the comments here:</p>
+
+<p><a href="http://simonwillison.net/2009/Nov/1/pudb/" rel="nofollow">http://simonwillison.net/2009/Nov/1/pudb/</a></p>
+    <p class="commentFooter">
+      
+      <strong><img alt="" src="/static/css/img/openid-14x14.png" style="vertical-align: top; padding-top: 3px"> <a href="http://gkgk.org/" rel="nofollow">Graham King</a></strong>
+       - 31st December 2009 01:12 - <a href="/2008/May/22/debugging/#c57654" title="Permalink for comment 26">#</a></p>
+    </div></li>
+  
+</ol>
+
+</div> <!-- #comments -->
+
+
+<div id="addcomment">
+
+<em>Comments are closed.</em>
+
+</div><!-- #addcomment -->
+
+</div><!-- #comment-wrapper -->
+
+
+
+
+
+
+
+<div id="ft">
+    <ul>
+      <li><a href="/about/">About</a></li>
+      <li><a href="/talks/">Speaking</a></li>
+      <li>&copy;</li>
+      <li><a href="/2002/">2002</a></li>
+      <li><a href="/2003/">2003</a></li>
+      <li><a href="/2004/">2004</a></li>
+      <li><a href="/2005/">2005</a></li>
+      <li><a href="/2006/">2006</a></li>
+      <li><a href="/2007/">2007</a></li>
+      <li><a href="/2008/">2008</a></li>
+      <li><a href="/2009/">2009</a></li>
+      <li><a href="/2010/">2010</a></li>
+      <li><a href="/feeds/">Feeds</a></li>
+    </ul>
+    <a id="djangosite" href="http://www.djangoproject.com/"><img src="/static/css/img/djangosite80x15.gif" alt="A django site" width="80" height="15"></a>
+</div>
+
+
+
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-1090368-1";
+urchinTracker();
+</script>
+
+<script type="text/javascript" src="http://liquidfold.net/js/simonwillison"></script>
+</body>
+</html>

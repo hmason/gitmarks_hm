@@ -1,0 +1,471 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>
+			Python Idioms and Efficiency Suggestions
+		</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	</head>
+
+	<body>
+		<h1>
+			Python Idioms and Efficiency 1/28/07
+		</h1>
+		        <h2>			Written by <a href=mailto:rob@spot.colorado.edu>Rob Knight</a> for the Cogent project </h2>
+
+
+		<!-- Table of Contents starts here -->
+
+		<h2>
+			Table of Contents
+		</h2>
+		<h3> <a href='#idioms_readable'>What idioms should I use to make my code easier to read?</a></h3>
+		<h3> <a href='#idioms_efficient'>What techniques should I use to make my code run faster?</a></h3>
+		<h3> <a href='PythonGuidelines.html'>Back to the coding guidelines</a></h3>
+
+		<!-- Python idioms start here -->
+		<h2> <a name='idioms_readable'>
+			What idioms should I use to make my code easier to read?</a>
+		</h2>
+		<p> <a name='read_cookbook'></a>
+		<b>Read "The Python Cookbook", especially the first few chapters.</b>
+		It's a great source of well-written Python code examples.
+		</p>
+		<p><a name='strings_as_list'></a>
+		<b>Build strings as a list and use <tt>''.join</tt> at the end.</b>
+		<tt>join</tt> is a string method called on the <em>separator</em>,
+		not the list. Calling it from the empty string concatenates the pieces
+		with no separator, which is a Python quirk and rather surprising at first.
+		<b>This is important: string building with + is quadratic time instead of
+			linear! If you learn one idiom, learn this one.</b>
+		</p>
+		<pre>
+<b>Wrong:</b> for s in strings: result += s
+<b>Right:</b> result = ''.join(strings)
+		</pre>
+		<p> <a name='capability_checking'></a>
+		<b>Always use an object's capabilities instead of its type.</b> Python is a
+		dynamically typed language: you should basically never care whether an
+		object is a particular type as long as it supports a particular interface.
+		This can give you impressive polymorphism for free. For example, my code
+		for checking whether a string is valid on an alphabet looks like this:
+		</p>
+		<pre>
+for char in string:
+    if char not in alphabet:
+        raise ValueError, "Char %s not in alphabet %a" % (char, alphabet)
+		</pre>
+		<p>
+		It doesn't matter whether <tt>alphabet</tt> is a string, a dict, a list,
+		or an object that I define as long as it supports the __contains__ special
+		method.
+		</p>
+		
+		<p> <a name='use_in'></a>
+		<b>Use <tt>in</tt> wherever possible</b> (you can override
+		<tt>__contains__</tt> to  support <tt>if x in y</tt> syntax and
+		<tt>__iter__</tt> to support <tt>for x in y</tt> syntax in your own
+		classes). This keeps your statements general and polymorphic.
+		</p>
+		<pre>
+<b>Better:</b> for key in d: print key     #also works for arbitrary sequence
+<b>Worse:</b>  for key in d.keys(): print key #limited to objects with keys()
+<b>Better:</b> if key not in d: d[key] = []
+<b>Worse:</b>  if not dict.has_key(key): d[key] = []
+		</pre>
+		<p>
+		Note: you still need to use <tt>d.keys()</tt> if you want to mutate the
+		dictionary. <tt> for key in d: del d[key] </tt> will raise
+		<tt>RuntimeError: dictionary changed size during iteration</tt>.
+		Use <tt> for key in d.keys(): del d[key] </tt> instead.
+		</p>
+		<p> <a name='use_coercion'></a>
+		<b>Use coercion if an object must be a particular type.</b>
+		If <tt>x</tt> <em>must</em> be a string for your code to work, why not call
+		<tt>str(x)</tt> instead of trying something like <tt>isinstance(str, x)</tt>?
+		You can wrap it in a <tt>try/except</tt> if you want to catch the errors, and
+		will probably end up with a solution that's much more general than if you had
+		tried to anticipate every possibility.
+		</p>
+		<p> <a name='use_if_not'></a>
+		<b>Use <tt>if not x</tt> instead of <tt>if x == 0</tt></b> or
+		<tt>if x == ""</tt> or <tt>if x == None</tt> or <tt>if x == False</tt>;
+		<b>likewise, <tt>if x</tt> instead of <tt>if x != 0</tt></b>,
+		<tt>if x != None</tt>, etc.
+		Exception: for numbers, 0 is a false value, so you may need to
+		distinguish between 0 and the other things that return <tt>False</tt>. Beware
+		of comparing a floating point value that is supposed to be zero with
+		<tt>int(0)</tt> or <tt>float(0.0)</tt>: rounding error can cause infuriating
+		bugs.
+		</p>
+		<p> <a name='string_methods'></a>
+		<b>Use string methods rather than the string module.</b>
+		For example, use s.startswith('abc') rather than startswith(s, 'abc'). This
+		lets you use other objects that just support a small part of the string
+		interface (e.g. ones you write yourself): the string module functions
+		generally expect real strings. There are a few cases where you need to
+		<tt>import string</tt>: for example, <tt>maketrans</tt> is still only
+		available through the string module. However, in general, seeing that
+		import statement is a warning sign.
+		</p>
+		<p> <a name='use_line_in_file'></a>
+		<b>Use <tt>for line in infile</tt>, not <tt>for line in
+				infile.readlines()</tt>.</b> <tt>readlines</tt> and <tt>xreadlines</tt> are
+		deprecated in Python 2.3 anyway in favor of the new iterator protocol. The
+		<tt>for line in infile</tt> version allows <tt>infile</tt> to be anything that
+		acts like a sequence of lines, such as a list, which can greatly aid testing.
+		Actually, just use <tt><b>for line in lines</b></tt>: you should basically
+		never care whether the lines come from a file, a list of strings, some other
+		iterator, the keys of a dict, or whatever.
+		</p>
+		<p> <a name='reverse_sort'></a>
+		<b>To reverse-sort a list, use:</b>
+		</p>
+		<pre>
+list.sort()
+list.reverse()
+		</pre>
+		<p>
+		It's much easier to read and, incidentally, faster than the tricky 1-line
+		alternatives. Remember that
+		in-place methods like <tt>sort()</tt> and <tt>reverse()</tt> do not
+		return a value. This can be surprising, because if you do something like
+		<tt>sorted_list = orig_list.sort()</tt> then <tt>sorted_list</tt> is
+		<tt>None</tt> and <tt>orig_list</tt> is now in sorted order. Note that if you
+		just want to iterate over the reversed list, you can (in Python 2.5, at least) use
+		<tt>for i in reversed(sorted(orig_list))</tt>.
+		</p>
+		<p> <a name='infinite_loops'></a>
+		<b>Use 'while 1:' for infinite loops, or to always execute the loop
+			body at least once.</b> This is just a Python idiom, but it's what other people
+		will expect to see once they're used to the language. For example:
+		</p>
+		<pre>
+while 1:
+    curr_line = reader.next()
+    if not curr_line:
+        break
+    curr_line.process()
+		</pre>
+		<p> <a name='eafp'></a>
+		<b>Catch errors rather than avoiding them to avoid cluttering your code with
+			special cases.</b> This idiom is called EAFP ('easier to ask forgiveness than
+		permission'), as opposed to LBYL ('look before you leap'). This often makes the
+		code more readable. For example:
+		</p>
+		<pre>
+<b>Worse:</b>
+#check whether int conversion will raise an error
+if not isinstance(s, str) or not s.isdigit:
+    return None
+elif len(s) &gt; 10:    #too many digits for int conversion
+    return None
+else:
+    return int(str)
+
+<b>Better:</b>
+try:
+    return int(str)
+except (TypeError, ValueError, OverflowError): #int conversion failed
+    return None
+		</pre>
+		<p>
+		(Note that in this case, the second version is <em>much</em> better, since it
+		correctly handles leading + and -, and also values between 2 and 10
+		billion (for 32-bit machines). Don't clutter your code by anticipating all
+		the possible failures: just try it and use appropriate exception
+		handling.)
+		</p>
+		<p> <a name='appropriate_errors'></a>
+		<b>Catch only the appropriate errors.</b>
+		It is incredibly risky to use <tt>catch</tt> without specifying which errors
+		you want to intercept, since it will get everything. If you are expecting a
+		particular kind of error, such as a <tt>ZeroDivisionError</tt> or a
+		<tt>ValueError</tt>, don't catch everything else as well on the assumption
+		that those are the only ones that could come up. You might be out of memory
+		instead, or you might have passed in an object that doesn't have the right
+		attribute or hasn't implemented the operation. Masking these unexpected
+		errors makes debugging very difficult, especially if you print misleading
+		error messages.
+		</p>
+		<p> <a name='no_temp_vars'></a>
+		<b>Swap values without using temporary variables.</b>
+		Instead, use implicit tuple unpacking. You can write <tt>a, b = b, a</tt> to
+		swap a and b. In fact, you can do this with as many items as you like:
+		<tt>a, b, c, d = d, b, c, a</tt> to map <tt>a</tt> to <tt>d</tt>, etc.
+		</p>
+		<p> <a name='indexed_sequences'></a>
+		<b>Use zip to get a list's (or any sequence's) items with their
+			indices:</b>
+		</p>
+		<pre>
+			indices = xrange(maxint)    #only need this once; mine is in Utils.py
+			for d, index in zip(data, indices):
+			#do something with d and index here
+		</pre>
+		<p>
+		(Note that Python 2.3 provides enumerate(data), which provides lazy evaluation
+		of the sequence and makes this idiom largely unnecessary. It can still be useful
+		when you want to include an index along with several other lists, however, e.g.
+		zip(list_1, list_2, indices). May fail on some 64-bit systems.)
+		</p>
+		<p>
+		If you do not need the indices, just do:
+		</p>
+		<pre>
+for i in items:
+    something(i)
+
+...rather than:
+
+for index in range(len(items)):
+    something(items[index])
+		</pre>
+		<p>
+		(which is more typing, uglier, and slower.)
+		</p>
+
+
+		<!--Efficiency suggestions start here -->
+		
+		<h2> <a name='idioms_efficient'>
+				What techniques should I use to make my code run faster?</a>
+		</h2>
+		<p><a name='always_profile'></a>
+		<b>Always profile before you optimize for speed.</b>
+		You should always optimize for readability first: it's easier to tune
+		readable code than to read 'optimized' code, especially if the optimizations
+		are not effective. Before using any technique that makes the code less
+		readable, you should check that it's actually a bottleneck in your
+		application by running your application with the built-in <tt>profile.py</tt>
+		script. If your program spends 10% of its time running a particular
+		method, even if you increase its speed tenfold you've only shaved 9% off the
+		total running time.
+		</p>
+		<p><a name='good_algorithms'></a>
+		<b>Always use a good algorithm when it is available.</b>
+		The exception to the above rule is when there are known large differences in the
+		time complexity of alternative algorithms. Reducing running time from
+		quadratic to linear, or from exponential to polynomial, is always worth
+		doing unless you are sure that the data sets will always be tiny (less than
+		a couple of dozen items).
+		</p>
+		<p> <a name='simplest_option'></a>
+		<b>Use the simplest option that could possibly work.</b>
+		Don't use a regular expression if you just want to see if a string starts
+		with a particular substring: use <tt>.startswith</tt> instead. Don't use
+		<tt>.index</tt> if you just want to see if a string contains a particular
+		letter: use <tt>in</tt> instead. Don't use <tt>StringIO</tt> if you could
+		just use a list of strings. In general, keeping it simple cuts down on
+		bugs and makes your code more readable. Even a complicated combination of
+		<tt>.index</tt> calls will be much faster than a regular expression, and
+		probably easier to decipher if you're just matching rather than capturing
+		the result.
+		</p>
+		<p><a name='strings_as_list'></a>
+		<b>Build strings as a list and use <tt>''.join</tt> at the end.</b>
+		Yes, you already saw this one above under "Python Idioms", but it's such
+		an important one that I thought I'd mention it again.
+		<tt>join</tt> is a string method called on the <em>separator</em>,
+		not the list. Calling it from the empty string concatenates the pieces
+		with no separator, which is a Python quirk and rather surprising at first.
+		<b>This is important: string building with + is quadratic time instead of
+			linear!</b>
+		</p>
+		<pre>
+<b>Wrong:</b> 
+for s in strings: result += s
+<b>Right:</b> 
+result = ''.join(strings)
+		</pre>
+		<p> <a name='use_is'></a>
+		<b>Use tests for object identity when appropriate:</b> <tt>if x is not
+			None</tt> rather than <tt>if x != None</tt>. It is much more efficient to
+		test objects for identity than equality, because identity only checks
+		their address in memory (two objects are identical if they are the same
+		object in the same physical location) and not their actual data.
+		</p>
+		<p> <a name='search_dictionaries'></a>
+		<b>Use dictionaries (or sets) for searching, not lists.</b> To find items in common
+		between two lists, make the first into a dictionary and then look for items
+		in the second in it. Searching a list for an item is linear-time, while
+		searching a dict or set for an item is constant time. This can often let you
+		reduce search time from quadratic to linear.
+		</p>
+		<p> <a name='use_built_in_sort'></a>
+		<b>Use the built-in <tt>sort</tt> wherever possible.</b> <tt>sort</tt> can
+		take a custom comparison function as a parameter, but this makes it very
+		slow because the function has to be called at least O(n log n) times in the
+		inner loop. To save time, turn the list of items into a list of tuples,
+		where the first element of each tuple has the precalculated value of the
+		function for each item (e.g. extracting a field), and the last element is the
+		item itself.
+		</p>
+		<p>
+		This idiom is called DSU for 'decorate-sort-undecorate.'
+		In the 'decorate' step, make a list of tuples
+		containing <tt>(transformed_value, second_key, ... , original value)</tt>.
+		In the 'sort' step, use the built-in <tt>sort</tt> on the tuples. In the
+		'undecorate' step, retrieve the original list in the sorted order by
+		extracting the last item from each tuple. For example:
+		</p>
+		<pre>
+aux_list = [i.Count, i.Name, ... i) for i in items]
+aux_list.sort()    #sorts by Count, then Name, ... , then by item itself
+sorted_list = [i[-1] for i in items] #extracts last item
+		</pre>
+		<p>For more recent versions of Python, DSU is often unnecessary. <a href="http://wiki.python.org/moin/HowTo/Sorting">
+		This page</a> has a good discussion of different sorting techniques in Python.
+		</p>
+		<p> <a name='map_filter'></a>
+		<b>Use <tt>map</tt> and/or <tt>filter</tt> to apply functions to lists.</b>
+		<tt>map</tt> applies a function to each item in a list (technically, sequence)
+		and returns a list of the results. <tt>filter</tt> applies a function to each
+		item in a sequence, and returns a list containing only those items for which
+		the function evaluated <tt>True</tt> (using the <tt>__nonzero__</tt> built-in
+		method). These functions can make code much shorter. They also make it much
+		faster, since the loop takes place entirely in the C API and never has to
+		bind loop variables to Python objects.
+		</p>
+		<pre>
+<b>Worse:</b>
+strings = []
+for d in data:
+    strings.append(str(d))
+
+<b>Better:</b>
+strings = map(str, data)
+		</pre>
+		<p> <a name='list_comprehensions'></a>
+		<b>Use list comprehensions where there are conditions attached, or where
+			the functions are methods or take more than one parameter.</b> These are
+		cases where <tt>map</tt> and <tt>filter</tt> do badly, since you have to
+		make up a new one-argument function that does the operation you want. This
+		makes them much slower, since more work is done in the Python layer. List
+		comprehensions are often surprisingly readable.
+		</p>
+		<pre>
+<b>Worse:</b>
+result = []
+for d in data:
+    if d.Count &gt; 4:
+        result.append[3*d.Count]
+
+<b>Better:</b>
+result = [3*d.Count for d in data if d.Count &gt; 4]
+		</pre>
+		<p>
+		If you find yourself making the same list comprehension repeatedly, make
+		utility functions and use <tt>map</tt> and/or <tt>filter</tt>:
+		</p>
+		<pre>
+def triple(x):
+    """Returns 3 * x.Count: raises AttributeError if .Count missing."""
+    return 3 * x.Count
+
+def check_count(x):
+    """Returns 1 if x.Count exists and is greater than 3, 0 otherwise."""
+    try:
+        return x.Count &gt; 3
+    except:
+        return 0
+
+result = map(triple, filter(check_count, data))
+		</pre>
+		<p> <a name='function_factories'></a>
+		<b>Use function factories to create utility functions.</b>
+		Often, especially if you're using <tt>map</tt> and <tt>filter</tt> a lot,
+		you need utility functions that convert other functions or methods to
+		taking a single parameter. In particular, you often want to bind some data
+		to the function once, and then apply it repeatedly to different objects.
+		In the above example, we needed a function that multiplied a particular field
+		of an object by 3, but what we really want is a factory that's able to return
+		for any field name and amount a multiplier function in that family:
+		</p>
+		<pre>
+def multiply_by_field(fieldname, multiplier):
+    """Returns function that multiplies field "fieldname" by multiplier."""
+    def multiplier(x):
+        return getattr(x, fieldname) * multiplier
+    return multiplier
+
+triple = multiply_by_field('Count', 3)
+quadruple = multiply_by_field('Count', 4)
+halve_sum = multiply_by_field('Sum', 0.5)
+		</pre>
+		<p>
+		This is a very powerful and general technique for producing functions that
+		might do something like search a specified field for a list of words, or
+		perform several actions on different fields of a particular object, etc.
+		It's a pain to write a lot of little functions that do very similar things,
+		but if they're produced by a function factory it's easy.
+		</p>
+		<p> <a name='operator'></a>
+		<b>Use the operator module and <tt>reduce</tt> to get sums, products, etc.</b>
+		<tt>reduce</tt> takes a function and a sequence. First it applies the
+		function to the first two items, then it takes the result and applies the
+		function to the result and the next item, takes that result and applies the
+		function to it and the next item, and so on until the end of the list. This
+		makes it very easy to accumulate items along a list (or, in fact, any
+		sequence). Note that Python 2.3 has a built-in sum() function (for numbers only),
+		making this less necessary than it used to be.
+		</p>
+		<pre>
+<b>Worse:</b>
+sum = 0
+for d in data:
+    sum += d
+product = 1
+for d in data:
+    product *= d
+
+<b>Better:</b>
+from operator import add, mul
+sum = reduce(add, data)
+product = reduce(mul, data)
+		</pre>
+		<p> <a name='zip_dict'></a>
+		<b>Use <tt>zip</tt> and <tt>dict</tt> to map fields to names.</b>
+		<tt>zip</tt> turns a pair of sequences into a list of tuples containing
+		the first, second, etc. values from each sequence. For example,
+		<tt>zip('abc', [1,2,3]) == [('a',1),('b',2),('c',3)]</tt>. You can use
+		this to save a lot of typing when you have fields in a known order that
+		you want to map to names:
+		</p>
+		<pre>
+<b>Bad:</b>
+fields = '|'.split(line)
+gi = fields[0]
+accession = fields[1]
+description = fields[2]
+#etc.
+lookup = {}
+lookup['GI'] = gi
+lookup['Accession'] = accession
+lookup['Description'] = description
+#etc.
+
+<b>Good:</b>
+fieldnames = ['GI', 'Accession', 'Description'] #etc.
+fields = '|'.split(line)
+lookup = dict(zip(fieldnames, fields))
+
+<b>Ideal:</b>
+def FieldWrapper(fieldnames, delimiter, constructor=dict):
+    """Returns function that splits a line and wraps it into an object.
+
+    Field names are passed in as keyword args, so constructor must be
+    expecting them as such.
+    """
+    def FieldsToObject(line):
+        fields = [field.strip() for field in line.split(delimiter)]
+        result = constructor(**dict(zip(fieldnames, fields)))
+    return FieldsToObject
+
+FastaFactory = FieldWrapper(['GI','Accession','Description'], '|', Fasta)
+TaxonFactory = FieldWrapper(['TaxonID', 'ParentID', ...], '|', Taxon)
+CodonFreqFactory = FieldWrapper(['UUU', 'UUC', 'UUA',...], ' ', CodonFreq)
+#etc for similar data, including any database tables you care to wrap
+		</pre>
+	</body>
+</html>

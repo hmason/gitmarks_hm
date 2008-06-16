@@ -1,0 +1,285 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html><head><title>Greasemonkey user script: LinkedIn Relations</title><link rel="meta" type="application/rdf+xml" title="FOAF" href="../../../foaf.rdf"/><meta name="author" content="Johannes la Poutre"/><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><link rel="stylesheet" type="text/css" title="Regular Style" href="../../../css/default.css"/><link rel="stylesheet alternate" type="text/css" title="CSS Naked Day" href="../../../css/naked-css-day.css"/><script type="text/javascript">
+function node_toggle(id) {
+    var node = document.getElementById(id); // parent LI element
+    node.className = 
+    	(node.className == "treenode") ? "treenodeopen" : "treenode";
+}
+</script></head><body><div id="hdr"/><div id="main">
+<h1>LinkedIn Relations to Javascript Object</h1>
+
+    <p><a href="linkedinrelations.user.js" title="Right click for context menu">linkedinrelations.user.js</a> - install as Greasemonkey
+User Script.
+    </p>
+
+<p>This Greasemonkey User Script is the basis for experiments with LinkedIn.com contact relations. It starts by spidering all "contacts" of the currently active account (you must be logged in). Then, all second order contacts (the contacts of your contacts) are retrieved.
+</p>
+
+<p>
+The script puts a lime-colored button in the top right position of your LinkedIn  <a href="https://www.linkedin.com/connections">My Contacts: Connections</a> page. The button is labeled "Create JS Model". 
+</p>
+<p>Clicking this button starts the process. Depending on the number of your contacts and their contacts, this process may take some time. The current status is displayed in the button label "Spidering (# of threads)...".
+</p>
+
+<h3>Script output</h3>
+<p>After the process is completed, the button label reads "Done" and the result is wrapped up in a single Javascript Object Definition.
+This result is opened in a new Firefox Tab. The Javascript definition looks something like this:</p>
+
+<pre id="samp">
+/* JS Object file created with linkedinrelations.user.js */
+// Thu Mar 30 2006 10:55:59 GMT+0200 (CEST)
+gContacts = {
+	596654: {
+		"key": 596654,
+		"name": "Johannes la Poutre",
+		"email": "joe@example.com",
+		"contacts": [10718, 1940, 1478, 308, 902, 8784, 10855, ...],
+	},
+	10718: {
+		"key": 1022718,
+		"name": "Jobs, Steve",
+		"email": "steve@example.com",
+		"contacts": [3702, 3415, 1797, 1817, 4881, 2284, ... ] },
+...
+};
+</pre>
+
+<h2>Limitations and Warnings</h2>
+
+<h3>Impact</h3>
+<p>
+This script can cause a heavy load on LinkedIn. 
+All contact listings, and their contact listings are retrieved from
+the web server. This can be a substantial number of hits in a relative
+short time.<br/>
+The script uses a "spider queue" with a maximum number of MAXREQ 
+simultaneous page requests; feedback of the queue size is displayed
+during runtime.<br/>
+Please do not over-use this script, more than one run in a couple of 
+days doesn't make sense anyway. Do your experiments with the resulting 
+javascript output instead!
+</p>
+
+<h3>Fragile</h3>
+<p>
+The script makes heavy use of "screen scraping". This means, 
+using regular expressions to parse relevant data from html pages.
+This method is inherently fragile. All occurrences of these regular
+expressions and request URLs are marked with a comment:
+<code>// pgtxt</code>
+</p>
+
+<h3>Character encoding</h3>
+<p>
+LinkedIn uses ISO-Latin-1 as character encoding for their
+html pages. Apparently, GM expects UTF-8 only, so any diacritic
+characters will be garbled in the output.
+<span class="del">Currently, I see no way to fix this.</span>
+See <a title="Squio.blog" href="http://squio.nl/blog/2006/06/27/xmlhttprequest-and-character-encoding/">xmlhttprequest and character encoding/</a> for a work around.
+</p>
+
+<h2>Experiments</h2>
+
+<p>
+The Javascript object definition can be saved to a file and included in a regular HTML page for further scripting and experimenting.
+</p>
+<pre>
+&lt;script type="text/javascript" src="li-object.js"&gt;&lt;/script&gt;
+</pre>
+<p>This instantiates a global object, in variable <code>gContacts</code>, as per the <a href="#samp">sample snippet</a> above.
+</p>
+
+<h3>Plotting relations</h3>
+
+<p>For this experiment, I generated output in <code>dot file</code> format.
+This file is used as input for <a href="http://www.graphviz.org/">Graphviz</a> (I used the award winning version for Mac OS-X: <a href="http://www.pixelglow.com/graphviz/" title="Graphviz for OS-X">graphviz 1.13 (v16)</a>).</p>
+
+<p>The result for my  current 128 contacts, and their contacts, looks really complicated:</p>
+
+<a href="javascript:window.open('li-graph.gif','flwin','width=980,height=680');void(0)"><img src="li-graph.gif" width="100%" alt="Graph of linkedin contact relations" border="0"/></a>
+
+<p>In order to reduce the mess a little bit, I pruned all contacts with one or less contacts of their own. Contacts with more than a certain number of contacts are colored green / yellow / orange / red.</p>
+
+<p>You can find the html page here: <a href="li2dot.html">li2dot.html</a>. Just feed it with your own Javascript links and you'll get a similar plot for your contacts!</p>
+
+<h3>Building a FOAF file</h3>
+
+<p>Still to do: generate a <a href="http://xmlns.com/foaf/0.1/" title="Friend of a Friend - specification">FOAF</a> file. Maybe limit to the first order contacts only, as email addresses are missing from second order contacts.
+</p>
+
+
+<h2>Changelog</h2>
+<pre>
+Version 1.00
+    - initial release
+    - this script is considered EXPERIMENTAL
+
+Version 1.01
+	- fix: email address extraction wasn't working OK
+    - use http rather than https urls
+      (Linkedin started redirecting those)
+    - work around for character encoding issue
+</pre>
+
+  <div class="svn">$Id: $</div>
+
+  
+<h2>About Greasemonkey</h2>
+
+<p><a href="http://greasemonkey.mozdev.org/">Greasemonkey</a> is a <a href="http://www.spreadfirefox.com/?q=affiliates&amp;id=83900&amp;t=76">Firefox</a> extension, which can change web pages by applying cleverly crafted <i>user scripts</i> after they are loaded in the browser.</p>
+<p><strong>Tip!</strong>
+<a title="Buy Greasemonkey Hacks from Amazon" href="http://www.amazon.com/exec/obidos/ASIN/0596101651/joesbagoftric-20">Greasemonkey Hacks by Mark Pilgim</a>.
+</p>
+
+<h3>More Greasemonkey User Scripts</h3>
+<form action="" onsubmit="return false">
+<select onchange="if (this.selectedIndex) window.location.href='../'+this.options[this.selectedIndex].value">
+<option value="#" selected="selected">I want to...</option>
+<optgroup label="Generic">
+	<option value="Microsummaries/">Create microsummaries for Firefox 2.x.</option>
+	<option value="PasswordComposer/greasemonkey.html">Use one master password for every website</option>
+	<option value="RSSpanel/">Quickly view RSS feed connected with the current web page</option>
+	<option value="ExifThumbs/">View thumbnails of remote digicam images</option>
+	<option value="Linkchecker/">Validate links on the current web-page</option>
+	<option value="AnnotateLinks/">List all external links at the bottom of printed pages</option>
+</optgroup>
+<optgroup label="Site specific">
+	<option value="Ikea/ikea_Availability_Check.html">Ikea: check for product availability</option>
+	<option value="Flickr/">Flickr: Directly link to the original from thumbnails</option>
+	<option value="PodSafeNetwork/">Podshow.com: directly download "Pod safe media"</option>
+	<option value="BinSearch/">Binsearch.info: improve search results interaction</option>
+	<option value="Squirrelmail/">Squirrelmail powered webmail: improve listing interaction</option>
+	<option value="ResizeUseitCom/">Useit.com: modestly sized text</option>
+	<option value="MacWorld/">MacWorld.com: remove all extraneous fluff from page printouts</option>
+	<option value="LinkedIn/">Linkedin.com: experiment with my relations list</option>
+	<option value="Squirrelmail/">Squirrelmail powered webmail: improve listing interaction</option>
+</optgroup>
+<optgroup label="Dutch language">
+	<option value="ANWB/">[NL] Look up distances by NL postal code</option>
+	<option value="Nationalevacaturebank/">[NL] Remove clutter from Nationalevacaturebank Resultaat</option>
+	<option value="NederlandsDagblad/">[NL] Improve Nederlands Dagblad Print layout</option>
+</optgroup>
+</select>
+</form>
+
+<p>For more, and a couple of Greasemonkey resources, see <a href="../../Greasemonkey/index.html">Greasemonkey User Scripts</a>.
+</p>
+
+
+
+<hr style="clear:both;margin:1em 0em;"/><div id="footer">
+      <div style="float:right;width:65px;height:60px;padding-left:5px;">
+<a href="http://www.wijvertrouwenstemcomputersniet.nl" title="Wij vertrouwen stemcomputers niet - www.wijvertrouwenstemcomputersniet.nl"><img src="http://www.wijvertrouwenstemcomputersniet.nl/images/b/bb/Bnr-5.gif" border="0" alt="Wij vertrouwen stemcomputers niet - www.wijvertrouwenstemcomputersniet.nl"/></a>
+    </div>
+  
+      <div style="float:right">
+<script src="http://fragments.irrepressible.info/js/fragment-234.js" type="text/javascript">
+</script>
+    </div>
+  
+    <script type="text/javascript">
+google_ad_client = "pub-4327692562598582";
+google_ad_width = 468;
+google_ad_height = 15;
+google_ad_format = "468x15_0ads_al_s";
+google_ad_channel ="4292369242";
+google_color_border = "DDB7BA";
+google_color_bg = "FFFFFFF";
+google_color_link = "0000CC";
+google_color_url = "008000";
+google_color_text = "6F6F6F";
+</script>
+    <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+  
+  <div style="clear:both;padding-top:15px;">
+    <a rel="license" href="http://creativecommons.org/licenses/by-sa/1.0/nl/">&#xA9;1998-2008 Johannes la Poutr&#xE9;</a>
+| <a href="../../../contact.html" onclick="at='@';dm='lapoutre';tl='com';window.location.href='mailto:'+'joe'+at+dm+'.'+tl;return false;">Contact</a>
+| <a href="http://www.xs4all.nl/~jlpoutre/gpg-pubkey.txt">GPG Public Key</a>
+</div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-52920-2");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+</div></div><div id="nav"><div class="treemenu" title="Site Navigation"><div class="reverse center">Navigation</div><ul><li class="treenodeopen" id="id20202"><a class="expand" href="#" onclick="javascript:node_toggle('id20202');" title="Click to expand/collapse">&#xA0;</a><a href="../../../">Home</a><ul><li><a href="../../../bookmarks/">My bookmarks</a></li><li class="treenodeopen" id="id24186"><a class="expand" href="#" onclick="javascript:node_toggle('id24186');" title="Click to expand/collapse">&#xA0;</a><a href="../../">Bag of Tricks</a><ul><li><a href="../../jhead-xml/">XML for jhead</a></li><li><a href="../../bookmarklets.html">Bookmarklets</a></li><li class="treenode" id="id24237"><a class="expand" href="#" onclick="javascript:node_toggle('id24237');" title="Click to expand/collapse">&#xA0;</a><a href="../../Perl/">Perl stuff</a><ul><li><a href="../../Perl/saveimgs.html">Rescue CF card</a></li><li><a href="../../Perl/extract_images_pspbrwse.html">Extract pspbrwse</a></li><li><a href="../../Perl/http-webtest.html">HTTP::WebTest</a></li><li><a href="../../Perl/webtest-demo/">WebTest Demo</a></li></ul></li><li class="treenode" id="id24340"><a class="expand" href="#" onclick="javascript:node_toggle('id24340');" title="Click to expand/collapse">&#xA0;</a><a href="../../Greasemonkey/">Greasemonkey</a><ul><li><a href="../../Greasemonkey/xpcnativewrapper.html">XPCNativeWrapper</a></li><li><a href="../../Greasemonkey/gm_openintab.html">GM_openInTab</a></li><li><a href="../../Greasemonkey/gm_head_onload.html">XHR onload</a></li><li><a href="../../Greasemonkey/gm_for_ff20beta.html">Firefox 2.0b</a></li></ul></li><li class="treenodeopen" id="id24453"><a class="expand" href="#" onclick="javascript:node_toggle('id24453');" title="Click to expand/collapse">&#xA0;</a><a href="../">Javascript</a><ul><li><a href="../async-write.html">Async write</a></li><li><a href="../PasswordComposer/">Passwd Composer</a></li><li><a href="../Utils/">JS Utils</a></li></ul></li><li class="treenode" id="id25072"><a class="expand" href="#" onclick="javascript:node_toggle('id25072');" title="Click to expand/collapse">&#xA0;</a><a href="../../Mac-OSX/">Mac OS-X</a><ul><li><a href="../../Mac-OSX/ipod-backup.html">iPodBackup</a></li><li><a href="../../Mac-OSX/oneliners.html">Oneliners</a></li><li><a href="../../Mac-OSX/transcode_with_vlc.html">VLC &gt; iTunes stream</a></li><li><a href="../../Mac-OSX/tiff_for_ABBYY_FineReader.html">Set File Type</a></li><li><a href="../../Mac-OSX/post_blog_from_journler.html">Post from Journler</a></li></ul></li><li class="treenode" id="id25179"><a class="expand" href="#" onclick="javascript:node_toggle('id25179');" title="Click to expand/collapse">&#xA0;</a><a href="../../Firefox/">Firefox</a><ul><li><a href="../../Firefox/Microsummaries/">Microsummaries</a></li><li><a href="../../Firefox/pageheight-test.html">Pageheight</a></li></ul></li><li><a href="../../XML/">XML hacks</a></li><li><a href="../../WP/">WordPress</a></li></ul></li><li><a href="http://squio.nl/blog/">Weblog</a></li></ul></li></ul></div>
+  <div class="nav-box">
+  <div style="padding:3px 6px;">
+<!-- AdSense referral -->
+<script type="text/javascript">
+google_ad_client = "pub-4327692562598582";
+google_ad_output = "textlink";
+google_ad_format = "ref_text";
+google_cpa_choice = "CAAQidTQgAIaCDFyD7PiBqtPKN2uuIEB";
+google_ad_channel = "";
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">.</script>
+</div>
+<!-- Search Google -->
+<form method="get" action="http://www.google.com/custom">
+<div style="text-align: center">
+
+<input type="text" name="q" size="20" maxlength="255" value="" id="gsearch" style="width:144px;margin-bottom:4px;"/>
+<br/>
+<input type="submit" name="sa" value="Google Search" style="margin-bottom:4px;"/>
+<input type="hidden" name="client" value="pub-4327692562598582"/>
+<input type="hidden" name="forid" value="1"/>
+<input type="hidden" name="channel" value="0085672720"/>
+<input type="hidden" name="ie" value="UTF-8"/>
+<input type="hidden" name="oe" value="UTF-8"/>
+<input type="hidden" name="cof" value="GALT:#008000;GL:1;DIV:#336699;VLC:663399;AH:center;BGC:FFFFFF;LBGC:336699;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;FORID:1;"/>
+<input type="hidden" name="hl" value="en"/>
+</div>
+</form>
+
+</div>
+
+    <div class="nav-box">
+<!-- adsense block 160x600 -->
+<script type="text/javascript">
+google_ad_client = "pub-4327692562598582";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel ="0364421999";
+google_color_border = "DDB7BA";
+google_color_bg = "FFF5F6";
+google_color_link = "0000CC";
+google_color_url = "008000";
+google_color_text = "6F6F6F";
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">.</script>
+</div>
+  
+    <div class="nav-box">
+      <div class="box">
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/1.0/nl/"><img alt="Creative Commons Licentie" src="http://creativecommons.org/images/public/somerights20.gif"/></a><br/>
+Op dit werk is de <a rel="license" href="http://creativecommons.org/licenses/by-sa/1.0/nl/">Creative Commons Licentie</a> van toepassing.
+<!-- /Creative Commons Licentie -->
+
+<!--
+<rdf:RDF xmlns="http://web.resource.org/cc/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<Work rdf:about="">
+   <dc:type rdf:resource="http://purl.org/dc/dcmitype/Text" />
+   <license rdf:resource="http://creativecommons.org/licenses/by-sa/1.0/nl/" />
+</Work>
+<License rdf:about="http://creativecommons.org/licenses/by-sa/1.0/nl/">
+   <permits rdf:resource="http://web.resource.org/cc/Reproduction" />
+   <permits rdf:resource="http://web.resource.org/cc/Distribution" />
+   <requires rdf:resource="http://web.resource.org/cc/Notice" />
+   <requires rdf:resource="http://web.resource.org/cc/Attribution" />
+   <permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+   <requires rdf:resource="http://web.resource.org/cc/ShareAlike" />
+</License>
+</rdf:RDF>
+-->
+</div>
+    </div>
+  </div></body></html>

@@ -1,0 +1,938 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+                      "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+  <title>Django and AJAX</title>
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="microid" content="d0714f36c065c0c9bd5c0797f690714f050715bc">
+  
+
+  
+  <link rel="stylesheet" href="http://media.b-list.org/css/b-list-20080614.css" type="text/css">
+  
+  <link rel="alternate"
+        title="Feed of latest entries" href="/feeds/entries/"
+        type="application/atom+xml">
+        
+  <link rel="alternate"
+       title="Feed of latest links"
+       href="/feeds/links/"
+       type="application/atom+xml">
+
+  <link rel="up"
+        href="/weblog/2006/jul/02/"
+        title="Entries published on July 2, 2006"
+        type="text/html">
+
+
+  <link rel="prev"
+        href="/weblog/2006/jun/30/essentialism/"
+        title="Essentialism"
+        type="text/html">
+
+
+
+
+  <link rel="next"
+        href="/weblog/2006/jul/03/django-tips-scaling-application/"
+        title="Django tips: scaling an application"
+        type="text/html">
+
+
+
+</head>
+<body>
+  
+
+
+
+
+
+
+
+
+<h1>Django and&nbsp;<span class="caps">AJAX</span></h1>
+
+<p class="meta">An <a href="/weblog/">entry</a> published by <a href="/">James Bennett</a> on <a href="/weblog/2006/jul/02/">July 2, 2006</a>,
+  
+Part of the categories <a href="/weblog/categories/django/">Django</a> and  <a href="/weblog/categories/javascript/">JavaScript</a>.
+  
+<a href="#comments">52 comments</a> posted.</p>
+
+
+<p>One hot topic that keeps coming up over and over again on the Django mailing lists and in <acronym title="Internet Relay Chat"><span class="caps">IRC</span></acronym> has to do with when Django will get &#8220;<acronym title="Asynchronous JavaScript And XML"><span class="caps">AJAX</span></acronym> support&#8221;. There are two answers to that question; one can be stated with authority, and the other consists entirely of my own unofficial and non-binding opinion. Let&#8217;s start with the&nbsp;first:
+</p>
+<h2>We&#8217;ve already got it, and more is on the&nbsp;way</h2>
+<p>Doing <span class="caps">AJAX</span> with Django has always been pretty easy, though maybe in a way that&#8217;s not obvious to users of other frameworks. All you have to do is use a slightly different template &#8212; to return <acronym title="eXtensible Markup Language"><span class="caps">XML</span></acronym>- or <acronym title="JavaScript Object Notation"><span class="caps">JSON</span></acronym>-formatted data instead of <acronym title="HyperText Markup Language"><span class="caps">HTML</span></acronym> &#8212; and you&#8217;re&nbsp;golden.
+</p>
+<p>This has gotten quite a bit easier in the past week, thanks to the first draft of a new module: <code>django.core.serialization</code>. In essence, the serialization system is designed to make it easy to translate Django model instances into various other formats. Serializers for <span class="caps">XML</span>, <span class="caps">JSON</span> and simple Python are now included in Django, so you could now do this in a&nbsp;view:
+</p>
+<div class="typygmentdown"><pre><span class="k">from</span> <span class="nn">django.core</span> <span class="k">import</span> <span class="n">serializers</span> 
+<span class="k">def</span> <span class="nf">my_json_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="s">&quot;json&quot;</span><span class="p">,</span> <span class="n">MyModel</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()[:</span><span class="mf">5</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="s">&quot;application/javascript&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>And voil&agrave;: you have a view which returns the latest five objects from a model in <span class="caps">JSON</span> format. Perfect for <span class="caps">AJAX</span> requests. You could even have the same view respond to both &#8220;normal&#8221; and <span class="caps">AJAX</span> requests by adding a parameter to the <acronym title="Uniform Resource Locator"><span class="caps">URL</span></acronym> and changing output types based on&nbsp;that.
+</p>
+<p>The same idea can easily be applied to most of the common operations people want to use <span class="caps">AJAX</span> for; comment posting, for example, could be handled by firing an XMLHttpRequest to a view which would save the comment and return it serialized in the format of your&nbsp;choice.
+</p>
+<p><a href="http://jacobian.org/">Jacob</a> and I have also tossed around ideas for a Django &#8220;web services&#8221; <acronym title="Application Programming Interface"><span class="caps">API</span></acronym> which would let you make calls from JavaScript or any other language to create, retrieve, update or delete arbitrary objects; the new serialization framework would make it extremely easy to have this output in any format you like, and would provide a powerful way for you to do pretty much anything you like via&nbsp;<span class="caps">AJAX</span>.
+</p>
+<h2>Is that <em>it</em>?</h2>
+<p>And now it&#8217;s time for me to step up on my soapbox and issue a big fat disclaimer: the following represents nothing more than my own opinion, and has no necessary bearing on what will actually end up happening in Django. This is just what I think, and doesn&#8217;t attempt to speak for anyone or anything else, and what I have to say on this topic is inflammatory and is almost certainly going to make some people angry. Read on with that in mind, and at your own&nbsp;risk.
+</p>
+<p>So. You may have noticed that the above example dealt only with the server side of things, and left out the business of actually constructing and firing off an XMLHttpRequest. That&#8217;s as it should be, because &#8212; and I know this is heresy &#8212; I think people should actually write JavaScript instead of relying on a framework to handle it for&nbsp;them.
+</p>
+<p>Yes, I know that Rails and TurboGears and all the other guys have those nifty &#8220;helpers&#8221; where you tell the framework what effect you want and it drops in the correct JavaScript for you. But something like that would be a really bad idea for&nbsp;Django.
+</p>
+<p>Besides thinking people should write JavaScript when they need JavaScript, there are a couple of reasons why I feel that way: offering built-in systems for automatically doing XMLHttpRequests and other effects would tie Django to a particular JavaScript toolkit, which I think would be an awful idea. Or else it would require us to maintain code in the framework for all of the popular <span class="caps">JS</span> toolkits, which would be an even worse idea. It would also mean getting opinionated and telling people how they should develop, which is an absolutely terrible&nbsp;idea.
+</p>
+<p>But the big, overriding reason is still this: it&#8217;s high time that a lot of so-called &#8220;web developers&#8221; out there finally grow the hell up and learn how to write&nbsp;JavaScript.
+</p>
+<p>Whenever people start talking about how they&#8217;d like Django to offer the kinds of &#8220;JavaScript helpers&#8221; you find in other frameworks, they inevitably fall back to a single line of reasoning: &#8220;why should I learn JavaScript and deal with all those <acronym title="Document Object Model"><span class="caps">DOM</span></acronym> quirks and other incompatibilities when all I want is this simple&nbsp;effect?&#8221;
+</p>
+<p>My tried-and-true response to that has always been to ask why, if we buy that reasoning,  a web framework should expect them to learn <acronym title="Cascading Style Sheets"><span class="caps">CSS</span></acronym> just to float a sidebar on the left side of the page, or learn <span class="caps">HTML</span> just to put in a list of links. <span class="caps">HTML</span> and <span class="caps">CSS</span> have just as many quirks and incompatibilities across browsers, and can take just as much time to master, as JavaScript; why, then, should we expect web developers to have to learn <em>any</em> of them? Shouldn&#8217;t the framework just automatically generate all the client-side&nbsp;code?
+</p>
+<p>Of course, that&#8217;s a ludicrous thing to suggest. <span class="caps">HTML</span> and <span class="caps">CSS</span> are foundational technologies of the Web, and no-one is suggesting that web developers shouldn&#8217;t have to know them. In fact, a &#8220;web developer&#8221; who didn&#8217;t know <span class="caps">HTML</span> and <span class="caps">CSS</span> has no right to the&nbsp;title.
+</p>
+<p>But here&#8217;s the thing: <em>JavaScript is just as foundational as <span class="caps">HTML</span> and <span class="caps">CSS</span></em>. Now, granted, when I first got into this business JavaScript was something of a red-headed stepchild; 99% of all the JavaScript deployed on the public Web was devoted to making images change when you rolled your mouse over them, and the other 1% was written by scary people who called it&nbsp;&#8220;<span class="caps">DHTML</span>&#8221;.
+</p>
+<p>But now&#8230; now it&#8217;s 2006, and we&#8217;re slowly realizing that those &#8220;<span class="caps">DHTML</span>&#8221; guys were really onto something. The rich interaction possibilities opened up by JavaScript are being recognized for what they are, and have even spawned a whole raft of new buzzwords and new toolkits. And even though it was always technically that way, we&#8217;re coming around to see (or, in some cases, being dragged kicking and screaming into seeing) that the Web really is based on three technologies: <span class="caps">HTML</span> for structure, <span class="caps">CSS</span> for style and JavaScript for behavior and&nbsp;interaction.
+</p>
+<p>Which means that here and now, in 2006, <strong>if you call yourself a &#8220;web developer&#8221; you have absolutely no excuse for not knowing JavaScript</strong>. And <strong>if you don&#8217;t know JavaScript, you have absolutely no right to call yourself a &#8220;web developer&#8221;</strong>.
+</p>
+<p>Yes, JavaScript takes time and effort to master. And yes, there are still lots of inconsistencies in how the major browsers deal with advanced JavaScript. But <span class="caps">HTML</span> and <span class="caps">CSS</span> take time and effort to master. And advanced <span class="caps">HTML</span> and <span class="caps">CSS</span> are still rendered inconsistently in the major browsers. And, just as in <span class="caps">HTML</span> and <span class="caps">CSS</span>, it&#8217;s possible to write JavaScript which works around the inconsistencies. And, just as in <span class="caps">HTML</span> and <span class="caps">CSS</span>, smart people have already written that code and made it available online, for&nbsp;free.
+</p>
+<p>So, once again: <strong>you have absolutely no excuse for not knowing JavaScript</strong>.
+</p>
+<p>Of course, once you&#8217;ve learned JavaScript you should feel free to use toolkits like <a href="http://dojotoolkit.org/">Dojo</a>, <a href="http://www.mochikit.com/">MochiKit</a> and <a href="http://prototype.conio.net/">Prototype</a>; they provide tons of useful code for dealing with common situations and for smoothing out the wrinkles in the various browser implementations. That&#8217;s pretty much what libraries are for, and you should take all the advantage of them you&nbsp;can.
+</p>
+<p>But, and here&#8217;s the thing, when you use those libraries to write JavaScript you should <em>actually use those libraries to write JavaScript</em>. Using a &#8220;helper&#8221; from your framework to call the appropriate code for you is like using a motorized wheelchair because you&#8217;re too lazy to walk. And, just as people who actually are walking will get places faster than you will in your powerchair, people who actually write JavaScript are going to leave people who rely on &#8220;helpers&#8221; in the&nbsp;dust.
+</p>
+<p>So, to get back to the actual topic at&nbsp;hand:
+</p>
+<ul>
+<li>
+     You can already do <span class="caps">AJAX</span> with Django, and it&#8217;s not really hard at&nbsp;all.
+ </li>
+<li>
+     It&#8217;ll probably get easier in the future as the serialization stuff improves, and even easier if/when we get a web-services <span class="caps">API</span> in&nbsp;place.
+ </li>
+<li>
+     Using &#8220;helpers&#8221; to avoid writing JavaScript is bad and wrong. Learn JavaScript. Write JavaScript. It&#8217;ll be good for&nbsp;you.
+ </li>
+</ul>
+<p>Any&nbsp;questions?
+</p>
+
+
+<p class="meta next-previous">
+
+
+<span class="previous" title="Posted on June 30, 2006">&larr; <a rel="prev" href="/weblog/2006/jun/30/essentialism/">Essentialism</a></span>
+
+
+
+
+
+<span class="next" title="Posted on July 3, 2006"><a rel="next" href="/weblog/2006/jul/03/django-tips-scaling-application/">Django tips: scaling an&nbsp;application</a> &rarr;</span>
+
+
+</p>
+
+
+
+
+
+<dl id="comments">
+
+  
+
+  <dt id="c144">On July 3, 2006, <span class="comment-person-name">Douglas Campos</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c144" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>It would be awesome if you can point some good docs/books about javascript: The internet have a lot of crap about&nbsp;this
+</p>
+<p>Very good&nbsp;article!!!
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c145">On July 3, 2006, <span class="comment-person-name">Nicola Larosa</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c145" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>Do you recall how much it took to learn to walk? And now you want us to do that <em>again</em>?&nbsp;;-P
+</p>
+<p>No, thanks, i think I&#8217;ll wait until Python replaces Javascript in the&nbsp;browser.
+</p>
+<p>No, seriously. It&#8217;s already on its way for <span class="caps">XUL</span> scripting in&nbsp;Mozilla:
+</p>
+<p><a href="http://www.mozillazine.org/talkback.html?article=7319">Brendan Eich Discusses Python for <span class="caps">XUL</span>&nbsp;Scripting</a>
+</p>
+<p>and Brett Cannon is working on the main&nbsp;target:
+</p>
+<p><a href="http://mail.python.org/pipermail/python-dev/2006-June/066344.html">Doc for new restricted execution design for&nbsp;Python</a>
+</p>
+<p>In the meantime, there&#8217;s nothing wrong with getting a little help from our friend Mochikit (thanks&nbsp;Bob!).
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c146">On July 3, 2006, <span class="comment-person-name">Jay P.</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c146" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>I&#8217;ve been waiting for someone more experienced with web development to stand up and say&nbsp;this!
+</p>
+<p>I recently had to breakdown and learn javascript (and <span class="caps">HTML</span> and <span class="caps">CSS</span>), and found MochiKit made it incredibly easy. It gave me a more Pythonic way of doing things, and it already took into account the known browser&nbsp;inconsistencies.
+</p>
+<p>In the end, learning enough javascript to get the job done wasn&#8217;t very hard at&nbsp;all.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c147">On July 3, 2006, <span class="comment-person-name">Jeff Croft</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c147" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>While I agree with your position on <span class="caps">AJAX</span> in Django (I don&#8217;t believe Django should be championing a particular <span class="caps">JS</span> toolkit by providing built-in hooks to it&#8217;s AjAX and effects methods, I don&#8217;t know if I really agree with&nbsp;this:
+</p>
+<blockquote><p>If you call yourself a “web developer” you have absolutely no excuse for not knowing JavaScript. And if you don’t know JavaScript, you have absolutely no right to call yourself a “web&nbsp;developer”.
+</p>
+</blockquote><p>It seems to me that as the web gets older, the disciplines within it get more and more specialized. Back when I first got into the web (early 90s), there was this concept of a &#8220;webmaster.&#8221; The &#8220;webmaster&#8221; was the person who took care of an organization&#8217;s website &#8212; from top to bottom. The did server administration, <span class="caps">CGI</span> scripting (usually with Perl), visual design, markup, and everything in&nbsp;between. 
+</p>
+<p>But that model is long since dead &#8212; and for good reason. Web development has gotten more complex, and it not requires some degree of specialization. You happen to be someone who can do the top-down thing pretty well, and that&#8217;s great. But that&#8217;s unusual, and I don&#8217;t think people should be expected to do that. The term &#8220;web developer&#8221; can potentially cover a lot of disciplines: server-side programming, client-side programming, flash, <span class="caps">HTML</span>/<span class="caps">CSS</span>, graphic design, usability/accessibility, interaction design, etc. To state that an expert in any one of these fields is not worthy of being called a &#8220;web developer&#8221; because they&#8217;re not an expert in <em>all</em> of them is pretty harsh, I&nbsp;think.
+</p>
+<p>I don&#8217;t want to learn Javascript because I consider it to be outside the scope of my particular specialization on the web. Oh sure, I know bits and pieces of Javascript and I can wrangle one of the popular frameworks into doing what I want &#8212; but I don&#8217;t really <em>know</em> Javascript. But what I do know, I know <em>really</em> well, and I think being a great specialist is just as valuable as being a jack of all&nbsp;trades.
+</p>
+<p>Sorry for  the slight tangent. Nice post.&nbsp;:)
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c148">On July 3, 2006, <span class="comment-person-name">James Bennett</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c148" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>Douglas: by far the best reference anywhere of any sort is the <a href="http://www.amazon.com/gp/product/0596101996/sr=8-1/qid=1151935508/ref=pd_bbs_1/103-0458384-1525429?ie=UTF8">Rhino book</a>. It treats JavaScript the way JavaScript <em>should</em> be treated, which is to say as a programming language that happens to have an <span class="caps">API</span> for working with web&nbsp;pages.
+</p>
+<p>Nicola: that way lies the <a href="/weblog/2006/05/21/google-web-toolkit">Google Web Toolkit</a>. And the results won&#8217;t be pretty. Nonetheless, it&#8217;s already being <a href="http://www.jtauber.com/blog/2006/05/17/python_equivalent_to_google_web_toolkit">ported to Python</a>.
+</p>
+<p>Jeff: learning JavaScript won&#8217;t kill you, you know&nbsp;:)
+</p>
+<p>And though there certainly are increasing degrees of specialization in our industry, I still think there&#8217;s a responsibility to know all three layers of the Web&#8217;s front end; even if you never use it and someone else is going to come along and add it later, knowing JavaScript will help you make better decisions at every step of the design and development&nbsp;process.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c149">On July 3, 2006, <span class="comment-person-name">Dagur</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c149" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<blockquote><p>And advanced <span class="caps">HTML</span> and <span class="caps">CSS</span> are still rendered inconsistently in the major browsers. And, just as in <span class="caps">HTML</span> and <span class="caps">CSS</span>, it’s possible to write JavaScript which works around the inconsistencies. And, just as in <span class="caps">HTML</span> and <span class="caps">CSS</span>, smart people have already written that code and made it available online, for&nbsp;free.
+</p>
+</blockquote><p>Non-compatible <span class="caps">HTML</span> or <span class="caps">CSS</span> won&#8217;t &#8220;break&#8221; your site like javascript might. That&#8217;s what I&#8217;m constantly worried about when writing&nbsp;javascript.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c150">On July 3, 2006, <span class="comment-person-name">James Bennett</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c150" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<blockquote><p>Non-compatible <span class="caps">HTML</span> or <span class="caps">CSS</span> won’t “break” your site like javascript might. That’s what I’m constantly worried about when writing&nbsp;javascript.
+</p>
+</blockquote><p>You don&#8217;t work much in Internet Explorer, do&nbsp;you?
+</p>
+<p>;)
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c151">On July 3, 2006, <span class="comment-person-name">Jeff Croft</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c151" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<blockquote><p>And though there certainly are increasing degrees of specialization in our industry, I still think there’s a responsibility to know all three layers of the Web’s front end; even if you never use it and someone else is going to come along and add it later, knowing JavaScript will help you make better decisions at every step of the design and development&nbsp;process.
+</p>
+</blockquote><p>I agree with that. I think that everyone has a responsibility to understand, at least conceptually, all of the layers of a web document &#8212; but that&#8217;s a bit different than <em>learning javascript</em>. I want to understand how javascript works and how it interacts with the <span class="caps">DOM</span> so that I can properly communicate with <span class="caps">DOM</span> scripters. I want to understand how Python works, since that&#8217;s the sever-side language we use for my job. But I don&#8217;t feel like I need to <em>learn</em> both of them. I just need to understand how they fit together with the parts of the document I deal with more&nbsp;specifically.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c152">On July 3, 2006, <span class="comment-person-name">Jay Graves</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c152" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>That is absolutely fantastic news about django.core.serialization.  Up until know I have been writing my own object to json serialization by hand.  This will save a lot of&nbsp;work.
+</p>
+<p>I also cannot wait to see what becomes of the Django &#8220;web services&#8221; api.  I think that is something that will really be a killer feature for&nbsp;Django.
+</p>
+<p>On a side note.  Please keep up the great posts about the latest news from the newsgroup.  I am sure many people, like myself, find them very userfull, since they don&#8217;t always read the&nbsp;newsgroup.
+</p>
+<p>Thanks&nbsp;again.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c158">On July 3, 2006, <span class="comment-person-name">arthur debert</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c158" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>I fully agree with a broader view of not tying django to a particular js toolkit. Also the new serializers are quite handy (just looked at them after this&nbsp;post!).
+</p>
+<p>One particular instance where it would be great to get more &#8220;integrated&#8221; js into django is on the admin. It already does useful things like populating slug fields and opening a new window for many to many fields object-creation.
+   Right now, having models order by an arbitrary field works well, but interface wise it sucks. An useful feature, would be drag and drop ordering of models on the list view. This one is though to hack on, because not only you must add more js to the admin(easy) but you must also hook up with the backend (to save the new order after dragging). That itself raises a full set of questions: would the order save be automatic after drag? or would there be a &#8220;save order&#8221; button on top after the user is done &#8220;reordering&#8221;. Also , the model would have to have an additional field (to store it&#8217;s&nbsp;order).
+</p>
+<p>maybe something inside the admin inner class:
+   class Admin:
+       &#8230;
+       draggable_order = &#8216;field_name&#8217; # the name of an IntegerField responsible for keeping order&nbsp;information. 
+</p>
+<p>Are there any plans to accommodate such use case (or maybe am I the only one to find this very&nbsp;useful)?
+</p>
+<p>Thanks,&nbsp;arthur
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c160">On July 3, 2006, <span class="comment-person-name">James Bennett</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c160" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>Arthur: I&#8217;d wonder at the logic for that use case; how often do you really need to rearrange the order in which the applications are listed on the index&nbsp;page?
+</p>
+<p>Also, you can already change that in a couple of ways (by overriding the template &#8212; and Django will spit out the <span class="caps">HTML</span> it&#8217;s using for easy editing &#8212; or by changing the order of applications in <code>INSTALLED_APPS</code> and/or the order of model definitions in the models&nbsp;file).
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c161">On July 3, 2006, <span class="comment-person-name">michele</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c161" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>@Douglas:
+</p>
+<p>You can find very good introductions&nbsp;here:
+</p>
+<p>http://www.crockford.com/javascript/survey.html
+</p>
+<p>and&nbsp;here:
+</p>
+<p>http://simon.incutio.com/slides/2006/etech/javascript/js-reintroduction-notes.htm
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c162">On July 3, 2006, <span class="comment-person-name">Jeff Croft</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c162" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>Don&#8217;t quote me on this, but I&#8217;m pretty sure Wilson Miner, who is the designer responsible for the Django admin interface, has plans to further Javascript-ify it. Of course, he just moved across the country and started a new job, so hard telling when he&#8217;ll get to it &#8212; but I do think it&#8217;s on his to-do list at some&nbsp;point.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c163">On July 3, 2006, <span class="comment-person-name">arthur debert</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c163" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>James:
+   Since this never comes up on the mailing list I suppose it&#8217;s pretty much a special case. But, at any rate I can see a few situations where arbitrary ordering is useful.
+   a) a photo gallery app. maybe ordering by date / title is not as meaningful.
+   b) in a bookmark list app (ala del.icio.us. ), I created &#8220;sets&#8221;, pages of bookmarks, and it was useful to allow an arbitrary order.
+   c) a portfolio app. sometimes you would like to list your works not by client name neither on chronological order.
+   These are three real life examples I&#8217;ve encountered so far. I guess that as you move away from cms like apps (blogs, newspapers) it makes more sense to allow users to order their own content (django already allows that, it&#8217;s just that drag and drop in the admin would make the interface more elegant).
+   cheers&nbsp;arthur
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c166">On July 4, 2006, <span class="comment-person-name">Sylvain</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c166" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>I don&#8217;t fully understand the point of this article (apart looking as somewhat a rant for God knows&nbsp;whom).
+</p>
+<p>It looks like: &#8220;hmmm let&#8217;s found a good reason to trash competitors which include built-in Javascript capabilities which Django does not and even say it would be a bad idea to do so because.. er.. Javascript is a given nowadays, isn&#8217;t&nbsp;it?&#8221;
+</p>
+<p>Well <span class="caps">SQL</span> is as well and yet Django provides its own wheelchair&#8230; hmm sorry&#8230;&nbsp;<span class="caps">ORM</span>. 
+</p>
+<p>I really have the feeling that each time I read an article about Django it&#8217;s to learn that &#8220;Django is the best and even when Django is missing something, well it&#8217;s done on purpose and is actually better than the rest&#8221;.&nbsp;Tiring.
+</p>
+<p>Yeah people should learn Javascript but as the rest of the crowd said here, do we have to comprehensively know a language before doing anything with it? Do&nbsp;you?
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c167">On July 4, 2006, <span class="comment-person-name">Luke</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c167" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>Here is a good excuse for not knowing&nbsp;Javascript:
+</p>
+<p>If you use any Javascript at all, you can fall fowl of the <span class="caps">WCAG</span> accessibility standards if you are not careful to ensure it works in the absence of Javascript.  Furthermore, many &#8216;<span class="caps">AJAX</span>-y&#8217; usages of Javascript (such as dynamically updating parts of the page) almost certainly don&#8217;t comply with <span class="caps">WCAG</span> recommendations, so you are still in trouble even if the user has javascript enabled, but is partially sighted for instance.  If you care about accessibility, either because you actually care or because you are being paid to care, or are forced by law to care (e.g. lots of public bodies in the <span class="caps">UK</span>), then you will probably avoid Javascript to a very large degree.  There are plenty of articles about this, I won&#8217;t repeat&nbsp;them.
+</p>
+<p>But I just wanted to point out that knowing Javascript is not at all mandatory for lots of web development.  You can create perfectly usuable web sites without&nbsp;it.
+</p>
+<p>Personally, I would say that having a solid grasp of <span class="caps">HTTP</span> is more important &#8212; lots of web developers don&#8217;t have a&nbsp;clue.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c168">On July 4, 2006, <span class="comment-person-name">James Bennett</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c168" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>Sylvain: you just go ahead and think whatever you want; <span class="caps">ORM</span> is a very different thing from &#8220;you don&#8217;t need to knwo <span class="caps">SQL</span>&#8221;, even though too many people use it that&nbsp;way.
+</p>
+<p>And again, my beef here is with people who say &#8220;I don&#8217;t want to learn JavaScript, I&#8217;d rather have some automated template tag do it for me&#8221;, which is entirely too common a position these days; even if you don&#8217;t become a JavaScript expert, you should know how the language works and, at the very least, how to use a good library or two in order to get the effects you want. Asking, as so many do, that someone else hide JavaScript from you completely in the form of a &#8220;helper&#8221; is lazy and&nbsp;childish.
+</p>
+<p>Luke: no, that&#8217;s not an excuse. If you use any <span class="caps">HTML</span> and <span class="caps">CSS</span> at all, you can also fall afoul of accessibility guidelines very easily; does that mean people shouldn&#8217;t use <span class="caps">HTML</span> and <span class="caps">CSS</span>, or rather does it mean that they should spend more time learning their&nbsp;craft?
+</p>
+<p>And I think knowledge of JavaScript is going to get more and more unavoidable as time goes by; the <span class="caps">AJAX</span> genie isn&#8217;t going to get put back in the bottle, so now&#8217;s the time to learn how to do things&nbsp;right.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c169">On July 4, 2006, <span class="comment-person-name">Sylvain</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c169" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>Agreed. That being said, I don&#8217;t think I&#8217;ve seen any framework hiding completely Javascript from the developer either. Yeah some people are childish and they want everything and their money back, but then your article is not clear you were aiming at lazy&nbsp;people.
+</p>
+<p>If I look at TurboGears, they don&#8217;t hide <span class="caps">JS</span> from the developer, do they? They might offer helper but at the end of the day you still need to understand Javascript&nbsp;itself.
+</p>
+<p>I don&#8217;t understand how <span class="caps">SQL</span>/<span class="caps">ORM</span> is any different from Javascript/Frameworks-that-do-it-all since in both cases the goal is to hide as much as possible the underlying details and provide a smooth interface for the&nbsp;developer. 
+</p>
+<p>I think you are right overall but the way you put things are somewhat unclear to&nbsp;me.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c170">On July 4, 2006, <span class="comment-person-name">James Bennett</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c170" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>If you&#8217;re causing JavaScript to be added to a page without actually writing JavaScript or a <code>script</code> tag, then your framework is hiding it from you and that ain&#8217;t&nbsp;cool.
+</p>
+<p><span class="caps">ORM</span> is a bit different because, while people do use <span class="caps">ORM</span> systems to avoid writing <span class="caps">SQL</span> (and that&#8217;s just as bad as hiding from JavaScript), <span class="caps">ORM</span> itself is not about avoiding <span class="caps">SQL</span>; it&#8217;s about giving persistence to the objects of an <span class="caps">OO</span> programming language by translating between the classes and objects of your code and the tables and rows of a relational database. In other words, <span class="caps">ORM</span> is primarily a means of taking a code object and storing it, then retrieving it later as a code object with the same&nbsp;attributes.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c171">On July 4, 2006, <span class="comment-person-name">Daniel Lindsley</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c171" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>Kudos, as ever, James.  A great article, especially the serialization.  I agree with what you&#8217;ve said, though I&#8217;m likely one of the web developers you&#8217;re talking about who only knows enough Javascript to get&nbsp;by.
+</p>
+<p>To Jeff, what you&#8217;re describing sounds more like the role of a web designer to me, as opposed to a web developer.  I am definitely am not trying to cut you down, and your site is a testament to your skills as a designer and a developer.  But to do just <span class="caps">HTML</span>/<span class="caps">CSS</span> results in static pages and one of the tennets, in my mind, of a developer is&nbsp;interactivity.
+</p>
+<p>Thanks again, all.  Wonderful read, both the post and the&nbsp;comments.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c172">On July 4, 2006, <span class="comment-person-name">Wilson Miner</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c172" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>@Jeff&#8230;
+</p>
+<blockquote><p>Don’t quote me on this, but I’m pretty sure Wilson Miner, who is the designer responsible for the Django admin interface, has plans to further Javascript-ify&nbsp;it.
+</p>
+</blockquote><p>Actually, the design foundation for the new AJAXy admin widgets is mostly done. I don&#8217;t know where Jacob is on implementing them&#8212;I know there are some unsolved problems&#8212;but this new serialization framework looks like&nbsp;progress.
+</p>
+<p>Once that first foundation stuff is in I&#8217;ve got lots of ideas for even more fancypants bits and&nbsp;widgets.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c173">On July 4, 2006, <span class="comment-person-name">James Bennett</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c173" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>Wilson, don&#8217;t forget that the Dojo-fication of the admin is pretty much done, too (though it hasn&#8217;t been committed); from the front-end side it&#8217;ll be pretty easy for me to add new widgets as we need&nbsp;them.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c174">On July 4, 2006, <span class="comment-person-name">Jeff Croft</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c174" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<blockquote><p>To Jeff, what you’re describing sounds more like the role of a web designer to&nbsp;me&#8230;
+</p>
+</blockquote><p>Absolutely. I consider myself to be a web designer, and not really a web developer. Although I do occasionally play with web development (i.e. programming) on personal projects, my <em>job</em> is that of a&nbsp;designer. 
+</p>
+<p>So I presume, then, that you agree with me that it&#8217;s not really within the scope of my <em>job</em> to be a Javascript expert. It is, I believe, in the scope of my job to understand how Javascript works, and probably to be able to read it and tweak other people&#8217;s code to some degree. I just don&#8217;t think I need to be able to write complex scripts from scratch, and it sounds like you agree with&nbsp;me.
+</p>
+<p>James doesn&#8217;t. He and I talked about it yesterday, and he definitely believes that it is <em>my job</em> to know Javascript inside and out. And that&#8217;s okay. We can agree to disagree. No big deal.&nbsp;:)
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c175">On July 4, 2006, <span class="comment-person-name">James Bennett</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c175" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>Jeff, we did talk about this yesterday :), but someone who doesn&#8217;t know&nbsp;Ja
+</p>
+<p>And I do think you should know JavaScript. I&#8217;m not asking that everyone get up to the level of Dean Edwards or Douglas Crockford, but you should know your way around in the language. As you well know, it doesn&#8217;t take expert-level JavaScript knowledge to pick up Prototype or MochiKit or one of the popular libraries and build interesting effects with it; that&#8217;s the level of knowledge I think is appropriate as a&nbsp;baseline.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c176">On July 4, 2006, <span class="comment-person-name">Chappie</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c176" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>Serializer needs&nbsp;filter.
+</p>
+<p>Currently the serializer returns:
+   [{&#8220;pk&#8221;: &#8220;1&#8221;, &#8220;model&#8221;: &#8220;map.location&#8221;, &#8220;fields&#8221;: {&#8220;lat&#8221;: 44.94141, &#8220;lng&#8221;: -123.034286, &#8220;tag&#8221;: &#8220;Salem&#8221;}}, {&#8220;pk&#8221;: &#8220;2&#8221;, &#8220;model&#8221;: &#8220;map.location&#8221;, &#8220;fields&#8221;: {&#8220;lat&#8221;: 44.052219, &#8220;lng&#8221;: -123.086548, &#8220;tag&#8221;:&nbsp;&#8220;Eugene&#8221;}}]
+</p>
+<p>I need it to return:
+   [{&#8220;pk&#8221;: &#8220;1&#8221;,  &#8220;fields&#8221;: {&#8220;lat&#8221;: 44.94141, &#8220;lng&#8221;: -123.034286}}, {&#8220;pk&#8221;: &#8220;2&#8221;, &#8220;fields&#8221;: {&#8220;lat&#8221;: 44.052219, &#8220;lng&#8221;:&nbsp;-123.086548}}]
+</p>
+<p>Also, why include the model at&nbsp;all? 
+</p>
+<p>It seems to me that <em>if</em> it is included, it doesn&#8217;t need to be in each record returned.  Is it possible to have different models in one&nbsp;serialization?
+</p>
+<p>A filtration mechanism would be very helpful&nbsp;here.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c177">On July 4, 2006, <span class="comment-person-name">Tim</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c177" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>I tried your example. I found that &#8220;mime_type&#8221; should be &#8220;mimetype&#8221;. I also agree with Chappie that some sort of filter would be great. However, I guess that could be done when retrieving the&nbsp;data.
+</p>
+<p>Thanks for the&nbsp;example.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c190">On July 4, 2006, <span class="comment-person-name">Cliff Wells</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c190" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>Thanks to MochiKit, I&#8217;ve started using JavaScript quite a bit in my web apps.  However I have to take the opposing view here:  JavaScript is nowhere near as core as <span class="caps">CSS</span>, which in turn is not as core as <span class="caps">HTML</span>.  Besides the fact that many browsers can do neither JavaScript nor <span class="caps">CSS</span>, you can accomplish the same things with pure <span class="caps">HTML</span> that you can with <span class="caps">HTML</span>+<span class="caps">CSS</span>+JavaScript, but the reverse isn&#8217;t true.   By &#8220;accomplish&#8221; I&#8217;m not referring to fading effects, pretty layout etc.  I&#8217;m talking about the actual core functions of the application.  In fact if your application can&#8217;t function <em>without</em> JavaScript, then I&#8217;d argue you have no right to call yourself a &#8220;web developer&#8221;.   I expect millions of blind people will agree with&nbsp;me.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c192">On July 4, 2006, <span class="comment-person-name">James Bennett</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c192" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>Cliff, no-one&#8217;s saying that people should run out and make stuff that doesn&#8217;t work without JavaScript, or stuff that isn&#8217;t accessible. I take accessibility extremely personally (I&#8217;m colorblind and my eyesight is otherwise rather horrible), so if someone does build something that&#8217;s got major accessibility problems I&#8217;ll happily beat them upside the head with my trusty&nbsp;cluestick.
+</p>
+<p>But at the same time, the progressive enhancement of user experience provided by JavaScript is becoming an absolute 100% necessity for web applications. And as a result, <em>knowing</em> JavaScript is becoming an absolute 100% necessity for web&nbsp;developers.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c194">On July 4, 2006, <span class="comment-person-name">Cliff Wells</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c194" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>James,
+</p>
+<p>I think for a certain class of application you are correct.  I think what I take umbrage with is the blanket statement you&#8217;ve cast out that in order to be a &#8220;web developer&#8221; you must know JavaScript.  I think there are places where JavaScript is appropriate and places where it isn&#8217;t.   JavaScript is an <em>enhancement</em>, not a core feature.  I think there is plenty of room on the web for developers who prefer not to do client-side scripting, and I&#8217;d judge them on how well they do what they set out to do rather than on whether or not they&#8217;ve embraced the technology of the&nbsp;day.
+</p>
+<p>I certainly consider it wise to use JavaScript where it will enhance the user experience, but at the same time I&#8217;d much rather see web developers focus on core concerns such as scalability, security, accessiblity, etc, and then consider where things like JavaScript might create an improved user&nbsp;experience.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c195">On July 5, 2006, <span class="comment-person-name">James Bennett</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c195" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>Cliff,
+</p>
+<p>You can&#8217;t enhance if you don&#8217;t know how the enhancement works. And even if you&#8217;re not developing the next GMail, there are tons of useful enhancements JavaScript can provide <em>without</em> getting in the way of anything else (live searches, immediate form validation, comment posting via XMLHttpRequest &#8212; I could go on all day). And professional web developers need to know how to do those things, which means they do need to know&nbsp;JavaScript.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c197">On July 5, 2006, <span class="comment-person-name">Tony</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c197" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>James,
+   Thanks for the info on serialization - I had no idea that was in there. Very&nbsp;useful. 
+</p>
+<p>Also, mime_type should be mimetype to get the example to&nbsp;work.
+</p>
+<p>Tone
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c199">On July 5, 2006, <span class="comment-person-name">Chris Ryland</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c199" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>I think James&#8217; point is well taken, in the same sense that if you&#8217;ve never programmed in C or in assembly, you&#8217;ll never really understand pointers and memory allocation in a fundamental way, etc. (Think &#8220;Java 90-day wonders&#8221;-style&nbsp;programmers.)
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c201">On July 5, 2006, <span class="comment-person-name">Nathan Borror</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c201" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>I whole heartedly agree. The only time I used the helpers in Rails was to quickly prototype stuff and I <span class="caps">ALWAYS</span> ended up going back and stripping it out. I&#8217;ve got <span class="caps">OCD</span> when it comes to behavior and structure separation, plus its just freakin easier to&nbsp;read!
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c202">On July 5, 2006, <span class="comment-person-name">Jeff Croft</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c202" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<blockquote><p>As you well know, it doesn’t take expert-level JavaScript knowledge to pick up Prototype or MochiKit or one of the popular libraries and build interesting effects with it; that’s the level of knowledge I think is appropriate as a&nbsp;baseline.
+</p>
+</blockquote><p>In that case, maybe we don&#8217;t really disagree at all. I also think that&#8217;s a pretty appropriate level of Javascript knowledge for my job &#8212; and, as you know, I&#8217;m pretty capable of getting Prototype to do what I want.&nbsp;:)
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c203">On July 5, 2006, <span class="comment-person-name">matt</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c203" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>Hmm&#8230;  Like Jeff, I&#8217;m not really buying this argument.  &#8220;Web Developer&#8221; is a broad title, one that get&#8217;s more ill-defined as the web matures.  It&#8217;s hard to hang the necessity of <em>any</em> skill on this position&#8212;it&#8217;s quite dependent on the needs of the project at hand, as well as the skills of the rest of the&nbsp;team.
+</p>
+<p>Of course, learning JavaScript will make anyone involved in the web more useful&#8212;but the real question is, <em>who should learn it</em>?  In my opinion, it&#8217;s a skill that the programmer should bear&#8212;since, as you said, JavaScript should be considered a true programming&nbsp;language.  
+</p>
+<p>Claiming that a web developer (who I take, in your agruement, to be a &#8220;xhtml/css designer-developer&#8221;) must &#8216;learn&#8217; JavaScript is a akin to a web developer demanding all programmers learn how to anchor classes and ids semantically, never allow programmatic output (even user inputed data) to break an <span class="caps">XHTML</span> document&#8217;s validity, and obey all <span class="caps">XHTML</span> tag conventions perfectly (i.e. list for lists, tables for tables, definition lists, etc).  Oh yeah, and document their code cleanly, especially when it appears in a template that non-programmers must edit.  In a perfect world, both programmers and developers/designers would know each other&#8217;s skills much&nbsp;better.
+</p>
+<p>I respect your desire to keep <span class="caps">JS</span> libraries out of Django.  However, I don&#8217;t think that choice necessitates a claim that &#8216;more people should learn js&#8217;&#8230;  My 2&nbsp;cents.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c204">On July 5, 2006, <span class="comment-person-name">James Bennett</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c204" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>Matt, &#8220;developers should learn JavaScript&#8221; is one of the reasons for not integrating lots of JavaScript helpers into Django, not the other way&nbsp;around.
+</p>
+<p>One of my co-workers this morning made the point in a fairly succinct way: if you&#8217;re a web shop, you absolutely have to have a JavaScript guy, just as you absolutely have to have an <span class="caps">HTML</span>+<span class="caps">CSS</span> guy. Maybe they&#8217;re the same&nbsp;guy.
+</p>
+<p>And if you&#8217;re a one-man shop, they <em>are</em> the same guy. Time to learn&nbsp;it.
+</p>
+<p>Also, &#8220;web programmers&#8221; who don&#8217;t know both <span class="caps">HTML</span> and good <span class="caps">HTML</span> practices have some learning to do, too. And if they&#8217;re the ones who get to learn JavaScript, then they sure as hell better know good <span class="caps">HTML</span> practices because they&#8217;re going to be fiddling with the&nbsp;<span class="caps">DOM</span>.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c207">On July 6, 2006, <span class="comment-person-name">qiulihong</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c207" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>I&#8217;m just learning Django,it&#8217;s a good article:)
+   I&#8217;m from China and I want to make friends with&nbsp;you!
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c212">On July 7, 2006, <span class="comment-person-name">Bjorn</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c212" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>Django should encourage the use of a JavaScript library the same way Django encourages the use of a certain templating system, O-R mapping layer, and url dispatching&nbsp;system.
+</p>
+<p><span class="caps">AND</span>&#8230; Django&#8217;s admin system should use this&nbsp;library.
+</p>
+<p><span class="caps">AND</span>&#8230; the library is Dojo :)  (I thought this had been decided&nbsp;already.)
+</p>
+<p>Well, those are my opinions, anyways.  We need to move forward on a common platform, or we&#8217;ll forever be behind Ruby on Rails.  Sorry&nbsp;guys.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c217">On July 8, 2006, <span class="comment-person-name">James Bennett</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c217" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<blockquote><p>Well, those are my opinions, anyways. We need to move forward on a common platform, or we’ll forever be behind Ruby on Rails. Sorry&nbsp;guys.
+</p>
+</blockquote><p>I&#8217;d much, much rather get things right than do something just to &#8220;get ahead of Rails&#8221;. So that&#8217;s a useless argument with&nbsp;me.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c218">On July 10, 2006, <span class="comment-person-name">Jeremy Keith</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c218" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>I completely and wholeheartedly agree with this post. It makes me especially happy to hear this viewpoint from someone on the inside of a framework. I think a framework that writes JavaScript for you is one layer of abstraction too&nbsp;many.
+</p>
+<p>To the web developers who claim it is not their job to know JavaScript: that&#8217;s fine as long as you never need to use JavaScript. If you stick to design, <span class="caps">HTML</span>, and <span class="caps">CSS</span>, everything&#8217;s&nbsp;cool.
+</p>
+<p>But if you find yourself needing to use JavaScript, it is completely unacceptable to go looking for some &#8220;helper&#8221; to do it for you. Either pass the work on to someone who knows how to do it, or learn how to do it&nbsp;yourself.
+</p>
+<p>Poop or get off the&nbsp;pot.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c219">On July 10, 2006, <span class="comment-person-name">AC</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c219" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>you should code in machine codes, and do not rely on any wheelchairs be they called python, ruby, or java.
+   p.s. I know how to code&nbsp;JavaScript.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c220">On July 10, 2006, <span class="comment-person-name">Lucas Carlson</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c220" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>I think the most important statement that James is trying to make here is that it is a framework&#8217;s responsibility to make programmers learn JavaScript. Sure it is possible to add javascript helper functions to Django, and yes that would speed up initial development times and reduce bugs since Python is usually more terse than <span class="caps">JS</span>&#8230; even for expert <span class="caps">JS</span> programmers. But speed, utility, and bug quantity are sacrificed because there are people out there that do not know JavaScript and James feels like Django should police those people. Essentially, James is arguing that Django needs to be dumbed down, to reduce the features and utility of the framework, because the beginner programmers need a&nbsp;smackdown.
+</p>
+<p>So I am sorry to the professionals amongst us, the ones who know JavaScript very well, but would simply rather spend their time in more fruitful ways and let the framework do a little extra work for them. To those professionals, my condolences, but Django will not provide for you, will not help you, because James is more interested in teaching a lesson to the people who never bothered to work as hard as you and learn&nbsp;<span class="caps">JS</span>.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c221">On July 10, 2006, <span class="comment-person-name">Jeremy Keith</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c221" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>Lucas, I&#8217;m amazed that you can stretch far enough to put all those words in James&#8217;s mouth from all the way up there on your high horse.&nbsp;;-)
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c235">On July 12, 2006, <span class="comment-person-name">James Bennett</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c235" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>Let&#8217;s count the number of things Lucas claims which have no basis whatsoever in anything I&#8217;ve&nbsp;said:
+</p>
+<blockquote><p>I think the most important statement that James is trying to make here is that it is a framework’s responsibility to make programmers learn&nbsp;JavaScript.
+</p>
+</blockquote><p>Except, well, I didn&#8217;t say that. In fact, I said pretty much the opposite when I stated that &#8220;opinionated&#8221; isn&#8217;t a good thing for a framework to&nbsp;be.
+</p>
+<p>Strike&nbsp;one.
+</p>
+<blockquote><p>But speed, utility, and bug quantity are sacrificed because there are people out there that do not know JavaScript and James feels like Django should police those&nbsp;people.
+</p>
+</blockquote><p>I&#8217;m so terribly sorry that I wasn&#8217;t able to accomodate your worldview by saying anything even remotely close to&nbsp;that.
+</p>
+<p>Strike&nbsp;two.
+</p>
+<blockquote><p>Essentially, James is arguing that Django needs to be dumbed down, to reduce the features and utility of the framework, because the beginner programmers need a&nbsp;smackdown.
+</p>
+</blockquote><p>That&#8217;s one hell of a stretch, dude. You&#8217;re not just pulling things out of your ass, you&#8217;re reaching way up the <span class="caps">GI</span> tract and yanking it out your duodenum or&nbsp;something.
+</p>
+<p>Strike three, and he&#8217;s&nbsp;out!
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c241">On July 13, 2006, <span class="comment-person-name">Joseph Rose</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c241" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<blockquote><p>Asking, as so many do, that someone else hide JavaScript from you completely in the form of a “helper” is lazy and&nbsp;childish.
+</p>
+</blockquote><p>How is this different than the &#8220;<span class="caps">SQL</span> Helpers&#8221; that Django&nbsp;provides?  
+</p>
+<p>article.get_object(name__exact=&#8217;foo&#8217;)
+</p>
+<p>translates&nbsp;to
+</p>
+<p><span class="caps">SELECT</span> * <span class="caps">FROM</span> articles <span class="caps">WHERE</span> name =&nbsp;&#8220;foo&#8221;
+</p>
+<p>Isn&#8217;t this lazy and childish as well?  Wouldn&#8217;t a more pure framework, one that doesn&#8217;t cater to children or the lazy, force you to get objects by <span class="caps">SQL</span> using a find_by_sql&nbsp;function? 
+</p>
+<p>I don&#8217;t understand why there isn&#8217;t a middle ground here, sort of like using Javascript helpers, but being able to drop into javascript when needed (Sound&nbsp;familiar?)
+</p>
+<p>I also disagree with this&nbsp;statement:
+</p>
+<blockquote><p>if you don’t know JavaScript, you have absolutely no right to call yourself a “web&nbsp;developer&#8221;
+</p>
+</blockquote><p>I write Django and RoR code at my current job and never touch <span class="caps">HTML</span>, <span class="caps">CSS</span> or Javascript.  I understand the basics of these languages, but am not an expert in them (I couldn&#8217;t write my own ajax, for example).  Does this mean I am not a web developer?  Teams (especially as large as the one I work on) need specialists, and I am one.  I proudly call myself a web&nbsp;developer.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c247">On July 13, 2006, <span class="comment-person-name">James Bennett</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c247" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<blockquote><p>How is this different than the “<span class="caps">SQL</span> Helpers” that Django&nbsp;provides? 
+</p>
+</blockquote><p>See <a href="/weblog/2006/07/04/javascript-orm-and-hding-sql">here</a>. <span class="caps">ORM</span>&#8217;s purpose, even though people may use it for that, is not to hide <span class="caps">SQL</span> from you, and people who do use it to avoid <span class="caps">SQL</span> are going to find that there are lots of useful things they can&#8217;t&nbsp;do.
+</p>
+<blockquote><p>I don’t understand why there isn’t a middle ground here, sort of like using Javascript helpers, but being able to drop into javascript when needed (Sound&nbsp;familiar?)
+</p>
+</blockquote><p>Mostly because there already are helpers for JavaScript. They go by names like <a href="http://dojotoolkit.org/">Dojo</a>, <a href="http://prototype.conio.net/">Prototype</a>, and so on. Why do some people find it unbearably hard to learn&nbsp;them?
+</p>
+<blockquote><p>I write Django and RoR code at my current job and never touch <span class="caps">HTML</span>, <span class="caps">CSS</span> or Javascript. I understand the basics of these languages, but am not an expert in them (I couldn’t write my own ajax, for example). Does this mean I am not a web&nbsp;developer?
+</p>
+</blockquote><p>Personally? I think that everyone on the team should have a baseline level of knowledge of the various technologies involved. Specialization is one thing; ignorance is something else&nbsp;entirely.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c248">On July 14, 2006, <span class="comment-person-name">Ed Epstein</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c248" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>I agree with this 100%. When I set about integrating &#8220;<span class="caps">AJAX</span>&#8221; into my django apps, this is the approach I took. All you need to do is return the json objects using the framework. Everything else is done in your templates. You don&#8217;t need any helpers on the python/django side&#8212; the rest of the fancy stuff is all JavaScript. If you want to use a toolkit like dojo, then go ahead.. but otherwise you&#8217;ve hit the nail on the head for what counts as django&#8217;s support for&nbsp;<span class="caps">AJAX</span>.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c250">On July 14, 2006, <span class="comment-person-name">Joseph Rose</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c250" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<blockquote><blockquote><p>How is this different than the “<span class="caps">SQL</span> Helpers” that Django&nbsp;provides? 
+</p>
+</blockquote></blockquote><blockquote><blockquote><p><span class="caps">ORM</span>’s purpose, even though people may use it for that, is not to hide <span class="caps">SQL</span> from you, and people who do use it to avoid <span class="caps">SQL</span> are going to find that there are lots of useful things they can’t&nbsp;do. 
+</p>
+</blockquote></blockquote><p>Why can&#8217;t they make javascript tags that , in your words describing <span class="caps">ORM</span>, don&#8217;t hide javascript from you? I know that with these tags, there are many useful things I will not be able to do.  However, they are a good start and help me turn over a barebones functional template (view, actually, in RoR) to a designer for&nbsp;polish.  
+</p>
+<p>Honestly, Javascript is a terrible, inconsistent language and I feel dirty after writing code in it.  I get much more satisfaction dropping a RoR Ajax tag on a page than having our Javascript guy spend an hour writing the same&nbsp;function.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c251">On July 14, 2006, <span class="comment-person-name">James Bennett</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c251" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>Joseph, if it takes your &#8220;JavaScript&#8221; guy an hour to write a trivial function, you need a new JavaScript&nbsp;guy.
+</p>
+<p>It&#8217;s really not a bad&nbsp;language.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c253">On July 14, 2006, <span class="comment-person-name">Joseph Rose</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c253" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>James, I think we may have to agree to disagree.  Javascript is the only programming language I know of that the same function does different things in different environments.  I laugh every time I hear our designer say he had to write a function twice, once for <span class="caps">IE</span> and once for&nbsp;Firefox.  
+</p>
+<p>I really am interested in your detailed opinion on the difference between &#8220;sql helpers&#8221; and javascript helpers.  Why are these so&nbsp;different?
+</p>
+<p>Just to clarify, I don&#8217;t consider these helpers a part of the <span class="caps">ORM</span>.  I think the <span class="caps">ORM</span> strictly relates to taking a query&#8217;s results and making objects out of it, and also trivial details like saving and&nbsp;deleting.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c254">On July 14, 2006, <span class="comment-person-name">James Bennett</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c254" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<blockquote><p>Javascript is the only programming language I know of that the same function does different things in different environments. I laugh every time I hear our designer say he had to write a function twice, once for <span class="caps">IE</span> and once for&nbsp;Firefox.
+</p>
+</blockquote><p>Sounds like it&#8217;s time for your designer to pick up a toolkit that abstracts away the browser&nbsp;differences.
+</p>
+<blockquote><p>I really am interested in your detailed opinion on the difference between “sql helpers” and javascript helpers. Why are these so&nbsp;different?
+</p>
+</blockquote><p>A moment ago you certainly seemed to be impying that <span class="caps">ORM</span> was a &#8220;<span class="caps">SQL</span> helper&#8221; intended to hide <span class="caps">SQL</span> from the developer. Django doesn&#8217;t offer any &#8220;<span class="caps">SQL</span> helpers&#8221;, so I&#8217;m not sure what exactly you&#8217;re asking about&nbsp;here.
+</p>
+
+
+</dd>
+
+  
+
+  <dt id="c423">On July 24, 2006, <span class="comment-person-name">carlos</span> <a href="/weblog/2006/jul/02/django-and-ajax/#c423" title="Permanent link for this comment">said</a>:</dt>
+  <dd>
+<p>What&#8217;s so hard about learning&nbsp;Javascript?
+</p>
+<p>Why avoid learning it when obviously your skills as a web &#8220;developer&#8221; would&nbsp;improve?
+</p>
+<p>Why avoid learning it if you would be able to produce better web sites by doing&nbsp;so?
+</p>
+<p>Never mind whatever &#8220;standards&#8221; you might break, or if someone says that you are not a real web developer if you don&#8217;t know it.  This is either just an excuse or bullying.  Frankly, you should just learn it because it will benefit you.  It&#8217;s not rocket science.  That you refuse means you are just lazy or&nbsp;stupid.
+</p>
+
+
+</dd>
+
+  
+
+</dl>
+
+
+
+
+  <p id="add-comment">Comments for this entry are closed. If you'd like to share your thoughts on this entry with me, please <a href="/contact/">contact me directly.</p>
+
+
+
+  <p class="meta" id="copyright"><a rel="copyright" href="/about/copyright/">Copyright &copy;</a> 2006-2010 <a href="/">James Bennett</a>. Learn more <a href="/about/">about the author</a> or <a href="/about/colophon/">about this site</a>. Subscribe to <a href="/about/feeds/">feeds</a> to get updates.</p>
+  <p style="width: 210px; margin-left: auto; margin-right: auto;"><a href="http://djangopony.com/" class="ponybadge" title="Magic! Ponies! Django! Whee!"><img src="http://media.djangopony.com/img/small/badge.png" width="210" height="65" alt="ponybadge"></a></p>
+  <script src="http://stats.b-list.org/mint/?js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,1310 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>jQuery Sparklines</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="Description" content="Plugin for jQuery to generate sparkline charts directly in the web browser" />
+    <style type="text/css">
+        body { font-family: helvetica, arial, san-serif; background-color: #257; text-align: center; font-size: 0.9em; line-height: 1.2em}
+        p, li { color: #333; }
+        h1 { border-bottom: 1px solid #44a; margin-bottom: 30px; line-height: 1.0em}
+        h1 span { border-bottom: 8px solid #44a; margin-bottom: 8px; }
+        h2 { border-bottom: 1px solid #44a; line-height: 1.0em}
+        h2 span { border-bottom: 4px solid #44a; margin-bottom: 8px; padding: 0px; }
+        h3 { margin-top: 30px; }
+        ul { margin-left: 0px; padding-left: 2em; }
+        #container { background-color: white; width: 720px;  margin-left: auto; margin-right: auto; text-align: left; padding: 30px; border: 5px solid #146;}
+        pre { border: 1px dotted gray; background-color: #def; margin-left: 20px; padding: 4px; margin-right: 20px; overflow: auto}
+        #markets { float: right; width: 250px; height: 60px;  font-size: 0.7em; text-align: right; background-color: white;}
+        #markets p { margin: 0px 0px 4px 0px; }
+        .coptions { display: none; }
+        #customize { padding: 15px; margin-left: 0px; border: 1px dashed black; font-size: 0.9em; background-color: #fafaff; position: relative}
+        #customize h3 { text-align:  center; margin-top: 0px; margin-bottom: 5px; font-size: 1.0em}
+        #customize ul { margin: 0px; list-style: none; }
+        #customize li { padding-bottom: 5px; }
+        #customize input { font-size: 0.9em; }
+        #examples1 { float: right; width: 300px; font-size: 0.8em; background-color: #f8f8ff; margin: 5px 0px 15px 10px; padding: 0px; }
+        #examples div { padding: 8px; }
+        #examples { position: relative; margin-top: 50px; }
+        #ex2 { float: right; width: 50%; position: relative}
+        .typetitle { text-decoration: underline; }
+        .section { display: none; clear: both}
+        #footer { text-align: center; font-size: 0.7em; color: #777; clear: both; margin-top: 100px; }
+        .docdemo { float: right; position: relative; line-height: 1.3em}
+        #doctoc { float: right; position: relative; border-left: 1px solid gray; font-size: 0.9em; line-height: 1.2em}
+        #doctoc a { text-decoration: none }
+        #doctoc a:hover { text-decoration: underline }
+        #customresult { text-align: center; font-size: 1.2em}
+        #rightfloat { float: right; margin: 5px 0px 15px 15px; font-size: 0.8em;  color: black; }
+        #newversion {  border: 1px solid red; background: #ff9; padding: 4px; text-align: center; font-weight: bold}
+        .splunkjobs {  border: 3px solid #000; ; color: #000; padding: 4px; text-align: center; overflow: hidden}
+        .splunkjobs p, .splunkjobs a { color: #333; }
+        .splunkjobs h3 { padding: 0px; margin: 0px; font-size: 1.1em }
+        #splunkjobsdetailbase { display: none}
+        #splunkjobsdetail { position: absolute; left:0px; top: -800px; padding: 15px; background-color: white;  text-align: left}
+        #splunkjobsdetail h2 { margin: 0px; text-align: center}
+        #splunkjobsdetail img { padding: 5px 0px 5px 5px;  }
+        #shade { position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background-color: black; opacity: 0; z-index: 100}
+            
+    </style>
+    <link rel="stylesheet" href="jquery.ui-1.6rc5/themes/spark/ui.core.css"></link>
+    <link rel="stylesheet" href="jquery.ui-1.6rc5/themes/spark/ui.theme.css"></link>
+    <link rel="stylesheet" href="jquery.ui-1.6rc5/themes/spark/ui.tabs.css"></link>
+
+    <!--
+    AHA!  I *knew* you wouldn't be able to resist taking a look here to see how things are setup!
+    Good idea - There's a few comments below, but hopefully things are readable as is.
+
+    First thing we do is load in jQuery and the jquery.sparkline plugin
+    (incidently you'd normally put all this at the END of your page to speed loading times)
+    -->
+    <script type="text/javascript" src="jquery-1.4.4.min.js"></script>
+    <script type="text/javascript" src="jquery.ui-1.6rc5/ui/ui.core.js"></script>
+    <script type="text/javascript" src="jquery.ui-1.6rc5/ui/ui.tabs.js"></script>
+    <script type="text/javascript" src="jquery.sparkline.js"></script>
+
+    <!--
+    Then we use jQuery's $(...) handler to define some javascript to run once the page is loaded
+    -->
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    var mdraw = 0;
+    $(function() {
+        var tabs = $('#tabs').tabs();
+        $('.ui-tabs-nav').bind('tabsshow', function() { $.sparkline_display_visible(); });
+
+        /** Draw all the example charts on the page **/
+
+        // Bar + line composite charts
+        $('#compositebar').sparkline('html', { type: 'bar', barColor: '#aaf' });
+        $('#compositebar').sparkline([4,1,5,7,9,9,8,7,6,6,4,7,8,4,3,2,2,5,6,7], { composite: true, fillColor: false, lineColor: 'red' });
+
+        // Line charts taking their values from the tag
+        $('.line').sparkline();
+
+        // Larger line charts for the docs
+        $('.largeline').sparkline('html', { type: 'line', height: '2.5em', width: '4em' });
+
+        // Customized line chart
+        $('#linecustom').sparkline('html', {height: '1.5em', width: '8em', lineColor: '#f00', fillColor: '#ffa', minSpotColor: false, maxSpotColor: false, spotColor: '#77f', spotRadius: 3});
+
+        // Bar charts using inline values
+        $('.bar').sparkline('html', {type: 'bar'});
+
+        // Tri-state charts using inline values
+        $('.tristate').sparkline('html', {type: 'tristate'});
+        $('.tristatecols').sparkline('html', {type: 'tristate', colorMap: {'-2': '#fa7', '2': '#44f'} });
+
+        // Composite line charts, the second using values supplied via javascript
+        $('#compositeline').sparkline('html', { fillColor: false });
+        $('#compositeline').sparkline([4,1,5,7,9,9,8,7,6,6,4,7,8,4,3,2,2,5,6,7], { composite: true, fillColor: false, lineColor: 'red' });
+
+        // Line charts with normal range marker
+        $('#normalline').sparkline('html', { fillColor: false, normalRangeMin: -1, normalRangeMax: 8 });
+        $('#normalExample').sparkline('html', { fillColor: false, normalRangeMin: 80, normalRangeMax: 95, normalRangeColor: '#4f4' });
+
+        // Discrete charts
+        $('.discrete1').sparkline('html', { type: 'discrete', lineColor: 'blue', xwidth: 18 });
+        $('#discrete2').sparkline('html', { type: 'discrete', lineColor: 'blue', thresholdColor: 'red', thresholdValue: 4 });
+
+        // Bullet charts
+        $('.bullet').sparkline('html', { type: 'bullet' });
+
+        // Pie charts
+        $('.pie').sparkline('html', { type: 'pie', height: '1.0em' });
+
+        // Box plots
+        $('.boxplot').sparkline('html', { type: 'box'});
+        $('.boxplotraw').sparkline([ 1, 3, 5, 8, 10, 15, 18 ], {type:'box', raw: true, showOutliers:true, target: 6});
+
+        /** Plot the stock indexes and the latest San Francisco Giants results - The data for this is gathered by some Python scripts I have on the server **/
+        var nd = [2578.98
+,2580.05
+,2562.98
+,2578.78
+,2555.52
+,2518.21
+,2513.82
+,2469.84
+,2476.01
+,2514.40
+,2518.12
+,2532.02
+,2494.95
+,2543.12
+,2534.56
+,2525.22
+,2498.23
+,2549.43
+,2579.35
+,2591.46
+,2594.92
+,2598.49
+,2609.16
+,2616.67
+,2637.54
+,2624.91
+,2627.72
+,2617.22
+,2637.31
+,2642.97
+];
+        var nd_vol = [0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+,0
+];
+        var dow = [11444.08
+,11406.84
+,11346.75
+,11357.04
+,11283.10
+,11192.58
+,11201.97
+,11023.50
+,11007.88
+,11181.23
+,11203.55
+,11178.58
+,11036.37
+,11187.28
+,11092.00
+,11052.49
+,11006.02
+,11255.78
+,11362.41
+,11382.09
+,11362.19
+,11359.16
+,11372.48
+,11370.06
+,11410.32
+,11428.56
+,11476.54
+,11457.47
+,11499.25
+,11491.91
+];
+        var dow_vol = [211673103
+,143993477
+,161909798
+,164169607
+,296662708
+,217646436
+,155662243
+,254565448
+,160254929
+,171771617
+,219399936
+,152849320
+,192821511
+,0
+,68396121
+,151525312
+,233767337
+,202517464
+,212090425
+,149439757
+,122655108
+,175716725
+,152511377
+,167966467
+,151821269
+,151191253
+,149861645
+,189672886
+,163043294
+,358304189
+];
+        var giants = [1,1,-1,-1,1,1,-1,1,1,1,-1,1,1,-1,1,1,1,-1,1,1];
+        $('#dow').sparkline(dow_vol, {height: '1.3em', type: 'bar', barSpacing: 0, barWidth: 3, barColor: '#ddd'});
+        $('#dow').sparkline(dow, {composite: true, height: '1.3em', fillColor:false, lineColor:'black'});
+        $('#nasdaq').sparkline(nd_vol, {height: '1.3em', type: 'bar', barSpacing: 0, barWidth: 3,barColor: '#ddd'});
+        $('#nasdaq').sparkline(nd, {composite: true, height: '1.3em', fillColor:false, lineColor:'black'});
+        $('#giants').sparkline(giants, {type: 'tristate'});
+
+        /** Handle updating the "try it" graphs form in the examples section **/
+        function updateLine() {
+            var type = $('#charttype').val();
+            var negbarcolor = '';
+            var barwidth = '';
+            var barspacing = '';
+            switch(type) {
+                case 'bar':
+                    negbarcolor = $('#barnegbarcolor').val();
+                    barwidth = parseInt($('#barbarwidth').val());
+                    barspacing = parseInt($('#barbarspacing').val());
+                    break;
+                case 'tristate':
+                    negbarcolor = $('#trinegbarcolor').val();
+                    barwidth = parseInt($('#tribarwidth').val());
+                    barspacing = parseInt($('#tribarspacing').val());
+                    break;
+            }
+            $('#dynamicline').sparkline($('#'+type+'vals').val().split(','),  {
+                type: type,
+                height: $('#chartheight').val(),
+                width: $('#chartwidth').val(),
+                lineColor: $('#linecol').val(),
+                fillColor: $('#fillcol').val(),
+                spotColor: $('#spotcol').val(),
+                spotRadius: parseInt($('#spotsize').val()),
+                lineWidth: parseFloat($('#linewidth').val()),
+                barColor: $('#barcolor').val(),
+                posBarColor: $('#posbarcolor').val(),
+                negBarColor: negbarcolor,
+                zeroBarColor: $('#zerobarcolor').val(),
+                zeroColor: $('#zerocolor').val() || undefined,
+                barWidth: barwidth,
+                barSpacing: barspacing,
+                lineHeight: parseInt($('#lineheight').val()) || undefined,
+                thresholdValue: parseInt($('#thresholdvalue').val()),
+                thresholdColor: $('#thresholdcolor').val(),
+                targetColor: $('#targetcolor').val(),
+                performanceColor: $('#performancecolor').val(),
+                rangeColors: $('#rangecolors').val().split(','),
+                targetWidth: parseInt($('#targetwidth').val()),
+                sliceColors: $('#slicecolors').val().split(','),
+                boxLineColor: $('#boxlinecol').val(),
+                boxFillColor: $('#boxfillcol').val(),
+                whiskerColor: $('#whiskercol').val(),
+                outlierLineColor: $('#outlierlinecol').val(),
+                outlierFillColor: $('#outlierfillcol').val(),
+                medianColor: $('#mediancol').val(),
+                showOutliers: $('#showoutliers').attr('checked'),
+                outlierIQR: parseFloat($('#outlieriqr').val()),
+                target: parseFloat($('#boxtarget').val())
+                });
+            $('.coptions').hide();
+            $('.'+type+'options').show();
+            if ($.browser.msie) 
+                $('input').hide().show(); // workaround weird ie layout glitch
+            return false;
+        }
+        updateLine();
+        $('#dynform input').change(updateLine);
+        $('#dynform select').change(updateLine);
+        $('#dynform').submit(updateLine);
+
+        /** 
+        ** Draw the little mouse speed animated graph
+        ** This just attaches a handler to the mousemove event to see
+        ** (roughly) how far the mouse has moved
+        ** and then updates the display a couple of times a second via
+        ** setTimeout()
+        **/
+        var mrefreshinterval = 500; // update display every 500ms
+        var lastmousex=-1; 
+        var lastmousey=-1;
+        var lastmousetime;
+        var mousetravel = 0;
+        var mpoints = [];
+        var mpoints_max = 30;
+        $('body').mousemove(function(e) {
+            var mousex = e.pageX;
+            var mousey = e.pageY;
+            if (lastmousex > -1)
+                mousetravel += Math.max( Math.abs(mousex-lastmousex), Math.abs(mousey-lastmousey) );
+            lastmousex = mousex;
+            lastmousey = mousey;
+        });
+        mdraw = function() {
+            var md = new Date();
+            var timenow = md.getTime();
+            if (lastmousetime && lastmousetime!=timenow) {
+                var pps = Math.round(mousetravel / (timenow - lastmousetime) * 1000);
+                mpoints.push(pps);
+                if (mpoints.length > mpoints_max)
+                    mpoints.splice(0,1);
+                mousetravel = 0;
+                $('#mousespeed').sparkline(mpoints, { width: mpoints.length*2 });
+            }
+            lastmousetime = timenow;
+            mtimer = setTimeout(mdraw, mrefreshinterval);
+        }
+        var mtimer = setTimeout(mdraw, mrefreshinterval); // We could use setInterval instead, but I prefer to do it this way
+        $.sparkline_display_visible(); 
+        $('#simplelink')[0].target = '_blank';
+
+
+        $('#splunkjobs').mouseenter(function() {
+            // make element absolute, positioned over the top of the float and resize
+            $('<div id="shade"></div>').
+                appendTo('body').
+                css('height', $(document).height()).
+                animate({
+                    opacity: 0.6
+                });
+            var jparent = $('#splunkjobs').parent();
+            var sj = $('#splunkjobs');
+            var offset = sj.offset();
+            var height = sj.height();
+            var width = sj.width();
+            var abscopy = sj.
+                clone(false).
+                attr('id', 'jobspopup').
+                addClass('splunkjobs').
+                css('position', 'absolute').
+                css('backgroundColor', 'white').
+                css('zIndex', 1000).
+                offset(offset).
+                width(width).
+                height(height).
+                appendTo(jparent).
+                mouseleave(function() {
+                    $('#shade').
+                        animate({
+                            opacity: 0
+                        }, 1000, function() { $(this).remove(); });
+                    $(this).animate({
+                        width: '-=300px',
+                        height: height,
+                        left: '+=300px'
+                    }, 1000, function() { $(this).remove(); });
+                    $('#splunkjobsdetail').animate({
+                        'opacity': 0
+                        }, 1000, function() { $(this).remove(); });
+                    //$(this).remove();
+                }).
+                animate({
+                    width: '+=300px',
+                    height: '350px',
+                    left: '-=300px'
+                }, 1000)
+                ;
+            var details = $('#splunkjobsdetailbase').
+                clone().
+                css('top', -800).
+                attr('id', 'splunkjobsdetail').
+                appendTo(abscopy).
+                animate({
+                    top: '0px'
+                }, 1000);
+
+        });
+    });
+    function switchtab(tabnum) {
+        $('#tabs').tabs('select', tabnum);
+    }
+
+
+    /* ]]> */
+    </script>
+</head>
+<body>
+
+<div id="container">
+
+    <div id="markets">
+        <p>
+            NASDAQ: <span id="nasdaq">Loading..</span> 2642.97 (close 11/5-12/17)        </p><p>
+            DOW: <span id="dow">Loading..</span> 11491.91 (close 11/5-12/17)        </p><p>
+            SF Giants: <span id="giants">Loading..</span> Last game 11/1        </p>
+    </div>
+
+    <h1><span>jQuery Sparklines</span></h1>
+
+    <ul id="tabs">
+        <li><a href="#about">About</a></li>
+        <li><a href="#news">News</a></li>
+        <li><a href="#docs">Docs</a></li>
+        <li><a href="#download">Download</a></li>
+        <li><a href="#who">Users</a></li>
+        <li><a href="#feedback">Feedback</a></li>
+    </ul>
+
+
+    <div id="about" class="section">
+
+    <noscript>
+        <p style="color: red"><b>You REALLY want to have Javascript turned ON to view this page!</b></p>
+    </noscript>
+
+    <h2><span>About</span></h2>
+
+    <div id="rightfloat">
+    <p id="newversion">
+        30 Nov 2010 <br />
+        <a href="javascript:void(0)" onclick="switchtab(1)">Version 1.6 Released</a>
+    </p>
+    <div id="splunkjobs" class="splunkjobs">
+        <h3>Come work at Splunk!</h3>
+        <p>
+            Only amazing UI engineers<br>
+            should mouse over here ;-)
+        </p>
+    </div>
+    <div id="splunkjobsdetailbase">
+        <h2>Come work at Splunk!</h2>
+        <p>
+            If you love working with cutting edge web technologies, my colleagues and I
+            would love to have you on our team at <a href="http://www.splunk.com/">Splunk</a>
+            in San Francisco.
+        </p>
+        <p>
+            <img src="splunk2.jpg" border="0" align="right">
+            We're actively looking for talented engineers who have lots of experience with 
+            HTML, CSS, JavaScript, HTTP, REST, AJAX, Python/Ruby/etc and the whole web stack to help build the next generation
+            UI for our award winning product (<a href="http://www.splunk.com/download">Download it; give it a try!</a> )
+        </p>
+        <p>
+            If that sounds like you, <a href="mailto:gareth@splunk.com?subject=Jobs%20At%20Splunk">drop me an email</a> (<i>no agents</i>)
+            with your resume and an idea of the great stuff you've done with the web,
+            or check out our <a href="http://www.splunk.com/view/careers/SP-CAAAAGG">careers page</a> where we have
+            lots of other opportunities listed too.
+        <p>
+        <p>
+            Look forward to hearing from you!<br>
+            <i>Gareth</i>
+        </p>
+    </div>
+    </div>
+
+
+    <p>
+    This <a href="http://jquery.com/">jQuery</a> plugin generates <a href="http://en.wikipedia.org/wiki/Sparkline">sparklines</a> (small inline charts) directly
+    in the browser using data supplied either inline in the HTML, or via javascript.
+    </p>
+
+
+    <p>
+    The plugin is compatible with most modern browsers and has been tested with Firefox 2+, Safari 3+, Opera 9, Google Chrome and Internet Explorer 6, 7 &amp; 8.
+    </p>
+
+    <p>
+    Each example displayed below takes just 1 line of HTML or javascript to generate.
+    </p>
+
+    <p>
+    The plugin was written by <a href="http://omnipotent.net/">Gareth Watts</a> for <a href="http://www.splunk.com/">Splunk Inc</a> and released under the <a href="http://www.opensource.org/licenses/bsd-license.php">New BSD License</a>.
+    </p>
+
+    <div id="examples">
+        <a name="examples"></a><h2><span>Examples</span></h2>
+        <div id="ex2">
+            <p>
+                Pie charts <span class="pie">1,1,2</span> <span class="pie">1,5</span> <span class="pie">20,50,80</span>
+            </p>
+            <p>
+                Bullet charts<br />
+                <span class="bullet">10,12,12,9,7</span><br />
+                <span class="bullet">14,12,12,9,7</span><br />
+                <span class="bullet">10,12,14,9,7</span><br />
+            </p>
+
+            <form id="dynform" action="#">
+            <div class=".customize" id="customize">
+                <h3>Try It Out</h3>
+                <p id="customresult"><span id="dynamicline">Loading..</span></p>
+                <ul>
+                    <li>Chart type: <select name="charttype" id="charttype">
+                        <option value="line" selected="selected">Line</option>
+                        <option value="bar">Bar</option>
+                        <option value="tristate">Tristate</option>
+                        <option value="discrete">Discrete</option>
+                        <option value="bullet">Bullet</option>
+                        <option value="pie">Pie</option>
+                        <option value="box">Box Plot</option>
+                        </select></li>
+                    <li class="coptions lineoptions">Values: <input id="linevals" type="text" size="20" value="5,6,7,9,9,5,3,2,2,4,6,7" /></li>
+                    <li class="coptions baroptions">Values: <input id="barvals" type="text" size="20" value="5,6,7,2,0,-4,-2,4" /></li>
+                    <li class="coptions bulletoptions">Values: <input id="bulletvals" type="text" size="20" value="10,12,12,9,7" /></li>
+                    <li class="coptions tristateoptions">Values: <input id="tristatevals" type="text" size="20" value="-1,1,1,2,0,-1,-2,1,1" /></li>
+                    <li class="coptions discreteoptions">Values: <input id="discretevals" type="text" size="20" value="5,6,7,9,9,5,3,2,2,4,6,7" /></li>
+                    <li class="coptions pieoptions">Values: <input id="pievals" type="text" size="20" value="1,2,4" /></li>
+                    <li class="coptions boxoptions">Values: <input id="boxvals" type="text" size="20" value="4,27,34,52,54,59,61,68,78,82,85,87,91,93,100" /></li>
+                    <li>Height: <input id="chartheight" type="text" size="10" value="auto" /> (css units; try 50px for pixels</li>
+                    <li>Width: <input id="chartwidth" type="text" size="10" value="auto" /> or 2em for double the font size)</li>
+                 </ul>
+                 <ul class="coptions lineoptions discreteoptions">
+                    <li>Line Colour: <input id="linecol" type="text" size="10" value="#00f" /></li>
+                    <li>Fill Colour: <input id="fillcol" type="text" size="10" value="#cdf" /></li>
+                </ul>
+                <ul class="coptions lineoptions">
+                    <li>Spot Colour: <input id="spotcol" type="text" size="10" value="#f80" /></li>
+                    <li>Spot Size: <input id="spotsize" type="text" size="10" value="2" /> (in pixels)</li>
+                    <li>Line Width: <input id="linewidth" type="text" size="10" value="1" /> (in pixels)</li>
+                </ul>
+                <ul class="coptions baroptions">
+                    <li>Bar Color: <input id="barcol" type="text" size="10" value="#00f" /></li>
+                    <li>Negative Bar Color: <input id="barnegbarcol" type="text" size="10" value="#f44" /></li>
+                    <li>Zero Color: <input id="zerocol" type="text" size="10" value="" /></li>
+                    <li>Bar Width: <input id="barbarwidth" type="text" size="10" value="4" /></li>
+                    <li>Bar Spacing: <input id="barbarspacing" type="text" size="10" value="1" /></li>
+                </ul>
+                <ul class="coptions tristateoptions">
+                    <li>Positive Bar Color: <input id="posbarcol" type="text" size="10" value="#6f6" /></li>
+                    <li>Negative Bar Color: <input id="trinegbarcol" type="text" size="10" value="#f44" /></li>
+                    <li>Zero Bar Color: <input id="zerobarcol" type="text" size="10" value="#999" /></li>
+                    <li>Bar Width: <input id="tribarwidth" type="text" size="10" value="4" /></li>
+                    <li>Bar Spacing: <input id="tribarspacing" type="text" size="10" value="1" /></li>
+                </ul>
+                <ul class="coptions discreteoptions">
+                    <li>Line Height: <input id="lineheight" type="text" size="10" value="" /></li>
+                    <li>Threshold Value: <input id="thresholdvalue" type="text" size="10" value="5" /></li>
+                    <li>Threshold Color: <input id="thresholdcolor" type="text" size="10" value="#f55" /></li>
+                </ul>
+                <ul class="coptions bulletoptions">
+                    <li>Performance Color: <input id="performancecolor" type="text" size="10" value="blue" /></li>
+                    <li>Range Colors: <input id="rangecolors" type="text" size="25" value="#D3DAFE,#A8B6FF,#7F94FF" /></li>
+                    <li>Target Width: <input id="targetwidth" type="text" size="10" value="3" /></li>
+                </ul>
+                <ul class="coptions pieoptions">
+                    <li>Slice Colors: <input id="slicecolors" type="text" size="25" value="#f00,#0f0,#00f" /></li>
+                </ul>
+                <ul class="coptions boxoptions">
+                    <li>Box Line Color: <input id="boxlinecol" type="text" size="10" value="black" /></li>
+                    <li>Box Fill Color: <input id="boxfillcol" type="text" size="10" value="#cdf" /></li>
+                    <li>Whisker Color: <input id="whiskercol" type="text" size="10" value="black" /></li>
+                    <li>Outlier Line Color: <input id="outlierlinecol" type="text" size="10" value="#333" /></li>
+                    <li>Outlier Fill Color: <input id="outlierfillcol" type="text" size="10" value="white" /></li>
+                    <li>Median Color: <input id="mediancol" type="text" size="10" value="red" /></li>
+                    <li>Show Outliers: <input id="showoutliers" type="checkbox" checked="checked" /></li>
+                    <li>Outlier IQR: <input id="outlieriqr" type="text" size="4" value="1.5" /></li>
+                    <li>Target: <input id="boxtarget" type="text" size="10" value="" /></li>
+                </ul>
+                <ul class="coptions boxoptions bulletoptions">
+                    <li>Target Color: <input id="targetcolor" type="text" size="10" value="#4a2" /></li>
+                </ul>
+            </div>
+            </form>
+        </div>
+        <div id="ex1">
+            <p>
+                Mouse speed <span id="mousespeed">Loading..</span>
+            </p>
+            <p>
+                Inline <span class="line">10,8,9,3,5,8,5</span> line graphs <span class="line">8,4,0,0,0,0,1,4,4,10,10,10,10,0,0,0,4,6,5,9,10</span>
+            </p>
+
+            <p>
+                Bar charts <span class="bar">10,8,9,3,5,8,5</span> negative values: <span class="bar">-3,1,2,0,3,-1</span>
+            </p>
+
+            <p>
+                Composite inline <span id="compositeline">8,4,0,0,0,0,1,4,4,10,10,10,10,0,0,0,4,6,5,9,10</span>
+            </p>
+            <p>
+                Inline with normal range <span id="normalline">8,4,0,0,0,0,1,4,4,10,10,10,10,0,0,0,4,6,5,9,10</span>
+            </p>
+            <p>
+                Composite bar <span id="compositebar">4,6,7,7,4,3,2,1,4</span>
+            </p>
+            <p>
+                Discrete <span class="discrete1">4,6,7,7,4,3,2,1,4,4,5,6,7,6,6,2,4,5</span><br />
+                Discrete with threshold <span id="discrete2">4,6,7,7,4,3,2,1,4</span>
+            </p>
+
+            <p>
+                Customize size and colours <span id="linecustom">10,8,9,3,5,8,5,7</span>
+            </p>
+            <p>
+                Tristate charts 
+                <span class="tristate">1,1,0,1,-1,-1,1,-1,0,0,1,1</span><br />
+                (think games won, lost or drawn)
+            </p>
+            <p>
+                Tristate chart using a colour map: <span class="tristatecols">1,2,0,2,-1,-2,1,-2,0,0,1,1</span>
+            </p>
+            <p>
+                Box Plot: <span class="boxplot">4,27,34,52,54,59,61,68,78,82,85,87,91,93,100</span><br />
+                Pre-computed box plot <span class="boxplotraw">Loading..</span>
+            </p>
+
+        </div>
+    </div>
+
+
+    </div>
+
+    <div id="news" class="section">
+        <a name="news"></a>
+        <h2><span>News</span></h2>
+        <p>
+        <b>30 November 2010 - Version 1.6 Released</b><br />
+        This release primarily makes it easier to work with the sparklines if your environment
+        requires you to pass options such as colours, etc on the tags themselves, rather than feeding
+        them to the sparkline function.  It also allows for values to passed as an attribute on the tag, 
+        as well as a comment inside the tag.  This avoids the values being displayed on screen briefly
+        before the sparkline function has a chance to execute.
+        </p>
+        <p>
+        eg.
+        </p>
+        <pre>
+&lt;span class="sparkline" sparkType="bar" sparkBarColor="green"&gt;&lt;!-- 1,2,3,4 --&gt;&lt;/span&gt;
+
+$('.sparkline').sparkline('html', { enableTagOptions: true });
+        </pre>
+
+        <p>
+        This release also:
+        </p>
+
+        <ul>
+            <li>Adds the drawNormalOnTop option to display normal ranges over the top
+        of the fill colour in line charts</li>
+            <li>Fixes an issue with non-integer values in bullet charts</li>
+            <li>Fixes an issue with elements that have not yet been inserted into the DOM</li>
+            <li>Removes the indexOf Array prototype addition that caused some conflicts with IE and other libraries</li>
+            <li>Allows you to override global default settings by updating $fn.sparkline.defaults</li>
+        </ul>
+
+        <p>
+        See the <a href="Changelog.txt">changelog</a> for the complete list of changes.
+        </p>
+
+        <hr/>
+        <p>
+        <b>1 March 2010 - Version 1.5.1 Released</b><br />
+        I accidently left a stray comma in the 1.5 release which breaks compatibility with Internet Explorer.
+        This version contains only a fix for that bug.
+        </p>
+        <p>
+        <b>26 February 2010 - Version 1.5 Released</b><br />
+        This version contains a number of minor updates and fixes, including:
+        </p>
+        <ul>
+            <li>Composite charts should work for all chart types now</li>
+            <li>colorMap can now accept an array of colours to control the colour of each
+              individual bar, rather than mapping colours by Y value</li>
+            <li>Added a nullColor option to bar charts so that null values may optionally
+              show up as a thin line rather than being omitted entirely</li>
+            <li>Added chartRangeClip option to clip the Y values of charts</li>
+        </ul>
+        <p>
+        See the <a href="Changelog.txt">changelog</a> for the complete list of changes.
+        </p>
+        <hr />
+        <p>
+        <b>14 September 2009 - Version 1.4.3 Released</b><br />
+        This version adds support for null values for line and bar charts, updates the
+        default pie chart colours, adds the colorMap option for bar charts and adds a
+        lineWidth option for line charts.
+        - See the <a href="Changelog.txt">changelog</a> for full details.
+        </p>
+        <p>
+        Over <a href="http://delicious.com/url/b20f7c9f32d1540d0cb35aa14cedc041">3,000 people</a> have bookmarked 
+        this site on delicious now!  Only <a href="http://plugins.jquery.com/project/sparklines">7 votes</a> on
+        the <a href="http://plugins.jquery.com/project/sparklines">jQuery plugins site</a> though; maybe you
+        could help with that ;-)
+        </p>
+        <hr />
+        <p>
+        <b>25 April 2009 - Version 1.4.2 Released</b><br />
+        This release just fixes the drawing of circular spots on line charts for Internet Explorer 8.
+        </p>
+        <hr />
+        <p>
+        <b>27 March 2009 - Version 1.4.1 Released</b><br />
+        This is a bug fix release - It addresses an off-by-one-pixel error when rendering sparklines in 
+        Internet Explorer.  It also addresses some issues with sparklines not being rendered in some 
+        situations with jQuery 1.3 and higher.
+        </p>
+        <hr />
+        <p>
+        <b>25 February 2009 - Version 1.4 Released</b><br />
+        This version adds box plots <span class="boxplot">4,27,34,52,54,59,61,68,78,82,85,87,91,93,100</span>
+        suggested by Daniel Kadosh.   <a href="http://en.wikipedia.org/wiki/Box_plot">What's a box plot?</a>.
+        </p>
+        <p>
+        This release also includes a few bug fixes including one where lines would not always appear
+        crisp in canvas based browsers such as Firefox.
+        </p>
+        <p>
+        Also at this time IE8 RC1 is out.. It looks like sparklines work fairly well in this release, although
+        the small circles used in line charts, box plots, etc. don't show up.
+        </p>
+        <hr />
+        <p>
+        <b>25 January 2009 - Version 1.3 Released</b><br />
+        This version fixes some positioning issues on all platforms and adds some support for 
+        Internet Explorer 8.  IE 8 beta 2 (the latest beta release) seems to have some VML bugs though
+        that I haven't been able to work around yet, so the results aren't perfect.
+        </p>
+        <p>
+        This version also adds a new function called $.sparkline_display_visible() - Call this anytime
+        sparklines that were drawn into a non-displayed element may have just become visible so that
+        they will be correctly rendered.  For example, this site uses the function to make sure sparklines
+        displayed in the various tabbed pages are drawn when the tab is selected.
+        </p>
+        <p>
+        Finally I updated the site and docs somewhat as the old layout was looking a little cramped.
+        </p>
+        <hr />
+        <p>
+        <b>21 November 2008 - Version 1.2.1 Released</b><br />
+        Fixes a couple of pie chart bugs; no new features. 
+        </p>
+        <hr />
+        <p>
+        <b>19 November 2008 - Version 1.2 Released</b><br />
+        Some important bug fixes amongst some basic new features:
+        </p>
+        <ul>
+          <li>Added zeroColor option to bar charts</li>
+          <li>Line, bart and discrete charts can now be plotted within a fixed value range using 
+            chartRangeMin and chartRangeMax - Useful if you want several different charts to use the same scale
+            (though not very sparkline-ish)</li>
+          <li>Line charts can now explicitly set the width of each value with defaultPixelsPerValue while allowing 
+            the chart as a whole to remain dynamically sized</li>
+          <li>The start angle for pie charts can now be modified with an offset option</li>
+          <li>Line charts can specify both the x and y values now; previously the x values were assumed to be
+            sequential from 0 (and still are by default)</li>
+        </ul>
+        <p>
+        See the <a href="Changelog.txt">changelog</a> for the complete list of changes.
+        </p>
+        <hr />
+        <p>
+        <b>14 August 2008 - Using Sparklines with Splunk</b><br />
+        I gave a quick 5 minute demo at the <a href="http://www.splunk.com/index.php/bootcamp08">Splunk Developers Boot Camp</a>
+        on using the Splunk PHP SDK with jquery.sparkline.js to chart the traffic
+        this page received within the first few days of its launch.
+        </p>
+        <p>
+        Check out the <a href="http://wiki.splunk.com/Dev:SparklinesExample">short write up
+        i posted to the new Splunk Wiki</a> for the code and data I used to make it work (it was really easy)
+        and if you download your own <a href="http://www.splunk.com/download">free copy of Splunk</a> you can try it yourself ;-)
+        </p>
+        <hr />
+        <p>
+        <b>29 July 2008 - Version 1.1 Released</b><br />
+        Thanks for the suggestions for improvements - This version fixes several bugs and adds some more features and chart types including
+        </p>
+        <ul>
+            <li>Composite graphs (overlay one graph on top of another)</li>
+            <li>Pie charts</li>
+            <li><a href="http://en.wikipedia.org/wiki/Bullet_graph">Bullet graphs</a></li>
+            <li>Discrete charts</li>
+            <li>Min/max spots for line charts</li>
+            <li>Normal range marking for line charts</li>
+        </ul>
+        <p>
+        See the <a href="Changelog.txt">changelog</a> for the complete list of changes.
+        </p>
+        <hr />
+        <p>
+        <b>17 July 2008 - Version 1.0 Released</b><br />
+        Initial version released
+        </p>
+    </div>
+
+    <div id="docs" class="section">
+        <a name="docs"></a>
+        <h2><span>Documentation</span></h2>
+
+        <div id="doctoc">
+            <ul>
+                <li><a href="#quickstart">Quick Start</a></li>
+                <li><a href="#syntax">Syntax</a></li>
+                <li><a href="#common">Common Options</a></li>
+                <li><a href="#hidden">Hidden Sparklines</a></li>
+                <li><a href="#line">Line Chart Options</a></li>
+                <li><a href="#bar">Bar Chart Options</a></li>
+                <li><a href="#tristate">Tristate Chart Options</a></li>
+                <li><a href="#discrete">Discrete Chart Options</a></li>
+                <li><a href="#bullet">Bullet Graph Options</a></li>
+                <li><a href="#pie">Pie Chart Options</a></li>
+                <li><a href="#boxplot">Box Plot Options</a></li>
+            </ul>
+        </div>
+        <a name="quickstart"></a><h3>Quick Start</h3>
+        <p>
+        To add some sparklines to your web page you need four things:
+        </p>
+        <ol>
+            <li>The <a href="http://www.jquery.com/">jQuery javascript library</a> loaded into the page - At least version 1.2 or higher </li>
+            <li>A copy of jquery.sparkline.js loaded into the page which you can download from this site</li>
+            <li>An inline tag on the page within which to display the sparkline (eg. &lt;span&gt;)</li>
+            <li>A call to the sparkline() function to actually display the sparkline.</li>
+        </ol>
+        <p>
+        Additionally rendering the page in standards mode (see the DOCTYPE declaration in the example below) maximizes compatibilty
+        with Internet Explorer.
+        </p>
+
+        <p>
+        Here's a simple web page that will display some sparklines:
+        </p>
+
+        <pre>
+&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" 
+    "http://www.w3.org/TR/html4/strict.dtd"&gt;
+&lt;head&gt;
+
+    <b>&lt;script type="text/javascript" src="jquery-1.4.4.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="jquery.sparkline.js"&gt;&lt;/script&gt;</b>
+
+    &lt;script type="text/javascript"&gt;
+    $(function() {
+        /** This code runs when everything has been loaded on the page */
+        /* Inline sparklines take their values from the contents of the tag */
+        <b>$('.inlinesparkline').sparkline(); </b>
+
+        /* Sparklines can also take their values from the first argument 
+        passed to the sparkline() function */
+        <b>var myvalues = [10,8,5,7,4,4,1];
+        $('.dynamicsparkline').sparkline(myvalues);</b>
+
+        /* The second argument gives options such as chart type */
+        <b>$('.dynamicbar').sparkline(myvalues, {type: 'bar', barColor: 'green'} );</b>
+
+        /* Use 'html' instead of an array of values to pass options 
+        to a sparkline with data in the tag */
+        <b>$('.inlinebar').sparkline('html', {type: 'bar', barColor: 'red'} );</b>
+    });
+    &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;p&gt;
+Inline Sparkline: <b>&lt;span class="inlinesparkline"&gt;1,4,4,7,5,9,10&lt;/span&gt;</b>.
+&lt;/p&gt;
+&lt;p&gt;
+Sparkline with dynamic data: <b>&lt;span class="dynamicsparkline"&gt;Loading..&lt;/span&gt;</b>
+&lt;/p&gt;
+&lt;p&gt;
+Bar chart with dynamic data: <b>&lt;span class="dynamicbar"&gt;Loading..&lt;/span&gt;</b>
+&lt;/p&gt;
+&lt;p&gt;
+Bar chart with inline data: <b>&lt;span class="inlinebar"&gt;1,3,4,5,3,5&lt;/span&gt;</b>
+&lt;/p&gt;
+
+
+&lt;/body&gt;
+&lt;/html&gt;
+        </pre>
+
+        <p>
+            <a href="simple.html" id="simplelink">Click here to open this example in a new window</a>.
+        </p>
+        <p>
+            As the example shows, the values to be used in a sparkline can either be supplied inline, inside the tag to be used as
+            the target or can be passed as the first parameter to the sparkline() function.
+        </p>
+
+        <p>
+            To draw different types of charts, or overlay one on top of another, or display charts into hidden layers, read on.
+        </p>
+
+
+        <a name="syntax"></a><h3>Syntax</h3>
+        <pre>
+$(selector).sparkline(values, options);
+        </pre>
+
+        <p>
+            Values can either be an array of numbers or "html" which causes the values to be read from from the selected tag:
+        </p>
+
+        <pre>
+&lt;span class="sparklines"&gt;1,2,3,4,5,4,3,2,1&lt;/span&gt;
+&lt;span id="ticker""&gt;Loading..&lt;/span&gt;
+
+$('.sparklines').sparkline('html');
+$('#ticker').sparkline([1,2,3,4,5,4,3,2,1]);
+        </pre>
+
+        <p>
+          Values supplied in the tag can also appear inside a comment, or as an attribute of the tag itself:
+        </p>
+
+        <pre>
+&lt;span class="sparklines"&gt;&lt;!-- 1,2,3,4,5,4,3,2,1 --&gt;&lt;/span&gt;
+&lt;span class="sparklines" values="1,2,3,4,5,4,3,2,1"&gt;&lt;/span&gt;
+        </pre>
+
+        <p>
+            Options is an object that specifies the type of sparkline to draw, colours to use, etc
+        </p>
+
+        <pre>
+$('#barchart').sparkline(myvalues, { type:'bar', barColor:'green' });
+        </pre>
+
+        <p>
+            If necessary, options can be passed as attributes on each tag.  This requires setting the enableTagOptions
+            option when calling the sparklines() function and reduces performance somewhat (more critical on IE6)
+        </p>
+
+        <pre>
+&lt;span class="sparklines" sparkType="bar" sparkBarColor="green"&gt;&lt;!-- 1,2,3,4,3,2,1 --&gt;&lt;/span&gt;
+&lt;span class="sparklines" sparkType="bar" sparkBarColor="red"&gt;&lt;!-- 1,2,3,4,3,2,1 --&gt;&lt;/span&gt;
+
+$('.sparklines').sparkline('html', { enableTagOptions: true });
+        </pre>
+
+        <p>
+            Each option must be prefixed with "spark", though this can be changed by passing
+            a tagOptionPrefix option to the sparkline() function
+        </p>
+
+        <p> 
+            You can also override the default options for all subsequent sparklines by assigning values to
+            $.fn.sparkline.defaults
+        </p>
+        <p>
+            Eg. to change the default line color as listed in the common options below, you can do:
+        </p>
+
+        <pre>
+$.sparkline.defaults.common.lineColor = 'red';
+        </pre>
+
+        <p>
+            Replace 'common' with 'line', 'bar', 'tristate', 'discrete', 'bullet', 'pie' or 'box' to set options
+            specific to those chart types.
+        </p>
+
+        <a name="common"></a><h3>Common Options</h3>
+        <ul>
+            <li><b>type</b> - line (default), bar, tristate, discrete, bullet, pie or box</li>
+            <li><b>width</b> - Width of the chart - Defaults to 'auto' - May be any valid css width - 1.5em, 20px, etc (using a number without a unit specifier won't do what you want) - This option does nothing for bar and tristate chars (see barWidth)</li>
+            <li><b>height</b> - Height of the chart - Defaults to 'auto' (line height of the containing tag)</li>
+            <li><b>lineColor</b> - Used by line and discrete charts</li>
+            <li><b>fillColor</b> - Set to false to disable fill.</li>
+            <li><b>chartRangeMin</b> - Specify the minimum value to use for the range of the chart - Defaults to the minimum value supplied</li>
+            <li><b>chartRangeMax</b> - Specify the maximum value to use for the range of the chart - Defaults to the maximum value supplied</li>
+            <li><b>composite</b> - If true then don't erase any existing chart attached to the tag, but draw
+                       another chart over the top - Note that width and height are ignored if an
+                       existing chart is detected.</li>
+            <li><b>enableTagOptions</b> - If true then options can be specified as attributes on each tag to be transformed into a sparkline, 
+                        as well as passed to the sparkline() function.  See also tagOptionPrefix</li>
+            <li><b>tagOptionPrefix</b> - String that each option passed as an attribute on a tag must begin with.  Defaults to 'spark'</li>
+        </ul>
+
+        <a name="hidden"></a><h3>Hidden Sparklines</h3>
+        <p>
+                If you try to display a sparkline in a tag that's currently not visible (ie. the tag or one of its parents
+                are set to display:none) then you'll find that the sparkline hasn't been rendered when you finally
+                make the tag visisble.  This is because a hidden tag has no size so we can't detect the area to draw on.
+        </p>
+        <p>
+            The solution is to call the <b>$.sparkline_display_visible()</b> function anytime a sparkline may have become visible
+            so that it can be correctly rendered.  This is the technique this site uses to handle the sparklines that are hidden
+            in the different tabbed sections.
+        </p>
+
+        <a name="line"></a><h3>Line Chart Options</h3>
+        <div class="docdemo">
+            <span class="line">8,4,0,0,0,0,1,4,4,10,10,10,10,0,0,0,4,6,5,9,10</span>
+        </div>
+        <p>
+            Line charts are the default chart type, but to specify the type explicitly  set an option called "type" to "line".
+        </p>
+        <ul>
+            <li><b>defaultPixelsPerValue</b> - Defaults to 3 pixels of width for each value in the chart</li>
+            <li><b>spotColor</b> - Set to false or an empty string to hide the final value marker</li>
+            <li><b>minSpotColor</b> - Set to false or an empty string to hide the minimum value marker</li>
+            <li><b>maxSpotColor</b> - Set to false or an empty string to hide the maximum value marker</li>
+            <li><b>spotRadius</b> - In pixels (default: 1.5)</li>
+            <li><b>lineWidth</b> - In pixels (default: 1)</li>
+            <li><b>normalRangeMin, normalRangeMax</b> Specify threshold values between which to draw a bar to denote the "normal" or expected range of values.
+                For example the green bar here <span id="normalExample">80,85,84,88,98,114,116,104,95,85,84</span> might denote a normal
+                operating temperature range.</li>
+            <li><b>drawNormalOnTop</b> - By default the normal range is drawn behind the fill area of the chart.  Setting this option to true causes it to be
+                drawn over the top of the fill area.</li>
+            <li><b>xvalues</b> - See below</li>
+            <li><b>chartRangeClip</b> - If true then the y values supplied to plot will be clipped to fall between chartRangeMin and chartRangeMax - By default chartRangeMin/Max just ensure that the chart spans at least that range of values, but does not constrain it</li>
+            <li><b>chartRangeMinX</b> - Specifies the minimum value to use for the X value of the charge</li>
+            <li><b>chartRangeMaxX</b> - Specifies the maximum value to use for the X value of the charge</li>
+        </ul>
+        <p>
+        By default the values supplied to line charts are presumed to be y values mapping on to sequential (integer) x values.
+        If you need to specify both the x and y values for your chart, you have a few options:
+        </p>
+        <ol>
+          <li><b>Inline:</b> x and y values are separated by a colon:  x:y,x:y,x:y - eg. &lt;span class="linechart"&gt;1:3,2.7:4,4.8:3&lt;/span&gt;</li>
+          <li><b>Array of arrays:</b> An array of [x,y] arrays: $('#linechart').sparkline([ [1,3], [2.7,4], [4.8,3] ]);</li>
+          <li><b>Separate arrays:</b> Pass x values separately: $('#linechart').sparkline([3,4,3], { xvalues: [1,2.7,4.8]});</li>
+        </ol>
+        <p>
+        You can also specify a value of "null" to omit values from the chart completely. eg:<br>
+        &lt;span class="linechart"&gt;1,2,3,null,3,4,2&lt;/span&gt; becomes:<br>
+        <span class="largeline">1,2,3,null,3,4,2</span>
+        </p>
+
+        <a name="bar"></a><h3>Bar Chart Options</h3>
+        <div class="docdemo">
+            <span class="bar">10,8,9,3,5,8,5</span><br /><br />
+            <span class="bar">-3,1,2,0,3,-1</span><br /><br />
+            <span class="bar">1,3,4,null,3,2,4</span>
+        </div>
+        <p>
+        Set the "type" option to "bar" to generate bar charts.  Values can be omitted by using the "null" value instead of a number.
+        </p>
+        <ul>
+            <li><b>barColor</b> - Colour used for postive values</li>
+            <li><b>negBarColor</b> - Colour used for negative values</li>
+            <li><b>zeroColor</b> - Colour used for values equal to zero</li>
+            <li><b>nullColor</b> - Colour used for values equal to null - By default null values are omitted entirely, but setting this adds a thin marker for the entry - This can be useful if your chart is pretty sparse; perhaps try setting it to a light grey or something equally unobtrusive</li>
+            <li><b>barWidth</b> - Width of each bar, in pixels</li>
+            <li><b>barSpacing</b> - Space between each bar, in pixels</li>
+            <li><b>zeroAxis</b> - Centers the y-axis at zero if true (default is to automatically do the right thing)</li>
+            <li><b>colorMap</b> - Map override colors to certain values - For example if you want all values of -2 to appear yellow, use colorMap: { '-2': '#ff0' }.  As of version 1.5 you may also pass an Array of values here instead of a mapping to specifiy a color for each individual bar.  For example if your chart has three values 1,3,1 you can set colorMap=["red", "green", "blue"]</li>
+        </ul>
+
+        <a name="tristate"></a><h3>Tristate Chart Options</h3>
+        <div class="docdemo">
+            <span class="tristate">1,1,0,1,-1,-1,1,-1,0,0,1,1</span>
+        </div>
+        <p>
+        Set the "type" option to "tristate" to generate tristate charts.
+        </p>
+        <ul>
+            <li><b>posBarColor</b> - Colour for positive (win) values</li>
+            <li><b>negBarColor</b> - Colour for negative (lose) values</li>
+            <li><b>zeroBarColor</b> - Colour for zero (draw) values</li>
+            <li><b>barWidth</b> - Width of each bar, in pixels</li>
+            <li><b>barSpacing</b> - Space between each bar, in pixels</li>
+            <li><b>zeroAxis</b> - Centers the y-axis at zero if true (default is to automatically do the right thing)</li>
+            <li><b>colorMap</b> - Map override colors to certain values - For example if you want all values of -2 to appear yellow, use colorMap: { '-2': '#ff0' }.  As of version 1.5 you may also pass an Array of values here instead of a mapping to specifiy a color for each individual bar.  For example if your chart has three values 1,3,1 you can set colorMap=["red", "green", "blue"]</li>
+        </ul>
+
+        <a name="discrete"></a><h3>Discrete Chart Options</h3>
+        <div class="docdemo">
+            <span class="discrete1">4,6,7,7,4,3,2,1,4,4,5,6,7,6,6,2,4,5</span>
+        </div>
+        <p>
+        Set the "type" option to "discrete" to generate discrete charts.
+        </p>
+        <ul>
+            <li><b>lineHeight</b> - Height of each line in pixels - Defaults to 30% of the graph height</li>
+            <li><b>thesholdValue</b> - Values less than this value will be drawn using thresholdColor instead of lineColor</li>
+            <li><b>thresholdColor</b></li>
+        </ul>
+                
+        <a name="bullet"></a><h3>Bullet Graph Options</h3>
+        <div class="docdemo">
+            <span class="bullet">10,12,12,9,7</span>
+        </div>
+        <p>
+        Set the "type" option to "bullet" to generate bullet graphs.
+        </p>
+        <p>
+        <i>See the <a href="http://en.wikipedia.org/wiki/Bullet_graph">wikipedia page</a> for more information on Bullet graphs.<br />
+        Supplied values must be in this order: target, performance, range1, range2, range3, ...</i>
+        </p>
+        <ul>
+            <li><b>targetColor</b> - The colour of the vertical target marker</li>
+            <li><b>targetWidth</b> - The width of the target marker in pixels</li>
+            <li><b>performanceColor</b> - The color of the performance measure horizontal bar</li>
+            <li><b>rangeColors</b> - Colors to use for each qualitative range background color - This must be a javascript array.  eg ['red','green', '#22f']</li>
+        </ul>
+
+        <a name="pie"></a><h3>Pie Chart Options</h3>
+        <div class="docdemo">
+            <span class="pie">1,1,2</span><br />
+            <span class="pie">1,5</span><br />
+            <span class="pie">20,50,80</span>
+        </div>
+        <p>
+            Set the "type" option to "pie" to generate pie charts.
+        </p>
+        <p>
+        <i>These little pie charts tend only to be useful with 2 or 3 values at most</i>
+        </p>
+        <ul>
+            <li><b>sliceColors</b> - An array of colors to use for pie slices</li>
+            <li><b>offset</b> - Angle in degrees to offset the first slice - Try -90 or +90</li>
+        </ul>
+
+        <a name="boxplot"></a><h3>Box Plot Options</h3>
+        <div class="docdemo">
+            <span class="boxplot">4,27,34,52,54,59,61,68,78,82,85,87,91,93,100</span><br />
+            <span class="boxplotraw">Loading..</span><br />
+        </div>
+        <p>
+        <i>See the <a href="http://en.wikipedia.org/wiki/Box_plot">wikipedia page</a> for more information on Box plots</i>
+        </p>
+        <ul>
+          <li><b>raw</b> - If set to false (default) then the values supplied are used to caculate the box data points for you.  If true then you must pre-calculate the points (see below)</li>
+          <li><b>showOutliers</b> - If true (default) then outliers (values &gt; 1.5x the IQR) are marked with circles and the whiskers are placed at Q1 and Q3 instead of the least and greatest value</li>
+          <li><b>outlierIQR</b> - Set the inter-quartile range multipler used to calculate values that qualify as an outlier - Defaults to 1.5x</li>
+          <li><b>boxLineColor</b> - Line colour used to outline the box</li>
+          <li><b>boxFillColor</b> - Fill colour used for the box</li>
+          <li><b>whiskerColor</b> - Colour used to draw the whiskers</li>
+          <li><b>outlierLineColor</b> - Colour used to draw the outlier circles</li>
+          <li><b>outlierFillColor</b> - Colour used to fill the outlier circles</li>
+          <li><b>spotRadius</b> - Radius to draw the outlier circles</li>
+          <li><b>medianColor</b> - Colour used to draw the median line</li>
+          <li><b>target</b> - If set to a value, then a small crosshair is drawn at that point to represent a target value</li>
+          <li><b>targetColor</b> - Colour used to draw the target crosshair, if set</li>
+          <li><b>minValue</b> - If minvalue and maxvalue are set then the scale of the plot is fixed.  By default minValue and maxValue are deduced from the values supplied</li>
+          <li><b>maxValue</b> - See minValue</li>
+        </ul>
+        <p>
+          Set the "type" option to "box" to generate box plots.
+        </p>
+        <p>
+          As noted in the options above, by default "raw" is set to false.  This means that you can just pass an arbitrarily long list of values to the sparkline
+          function and the corresponding box plot will be calculated from those values.  This is probably the behaviour you want most of the time.
+        </p>
+        <p>
+          If, on the other hand, you have thousands of values to deal with you may want to pre-compute the points needed for the box plot.  In that case, set raw=true and pass in
+          the computed values.  If showing outliers, supplied values of:<br />
+            <i>low_outlier, low_whisker, q1, median, q3, high_whisker, high_outlier</i><br />
+        Omit the outliers and set showOutliers to false to omit outlier display.
+        </p>
+
+
+        <a name="license"></a><h3>License</h3>
+        <p>
+            This plugin is copyright <a href="http://www.splunk.com/">Splunk Inc</a> and licensed using
+            the <a href="http://www.opensource.org/licenses/bsd-license.php">New BSD License</a>
+        </p>
+    </div>
+
+
+    <div id="download" class="section">
+        <a name="download"></a><h2><span>Download</span></h2>
+
+        <p> 
+            <b>Note: </b> jquery.sparkline.js is a plugin for <a href="http://www.jquery.org/">jQuery</a> - You need to include
+            both on your page to generate sparklines.
+        </p>
+        <p>
+            NOTE: Be sure to copy the files linked below to your own server - If you embed the plugin as a link
+            from my server, your site will be broken when this site is down (as it occasionally is).
+        </p>
+        <p>
+            If you use the plugin on a production site I'd love to see it in action, 
+            so please <a href="mailto:gareth@splunk.com?subject=jQuery%20Sparkline">send me an email!</a> 
+            (be sure to include "jQuery Sparkline" in the subject).
+        </p>
+        <p>
+            Version 1.6:
+        </p>
+        <ul>
+            <li><a href="1.6/jquery.sparkline.js">jquery.sparkline.js</a> (Uncompressed - 54KB)</li>
+            <li><a href="1.6/jquery.sparkline.min.js">jquery.sparkline.min.js</a> (Minified - 27kB)</li>
+            <li><a href="1.6/jquery.sparkline.min.js.gz">jquery.sparkline.min.js.gz</a> (Minified &amp; gzipped - 6.0KB)</li>
+        </ul>
+        <p>
+            Version 1.5.1:
+        </p>
+        <ul>
+            <li><a href="1.5.1/jquery.sparkline.js">jquery.sparkline.js</a> (Uncompressed - 47KB)</li>
+            <li><a href="1.5.1/jquery.sparkline.min.js">jquery.sparkline.min.js</a> (Minified - 25kB)</li>
+            <li><a href="1.5.1/jquery.sparkline.min.js.gz">jquery.sparkline.min.js.gz</a> (Minified &amp; gzipped - 5.1KB)</li>
+        </ul>
+        <p>
+            Version 1.4.3: 
+        </p>
+        <ul>
+            <li><a href="1.4.3/jquery.sparkline.js">jquery.sparkline.js</a> (Uncompressed - 41KB)</li>
+            <li><a href="1.4.3/jquery.sparkline.min.js">jquery.sparkline.min.js</a> (Minified - 22kB)</li>
+            <li><a href="1.4.3/jquery.sparkline.min.js.gz">jquery.sparkline.min.js.gz</a> (Minified &amp; gzipped - 4.7KB)</li>
+        </ul>
+        <p>
+            Version 1.3: 
+        </p>
+        <ul>
+            <li><a href="1.3/jquery.sparkline.js">jquery.sparkline.js</a> (Uncompressed - 34kB)</li>
+            <li><a href="1.3/jquery.sparkline.min.js">jquery.sparkline.min.js</a> (Minified - 18kB)</li>
+            <li><a href="1.3/jquery.sparkline.min.js.gz">jquery.sparkline.min.js.gz</a> (Minified &amp; gzipped - 4.0KB)</li>
+        </ul>
+        <p>
+            Version 1.2.1: 
+        </p>
+        <ul>
+            <li><a href="1.2.1/jquery.sparkline.js">jquery.sparkline.js</a> (Uncompressed - 33kB)</li>
+            <li><a href="1.2.1/jquery.sparkline.min.js">jquery.sparkline.min.js</a> (Minified - 18kB)</li>
+            <li><a href="1.2.1/jquery.sparkline.min.js.gz">jquery.sparkline.min.js.gz</a> (Minified &amp; gzipped - 3.9Kb)</li>
+        </ul>
+
+    </div>
+
+
+    <div id="who" class="section">
+        <a name="who"></a><h2><span>Who's Using It</span></h2>
+        <p>
+            Are you using jquery.sparkline on your project or site?
+            <a href="mailto:gareth@splunk.com?subject=I'm%20Using%20jquery.sparkline">Send me a quick email</a> and I'll add a link here!
+            (try to send a link to an example of the plugin in action for bonus points ;-) )
+        </p>
+        <p>
+            Current users include:
+        </p>
+        <ul>
+            <li><a href="http://www.mychances.net/">My Chances</a> College admission predictions - Examples of <a href="http://college.mychances.net/college-544-Harvard-University.html">bullet</a> and <a href="http://college.mychances.net/college-544-Harvard-University_admissions-statistics.html">pie</a> charts</li>
+            <li><a href="http://code.google.com/p/pentaho-cdf/">Pentaho Community Dashboard Framework</a></li>
+            <li><a href="http://www.newfuelist.com">The New Fuelist<a></li>
+            <li><a href="http://www.promotionalcodes.org.uk">UK Promotional Codes</a> - Uses them on individual code pages</a></li>
+            <li><a href="http://tumblruptime.icodeforlove.com/">Tumblr Updtime</a> - Uses sparklines to display Tumblr's api uptime and performance</a></li>
+            <li><a href="http://www.logmytime.de/">LogMyTime</a> - Uses pie charts for their SaaS time tracking application (German only) - See also their <a href="http://www.logmytime.de/Blog/post/Abrechenbarkeit-und-Tatigkeitenverwaltung-Neue-Funktionen.aspx">blog post</a></li>
+            <li><a href="http://www.theskinnyscoop.com/">Skinny Scoop</a> - Pie charts aplenty</li>
+            <li><a href="http://outdoorsbeijing.appspot.com/">Beijing Air Status</a></li>
+            <li><a href="http://www.gtportalbase.com/">GT portalBase</a> - See also this <a href="http://gtportalbase.wordpress.com/2009/12/03/2-4-1-sparkline-dashboards/">blog post</a></li>
+            <li><a href="http://outer-empires.com/MarketData.asp?T=MarketDataHome">Outer Empires market data</a></li>
+            <li><a href="http://your.gridspy.co.nz/powertech/">Gridspy web power monitoring system</a></li>
+            <li><a href="http://downloadstats.mozilla.com/">FireFox 3.5 realtime download statistics</a></li>
+            <li><a href="http://www.meteoram.com/">Meteor Asset Management</a> - Uses <a href="http://developer.yahoo.com/yql/">YQL</a> to collect the graphed data directly in the browser</li>
+            <li><a href="http://rt.nu/">rt.nu url shortener</a></li>
+            <li><a href="http://retweet.com/">Retweet.com</a></li>
+            <li><a href="http://gameticker.net/">Game Ticker</a></li>
+            <li><a href="http://everymomentnow.com/">Everymoment Now</a></li>
+            <li><a href="http://sickcity.org/">SickCity disease tracker</a></li>
+            <li><a href="http://dentedreality.com.au/projects/wp-sparkplug/">SparkPlug: WordPress Sparkline Plugin</a></li>
+            <li><a href="http://www.pathtosharepoint.com/Pages/February09.aspx">Path to SharePoint</a></li>
+            <li><a href="http://sorgenti.big-bug.net/">Big Bug Sources</a> (Italian)</li>
+            <li><a href="http://www.gremcheck.com/">GremCheck</a></li>
+            <li><a href="http://www.ctrlc.hu/~stef/blog/tags/timecloud/">jQuery Timecloud</a></li>
+            <li><a href="http://debatehub.c-span.org/">C-SPAN Debate Hub</a></li>
+            <li><a href="http://www.epispider.net/index.php?page=FEEDS">EpiSPIDER news page</a></li>
+            <li><a href="http://www.cruxlux.com/">Cruxlux</a></li>
+        </ul>
+
+    </div>
+
+    <div id="feedback" class="section">
+        <a name="feedback"></a><h2><span>Feedback</span></h2>
+        <p>
+            Feedback and patches are welcome - Please direct email to Gareth Watts - <a href="mailto:gareth@splunk.com?subject=jQuery%20Sparkline">gareth@splunk.com</a> 
+            (be sure to include "jQuery Sparkline" in the subject)
+            or find me on <a href="http://twitter.com/garethwatts">Twitter</a>.
+        </p>
+    </div>
+
+    <div id="footer">
+        &copy; Splunk Inc. 2009-2010
+    </div>
+
+</div>
+
+    <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </script>
+    <script type="text/javascript">
+    _uacct = "UA-2899795-1";
+    urchinTracker();
+    </script>
+
+</body>
+</html>

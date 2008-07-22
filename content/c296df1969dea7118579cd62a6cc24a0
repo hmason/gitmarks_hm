@@ -1,0 +1,942 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Movable Type Publishing Platform 4.01" />
+<link rel="stylesheet" href="http://www.boingboing.net/base_styles.css" type="text/css" />
+<link rel="stylesheet" href="http://www.boingboing.net/theme_styles.css?v=20080310" type="text/css" />
+
+<link rel="icon" href="/favicon.ico" type="image/ico" />
+<link rel="shortcut icon" href="/favicon.ico" />
+
+<link rel="stylesheet" href="http://www.boingboing.net/profile_styles.css?20080331" type="text/css" />
+
+  
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.boingboing.net/boingboing/iBag" />
+  
+  
+  
+
+
+<title>
+
+First-ever Web server - Boing Boing
+
+</title>
+
+
+
+<link rel="start" href="http://www.boingboing.net/" title="Home" />
+
+
+
+
+<link rel="prev" href="http://www.boingboing.net/2008/07/09/dopey-the-hamster-an.html" title="Dopey the hamster, and his private LEGO elevator." />
+<link rel="next" href="http://www.boingboing.net/2008/07/09/nehru-place-delhis-a.html" title="Nehru Place, Delhi's amazing computer market" />
+
+
+
+  <link rel="videothumbnail" href="" type="image/jpeg" />
+
+
+
+
+
+<script type="text/javascript" src="http://www.boingboing.net/mt.js?v=20080409"></script>
+<script type="text/javascript" charset="utf-8">
+  (function() {
+    var library_path = "/mt-static/plugins/Recommend/";
+    if((typeof Prototype == 'undefined') || 
+       (typeof Element == 'undefined') || 
+       (typeof Element.Methods == 'undefined')) {
+          // ok we need to include protoype.js
+          document.write('<scr'+'ipt type="text/javascript" src="'+library_path+'prototype-shrunk.js"></scr'+'ipt>');
+       }    
+  })
+  ();
+</script>
+<script src="/mt-static/plugins/Recommend/scriptaculous.js?load=effects" type="text/javascript"></script>
+<script src="/mt-static/plugins/Recommend/favorites.js" type="text/javascript"></script>
+<script type="text/javascript">
+	var ratingURL = "/remotejs/mt-recommend.cgi";
+	var recommendedText = "Favorited";
+	if (window.addEventListener) {
+		window.addEventListener('load', Favorites.init, false);
+	} else {
+		window.attachEvent('onload', Favorites.init);
+	}
+</script>
+
+
+
+<!--
+<rdf:RDF xmlns="http://web.resource.org/cc/"
+         xmlns:dc="http://purl.org/dc/elements/1.1/"
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<Work rdf:about="http://www.boingboing.net/2008/07/09/firstever-web-server.html">
+<dc:title>First-ever Web server</dc:title>
+<dc:description>Wikipedia&apos;s image repository includes a photo of the NeXTCube that Tim Berners-Lee ran the first-ever Web server on, at the CERN lab in Geneva, Switzerland: This NeXT workstation (a NeXTcube) was used by Tim Berners-Lee as the first Web server on the World Wide Web. Today, it is kept in Microcosm, the public museum at the Meyrin site of CERN, in the Canton of Geneva, Switzerland. The document resting on the keyboard is a copy of &quot;Information Management: A Proposal,&quot; which was Berners-Lee&apos;s original proposal for the World Wide Web. The label on the cube itself has the following text: &quot;This machine is a server. DO NOT POWER IT DOWN!!&quot; Link (Thanks, Fipi Lele!)...</dc:description>
+<dc:creator>Cory Doctorow</dc:creator>
+<dc:date>2008-07-09T06:20:09-08:00</dc:date>
+<license rdf:resource="http://creativecommons.org/licenses/by-nc-nd/1.0/" />
+</Work>
+<License rdf:about="http://creativecommons.org/licenses/by-nc-nd/1.0/">
+</License>
+</rdf:RDF>
+-->
+
+
+
+
+
+<script type="text/javascript">
+  
+    site_category = '';
+  
+</script>
+
+<script type='text/javascript'>var federated_media_section = 'holiday';Ê</script>
+
+</head>
+
+<body class="entry-archive" onload="individualArchivesOnLoad(commenter_name)">
+<script src="http://www.boingboing.net/awstats_misc_tracker.js" type="text/javascript" charset="utf-8"></script>
+<div id="adunit-leaderboard">
+  
+  
+  
+
+  
+    <script type="text/javascript">
+    if (site_category == 'Innovation' || site_category == 'Safety' || site_category == 'Environment') {
+      document.write("<scr" + "ipt type='text/javascript' src='http://static.fmpub.net/zone/1149'></sc" + "ript>");
+    } else {
+      document.write("<scr" + "ipt type='text/javascript' src='http://static.fmpub.net/zone/356'></sc" + "ript>");
+    }
+    </script>
+  
+</div>
+
+<div id="navigation-site">
+  <ul>
+    
+    <li id="section-boingboing-selected"><a href="http://www.boingboing.net/">Boing Boing Home</a></li>
+    
+
+    
+    <li id="section-gadgets"><a href="http://gadgets.boingboing.net/">Gadgets</a></li>
+    
+
+    
+    <li id="section-tv"><a href="http://tv.boingboing.net/">TV</a></li>
+    
+    <li id="section-offworld"><a href="http://offworld.com">Boing Boing Offworld</a></li>
+    
+  </ul>
+    <script type="text/javascript">
+    var user = getCommenterName();
+    if (user.length>0) {
+    document.write('<div id="profile-links-active">Hello, <a href="http://dynamic.boingboing.net/profile/' +  trimString(unescape(user)) + '">' + unescape(user) + '</a>! (<a href="http://dynamic.boingboing.net/profile/logout?return_to=' + document.URL + '">Logout</a>)</div>');
+    } else {
+    	document.write('<div id="profile-links"><a href="http://dynamic.boingboing.net/profile/login?return_to=' + document.URL + '" class="login-link">Sign In</a> <span>or</span> <a href="http://dynamic.boingboing.net/profile/signup">Create Account</a></div>');
+    }
+</script>
+</div>
+
+<div id="navigation">
+<div class="divitis">
+<ul>
+
+<li><a href="http://www.boingboing.net/suggest.html">Suggest a Link</a></li>
+
+<li><a href="http://www.boingboing.net/archives.html">Archives</a></li>
+<li id="navigation-subscribe"><a href="#subscribe">Subscribe</a></li>
+
+<li><a href="http://boingboing.net/markf.html">Mark</a></li>
+<li><a href="http://craphound.com/">Cory</a></li>
+<li><a href="http://pesco.net/">David</a></li>
+<li><a href="http://xeni.net/">Xeni</a></li>
+<li><a href="http://battellemedia.com/">John</a></li>
+
+<li><a href="http://www.boingboing.net/2008/03/27/boing-boings-moderat.html" style="color:silver;">Moderation Policy</a></li>
+</ul>
+<br class="clear" />
+</div>
+</div>
+
+
+
+<div id="wrap">
+
+<div id="search">
+
+<form id="search-form" method="get" action="http://www.google.com/search">
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="domains" value="boingboing.net" />
+<input type="hidden" name="sitesearch" value="boingboing.net" />
+
+<input id="search-form-q" type="text" name="q" size="24" maxlength="255" class="form-input-text" value="" />
+<input id="search-form-submit" type="submit" name="btnG" value="Search" class="form-input-submit" />
+</form>
+
+</div>
+
+<div id="content">
+  <div id="section-logo">
+    
+    
+    
+      <a href="http://www.boingboing.net/"><img src="http://www.boingboing.net//mtimages/boingboing-logo.gif" width="356" height="72" alt="Boing Boing - A directory of wonderful things" /></a>
+    
+  </div>
+
+
+<div class="entry" style="padding-bottom: 0;" id="entry-47697">
+<h3 class="entry-header">First-ever Web server</h3>
+<div class="entry-metadata">
+<div class="entry-meta">
+<span class="byline">
+
+  
+    Posted by <a href="http://dynamic.boingboing.net/profile/Cory Doctorow">Cory Doctorow</a>, July  9, 2008  6:20 AM
+    
+
+</span>
+<span class="separator">|</span> 
+<a class="permalink" href="http://www.boingboing.net/2008/07/09/firstever-web-server.html">permalink</a>
+</div>
+
+
+</div>
+<div class="entry-content">
+
+<div class="entry-body">
+
+
+
+Wikipedia's image repository includes a photo of the NeXTCube that Tim Berners-Lee ran the first-ever Web server on, at the CERN lab in Geneva, Switzerland:
+
+<blockquote>
+<img src="http://craphound.com/images/800px-FirstWebServer.jpg"><br>
+This NeXT workstation (a NeXTcube) was used by Tim Berners-Lee as the first Web server on the World Wide Web. Today, it is kept in Microcosm, the public museum at the Meyrin site of CERN, in the Canton of Geneva, Switzerland.
+<p>
+The document resting on the keyboard is a copy of "Information Management: A Proposal," which was Berners-Lee's original proposal for the World Wide Web.
+<p>
+The label on the cube itself has the following text: "This machine is a server. DO NOT POWER IT DOWN!!"
+</blockquote>
+
+<a href="http://en.wikipedia.org/wiki/Image:FirstWebServer.jpg">Link</a>
+
+(<i>Thanks, Fipi Lele!</i>)
+</i></b></em></font></a>
+</div>
+
+
+</div>
+<div class="entry-footer entry-footer-permalink">
+<div class="entry-footer-tags">posted in: 
+            <span class="entry-categories-list">
+            
+            
+              
+              
+              
+              <span class="entry-category"><a href="http://www.boingboing.net/old-school/">Old school</a></span>
+              
+              
+            
+            </span>
+
+</div>
+<div class="entry-footer-favorites"><span class='votetext' id='ratetext_47697'><a href='javascript:void(0)' onclick='Favorites.setRecommendation(47697)'>Favorite this!</a></span> <span class="count">( <span class='votes' id='ratevotes_47697'>14</span> )</span></div>
+
+<div class="entry-footer-share" style="width:330px">
+
+
+	<div class="badge badge-yahoo" style="float:right">
+		<script src="http://d.yimg.com/ds/badge.js" badgetype="small" showbranding="0">boing_boing:http://www.boingboing.net/2008/07/09/firstever-web-server.html</script> 
+	</div>
+
+	<div style="float:right;margin-right:5px;">
+<script>
+	var diggurl = escape(location.href);
+	document.write('<a rel="nofollow" title="Digg this" alt="Digg this" href="http://digg.com/submit?phase=2&amp;url=' + diggurl + '"><img src="http://gadgets.boingboing.net/digg.png" /></a>');
+</script>
+	</div>
+
+	<div class="badge-email">
+		<a href="http://dynamic.boingboing.net/cgi-bin/mt/plugins/EmailEntry/mt-emailentry.cgi?__mode=email_form&amp;entry_id=47697" title="Send this to a Friend" onclick="window.open(this.href, this.title, 'width=500,height=600,resizable=yes,toolbar=yes,statusbar=yes,scrollbars=no'); return false;">Send</a>
+
+	</div>
+	
+</div>
+
+
+
+
+<div class="clear"><!-- --></div>
+</div>
+
+</div>
+
+
+<div class="content-nav-entry">
+
+
+
+<div class="older">
+<span class="when">Older </span>
+<a href="http://www.boingboing.net/2008/07/09/dopey-the-hamster-an.html">Dopey the hamster, and his private LEGO elevator.</a>
+</div>
+
+
+
+
+<div class="newer">
+<span class="when">Newer </span>
+<a href="http://www.boingboing.net/2008/07/09/nehru-place-delhis-a.html">Nehru Place, Delhi's amazing computer market</a>
+</div>
+
+
+<br class="clear" />
+</div>
+
+
+
+
+
+
+<!-- comments -->
+
+<div id="comments" class="comments">
+  <div class="sponsorship">
+<!-- FM HP Comments Sponsorship Zone -->
+<script type='text/javascript'>
+var federated_media_section = '';
+</script>
+<script type='text/javascript' src='http://static.fmpub.net/zone/781'></script>
+<!-- FM HP Comments Sponsorship Zone -->
+
+  </div>
+  <h3 class="comments-header">Discussion</h3>
+
+  
+    <div class="comments-content">
+  
+  
+
+<div class="comment" id="comment-229335">
+  <span class="comment-moderate"> 
+<script type="text/javascript" charset="utf-8">
+  (function() {
+    var library_path = "http://www.boingboing.net/mt-static/plugins/Moderate/";
+    if((typeof Prototype == 'undefined') || 
+       (typeof Element == 'undefined') || 
+       (typeof Element.Methods == 'undefined')) {
+          // ok we need to include protoype.js
+          document.write('<scr'+'ipt type="text/javascript" src="'+library_path+'prototype-shrunk.js"></scr'+'ipt>');
+       }    
+  })
+  ();
+</script>
+		
+<script type="text/javascript" src="http://www.boingboing.net/mt-static/plugins/Moderate/moderate.js"></script>
+<script type="text/javascript">
+successMsg = "";
+</script>
+<a href='http://dynamic.boingboing.net/cgi-bin/mt/plugins/Moderate/moderate.cgi?__mode=flag&comment_id=229335&rnd=245088' title='Take a look at this' onClick="return moderate(this, 'http://dynamic.boingboing.net/cgi-bin/mt/plugins/Moderate/moderate.cgi?__mode=flag&comment_id=229335&rnd=245088'); return false;">Take a look at this</a></span>
+  <div class="comment-header">
+  <span class="comment-id">#1</span> posted by <a href="http://dynamic.boingboing.net/profile/jredmond">jredmond</a>  <a class="commenter-profile" href="http://en.wikipedia.org/wiki/User:Jredmond"><img alt="Author Profile Page" src="/mt-static/images/comment/mt_logo.png" width="16" height="16" /></a>, <a href="#comment-229335" title="Permalink to this comment">July  9, 2008  8:03 AM</a>
+  </div>
+  <div class="comment-content">
+    <p>FWIW, that file is really hosted on the Wikimedia Commons, a centralized media repository for all Wikimedia Foundation projects.  While the English Wikipedia allows fair use for images and other media, the Commons only allows material that's either freely licensed or in the public domain.  (Some Commons volunteers might get a little touchy about that "Wikipedia's image repository" line, even though Wikipedias are currently where most Commons content is actually used.)</p>
+
+<p>Otherwise - love the photo.</p>
+  </div>
+</div>
+
+  
+
+  
+  
+
+<div class="comment" id="comment-229373">
+  <span class="comment-moderate"> <a href='http://dynamic.boingboing.net/cgi-bin/mt/plugins/Moderate/moderate.cgi?__mode=flag&comment_id=229373&rnd=530444' title='Take a look at this' onClick="return moderate(this, 'http://dynamic.boingboing.net/cgi-bin/mt/plugins/Moderate/moderate.cgi?__mode=flag&comment_id=229373&rnd=530444'); return false;">Take a look at this</a></span>
+  <div class="comment-header">
+  <span class="comment-id">#2</span> posted by <a href="http://dynamic.boingboing.net/profile/tomic">tomic</a>  <a class="commenter-profile" href="wps.com"><img alt="Author Profile Page" src="/mt-static/images/comment/mt_logo.png" width="16" height="16" /></a>, <a href="#comment-229373" title="Permalink to this comment">July  9, 2008  8:50 AM</a>
+  </div>
+  <div class="comment-content">
+    <p>It's so different than other NeXT Cubes! You can just SEE the porn radiating from it!</p>
+
+<p>srsly thgh, it's funny how we persist in wanting to see the 'first of' even when the thing was an abstraction. Somehow we need to *see* it.</p>
+  </div>
+</div>
+
+  
+
+  
+  
+
+<div class="comment" id="comment-229377">
+  <span class="comment-moderate"> <a href='http://dynamic.boingboing.net/cgi-bin/mt/plugins/Moderate/moderate.cgi?__mode=flag&comment_id=229377&rnd=399803' title='Take a look at this' onClick="return moderate(this, 'http://dynamic.boingboing.net/cgi-bin/mt/plugins/Moderate/moderate.cgi?__mode=flag&comment_id=229377&rnd=399803'); return false;">Take a look at this</a></span>
+  <div class="comment-header">
+  <span class="comment-id">#3</span> posted by <a href="http://dynamic.boingboing.net/profile/laffmakr">laffmakr</a>  , <a href="#comment-229377" title="Permalink to this comment">July  9, 2008  8:54 AM</a>
+  </div>
+  <div class="comment-content">
+    <p>Only $40?!? Come one...your chance to hold the entire Internet in your hand has got to be worth more than that.</p>
+
+<p>However, $40 for a NeXT might be a bit high.</p>
+
+<p>I'm glad it's in a museum.</p>
+  </div>
+</div>
+
+  
+
+  
+  
+
+<div class="comment" id="comment-229460">
+  <span class="comment-moderate"> <a href='http://dynamic.boingboing.net/cgi-bin/mt/plugins/Moderate/moderate.cgi?__mode=flag&comment_id=229460&rnd=900834' title='Take a look at this' onClick="return moderate(this, 'http://dynamic.boingboing.net/cgi-bin/mt/plugins/Moderate/moderate.cgi?__mode=flag&comment_id=229460&rnd=900834'); return false;">Take a look at this</a></span>
+  <div class="comment-header">
+  <span class="comment-id">#4</span> posted by <a href="http://dynamic.boingboing.net/profile/haaz">haaz</a>  <a class="commenter-profile" href="www.mkebio.org"><img alt="Author Profile Page" src="/mt-static/images/comment/mt_logo.png" width="16" height="16" /></a>, <a href="#comment-229460" title="Permalink to this comment">July  9, 2008 10:31 AM</a>
+  </div>
+  <div class="comment-content">
+    <p>Ahhh, NeXT. That was a cool effing box. What was it, a 40 MHz 68040? No! I checked Wikipedia (always reliable) and the first NeXT cube apparently had a 25 MHz 68030. Considering this was 1988, that was pretty good. (And again, a correction. According to Wikipedia, it came out in 1990.) The second generation had the '040, and was actually cheaper than the first round, which is good, as they were not cheap.</p>
+
+<p>In my estimation, you cannot call NeXT a failure. Tim Berners-Lee used one to create the Web, the same thing most people consider to be the Internets. And the NeXT OS, NeXTSTEP, went on to become the basis of Mac OS X. And that actually is going pretty darn well.</p>
+  </div>
+</div>
+
+  
+
+  
+  
+
+<div class="comment" id="comment-229645">
+  <span class="comment-moderate"> <a href='http://dynamic.boingboing.net/cgi-bin/mt/plugins/Moderate/moderate.cgi?__mode=flag&comment_id=229645&rnd=634945' title='Take a look at this' onClick="return moderate(this, 'http://dynamic.boingboing.net/cgi-bin/mt/plugins/Moderate/moderate.cgi?__mode=flag&comment_id=229645&rnd=634945'); return false;">Take a look at this</a></span>
+  <div class="comment-header">
+  <span class="comment-id">#5</span> posted by <a href="http://dynamic.boingboing.net/profile/OM">OM</a>  <a class="commenter-profile" href="www.io.com/~o_m"><img alt="Author Profile Page" src="/mt-static/images/comment/mt_logo.png" width="16" height="16" /></a>, <a href="#comment-229645" title="Permalink to this comment">July  9, 2008  1:59 PM</a>
+  </div>
+  <div class="comment-content">
+    <p>...Ah, the NeXT. The machine that proved the theory that the reason the Mac remained colorless for so long was that Steve Jobs was color blind and wanted the rest of the world to suffer.<br />
+</p>
+  </div>
+</div>
+
+  
+
+  
+  
+
+<div class="comment" id="comment-229703">
+  <span class="comment-moderate"> <a href='http://dynamic.boingboing.net/cgi-bin/mt/plugins/Moderate/moderate.cgi?__mode=flag&comment_id=229703&rnd=83874' title='Take a look at this' onClick="return moderate(this, 'http://dynamic.boingboing.net/cgi-bin/mt/plugins/Moderate/moderate.cgi?__mode=flag&comment_id=229703&rnd=83874'); return false;">Take a look at this</a></span>
+  <div class="comment-header">
+  <span class="comment-id">#6</span> posted by <a href="http://dynamic.boingboing.net/profile/GregLondon">GregLondon</a>  <a class="commenter-profile" href="http://www.GregLondon.com"><img alt="Author Profile Page" src="/mt-static/images/comment/mt_logo.png" width="16" height="16" /></a>, <a href="#comment-229703" title="Permalink to this comment">July  9, 2008  3:17 PM</a>
+  </div>
+  <div class="comment-content">
+    <p><i>The label on the cube itself has the following text: "This machine is a server. DO NOT POWER IT DOWN!!" </i></p>
+
+<p>Ah, the good ol' days, when you could shut one server off, and take down the entire world wibe web!</p>
+  </div>
+</div>
+
+  
+
+  
+  
+
+<div class="comment" id="comment-229704">
+  <span class="comment-moderate"> <a href='http://dynamic.boingboing.net/cgi-bin/mt/plugins/Moderate/moderate.cgi?__mode=flag&comment_id=229704&rnd=770537' title='Take a look at this' onClick="return moderate(this, 'http://dynamic.boingboing.net/cgi-bin/mt/plugins/Moderate/moderate.cgi?__mode=flag&comment_id=229704&rnd=770537'); return false;">Take a look at this</a></span>
+  <div class="comment-header">
+  <span class="comment-id">#7</span> posted by <a href="http://dynamic.boingboing.net/profile/padster123">padster123</a>  , <a href="#comment-229704" title="Permalink to this comment">July  9, 2008  3:17 PM</a>
+  </div>
+  <div class="comment-content">
+    <p>Come the singularity, that machine is going to be placed in a black hole and worshipped by the goo! </p>
+  </div>
+</div>
+
+  
+
+  
+  
+
+<div class="comment" id="comment-229730">
+  <span class="comment-moderate"> <a href='http://dynamic.boingboing.net/cgi-bin/mt/plugins/Moderate/moderate.cgi?__mode=flag&comment_id=229730&rnd=573306' title='Take a look at this' onClick="return moderate(this, 'http://dynamic.boingboing.net/cgi-bin/mt/plugins/Moderate/moderate.cgi?__mode=flag&comment_id=229730&rnd=573306'); return false;">Take a look at this</a></span>
+  <div class="comment-header">
+  <span class="comment-id">#8</span> posted by <a href="http://dynamic.boingboing.net/profile/tonx">tonx</a>  <a class="commenter-profile" href="www.tonx.org"><img alt="Author Profile Page" src="/mt-static/images/comment/mt_logo.png" width="16" height="16" /></a>, <a href="#comment-229730" title="Permalink to this comment">July  9, 2008  4:12 PM</a>
+  </div>
+  <div class="comment-content">
+    <p>it should be kept perpetually running like an eternal flame, generating random numbers or something.</p>
+  </div>
+</div>
+
+  
+
+  
+  
+
+<div class="comment" id="comment-229825">
+  <span class="comment-moderate"> <a href='http://dynamic.boingboing.net/cgi-bin/mt/plugins/Moderate/moderate.cgi?__mode=flag&comment_id=229825&rnd=591314' title='Take a look at this' onClick="return moderate(this, 'http://dynamic.boingboing.net/cgi-bin/mt/plugins/Moderate/moderate.cgi?__mode=flag&comment_id=229825&rnd=591314'); return false;">Take a look at this</a></span>
+  <div class="comment-header">
+  <span class="comment-id">#9</span> posted by <a href="http://dynamic.boingboing.net/profile/dculberson">dculberson</a>  , <a href="#comment-229825" title="Permalink to this comment">July  9, 2008  6:44 PM</a>
+  </div>
+  <div class="comment-content">
+    <p>I actually had an '040 Turbo NeXT Dimension cube and a turbo slab a little while back.. I sold the cube to a friend and gave him the slab as a bonus.  They're still incredible looking and feeling machines; the casing on the cube is magnesium, and the monitor base is magnesium.  The build quality of the whole thing is incredible.  I even had a couple matching laser printers; even the <i>paper trays</i> matched the design aesthetic.  Hell, everything down to the freakin' power cords matched!!  (Logos, black, with little ribs, etc..)  So cool.  One of the highlights of computer history, for sure.</p>
+
+<p>And most certainly not a failure.  Unless you mean failure as in not around any more.  But they definitely contributed to the improvement of computers as a whole.</p>
+  </div>
+</div>
+
+  
+    </div>
+  
+
+
+
+  
+<div class="comments-open" id="comments-open">
+<h2 class="comments-open-header">Post a comment</h2>
+  <div class="comments-open-content">
+
+<script type="text/javascript">
+  var user = getCommenterName();
+  if (user.length>0) {
+    document.write('<div id="comment-form-external-auth">Thanks for signing in, <a href="http://www.boingboing.net/profile/' + trimString(unescape(user)) + '">' + unescape(user) + '</a>. Now you can comment (<a href="/profile/logout?return_to=' + document.URL + '">sign out</a>).</div>' +
+    '<form method="post" action="http://dynamic.boingboing.net/cgi-bin/mt/mt-comments.cgi" name="comments_form" id="comments-form">' +
+    '<input type="hidden" name="static" value="1" /><input type="hidden" name="entry_id" value="47697" /><input type="hidden" name="__lang" value="en" />' +
+    '<div id="comments-open-text-profile" class="comment-form-field">' + 
+    '<label for="comment-text">Comments (you may use HTML tags for style)</label>' + 
+    '<textarea id="comment-text" name="text" rows="15" cols="50"></textarea></div>' + 
+    '<div id="comments-open-footer" class="comment-form-field">' +
+    '<input type="submit" accesskey="v" name="preview" id="comment-preview" class="form-input-preview" value="Preview" />' +
+    ' <input type="submit" accesskey="s" name="post" id="comment-post" class="form-input-submit" value="Post" /></div>' +
+    '</form>');
+  } else {
+    // show the anonymous form
+    var show_anonymous = true;
+    
+    var show_anonymous = false;
+    document.write('<div id="comment-form-external-auth"><a href="http://www.boingboing.net/profile/login?return_to=' + document.URL + '">Login</a> or <a href="http://www.boingboing.net/profile/signup">create an account</a> to comment on this entry.' +
+    '<p>You can also <a href="javascript:void(0);" onclick="showAnonymousForm();">comment anonymously below</a>:</p></div>');
+    document.write('<p class="comment-warning"><span>Warning:</span> Anonymous messages are held for moderation. This could take a (long) while. Or  your comment may not be posted at all. Please consider <a href="http://www.boingboing.net/profile/signup">creating an account</a> and logging in. It\'s fast, free, and we don\'t spam, ever.</p>');
+    
+}
+</script>
+
+<form method="post" action="http://dynamic.boingboing.net/cgi-bin/mt/mt-comments.cgi" name="comments_form_anon" id="comments-form-anon" onsubmit="if (this.bakecookie.checked) rememberMe(this)">
+<input type="hidden" name="static" value="1" /><input type="hidden" name="entry_id" value="47697" /><input type="hidden" name="__lang" value="en" />
+  <div id="comments-open-data">
+    <div id="comment-form-name" class="comment-form-field">
+      <label for="comment-author">Name:</label> 
+    Anonymous <input id="comment-author" name="author" size="30" value="Anonymous" type="hidden"/>
+    </div>
+    <div id="comment-form-email" class="comment-form-field">
+      <label for="comment-email">Email Address:</label>
+      <input id="comment-email" name="email" size="30" value="" />
+    </div>
+  </div>
+  <div id="comments-open-text-profile" class="comment-form-field">
+    <label for="comment-text">Comments (you may use HTML tags for style)</label>
+<textarea id="comment-text" name="text" rows="15" cols="50"></textarea></div>
+  
+    <div id="comments-open-captcha-permalink">
+      <div id="recaptcha_script"><script type="text/javascript"   src="http://api.recaptcha.net/challenge?k=6LewUAAAAAAAABivjWcfXNoJMERKTQtUiUMbrDs-"></script><noscript>   <iframe src="http://api.recaptcha.net/noscript?k=6LewUAAAAAAAABivjWcfXNoJMERKTQtUiUMbrDs-"       height="300" width="500" frameborder="0"></iframe><br>   <textarea name="recaptcha_challenge_field" rows="3" cols="40">   </textarea>   <input type="hidden" name="recaptcha_response_field"        value="manual_challenge"></noscript></div><script type="text/javascript">var div = document.getElementById("recaptcha_script");if (commenter_name) {    div.style.display = "none";} else {    div.style.display = "block";}</script>
+    </div>
+  
+
+  <div id="comments-open-footer" class="comment-form-field">
+      <input type="submit" accesskey="v" name="preview" id="comment-preview" class="form-input-preview" value="Preview" />
+      <input type="submit" accesskey="s" name="post" id="comment-post" class="form-input-submit" value="Post" /></div>
+</form>
+<script type="text/javascript">
+if (show_anonymous == true) {
+showAnonymousForm();
+}
+</script>
+
+  </div>
+</div>
+
+
+
+
+</div>
+
+
+
+</div>
+
+<script type="text/javascript">
+    if (typeof site_category == 'undefined') {
+      site_category='';
+    }
+  </script>
+<div id="sidebar">
+ 
+
+  <div id="adunit-mediumrectangle">
+  
+
+  
+
+  
+    
+    <!-- FM Medium Rectangle (Gadgets) Zone -->
+    <script type='text/javascript' src='http://static.fmpub.net/zone/198'></script>
+    <!-- FM Medium Rectangle Zone -->
+    <p>&nbsp;
+    <!-- FM Medium Rectangle (Gadgets) Zone -->
+    <script type='text/javascript' src='http://static.fmpub.net/zone/1148'></script>
+    <!-- FM Medium Rectangle Zone -->
+    
+
+  
+  </div>
+
+
+
+<div id="vidbox" style="margin-bottom:10px;"><iframe src="http://www.boingboing.net/includes/bbvideo.html" height="230" frameborder="0" width="300" scrolling="no" marginheight="0" marginwidth="0"></iframe></div>
+
+	
+	  
+
+  <div id="column-alpha">
+  
+
+  
+  
+    
+  
+    <script type="text/javascript">
+    if (site_category == 'Innovation' || site_category == 'Safety' || site_category == 'Environment') {
+      document.write("<scr" + "ipt type='text/javascript' src='http://static.fmpub.net/zone/1150'></sc" + "ript>");
+    } else {
+      document.write("<scr" + "ipt type='text/javascript' src='http://static.fmpub.net/zone/98'></sc" + "ript>");
+    }
+    </script>
+  
+    <!-- FM Text Ads Zone -->
+    <script type='text/javascript' src='http://static.fmpub.net/zone/65'></script>
+    <!-- FM Text Ads Zone -->
+  
+  </div>
+
+  <div id="column-beta">
+    
+    
+    
+    
+    
+      <div class="adunit-square-cpm">
+      <!-- FM Square Button CPM Zone -->
+      <script type='text/javascript' src='http://static.fmpub.net/zone/452'></script>
+      <!-- FM Square Button CPM Zone -->
+      </div>
+
+      <div class="adunit-square">
+      <!-- FM Square Button CPM Zone -->
+      <script type='text/javascript' src='http://static.fmpub.net/zone/452'></script>
+      <!-- FM Square Button CPM Zone -->
+      </div>  
+
+      <div class="adunit-square">
+      <script type='text/javascript' src='http://static.fmpub.net/zone/15'></script>
+      <!-- FM Square Button Flat Rate Zone -->
+      </div>    
+
+      <div class="adunit-square">
+      <!-- FM Square Button Flat Rate Zone -->
+      <script type='text/javascript' src='http://static.fmpub.net/zone/15'></script>
+      <!-- FM Square Button Flat Rate Zone -->
+      </div>
+
+      <div class="adunit-square">
+      <!-- Honda custom -->
+      <script type='text/javascript' src='http://static.fmpub.net/zone/1155'></script>
+      </div>
+
+      <div class="adunit-square">
+      <!-- FM Badge Start -->
+      <a href="http://www.federatedmedia.net/authors/boingboing"><img src="http://static.fmpub.net/banners/1/0Uploaded/fm_badge.jpg" width="125" height="95" border="0"></a>
+      <!-- FM Badge End -->
+      </div>
+
+    
+
+  </div>
+
+  <div id="sidebar-content">
+
+  
+    <div class="block" id="block-recentcomments">
+      <h4>Recent Comments</h4>
+      <ul>
+        
+          <li><span style="text-transform:uppercase"><a href="http://www.boingboing.net/2009/10/10/the-chipmunks-from-r.html#comment-611386">Omir the Storyteller</a> on <a href="http://www.boingboing.net/2009/10/10/the-chipmunks-from-r.html">The Chipmunks: From Rags to Ri...</a></span><br/>
+	"I had a copy of the Chipmunks LP when I was a kid. It was red vinyl.
+
+My father-in-law was named Alv ..."</li>
+			
+        
+          <li><span style="text-transform:uppercase"><a href="http://www.boingboing.net/2009/10/12/phillip-roebuck-one.html#comment-611384">Omir the Storyteller</a> on <a href="http://www.boingboing.net/2009/10/12/phillip-roebuck-one.html">Phillip Roebuck: One Man Band ...</a></span><br/>
+	"Am I the only one who was bothered, not so much by the seizure inducing editing (although that was b ..."</li>
+			
+        
+          <li><span style="text-transform:uppercase"><a href="http://www.boingboing.net/2009/10/12/digging-through-baby.html#comment-611379">Blake2go</a> on <a href="http://www.boingboing.net/2009/10/12/digging-through-baby.html">Digging through baby poo in th...</a></span><br/>
+	"Scatological fun for all!
+
+Must be a great conversation starter, so doctor what is your specialty? ..."</li>
+			
+        
+          <li><span style="text-transform:uppercase"><a href="http://www.boingboing.net/2009/10/12/boing-boing-guest-bl-2.html#comment-611377">Beedie</a> on <a href="http://www.boingboing.net/2009/10/12/boing-boing-guest-bl-2.html">Boing Boing guest blogger: Con...</a></span><br/>
+	"Welcome!  If I can get my kimchi from a Boing Boinger, then that is what I will do.  I love the slog ..."</li>
+			
+        
+          <li><span style="text-transform:uppercase"><a href="http://www.boingboing.net/2009/10/12/the-woman-who-cant-s.html#comment-611376">querent</a> on <a href="http://www.boingboing.net/2009/10/12/the-woman-who-cant-s.html">The woman who can't stop orgas...</a></span><br/>
+	"seconded and agreed.  especially, "The one course of action I would not recommend is sitting on a di ..."</li>
+			
+        
+          <li><span style="text-transform:uppercase"><a href="http://www.boingboing.net/2009/10/12/farms-as-skyscrapers.html#comment-611375">cmaceachen</a> on <a href="http://www.boingboing.net/2009/10/12/farms-as-skyscrapers.html">Farms as skyscrapers...</a></span><br/>
+	"Who said anything about soil?  As I said in my original post, I'm talking about aeroponics.  The sil ..."</li>
+			
+        
+          <li><span style="text-transform:uppercase"><a href="http://www.boingboing.net/2009/10/12/xkcd-volume-0.html#comment-611374">Xenu</a> on <a href="http://www.boingboing.net/2009/10/12/xkcd-volume-0.html">xkcd: volume 0...</a></span><br/>
+	"Mine arrived the day of the official release party (coincidentally?) at 111 Mina in SF.
+
+It's great  ..."</li>
+			
+        
+          <li><span style="text-transform:uppercase"><a href="http://www.boingboing.net/2009/10/12/fireplace-named-worl.html#comment-611373">redesigned</a> on <a href="http://www.boingboing.net/2009/10/12/fireplace-named-worl.html">Fireplace named world's most b...</a></span><br/>
+	"Sorry, but that is one ugly and impractical fireplace.
+
+It also must be a very inefficient heater as ..."</li>
+			
+        
+          <li><span style="text-transform:uppercase"><a href="http://www.boingboing.net/2009/10/12/the-woman-who-cant-s.html#comment-611372">Space Toast</a> on <a href="http://www.boingboing.net/2009/10/12/the-woman-who-cant-s.html">The woman who can't stop orgas...</a></span><br/>
+	"She may well be suffering from "just" a psychiatric disorder (if one considers, for instance, a crip ..."</li>
+			
+        
+          <li><span style="text-transform:uppercase"><a href="http://www.boingboing.net/2009/10/12/farms-as-skyscrapers.html#comment-611371">caseyd</a> on <a href="http://www.boingboing.net/2009/10/12/farms-as-skyscrapers.html">Farms as skyscrapers...</a></span><br/>
+	"population pressure will force some change
+
+&lt;a href="http://www.fao.org/news/story/en/item/35571/ico ..."</li>
+			
+        
+      </ul>
+    </div>
+
+    <div class="block" id="block-favoriteposts">
+        <h4>Don't Miss</h4>
+        <ul>
+          
+            <li><a href="http://www.boingboing.net/2009/10/12/farms-as-skyscrapers.html">Farms as skyscrapers</a></li>
+          
+            <li><a href="http://www.boingboing.net/2009/10/12/xkcd-volume-0.html">xkcd: volume 0</a></li>
+          
+            <li><a href="http://www.boingboing.net/2009/10/12/the-woman-who-cant-s.html">The woman who can't stop orgasming </a></li>
+          
+            <li><a href="http://www.boingboing.net/2009/10/12/my-generation-how-in.html">My generation: How Indie Game Makers are Embracing Controlled Chaos</a></li>
+          
+            <li><a href="http://www.boingboing.net/2009/10/12/crop-art-is-for-ever.html">Crop Art Is For Everyone! </a></li>
+          
+            <li><a href="http://www.boingboing.net/2009/10/10/great-stuff-you-migh.html">Great stuff you might have missed</a></li>
+          
+            <li><a href="http://www.boingboing.net/2009/10/10/saturday-morning-sci.html">Saturday Morning Science Experiment: The Gummi Bear Gets It</a></li>
+          
+            <li><a href="http://www.boingboing.net/2009/10/09/urban-surveillance-a.html">Urban surveillance as a game?</a></li>
+          
+            <li><a href="http://www.boingboing.net/2009/10/09/c-graffiti.html">C graffiti</a></li>
+          
+            <li><a href="http://www.boingboing.net/2009/10/09/red-kuri-squash-draf.html">Taste Test: red kuri squash </a></li>
+          
+        </ul>
+   </div>
+   
+   
+      
+      <div class="block" id="block-otherposts-gadgets">
+        <h4><a href="http://gadgets.boingboing.net/"><img src="http://www.boingboing.net/mtimages/bb-gadgets-clean.gif" alt="Boing Boing Gadgets"> the latest</a></h4>
+        <ul>
+          
+            <li><a href="http://gadgets.boingboing.net/2009/10/08/somebody-should-make.html">Somebody should make a phone like this</a></li>
+          
+            <li><a href="http://gadgets.boingboing.net/2009/10/05/joey-roths-ceramic-s.html">Joey Roth's Ceramic Speakers</a></li>
+          
+            <li><a href="http://gadgets.boingboing.net/2009/10/05/sidekick-services.html">Sidekick servers "impacted" by outage.</a></li>
+          
+            <li><a href="http://gadgets.boingboing.net/2009/10/05/little-dog.html">Little Dog</a></li>
+          
+            <li><a href="http://gadgets.boingboing.net/2009/10/05/if-only-these-retro.html">If only these retro fake ads were for real products!</a></li>
+          
+            <li><a href="http://gadgets.boingboing.net/2009/10/05/introducing-the-kind.html">Introducing the Kindle Gutenberg Bookreader</a></li>
+          
+            <li><a href="http://gadgets.boingboing.net/2009/10/05/flotsam-robots.html">Flotsam Robots</a></li>
+          
+            <li><a href="http://gadgets.boingboing.net/2009/10/05/technical-illustrati.html">Technical illustrations by Karl Hans Janke</a></li>
+          
+            <li><a href="http://gadgets.boingboing.net/2009/10/05/48cake.html">48Cake</a></li>
+          
+            <li><a href="http://gadgets.boingboing.net/2009/10/02/in-future-america-ca.html">In future America, car stops you.</a></li>
+          
+        </ul>
+      </div>
+      
+      <div class="block" id="block-otherposts-tv">
+        <h4><a href="http://www.boingboing.net/video.html"><img src="http://www.boingboing.net/mtimages/bb-tv-clean.gif" alt="Boing Boing TV"> latest episodes</a></h4>
+        <ul>
+          
+            <li><a href="http://www.boingboing.net/2009/09/30/bb-video-coachella-t.html">Boing Boing Video: Coachella Time-Lapse (dir. Ray Klein, music by Hawke)</a></li>
+          
+            <li><a href="http://www.boingboing.net/2009/09/22/boing-boing-video-sy.html">Boing Boing Video: SYNESTHESIA, a film by Jonathan Fowler.</a></li>
+          
+            <li><a href="http://www.boingboing.net/2009/09/08/they-might-be-giants-2.html">They Might Be Giants: "Meet the Elements" music video (BB Video)</a></li>
+          
+            <li><a href="http://www.boingboing.net/2009/08/24/doctor-who-exit-inte.html">Doctor Who Exit Interview: David Tennant + Russell T. Davies, with Richard Metzger (BB Video)</a></li>
+          
+            <li><a href="http://www.boingboing.net/2009/08/19/bb-video-mighty-boos-2.html">(BB Video) Mighty Boosh: Live at the Roxy / Pocket Book of Boosh (pt. 4 of 4)</a></li>
+          
+            <li><a href="http://www.boingboing.net/2009/08/17/bb-video-mighty-boos-1.html">(BB Video) Mighty Boosh, pt 3: Slashfic, Boosh books, Eleanor's NORAD link</a></li>
+          
+            <li><a href="http://www.boingboing.net/2009/08/13/bb-video-mighty-boos.html">(BB Video) Mighty Boosh, part 2: Crimpin' Ain't Easy</a></li>
+          
+            <li><a href="http://www.boingboing.net/2009/08/11/bb-video-the-mighty.html">BB Video: Xeni with Noel Fielding and Julian Barratt of The Mighty Boosh (pt 1)</a></li>
+          
+            <li><a href="http://www.boingboing.net/2009/08/06/bb-video-carve-steel.html">BB Video: Carve Steel with Saltwater, Electricity and a Tin Earring (Popsci)</a></li>
+          
+            <li><a href="http://www.boingboing.net/2009/07/30/bb-video-send-me-a-l.html">(BB Video) Send Me a Link: The Art of Cassandra C. Jones</a></li>
+          
+        </ul>
+      </div>
+      
+
+      
+
+      
+      <div id="sidebar-personaltiles">
+      </div>
+  </div>
+</div>
+
+
+<br class="clear" />
+</div>
+
+<div id="footer">
+  <div class="divitis">
+  <div class="block" id="subscribe">
+    <h4>Subscribe</h4>
+    <ul>
+
+      
+      <li id="subscribe-all"><a href="http://feeds.boingboing.net/boingboing/iBag">Boing Boing</a></li>
+      <li id="subscribe-podcast"><a href="http://odeo.com/channel/126064/rss.xml">Audio podcast</a></li>
+      <li id="subscribe-email">Subscribe by email:
+        <form action="http://www.feedburner.com/fb/a/emailverify" method="post" target="popupwindow" onsubmit="window.open('http://www.feedburner.com/fb/a/emailverifySubmit?feedId=18399', 'popupwindow', 'scrollbars=yes,width=550,height=520');return true">
+        <input class="text" type="text" name="email" size="20"><input type="hidden" value="http://feeds.feedburner.com/~e?ffid=18399" name="url"/><input type="hidden" value="Boing Boing" name="title"/><input type="hidden" name="loc" value="en_US"/>
+        <input class="form-input-submit-secondary" type="submit" value="Subscribe">
+        </form></li>
+      
+      
+      
+
+      
+
+    </ul>
+  </div>
+  
+  <div class="block" id="footer-bottom-nav">
+    
+      <h4><img id="you-are-reading-image" src="http://www.boingboing.net/mtimages/bb-home-footer.gif" alt="Boing Boing" /></h4>
+      <ul>
+        <li><a href="http://www.boingboing.net/">Go Home</a></li>
+        <li><a href="http://www.boingboing.net/archives.html">Archives</a></li>
+        <li class="list-break">Other Sites:</li>
+        <li><a href="http://gadgets.boingboing.net/">Boing Boing Gadgets</a></li>
+        <li><a href="http://tv.boingboing.net/">Boing Boing TV</a></li>        
+      </ul>
+      <div class="boing">
+        <a href="http://boingboing.net/" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('jjill','','http://www.boingboing.net//mtimages/jjill_bounce.gif',1)"><img name="jjill" src="http://www.boingboing.net//mtimages/jjill_static.gif" width="40" height="71" alt="Boing Boing - A directory of wonderful things" /></a>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+  
+  <div class="block" id="footer-extras">
+    <h4>Extras</h4>
+    <ul>
+      <li><a href="http://www.boingboing.net/censorroute.html">Defeat Censorware</a></li>
+      <li><a href="http://www.boingboing.net/policies.html">Policies</a></li>
+      <li><a href="http://www.boingboing.net/2005/02/17/howto_get_something_.html">HOWTO: Get a link posted to Boing Boing</a></li>
+    </ul>
+  </div>
+  
+  <div id="footer-personaltiles">
+    
+  </div>
+  
+  <div id="footer-etc">
+    <div class="block">This work is licensed under a <a href="http://creativecommons.org/licenses/by-nc/2.5/">Creative Commons License</a> permitting non-commercial sharing with attribution.</div>
+    <div class="block">Boing Boing is a trademark of Happy Mutants LLC in the United States and other countries.</div>
+  </div>
+
+  </div>
+</div>
+  
+  <!-- FM Tracking Pixel -->
+  <script type='text/javascript' src='http://static.fmpub.net/site/boingboing'></script>
+  <!-- FM Tracking Pixel -->
+  <script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-3839311-1");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+  
+
+  
+
+  
+  
+<script src="http://24725.hittail.com/mlt.js" type="text/javascript"></script>
+
+
+<script src="http://www.boingboing.net/includes/sidebar-a.txt" type="text/javascript"></script>
+
+
+
+</body>
+</html>
+
+

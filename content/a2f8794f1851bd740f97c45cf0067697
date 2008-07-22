@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+<head>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Script-Type" content="text/javascript">
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="expires" content="3600" />
+    <meta name="revisit-after" content="2 days" />
+    <meta name="robots" content="index,follow" />
+    <meta name="publisher" content="Ed Menendez" />
+    <meta name="copyright" content="Copyright 2007-2010, Ed Menendez. All Rights Reserved." />
+    <meta name="author" content="Ed Menendez" />
+    <meta name="distribution" content="global" />
+    <meta name="description" content="Are the brakes on your Django app? When building an application using an application framework like Django... the priority is often to get the application working first and optimize it later. The trade off is between getting it done and getting it done for 1 million users. Here&#39;s a check ..." />
+    <meta name="keywords" content="menendez, fantasy, python, coldfusion, django, politics, fantasydot, sports, games, blog, photo, video, libertarian, " />
+    <meta name="verify-v1" content="nEQArUPm/aZ8na1HUBKvK4CJcaOKV+F7+WzldXyOqpE=" />
+
+    <link rel="stylesheet" type="text/css" media="screen,projection,print" href="http://www.menendez.com/site_media//css/default.css" />
+    <link rel="icon" type="image/x-icon" href="http://www.menendez.com/site_media/images/favicon.ico" />
+    <link rel="alternate" type="application/rss+xml" title="Ed Menendez' Blog" href="/feeds/latest/" />
+    
+    
+    
+    
+    
+    
+
+    <title>Ed Menendez Blog - Launching a High Performance Django Site</title>
+    
+
+</head>
+
+
+<!--[if IE]><body class="ie"><![endif]-->
+<!-- <![if !IE]> --><body><!-- <![endif]> -->
+<script type='text/javascript' src='http://track.mybloglog.com/js/jsserv.php?mblID=2008072716191550'></script>
+<div id="nsaAll">
+	<div id="nsaTop">
+		<div id="logo"><a href="/"><img src="http://www.menendez.com/site_media/images/logo.gif" /></a></div>
+	</div>
+	
+	<div id="nsaContent">
+		<table id="tblMain">
+			<tr>
+				<td class="tblMainLeft">
+					<ul id="menu">
+						<li class="on"><a href="/">Home</a></li>
+						<!--<li ><a href="#">Photos</a></li>-->
+						<li ><a href="/links/">Links</a></li>
+						<li ><a href="/about/">About Me</a></li>
+						<li ><a href="/contact/">Contact Me</a></li>
+					</ul>
+                    <br><br>
+				</td>
+				<td class="tblMainRight">
+                    
+<div id="left_a">
+
+    
+
+    
+
+<div id="intro">
+    <h1 style="padding-top: 4px;"><a href="/blog/launching-high-performance-django-site/">Launching a High Performance Django Site</a></h1>
+    <p class="date">Sunday, July 6 2008 3:29 p.m.</p>
+    <p class="item"><p><img src="http://www.menendez.com/site_media/images/blog/pit-babe-1.jpg" width="318" height="300" border="0" hspace="5" align="left">
+Are the brakes on your Django app?</p>
+
+<p>When building an application using an application framework like Django... the priority is often to get the application working first and optimize it later. The trade off is between getting it done and getting it done for 1 million users. Here's a check list of things you can do to make sure your application can be optimized quickly when you put on your optimization hat. Note, most applications don't need all of this since most applications do not get anywhere near <a href="http://twitter.com/">enough traffic</a> to justify even bothering. But if you're lucky enough to need to optimize your Django app, I hope this post can help you.</p>
+
+<fold>
+
+<p>Note, my background is in building very large high traffic sites for companies such as Fanball.com, AOL Fantasy Sports, eBay.ca, PGATour and NASCAR. All of those sites were built using ColdFusion/Microsoft SQLServer or MySQL or Oracle and I only recently jumped into Django. If you're familiar with fantasy sports, you know that you usually rush to a site to set your line up just before a sporting event starts and then you check your score when an event is live. This traffic is extremely high during those peak times, so much so that Fanball.com used to be a top 1000 site according to Alexa during football season. Being new to Django I wished I could have found a post like this when trying to launch a high traffic site.</p>
+
+<p><b>Caching and Managers</b><br>
+You probably built your app using managers right? Even if you're not building the application for a large number of users, you should be using managers anyway to help reuse code. If you are using managers, going back to retrofix your code to use <a href="http://www.danga.com/memcached/">memcache</a> or some other type of caching is straight forward. Be sure to use <a href="http://gijsbert.org/cmemcache/">cMemcache</a> in your production environment. And be sure NOT to mix cMemcache and the regular <a href="http://www.tummy.com/Community/software/python-memcached/">memcache python library</a>. The keys they generate are not 100% compatible. You'll be able to read keys from either, but cMemcache won't write keys that regular memcache can always read. I'm not sure why that's true, but you've been warned.</p>
+
+<p><b>Dog Piling and Caching</b><br>
+This is a big deal. No matter how good you're caching objects, you need to make sure only ONE process is refreshing the cache. There are several ways to handle this. <a href="http://www.djangosnippets.org/snippets/155/">Mint Cache</a> is a good solution. Another solution is to use managers that ONLY read the cached objects, and have a separate process refresh the cache. You can use signals to flag that an object needs to be refreshed. Or you could refresh it on a timed interval.</p>
+
+<p><b>Health Check for Load Balancers</b><br>
+You have two options to survive a server going down. One is to have a hot spare waiting to be put online. In this scenario the load balancer should do this automatically. Another, is to have that hot swappable server already online and make sure that your load can always be handled with at least 1 server down. I prefer the later solution as this guarantees that the "idle" server is actually functional under load. Opinions vary. Avoid auto shutting down a server from a load balancer. You could cause a death spiral very easily this way.</p>
+
+<p><b>Access Servers Directly</b><br>
+It's important to be able to access the servers directly, even if you are behind a load balancer. This will often be the only way to reliably test unusual problem that might be happening in production. To do this, make sure the servers are configured to answer at a special URL directly. For example web1.mysite.com. You should have web1.mysite.com in your HOSTS or in your local DNS server. If you can't get to the server directly because of a firewall, try using a free VPN like <a href="https://secure.logmein.com/products/hamachi/vpn.asp?lang=en">Hamachi</a> to get through.</p>
+
+<p><b>Connection Caching</b><br>
+Be sure to have some sort of connection pooling or connection caching. I was able to get <a href="http://www.sqlalchemy.org/">SQLAlchemy</a> installed within 30 minutes. It's easy to setup. Make sure that the database timeout value (base.py) in the SQLAlchemy matches the timeout value for the connection at the database.</p>
+
+<p><b>Avoid Thread Thrashing</b><br>
+Keep those threads alive! Check your Apache settings and make sure that you don't have thread thrashing. You don't want Apache killing and starting threads on you. Every time you do that, Django needs to initialize... an expensive process. Any objects you might have built in memory need to be rebuilt. The database connection needs to be established again. These are all things you only want to do once. Would you boot up your machine every single time you want to send an email? You probably leave it on during working hours. Same thing applies here. Leave those threads on. Here's an example of settings I've used with Apache on a 4 CPU server. <br><br>
+
+<code>
+StartServers 20<br>
+ServerLimit 20<br>
+MinSpareServers 20<br>
+MaxClients 20<br>
+MaxRequestsPerChild 100000<br>
+</code>
+</p>
+
+<p>Note that MaxRequestsPerChild COULD be set to 0 and have the thread never reset, but just in case there's a memory leak somewhere (I have yet to see one) I have it reset every 100k requests. Don't just set the ServerLimit and MaxClients connections to some crazy high number. Remember, there's only so much memory on the server to go around. If you start to swap memory, your server is dead. Additionally, if your server is already CPU bound (85% CPU utilization), setting these numbers higher is not going to help. You'll just increase the overhead of switching between all the processes.</p>
+
+<p><b>Cache Templates</b><br>
+In a production environment, you should cache templates.<a href="http://www.djangosnippets.org/snippets/507/">Here's</a> a great snippet to do that.</p>
+
+<p><b>Note About Load Testing</b><br>
+There are two ways to test how your application is going to perform under load. The more expensive, more time consuming and least accurate number can be had with load testing software. You can start to unit test certain parts with software as simple as ab which comes with Apache. You can start to spend some real money on expensive load testing suites with nice reports and that allowing load testing from multiple clients so that you can effectively test against a load balanced farm. Load testing is a completely different test, but just remember that load testing is in fact the least accurate and the most expensive way to load test an application. You can spend lots of time and money building script that try to get close to a real world scenario but will never actually be real. The advantage is that you will get back some useful data and you can do this before a single user hits a web page. A better approach, if it's possible, is to gradually roll-out the application. Gradually increase both the number of users and the number of expensive features. This is not always possible, but usually.. it is.</p>
+
+<p><b>Reverse DNS and Mutexes</b><br>
+This might sound obvious, but be sure your DBA has checked this one. MySQL likes to do reverse DNS lookups on the IP when it receives a connection. Either start MySQL with --skip-name-resolve or be sure that reverse DNS is configured properly. Also, if you're going to have a large number of connections (probably one per apache thread + a few extra) be sure the mutex count in the OS is set high enough. We've had to raise it to 1000 on a very large installation.</p>
+
+<p><b>Miscellaneous</b><br>
+Here's a few things covered in other <a href="http://www.jacobian.org/writing/2005/dec/12/django-performance-tips/">posts</a>, but that I feel I need to include in here because.. well. it's very low hanging fruit. Remember to reduce the number of queries. If you're doing something like this in a template team.player.name and you're not using select_related() or not creating your own object, that means that django will automatically query the data for you. This is a huge problem if it's in a loop. Additionally, try to combine ORM calls if it makes sense. Try to go to the database as little as possible. It's often easy to browse through the queries on a page and see where often used lookups can be cached or different ORM calls can be combined. </p>
+
+<p>Be sure to monitor your disk space. You probably want to turn of most logging on Apache. </p>
+
+<p>Also, please don't serve your images and static content through Python. It's like using your flat bed to transport a letter.</p>
+
+<p><b>Conclusion</b><br>
+You've already chosen Django and Python so you know you have room to improve performance. Plan ahead. You don't have to slow down development to optimize the application for those mythical million users, but use managers whenever possible. Keep an eye on that query count at the bottom of the page.</p>
+
+<p>If all else fails and you're under the gun, <a href="/contact/">ask</a>. The <a href="irc://irc.freenode.net/django">IRC channel</a> can really help when things are happening right now.</p>
+</p>
+</div>
+
+
+<a href="/tag/django/">django</a>, <a href="/tag/programming/">programming</a>, <a href="/tag/python/">python</a>
+
+<br>
+
+
+<br>
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/edmenendez/embed.js"></script><noscript><a href="http://edmenendez.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink"></a>
+
+
+</div>
+<!-- end left -->
+
+<!--
+        <div id="middle_b">
+            <div id="center">
+                <h2>Title</h2>
+                <p>lorem</p>
+                <p>lorem</p>
+                <p class="date"><a href="#" title="Comments">Comments (9)</a> Mar 11th</p>
+            </div>
+        </div>
+-->
+
+<div id="right_a">
+
+
+    
+
+
+  
+</div>
+<!-- end right -->
+
+				</td>
+                <td class="tblRightRail">
+                    <a style="color: black;" href="http://feeds.feedburner.com/edmenendez" title="RSS Feed for Ed Menendez' Blog" rel="alternate" type="application/rss+xml"><img src="http://www.feedburner.com/fb/images/pub/feed-icon16x16.png" alt="Subscribe RSS Feed" valign="bottom"></a>
+                    
+<!-- AddThis Button BEGIN -->
+<a href="http://www.addthis.com/bookmark.php" onclick="window.open('http://www.addthis.com/bookmark.php?wt=nw&pub=edmenendez&url='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title), 'addthis', 'scrollbars=yes,menubar=no,width=620,height=520,resizable=yes,toolbar=no,location=no,status=no,screenX=200,screenY=100,left=200,top=100'); return false;" title="Bookmark and Share" target="_blank"><img src="http://s9.addthis.com/button1-share.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a>
+<!-- AddThis Button END -->
+
+
+                    
+                        <br><hr>
+                        <b>More Blog Entries</b>
+                        <ul>
+                        
+                            <li>&#8226; <a href="/blog/search-twitter-public-timeline-python/">Search Twitter Public Timeline with Python</a></li>
+                        
+                            <li>&#8226; <a href="/blog/python-syntax-highlighting/">Python Syntax Highlighting</a></li>
+                        
+                            <li>&#8226; <a href="/blog/human-resources-in-the-cloud/">Human Resources in the Cloud</a></li>
+                        
+                            <li>&#8226; <a href="/blog/using-django-as-pass-through-image-proxy/">Using Django as a Pass Through Image Proxy</a></li>
+                        
+                            <li>&#8226; <a href="/blog/maintain-contants-through-south-data-migration/">Maintain Constants.py through Data Migration</a></li>
+                        
+                            <li>&#8226; <a href="/blog/configuring-nginx-pass-through-image-proxy/">Configuring Nginx as a Pass Through Image Proxy</a></li>
+                        
+                        </ul>
+                        <hr>
+                    
+                    <a href="http://feeds.feedburner.com/edmenendez/?format=xml"><img src="http://www.menendez.com/site_media/images/trans.gif" border=0"></a>
+                    <center><script type="text/javascript" src="http://cdn.widgetserver.com/syndication/subscriber/InsertWidget.js"></script><script>if (WIDGETBOX) WIDGETBOX.renderWidget('6dbe9a47-fa1d-43f3-bd68-cbc361a27bae');</script><noscript>Get the <a href="http://www.widgetbox.com/widget/twidget">Twitter Widget</a> widget and many other <a href="http://www.widgetbox.com/">great free widgets</a> at <a href="http://www.widgetbox.com">Widgetbox</a>!</noscript></center><br>
+<center>
+<table border="0"><Tr><td>
+<!-- Feedo Style code version: X.1.
+        Copyright 2005-2009 Acme Inc..
+More info available at http://www.feedostyle.com/ -->
+<script type="text/javascript">
+//<![CDATA[
+
+feedostyle_id = "b704bb460b9a478a87fc6cda34cc5746";
+feedostyle_format = "static";
+feedostyle_title = "Ed's Ideas";
+feedostyle_subtitle = "";
+feedostyle_show_caption = true;
+feedostyle_show_date = false;
+feedostyle_show_time = false;
+feedostyle_show_source = false;
+feedostyle_rounded_corners = true;
+feedostyle_pause_time = 3000;
+feedostyle_font_size = "medium";
+feedostyle_font_family = "auto";
+feedostyle_width = "180px";
+feedostyle_height = "380px";
+feedostyle_entry_count = 5;
+feedostyle_entry_spacing = "7px";
+feedostyle_collapse_overflow = true;
+feedostyle_theme = "vanilla";
+feedostyle_new_window_links = true;
+
+//]]>
+</script>
+<script type="text/javascript" src="http://digest.feedostyle.com/feedostyle.js"></script>
+<!-- End Feedo Style code version: X.1. -->
+</td></tr></table>
+</center>
+                                    
+                    
+                    
+                    
+                    
+                    <table align="center" width="100%"><tr><td align="center"><a href="http://www.new.facebook.com/people/Ed_Menendez/648609570" title="Ed Menendez' Facebook profile" target=_TOP><img src="http://badge.facebook.com/badge/648609570.329.368053829.png" border=0 alt="Ed Menendez' Facebook profile"></a></noscript>
+                    <table align="center" width="100%"><tr><td align="center"><style type="text/css">table.lfmWidgetchart_f815a6b80ab7b8bd9dd46b71bbf9e82a td {margin:0 !important;padding:0 !important;border:0 !important;}table.lfmWidgetchart_f815a6b80ab7b8bd9dd46b71bbf9e82a tr.lfmHead a:hover {background:url(http://cdn.last.fm/widgets/images/en/header/chart/recenttracks_regular_grey.png) no-repeat 0 0 !important;}table.lfmWidgetchart_f815a6b80ab7b8bd9dd46b71bbf9e82a tr.lfmEmbed object {float:left;}table.lfmWidgetchart_f815a6b80ab7b8bd9dd46b71bbf9e82a tr.lfmFoot td.lfmConfig a:hover {background:url(http://cdn.last.fm/widgets/images/en/footer/grey.png) no-repeat 0px 0 !important;;}table.lfmWidgetchart_f815a6b80ab7b8bd9dd46b71bbf9e82a tr.lfmFoot td.lfmView a:hover {background:url(http://cdn.last.fm/widgets/images/en/footer/grey.png) no-repeat -85px 0 !important;}table.lfmWidgetchart_f815a6b80ab7b8bd9dd46b71bbf9e82a tr.lfmFoot td.lfmPopup a:hover {background:url(http://cdn.last.fm/widgets/images/en/footer/grey.png) no-repeat -159px 0 !important;}</style></td></tr></table>
+                    <table class="lfmWidgetchart_f815a6b80ab7b8bd9dd46b71bbf9e82a" cellpadding="0" cellspacing="0" border="0" style="width:184px;"><tr class="lfmHead"><td><a title="edmenendez: Recently Listened Tracks" href="http://www.last.fm/user/edmenendez" target="_blank" style="display:block;overflow:hidden;height:20px;width:184px;background:url(http://cdn.last.fm/widgets/images/en/header/chart/recenttracks_regular_grey.png) no-repeat 0 -20px;text-decoration:none;border:0;"></a></td></tr><tr class="lfmEmbed"><td><object type="application/x-shockwave-flash" data="http://cdn.last.fm/widgets/chart/friends_6.swf" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0" id="lfmEmbed_721887314" width="184" height="199"> <param name="movie" value="http://cdn.last.fm/widgets/chart/friends_6.swf" /> <param name="flashvars" value="type=recenttracks&amp;user=edmenendez&amp;theme=grey&amp;lang=en&amp;widget_id=chart_f815a6b80ab7b8bd9dd46b71bbf9e82a" /> <param name="allowScriptAccess" value="always" /> <param name="allowNetworking" value="all" /> <param name="allowFullScreen" value="true" /> <param name="quality" value="high" /> <param name="bgcolor" value="999999" /> <param name="wmode" value="transparent" /> <param name="menu" value="true" /> </object></td></tr><tr class="lfmFoot"><td style="background:url(http://cdn.last.fm/widgets/images/footer_bg/grey.png) repeat-x 0 0;text-align:right;"><table cellspacing="0" cellpadding="0" border="0" style="width:184px;"><tr><td class="lfmConfig"><a href="http://www.last.fm/widgets/?colour=grey&amp;chartType=recenttracks&amp;user=edmenendez&amp;chartFriends=1&amp;from=code&amp;widget=chart" title="Get your own widget" target="_blank" style="display:block;overflow:hidden;width:85px;height:20px;float:right;background:url(http://cdn.last.fm/widgets/images/en/footer/grey.png) no-repeat 0px -20px;text-decoration:none;border:0;"></a></td><td class="lfmView" style="width:74px;"><a href="http://www.last.fm/user/edmenendez" title="View edmenendez's profile" target="_blank" style="display:block;overflow:hidden;width:74px;height:20px;background:url(http://cdn.last.fm/widgets/images/en/footer/grey.png) no-repeat -85px -20px;text-decoration:none;border:0;"></a></td><td class="lfmPopup"style="width:25px;"><a href="http://www.last.fm/widgets/popup/?colour=grey&amp;chartType=recenttracks&amp;user=edmenendez&amp;chartFriends=1&amp;from=code&amp;widget=chart&amp;resize=1" title="Load this chart in a pop up" target="_blank" style="display:block;overflow:hidden;width:25px;height:20px;background:url(http://cdn.last.fm/widgets/images/en/footer/grey.png) no-repeat -159px -20px;text-decoration:none;border:0;" onclick="window.open(this.href + '&amp;resize=0','lfm_popup','height=299,width=234,resizable=yes,scrollbars=yes'); return false;"></a></td></tr></table></td></tr></table>
+                    <table align="center" width="100%"><tr><td align="center"><script src="http://www.gmodules.com/ig/ifr?url=http://www.google.com/ig/modules/translatemypage.xml&up_source_language=en&w=160&h=60&title=&border=&output=js"></script><br></td></tr></table>
+</td></tr></table><br><br>
+                    
+                </td>
+			</tr>
+		</table>
+	</div>
+	
+	<div id="footer">&copy 2007-2010, Ed Menendez. All rights reserved.</div>
+    
+</div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-3642944-2");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+
+
+
+</body>
+</html>

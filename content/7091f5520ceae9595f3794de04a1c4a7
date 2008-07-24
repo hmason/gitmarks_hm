@@ -1,0 +1,1074 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/2001/REC-xhtml11-20010531/DTD/xhtml11-flat.dtd">
+<!-- <!DOCTYPE XHTML 1.1> -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta name="author" content="Will Larson" />
+<meta name="description" content="Will Larson&#39;s blog about programming and other things." />
+<meta name="keywords" content="Blog Will Larson Programming Life" />
+<link rel="alternate" type="application/rss+xml" title="Content feed" href="/feeds/all/" />
+<link href="/media/lethain.r1235149989.css" rel="stylesheet" type="text/css" media="screen,projection" />
+<link href="/media/print.r1235059794.css" rel="stylesheet" type="text/css" media="print" />	
+<!--[if IE]><link rel="stylesheet" href="/media/blueprint/lib/ie.css" type="text/css" media="screen, projection" /><![endif]-->
+<title>Yahoo&#39;s Build your Own Search Service in Django @ Irrational Exuberance</title>
+
+
+</head>
+
+<body>
+<div class="container body">
+  <div class="column span-24 first heading">
+    <div class="column span-24 first heading-name">
+      
+      <h1><a href="/">Irrational Exuberance</a></h1>
+      
+    </div>
+    <div class="column span-24 last header-links">
+      
+      <span class="header-link"><a href="/code/">Code</a></span>
+      
+      <span class="header-link"><a href="/life/">Life</a></span>
+      
+      <span class="header-link"><a href="/articles/">Series</a></span>
+      
+      <span class="header-link"><a href="/projects/">Projects</a></span>
+      
+    </div>
+  </div>
+    
+  <div class="column span-24 header center">
+      <span class="nav-link"><a href="/author/will-larson/">About</a></span>
+      <span class="nav-link"><a href="/entry/">Archive</a></span>
+      <span class="nav-link"><a href="/tags/">Tag Cloud</a></span>
+      <span class="nav-link"><a href="/language/">Translations</a></span>
+      <span class="nav-link"><a href="/meta/rss/">RSS</a></span>
+  </div>
+  
+
+
+  
+  <div class="column span-24 content">
+  <div class="content-main-internal">
+    
+<div class="article-nav">
+
+
+
+
+<a class="left" href="/entry/2008/jul/07/release-of-lifeflow-0-91/">&lt;&lt; Release of LifeFlow 0.91</a>
+
+
+
+<a class="right" href="/entry/2008/jul/11/search-recipes-for-yahoo-s-boss-in-python/">Search Recipes for Yahoo&#39;s BOSS in Python &gt;&gt;</a>
+
+
+
+</div>
+
+<h1 class="center">Yahoo&#39;s Build your Own Search Service in Django</h1>
+<div class="below-title">
+  
+  
+  <span class="authors">by <a href="/author/will-larson/">Will Larson</a></span>
+  
+  
+  <span class="date">July 10, 2008</span>  
+  
+  <span class="tag">
+  <a href="/tags/django/"> django</a>
+  </span>
+  
+  <span class="tag">
+  <a href="/tags/boss/"> BOSS</a>
+  </span>
+  
+  
+  <br />
+  
+  
+  
+  
+  
+  
+</div>
+
+
+
+
+<div class="article-body">
+<p>In this tutorial we are going to look at building a simple Django application that integrates with the <a href="http://developer.yahoo.com/search/boss/">Yahoo BOSS search framework</a>. More specifically we're going to be using the <a href="http://developer.yahoo.com/search/boss/mashup.html">BOSS Mashup Framework</a>.
+</p>
+<p>First, lets address the most pressing question: <em>What the hell is Yahoo BOSS?</em> BOSS is <strong>Build Your Own Search Service</strong> and presents us with a fairly low level interface with Yahoo's search engine, not just to search our own site, but to search pretty much anything. The BOSS Mashup Framework, which is what we are going to be using, is open for any developers and has very few restrictions.
+</p>
+
+<h3>Fussy Details</h3>
+<p>First lets get all the little configuration stuff out of the way. There is a fair bit, but none of it is very difficult. As a warning, I'll point out that the <strong>BOSS Mashup Framework requires Python 2.5</strong>, and won't work with previous versions without some changes<sup id="fnr1-195888556"><a href="#fn1-195888556">1</a></sup>.
+</p>
+<ol>
+ <li><p><a href="http://developer.yahoo.com/wsregapp/">Sign up for a BOSS App ID.</a>
+</p>
+
+ </li>
+
+ <li><p>Create a new Django project, lets call it <code>my_search</code>.
+</p>
+<div class="highlight"><pre>django-admin.py startproject my_search
+</pre></div>
+
+
+
+ </li>
+
+ <li><p>Create a Django app inside <code>my_search</code>, lets name it <code>yahoo_search</code>.
+</p>
+<div class="highlight"><pre>python2.5 manage.py startapp yahoo_search
+</pre></div>
+
+
+
+ </li>
+
+ <li><p><a href="http://developer.yahoo.com/search/boss/download/">Download the Python library for controlling BOSS.</a>
+</p>
+
+ </li>
+
+ <li><p>Unzip it into the <code>my_search/yahoo_search</code> folder, and rename it to <code>boss</code>.
+</p>
+<div class="highlight"><pre>unzip boss_mashup_framework_0.1.zip
+rm boss_mashup_framework_0.1.zip
+mv boss_mashup_framework_0.1 boss
+</pre></div>
+
+
+
+ </li>
+
+ <li><p>Yahoo didn't do a great job of packaging something that just works, so we have to go through a few steps to build the framework. (Although, these sub-instructions here are lifted almost directly from the included <code>README</code> file, so its not that they didn't document it, just that its a bit of a pain to get working.) In Yahoo's defense, I think the reason they did a 'bad' job of packaging is that they probably ran into some incompatable licenses.
+</p>
+<ol>
+ <li><p>Install Simple JSON if you don't have it installed. You can check if you have it installed by entering a Python2.5 prompt and typing
+</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">simplejson</span>
+</pre></div>
+
+
+<p>If that didn't work, <a href="http://pypi.python.org/pypi/simplejson/">download Simple JSON</a>. And then install it.
+</p>
+<div class="highlight"><pre>python2.5 setup.py build
+python2.5 setup.py install
+</pre></div>
+
+
+
+ </li>
+
+ <li><p>Create the folder <code>my_search/yahoo_search/boss/deps/</code>.
+</p>
+
+ </li>
+
+ <li><p>Download <a href="http://dict2xml.googlecode.com/files/dict2xml.tar.gz">dict2xml</a> and <a href="http://xml2dict.googlecode.com/files/xml2dict.tgz">xml2dict</a>, and extract them into the deps folder, remove the <code>.tgz</code> files, and return to the <code>boss</code> directory.
+</p>
+<div class="highlight"><pre>tar -xzvf dict2xml.tgz
+tar -xzvf xml2dict.tgz
+rm *.tgz
+<span class="nb">cd</span> ..
+</pre></div>
+
+
+
+ </li>
+
+ <li><p>Now we can finally build the framework.
+</p>
+<div class="highlight"><pre>python2.5 setup.py build
+python2.5 setup.py install
+</pre></div>
+
+
+
+ </li>
+
+ <li><p>Next, we have to update the settings in <code>boss/config.json</code>. I only changed the first three settings: <code>appid</code>, <code>email</code>, and <code>org</code>. The <code>appid</code> is the one you were given upon <a href="http://developer.yahoo.com/wsregapp/">signing up for BOSS</a>.
+</p>
+
+ </li>
+
+ <li><p>Check that it all worked by running (from within the <code>boss</code> directory):
+</p>
+<div class="highlight"><pre>python2.5 examples/ex3.py
+</pre></div>
+
+
+
+ </li>
+
+ <li><p>From here on things are going to deviate from the <code>README</code> a bit, we're going to move <code>example</code> and <code>yos</code> into our <code>yahoo_search</code> directory, move <code>config.json</code> into our <code>my_search</code> directory and get rid of everything else (well, you might want to keep the <code>examples</code> folder for your own benefit).
+</p>
+<div class="highlight"><pre>mv config.json ../../
+mv yos ../
+mv examples ../
+<span class="nb">cd</span> ..
+rm -r boss
+</pre></div>
+
+
+
+ </li>
+</ol>
+
+ </li>
+</ol>
+<p>Okay, now we're all done with the setup, and are ready to move on to putting together a simple Django application that uses the BOSS Mashup Framework.
+</p>
+
+<h3>Defining our App</h3>
+<p>Now that we have all the setup out of the way, we need to decide exactly what our app is going to do. To begin with (however, fear not, this is posed to turn into a multi-part series where we gradually put together a more interesting app) we're going to do something really simple: <em>search Yahoo News based on the results of a posted form</em>.
+</p>
+<p>Yep. As simple as you can get. We'll make it more interesting afterwards, when we have something that works.
+</p>
+
+<h3>URLs</h3>
+<p>First lets edit our project's <code>urls.py</code> to include urls from our <code>yahoo_search</code> app. <code>my_search/urls.py</code> is should look like this:
+</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls.defaults</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="s">r&#39;^&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s">&#39;my_search.yahoo_search.urls&#39;</span><span class="p">)),</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>However, we haven't actually created <code>my_search/yahoo_search/urls.py</code> yet, so lets do that real quick.
+</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls.defaults</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="s">r&#39;^$&#39;</span><span class="p">,</span> <span class="s">&#39;my_search.yahoo_search.views.index&#39;</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>As you can see by looking at <code>urlpatterns</code> we're only going to have one view <code>index</code>, and it is going to be handling everything for us.
+</p>
+
+<h3>The <code>index</code> view</h3>
+<p>Now we're going to write the <code>index</code> view, which will be handling everything for us. Start out by opening <code>my_search/yahoo_search/views.py</code>. Lets start out with all the imports we're going to need.
+</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render_to_response</span>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">newforms</span> <span class="k">as</span> <span class="n">forms</span>
+<span class="kn">from</span> <span class="nn">yos.boss</span> <span class="kn">import</span> <span class="n">ysearch</span>
+<span class="kn">from</span> <span class="nn">yos.yql</span> <span class="kn">import</span> <span class="n">db</span>
+</pre></div>
+
+
+<p>We're going to use <code>render_to_response</code> to render templates, <code>newforms</code> to query our user for their search term, <code>ysearch</code> for retrieving data from BOSS, and <code>db</code> to format those retrieved results into something a bit more managable.
+</p>
+
+<h3>Writing the <code>search</code> function</h3>
+<p>Now lets write a simple search function we'll use for querying BOSS.
+</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">ysearch</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="n">vertical</span><span class="o">=</span><span class="s">&quot;news&quot;</span><span class="p">,</span><span class="n">count</span><span class="o">=</span><span class="mf">10</span><span class="p">)</span>
+    <span class="n">news</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">news</span><span class="o">.</span><span class="n">rows</span>
+</pre></div>
+
+
+<hr>
+
+
+<h3>Brief Aside</h3>
+<p>If you wanted to search from Yahoo's web results instead of their news, you'd simply change the line
+</p>
+<div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="n">ysearch</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="n">vertical</span><span class="o">=</span><span class="s">&quot;news&quot;</span><span class="p">,</span><span class="n">count</span><span class="o">=</span><span class="mf">10</span><span class="p">)</span>
+</pre></div>
+
+
+<p>to
+</p>
+<div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="n">ysearch</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="n">count</span><span class="o">=</span><span class="mf">10</span><span class="p">)</span>
+</pre></div>
+
+
+<hr>
+
+<p>The data returned by the <code>search</code> function is a list of dictionaries that look like this:
+</p>
+<div class="highlight"><pre><span class="p">{</span>
+  <span class="s">u&#39;sourceurl&#39;</span><span class="p">:</span> <span class="s">u&#39;http://www.channelweb.com/&#39;</span><span class="p">,</span>
+  <span class="s">u&#39;language&#39;</span><span class="p">:</span> <span class="s">u&#39;en english&#39;</span><span class="p">,</span>
+  <span class="s">u&#39;title&#39;</span><span class="p">:</span> <span class="s">u&#39;Google Works With eBay And PayPal To Curtail Phishing&#39;</span><span class="p">,</span>
+  <span class="s">u&#39;url&#39;</span><span class="p">:</span> <span class="s">u&#39;http://www.crn.com/security/208808698?cid=ChannelWebBreakingNews&#39;</span><span class="p">,</span>
+  <span class="s">u&#39;abstract&#39;</span><span class="p">:</span> <span class="s">u&#39;Google Gmail requires eBay and PayPal to use DomainKeys to authenticate mail in an anti-phish effort&#39;</span><span class="p">,</span>
+  <span class="s">u&#39;clickurl&#39;</span><span class="p">:</span> <span class="s">u&#39;http://www.crn.com/security/208808698?cid=ChannelWebBreakingNews&#39;</span><span class="p">,</span>
+  <span class="s">u&#39;source&#39;</span><span class="p">:</span> <span class="s">u&#39;ChannelWeb&#39;</span><span class="p">,</span>
+  <span class="s">u&#39;time&#39;</span><span class="p">:</span> <span class="s">u&#39;22:26:08&#39;</span><span class="p">,</span>
+  <span class="s">u&#39;date&#39;</span><span class="p">:</span> <span class="s">u&#39;2008/07/11&#39;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>The <code>search</code> function is very basic, but will be enough for this initial version of the application. Lets move forward.
+</p>
+
+<h3>A simple <code>newform</code></h3>
+<p>Next we need to create a (very) simple <code>newform</code> that we will use for querying our users' for their search terms.
+</p>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">SearchForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+    <span class="n">search_terms</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mf">200</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Thats all we'll need for now, carry on. (I said it was simple.)
+</p>
+
+<h3>Actually implementing the <code>index</code> view</h3>
+<p>Okay, now lets stop for a moment and consider what the <code>index</code> view needs to accomplish.
+</p>
+<ol>
+ <li>
+     It needs to check if there are any incoming POST parameters.
+ </li>
+
+ <li>
+     If there are POST parameters, it needs to validate them using <code>SearchForm</code>, and then use <code>search</code> to put together the results.
+ </li>
+
+ <li>
+     It needs to use <code>render_to_response</code> to render a template contain a <code>SearchForm</code>, and any search results (if applicable).
+ </li>
+</ol>
+<p>Okay, translating that into Python we get our <code>index</code> function:
+</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&quot;POST&quot;</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">SearchForm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="n">search_terms</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s">&#39;search_terms&#39;</span><span class="p">]</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">search</span><span class="p">(</span><span class="n">search_terms</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">SearchForm</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">render_to_response</span><span class="p">(</span><span class="s">&#39;yahoo_search/index.html&#39;</span><span class="p">,</span> 
+                              <span class="p">{</span><span class="s">&#39;form&#39;</span><span class="p">:</span> <span class="n">form</span><span class="p">,</span><span class="s">&#39;results&#39;</span><span class="p">:</span> <span class="n">results</span><span class="p">})</span>
+</pre></div>
+
+
+<p>Admittedly we haven't written the <code>index.html</code> template yet, that will be our next task. Beyond that, this is a pretty standard Django view.
+</p>
+
+<h3>Filling in the <code>index.html</code> template</h3>
+<p>First, we need to create the template directory for our <code>yahoo_search</code> app. From <em>inside</em> the <code>my_search/yahoo_search</code> directory:
+</p>
+<div class="highlight"><pre>mkdir templates
+mkdir templates/yahoo_search
+</pre></div>
+
+
+<p>And then create the file <code>templates/yahoo_search/index.hml</code>, and open it up in your editor. This is going to be a simple template, containing only an input box for searching, and a listing of the results.
+</p>
+<p>It'll look like this:
+</p>
+<div class="highlight"><pre><span class="nt">&lt;html&gt;</span> <span class="nt">&lt;head&gt;</span>
+<span class="nt">&lt;title&gt;</span>My Search<span class="nt">&lt;/title&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+<span class="nt">&lt;h1&gt;</span>My Search<span class="nt">&lt;/h1&gt;</span>
+
+<span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">&quot;/&quot;</span> <span class="na">method=</span><span class="s">&quot;post&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;table&gt;</span>
+  <span class="cp">{{</span> <span class="nv">form</span> <span class="cp">}}</span>
+  <span class="nt">&lt;tr&gt;&lt;td&gt;&lt;input</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span> <span class="na">value=</span><span class="s">&quot;Search&quot;</span><span class="nt">&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="nt">&lt;/table&gt;</span>
+
+<span class="cp">{%</span> <span class="k">if</span> <span class="nv">results</span> <span class="cp">%}</span>
+<span class="nt">&lt;ol&gt;</span>
+  <span class="cp">{%</span> <span class="k">for</span> <span class="nv">result</span> <span class="k">in</span> <span class="nv">results</span> <span class="cp">%}</span>
+  <span class="nt">&lt;li&gt;</span>
+  <span class="cp">{%</span> <span class="k">comment</span> <span class="cp">%}</span><span class="c"></span>
+<span class="c">  Notice we are using {{ result.clickurl }} instead of</span>
+<span class="c">  {{ result.url }}. You might wonder why we are doing</span>
+<span class="c">  that, and the answer is pretty simple: because thats</span>
+<span class="c">  what Yahoo is asking us to.</span>
+<span class="c">  http://developer.yahoo.com/search/boss/boss_guide/univer_api_query.html#url_vs_clickurl</span>
+<span class="c">  </span><span class="cp">{%</span> <span class="k">endcomment</span> <span class="cp">%}</span>
+  <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;title&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">result.clickurl</span> <span class="cp">}}</span><span class="s">&quot;</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">result.title</span> <span class="cp">}}</span><span class="nt">&lt;/a&gt;</span>
+  <span class="nt">&lt;/span&gt;</span>
+  <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;date&quot;</span><span class="nt">&gt;</span> <span class="cp">{{</span> <span class="nv">result.date</span> <span class="cp">}}</span> <span class="nt">&lt;/span&gt;</span>
+  <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;time&quot;</span><span class="nt">&gt;</span> <span class="cp">{{</span> <span class="nv">result.time</span> <span class="cp">}}</span> <span class="nt">&lt;/span&gt;</span>
+  <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;source&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">result.sourceurl</span> <span class="cp">}}</span><span class="s">&quot;</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">result.source</span> <span class="cp">}}</span><span class="nt">&lt;/a&gt;</span>
+  <span class="nt">&lt;/span&gt;</span> 
+  <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;abstract&quot;</span><span class="nt">&gt;</span> <span class="cp">{{</span> <span class="nv">result.abstract</span> <span class="cp">}}</span> <span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;/li&gt;</span>
+  <span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span>
+<span class="nt">&lt;/ol&gt;</span>
+<span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span>
+<span class="nt">&lt;/body&gt;</span> <span class="nt">&lt;/html&gt;</span>
+</pre></div>
+
+
+
+<h3>Download Zip of Files</h3>
+<p>If you haven't been keeping up, or if your code is behaving strangely, <a href="/media/lifeflow/resource/__my_search.zip">you can grab a zip of all these files</a>. Just unzip these somewhere, fill in the first three entries (your BOSS <code>appid</code>, <code>email</code>, and <code>org</code>) in <code>my_search/config.json</code>, and you'll be ready to take a look at the app in the next step.
+</p>
+<p><strong>Update 7/12/2008</strong>: Unfortunately, the way the BOSS library has been built it isn't enough to simply copy over <code>yos</code> folder, and instead you will need to follow the installation steps for the BOSS Framework listed above (step #6). Specifically, you need to work through those steps and finish with:
+</p>
+<div class="highlight"><pre>python2.5 setup.py build
+python2.5 setup.py install
+</pre></div>
+
+
+<p>Its a bit of a pain, and I'll see if I can clean things up to make it simpler.
+</p>
+
+<h3>Seeing it work</h3>
+<p>Now we've finished building the app, lets fire it up.
+</p>
+<div class="highlight"><pre>python2.5 manage.py runserver
+</pre></div>
+
+
+<p>Navigate over to <a href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a>, and you'll see a friendly search box waiting for you. Type in a search term, hit enter, and voila, you'll see a list of your results. I searched for <code>iPhone</code> and got a page of results like this:
+</p>
+<p><img src="/media/lifeflow/resource/django_boss_image.jpg" alt="A screenshot of a Django app using the BOSS Mashup Framework."/>
+</p>
+<p>One gotcha I'll point out is that the helper library Yahoo has supplied relies on <code>config.json</code> being in the base directory where the Python is being run from. This will be true for your development setup, but won't necessarily be the case on your deployment server. I believe the best solution here would be to add the contents of <code>config.json</code> to your project's <code>settings.py</code> file and tweak the <code>yos/boss/ysearch.py</code> file to load the settings using <code>django.conf.settings</code> instead of from disk.
+</p>
+<p>Let me know if you have any questions, and I'll try to answer them. Time permitting, I'll continue with another segment or two working on building a slightly more compelling search service than what we have created so far.
+</p>
+<p><strong>Update 7/12</strong> Thanks to Wayne's comments I was able to simplify the <code>search</code> function quite a bit. Specifically, he pointed out that I was using the library to prepend <code>ynews$</code> to all the dictionaries' keys, then getting upset it was there and removing it manually. Woops.
+</p>
+
+<div class="footnote"><hr/><ol>
+ <li id="fn1-195888556"><p>I accidentally installed it under Python 2.4 at first, and the first problem it runs into is the renaming of the <code>ElementTree</code> package between 2.4 and 2.5. I didn't go any further with that, so I'm unsure if there is anything else causing problems.<a href="#fnr1-195888556" class="footnoteBackLink" title="Jump back to footnote 1 in the text">&#8617;</a>
+</p>
+
+ </li>
+</ol>
+</div>
+</div>
+
+
+
+<div>
+  
+
+
+<div class="social">
+  <span class="social"><a href="http://reddit.com/submit?url=http://lethain.com/entry/2008/jul/10/yahoo-s-build-your-own-search-service-in-django/&amp;title=Yahoo%27s%20Build%20your%20Own%20Search%20Service%20in%20Django">Reddit</a></span>
+  <span class="social"><a href="http://del.icio.us/post?url=lethain.com/entry/2008/jul/10/yahoo-s-build-your-own-search-service-in-django/&amp;title=Yahoo%27s%20Build%20your%20Own%20Search%20Service%20in%20Django">Del.icio.us</a></span>
+  <span class="social"><a href="http://www.stumbleupon.com/submit?url=lethain.com/entry/2008/jul/10/yahoo-s-build-your-own-search-service-in-django/&amp;title=Yahoo%27s%20Build%20your%20Own%20Search%20Service%20in%20Django">StumbleUpon</a></span>
+  <span class="social"><a href="http://digg.com/submit?phase=2&amp;url=lethain.com/entry/2008/jul/10/yahoo-s-build-your-own-search-service-in-django/&amp;title=Yahoo%27s%20Build%20your%20Own%20Search%20Service%20in%20Django">Digg</a></span>
+</div>
+
+
+
+</div>
+
+<div class="comments">
+  
+
+<div class="comments" id="comments">
+  
+  <div class="comments-subscribe">
+  <span><a href="/feeds/entry_comment/2008/7/10/yahoo-s-build-your-own-search-service-in-django/">Subscribe to comments on Yahoo&#39;s Build your Own Search Service in Django</a></span>
+  </div>
+  
+  
+  
+    
+    
+    <div class="comment">
+      <div class="comment_0" id="comment_256">
+
+      
+        <span class="comment-author">
+          <a href="http://relations.ka2.de">Gerd Kamp</a>
+        </span>
+      
+	<span class="comment-reply"><a href="/comments/create/187/256/"> reply </a></span>
+	
+	<br />
+      <div class="comment-body">
+        <p>Thanks Will,
+</p>
+<p>that wha exactly what i was planning to do when i find time to do it. You saved me quite some hassle.
+</p>
+<p>I'm wondering how Yahoo's authentication scheme and the two URLS you have to provide when signing up for the API key fit in? 
+</p>
+      </div>
+      </div>
+    </div>
+    
+    
+  
+    
+    
+    <div class="comment">
+      <div class="comment_1" id="comment_260">
+
+      
+        <span class="comment-author">
+          Will Larson
+        </span>
+      
+	<span class="comment-reply"><a href="/comments/create/187/260/"> reply </a></span>
+	
+	<span class="comment-parent-link">
+	  Responding to <a href="#comment_256">Gerd Kamp</a>
+	</span>
+	
+	<br />
+      <div class="comment-body">
+        <p>The authentication scheme and two URLs provided when you sign up for the API play <strong>no</strong> role whatsoever once you have signed up. However, you need to be able to verify a domain with Yahoo (by placing a static file at the root of the domain you're trying to register for), so you'll need to use a domain you have control over.
+</p>
+      </div>
+      </div>
+    </div>
+    
+    
+  
+    
+    
+    <div class="comment">
+      <div class="comment_2" id="comment_265">
+
+      
+        <span class="comment-author">
+          <a href="http://relations.ka2.de">Gerd</a>
+        </span>
+      
+	<span class="comment-reply"><a href="/comments/create/187/265/"> reply </a></span>
+	
+	<span class="comment-parent-link">
+	  Responding to <a href="#comment_260">Will Larson</a>
+	</span>
+	
+	<br />
+      <div class="comment-body">
+        <p>That's good to hear. I already verified my API key via the static file, so i'm all set.
+</p>
+      </div>
+      </div>
+    </div>
+    
+    
+  
+    
+    
+    <div class="comment">
+      <div class="comment_2" id="comment_2162">
+
+      
+        <span class="comment-author">
+          <a href="http://www.efadmall.com">wholesale jeans</a>
+        </span>
+      
+	<span class="comment-reply"><a href="/comments/create/187/2162/"> reply </a></span>
+	
+	<span class="comment-parent-link">
+	  Responding to <a href="#comment_260">Will Larson</a>
+	</span>
+	
+	<br />
+      <div class="comment-body">
+        <p>That is an awfully astounding column you've posted.
+   Thanks a lot for that a fantastically amazing post!
+</p>
+      </div>
+      </div>
+    </div>
+    
+    
+  
+    
+    
+    <div class="comment">
+      <div class="comment_1" id="comment_2151">
+
+      
+        <span class="comment-author">
+          <a href="http://www.pnike.com">nike air max 90</a>
+        </span>
+      
+	<span class="comment-reply"><a href="/comments/create/187/2151/"> reply </a></span>
+	
+	<span class="comment-parent-link">
+	  Responding to <a href="#comment_256">Gerd Kamp</a>
+	</span>
+	
+	<br />
+      <div class="comment-body">
+        <p>I would like to thank you for the efforts you have made in writing this article. 
+</p>
+      </div>
+      </div>
+    </div>
+    
+    
+  
+    
+    
+    <div class="comment">
+      <div class="comment_0" id="comment_257">
+
+      
+        <span class="comment-author">
+          <a href="http://http.//relations.ka2.de">Gerd Kamp</a>
+        </span>
+      
+	<span class="comment-reply"><a href="/comments/create/187/257/"> reply </a></span>
+	
+	<br />
+      <div class="comment-body">
+        <p>I just gave it a quick try. Downloaded the zip, moved it to a fairly recent trunk export and got the following error.
+</p>
+<p>Exception Value: Could not import my_search.yahoo_search.views. Error was: No module named yos.crawl
+</p>
+<p>Couldn't find any references to yos.crawl in the views.py
+</p>
+<p>I'm a django newbie, hence it is very likely that i'm missing something trivial.
+</p>
+      </div>
+      </div>
+    </div>
+    
+    
+  
+    
+    
+    <div class="comment">
+      <div class="comment_1" id="comment_261">
+
+      
+        <span class="comment-author">
+          Will Larson
+        </span>
+      
+	<span class="comment-reply"><a href="/comments/create/187/261/"> reply </a></span>
+	
+	<span class="comment-parent-link">
+	  Responding to <a href="#comment_257">Gerd Kamp</a>
+	</span>
+	
+	<br />
+      <div class="comment-body">
+        <p>Gerd,
+</p>
+<p>I'm not exactly sure, but it seems quite possible that the problem has to do with installing the BOSS framework, and if you work through the subset of instructions on installing BOSS (this is step #6 in the setup instructions) everything should be okay.
+</p>
+<p>Sorry that things aren't quite working as planned.
+</p>
+      </div>
+      </div>
+    </div>
+    
+    
+  
+    
+    
+    <div class="comment">
+      <div class="comment_2" id="comment_262">
+
+      
+        <span class="comment-author">
+          Will Larson
+        </span>
+      
+	<span class="comment-reply"><a href="/comments/create/187/262/"> reply </a></span>
+	
+	<span class="comment-parent-link">
+	  Responding to <a href="#comment_261">Will Larson</a>
+	</span>
+	
+	<br />
+      <div class="comment-body">
+        <p>Okay, I took a look at what was going wrong and fixed it up, it will now work correctly from my download.
+</p>
+      </div>
+      </div>
+    </div>
+    
+    
+  
+    
+    
+    <div class="comment">
+      <div class="comment_3" id="comment_266">
+
+      
+        <span class="comment-author">
+          <a href="http://relations.ka2.de">Gerd</a>
+        </span>
+      
+	<span class="comment-reply"><a href="/comments/create/187/266/"> reply </a></span>
+	
+	<span class="comment-parent-link">
+	  Responding to <a href="#comment_262">Will Larson</a>
+	</span>
+	
+	<br />
+      <div class="comment-body">
+        <p>Will,
+</p>
+<p>downloaded the new version and gave it a try. I am now getting:
+</p>
+<p>Could not import my_search.yahoo_search.views. Error was: No module named util.typechecks
+</p>
+<p>Am going to look into this tomorrow. BTW. I'm using a django svn checkout at revision 7823.
+</p>
+      </div>
+      </div>
+    </div>
+    
+    
+  
+    
+    
+    <div class="comment">
+      <div class="comment_4" id="comment_267">
+
+      
+        <span class="comment-author">
+          <a href="http://relations.ka2.de">Gerd</a>
+        </span>
+      
+	<span class="comment-reply"><a href="/comments/create/187/267/"> reply </a></span>
+	
+	<span class="comment-parent-link">
+	  Responding to <a href="#comment_266">Gerd</a>
+	</span>
+	
+	<br />
+      <div class="comment-body">
+        <p>Just copied the util files from the mashup framework and am up and running
+</p>
+<p>Thanks a lot
+</p>
+      </div>
+      </div>
+    </div>
+    
+    
+  
+    
+    
+    <div class="comment">
+      <div class="comment_0" id="comment_258">
+
+      
+        <span class="comment-author">
+          <a href="http://www.mellowmorning.com">Thierry Schellenbach</a>
+        </span>
+      
+	<span class="comment-reply"><a href="/comments/create/187/258/"> reply </a></span>
+	
+	<br />
+      <div class="comment-body">
+        <p>Great Post!
+</p>
+<p>Was wondering how long it would take for someone to cover this :) Awesome!
+</p>
+      </div>
+      </div>
+    </div>
+    
+    
+  
+    
+    
+    <div class="comment">
+      <div class="comment_0" id="comment_259">
+
+      
+        <span class="comment-author">
+          wayne
+        </span>
+      
+	<span class="comment-reply"><a href="/comments/create/187/259/"> reply </a></span>
+	
+	<br />
+      <div class="comment-body">
+        <p>this is really great. well done integrating the boss mashup framework with django! the boss page needs to link to this asap.
+</p>
+      </div>
+      </div>
+    </div>
+    
+    
+  
+    
+    
+    <div class="comment">
+      <div class="comment_0" id="comment_264">
+
+      
+        <span class="comment-author">
+          wayne
+        </span>
+      
+	<span class="comment-reply"><a href="/comments/create/187/264/"> reply </a></span>
+	
+	<br />
+      <div class="comment-body">
+        <p>btw, no need to strip the prefix field names out (before the &quot;$&quot;)
+</p>
+<p>the &quot;name&quot; parameter is optional (useful for joining)
+</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="k">from</span> <span class="nn">yos.boss</span> <span class="k">import</span> <span class="n">ysearch</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">from</span> <span class="nn">yos.yql</span> <span class="k">import</span> <span class="n">db</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">ysearch</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&quot;google&quot;</span><span class="p">))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">d</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+<span class="n">TABLENAME</span><span class="p">:</span> <span class="p">,</span> <span class="c"># RECORDS: 10</span>
+        <span class="n">OUTER</span> <span class="n">KEY</span><span class="p">:</span> <span class="n">dispurl</span>
+        <span class="n">OUTER</span> <span class="n">KEY</span><span class="p">:</span> <span class="n">title</span>
+        <span class="n">OUTER</span> <span class="n">KEY</span><span class="p">:</span> <span class="n">url</span>
+        <span class="n">OUTER</span> <span class="n">KEY</span><span class="p">:</span> <span class="n">abstract</span>
+        <span class="n">OUTER</span> <span class="n">KEY</span><span class="p">:</span> <span class="n">clickurl</span>
+        <span class="n">OUTER</span> <span class="n">KEY</span><span class="p">:</span> <span class="n">date</span>
+        <span class="n">OUTER</span> <span class="n">KEY</span><span class="p">:</span> <span class="n">size</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">d</span><span class="o">.</span><span class="n">rows</span>
+</pre></div>
+      </div>
+      </div>
+    </div>
+    
+    
+  
+    
+    
+    <div class="comment">
+      <div class="comment_0" id="comment_345">
+
+      
+        <span class="comment-author">
+          Amit
+        </span>
+      
+	<span class="comment-reply"><a href="/comments/create/187/345/"> reply </a></span>
+	
+	<br />
+      <div class="comment-body">
+        <p>Hi, This is a wonderul tutorial.  I learnt most of Python and Boss from here.
+</p>
+<p>I followed the steps exactly as above. But, struck with the following error when I try to open thru the browser.
+</p>
+<p>Exception Type: TemplateDoesNotExist 
+   Exception Value: yahoo_search/index.html 
+   Exception Location: C:Python25Libsite-packagesdjangotemplateloader.py in find_template_source, line 73 
+</p>
+<p>I greatly appreciate in any inputs to fix this problem.
+</p>
+<p>Thanks
+</p>
+      </div>
+      </div>
+    </div>
+    
+    
+  
+    
+    
+    <div class="comment">
+      <div class="comment_0" id="comment_722">
+
+      
+        <span class="comment-author">
+          Jess
+        </span>
+      
+	<span class="comment-reply"><a href="/comments/create/187/722/"> reply </a></span>
+	
+	<br />
+      <div class="comment-body">
+        <p>Is there a way to use my own database of web pages using yahoo's BOSS Mashup Framework?
+</p>
+      </div>
+      </div>
+    </div>
+    
+    
+  
+    
+    
+    <div class="comment">
+      <div class="comment_1" id="comment_723">
+
+      
+        <span class="comment-author">
+          Will Larson
+        </span>
+      
+	<span class="comment-reply"><a href="/comments/create/187/723/"> reply </a></span>
+	
+	<span class="comment-parent-link">
+	  Responding to <a href="#comment_722">Jess</a>
+	</span>
+	
+	<br />
+      <div class="comment-body">
+        <p>It kind of depends on what you mean. If you want to mix your own results with Yahoo!'s results, then that is definitely possible. Just mix 'em in as you please. If you want to use the mashup framework to access your pages, that is more complicated.
+</p>
+<p>Fundamentally the mashup framework is just a wrapper around an API hosted by Yahoo, so you would need to recreate a similar API for your pages, and then you would need to make the query syntax and result schema match the current API's syntax/schema or modify the mashup code to work with your new syntax/schema, at which point you're probably better off rolling your own wrapper library for your own system.
+</p>
+      </div>
+      </div>
+    </div>
+    
+    
+  
+    
+</div>
+
+</div>
+
+
+  </div>
+  </div>
+  
+  <div class="column span-24 last footer">
+  
+<div class="column span-24 header center">
+      <span class="nav-link"><a href="/author/will-larson/">About</a></span>
+      <span class="nav-link"><a href="/entry/">Archive</a></span>
+      <span class="nav-link"><a href="/tags/">Tag Cloud</a></span>
+      <span class="nav-link"><a href="/language/">Translations</a></span>
+      <span class="nav-link"><a href="/meta/rss/">RSS</a></span>
+  </div>
+
+
+
+
+
+<span><strong>Django &amp; Yahoo BOSS Mashup</strong> <a href="/feeds/series/django-&amp;-yahoo-boss-mashup/">(subscribe)</a></span>
+<ol class="navLinks">
+
+<li><a href="/entry/2008/jul/10/yahoo-s-build-your-own-search-service-in-django/">Yahoo&#39;s Build your Own Search Service in ...</a></li>
+
+<li><a href="/entry/2008/jul/12/polishing-up-our-django-boss-search-service/">Polishing Up Our Django &amp; BOSS Search ...</a></li>
+
+</ol>
+<br class="clear">
+
+
+
+
+<span><strong>django</strong> <a href="/feeds/tag/django/">(subscribe)</a></span>
+<ul class="navLinks">
+
+<li><a href="/entry/2007/dec/01/using-jquery-django-autocomplete-fields/">Using JQuery with Django for Autocomplete Fields</a></li>
+
+<li><a href="/entry/2008/jun/10/release-of-lifeflow-version-0-90/">Release of LifeFlow Version 0.90</a></li>
+
+<li><a href="/entry/2008/jul/10/yahoo-s-build-your-own-search-service-in-django/">Yahoo&#39;s Build your Own Search Service in ...</a></li>
+
+<li><a href="/entry/2008/jul/12/polishing-up-our-django-boss-search-service/">Polishing Up Our Django &amp; BOSS Search ...</a></li>
+
+<li><a href="/entry/2008/feb/03/technical-aspects-of-the-life-flow-editor/">Technical Aspects of the Life Flow Editor</a></li>
+
+<li><a href="/entry/2008/jul/23/replacing-django-s-orm-with-sqlalchemy/">Replacing Django&#39;s ORM with SQLAlchemy</a></li>
+
+<li><a href="/entry/2009/feb/13/the-django-and-ubuntu-intrepid-almanac/">The Django and Ubuntu Intrepid Almanac</a></li>
+
+<li><a href="/entry/2008/oct/27/customize-site-style-by-user-with-django-userskins/">Customize site style by user with django-userskins</a></li>
+
+<li><a href="/entry/2008/sep/15/intricate-static-websites-with-django-templates/">Intricate Static Websites With Django Templates</a></li>
+
+<li><a href="/entry/2008/sep/26/as-you-type-slug-uniqueness-validation/">As-You-Type Slug Uniqueness Validation</a></li>
+
+</ul>
+<br class="clear">
+
+<span><strong>BOSS</strong> <a href="/feeds/tag/boss/">(subscribe)</a></span>
+<ul class="navLinks">
+
+<li><a href="/entry/2008/sep/06/writing-mahou-a-cappuccino-image-search/">Writing Mahou; a Cappuccino Image Search</a></li>
+
+<li><a href="/entry/2008/sep/12/extending-mahou-gotchas-and-snippets/">Extending Mahou; Gotchas and Snippets</a></li>
+
+<li><a href="/entry/2008/jul/12/polishing-up-our-django-boss-search-service/">Polishing Up Our Django &amp; BOSS Search ...</a></li>
+
+<li><a href="/entry/2009/feb/25/django-springsteen-and-distributed-search/">django-springsteen and Distributed Search</a></li>
+
+<li><a href="/entry/2009/feb/04/visualizing-keyterms-with-boss-and-processing/">Visualizing Keyterms with BOSS and Processing</a></li>
+
+<li><a href="/entry/2008/oct/16/releasing-source-for-mahou/">Releasing Source for Mahou</a></li>
+
+<li><a href="/entry/2008/jul/10/yahoo-s-build-your-own-search-service-in-django/">Yahoo&#39;s Build your Own Search Service in ...</a></li>
+
+<li><a href="/entry/2008/jul/11/search-recipes-for-yahoo-s-boss-in-python/">Search Recipes for Yahoo&#39;s BOSS in Python</a></li>
+
+<li><a href="/entry/2009/feb/26/custom-reranking-of-results-and-django-springsteen/">Reranking Results in django-springsteen</a></li>
+
+<li><a href="/entry/2008/jul/28/bossarray-for-list-like-yahoo-search-results/">BossArray for list-like Yahoo search results</a></li>
+
+</ul>
+<br class="clear">
+
+
+
+    
+  <span><strong>Random Entries</strong></span>
+  <ul class="navLinks">
+    
+    <li><a href="/entry/2008/sep/05/migrating-the-this-week-in-django-concept/">Migrating the &#39;This Week in Django&#39; Concept</a></li>
+    
+    <li><a href="/entry/2007/oct/19/grocery-shopping-japan/">Grocery Shopping in Japan</a></li>
+    
+    <li><a href="/entry/2010/may/23/supercolumn-relationships-with-lazyboy/">SuperFamily Relationships with Lazyboy</a></li>
+    
+    <li><a href="/entry/2008/nov/19/slides-from-django-nyc-on-11-18-2008/">Slides from django-nyc on 11/18/2008</a></li>
+    
+    <li><a href="/entry/2007/nov/05/those-annoying-habits/">Those Annoying Habits</a></li>
+    
+  </ul>
+  <br class="clear">
+
+  <span><strong>Recent Entries</strong></span>
+  <ul class="navLinks">
+    
+    <li><a href="/entry/2010/sep/11/python-default-parameter-value-gotchas/">Python Default Parameter Value Gotchas</a></li>
+    
+    <li><a href="/entry/2010/sep/05/python-datastructures-backed-by-redis/">Python Datastructures Backed by Redis</a></li>
+    
+    <li><a href="/entry/2010/sep/04/djangodash-and-drinkfindr/">DjangoDash and Drinkfindr</a></li>
+    
+    <li><a href="/entry/2010/aug/23/time-to-load-redis-snapshots/">Time to Load Redis Snapshots</a></li>
+    
+    <li><a href="/entry/2010/aug/22/notes-on-redis-memory-usage/">Notes on Redis Memory Usage</a></li>
+    
+  </ul>
+  <br class="clear last">
+    
+    
+  <hr>
+    <span class="attribution">
+      All Rights Reserved, <a href="http://www.lethain.com/">Will Larson</a>. 2007 - 2009.
+    </span>
+    
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-1812785-2";
+urchinTracker();
+</script>
+
+
+</body>
+</html>

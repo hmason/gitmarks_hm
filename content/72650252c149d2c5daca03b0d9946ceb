@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<head>
+<title>Firefox Release Repackager</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<link rel="stylesheet" href="/bdstyle.css" type="text/css">
+<link rel="shortcut icon" href="/bsmedberg-32square.ico">
+
+</head>
+<body>
+
+<div id="header">
+<ul>
+
+  <li><a href="/">Home</a>
+  <li><a href="/contact/">Contact</a>
+  <li><a href="/planet/">Planet Benjamin</a>
+</ul>
+</div>
+
+<h1>Firefox Release Repackager</h1>
+
+<img src="/graphics/firefox-rgb-250.png" width="250" height="250" style="float: right;">
+
+<h2>Overview</h2>
+
+<p>The release repackager is a tool which can take a Firefox release,
+deconstruct the release package, insert an extension to be installed
+with the release, and reconstruct the release package. The repackager
+is typically used in conjunction with the <a href="http://www.mozilla.org/projects/cck/firefox/">CCK</a> to create customized
+builds for Mozilla partners and corporate IT administrators.
+
+<p><strong>Warning: It is a violation of the Mozilla license and trademark to distribute customized builds created with this tool outside of your organization without a written agreement with the Mozilla corporation. Contact <a href="mailto:licensing@mozilla.org">licensing@mozilla.org</a> if you have any questions.</strong>
+
+<h2>Requirements</h2>
+
+<ul>
+ <li>A Mac.
+ <li>Firefox 1.5.0.x or 2.0.0.x release binaries. These should be placed in an empty folder:
+  <ul>
+   <li>Windows Installer
+   <li>Mac DMG
+   <li>Linux Tarball
+  </ul>
+
+ <li>An extension .xpi to package. 
+
+ <li>If repackaging Firefox 1.5 on Windows, the extension must have an
+  <tt>install.js</tt> in addition to the standard
+  <tt>install.rdf</tt>. The CCK automatically adds a correct
+  <tt>install.js</tt>. This is not necessary for the Firefox 2 series.
+
+</ul>
+
+<h2>Download</h2>
+
+<p><a href="CCK-repack-1.4.dmg">CCK-repack-1.4.dmg</a>
+
+<p>Note: this package includes the repackaging application and an
+ embedded copy of <a href="http://developer.mozilla.org/en/docs/XULRunner_1.8.0.4_Release_Notes">XULRunner 1.8.0.4</a>.
+
+<p><a href="http://svn.smedbergs.us/cck-repack/trunk/">Development
+sources</a> are available via <a
+href="http://subversion.tigris.org/">SVN</a>.
+
+<h2>Usage</h2>
+
+<p>Usage from the GUI is hopefully pretty self-explanatory; specify the path
+ of the extension .XPI, the path of the original Firefox release bits, and
+ an empty directory into which to save the repackaged bits. The repackaged
+ bits will have the same filename as the originals.
+
+<p>There is also a command-line interface:
+
+<tt>/Applications/ClientKitRepackage.app/Contents/MacOS/xulrunner <var>[options]</var></tt>
+
+<h3>Options:</h3>
+
+<dl>
+ <dt><tt>--xpi=<var>/path/to/extension.xpi</var></tt>
+
+ <dt><tt>--xpi2=<var>/path/to/extension.xpi</var></tt>
+
+ <dt><tt>--dest=<var>/path/to/repackaged-directory</var></tt>
+
+ <dt><tt>--platforms=platform[,platform]</tt>
+ <dd>Available platforms are <tt>win</tt>, <tt>mac</tt>, <tt>unix</tt>, <tt>zip</tt> (Windows ZIP archive... mainly useful for generating update MARs)
+
+ <dt><tt>--disable-migration</tt>
+ <dd>Disable profile migration in this build using <tt>override.ini</tt>.
+
+ <dt><tt>--silent</tt>
+ <dd>Perform repackaging immediately without requiring any GUI actions.
+
+</dl>
+
+<h2>Known Issues</h2>
+
+<ul>
+ <li>Since MacOS is the only OS that can unpack and repack DMG
+  archives, the repackager only works on MacOS. If you only have a Windows
+  machine and you only care about repackaging Windows installers, I'm happy
+  to accept patches.
+
+ <li>The tool only works with single extensions; it does not work with
+  multiple-item packages.  If you're using the CCK wizard, this means
+  that you cannot add any items to the "Extensions/Themes" panel. This
+  wouldn't be especially hard to fix: patches accepted.
+
+</ul>
+
+<h2>Release Notes</h2>
+
+<dl>
+ <dt><a href="CCK-repack-1.4.dmg">Version 1.4</a> - <a href="http://svn.smedbergs.us/cck-repack/tags/1.4/">Source</a>
+ <dd>
+  <ul>
+   <li>Released 23-Feb-2006
+   <li>Added the ability to suppress profile migration.
+  </ul>
+
+ <dt><a href="CCK-repack-1.3.dmg">Version 1.3</a> - <a href="http://svn.smedbergs.us/cck-repack/tags/1.3/">Source</a>
+ <dd>
+  <ul>
+   <li>Released 16-Nov-2006
+   <li>Added the ability to repack a second XPI (this doesn't work for the
+     xpinstall-based installer)
+  </ul>
+
+ <dt><a href="CCK-repack-1.2.dmg">Version 1.2</a> - <a href="http://svn.smedbergs.us/cck-repack/tags/1.2/">Source</a>
+ <dd>
+  <ul>
+   <li>Released 9-Oct-2006
+   <li>Added the ability to repack NSIS installers for Firefox 2.
+  </ul>
+
+ <dt><a href="CCK-repack-1.1.dmg">Version 1.1</a> - <a href="http://svn.smedbergs.us/cck-repack/tags/1.1/">Source</a>
+ <dd>
+  <ul>
+   <li>Released 4-Oct-2006
+   <li>Added the ability to repack Windows ZIP files.
+  </ul>
+
+ <dt><a href="CCK-repack-1.0.dmg">Version 1.0</a> - <a href="http://svn.smedbergs.us/cck-repack/tags/1.0/">Source</a>
+ <dd>
+  <ul>
+   <li>Released 26-Aug-2006
+   <li>Fixed several bugs from prerelease versions, including a major bug
+    where the Windows installer wasn't repackaged correctly due a mismatched
+    name for the "Component CCK" section in <tt>config.ini</tt>.
+   <li>Added a command-line interface for scripted repackaging.
+  </ul>
+
+</dl>
+
+</body>

@@ -1,0 +1,2775 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+"http://www.w3.org/TR/REC-html40/transitional.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Beautiful Soup documentation</title>
+<link rev="made" href="mailto:leonardr@segfault.org">
+<meta name="generator" content="Markov Approximation 1.4 (module: leonardr)">
+<meta name="author" content="Leonard Richardson">
+</head>
+<body bgcolor="white" text="black" link="blue" vlink="660066" alink="red">
+<style>
+ div.sample { border-style: solid; border-width: 1px; background:#FFFFFF}
+ samp { background:#EEFFEE}
+</style>
+
+<img align="right" src="6.1.jpg" height="250" width="209">
+
+<h1>Beautiful Soup Documentation</h1>
+by <a href="http://www.crummy.com/">Leonard Richardson</a>
+(leonardr&#64;segfault&#46;org)
+
+<p><A href="documentation.zh.html">这份文档也有中文版了 (This document is
+also available in Chinese translation)<?a>
+
+<p><a href="http://www.crummy.com/software/BeautifulSoup/">Beautiful
+Soup</a> is an HTML/XML parser for Python that can turn even invalid
+markup into a parse tree. It provides simple, idiomatic ways of
+navigating, searching, and modifying the parse tree. It commonly saves
+programmers hours or days of work. There's also a Ruby port called <a
+href="http://www.crummy.com/software/RubyfulSoup/">Rubyful Soup</a>.
+
+<p>This document illustrates all major features of Beautiful Soup
+version 3.0, with examples. It shows you what the library is good for,
+how it works, how to use it, how to make it do what you want, and what
+to do when it violates your expectations.
+
+<h2>Table of Contents</h2>
+
+<ul>
+<li><a href="#Quick Start">Quick Start</a></li></li>
+<li><a href="#Parsing a Document">Parsing a Document</a></li></li>
+<ul>
+<li><a href="#Parsing HTML">Parsing HTML</a></li></li>
+<li><a href="#Parsing XML">Parsing XML</a></li></li>
+<li><a href="#If That Doesn't Work">If That Doesn't Work</a></li></li>
+</ul>
+<li><a href="#Beautiful Soup Gives You Unicode, Dammit">Beautiful Soup Gives You Unicode, Dammit</a></li></li>
+<li><a href="#Printing a Document">Printing a Document</a></li></li>
+<li><a href="#The Parse Tree">The Parse Tree</a></li></li>
+<ul>
+<li><a href="#The attributes of Tags">The attributes of <code>Tag</code>s</a></li></li>
+</ul>
+<li><a href="#Navigating the Parse Tree">Navigating the Parse Tree</a></li></li>
+<ul>
+<li><a href="#parent"><code>parent</code></a></li></li>
+<li><a href="#contents"><code>contents</code></a></li></li>
+<li><a href="#string"><code>string</code></a></li></li>
+<li><a href="#nextSibling and previousSibling"><code>nextSibling</code> and <code>previousSibling</code></a></li></li>
+<li><a href="#next and previous"><code>next</code> and <code>previous</code></a></li></li>
+<li><a href="#Iterating over a Tag">Iterating over a <code>Tag</code></a></li></li>
+<li><a href="#Using tag names as members">Using tag names as members</a></li></li>
+</ul>
+<li><a href="#Searching the Parse Tree">Searching the Parse Tree</a></li></li>
+<ul>
+<li><a href="#The basic find method: findAll(name, attrs, recursive, text, limit, **kwargs)">The basic find method: <code>findAll(name, attrs, recursive, text, limit, **kwargs)</code></a></li></li>
+<ul>
+<li><a href="#Searching by CSS class">Searching by CSS class</a></li></li>
+<li><a href="#Calling a tag is like calling findall">Calling a tag is like calling <code>findall</code></a></li></li>
+</ul>
+<li><a href="#find(name, attrs, recursive, text, **kwargs)"><code>find(name, attrs, recursive, text, **kwargs)</code></a></li></li>
+<li><a href="#What happened to first?">What happened to <code>first</code>?</a></li></li>
+</ul>
+<li><a href="#Searching Within the Parse Tree">Searching Within the Parse Tree</a></li></li>
+<ul>
+<li><a href="#findNextSiblings(name, attrs, text, limit, **kwargs) and findNextSibling(name, attrs, text, **kwargs)"><code>findNextSiblings(name, attrs, text, limit, **kwargs)</code> and <code>findNextSibling(name, attrs, text, **kwargs)</code></a></li></li>
+<li><a href="#findPreviousSiblings(name, attrs, text, limit, **kwargs) and findPreviousSibling(name, attrs, text, **kwargs)"><code>findPreviousSiblings(name, attrs, text, limit, **kwargs)</code> and <code>findPreviousSibling(name, attrs, text, **kwargs)</code></a></li></li>
+<li><a href="#findAllNext(name, attrs, text, limit, **kwargs) and findNext(name, attrs, text, **kwargs)"><code>findAllNext(name, attrs, text, limit, **kwargs)</code> and <code>findNext(name, attrs, text, **kwargs)</code></a></li></li>
+<li><a href="#findAllPrevious(name, attrs, text, limit, **kwargs) and findPrevious(name, attrs, text, **kwargs)"><code>findAllPrevious(name, attrs, text, limit, **kwargs)</code> and <code>findPrevious(name, attrs, text, **kwargs)</code></a></li></li>
+</ul>
+<li><a href="#Modifying the Parse Tree">Modifying the Parse Tree</a></li></li>
+<ul>
+<li><a href="#Changing attribute values">Changing attribute values</a></li></li>
+<li><a href="#Removing elements">Removing elements</a></li></li>
+<li><a href="#Replacing one Element with Another">Replacing one Element with Another</a></li></li>
+<li><a href="#Adding a Brand New Element">Adding a Brand New Element</a></li></li>
+</ul>
+<li><a href="#Troubleshooting">Troubleshooting</a></li></li>
+<ul>
+<li><a href="#Why can't Beautiful Soup print out the non-ASCII characters I gave it?">Why can't Beautiful Soup print out the non-ASCII characters I gave it?</a></li></li>
+<li><a href="#Beautiful Soup loses the data I fed it! Why? WHY?????">Beautiful Soup loses the data I fed it! Why? WHY?????</a></li></li>
+<li><a href="#Beautiful Soup is too slow!">Beautiful Soup is too slow!</a></li></li>
+</ul>
+<li><a href="#Advanced Topics">Advanced Topics</a></li></li>
+<ul>
+<li><a href="#Generators">Generators</a></li></li>
+<li><a href="#Other Built-In Parsers">Other Built-In Parsers</a></li></li>
+<li><a href="#Customizing the Parser">Customizing the Parser</a></li></li>
+<li><a href="#Entity Conversion">Entity Conversion</a></li></li>
+<li><a href="#Sanitizing Bad Data with Regexps">Sanitizing Bad Data with Regexps</a></li></li>
+<li><a href="#Fun With SoupStrainers">Fun With <code>SoupStrainer</code>s</a></li></li>
+<li><a href="#Improving Performance by Parsing Only Part of the Document">Improving Performance by Parsing Only Part of the Document</a></li></li>
+<li><a href="#Improving Memory Usage with extract">Improving Memory Usage with <code>extract</code></a></li></li>
+</ul>
+<li><a href="#See Also">See Also</a></li></li>
+<ul>
+<li><a href="#Applications that use Beautiful Soup">Applications that use Beautiful Soup</a></li></li>
+<li><a href="#Similar libraries">Similar libraries</a></li></li>
+</ul>
+<li><a href="#Conclusion">Conclusion</a></li></li>
+</ul>
+
+<a name="Quick Start"><h2>Quick Start</h2></a>
+
+<p>Get Beautiful Soup <a
+href="http://www.crummy.com/software/BeautifulSoup/#Download/">here</a>. The
+<a
+href="http://www.crummy.com/software/BeautifulSoup/CHANGELOG.html">changelog</a>
+describes differences between 3.0 and earlier versions.
+
+<p>Include Beautiful Soup in your application with a line like one of
+the following:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup          # For processing HTML</kbd>
+<kbd>from BeautifulSoup import BeautifulStoneSoup     # For processing XML</kbd>
+<kbd>import BeautifulSoup                             # To get everything</kbd>
+</pre></div>
+
+<p>Here's some code demonstrating the basic features of Beautiful
+Soup. You can copy and paste this code into a Python session to run it
+yourself.
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>import re</kbd>
+<kbd></kbd>
+<kbd>doc = ['&lt;html&gt;&lt;head&gt;&lt;title&gt;Page title&lt;/title&gt;&lt;/head&gt;',</kbd>
+<kbd>       '&lt;body&gt;&lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;.',</kbd>
+<kbd>       '&lt;p id="secondpara" align="blah"&gt;This is paragraph &lt;b&gt;two&lt;/b&gt;.',</kbd>
+<kbd>       '&lt;/html&gt;']</kbd>
+<kbd>soup = BeautifulSoup(''.join(doc))</kbd>
+<kbd></kbd>
+<kbd>print soup.prettify()</kbd>
+# <samp>&lt;html&gt;</samp>
+# <samp> &lt;head&gt;</samp>
+# <samp>  &lt;title&gt;</samp>
+# <samp>   Page title</samp>
+# <samp>  &lt;/title&gt;</samp>
+# <samp> &lt;/head&gt;</samp>
+# <samp> &lt;body&gt;</samp>
+# <samp>  &lt;p id="firstpara" align="center"&gt;</samp>
+# <samp>   This is paragraph</samp>
+# <samp>   &lt;b&gt;</samp>
+# <samp>    one</samp>
+# <samp>   &lt;/b&gt;</samp>
+# <samp>   .</samp>
+# <samp>  &lt;/p&gt;</samp>
+# <samp>  &lt;p id="secondpara" align="blah"&gt;</samp>
+# <samp>   This is paragraph</samp>
+# <samp>   &lt;b&gt;</samp>
+# <samp>    two</samp>
+# <samp>   &lt;/b&gt;</samp>
+# <samp>   .</samp>
+# <samp>  &lt;/p&gt;</samp>
+# <samp> &lt;/body&gt;</samp>
+# <samp>&lt;/html&gt;</samp>
+</pre></div>
+
+<p>Here are some ways to navigate the soup:
+
+<div class="sample"><pre>
+<kbd>soup.contents[0].name</kbd>
+# <samp>u'html'</samp>
+<kbd></kbd>
+<kbd>soup.contents[0].contents[0].name</kbd>
+# <samp>u'head'</samp>
+<kbd></kbd>
+<kbd>head = soup.contents[0].contents[0]</kbd>
+<kbd>head.parent.name</kbd>
+# <samp>u'html'</samp>
+<kbd></kbd>
+<kbd>head.next</kbd>
+# <samp>&lt;title&gt;Page title&lt;/title&gt;</samp>
+<kbd></kbd>
+<kbd>head.nextSibling.name</kbd>
+# <samp>u'body'</samp>
+<kbd></kbd>
+<kbd>head.nextSibling.contents[0]</kbd>
+# <samp>&lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;.&lt;/p&gt;</samp>
+<kbd></kbd>
+<kbd>head.nextSibling.contents[0].nextSibling</kbd>
+# <samp>&lt;p id="secondpara" align="blah"&gt;This is paragraph &lt;b&gt;two&lt;/b&gt;.&lt;/p&gt;</samp>
+</pre></div>
+
+<p>Here are a couple of ways to search the soup for certain tags, or
+tags with certain properties:
+
+<div class="sample"><pre>
+<kbd>titleTag = soup.html.head.title</kbd>
+<kbd>titleTag</kbd>
+# <samp>&lt;title&gt;Page title&lt;/title&gt;</samp>
+<kbd></kbd>
+<kbd>titleTag.string</kbd>
+# <samp>u'Page title'</samp>
+<kbd></kbd>
+<kbd>len(soup('p'))</kbd>
+# <samp>2</samp>
+<kbd></kbd>
+<kbd>soup.findAll('p', align="center")</kbd>
+# <samp>[&lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;. &lt;/p&gt;]</samp>
+<kbd></kbd>
+<kbd>soup.find('p', align="center")</kbd>
+# <samp>&lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;. &lt;/p&gt;</samp>
+<kbd></kbd>
+<kbd>soup('p', align="center")[0]['id']</kbd>
+# <samp>u'firstpara'</samp>
+<kbd></kbd>
+<kbd>soup.find('p', align=re.compile('^b.*'))['id']</kbd>
+# <samp>u'secondpara'</samp>
+<kbd></kbd>
+<kbd>soup.find('p').b.string</kbd>
+# <samp>u'one'</samp>
+<kbd></kbd>
+<kbd>soup('p')[1].b.string</kbd>
+# <samp>u'two'</samp>
+</pre></div>
+
+<p>It's easy to modify the soup:
+
+<div class="sample"><pre>
+<kbd>titleTag['id'] = 'theTitle'</kbd>
+<kbd>titleTag.contents[0].replaceWith("New title")</kbd>
+<kbd>soup.html.head</kbd>
+# <samp>&lt;head&gt;&lt;title id="theTitle"&gt;New title&lt;/title&gt;&lt;/head&gt;</samp>
+<kbd></kbd>
+<kbd>soup.p.extract()</kbd>
+<kbd>soup.prettify()</kbd>
+# <samp>&lt;html&gt;</samp>
+# <samp> &lt;head&gt;</samp>
+# <samp>  &lt;title id="theTitle"&gt;</samp>
+# <samp>   New title</samp>
+# <samp>  &lt;/title&gt;</samp>
+# <samp> &lt;/head&gt;</samp>
+# <samp> &lt;body&gt;</samp>
+# <samp>  &lt;p id="secondpara" align="blah"&gt;</samp>
+# <samp>   This is paragraph</samp>
+# <samp>   &lt;b&gt;</samp>
+# <samp>    two</samp>
+# <samp>   &lt;/b&gt;</samp>
+# <samp>   .</samp>
+# <samp>  &lt;/p&gt;</samp>
+# <samp> &lt;/body&gt;</samp>
+# <samp>&lt;/html&gt;</samp>
+<kbd></kbd>
+<kbd>soup.p.replaceWith(soup.b)</kbd>
+# <samp>&lt;html&gt;</samp>
+# <samp> &lt;head&gt;</samp>
+# <samp>  &lt;title id="theTitle"&gt;</samp>
+# <samp>   New title</samp>
+# <samp>  &lt;/title&gt;</samp>
+# <samp> &lt;/head&gt;</samp>
+# <samp> &lt;body&gt;</samp>
+# <samp>  &lt;b&gt;</samp>
+# <samp>   two</samp>
+# <samp>  &lt;/b&gt;</samp>
+# <samp> &lt;/body&gt;</samp>
+# <samp>&lt;/html&gt;</samp>
+<kbd></kbd>
+<kbd>soup.body.insert(0, "This page used to have ")</kbd>
+<kbd>soup.body.insert(2, " &amp;lt;p&amp;gt; tags!")</kbd>
+<kbd>soup.body</kbd>
+# <samp>&lt;body&gt;This page used to have &lt;b&gt;two&lt;/b&gt; &amp;lt;p&amp;gt; tags!&lt;/body&gt;</samp>
+</pre></div>
+
+<p>Here's a real-world example. It fetches the <a
+href="http://www.icc-ccs.org/prc/piracyreport.php">ICC Commercial
+Crime Services weekly piracy report</a>, parses it with Beautiful
+Soup, and pulls out the piracy incidents:
+
+<div class="sample"><pre>
+<kbd>import urllib2</kbd>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd></kbd>
+<kbd>page = urllib2.urlopen("http://www.icc-ccs.org/prc/piracyreport.php")</kbd>
+<kbd>soup = BeautifulSoup(page)</kbd>
+<kbd>for incident in soup('td', width="90%"):</kbd>
+<kbd>    where, linebreak, what = incident.contents[:3]</kbd>
+<kbd>    print where.strip()</kbd>
+<kbd>    print what.strip()</kbd>
+<kbd>    print</kbd>
+</pre></div>
+
+<a name="Parsing a Document"><h2>Parsing a Document</h2></a>
+
+<p>A Beautiful Soup constructor takes an XML or HTML document in the
+form of a string (or an open file-like object). It parses the document
+and creates a corresponding data structure in memory.
+
+<p>If you give Beautiful Soup a perfectly-formed document, the parsed
+data structure looks just like the original document. But if there's
+something wrong with the document, Beautiful Soup uses heuristics to
+figure out a reasonable structure for the data structure.
+
+<a name="Parsing HTML"><h3>Parsing HTML</h3></a>
+
+<p>Use the <code>BeautifulSoup</code> class to parse an HTML
+document. Here are some of the things that <code>BeautifulSoup</code>
+knows:
+
+<ul>
+<li>Some tags can be nested (&lt;BLOCKQUOTE&gt;) and some can't (&lt;P&gt;).
+<li>Table and list tags have a natural nesting order. For instance,
+&lt;TD&gt; tags go inside &lt;TR&gt; tags, not the other way around.
+<li>The contents of a &lt;SCRIPT&gt; tag should not be parsed as HTML.
+<li>A &lt;META&gt; tag may specify an encoding for the document.
+</ul>
+
+<p>Here it is in action:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>html = "&lt;html&gt;&lt;p&gt;Para 1&lt;p&gt;Para 2&lt;blockquote&gt;Quote 1&lt;blockquote&gt;Quote 2"</kbd>
+<kbd>soup = BeautifulSoup(html)</kbd>
+<kbd>print soup.prettify()</kbd>
+# <samp>&lt;html&gt;</samp>
+# <samp> &lt;p&gt;</samp>
+# <samp>  Para 1</samp>
+# <samp> &lt;/p&gt;</samp>
+# <samp> &lt;p&gt;</samp>
+# <samp>  Para 2</samp>
+# <samp>  &lt;blockquote&gt;</samp>
+# <samp>   Quote 1</samp>
+# <samp>   &lt;blockquote&gt;</samp>
+# <samp>    Quote 2</samp>
+# <samp>   &lt;/blockquote&gt;</samp>
+# <samp>  &lt;/blockquote&gt;</samp>
+# <samp> &lt;/p&gt;</samp>
+# <samp>&lt;/html&gt;</samp>
+</pre></div>
+
+<p>Note that <code>BeautifulSoup</code> figured out sensible places to put the
+closing tags, even though the original document lacked them.
+
+<p>That document isn't valid HTML, but it's not too bad either. Here's
+a really horrible document. Among other problems, it's got a &lt;FORM&gt;
+tag that starts outside of a &lt;TABLE&gt; tag and ends inside the &lt;TABLE&gt;
+tag. (HTML like this was found on a website run by a major web
+company.)
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>html = """</kbd>
+<kbd>&lt;html&gt;</kbd>
+<kbd>&lt;form&gt;</kbd>
+<kbd> &lt;table&gt;</kbd>
+<kbd> &lt;td&gt;&lt;input name="input1"&gt;Row 1 cell 1</kbd>
+<kbd> &lt;tr&gt;&lt;td&gt;Row 2 cell 1</kbd>
+<kbd> &lt;/form&gt; </kbd>
+<kbd> &lt;td&gt;Row 2 cell 2&lt;br&gt;This&lt;/br&gt; sure is a long cell</kbd>
+<kbd>&lt;/body&gt; </kbd>
+<kbd>&lt;/html&gt;"""</kbd>
+</pre></div>
+
+<p>Beautiful Soup handles this document as well:
+
+<div class="sample"><pre>
+<kbd>print BeautifulSoup(html).prettify()</kbd>
+# <samp>&lt;html&gt;</samp>
+# <samp> &lt;form&gt;</samp>
+# <samp>  &lt;table&gt;</samp>
+# <samp>   &lt;td&gt;</samp>
+# <samp>    &lt;input name="input1" /&gt;</samp>
+# <samp>    Row 1 cell 1</samp>
+# <samp>   &lt;/td&gt;</samp>
+# <samp>   &lt;tr&gt;</samp>
+# <samp>    &lt;td&gt;</samp>
+# <samp>     Row 2 cell 1</samp>
+# <samp>    &lt;/td&gt;</samp>
+# <samp>   &lt;/tr&gt;</samp>
+# <samp>  &lt;/table&gt;</samp>
+# <samp> &lt;/form&gt;</samp>
+# <samp> &lt;td&gt;</samp>
+# <samp>  Row 2 cell 2</samp>
+# <samp>  &lt;br /&gt;</samp>
+# <samp>  This </samp>
+# <samp>  sure is a long cell</samp>
+# <samp> &lt;/td&gt;</samp>
+# <samp>&lt;/html&gt;</samp>
+</pre></div>
+
+<p>The last cell of the table is outside the &lt;TABLE&gt; tag; Beautiful
+Soup decided to close the &lt;TABLE&gt; tag when it closed the &lt;FORM&gt;
+tag. The author of the original document probably intended the &lt;FORM&gt;
+tag to extend to the end of the table, but Beautiful Soup has no way
+of knowing that. Even in a bizarre case like this, Beautiful Soup
+parses the invalid document and gives you access to all the data.
+
+<a name="Parsing XML"><h3>Parsing XML</h3></a>
+
+<p>The <code>BeautifulSoup</code> class is full of web-browser-like
+heuristics for divining the intent of HTML authors. But XML doesn't
+have a fixed tag set, so those heuristics don't apply.  So
+<code>BeautifulSoup</code> doesn't do XML very well.
+
+<p>Use the <code>BeautifulStoneSoup</code> class to parse XML
+documents. It's a general class with no special knowledge of any XML
+dialect and very simple rules about tag nesting: Here it is in action:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulStoneSoup</kbd>
+<kbd>xml = "&lt;doc&gt;&lt;tag1&gt;Contents 1&lt;tag2&gt;Contents 2&lt;tag1&gt;Contents 3"</kbd>
+<kbd>soup = BeautifulStoneSoup(xml)</kbd>
+<kbd>print soup.prettify()</kbd>
+# <samp>&lt;doc&gt;</samp>
+# <samp> &lt;tag1&gt;</samp>
+# <samp>  Contents 1</samp>
+# <samp>  &lt;tag2&gt;</samp>
+# <samp>   Contents 2</samp>
+# <samp>  &lt;/tag2&gt;</samp>
+# <samp> &lt;/tag1&gt;</samp>
+# <samp> &lt;tag1&gt;</samp>
+# <samp>  Contents 3</samp>
+# <samp> &lt;/tag1&gt;</samp>
+# <samp>&lt;/doc&gt;</samp>
+</pre></div>
+
+<p><a name="selfClosingTags">The</a> most common shortcoming of
+<code>BeautifulStoneSoup</code> is that it doesn't know about
+self-closing tags. HTML has a fixed set of self-closing tags, but with
+XML it depends on what the DTD says. You can tell
+<code>BeautifulStoneSoup</code> that certain tags are self-closing by
+passing in their names as the <code>selfClosingTags</code> argument to
+the constructor:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulStoneSoup</kbd>
+<kbd>xml = "&lt;tag&gt;Text 1&lt;selfclosing&gt;Text 2"</kbd>
+<kbd>print BeautifulStoneSoup(xml).prettify()</kbd>
+# <samp>&lt;tag&gt;</samp>
+# <samp> Text 1</samp>
+# <samp> &lt;selfclosing&gt;</samp>
+# <samp>  Text 2</samp>
+# <samp> &lt;/selfclosing&gt;</samp>
+# <samp>&lt;/tag&gt;</samp>
+<kbd></kbd>
+<kbd>print BeautifulStoneSoup(xml, selfClosingTags=['selfclosing']).prettify()</kbd>
+# <samp>&lt;tag&gt;</samp>
+# <samp> Text 1</samp>
+# <samp> &lt;selfclosing /&gt;</samp>
+# <samp> Text 2</samp>
+# <samp>&lt;/tag&gt;</samp>
+</pre></div>
+
+<a name="If That Doesn't Work"><h3>If That Doesn't Work</h3></a>
+
+<p>There are several <a href="#Other Built-In Parsers">other parser classes</a>
+with different heuristics from these two. You can also <a
+href="#Customizing the Parser">subclass and customize a parser</a> and
+give it your own heuristics.
+
+<a name="Beautiful Soup Gives You Unicode, Dammit"><h2>Beautiful Soup Gives You Unicode, Dammit</h2></a>
+
+<p>By the time your document is parsed, it has been transformed into
+Unicode. Beautiful Soup stores only Unicode strings in its data
+structures.
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>soup = BeautifulSoup("Hello")</kbd>
+<kbd>soup.contents[0]</kbd>
+# <samp>u'Hello'</samp>
+<kbd>soup.originalEncoding</kbd>
+# <samp>'ascii'</samp>
+</pre></div>
+
+<p>Here's an example with a Japanese document encoded in UTF-8:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>soup = BeautifulSoup("\xe3\x81\x93\xe3\x82\x8c\xe3\x81\xaf")</kbd>
+<kbd>soup.contents[0]</kbd>
+# <samp>u'\u3053\u308c\u306f'</samp>
+<kbd>soup.originalEncoding</kbd>
+# <samp>'utf-8'</samp>
+<kbd></kbd>
+<kbd>str(soup)</kbd>
+# <samp>'\xe3\x81\x93\xe3\x82\x8c\xe3\x81\xaf'</samp>
+<kbd></kbd>
+# <samp>Note: this bit uses EUC-JP, so it only works if you have cjkcodecs</samp>
+# <samp>installed, or are running Python 2.4.</samp>
+<kbd>soup.__str__('euc-jp')</kbd>
+# <samp>'\xa4\xb3\xa4\xec\xa4\xcf'</samp>
+</pre></div>
+
+<p>Beautiful Soup uses a class called <code>UnicodeDammit</code> to
+detect the encodings of documents you give it and convert them to
+Unicode, no matter what. If you need to do this for other documents
+(without using Beautiful Soup to parse them), you can use
+<code>UnicodeDammit</code> by itself. It's heavily based on code from
+the <a href="http://www.feedparser.org/">Universal Feed Parser</a>.
+
+<p>If you're running an older version of Python than 2.4, be sure to
+download and install <a
+href="http://cjkpython.i18n.org/"><code>cjkcodecs</code> and
+<code>iconvcodec</code></a>, which make Python capable of supporting
+more codecs, especially CJK codecs. Also install the <a
+href="http://chardet.feedparser.org/"><code>chardet</code></a>
+library, for better autodetection.
+
+<p>Beautiful Soup tries the following encodings, in order of priority,
+to turn your document into Unicode:
+
+<ul>
+
+<li>An encoding you pass in as the <code>fromEncoding</code> argument
+to the soup constructor.
+
+<li>An encoding discovered in the document itself: for instance, in an
+XML declaration or (for HTML documents) an <code>http-equiv</code>
+META tag. If Beautiful Soup finds this kind of encoding within the
+document, it parses the document again from the beginning and gives
+the new encoding a try. The only exception is if you explicitly
+specified an encoding, and that encoding actually worked: then it will
+ignore any encoding it finds in the document.
+
+<li>An encoding sniffed by looking at the first few bytes of the
+file. If an encoding is detected at this stage, it will be one of the
+UTF-* encodings, EBCDIC, or ASCII.
+
+<li>An encoding sniffed by the <a
+href="http://chardet.feedparser.org/"><code>chardet</code></a>
+library, if you have it installed.
+<li>UTF-8
+<li>Windows-1252
+</ul>
+
+<p>Beautiful Soup will almost always guess right if it can make a
+guess at all. But for documents with no declarations and in strange
+encodings, it will often not be able to guess. It will fall back to
+Windows-1252, which will probably be wrong. Here's an EUC-JP example
+where Beautiful Soup guesses the encoding wrong. (Again, because it
+uses EUC-JP, this example will only work if you are running Python 2.4
+or have <code>cjkcodecs</code> installed):
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>euc_jp = '\xa4\xb3\xa4\xec\xa4\xcf'</kbd>
+<kbd></kbd>
+<kbd>soup = BeautifulSoup(euc_jp)</kbd>
+<kbd>soup.originalEncoding</kbd>
+# <samp>'windows-1252'</samp>
+<kbd></kbd>
+<kbd>str(soup)</kbd>
+# <samp>'\xc2\xa4\xc2\xb3\xc2\xa4\xc3\xac\xc2\xa4\xc3\x8f'     # Wrong!</samp>
+</pre></div>
+
+<p>But if you specify the encoding with <code>fromEncoding</code>, it
+parses the document correctly, and can convert it to UTF-8 or back to
+EUC-JP.
+
+<div class="sample"><pre>
+<kbd>soup = BeautifulSoup(euc_jp, fromEncoding="euc-jp")</kbd>
+<kbd>soup.originalEncoding</kbd>
+# <samp>'windows-1252'</samp>
+<kbd></kbd>
+<kbd>str(soup)</kbd>
+# <samp>'\xe3\x81\x93\xe3\x82\x8c\xe3\x81\xaf'                 # Right!</samp>
+<kbd></kbd>
+<kbd>soup.__str__(self, 'euc-jp') == euc_jp</kbd>
+# <samp>True</samp>
+</pre></div>
+
+<p>If you give Beautiful Soup a document in the Windows-1252 encoding
+(or a similar encoding like ISO-8859-1 or ISO-8859-2), Beautiful Soup
+finds and destroys the document's smart quotes and other
+Windows-specific characters. Rather than transforming those characters
+into their Unicode equivalents, Beautiful Soup transforms them into
+HTML entities (<code>BeautifulSoup</code>) or XML entities
+(<code>BeautifulStoneSoup</code>).
+
+<p>To prevent this, you can pass <code>smartQuotesTo=None</code> into the soup
+constructor: then smart quotes will be converted to Unicode like any
+other native-encoding characters. You can also pass in "xml" or "html"
+for <code>smartQuotesTo</code>, to change the default behavior of <code>BeautifulSoup</code>
+and <code>BeautifulStoneSoup</code>.
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup, BeautifulStoneSoup</kbd>
+<kbd>text = "Deploy the \x91SMART QUOTES\x92!"</kbd>
+<kbd></kbd>
+<kbd>str(BeautifulSoup(text))</kbd>
+# <samp>'Deploy the &amp;lsquo;SMART QUOTES&amp;rsquo;!'</samp>
+<kbd></kbd>
+<kbd>str(BeautifulStoneSoup(text))</kbd>
+# <samp>'Deploy the &amp;#x2018;SMART QUOTES&amp;#x2019;!'</samp>
+<kbd></kbd>
+<kbd>str(BeautifulSoup(text, smartQuotesTo="xml"))</kbd>
+# <samp>'Deploy the &amp;#x2018;SMART QUOTES&amp;#x2019;!'</samp>
+<kbd></kbd>
+<kbd>BeautifulSoup(text, smartQuotesTo=None).contents[0]</kbd>
+# <samp>u'Deploy the \u2018SMART QUOTES\u2019!'</samp>
+</pre></div>
+
+<a name="Printing a Document"><h2>Printing a Document</h2></a>
+
+<p>You can turn a Beautiful Soup document (or any subset of it) into a
+string with the <code>str</code> function, or the <code>prettify</code> or <code>renderContents</code>
+methods. You can also use the <code>unicode</code> function to get the whole
+document as a Unicode string.
+
+<p>The <code>prettify</code> method adds strategic newlines and spacing to make
+the structure of the document obvious. It also strips out text nodes
+that contain only whitespace, which might change the meaning of an XML
+document. The <code>str</code> and <code>unicode</code> functions don't strip out text nodes
+that contain only whitespace, and they don't add any whitespace
+between nodes either.
+
+<p>Here's an example.
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>doc = "&lt;html&gt;&lt;h1&gt;Heading&lt;/h1&gt;&lt;p&gt;Text"</kbd>
+<kbd>soup = BeautifulSoup(doc)</kbd>
+<kbd></kbd>
+<kbd>str(soup)</kbd>
+# <samp>'&lt;html&gt;&lt;h1&gt;Heading&lt;/h1&gt;&lt;p&gt;Text&lt;/p&gt;&lt;/html&gt;'</samp>
+<kbd>soup.renderContents()</kbd>
+# <samp>'&lt;html&gt;&lt;h1&gt;Heading&lt;/h1&gt;&lt;p&gt;Text&lt;/p&gt;&lt;/html&gt;'</samp>
+<kbd>soup.__str__()</kbd>
+# <samp>'&lt;html&gt;&lt;h1&gt;Heading&lt;/h1&gt;&lt;p&gt;Text&lt;/p&gt;&lt;/html&gt;'</samp>
+<kbd>unicode(soup)</kbd>
+# <samp>u'&lt;html&gt;&lt;h1&gt;Heading&lt;/h1&gt;&lt;p&gt;Text&lt;/p&gt;&lt;/html&gt;'</samp>
+<kbd></kbd>
+<kbd>soup.prettify()</kbd>
+# <samp>'&lt;html&gt;\n &lt;h1&gt;\n  Heading\n &lt;/h1&gt;\n &lt;p&gt;\n  Text\n &lt;/p&gt;\n&lt;/html&gt;'</samp>
+<kbd></kbd>
+<kbd>print soup.prettify()</kbd>
+# <samp>&lt;html&gt;</samp>
+# <samp> &lt;h1&gt;</samp>
+# <samp>  Heading</samp>
+# <samp> &lt;/h1&gt;</samp>
+# <samp> &lt;p&gt;</samp>
+# <samp>  Text</samp>
+# <samp> &lt;/p&gt;</samp>
+# <samp>&lt;/html&gt;</samp>
+</pre></div>
+
+<p>Note that <code>str</code> and <code>renderContents</code> give
+different results when used on a tag within the document.
+<code>str</code> prints a tag and its contents, and
+<code>renderContents</code> only prints the contents.
+
+<div class="sample"><pre>
+<kbd>heading = soup.h1</kbd>
+<kbd>str(heading)</kbd>
+# <samp>'&lt;h1&gt;Heading&lt;/h1&gt;'</samp>
+<kbd>heading.renderContents()</kbd>
+# <samp>'Heading'</samp>
+</pre></div>
+
+<p>When you call <code>__str__</code>, <code>prettify</code>, or
+<code>renderContents</code>, you can specify an output encoding. The
+default encoding (the one used by <code>str</code>) is UTF-8. Here's
+an example that parses an ISO-8851-1 string and then outputs the same
+string in different encodings:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>doc = "Sacr\xe9 bleu!"</kbd>
+<kbd>soup = BeautifulSoup(doc)</kbd>
+<kbd>str(soup)</kbd>
+# <samp>'Sacr\xc3\xa9 bleu!'                          # UTF-8</samp>
+<kbd>soup.__str__("ISO-8859-1")</kbd>
+# <samp>'Sacr\xe9 bleu!'</samp>
+<kbd>soup.__str__("UTF-16")</kbd>
+# <samp>'\xff\xfeS\x00a\x00c\x00r\x00\xe9\x00 \x00b\x00l\x00e\x00u\x00!\x00'</samp>
+<kbd>soup.__str__("EUC-JP")</kbd>
+# <samp>'Sacr\x8f\xab\xb1 bleu!'</samp>
+</pre></div>
+
+<p>If the original document contained an encoding declaration, then
+Beautiful Soup rewrites the declaration to mention the new encoding
+when it converts the document back to a string. This means that if you
+load an HTML document into <code>BeautifulSoup</code> and print it
+back out, not only should the HTML be cleaned up, but it should be
+transparently converted to UTF-8.
+
+<p>Here's an HTML example:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>doc = """&lt;html&gt;</kbd>
+<kbd>&lt;meta http-equiv="Content-type" content="text/html; charset=ISO-Latin-1" &gt;</kbd>
+<kbd>Sacr\xe9 bleu!</kbd>
+<kbd>&lt;/html&gt;"""</kbd>
+<kbd></kbd>
+<kbd>print BeautifulSoup(doc).prettify()</kbd>
+# <samp>&lt;html&gt;</samp>
+# <samp> &lt;meta http-equiv="Content-type" content="text/html; charset=utf-8" /&gt;</samp>
+# <samp> Sacr&eacute; bleu!</samp>
+# <samp>&lt;/html&gt;</samp>
+</pre></div>
+
+<p>Here's an XML example:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulStoneSoup</kbd>
+<kbd>doc = """&lt;?xml version="1.0" encoding="ISO-Latin-1"&gt;Sacr\xe9 bleu!"""</kbd>
+<kbd></kbd>
+<kbd>print BeautifulStoneSoup(doc).prettify()</kbd>
+# <samp>&lt;?xml version='1.0' encoding='utf-8'&gt;</samp>
+# <samp>Sacr&eacute; bleu!</samp>
+</pre></div>
+
+<a name="The Parse Tree"><h2>The Parse Tree</h2></a>
+
+<p>So far we've focused on loading documents and writing them back
+out. Most of the time, though, you're interested in the parse tree:
+the data structure Beautiful Soup builds as it parses the document.
+
+<p>A parser object (an instance of <code>BeautifulSoup</code> or
+<code>BeautifulStoneSoup</code>) is a deeply-nested, well-connected data
+structure that corresponds to the structure of an XML or HTML
+document. The parser object contains two other types of objects: <code>Tag</code>
+objects, which correspond to tags like the &lt;TITLE&gt; tag and the &lt;B&gt;
+tags; and <code>NavigableString</code> objects, which correspond to strings like
+"Page title" and "This is paragraph".
+
+<p>There are also some subclasses of <code>NavigableString</code> (<code>CData</code>,
+<code>Comment</code>, <code>Declaration</code>, and <code>ProcessingInstruction</code>), which
+correspond to special XML constructs. They act like
+<code>NavigableString</code>s, except that when it's time to print them out they
+have some extra data attached to them. Here's a document that includes
+a comment:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>import re</kbd>
+<kbd>hello = "Hello! &lt;!--I've got to be nice to get what I want.--&gt;"</kbd>
+<kbd>commentSoup = BeautifulSoup(hello)</kbd>
+<kbd>comment = commentSoup.find(text=re.compile("nice"))</kbd>
+<kbd></kbd>
+<kbd>comment.__class__</kbd>
+# <samp>&lt;class 'BeautifulSoup.Comment'&gt;</samp>
+<kbd>comment</kbd>
+# <samp>u"I've got to be nice to get what I want."</samp>
+<kbd>comment.previousSibling</kbd>
+# <samp>u'Hello! '</samp>
+<kbd></kbd>
+<kbd>str(comment)</kbd>
+# <samp>"&lt;!--I've got to be nice to get what I want.--&gt;"</samp>
+<kbd>print commentSoup</kbd>
+# <samp>Hello! &lt;!--I've got to be nice to get what I want.--&gt;</samp>
+</pre></div>
+
+<p>Now, let's take <a name="The document above">a closer look</a> at
+the document used at the beginning of the documentation:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup </kbd>
+<kbd>doc = ['&lt;html&gt;&lt;head&gt;&lt;title&gt;Page title&lt;/title&gt;&lt;/head&gt;',</kbd>
+<kbd>       '&lt;body&gt;&lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;.',</kbd>
+<kbd>       '&lt;p id="secondpara" align="blah"&gt;This is paragraph &lt;b&gt;two&lt;/b&gt;.',</kbd>
+<kbd>       '&lt;/html&gt;']</kbd>
+<kbd>soup = BeautifulSoup(''.join(doc))</kbd>
+<kbd></kbd>
+<kbd>print soup.prettify()</kbd>
+# <samp>&lt;html&gt;</samp>
+# <samp> &lt;head&gt;</samp>
+# <samp>  &lt;title&gt;</samp>
+# <samp>   Page title</samp>
+# <samp>  &lt;/title&gt;</samp>
+# <samp> &lt;/head&gt;</samp>
+# <samp> &lt;body&gt;</samp>
+# <samp>  &lt;p id="firstpara" align="center"&gt;</samp>
+# <samp>   This is paragraph</samp>
+# <samp>   &lt;b&gt;</samp>
+# <samp>    one</samp>
+# <samp>   &lt;/b&gt;</samp>
+# <samp>   .</samp>
+# <samp>  &lt;/p&gt;</samp>
+# <samp>  &lt;p id="secondpara" align="blah"&gt;</samp>
+# <samp>   This is paragraph</samp>
+# <samp>   &lt;b&gt;</samp>
+# <samp>    two</samp>
+# <samp>   &lt;/b&gt;</samp>
+# <samp>   .</samp>
+# <samp>  &lt;/p&gt;</samp>
+# <samp> &lt;/body&gt;</samp>
+# <samp>&lt;/html&gt;</samp>
+</pre></div>
+
+
+<a name="The attributes of Tags"><h3>The attributes of <code>Tag</code>s</h3></a>
+
+<p><code>Tag</code> and <code>NavigableString</code> objects have lots of useful members,
+most of which are covered in 
+
+<a href="#Navigating the Parse Tree">Navigating the Parse Tree</a> and
+
+<a href="#Searching the Parse Tree">Searching the Parse Tree</a>.
+
+However, there's one aspect of <code>Tag</code> objects we'll cover here: the
+attributes.
+
+<p>SGML tags have attributes:. for instance, each of the &lt;P&gt; tags in
+<a href="#The document above">the example HTML above</a> has an "id"
+attribute and an "align" attribute. You can access a tag's attributes
+by treating the <code>Tag</code> object as though it were a dictionary:
+
+<div class="sample"><pre>
+<kbd>firstPTag, secondPTag = soup.findAll('p')</kbd>
+<kbd></kbd>
+<kbd>firstPTag['id']</kbd>
+# <samp>u'firstPara'</samp>
+<kbd></kbd>
+<kbd>secondPTag['id']</kbd>
+# <samp>u'secondPara'</samp>
+</pre></div>
+
+<p><code>NavigableString</code> objects don't have attributes; only <code>Tag</code> objects
+have them.
+
+<a name="Navigating the Parse Tree"><h2>Navigating the Parse Tree</h2></a>
+
+<p>All <code>Tag</code> objects have all of the members listed below (though the
+actual value of the member may be <code>None</code>). <code>NavigableString</code> objects
+have all of them except for <code>contents</code> and <code>string</code>.
+
+<a name="parent"><h3><code>parent</code></h3></a>
+
+<p>In <a href="#The document above">the example above</a>, the parent
+of the &lt;HEAD&gt; <code>Tag</code> is the &lt;HTML&gt; <code>Tag</code>. The parent of the &lt;HTML&gt;
+<code>Tag</code> is the <code>BeautifulSoup</code> parser object itself. The parent of the
+parser object is <code>None</code>. By following <code>parent</code>, you can move up the
+parse tree:
+
+<div class="sample"><pre>
+<kbd>soup.head.parent.name</kbd>
+# <samp>u'html'</samp>
+<kbd>soup.head.parent.parent.__class__.__name__</kbd>
+# <samp>'BeautifulSoup'</samp>
+<kbd>soup.parent == None</kbd>
+# <samp>True</samp>
+</pre></div>
+
+<a name="contents"><h3><code>contents</code></h3></a>
+
+<p>With <code>parent</code> you move up the parse tree. With <code>contents</code> you move
+down the tree. <code>contents</code> is an ordered list of the <code>Tag</code> and
+<code>NavigableString</code> objects contained within a page element. Only the
+top-level parser object and <code>Tag</code> objects have
+<code>contents</code>. <code>NavigableString</code> objects are just strings and can't
+contain sub-elements, so they don't have <code>contents</code>.
+
+<p>In <a href="#The document above">the example above</a>, the
+<code>contents</code> of the first &lt;P&gt; <code>Tag</code> is a list containing a
+<code>NavigableString</code> ("This is paragraph "), a &lt;B&gt; <code>Tag</code>, and another
+<code>NavigableString</code> ("."). The <code>contents</code> of the &lt;B&gt; <code>Tag</code>: a list
+containing a <code>NavigableString</code> ("one").
+
+<div class="sample"><pre>
+<kbd>pTag = soup.p</kbd>
+<kbd>pTag.contents</kbd>
+# <samp>[u'This is paragraph ', &lt;b&gt;one&lt;/b&gt;, u'.']</samp>
+<kbd>pTag.contents[1].contents</kbd>
+# <samp>[u'one']</samp>
+<kbd>pTag.contents[0].contents</kbd>
+# <samp>AttributeError: 'NavigableString' object has no attribute 'contents'</samp>
+</pre></div>
+
+<a name="string"><h3><code>string</code></h3></a>
+
+<p>For your convenience, if a tag has only one child node, and that
+child node is a string, the child node is made available as
+<code>tag.string</code>, as well as <code>tag.contents[0]</code>. 
+
+In <a href="#The document above">the example above</a>,
+<code>soup.b.string</code> is a <code>NavigableString</code> representing the Unicode string
+"one". That's the string contained in the first &lt;B&gt; <code>Tag</code> in the parse
+tree.
+
+<div class="sample"><pre>
+<kbd>soup.b.string</kbd>
+# <samp>u'one'</samp>
+<kbd>soup.b.contents[0]</kbd>
+# <samp>u'one'</samp>
+</pre></div>
+
+<p>But <code>soup.p.string</code> is <code>None</code>, because the first &lt;P&gt; <code>Tag</code> in the
+parse tree has more than one child. <code>soup.head.string</code> is also <code>None</code>,
+even though the &lt;HEAD&gt; Tag has only one child, because that child is a
+<code>Tag</code> (the &lt;TITLE&gt; <code>Tag</code>), not a <code>NavigableString</code>.
+
+<div class="sample"><pre>
+<kbd>soup.p.string == None</kbd>
+# <samp>True</samp>
+<kbd>soup.head.string == None</kbd>
+# <samp>True</samp>
+</pre></div>
+
+<a name="nextSibling and previousSibling"><h3><code>nextSibling</code> and <code>previousSibling</code></h3></a>
+
+<p>These members let you skip to the next or previous thing on the
+same level of the parse tree. In <a href="#The document above">the
+document above</a>, the <code>nextSibling</code> of the &lt;HEAD&gt; <code>Tag</code> is the
+&lt;BODY&gt; <code>Tag</code>, because the &lt;BODY&gt; <code>Tag</code> is the next thing directly
+beneath the &lt;html&gt; <code>Tag</code>. The <code>nextSibling</code> of the &lt;BODY&gt; tag is
+<code>None</code>, because there's nothing else directly beneath the &lt;HTML&gt;
+<code>Tag</code>.
+
+<div class="sample"><pre>
+<kbd>soup.head.nextSibling.name</kbd>
+# <samp>u'body'</samp>
+<kbd>soup.html.nextSibling == None</kbd>
+# <samp>True</samp>
+</pre></div>
+
+<p>Conversely, the <code>previousSibling</code> of the &lt;BODY&gt; <code>Tag</code> is the &lt;HEAD&gt;
+tag, and the <code>previousSibling</code> of the &lt;HEAD&gt; <code>Tag</code> is <code>None</code>:
+
+<div class="sample"><pre>
+<kbd>soup.body.previousSibling.name</kbd>
+# <samp>u'head'</samp>
+<kbd>soup.head.previousSibling == None</kbd>
+# <samp>True</samp>
+</pre></div>
+
+<p>Some more examples: the <code>nextSibling</code> of the first &lt;P&gt; <code>Tag</code> is the
+second &lt;P&gt; <code>Tag</code>. The <code>previousSibling</code> of the &lt;B&gt; <code>Tag</code> inside the
+second &lt;P&gt; <code>Tag</code> is the <code>NavigableString</code> "This is paragraph". The
+<code>previousSibling</code> of that <code>NavigableString</code> is <code>None</code>, not anything
+inside the first &lt;P&gt; <code>Tag</code>.
+
+<div class="sample"><pre>
+<kbd>soup.p.nextSibling</kbd>
+# <samp>&lt;p id="secondpara" align="blah"&gt;This is paragraph &lt;b&gt;two&lt;/b&gt;.&lt;/p&gt;</samp>
+<kbd></kbd>
+<kbd>secondBTag = soup.findAlll('b')[1]</kbd>
+<kbd>secondBTag.previousSibling</kbd>
+# <samp>u'This is paragraph'</samp>
+<kbd>secondBTag.previousSibling.previousSibling == None</kbd>
+# <samp>True</samp>
+</pre></div>
+
+<a name="next and previous"><h3><code>next</code> and <code>previous</code></h3></a>
+
+<p>These members let you move through the document elements in the
+order they were processed by the parser, rather than in the order they
+appear in the tree. For instance, the <code>next</code> of the &lt;HEAD&gt; <code>Tag</code> is
+the &lt;TITLE&gt; <code>Tag</code>, not the &lt;BODY&gt; <code>Tag</code>. This is because, in 
+
+<a href="#The document above">the original document</a>, the &lt;TITLE&gt;
+tag comes immediately after the &lt;HEAD&gt; tag.
+
+<div class="sample"><pre>
+<kbd>soup.head.next</kbd>
+# <samp>u'title'</samp>
+<kbd>soup.head.nextSibling.name</kbd>
+# <samp>u'body'</samp>
+<kbd>soup.head.previous.name</kbd>
+# <samp>u'html'</samp>
+</pre></div>
+
+<p>Where <code>next</code> and <code>previous</code> are concerned, a <code>Tag</code>'s <code>contents</code> come
+before its <code>nextSibling</code>. You usually won't have to use these members,
+but sometimes it's the easiest way to get to something buried inside
+the parse tree.
+
+<a name="Iterating over a Tag"><h3>Iterating over a <code>Tag</code></h3></a>
+
+<p>You can iterate over the <code>contents</code> of a <code>Tag</code> by treating it as a
+list. This is a useful shortcut. Similarly, to see how many child
+nodes a <code>Tag</code> has, you can call <code>len(tag)</code> instead of
+<code>len(tag.contents)</code>. In terms of <a href="#The document above">the
+document above</a>:
+
+<div class="sample"><pre>
+<kbd>for i in soup.body:</kbd>
+<kbd>    print i</kbd>
+# <samp>&lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;.&lt;/p&gt;</samp>
+# <samp>&lt;p id="secondpara" align="blah"&gt;This is paragraph &lt;b&gt;two&lt;/b&gt;.&lt;/p&gt;</samp>
+<kbd></kbd>
+<kbd>len(soup.body)</kbd>
+# <samp>2</samp>
+<kbd>len(soup.body.contents)</kbd>
+# <samp>2</samp>
+</pre></div>
+
+<a name="Using tag names as members"><h3>Using tag names as members</h3></a>
+
+<p>It's easy to navigate the parse tree by acting as though the name
+of the tag you want is a member of a parser or <code>Tag</code> object. We've
+been doing it throughout these examples. In terms of <a href="#The
+document above">the document above</a>, <code>soup.head</code> gives us the first
+(and, as it happens, only) &lt;HEAD&gt; <code>Tag</code> in the document:
+
+<div class="sample"><pre>
+<kbd>soup.head</kbd>
+# <samp>&lt;head&gt;&lt;title&gt;Page title&lt;/title&gt;&lt;/head&gt;</samp>
+</pre></div>
+
+<p>In general, calling <code>mytag.foo</code> returns the first child of <code>mytag</code>
+that happens to be a &lt;FOO&gt; <code>Tag</code>. If there aren't any &lt;FOO&gt; <code>Tag</code>s
+beneath <code>mytag</code>, then <code>mytag.foo</code> returns <code>None</code>.
+
+You can use this to traverse the parse tree very quickly:
+
+<div class="sample"><pre>
+<kbd>soup.head.title</kbd>
+# <samp>&lt;title&gt;Page title&lt;/title&gt;</samp>
+<kbd></kbd>
+<kbd>soup.body.p.b.string</kbd>
+# <samp>u'one'</samp>
+</pre></div>
+
+<p>You can also use this to quickly jump to a certain part of a parse
+tree. For instance, if you're not worried about &lt;TITLE&gt; tags in weird
+places outside of the &lt;HEAD&gt; tag, you can just use <code>soup.title</code> to get
+an HTML document's title. You don't have to use <code>soup.head.title</code>:
+
+<div class="sample"><pre>
+<kbd>soup.title.string</kbd>
+# <samp>u'Page title'</samp>
+</pre></div>
+
+<p><code>soup.p</code> jumps to the first &lt;P&gt; tag inside a document, wherever it
+is. <code>soup.table.tr.td</code> jumps to the first column of the first row of
+the first table in the document.
+
+<p>These members actually alias to the <code>first</code> method, covered <a
+href="#Searching the Parse Tree">below</a>. I mention it here because
+the alias makes it very easy to zoom in on an interesting part of a
+well-known parse tree.
+
+<p>An alternate form of this idiom lets you access the first &lt;FOO&gt; tag
+as <code>.fooTag</code> instead of <code>.foo</code>. For instance, <code>soup.table.tr.td</code> could
+also be expressed as <code>soup.tableTag.trTag.tdTag</code>, or even
+<code>soup.tableTag.tr.tdTag</code>. This is useful if you like to be more
+explicit about what you're doing, or if you're parsing XML whose tag
+names conflict with the names of Beautiful Soup methods and members.
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulStoneSoup</kbd>
+<kbd>xml = '&lt;person name="Bob"&gt;&lt;parent rel="mother" name="Alice"&gt;'</kbd>
+<kbd>xmlSoup = BeautifulStoneSoup(xml)</kbd>
+<kbd></kbd>
+<kbd>xmlSoup.person.parent                      # A Beautiful Soup member</kbd>
+# <samp>&lt;person name="Bob"&gt;&lt;parent rel="mother" name="Alice"&gt;&lt;/parent&gt;&lt;/person&gt;</samp>
+<kbd>xmlSoup.person.parentTag                   # A tag name</kbd>
+# <samp>&lt;parent rel="mother" name="Alice"&gt;&lt;/parent&gt;</samp>
+</pre></div>
+
+<p>If you're looking for tag names that aren't valid Python
+identifiers (like <code>hyphenated-name</code>), you need to use <code>first</code>.
+
+<a name="Searching the Parse Tree"><h2>Searching the Parse Tree</h2></a>
+
+<p>Beautiful Soup provides many methods that traverse the parse tree,
+gathering <code>Tag</code>s and <code>NavigableString</code>s that match criteria you
+specify.
+
+<p><a name="findall example document">There are several ways to define
+criteria for matching Beautiful Soup objects. Let's demonstrate by
+examining in depth the most basic of all Beautiful Soup search
+methods, <code>findAll</code>. As before, we'll demonstrate on the following
+document:</a>
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>doc = ['&lt;html&gt;&lt;head&gt;&lt;title&gt;Page title&lt;/title&gt;&lt;/head&gt;',</kbd>
+<kbd>       '&lt;body&gt;&lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;.',</kbd>
+<kbd>       '&lt;p id="secondpara" align="blah"&gt;This is paragraph &lt;b&gt;two&lt;/b&gt;.',</kbd>
+<kbd>       '&lt;/html&gt;']</kbd>
+<kbd>soup = BeautifulSoup(''.join(doc))</kbd>
+<kbd>print soup.prettify()</kbd>
+# <samp>&lt;html&gt;</samp>
+# <samp> &lt;head&gt;</samp>
+# <samp>  &lt;title&gt;</samp>
+# <samp>   Page title</samp>
+# <samp>  &lt;/title&gt;</samp>
+# <samp> &lt;/head&gt;</samp>
+# <samp> &lt;body&gt;</samp>
+# <samp>  &lt;p id="firstpara" align="center"&gt;</samp>
+# <samp>   This is paragraph</samp>
+# <samp>   &lt;b&gt;</samp>
+# <samp>    one</samp>
+# <samp>   &lt;/b&gt;</samp>
+# <samp>   .</samp>
+# <samp>  &lt;/p&gt;</samp>
+# <samp>  &lt;p id="secondpara" align="blah"&gt;</samp>
+# <samp>   This is paragraph</samp>
+# <samp>   &lt;b&gt;</samp>
+# <samp>    two</samp>
+# <samp>   &lt;/b&gt;</samp>
+# <samp>   .</samp>
+# <samp>  &lt;/p&gt;</samp>
+# <samp> &lt;/body&gt;</samp>
+# <samp>&lt;/html&gt;</samp>
+</pre></div>
+
+<p>Incidentally, the two methods described in this section (<code>findAll</code>
+and <code>find</code>) are available only to <code>Tag</code> objects and the top-level
+parser objects, not to <code>NavigableString</code> objects. The methods defined
+in <a href="#Searching Within the Parse Tree">Searching Within the
+Parse Tree</a> are also available to <code>NavigableString</code> objects.
+
+<a name="The basic find method: findAll(name, attrs, recursive, text, limit, **kwargs)"><h3>The basic find method: <code>findAll(<a href="#arg-name">name</a>, <a href="#arg-attrs">attrs</a>, <a href="#arg-recursive">recursive</a>, <a href="#arg-text">text</a>, <a href="#arg-limit">limit</a>, <a href="#arg-**kwargs">**kwargs</a>)</code></h3></a>
+
+<p>The <code>findAll</code> method traverses the tree, starting at the given
+point, and finds all the <code>Tag</code> and <code>NavigableString</code> objects that match
+the criteria you give. The signature for the <code>findall</code> method is this:
+
+<p><b>findAll(name=None, attrs={}, recursive=True, text=None,
+limit=None, **kwargs)</b></p>
+
+<p><a name="args">These arguments</a> show up
+over and over again throughout the Beautiful Soup API. The most
+important arguments are <code>name</code> and the keyword arguments.
+
+<ul>
+
+<li><p>The <a name="arg-name"><b><code>name</code></b></a> argument restricts the set
+of tags by name. There are several ways to restrict the name, and
+these too show up over and over again throughout the Beautiful Soup
+API.
+
+<ol><p>
+
+<li><p>The simplest usage is to just pass in a tag name. This code finds
+all the &lt;B&gt; <code>Tag</code>s in the document:
+
+<div class="sample"><pre>
+<kbd>soup.findAll('b')</kbd>
+# <samp>[&lt;b&gt;one&lt;/b&gt;, &lt;b&gt;two&lt;/b&gt;]</samp>
+</pre></div>
+
+<li><p>You can also pass in a regular expression. This code finds all the
+tags whose names <i>start</i> with B:
+
+<div class="sample"><pre>
+<kbd>import re</kbd>
+<kbd>tagsStartingWithB = soup.findAll(re.compile('^b'))</kbd>
+<kbd>[tag.name for tag in tagsStartingWithB]</kbd>
+# <samp>[u'body', u'b', u'b']</samp>
+</pre></div>
+
+<li><p>You can pass in a list or a dictionary. These two calls find all
+the &lt;TITLE&gt; and all the &lt;P&gt; tags. They work the same way, but the
+second call runs faster:
+
+<div class="sample"><pre>
+<kbd>soup.findAll(['title', 'p'])</kbd>
+# <samp>[&lt;title&gt;Page title&lt;/title&gt;, </samp>
+# <samp> &lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;.&lt;/p&gt;, </samp>
+# <samp> &lt;p id="secondpara" align="blah"&gt;This is paragraph &lt;b&gt;two&lt;/b&gt;.&lt;/p&gt;]</samp>
+<kbd></kbd>
+<kbd>soup.findAll({'title' : True, 'p' : True})</kbd>
+# <samp>[&lt;title&gt;Page title&lt;/title&gt;, </samp>
+# <samp> &lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;.&lt;/p&gt;, </samp>
+# <samp> &lt;p id="secondpara" align="blah"&gt;This is paragraph &lt;b&gt;two&lt;/b&gt;.&lt;/p&gt;]</samp>
+</pre></div>
+
+<li><p>You can pass in the special value <code>True</code>, which matches every tag
+with a name: that is, it matches every tag.
+
+<div class="sample"><pre>
+<kbd>allTags = soup.findAll(True)</kbd>
+<kbd>[tag.name for tag in allTags]</kbd>
+<kbd>[u'html', u'head', u'title', u'body', u'p', u'b', u'p', u'b']</kbd>
+</pre></div>
+
+<p>This doesn't look useful, but <code>True</code> is very useful when
+restricting attribute values.
+
+<li><p>You can pass in a <a name="match-callable">callable</a> object which
+takes a <code>Tag</code> object as its only argument, and returns a
+boolean. Every <code>Tag</code> object that <code>findAll</code> encounters will be passed
+into this object, and if the call returns <code>True</code> then the tag is
+considered to match.
+
+<p>This code finds the tags that have two, and only two, attributes:
+
+<div class="sample"><pre>
+<kbd>soup.findAll(lambda tag: len(tag.attrs) == 2)</kbd>
+# <samp>[&lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;.&lt;/p&gt;, </samp>
+# <samp> &lt;p id="secondpara" align="blah"&gt;This is paragraph &lt;b&gt;two&lt;/b&gt;.&lt;/p&gt;]</samp>
+</pre></div>
+
+<p>This code finds the tags that have one-character names and no
+attributes:
+
+<div class="sample"><pre>
+<kbd>soup.findAll(lambda tag: len(tag.name) == 1 and not tag.attrs)</kbd>
+# <samp>[&lt;b&gt;one&lt;/b&gt;, &lt;b&gt;two&lt;/b&gt;]</samp>
+</pre></div>
+</ol>
+
+<li><p><a name="arg-**kwargs">The keyword arguments</a> impose
+restrictions on the attributes of a tag. This simple example finds all
+the tags which have a value of "center" for their "align" attribute:
+
+<div class="sample"><pre>
+<kbd>soup.findAll(align="center")</kbd>
+# <samp>[&lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;.&lt;/p&gt;]</samp>
+</pre></div>
+
+<p>As with the <code>name</code> argument, you can pass a keyword argument
+different kinds of object to impose different restrictions on the
+corresponding attribute. You can pass a string, as seen above, to
+restrict an attribute to a single value. You can also pass a regular
+expression, a list, a hash, the special values <code>True</code> or <code>None</code>, or a
+callable that takes the attribute value as its argument (note that the
+value may be <code>None</code>). Some examples:
+
+<div class="sample"><pre>
+<kbd>soup.findAll(id=re.compile("para$"))</kbd>
+# <samp>[&lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;.&lt;/p&gt;,</samp>
+# <samp> &lt;p id="secondpara" align="blah"&gt;This is paragraph &lt;b&gt;two&lt;/b&gt;.&lt;/p&gt;]</samp>
+<kbd></kbd>
+<kbd>soup.findAll(align=["center", "blah"])</kbd>
+# <samp>[&lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;.&lt;/p&gt;,</samp>
+# <samp> &lt;p id="secondpara" align="blah"&gt;This is paragraph &lt;b&gt;two&lt;/b&gt;.&lt;/p&gt;]</samp>
+<kbd></kbd>
+<kbd>soup.findAll(align=lambda(value): value and len(value) &lt; 5)</kbd>
+# <samp>[&lt;p id="secondpara" align="blah"&gt;This is paragraph &lt;b&gt;two&lt;/b&gt;.&lt;/p&gt;]</samp>
+</pre></div>
+
+<p>The special values <code>True</code> and <code>None</code> are of special
+interest. <code>True</code> matches a tag that has <i>any</i> value for the given
+attribute, and <code>None</code> matches a tag that has <i>no</i> value for the
+given attribute. Some examples:
+
+<div class="sample"><pre>
+<kbd>soup.findAll(align=True)</kbd>
+# <samp>[&lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;.&lt;/p&gt;,</samp>
+# <samp> &lt;p id="secondpara" align="blah"&gt;This is paragraph &lt;b&gt;two&lt;/b&gt;.&lt;/p&gt;]</samp>
+<kbd></kbd>
+<kbd>[tag.name for tag in soup.findAll(align=None)]</kbd>
+# <samp>[u'html', u'head', u'title', u'body', u'b', u'b']</samp>
+</pre></div>
+
+<p>If you need to impose complex or interlocking restrictions on a
+tag's attributes, pass in a callable object for <code>name</code>, <a
+href="#match-callable">as seen above</a>, and deal with the <code>Tag</code>
+object.
+
+<p><a name="arg-attrs">You might have noticed a problem here.</a> What
+if you have a document with a tag that defines an attribute called
+<code>name</code>? You can't use a keyword argument called <code>name</code> because the
+Beautiful Soup search methods already define a <code>name</code> argument. You
+also can't use a Python reserved word like <code>for</code> as a keyword
+argument.
+
+<p>Beautiful Soup provides a special argument called <code>attrs</code> which you
+can use in these situations. <code>attrs</code> is a dictionary that acts just
+like the keyword arguments:
+
+<div class="sample"><pre>
+<kbd>soup.findAll(id=re.compile("para$"))</kbd>
+# <samp>[&lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;.&lt;/p&gt;,</samp>
+# <samp> &lt;p id="secondpara" align="blah"&gt;This is paragraph &lt;b&gt;two&lt;/b&gt;.&lt;/p&gt;]</samp>
+<kbd></kbd>
+<kbd>soup.findAll(attrs={'id' : re.compile("para$")})</kbd>
+# <samp>[&lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;.&lt;/p&gt;,</samp>
+# <samp> &lt;p id="secondpara" align="blah"&gt;This is paragraph &lt;b&gt;two&lt;/b&gt;.&lt;/p&gt;]</samp>
+</pre></div>
+
+<p>You can use <code>attrs</code> if you need to put restrictions on attributes
+whose names are Python reserved words, like <code>class</code>, <code>for</code>, or
+<code>import</code>; or attributes whose names are non-keyword arguments to the
+Beautiful Soup search methods: <code>name</code>, <code>recursive</code>, <code>limit</code>, <code>text</code>,
+or <code>attrs</code> itself.
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulStoneSoup</kbd>
+<kbd>xml = '&lt;person name="Bob"&gt;&lt;parent rel="mother" name="Alice"&gt;'</kbd>
+<kbd>xmlSoup = BeautifulStoneSoup(xml)</kbd>
+<kbd></kbd>
+<kbd>xmlSoup.findAll(name="Alice")</kbd>
+# <samp>[]</samp>
+<kbd></kbd>
+<kbd>xmlSoup.findAll(attrs={"name" : "Alice"})</kbd>
+# <samp>[parent rel="mother" name="Alice"&gt;&lt;/parent&gt;]</samp>
+</pre></div>
+
+<a name="Searching by CSS class"><h4>Searching by CSS class</h4></a>
+
+<p>The <code>attrs</code> argument would be a pretty obscure feature
+were it not for one thing: CSS. It's very useful to search for a tag
+that has a certain CSS class, but the name of the CSS attribute,
+<code>class</code>, is also a Python reserved word. 
+
+<p>You could search by CSS class with <code>soup.find("tagName", {
+"class" : "cssClass" })</code>, but that's a lot of code for such a
+common operation. Instead, you can pass a string for <code>attrs</code> instead
+of a dictionary. The string will be used to restrict the CSS class.
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>soup = BeautifulSoup("""Bob's &lt;b&gt;Bold&lt;/b&gt; Barbeque Sauce now available in </kbd>
+<kbd>                        &lt;b class="hickory"&gt;Hickory&lt;/b&gt; and &lt;b class="lime"&gt;Lime&lt;/a&gt;""")</kbd>
+<kbd></kbd>
+<kbd>soup.find("b", { "class" : "lime" })</kbd>
+# <samp>&lt;b class="lime"&gt;Lime&lt;/b&gt;</samp>
+<kbd></kbd>
+<kbd>soup.find("b", "hickory")</kbd>
+# <samp>&lt;b class="hickory"&gt;Hickory&lt;/b&gt;</samp>
+</pre></div>
+
+<li><p><a name="arg-text"><b><code>text</code></b></a> is an argument that lets
+you search for <code>NavigableString</code> objects instead of <code>Tag</code>s. Its value
+can be a string, a regular expression, a list or dictionary, <code>True</code> or
+<code>None</code>, or a callable that takes a <code>NavigableString</code> object as its
+argument:
+
+<div class="sample"><pre>
+<kbd>soup.findAll(text="one")</kbd>
+# <samp>[u'one']</samp>
+<kbd>soup.findAll(text=u'one')</kbd>
+# <samp>[u'one']</samp>
+<kbd></kbd>
+<kbd>soup.findAll(text=["one", "two"])</kbd>
+# <samp>[u'one', u'two']</samp>
+<kbd></kbd>
+<kbd>soup.findAll(text=re.compile("paragraph"))</kbd>
+# <samp>[u'This is paragraph ', u'This is paragraph ']</samp>
+<kbd></kbd>
+<kbd>soup.findAll(text=True)</kbd>
+# <samp>[u'Page title', u'This is paragraph ', u'one', u'.', u'This is paragraph ', </samp>
+# <samp> u'two', u'.']</samp>
+<kbd></kbd>
+<kbd>soup.findAll(text=lambda(x): len(x) &lt; 12)</kbd>
+# <samp>[u'Page title', u'one', u'.', u'two', u'.']</samp>
+</pre></div>
+
+<p>If you use <code>text</code>, then any values you give for <code>name</code> and the
+keyword arguments are ignored.
+
+<li><p><a name="arg-recursive"><b><code>recursive</code></b></a> is a boolean
+argument (defaulting to <code>True</code>) which tells Beautiful Soup whether to
+go all the way down the parse tree, or whether to only look at the
+immediate children of the <code>Tag</code> or the parser object. Here's the
+difference:
+
+<div class="sample"><pre>
+<kbd>[tag.name for tag in soup.html.findAll()]</kbd>
+# <samp>[u'head', u'title', u'body', u'p', u'b', u'p', u'b']</samp>
+<kbd></kbd>
+<kbd>[tag.name for tag in soup.html.findAll(recursive=False)]</kbd>
+# <samp>[u'head', u'body']</samp>
+</pre></div>
+
+<p>When <code>recursive</code> is false, only the immediate children of the
+&lt;HTML&gt; tag are searched. If you know that's all you need to search,
+you can save some time this way.
+
+<li><p>Setting <a name="arg-limit"><b><code>limit</code></b></a> argument lets you
+stop the search once Beautiful Soup finds a certain number of matches.
+If there are a thousand tables in your document, but you only need the
+fourth one, pass in 4 to <code>limit</code> and you'll save time. By default,
+there is no limit.
+
+<div class="sample"><pre>
+<kbd>soup.findAll('p', limit=1)</kbd>
+# <samp>[&lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;.&lt;/p&gt;]</samp>
+<kbd></kbd>
+<kbd>soup.findAll('p', limit=100)</kbd>
+# <samp>[&lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;.&lt;/p&gt;, </samp>
+# <samp> &lt;p id="secondpara" align="blah"&gt;This is paragraph &lt;b&gt;two&lt;/b&gt;.&lt;/p&gt;]</samp>
+</pre></div>
+</ul>
+
+<a name="Calling a tag is like calling findall"><h4>Calling a tag is like calling <code>findall</code></h4></a>
+
+<p>A little shortcut for you. If you call the parser object or a <code>Tag</code>
+like a function, then you can pass in all of <code>findall</code>'s arguments and
+it's the same as calling <code>findall</code>. In terms of 
+
+<a href="#findall example document">the document above</a>:
+
+<div class="sample"><pre>
+<kbd>soup(text=lambda(x): len(x) &lt; 12)</kbd>
+# <samp>[u'Page title', u'one', u'.', u'two', u'.']</samp>
+<kbd></kbd>
+<kbd>soup.body('p', limit=1)</kbd>
+# <samp>[&lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;.&lt;/p&gt;]</samp>
+</pre></div>
+
+<a name="find(name, attrs, recursive, text, **kwargs)"><h3><code>find(<a href="#arg-name">name</a>, <a href="#arg-attrs">attrs</a>, <a href="#arg-recursive">recursive</a>, <a href="#arg-text">text</a>, <a href="#arg-**kwargs">**kwargs</a>)</code></h3></a>
+
+<p>Okay, now let's look at the other search methods. They all take
+pretty much the same arguments as <code>findAll</code>.
+
+<p>The <code>find</code> method is almost exactly like <code>findAll</code>, except that
+instead of finding all the matching objects, it only finds the first
+one. It's like imposing a <code>limit</code> of 1 on the result set, and then
+extracting the single result from the array. 
+
+In terms of <a href="#findall example document">the document above</a>:
+
+<div class="sample"><pre>
+<kbd>soup.findAll('p', limit=1)</kbd>
+# <samp>[&lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;.&lt;/p&gt;]</samp>
+<kbd></kbd>
+<kbd>soup.find('p', limit=1)</kbd>
+# <samp>&lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;.&lt;/p&gt;</samp>
+<kbd></kbd>
+<kbd>soup.find('nosuchtag', limit=1) == None</kbd>
+# <samp>True</samp>
+</pre></div>
+
+<p>In general, when you see a search method with a plural name (like
+<code>findAll</code> or <code>findNextSiblings</code>), that method takes a <code>limit</code> argument
+and returns a list of results. When you see a search method that
+doesn't have a plural name (like <code>find</code> or <code>findNextSibling</code>), you
+know that the method doesn't take a <code>limit</code> and returns a single
+result.
+
+<a name="What happened to first?"><h3>What happened to <code>first</code>?</h3></a>
+
+<p>Previous versions of Beautiful Soup had methods like <code>first</code>,
+<code>fetch</code>, and <code>fetchPrevious</code>. These methods are sitll there, but
+they're deprecated, and may go away soon. The total effect of all
+those names was very confusing. The new names are named consistently:
+as mentioned above, if the method name is plural or refers to <code>All</code>,
+it returns multiple objects. Otherwise, it returns one object.
+
+<a name="Searching Within the Parse Tree"><h2>Searching Within the Parse Tree</h2></a>
+
+<p>The methods described above, <code>findAll</code> and <code>find</code>, start at a
+certain point in the parse tree and go down. They recursively iterate
+through an object's <code>contents</code> until they bottom out.
+
+<p>This means that you can't call these methods on <code>NavigableString</code>
+objects, because they have no <code>contents</code>: they're always the leaves of
+the parse tree.
+
+<p>But downwards isn't the only way you can iterate through a
+document. Back in <a href="#Navigating the Parse Tree">Navigating the
+Parse Tree</a> I showed you many other ways: <code>parent</code>, <code>nextSibling</code>,
+and so on. Each of these iteration techniques has two corresponding
+methods: one that works like <code>findAll</code>, and one that works like
+<code>find</code>. And since <code>NavigableString</code> objects <i>do</i> support these
+operations, you can call these methods on them as well as on <code>Tag</code>
+objects and the main parser object.
+
+<p>Why is this useful? Well, sometimes you just can't use <code>findAll</code> or
+<code>find</code> to get to the <code>Tag</code> or <code>NavigableString</code> you want. For
+instance, consider some HTML like this:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>soup = BeautifulSoup('''&lt;ul&gt;</kbd>
+<kbd> &lt;li&gt;An unrelated list</kbd>
+<kbd>&lt;/ul&gt;</kbd>
+<kbd></kbd>
+<kbd>&lt;h1&gt;Heading&lt;/h1&gt;</kbd>
+<kbd>&lt;p&gt;This is &lt;b&gt;the list you want&lt;/b&gt;:&lt;/p&gt;</kbd>
+<kbd>&lt;ul&gt;&lt;li&gt;The data you want&lt;/ul&gt;''')</kbd>
+</pre></div>
+
+<p>There are a number of ways to navigate to the &lt;LI&gt; tag that contains
+the data you want. The most obvious is this:
+
+<div class="sample"><pre>
+<kbd>soup('li', limit=2)[1]</kbd>
+# <samp>&lt;li&gt;The data you want&lt;/li&gt;</samp>
+</pre></div>
+
+<p>It should be equally obvious that that's not a very stable way to get
+that &lt;LI&gt; tag. If you're only scraping this page once it doesn't
+matter, but if you're going to scrape it many times over a long
+period, such considerations become important. If the irrelevant list
+grows another &lt;LI&gt; tag, you'll get that tag instead of the one you
+want, and your script will break or give the wrong data.
+
+<div class="sample"><pre>
+<kbd>soup('ul', limit=2)[1].li</kbd>
+# <samp>&lt;li&gt;The data you want&lt;/li&gt;</samp>
+</pre></div>
+
+<p>That's is a little better, because it can survive changes to the
+irrelevant list. But if the document grows another irrelevant list at
+the top, you'll get the first &lt;LI&gt; tag of that list instead of the one
+you want. A more reliable way of referring to the ul tag you want
+would better reflect that tag's place in the structure of the
+document.
+
+<p>When you look at that HTML, you might think of the list you want as
+'the &lt;UL&gt; tag beneath the &lt;H1&gt; tag'. The problem is that the tag isn't
+contained inside the &lt;H1&gt; tag; it just happens to comes after it. It's
+easy enough to get the &lt;H1&gt; tag, but there's no way to get from there
+to the &lt;UL&gt; tag using <code>first</code> and <code>fetch</code>, because those methods only
+search the <code>contents</code> of the &lt;H1&gt; tag. You need to navigate to the
+&lt;UL&gt; tag with the <code>next</code> or <code>nextSibling</code> members:
+
+<div class="sample"><pre>
+<kbd>s = soup.h1</kbd>
+<kbd>while getattr(s, 'name', None) != 'ul':</kbd>
+<kbd>    s = s.nextSibling</kbd>
+<kbd>s.li</kbd>
+# <samp>&lt;li&gt;The data you want&lt;/li&gt;</samp>
+</pre></div>
+
+<p>Or, if you think this might be more stable:
+
+<div class="sample"><pre>
+<kbd>s = soup.find(text='Heading')</kbd>
+<kbd>while getattr(s, 'name', None) != 'ul':</kbd>
+<kbd>    s = s.next</kbd>
+<kbd>s.li</kbd>
+# <samp>&lt;li&gt;The data you want&lt;/li&gt;</samp>
+</pre></div>
+
+<p>But that's more trouble than you should need to go through. The
+methods in this section provide a useful shorthand. They can be used
+whenever you find yourself wanting to write a while loop over one of
+the navigation members. Given a starting point somewhere in the tree,
+they navigate the tree in some way and keep track of <code>Tag</code> or
+<code>NavigableString</code> objects that match the criteria you specify. Instead of
+the first loop in the example code above, you can just write this:
+
+<div class="sample"><pre>
+<kbd>soup.h1.findNextSibling('ul').li</kbd>
+# <samp>&lt;li&gt;The data you want&lt;/li&gt;</samp>
+</pre></div>
+
+<p>Instead of the second loop, you can write this:
+
+<div class="sample"><pre>
+<kbd>soup.find(text='Heading').findNext('ul').li</kbd>
+# <samp>&lt;li&gt;The data you want&lt;/li&gt;</samp>
+</pre></div>
+
+<p>The loops are replaced with calls to <code>findNextSibling</code> and
+<code>findNext</code>. The rest of this section is a reference to all the methods
+of this kind. Again, there are two methods for every navigation
+member: one that returns a list the way <code>findAll</code> does, and one that
+returns a scalar the way <code>find</code> does.
+
+<p><a name="Search example document">One last time, let's load up
+the familiar soup document for example's sake:</a>
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>doc = ['&lt;html&gt;&lt;head&gt;&lt;title&gt;Page title&lt;/title&gt;&lt;/head&gt;',</kbd>
+<kbd>       '&lt;body&gt;&lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;.',</kbd>
+<kbd>       '&lt;p id="secondpara" align="blah"&gt;This is paragraph &lt;b&gt;two&lt;/b&gt;.',</kbd>
+<kbd>       '&lt;/html&gt;']</kbd>
+<kbd>soup = BeautifulSoup(''.join(doc))</kbd>
+<kbd>print soup.prettify()</kbd>
+# <samp>&lt;html&gt;</samp>
+# <samp> &lt;head&gt;</samp>
+# <samp>  &lt;title&gt;</samp>
+# <samp>   Page title</samp>
+# <samp>  &lt;/title&gt;</samp>
+# <samp> &lt;/head&gt;</samp>
+# <samp> &lt;body&gt;</samp>
+# <samp>  &lt;p id="firstpara" align="center"&gt;</samp>
+# <samp>   This is paragraph</samp>
+# <samp>   &lt;b&gt;</samp>
+# <samp>    one</samp>
+# <samp>   &lt;/b&gt;</samp>
+# <samp>   .</samp>
+# <samp>  &lt;/p&gt;</samp>
+# <samp>  &lt;p id="secondpara" align="blah"&gt;</samp>
+# <samp>   This is paragraph</samp>
+# <samp>   &lt;b&gt;</samp>
+# <samp>    two</samp>
+# <samp>   &lt;/b&gt;</samp>
+# <samp>   .</samp>
+# <samp>  &lt;/p&gt;</samp>
+# <samp> &lt;/body&gt;</samp>
+# <samp>&lt;/html&gt;</samp>
+</pre></div>
+
+<a name="findNextSiblings(name, attrs, text, limit, **kwargs) and findNextSibling(name, attrs, text, **kwargs)"><h3><code>findNextSiblings(<a href="#arg-name">name</a>, <a href="#arg-attrs">attrs</a>, <a href="#arg-text">text</a>, <a href="#arg-limit">limit</a>, <a href="#arg-**kwargs">**kwargs</a>)</code> and <code>findNextSibling(<a href="#arg-name">name</a>, <a href="#arg-attrs">attrs</a>, <a href="#arg-text">text</a>, <a href="#arg-**kwargs">**kwargs</a>)</code></h3></a>
+
+<p>These methods repeatedly follow an object's <code>nextSibling</code> member,
+gathering <code>Tag</code> or <code>NavigableText</code> objects that match the criteria you
+specify. In terms of <a href="#Search example document">the document
+above</a>:
+
+<div class="sample"><pre>
+<kbd>paraText = soup.find(text='This is paragraph ')</kbd>
+<kbd>paraText.findNextSiblings('b')</kbd>
+# <samp>[&lt;b&gt;one&lt;/b&gt;]</samp>
+<kbd></kbd>
+<kbd>paraText.findNextSibling(text = lambda(text): len(text) == 1)</kbd>
+# <samp>u'.'</samp>
+</pre></div>
+
+<a name="findPreviousSiblings(name, attrs, text, limit, **kwargs) and findPreviousSibling(name, attrs, text, **kwargs)"><h3><code>findPreviousSiblings(<a href="#arg-name">name</a>, <a href="#arg-attrs">attrs</a>, <a href="#arg-text">text</a>, <a href="#arg-limit">limit</a>, <a href="#arg-**kwargs">**kwargs</a>)</code> and <code>findPreviousSibling(<a href="#arg-name">name</a>, <a href="#arg-attrs">attrs</a>, <a href="#arg-text">text</a>, <a href="#arg-**kwargs">**kwargs</a>)</code></h3></a>
+
+<p>These methods repeatedly follow an object's <code>previousSibling</code> member,
+gathering <code>Tag</code> or <code>NavigableText</code> objects that match the criteria you
+specify. In terms of <a href="#Search example document">the document
+above</a>:
+
+<div class="sample"><pre>
+<kbd>paraText = soup.find(text='.')</kbd>
+<kbd>paraText.findPreviousSiblings('b')</kbd>
+# <samp>[&lt;b&gt;one&lt;/b&gt;]</samp>
+<kbd></kbd>
+<kbd>paraText.findPreviousSibling(text = True)</kbd>
+# <samp>u'This is paragraph '</samp>
+</pre></div>
+
+<a name="findAllNext(name, attrs, text, limit, **kwargs) and findNext(name, attrs, text, **kwargs)"><h3><code>findAllNext(<a href="#arg-name">name</a>, <a href="#arg-attrs">attrs</a>, <a href="#arg-text">text</a>, <a href="#arg-limit">limit</a>, <a href="#arg-**kwargs">**kwargs</a>)</code> and <code>findNext(<a href="#arg-name">name</a>, <a href="#arg-attrs">attrs</a>, <a href="#arg-text">text</a>, <a href="#arg-**kwargs">**kwargs</a>)</code></h3></a>
+
+<p>These methods repeatedly follow an object's <code>next</code> member,
+gathering <code>Tag</code> or <code>NavigableText</code> objects that match the criteria you
+specify. In terms of <a href="#Search example document">the document
+above</a>:
+
+<div class="sample"><pre>
+<kbd>pTag = soup.find('p')</kbd>
+<kbd>pTag.findAllNext(text=True)</kbd>
+# <samp>[u'This is paragraph ', u'one', u'.', u'This is paragraph ', u'two', u'.']</samp>
+<kbd></kbd>
+<kbd>pTag.findNext('p')</kbd>
+# <samp>&lt;p id="secondpara" align="blah"&gt;This is paragraph &lt;b&gt;two&lt;/b&gt;.&lt;/p&gt;</samp>
+<kbd></kbd>
+<kbd>pTag.findNext('b')</kbd>
+# <samp>&lt;b&gt;one&lt;/b&gt;</samp>
+</pre></div>
+
+<a name="findAllPrevious(name, attrs, text, limit, **kwargs) and findPrevious(name, attrs, text, **kwargs)"><h3><code>findAllPrevious(<a href="#arg-name">name</a>, <a href="#arg-attrs">attrs</a>, <a href="#arg-text">text</a>, <a href="#arg-limit">limit</a>, <a href="#arg-**kwargs">**kwargs</a>)</code> and <code>findPrevious(<a href="#arg-name">name</a>, <a href="#arg-attrs">attrs</a>, <a href="#arg-text">text</a>, <a href="#arg-**kwargs">**kwargs</a>)</code></h3></a>
+
+<p>These methods repeatedly follow an object's <code>previous</code> member,
+gathering <code>Tag</code> or <code>NavigableText</code> objects that match the criteria you
+specify. In terms of <a href="#Search example document">the document
+above</a>:
+
+<div class="sample"><pre>
+<kbd>lastPTag = soup('p')[-1]</kbd>
+<kbd>lastPTag.findAllPrevious(text=True)</kbd>
+# <samp>[u'.', u'one', u'This is paragraph ', u'Page title']</samp>
+# <samp>Note the reverse order!</samp>
+<kbd></kbd>
+<kbd>lastPTag.findPrevious('p')</kbd>
+# <samp>&lt;p id="firstpara" align="center"&gt;This is paragraph &lt;b&gt;one&lt;/b&gt;.&lt;/p&gt;</samp>
+<kbd></kbd>
+<kbd>lastPTag.findPrevious('b')</kbd>
+# <samp>&lt;b&gt;one&lt;/b&gt;</samp>
+</pre></div>
+
+<h3><code>findParents(<a href="#arg-name">name</a>, <a href="#arg-attrs">attrs</a>, <a href="#arg-limit">limit</a>, <a href="#arg-**kwargs">**kwargs</a>)</code> and
+<code>findParent(<a href="#arg-name">name</a>, <a href="#arg-attrs">attrs</a>, <a href="#arg-**kwargs">**kwargs</a>)</code></h3>
+
+<p>These methods repeatedly follow an object's <code>parent</code> member,
+gathering <code>Tag</code> or <code>NavigableText</code> objects that match the criteria you
+specify. They don't take a <code>text</code> argument, because there's no way any
+object can have a <code>NavigableString</code> for a parent. In terms of <a
+href="#Search example document">the document above</a>:
+
+<div class="sample"><pre>
+<kbd>bTag = soup.find('b')</kbd>
+<kbd></kbd>
+<kbd>[tag.name for tag in bTag.findParents()]</kbd>
+# <samp>[u'p', u'body', u'html', '[document]']</samp>
+# <samp>NOTE: "u'[document]'" means that that the parser object itself matched.</samp>
+<kbd></kbd>
+<kbd>bTag.findParent('body').name</kbd>
+# <samp>u'body'</samp>
+</pre></div>
+
+<a name="Modifying the Parse Tree"><h2>Modifying the Parse Tree</h2></a>
+
+<p>Now you know how to find things in the parse tree. But maybe you
+want to modify it and print it back out. You can just rip an element
+out of its parent's <code>contents</code>, but the rest of the document will
+still have references to the thing you ripped out. Beautiful Soup
+offers several methods that let you modify the parse tree while
+maintaining its internal consistency.
+
+<a name="Changing attribute values"><h3>Changing attribute values</h3></a>
+
+<p>You can use dictionary assignment to modify the attribute values of
+<code>Tag</code> objects. 
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>soup = BeautifulSoup("&lt;b id="2"&gt;Argh!&lt;/b&gt;")</kbd>
+<kbd>print soup</kbd>
+# <samp>&lt;b id="2"&gt;Argh!&lt;/b&gt;</samp>
+<kbd>b = soup.b</kbd>
+<kbd></kbd>
+<kbd>b['id'] = 10</kbd>
+<kbd>print soup</kbd>
+# <samp>&lt;b id="10"&gt;Argh!&lt;/b&gt;</samp>
+<kbd></kbd>
+<kbd>b['id'] = "ten"</kbd>
+<kbd>print soup</kbd>
+# <samp>&lt;b id="ten"&gt;Argh!&lt;/b&gt;</samp>
+<kbd></kbd>
+<kbd>b['id'] = 'one "million"'</kbd>
+<kbd>print soup</kbd>
+# <samp>&lt;b id='one "million"'&gt;Argh!&lt;/b&gt;</samp>
+</pre></div>
+
+<p>You can also delete attribute values, and add new ones:</p>
+
+<div class="sample"><pre>
+<kbd>del(b['id'])</kbd>
+<kbd>print soup</kbd>
+# <samp>&lt;b&gt;Argh!&lt;/b&gt;</samp>
+<kbd></kbd>
+<kbd>b['class'] = "extra bold and brassy!"</kbd>
+<kbd>print soup</kbd>
+# <samp>&lt;b class="extra bold and brassy!"&gt;Argh!&lt;/b&gt;</samp>
+</pre></div>
+
+<a name="Removing elements"><h3>Removing elements</h3></a>
+
+<p>Once you have a reference to an element, you can rip it out of the
+tree with the <code>extract</code> method. This code removes all the comments
+from a document:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup, Comment</kbd>
+<kbd>soup = BeautifulSoup("""1&lt;!--The loneliest number--&gt;</kbd>
+<kbd>                        &lt;a&gt;2&lt;!--Can be as bad as one--&gt;&lt;b&gt;3""")</kbd>
+<kbd>comments = soup.findAll(text=lambda text:isinstance(text, Comment))</kbd>
+<kbd>[comment.extract() for comment in comments]</kbd>
+<kbd>print soup</kbd>
+# <samp>1</samp>
+# <samp>&lt;a&gt;2&lt;b&gt;3&lt;/b&gt;&lt;/a&gt;</samp>
+</pre></div>
+
+<p>This code removes a whole subtree from a document:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>soup = BeautifulSoup("&lt;a1&gt;&lt;/a1&gt;&lt;a&gt;&lt;b&gt;Amazing content&lt;c&gt;&lt;d&gt;&lt;/a&gt;&lt;a2&gt;&lt;/a2&gt;")</kbd>
+<kbd>soup.a1.nextSibling</kbd>
+# <samp>&lt;a&gt;&lt;b&gt;Amazing content&lt;c&gt;&lt;d&gt;&lt;/d&gt;&lt;/c&gt;&lt;/b&gt;&lt;/a&gt;</samp>
+<kbd>soup.a2.previousSibling</kbd>
+# <samp>&lt;a&gt;&lt;b&gt;Amazing content&lt;c&gt;&lt;d&gt;&lt;/d&gt;&lt;/c&gt;&lt;/b&gt;&lt;/a&gt;</samp>
+<kbd></kbd>
+<kbd>subtree = soup.a</kbd>
+<kbd>subtree.extract()</kbd>
+<kbd></kbd>
+<kbd>print soup</kbd>
+# <samp>&lt;a1&gt;&lt;/a1&gt;&lt;a2&gt;&lt;/a2&gt;</samp>
+<kbd>soup.a1.nextSibling</kbd>
+# <samp>&lt;a2&gt;&lt;/a2&gt;</samp>
+<kbd>soup.a2.previousSibling</kbd>
+# <samp>&lt;a1&gt;&lt;/a1&gt;</samp>
+</pre></div>
+
+<p>The <code>extract</code> method turns one parse tree into two disjoint
+trees. The navigation members are changed so that it looks like the
+trees had never been together:
+
+<div class="sample"><pre>
+<kbd>soup.a1.nextSibling</kbd>
+# <samp>&lt;a2&gt;&lt;/a2&gt;</samp>
+<kbd>soup.a2.previousSibling</kbd>
+# <samp>&lt;a1&gt;&lt;/a1&gt;</samp>
+<kbd>subtree.previousSibling == None</kbd>
+# <samp>True</samp>
+<kbd>subtree.parent == None</kbd>
+# <samp>True</samp>
+</pre></div>
+
+<a name="Replacing one Element with Another"><h3>Replacing one Element with Another</h3></a>
+
+<p>The <code>replaceWith</code> method extracts one page element and replaces it
+with a different one. The new element can be a <code>Tag</code> (possibly with a
+whole parse tree beneath it) or a <code>NavigableString</code>. If you pass a
+plain old string into <code>replaceWith</code>, it gets turned into a
+<code>NavigableString</code>. The navigation members are changed as though the
+document had been parsed that way in the first place.
+
+<p>Here's a simple example:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>soup = BeautifulSoup("&lt;b&gt;Argh!&lt;/b&gt;")</kbd>
+<kbd>soup.find(text="Argh!").replaceWith("Hooray!")</kbd>
+<kbd>print soup</kbd>
+# <samp>&lt;b&gt;Hooray!&lt;/b&gt;</samp>
+<kbd></kbd>
+<kbd>newText = soup.find(text="Hooray!")</kbd>
+<kbd>newText.previous</kbd>
+# <samp>&lt;b&gt;Hooray!&lt;/b&gt;</samp>
+<kbd>newText.previous.next</kbd>
+# <samp>u'Hooray!'</samp>
+<kbd>newText.parent</kbd>
+# <samp>&lt;b&gt;Hooray!&lt;/b&gt;</samp>
+<kbd>soup.b.contents</kbd>
+# <samp>[u'Hooray!']</samp>
+</pre></div>
+
+<p>Here's a more complex example that replaces one tag with another:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup, Tag</kbd>
+<kbd>soup = BeautifulSoup("&lt;b&gt;Argh!&lt;a&gt;Foo&lt;/a&gt;&lt;/b&gt;&lt;i&gt;Blah!&lt;/i&gt;")</kbd>
+<kbd>tag = Tag(soup, "newTag", [("id", 1)])</kbd>
+<kbd>tag.insert(0, "Hooray!")</kbd>
+<kbd>soup.a.replaceWith(tag)</kbd>
+<kbd>print soup</kbd>
+# <samp>&lt;b&gt;Argh!&lt;newTag id="1"&gt;Hooray!&lt;/newTag&gt;&lt;/b&gt;&lt;i&gt;Blah!&lt;/i&gt;</samp>
+</pre></div>
+
+<p>You can even rip out an element from one part of the document and
+stick it in another part:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>text = "&lt;html&gt;There's &lt;b&gt;no&lt;/b&gt; business like &lt;b&gt;show&lt;/b&gt; business&lt;/html&gt;"</kbd>
+<kbd>soup = BeautifulSoup(text)</kbd>
+<kbd></kbd>
+<kbd>no, show = soup.findAll('b')</kbd>
+<kbd>show.replaceWith(no)</kbd>
+<kbd>print soup</kbd>
+# <samp>&lt;html&gt;There's  business like &lt;b&gt;no&lt;/b&gt; business&lt;/html&gt;</samp>
+</pre></div>
+
+<a name="Adding a Brand New Element"><h3>Adding a Brand New Element</h3></a>
+
+<p>The <code>Tag</code> class and the parser classes support a method called
+<code>insert</code>. It works just like a Python list's <code>insert</code> method: it takes
+an index to the tag's <code>contents</code> member, and sticks a new element in
+that slot.
+
+<p>This was demonstrated in the previous section, when we replaced a
+tag in the document with a brand new tag. You can use <code>insert</code> to
+build up an entire parse tree from scratch:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup, Tag, NavigableString</kbd>
+<kbd>soup = BeautifulSoup()</kbd>
+<kbd>tag1 = Tag(soup, "mytag")</kbd>
+<kbd>tag2 = Tag(soup, "myOtherTag")</kbd>
+<kbd>tag3 = Tag(soup, "myThirdTag")</kbd>
+<kbd>soup.insert(0, tag1)</kbd>
+<kbd>tag1.insert(0, tag2)</kbd>
+<kbd>tag1.insert(1, tag3)</kbd>
+<kbd>print soup</kbd>
+# <samp>&lt;mytag&gt;&lt;myOtherTag&gt;&lt;/myOtherTag&gt;&lt;myThirdTag&gt;&lt;/myThirdTag&gt;&lt;/mytag&gt;</samp>
+<kbd></kbd>
+<kbd>text = NavigableString("Hello!")</kbd>
+<kbd>tag3.insert(0, text)</kbd>
+<kbd>print soup</kbd>
+# <samp>&lt;mytag&gt;&lt;myOtherTag&gt;&lt;/myOtherTag&gt;&lt;myThirdTag&gt;Hello!&lt;/myThirdTag&gt;&lt;/mytag&gt;</samp>
+</pre></div>
+
+<p>An element can occur in only one place in one parse tree. If you
+give <code>insert</code> an element that's already connected to a soup object, it
+gets disconnected (with <code>extract</code>) before it gets connected
+elsewhere. In this example, I try to insert my <code>NavigableString</code> into
+a second part of the soup, but it doesn't get inserted again. It gets
+moved:
+
+<div class="sample"><pre>
+<kbd>tag2.insert(0, text)</kbd>
+<kbd>print soup</kbd>
+# <samp>&lt;mytag&gt;&lt;myOtherTag&gt;Hello!&lt;/myOtherTag&gt;&lt;myThirdTag&gt;&lt;/myThirdTag&gt;&lt;/mytag&gt;</samp>
+</pre></div>
+
+<p>This happens even if the element previously belonged to a
+completely different soup object. An element can only have one
+<code>parent</code>, one <code>nextSibling</code>, et cetera, so it can only be in one place
+at a time.
+
+<a name="Troubleshooting"><h2>Troubleshooting</h2></a>
+
+<p>This section covers common problems people have with Beautiful Soup.
+
+<a name="Why can't Beautiful Soup print out the non-ASCII characters I gave it?"><h3>Why can't Beautiful Soup print out the non-ASCII characters I gave it?</h3></a>
+
+<p>If you're getting errors that say: 
+<code>"'ascii' codec can't encode character 'x' in position y: ordinal not in range(128)"</code>, 
+the problem is probably with your Python installation rather than with
+Beautiful Soup. Try printing out the non-ASCII characters without
+running them through Beautiful Soup and you should have the same
+problem. For instance, try running code like this:
+
+<div class="sample"><pre>
+<kbd>latin1word = 'Sacr\xe9 bleu!'</kbd>
+<kbd>unicodeword = unicode(latin1word, 'latin-1')</kbd>
+<kbd>print unicodeword</kbd>
+</pre></div>
+
+<p>If this works but Beautiful Soup doesn't, there's probably a bug in
+Beautiful Soup. However, if this doesn't work, the problem's with your
+Python setup. Python is playing it safe and not sending non-ASCII
+characters to your terminal. There are two ways to override this
+behavior.
+
+<ol>
+<li>
+
+<p>The easy way is to remap standard output to a converter that's
+not afraid to send ISO-Latin-1 or UTF-8 characters to the terminal.
+
+<div class="sample"><pre>
+<kbd>import codecs</kbd>
+<kbd>import sys</kbd>
+<kbd>streamWriter = codecs.lookup('utf-8')[-1]</kbd>
+<kbd>sys.stdout = streamWriter(sys.stdout)</kbd>
+</pre></div>
+
+<p><code>codecs.lookup</code> returns a number of bound methods and
+other objects related to a codec. The last one is a
+<code>StreamWriter</code> object capable of wrapping an output
+stream.</p>
+
+<li><p>The hard way is to create a <code>sitecustomize.py</code> file
+in your Python installation which sets the default encoding to
+ISO-Latin-1 or to UTF-8. Then all your Python programs will use that
+encoding for standard output, without you having to do something for
+each program. In my installation, I have a
+<code>/usr/lib/python/sitecustomize.py</code> which looks like this:
+
+<div class="sample"><pre>
+<kbd>import sys</kbd>
+<kbd>sys.setdefaultencoding("utf-8")</kbd>
+</pre></div>
+</ol>
+
+<p>For more information about Python's Unicode support, look at <a
+href="http://dalchemy.com/opensource/unicodedoc/">Unicode for
+Programmers</a> or <a
+href="http://dalchemy.com/opensource/unicodedoc/">End to End Unicode
+Web Applications in Python</a>. Recipes 1.20 and 1.21 in the Python
+cookbook are also very helpful.
+
+<p>Remember, even if your terminal display is restricted to ASCII, you
+can still use Beautiful Soup to parse, process, and write documents in
+UTF-8 and other encodings. You just can't print certain strings with
+<code>print</code>.
+
+<a name="Beautiful Soup loses the data I fed it! Why? WHY?????"><h3>Beautiful Soup loses the data I fed it! Why? WHY?????</h3></a>
+
+<p>Beautiful Soup can handle poorly-structured SGML, but sometimes
+it loses data when it gets stuff that's not SGML at all. This is
+not nearly as common as poorly-structured markup, but if you're
+building a web crawler or something you'll surely run into it.
+
+<p>The only solution is to 
+
+<a href="#Sanitizing Bad Data with Regexps">sanitize the data ahead of
+time</a> with a regular expression. Here are some examples that I and
+Beautiful Soup users have discovered:
+
+<ul> 
+
+<li><p>Beautiful Soup treats ill-formed XML definitions as data. However,
+it loses well-formed XML definitions that don't actually exist:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>BeautifulSoup("&lt; ! FOO @=&gt;")</kbd>
+# <samp>&lt; ! FOO @=&gt;</samp>
+<kbd>BeautifulSoup("&lt;b&gt;&lt;!FOO&gt;!&lt;/b&gt;")</kbd>
+# <samp>&lt;b&gt;!&lt;/b&gt;</samp>
+</pre></div>
+
+<li><p>If your document starts a declaration and never finishes it,
+Beautiful Soup assumes the rest of your document is part of the
+declaration. If the document ends in the middle of the declaration,
+Beautiful Soup ignores the declaration totally. A couple examples:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd></kbd>
+<kbd>BeautifulSoup("foo&lt;!bar") </kbd>
+# <samp>foo </samp>
+<kbd></kbd>
+<kbd>soup = BeautifulSoup("&lt;html&gt;foo&lt;!bar&lt;/html&gt;") </kbd>
+<kbd>print soup.prettify()</kbd>
+# <samp>&lt;html&gt;</samp>
+# <samp> foo&lt;!bar&lt;/html&gt;</samp>
+# <samp>&lt;/html&gt;</samp>
+</pre></div>
+
+<p>There are a couple ways to fix this; one is detailed <a
+href="http://groups.google.com/group/beautifulsoup/browse_thread/thread/69093cb0d3a3cf63">here</a>.
+
+<p>Beautiful Soup also ignores an entity reference that's not finished
+by the end of the document:
+
+<div class="sample"><pre>
+<kbd>BeautifulSoup("&amp;lt;foo&amp;gt")</kbd>
+# <samp>&amp;lt;foo</samp>
+</pre></div>
+
+<p>I've never seen this in real web pages, but it's probably out there
+somewhere.
+
+<li><p>A malformed comment will make Beautiful Soup ignore the rest of
+the document. This is covered as the example in <a href="#Sanitizing 
+Bad Data with Regexps">Sanitizing Bad Data with Regexps</a>.
+
+</ul>
+
+<h3>The parse tree built by the <code>BeautifulSoup</code> class offends my
+senses!</h3>
+
+<p>To get your markup parsed differently, check out 
+
+<a href="#Other Built-In Parsers">Other Built-In Parsers</a>, or else
+<a href="#Customizing the Parser">build a custom parser</a>.
+
+<a name="Beautiful Soup is too slow!"><h3>Beautiful Soup is too slow!</h3></a>
+
+<p>Beautiful Soup will never run as fast as ElementTree or a
+custom-built <code>SGMLParser</code> subclass. ElementTree is written in C, and
+<code>SGMLParser</code> lets you write your own mini-Beautiful Soup that only
+does what you want. The point of Beautiful Soup is to save programmer
+time, not processor time.
+
+<p>That said, you can speed up Beautiful Soup quite a lot by <a
+
+href="#Improving Performance by Parsing Only Part of the Document">only 
+
+parsing the parts of the document you need</a>, and you
+can make unneeded objects get garbage-collected by using <a
+href="#Improving Memory Usage with extract"><code>extract</code> or <code>decompose</code></a>.
+
+<a name="Advanced Topics"><h2>Advanced Topics</h2></a>
+
+<p>That does it for the basic usage of Beautiful Soup. But HTML and
+XML are tricky, and in the real world they're even trickier. So
+Beautiful Soup keeps some extra tricks of its own up its sleeve.
+
+<a name="Generators"><h3>Generators</h3></a>
+
+<p>The search methods described above are driven by generator
+methods. You can use these methods yourself: they're called
+<code>nextGenerator</code>, <code>previousGenerator</code>, <code>nextSiblingGenerator</code>,
+<code>previousSiblingGenerator</code>, and <code>parentGenerator</code>. <code>Tag</code> and parser
+objects also have <code>childGenerator</code> and <code>recursiveChildGenerator</code>
+available. 
+
+<p>Here's a simple example that strips HTML tags out of a document by
+iterating over the document and collecting all the strings.
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>soup = BeautifulSoup("""&lt;div&gt;You &lt;i&gt;bet&lt;/i&gt;</kbd>
+<kbd>&lt;a href="http://www.crummy.com/software/BeautifulSoup/"&gt;BeautifulSoup&lt;/a&gt;</kbd>
+<kbd>rocks!&lt;/div&gt;""")</kbd>
+<kbd></kbd>
+<kbd>''.join([e for e in soup.recursiveChildGenerator() </kbd>
+<kbd>         if isinstance(e,unicode)])</kbd>
+# <samp>u'You bet\nBeautifulSoup\nrocks!'</samp>
+</pre></div>
+
+<p>Of course, you don't really need a generator to find only the text
+beneath a tag. That code does the same thing as <code>.findAll(text=True)</code>.
+
+<div class="sample"><pre>
+<kbd>''.join(soup.findAll(text=True))</kbd>
+# <samp>u'You bet\nBeautifulSoup\nrocks!'</samp>
+</pre></div>
+
+<p>Here's a more complex example that uses <code>recursiveChildGenerator</code>
+to iterate over the elements of a document, printing each one as it
+gets it.
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>soup = BeautifulSoup("1&lt;a&gt;2&lt;b&gt;3")</kbd>
+<kbd>g = soup.recursiveChildGenerator()</kbd>
+<kbd>while True:</kbd>
+<kbd>    try:</kbd>
+<kbd>        print g.next()</kbd>
+<kbd>    except StopIteration:</kbd>
+<kbd>        break</kbd>
+# <samp>1</samp>
+# <samp>&lt;a&gt;2&lt;b&gt;3&lt;/b&gt;&lt;/a&gt;</samp>
+# <samp>2</samp>
+# <samp>&lt;b&gt;3&lt;/b&gt;</samp>
+# <samp>3</samp>
+</pre></div>
+
+<a name="Other Built-In Parsers"><h3>Other Built-In Parsers</h3></a>
+
+<p>Beautiful Soup comes with three parser classes besides <a
+href="#Parsing HTML"><code>BeautifulSoup</code></a> and <a href="#Parsing XML">
+<code>BeautifulStoneSoup</code></a>:
+
+<ul>
+
+<li><p><code>MinimalSoup</code> is a subclass of <code>BeautifulSoup</code>. It knows most
+facts about HTML like which tags are self-closing, the special
+behavior of the &lt;SCRIPT&gt; tag, the possibility of an encoding mentioned
+in a &lt;META&gt; tag, etc. But it has no nesting heuristics at all. So it
+doesn't know that &lt;LI&gt; tags go underneath &lt;UL&gt; tags and not the other
+way around. It's useful for parsing pathologically bad markup, and for
+subclassing.
+
+<li><p><code>ICantBelieveItsBeautifulSoup</code> is also a subclass of
+<code>BeautifulSoup</code>. It has HTML heuristics that conform more
+closely to the HTML standard, but ignore how HTML is used in the real
+world. For instance, it's valid HTML to nest &lt;B&gt; tags, but in the real
+world a nested &lt;B&gt; tag almost always means that the author forgot to
+close the first &lt;B&gt; tag. If you run into someone who actually nests
+&lt;B&gt; tags, then you can use <code>ICantBelieveItsBeautifulSoup</code>.
+
+<li><p><code>BeautifulSOAP</code> is a subclass of
+<code>BeautifulStoneSoup</code>. It's useful for parsing documents
+like SOAP messages, which use a subelement when they could just use an
+attribute of the parent element. Here's an example:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulStoneSoup, BeautifulSOAP</kbd>
+<kbd>xml = "&lt;doc&gt;&lt;tag&gt;subelement&lt;/tag&gt;&lt;/doc&gt;"</kbd>
+<kbd>print BeautifulStoneSoup(xml)</kbd>
+# <samp>&lt;doc&gt;&lt;tag&gt;subelement&lt;/tag&gt;&lt;/doc&gt;</samp>
+<kbd>print BeautifulSOAP(xml)</kbd>
+<kbd>&lt;doc tag="subelement"&gt;&lt;tag&gt;subelement&lt;/tag&gt;&lt;/doc&gt;</kbd>
+</pre></div>
+
+<p>With <code>BeautifulSOAP</code> you can access the contents of the
+&lt;TAG&gt; tag without descending into the tag.
+
+</ul>
+
+<a name="Customizing the Parser"><h3>Customizing the Parser</h3></a>
+
+<p>When the built-in parser classes won't do the job, you need to
+customize. This usually means customizing the lists of nestable and
+self-closing tags. You can customize the list of self-closing tags by
+passing a <a href="#selfClosingTags"><code>selfClosingTags</code></a> argument
+into the soup constructor. To customize the lists of nestable tags,
+though, you'll have to subclass.
+
+<p>The most useful classes to subclass are <code>MinimalSoup</code> (for HTML)
+and <code>BeautifulStoneSoup</code> (for XML). I'm going to show you how to
+override <code>RESET_NESTING_TAGS</code> and <code>NESTABLE_TAGS</code> in a subclass. This
+is the most complicated part of Beautiful Soup and I'm not going to
+explain it very well here, but I'll get something written and then I
+can improve it with feedback.
+
+<p>When Beautiful Soup is parsing a document, it keeps a stack of open
+tags. Whenever it sees a new start tag, it tosses that tag on top of
+the stack. But before it does, it might close some of the open tags
+and remove them from the stack. Which tags it closes depends on the
+qualities of tag it just found, and the qualities of the tags in the
+stack.
+
+<p>The best way to explain it is through example. Let's say the stack
+looks like <code>['html', 'p', 'b']</code>, and Beautiful Soup encounters a &lt;P&gt;
+tag. If it just tossed another <code>'p'</code> onto the stack, this would imply
+that the second &lt;P&gt; tag is within the first &lt;P&gt; tag, not to mention
+the open &lt;B&gt; tag. But that's not the way &lt;P&gt; tags work. You can't
+stick a &lt;P&gt; tag inside another &lt;P&gt; tag. A &lt;P&gt; tag isn't "nestable" at
+all.
+
+<p>So when Beautiful Soup encounters a &lt;P&gt; tag, it closes and pops all
+the tags up to and including the previously encountered tag of the
+same type. This is the default behavior, and this is how
+<code>BeautifulStoneSoup</code> treats <i>every</i> tag. It's what you get when a
+tag is not mentioned in either <code>NESTABLE_TAGS</code> or
+<code>RESET_NESTING_TAGS</code>. It's also what you get when a tag shows up in
+<code>RESET_NESTING_TAGS</code> but has no entry in <code>NESTABLE_TAGS</code>, the way the
+&lt;P&gt; tag does.
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>BeautifulSoup.RESET_NESTING_TAGS['p'] == None</kbd>
+# <samp>True</samp>
+<kbd>BeautifulSoup.NESTABLE_TAGS.has_key('p')</kbd>
+# <samp>False</samp>
+<kbd></kbd>
+<kbd>print BeautifulSoup("&lt;html&gt;&lt;p&gt;Para&lt;b&gt;one&lt;p&gt;Para two")</kbd>
+# <samp>&lt;html&gt;&lt;p&gt;Para&lt;b&gt;one&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Para two&lt;/p&gt;&lt;/html&gt;</samp>
+# <samp>                     ^---^--The second &lt;p&gt; tag made those two tags get closed</samp>
+</pre></div>
+
+<p>Let's say the stack looks like <code>['html', 'span', 'b']</code>, and
+Beautiful Soup encounters a &lt;SPAN&gt; tag. Now, &lt;SPAN&gt; tags can contain
+other &lt;SPAN&gt; tags without limit, so there's no need to pop up to the
+previous &lt;SPAN&gt; tag when you encounter one. This is represented by
+mapping the tag name to an empty list in <code>NESTABLE_TAGS</code>. This kind of
+tag should not be mentioned in <code>RESET_NESTING_TAGS</code>: there are no
+circumstances when encountering a &lt;SPAN&gt; tag would cause any tags to
+be popped.
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>BeautifulSoup.NESTABLE_TAGS['span']</kbd>
+# <samp>[]</samp>
+<kbd>BeautifulSoup.RESET_NESTING_TAGS.has_key('span')</kbd>
+# <samp>False</samp>
+<kbd></kbd>
+<kbd>print BeautifulSoup("&lt;html&gt;&lt;span&gt;Span&lt;b&gt;one&lt;span&gt;Span two")</kbd>
+# <samp>&lt;html&gt;&lt;span&gt;Span&lt;b&gt;one&lt;span&gt;Span two&lt;/span&gt;&lt;/b&gt;&lt;/span&gt;&lt;/html&gt;</samp>
+</pre></div>
+
+<p>Third example: suppose the stack looks like <code>['ol','li','ul']</code>:
+that is, we've got an ordered list, the first element of which
+contains an unordered list. Now suppose Beautiful Soup encounters a
+&lt;LI&gt; tag. It shouldn't pop up to the first &lt;LI&gt; tag, because this new
+&lt;LI&gt; tag is part of the unordered sublist. It's okay for an &lt;LI&gt; tag
+to be inside another &lt;LI&gt; tag, so long as there's a &lt;UL&gt; or &lt;OL&gt; tag
+in the way.
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>print BeautifulSoup("&lt;ol&gt;&lt;li&gt;1&lt;ul&gt;&lt;li&gt;A").prettify()</kbd>
+# <samp>&lt;ol&gt;</samp>
+# <samp> &lt;li&gt;</samp>
+# <samp>  1</samp>
+# <samp>  &lt;ul&gt;</samp>
+# <samp>   &lt;li&gt;</samp>
+# <samp>    A</samp>
+# <samp>   &lt;/li&gt;</samp>
+# <samp>  &lt;/ul&gt;</samp>
+# <samp> &lt;/li&gt;</samp>
+# <samp>&lt;/ol&gt;</samp>
+</pre></div>
+
+<p>But if there is no intervening &lt;UL&gt; or &lt;OL&gt;, then one &lt;LI&gt; tag
+can't be underneath another:
+
+<div class="sample"><pre>
+<kbd>print BeautifulSoup("&lt;ol&gt;&lt;li&gt;1&lt;li&gt;A").prettify()</kbd>
+# <samp>&lt;ol&gt;</samp>
+# <samp> &lt;li&gt;</samp>
+# <samp>  1</samp>
+# <samp> &lt;/li&gt;</samp>
+# <samp> &lt;li&gt;</samp>
+# <samp>  A</samp>
+# <samp> &lt;/li&gt;</samp>
+# <samp>&lt;/ol&gt;</samp>
+</pre></div>
+
+<p>We tell Beautiful Soup to treat &lt;LI&gt; tags this way by putting "li"
+in <code>RESET_NESTING_TAGS</code>, and by giving "li" a <code>NESTABLE_TAGS</code> entry
+showing list of tags under which it can nest.
+
+<div class="sample"><pre>
+<kbd>BeautifulSoup.RESET_NESTING_TAGS.has_key('li')</kbd>
+# <samp>True</samp>
+<kbd>BeautifulSoup.NESTABLE_TAGS['li']</kbd>
+# <samp>['ul', 'ol']</samp>
+</pre></div>
+
+<p>This is also how we handle the nesting of table tags:
+
+<div class="sample"><pre>
+<kbd>BeautifulSoup.NESTABLE_TAGS['td']</kbd>
+# <samp>['tr']</samp>
+<kbd>BeautifulSoup.NESTABLE_TAGS['tr']</kbd>
+# <samp>['table', 'tbody', 'tfoot', 'thead']</samp>
+<kbd>BeautifulSoup.NESTABLE_TAGS['tbody']</kbd>
+# <samp>['table']</samp>
+<kbd>BeautifulSoup.NESTABLE_TAGS['thead']</kbd>
+# <samp>['table']</samp>
+<kbd>BeautifulSoup.NESTABLE_TAGS['tfoot']</kbd>
+# <samp>['table']</samp>
+<kbd>BeautifulSoup.NESTABLE_TAGS['table']</kbd>
+# <samp>[]</samp>
+</pre></div>
+
+<p>That is: &lt;TD&gt; tags can be nested within &lt;TR&gt; tags. &lt;TR&gt; tags can be
+nested within &lt;TABLE&gt;, &lt;TBODY&gt;, &lt;TFOOT&gt;, and &lt;THEAD&gt; tags. &lt;TBODY&gt;,
+&lt;TFOOT&gt;, and &lt;THEAD&gt; tags can be nested in &lt;TABLE&gt; tags, and &lt;TABLE&gt;
+tags can be nested in other &lt;TABLE&gt; tags. If you know about HTML
+tables, these rules should already make sense to you.
+
+<p>One more example. Say the stack looks like <code>['html', 'p', 'table']</code>
+and Beautiful Soup encounters a &lt;P&gt; tag. 
+
+<p>At first glance, this looks just like the example where the stack
+is <code>['html', 'p', 'b']</code> and Beautiful Soup encounters a &lt;P&gt; tag. In
+that example, we closed the &lt;B&gt; and &lt;P&gt; tags, because you can't have
+one paragraph inside another.
+
+<p>Except... you <i>can</i> have a paragraph that contains a table,
+and then the table contains a paragraph. So the right thing to do is
+to not close any of these tags. Beautiful Soup does the right thing:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>print BeautifulSoup("&lt;p&gt;Para 1&lt;b&gt;&lt;p&gt;Para 2")</kbd>
+# <samp>&lt;p&gt;</samp>
+# <samp> Para 1</samp>
+# <samp> &lt;b&gt;</samp>
+# <samp> &lt;/b&gt;</samp>
+# <samp>&lt;/p&gt;</samp>
+# <samp>&lt;p&gt;</samp>
+# <samp> Para 2</samp>
+# <samp>&lt;/p&gt;</samp>
+<kbd></kbd>
+<kbd>print BeautifulSoup("&lt;p&gt;Para 1&lt;table&gt;&lt;p&gt;Para 2").prettify()</kbd>
+# <samp>&lt;p&gt;</samp>
+# <samp> Para 1</samp>
+# <samp> &lt;table&gt;</samp>
+# <samp>  &lt;p&gt;</samp>
+# <samp>   Para 2</samp>
+# <samp>  &lt;/p&gt;</samp>
+# <samp> &lt;/table&gt;</samp>
+# <samp>&lt;/p&gt;</samp>
+</pre></div>
+
+<p>What's the difference? The difference is that &lt;TABLE&gt; is in
+<code>RESET_NESTING_TAGS</code> and &lt;B&gt; is not. A tag that's in
+<code>RESET_NESTING_TAGS</code> doesn't get popped off the stack as easily as a
+tag that's not. 
+
+<p>Okay, hopefully you get the idea. Here's the <code>NESTABLE_TAGS</code> for
+the <code>BeautifulSoup</code> class. Correlate this with what you know about
+HTML, and you should be able to create your own <code>NESTABLE_TAGS</code> for
+bizarre HTML documents that don't follow the normal rules, and for
+other XML dialects that have different nesting rules.
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>nestKeys = BeautifulSoup.NESTABLE_TAGS.keys()</kbd>
+<kbd>nestKeys.sort()</kbd>
+<kbd>for key in nestKeys:</kbd>
+<kbd>    print "%s: %s" % (key, BeautifulSoup.NESTABLE_TAGS[key])</kbd>
+# <samp>bdo: []</samp>
+# <samp>blockquote: []</samp>
+# <samp>center: []</samp>
+# <samp>dd: ['dl']</samp>
+# <samp>del: []</samp>
+# <samp>div: []</samp>
+# <samp>dl: []</samp>
+# <samp>dt: ['dl']</samp>
+# <samp>fieldset: []</samp>
+# <samp>font: []</samp>
+# <samp>ins: []</samp>
+# <samp>li: ['ul', 'ol']</samp>
+# <samp>object: []</samp>
+# <samp>ol: []</samp>
+# <samp>q: []</samp>
+# <samp>span: []</samp>
+# <samp>sub: []</samp>
+# <samp>sup: []</samp>
+# <samp>table: []</samp>
+# <samp>tbody: ['table']</samp>
+# <samp>td: ['tr']</samp>
+# <samp>tfoot: ['table']</samp>
+# <samp>th: ['tr']</samp>
+# <samp>thead: ['table']</samp>
+# <samp>tr: ['table', 'tbody', 'tfoot', 'thead']</samp>
+# <samp>ul: []</samp>
+</pre></div>
+
+<p>And here's <code>BeautifulSoup</code>'s <code>RESET_NESTING_TAGS</code>. Only the keys
+are important: <code>RESET_NESTING_TAGS</code> is actually a list, put into the
+form of a dictionary for quick random access.
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>resetKeys = BeautifulSoup.RESET_NESTING_TAGS.keys()</kbd>
+<kbd>resetKeys.sort()</kbd>
+<kbd>resetKeys</kbd>
+# <samp>['address', 'blockquote', 'dd', 'del', 'div', 'dl', 'dt', 'fieldset', </samp>
+# <samp> 'form', 'ins', 'li', 'noscript', 'ol', 'p', 'pre', 'table', 'tbody',</samp>
+# <samp> 'td', 'tfoot', 'th', 'thead', 'tr', 'ul']</samp>
+</pre></div>
+
+<p>Since you're subclassing anyway, you might as well override
+<code>SELF_CLOSING_TAGS</code> while you're at it. It's a dictionary that maps
+self-closing tag names to any values at all (like
+<code>RESET_NESTING_TAGS</code>, it's actually a list in the form of a
+dictionary). Then you won't have to pass that list in to the
+constructor (as <code>selfClosingTags</code>) every time you instantiate your
+subclass.
+
+<a name="Entity Conversion"><h3>Entity Conversion</h3></a>
+
+<p>When you parse a document, you can convert HTML or XML entity
+references to the corresponding Unicode characters. This code converts
+the HTML entity "&amp;eacute;" to the Unicode character LATIN SMALL
+LETTER E WITH ACUTE, and the numeric entity "&amp;#101;" to the Unicode
+character LATIN SMALL LETTER E.
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulStoneSoup</kbd>
+<kbd>BeautifulStoneSoup("Sacr&amp;eacute; bl&amp;#101;u!", </kbd>
+<kbd>                   convertEntities=BeautifulStoneSoup.HTML_ENTITIES).contents[0]</kbd>
+# <samp>u'Sacr\xe9 bleu!'</samp>
+</pre></div>
+
+<p>That's if you use <code>HTML_ENTITIES</code> (which is just the string
+"html"). If you use <code>XML_ENTITIES</code> (or the string "xml"), then only
+numeric entities and the five XML entities ("&amp;quot;",
+"&amp;apos;", "&amp;gt;", "&amp;lt;", and "&amp;amp;") get
+converted. If you use <code>ALL_ENTITIES</code> (or the list <code>["xml", "html"]</code>),
+then both kinds of entities will be converted. This last one is
+neccessary because &amp;apos; is an XML entity but not an HTML
+entity.
+
+<div class="sample"><pre>
+<kbd>BeautifulStoneSoup("Sacr&amp;eacute; bl&amp;#101;u!", </kbd>
+<kbd>                   convertEntities=BeautifulStoneSoup.XML_ENTITIES)</kbd>
+# <samp>Sacr&amp;eacute; bleu!</samp>
+<kbd></kbd>
+<kbd>from BeautifulSoup import BeautifulStoneSoup</kbd>
+<kbd>BeautifulStoneSoup("Il a dit, &amp;lt;&amp;lt;Sacr&amp;eacute; bl&amp;#101;u!&amp;gt;&amp;gt;", </kbd>
+<kbd>                   convertEntities=BeautifulStoneSoup.XML_ENTITIES)</kbd>
+# <samp>Il a dit, &lt;&lt;Sacr&amp;eacute; bleu!&gt;&gt;</samp>
+</pre></div>
+
+<p>If you tell Beautiful Soup to convert XML or HTML entities into the
+corresponding Unicode characters, then Windows-1252 characters (like
+Microsoft smart quotes) also get transformed into Unicode
+characters. This happens even if you told Beautiful Soup to convert
+those characters to entities.
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulStoneSoup</kbd>
+<kbd>smartQuotesAndEntities = "Il a dit, \x8BSacr&amp;eacute; bl&amp;#101;u!\x9b"</kbd>
+<kbd></kbd>
+<kbd>BeautifulStoneSoup(smartQuotesAndEntities, smartQuotesTo="html").contents[0]</kbd>
+# <samp>u'Il a dit, &amp;lsaquo;Sacr&amp;eacute; bl&amp;#101;u!&amp;rsaquo;'</samp>
+<kbd></kbd>
+<kbd>BeautifulStoneSoup(smartQuotesAndEntities, convertEntities="html", </kbd>
+<kbd>                   smartQuotesTo="html").contents[0]</kbd>
+# <samp>u'Il a dit, \u2039Sacr\xe9 bleu!\u203a'</samp>
+<kbd></kbd>
+<kbd>BeautifulStoneSoup(smartQuotesAndEntities, convertEntities="xml", </kbd>
+<kbd>                   smartQuotesTo="xml").contents[0]</kbd>
+# <samp>u'Il a dit, \u2039Sacr&amp;eacute; bleu!\u203a'</samp>
+</pre></div>
+
+<p>It doesn't make sense to create new HTML/XML entities while you're
+busy turning all the existing entities into Unicode
+characters.
+
+<a name="Sanitizing Bad Data with Regexps"><h3>Sanitizing Bad Data with Regexps</h3></a>
+
+<p>Beautiful Soup does pretty well at handling bad markup when "bad
+markup" means tags in the wrong places. But sometimes the markup is
+just malformed, and the underlying parser can't handle it. So
+Beautiful Soup runs regular expressions against an input document
+before trying to parse it.
+
+<p>By default, Beautiful Soup uses regular expressions and replacement
+functions to do search-and-replace on input documents. It finds
+self-closing tags that look like &lt;BR/&gt;, and changes them to look like
+&lt;BR /&gt;. It finds declarations that have extraneous whitespace, like 
+&lt;! --Comment--&gt;, and removes the whitespace: &lt;!--Comment--&gt;.
+
+<p>If you have bad markup that needs fixing in some other way, you can
+pass your own list of <code>(regular expression, replacement function)</code>
+tuples into the soup constructor, as the <code>markupMassage</code> argument.
+
+<p>Let's take an example: a page that has a malformed comment. The
+underlying SGML parser can't cope with this, and ignores the comment
+and everything afterwards:
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup</kbd>
+<kbd>badString = "Foo&lt;!-This comment is malformed.--&gt;Bar&lt;br/&gt;Baz"</kbd>
+<kbd>BeautifulSoup(badString)</kbd>
+# <samp>Foo</samp>
+</pre></div>
+
+<p>Let's fix it up with a regular expression and a function:
+
+<div class="sample"><pre>
+<kbd>import re</kbd>
+<kbd>myMassage = [(re.compile('&lt;!-([^-])'), lambda match: '&lt;!--' + match.group(1))]</kbd>
+<kbd>BeautifulSoup(badString, markupMassage=myMassage)</kbd>
+# <samp>Foo&lt;!--This comment is malformed.--&gt;Bar</samp>
+</pre></div>
+
+<p>Oops, we're still missing the &lt;BR&gt; tag. Our <code>markupMassage</code>
+overrides the parser's default massage, so the default
+search-and-replace functions don't get run. The parser makes it past
+the comment, but it dies at the malformed self-closing tag. Let's add
+our new massage function to the default list, so we run all the
+functions.
+
+<div class="sample"><pre>
+<kbd>import copy</kbd>
+<kbd>myNewMassage = copy.copy(BeautifulSoup.MARKUP_MASSAGE)</kbd>
+<kbd>myNewMassage.extend(myMassage)</kbd>
+<kbd>BeautifulSoup(badString, markupMassage=myNewMassage)</kbd>
+# <samp>Foo&lt;!--This comment is malformed.--&gt;Bar&lt;br /&gt;Baz</samp>
+</pre></div>
+
+<p>Now we've got it all.
+
+<p>If you know for a fact that your markup doesn't need any regular
+expressions run on it, you can get a faster startup time by passing in
+<code>False</code> for <code>markupMassage</code>.
+
+<a name="Fun With SoupStrainers"><h3>Fun With <code>SoupStrainer</code>s</h3></a>
+
+<p>Recall that all the search methods take more or less <a
+href="#args">the same arguments</a>. Behind the scenes, your arguments
+to a search method get transformed into a <code>SoupStrainer</code> object. If
+you call one of the methods that returns a list (like <code>findAll</code>), the
+<code>SoupStrainer</code> object is made available as the <code>source</code> property of
+the resulting list.
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulStoneSoup</kbd>
+<kbd>xml = '&lt;person name="Bob"&gt;&lt;parent rel="mother" name="Alice"&gt;'</kbd>
+<kbd>xmlSoup = BeautifulStoneSoup(xml)</kbd>
+<kbd>results = xmlSoup.findAll(rel='mother')</kbd>
+<kbd></kbd>
+<kbd>results.source</kbd>
+# <samp>&lt;BeautifulSoup.SoupStrainer instance at 0xb7e0158c&gt;</samp>
+<kbd>str(results.source)</kbd>
+# <samp>"None|{'rel': 'mother'}"</samp>
+</pre></div>
+
+<p>The <code>SoupStrainer</code> constructor takes most of the same arguments as
+<code>find</code>: <code><a href="#arg-name">name</a></code>, <code><a href="#arg-attrs">attrs</a></code>, <code><a href="#arg-text">text</a></code>, and <code><a href="#arg-**kwargs">**kwargs</a></code>. You can pass
+in a <code>SoupStrainer</code> as the <code>name</code> argument to any search method:
+
+<div class="sample"><pre>
+<kbd>xmlSoup.findAll(results.source) == results</kbd>
+# <samp>True</samp>
+<kbd></kbd>
+<kbd>customStrainer = BeautifulSoup.SoupStrainer(rel='mother')</kbd>
+<kbd>xmlSoup.findAll(customStrainer) == results</kbd>
+# <samp> True</samp>
+</pre></div>
+
+<p>Yeah, who cares, right? You can carry around a method call's
+arguments in many other ways. But another thing you can do with
+<code>SoupStrainer</code> is pass it into the soup constructor to restrict the
+parts of the document that actually get parsed. That brings us to the
+next section:
+
+<a name="Improving Performance by Parsing Only Part of the Document"><h3>Improving Performance by Parsing Only Part of the Document</h3></a>
+
+<p>Beautiful Soup turns every element of a document into a Python
+object and connects it to a bunch of other Python objects. If you only
+need a subset of the document, this is really slow. But you can pass
+in a <a href="#Fun With SoupStrainers"><code>SoupStrainer</code></a> as the
+<code>parseOnlyThese</code> argument to the soup constructor. Beautiful Soup
+checks each element against the <code>SoupStrainer</code>, and only if it matches
+is the element turned into a <code>Tag</code> or <code>NavigableText</code>, and added to
+the tree.
+
+<p>If an element is added to to the tree, then so are its
+children&mdash;even if they wouldn't have matched the <code>SoupStrainer</code>
+on their own. This lets you parse only the chunks of a document that
+contain the data you want.
+
+<p>Here's a pretty varied document:
+
+<div class="sample"><pre>
+<kbd>doc = '''Bob reports &lt;a href="http://www.bob.com/"&gt;success&lt;/a&gt;</kbd>
+<kbd>with his plasma breeding &lt;a</kbd>
+<kbd>href="http://www.bob.com/plasma"&gt;experiments&lt;/a&gt;. &lt;i&gt;Don't get any on</kbd>
+<kbd>us, Bob!&lt;/i&gt;</kbd>
+<kbd></kbd>
+<kbd>&lt;br&gt;&lt;br&gt;Ever hear of annular fusion? The folks at &lt;a</kbd>
+<kbd>href="http://www.boogabooga.net/"&gt;BoogaBooga&lt;/a&gt; sure seem obsessed</kbd>
+<kbd>with it. Secret project, or &lt;b&gt;WEB MADNESS?&lt;/b&gt; You decide!'''</kbd>
+</pre></div>
+
+<p>Here are several different ways of parsing the document into soup,
+depending on which parts you want. All of these are faster and use
+less memory than parsing the whole document and then using the same
+<code>SoupStrainer</code> to pick out the parts you want.
+
+<div class="sample"><pre>
+<kbd>from BeautifulSoup import BeautifulSoup, SoupStrainer</kbd>
+<kbd>import re</kbd>
+<kbd></kbd>
+<kbd>links = SoupStrainer('a')</kbd>
+<kbd>[tag for tag in BeautifulSoup(doc, parseOnlyThese=links)]</kbd>
+# <samp>[&lt;a href="http://www.bob.com/"&gt;success&lt;/a&gt;, </samp>
+# <samp> &lt;a href="http://www.bob.com/plasma"&gt;experiments&lt;/a&gt;, </samp>
+# <samp> &lt;a href="http://www.boogabooga.net/"&gt;BoogaBooga&lt;/a&gt;]</samp>
+<kbd></kbd>
+<kbd>linksToBob = SoupStrainer('a', href=re.compile('bob.com/'))</kbd>
+<kbd>[tag for tag in BeautifulSoup(doc, parseOnlyThese=linksToBob)]</kbd>
+# <samp>[&lt;a href="http://www.bob.com/"&gt;success&lt;/a&gt;, </samp>
+# <samp> &lt;a href="http://www.bob.com/plasma"&gt;experiments&lt;/a&gt;]</samp>
+<kbd></kbd>
+<kbd>mentionsOfBob = SoupStrainer(text=re.compile("Bob"))</kbd>
+<kbd>[text for text in BeautifulSoup(doc, parseOnlyThese=mentionsOfBob)]</kbd>
+# <samp>[u'Bob reports ', u"Don't get any on\nus, Bob!"]</samp>
+<kbd></kbd>
+<kbd>allCaps = SoupStrainer(text=lambda(t):t.upper()==t)</kbd>
+<kbd>[text for text in BeautifulSoup(doc, parseOnlyThese=allCaps)]</kbd>
+# <samp>[u'. ', u'\n', u'WEB MADNESS?']</samp>
+</pre></div>
+
+<p>There is one major difference between the <code>SoupStrainer</code> you pass
+into a search method and the one you pass into a soup
+constructor. Recall that the <code>name</code> argument can take <a
+href="#match-callable">a function whose argument is a <code>Tag</code>
+object</a>. You can't do this for a <code>SoupStrainer</code>'s <code>name</code>, because
+the <code>SoupStrainer</code> is used to decide whether or not a <code>Tag</code> object
+should be created in the first place. You can pass in a function for a
+<code>SoupStrainer</code>'s <code>name</code>, but it can't take a <code>Tag</code> object: it can only
+take the tag name and a map of arguments.
+
+<div class="sample"><pre>
+<kbd>shortWithNoAttrs = SoupStrainer(lambda name, attrs: \</kbd>
+<kbd>                                len(name) == 1 and not attrs)</kbd>
+<kbd>[tag for tag in BeautifulSoup(doc, parseOnlyThese=shortWithNoAttrs)]</kbd>
+# <samp>[&lt;i&gt;Don't get any on us, Bob!&lt;/i&gt;, </samp>
+# <samp> &lt;b&gt;WEB MADNESS?&lt;/b&gt;]</samp>
+</pre></div>
+
+<a name="Improving Memory Usage with extract"><h3>Improving Memory Usage with <code>extract</code></h3></a>
+
+<p>When Beautiful Soup parses a document, it loads into memory a large,
+densely connected data structure. If you just need a string from that
+data structure, you might think that you can grab the string and leave
+the rest of it to be garbage collected. Not so. That string is a
+<code>NavigableString</code> object. It's got a <code>parent</code> member that points to a
+<code>Tag</code> object, which points to other <code>Tag</code> objects, and so on. So long
+as you hold on to any part of the tree, you're keeping the whole thing
+in memory.
+
+<p>The <code>extract</code> method breaks those connections. If you call
+<code>extract</code> on the string you need, it gets disconnected from the rest
+of the parse tree. The rest of the tree can then go out of scope and
+be garbage collected, while you use the string for something else. If
+you just need a small part of the tree, you can call <code>extract</code> on its
+top-level <code>Tag</code> and let the rest of the tree get garbage collected.
+
+<p>This works the other way, too. If there's a big chunk of the
+document you <i>don't</i> need, you can call <code>extract</code> to rip it out
+of the tree, then abandon it to be garbage collected while retaining
+control of the (smaller) tree. 
+
+<p>If <code>extract</code> doesn't work for you, you can try
+<code>Tag.decompose</code>. It's slower than <code>extract</code> but more thorough. It
+recursively disassembles a <code>Tag</code> and its contents, disconnecting every
+part of a tree from every other part.
+
+<p>If you find yourself destroying big chunks of the tree, you might
+have been able to save time by 
+<a href="#Improving Performance by Parsing Only Part of the Document">not
+parsing that part of the tree in the first place</a>.
+
+<a name="See Also"><h2>See Also</h2></a>
+
+<a name="Applications that use Beautiful Soup"><h3>Applications that use Beautiful Soup</h3></a>
+
+<p>Lots of real-world applications use Beautiful Soup. Here are the
+publicly visible applications that I know about:
+
+<ul>
+
+<li><a href="http://www.crummy.com/software/ScrapeNFeed">Scrape 'N'
+Feed</a> is designed to work with Beautiful Soup to build RSS feeds
+for sites that don't have them.
+
+<li><a href="http://www.meangrape.com/htmlatex/">htmlatex</a> uses
+Beautiful Soup to find LaTeX equations and render them as graphics.
+
+<li><a href="http://code.google.com/p/chmtopdf/">chmtopdf</a> converts
+CHM files to PDF format. Who am I to argue with that?
+
+<li>Duncan Gough's <a
+href="http://www.suttree.com/code/fotopic/">Fotopic backup</a> uses
+Beautiful Soup to scrape the Fotopic website.
+
+<li>I&ntilde;igo Serna's <a
+href="http://inigo.katxi.org/devel/misc/googlenews.py">googlenews.py</a>
+uses Beautiful Soup to scrape Google News (it's in the parse_entry and
+parse_category functions)
+
+<li>The <a href="http://potheads.ca/~cgm/weatheroffice/">Weather
+Office Screen Scraper</a> uses Beautiful Soup to scrape the Canadian
+government's weather office site.
+
+<li><a href="http://www.cs.duke.edu/~pbh/newsclues.html">News
+Clues</a> uses Beautiful Soup to parse RSS feeds.
+
+<li><a href="http://blinkflash.sourceforge.net/">BlinkFlash</a>
+uses Beautiful Soup to automate form submission for an online service.
+
+<li>The <a
+href="http://www.voidspace.org.uk/python/programs.shtml#linky">linky</a>
+link checker uses Beautiful Soup to find a page's links and images
+that need checking.
+
+<li><A
+href="http://www.postneo.com/2005/03/28/mobile-screen-scraping-with-beautifulsoup-and-python-for-series-60">Matt
+Croydon</a> got Beautiful Soup 1.x to work on his Nokia Series 60
+smartphone. <a
+href="http://sandeep.weblogs.us/archives/024473.html">C.R. Sandeep</a>
+wrote a real-time currency converter for the Series 60 using Beautiful
+Soup, but he won't show us how he did it.
+
+<li>Here's <a
+href="http://jacobian.org/recipes/archives/2005/03/21/fixing-tracks-bought-from-allofmp3com/">a
+short script</a> from jacobian.org to fix the metadata on music files
+downloaded from allofmp3.com.
+
+<li>The <a href="http://www.pycs.net/">Python Community Server</a>
+uses Beautiful Soup in its spam detector.
+
+</ul>
+
+<a name="Similar libraries"><h3>Similar libraries</h3></a>
+
+<p>I've found several other parsers for various languages that can
+handle bad markup, do tree traversal for you, or are otherwise more
+useful than your average parser.
+
+<ul>
+
+<li>I've ported Beautiful Soup to Ruby. The result is <a
+href="http://www.crummy.com/software/RubyfulSoup/">Rubyful Soup</a>.
+
+<li><a href="http://code.whytheluckystiff.net/hpricot/">Hpricot</a> is
+giving Rubyful Soup a run for its money.
+
+<li><a href="http://effbot.org/zone/element-index.htm">ElementTree</a>
+is a fast Python XML parser with a bad attitude. I love it.
+
+<li><a href="http://home.ccil.org/~cowan/XML/tagsoup/">Tag Soup</a> is
+an XML/HTML parser written in Java which rewrites bad HTML into
+parseable HTML.
+
+<li><a href="http://www.neilvandyke.org/htmlprag/">HtmlPrag</a> is a
+Scheme library for parsing bad HTML.
+
+<li><a href="http://www.aaronsw.com/2002/xmltramp/">xmltramp</a> is a
+nice take on a 'standard' XML/XHTML parser. Like most parsers, it
+makes you traverse the tree yourself, but it's easy to use.
+
+<li><a
+href="http://wwwsearch.sourceforge.net/pullparser/">pullparser</a>
+includes a tree-traversal method.
+
+<li>Mike Foord didn't like the way Beautiful Soup can change HTML if
+you write the tree back out, so he wrote <a
+href="http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/286269">HTML
+Scraper</a>. It's basically a version of HTMLParser that can handle
+bad HTML. It might be obsolete with the release of Beautiful Soup 3.0,
+though; I'm not sure.
+
+<li>Ka-Ping Yee's <a
+href="http://zesty.ca/python/scrape.py">scrape.py</a> combines page
+scraping with URL opening.
+
+</ul>
+
+<a name="Conclusion"><h2>Conclusion</h2></a>
+
+<p>That's it! Have fun! I wrote Beautiful Soup to save everybody
+time. Once you get used to it, you should be able to wrangle data out
+of poorly-designed websites in just a few minutes. Send me email if
+you have any comments, run into problems, or want me to know about
+your project that uses Beautiful Soup.
+
+<p>--Leonard<hr><table><tr><td valign="top">
+<p>This document (<a href="/source/software/BeautifulSoup/documentation.bhtml">source</a>) is part of Crummy, the webspace of <a href="/self/">Leonard Richardson</a> (<a href="/self/contact.html">contact information</a>). It was last modified on Monday, October 13 2008, 21:11:33 Nowhere Standard Time and last built on Monday, December 20 2010, 14:00:01 Nowhere Standard Time.</p><p><table class="licenseText"><tr><td><a href="http://creativecommons.org/licenses/by-sa/2.0/"><img border="0" src="/nb//resources/img/somerights20.jpg"></a></td><td valign="top">Crummy is &copy; 1996-2010 Leonard Richardson. Unless otherwise noted, all text licensed under a <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons License</a>.</td></tr></table></span><!--<rdf:RDF xmlns="http://web.resource.org/cc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><Work rdf:about="http://www.crummy.com/"><dc:title>Crummy: The Site</dc:title><dc:rights><Agent><dc:title>Crummy: the Site</dc:title></Agent></dc:rights><dc:format>text/html</dc:format><license rdf:resource=http://creativecommons.org/licenses/by-sa/2.0//></Work><License rdf:about="http://creativecommons.org/licenses/by-sa/2.0/"></License></rdf:RDF>--></p></td><td valign=top><p><b>Document tree:</b>
+<dl><dd><a href="http://www.crummy.com/">http://www.crummy.com/</a><dl><dd><a href="http://www.crummy.com/software/">software/</a><dl><dd><a href="http://www.crummy.com/software/BeautifulSoup/">BeautifulSoup/</a><dl><dd><a href="http://www.crummy.com/software/BeautifulSoup/documentation.html">documentation.html</a></dl>
+</dl>
+</dl>
+</dl>
+
+
+Site Search:
+
+<form method="get" action="/search/">
+        <input type="text" name="q" maxlength="255" value=""></input>
+        </form>
+        </td>
+
+</tr>
+
+</table>
+</body>
+</html>

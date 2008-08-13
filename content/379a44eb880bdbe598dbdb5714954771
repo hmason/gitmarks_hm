@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta content="text/html; charset=utf-8" http-equiv="content-type" />
+		<title>Calais Viewer</title>
+		<script type="text/javascript" src="js/clfwz_tooltip.js"></script>
+		<script type="text/javascript" src="js/clfutils.js"></script>
+		<script type="text/javascript" src="js/clfdocview.js"></script>
+		<script type="text/javascript" src="js/clfgeneralprototype.js"></script>
+		<script type="text/javascript" src="js/clfwriter.js"></script>
+		<script type="text/javascript" src="js/clfxml.js"></script>
+		<script type="text/javascript" src="js/extractionresults.js"></script>
+		<script type="text/javascript" src="js/highlight.js"></script>
+		<script type="text/javascript" src="js/marknextprev.js"></script>
+		<script type="text/javascript" src="js/clfrdfparser.js"></script>
+		<script type="text/javascript" src="js/clfxmlparser.js"></script>
+		<script type="text/javascript" src="js/clfxsltparser.js"></script>
+		<!-- <script type="text/javascript" src="js/feedback.js"></script> -->
+		<!-- <script type="text/javascript" src="http://feedback.opencalais.com/CalaisFeedback/Client/WebDocViewer"></script> -->
+
+		<link href="css/highlight.css" rel="stylesheet" />
+		<link href="css/calaisviewer.css" rel="stylesheet" />
+
+		<link href="img/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+		<link href="img/favicon.ico" rel="icon" type="image/x-icon"/>
+	</head>
+	<body>
+		<script type="text/javascript">
+		window.clf_wzTooltip = true;
+		loadResources(null, "./img/");
+		var behavior = {};
+		behavior.feedback = false;
+		behavior.oneclick = false;
+		behavior.parseNewLine = true;
+		behavior.repository = true;
+		behavior.createLinks = true;
+		behavior.freebase = false;
+
+		function setBehaviorOneClick(b) {
+			behavior.oneclick = b;
+		}
+		function id(i) {
+			return document.getElementById(i);
+		}
+		var oReq = new XMLHttpRequest();
+		function submit() {
+			id("errormsg").value = "";
+			oReq.open("POST", document.location.toString().replace(/\/[^\/]*$/,"/Bridge.asmx/BridgeMe"), true);
+			oReq.onreadystatechange = process;
+			oReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			oReq.send("content=" + encodeURIComponent(DocumentSrc.value) + "&type=text/txt");
+		}
+		function process() {
+			if (oReq.readyState != 4)
+				return;
+			if (oReq.status != 200) {
+				if (oReq.status == 500) {
+					submit();
+					return;
+				}
+				id("errormsg").value = "Error on server (" + oReq.status + ")";
+				hideprogress();
+				showquery();
+				return;
+			}
+			var xmlstr = oReq.responseXML.documentElement.text; // IE
+			if (xmlstr == null) { // FF
+				xmlstr = "";
+				var textNode = oReq.responseXML.documentElement.firstChild;
+				while (textNode != null) {
+					xmlstr += textNode.nodeValue;
+					textNode = textNode.nextSibling;
+				}
+			}
+			if (xmlstr.indexOf("<Error") == 0) { // check for errors
+				id("errormsg").value = xmlstr;
+				hideprogress();
+				showquery();
+				return;
+			}
+			id("CalaisRDF").value =  xmlstr;
+			initHighlight("CalaisRDF", "placeholderfordoc", "placeholderforsidebar", "Topics:", "Social Tags:", "Entities:", "Events & Facts:");
+			collapseExpandAll(true);
+			changeHighlightAll(true);
+			hideprogress();
+			showres();
+		}
+		function showres() {
+			id("RESULT").style.visibility = "visible";
+			id("QUERY").style.visibility = "hidden";
+			id("RDF").style.visibility = "hidden";
+		}
+		function showrdf() {
+			id("RDF").style.visibility = "visible";
+			id("RESULT").style.visibility = "hidden";
+			id("QUERY").style.visibility = "hidden";
+		}
+		function showquery() {
+			id("QUERY").style.visibility = "visible";
+			id("RESULT").style.visibility = "hidden";
+			id("RDF").style.visibility = "hidden";
+		}
+		function showprogress() {
+			id("DocumentSrc").disabled = true;
+			id("hiddenDIV").appendChild(id("submitDIV").replaceChild(id("progress"), id("submit")));
+		}
+		function hideprogress() {
+			id("DocumentSrc").disabled = false;
+			id("hiddenDIV").appendChild(id("submitDIV").replaceChild(id("submit"), id("progress")));
+		}
+		</script>
+
+			<!-- <div><input type="button" onclick="javascript:showres()" style="clear: both;" value="clicko"></div> -->
+
+
+		<a href="http://opencalais.com/" target="_blank" style="position:static; text-align:left; display:block; top:0; left:0; margin-bottom:25px;"><img alt="Calais Homepage" src="img/logo.jpg" width="218" height="86" border="0"/></a>
+
+
+<!-- QUERY////////////////////////////////////////////////////-->
+		<div id="QUERY" style="position: absolute; position: absolute; top:100; left:7;">
+		<table>
+			<tr>
+				<td style="width:260px;" valign="top">
+					<div class="text01">
+							<p>The Calais initiative is about enabling semantic applications by providing a metadata generation web service, sample applications using that service to jumpstart development efforts, and support for developers.</p>
+							<p><span class="title1">The Calais Web Service</span><br />
+							The Calais web service automatically attaches rich semantic metadata to the content you submit. Using natural language processing, machine learning and other methods, Calais categorizes and links your document with entities (people, places, organizations, etc.), facts (person "x" works for company "y"), and events (person "z" was appointed chairman of company "y" on date "x").</p>
+							<p>* The Calais Viewer works with Firefox and Internet Explorer - other browsers may yield unpredictable results</p>
+					</div></td>
+				<td valign="top"><div class="text02">
+						<div class="title2">Enter text here:</div>
+						<textarea id="DocumentSrc" rows="22" cols="90" style="overflow: auto;"></textarea>
+						<div id="submitDIV">
+							<input id="submit" type="image" src="img/submit.jpg" value="Submit" onclick="javascript:showprogress();submit();"/>
+						</div>
+			</div></td></tr>
+
+			<!-- ERROR MSG //////////////////////////////////////////////// -->
+			<tr>
+				<td colspan="2">
+				<br /><p>&nbsp;</p>
+				<div class="error_txt"><textarea id="errormsg" style="border:none; overflow: auto; background: #dedede;" rows="5" cols="80" readonly="readonly"></textarea></div>
+				</td></tr>
+		</table>
+		</div>
+
+<!-- RDF//////////////////////////////////////////////////// -->
+		<div id="RDF" class="RDF_box" style="visibility: hidden; position: absolute; top:100; left:7;">
+			<input id="showResults" type="image" src="img/showResults.jpg" value="Show Results" onclick="javascript:showres()"/>
+			<input id="shwquery2" type="image" src="img/editQuery.jpg" value="Edit Query" onclick="javascript:showquery()"/>
+			<br />
+			<textarea id="CalaisRDF" readonly="readonly"></textarea>
+		</div>
+
+<!-- RESULT//////////////////////////////////////////////////// -->
+		<div id="RESULT" style="visibility: hidden; position: absolute; top:100; left:7;">
+			<input id="showRDF" type="image" src="img/showRDF.jpg" value="Show RDF" onclick="javascript:showrdf()"/>
+			<input id="shwquery1" type="image" src="img/editQuery.jpg" value="Edit Query" onclick="javascript:showquery()"/>
+			<table>
+				<tr valign="top">
+					<td style="width:300px;">
+						<div id="placeholderforsidebar" style="width: 300px; text-align: left; word-wrap: break-word; overflow: hidden;" />
+					</td>
+					<td style="width:1010px;">
+						<div id="placeholderfordoc" style="text-align: left; margin-left: 10px; overflow: hidden; width: 1000px; word-wrap: break-word;" />
+					</td>
+				</tr>
+			</table>
+		</div>
+
+<!-- Hidden/////////////////////////////// -->
+		<div id="hiddenDIV" style="visibility: hidden">
+			<img id="progress" src="img/progress.gif" alt="Please Wait" style="float:right;"/>
+		</div>
+	</body>
+</html>

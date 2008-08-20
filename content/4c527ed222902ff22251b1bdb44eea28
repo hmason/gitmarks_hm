@@ -1,0 +1,295 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="content-type">
+<title>Jeditable - Edit In Place Plugin For jQuery</title>
+<link href="http://www.appelsiini.net/stylesheets/screen.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/attachments/styles.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/attachments/coderay.css" media="screen" rel="stylesheet" type="text/css">
+<link href="http://feeds.feedburner.com/tuupola" rel="alternate" type="application/atom+xml">
+<link href="http://www.myopenid.com/server" rel="openid.server">
+<link href="http://tuupola.myopenid.com/" rel="openid.delegate">
+<meta content="kpdZZm3glgPWE++IGp64scG0ymM5JEHVKe2HlH8Rm18=" name="verify-v1">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript"></script>
+</head>
+<body>
+    <div class="container">
+      <div class="span-20" id="header">
+        <div class="span-10">
+          <h1>Mika Tuupola</h1>
+          <p>Technology guy with passion for advertising.</p>
+        </div>
+        <div class="span-10 last">
+          <ul id="nav">
+<li id="first">
+              <a href="/">weblog</a>
+            </li>
+            <li>
+              <a href="/projects">projects</a>
+            </li>
+            <li>
+              <a class="last" href="/cv">cv</a>
+            </li>
+          </ul>
+</div>
+        <div class="span-14" id="content">
+          <h2>
+            <a href="/projects/jeditable">Jeditable - Edit In Place Plugin For jQuery</a>
+          </h2>
+          <h4>17 January 2007</h4>
+          <p>Hi! My name is Jeditable and I am inplace editor plugin for <a href="http://www.jquery.com/">jQuery</a>. With few lines of JavaScript code I allow you to click and edit the content of different xhtml elements. I am based on Dylan Verheul’s <a href="http://www.dyve.net/jquery/?editable">editable</a>.</p>
+          <p><img src="http://www.appelsiini.net/images/jquery.gif" alt="">  For those in hurry download latest <a href="http://www.appelsiini.net/download/jquery.jeditable.js">source</a> or <a href="http://www.appelsiini.net/download/jquery.jeditable.mini.js">minified</a>. <br>
+          For bleeding edge version check <a href="http://github.com/tuupola/jquery_jeditable">GitHub</a>.</p>
+          <h3>How does in place editing work?</h3>
+          <p>Normal flow is this. User clicks  text on web page. Block of text becomes a form. User edits contents and presses submit button. New text is sent to webserver and saved. Form becomes normal text again.</p>
+          <h3>Basic usage</h3>
+          <p>While reading you might also want to check <a href="/projects/jeditable/default.html">live demo</a>. For basic examples we assume to have following xhtml elements.</p>
+          <pre class="CodeRay">
+&lt;div class="edit" id="div_1"&gt;Dolor&lt;/div&gt;
+&lt;div class="edit_area" id="div_2"&gt;Lorem ipsum dolor sit amet, consectetuer 
+adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore 
+magna aliquam erat volutpat.&lt;/div&gt;</pre>
+          <p>There is only one mandatory parameter. <span class="caps">URL</span> where browser posts edited content.</p>
+          <pre class="CodeRay">
+ $(document).ready(function() {
+     $('.edit').editable('http://www.example.com/save.php');
+ });</pre>
+          <p>Code above does several things: Elements with class <em>edit</em> become editable. Editing starts with single mouse click. Form input element is <em>text</em>. Width and height of input element matches the original element. If users clicks outside form changes are discarded. Same thing happens if users hits <span class="caps">ESC</span>. When user hits <span class="caps">ENTER</span> browser submits text to <em>save.php</em> at <em>www.example.com</em>.</p>
+          <p>Not bad for oneliner, huh?  Lets add some options.</p>
+          <p>Elements with class <em>edit_area</em> will use <em>textarea</em> as input. They will also have spinning image when data is being submitted to server. Elements with class <em>edit</em> will have text <em>Saving…</em> instead of spinning image. As a bonus lets add tooltip to both. Tooltips are great for informing users what  they should do.</p>
+          <pre class="CodeRay">
+ $(document).ready(function() {
+     $('.edit').editable('http://www.example.com/save.php', {
+         indicator : 'Saving...',
+         tooltip   : 'Click to edit...'
+     });
+     $('.edit_area').editable('http://www.example.com/save.php', { 
+         type      : 'textarea',
+         cancel    : 'Cancel',
+         submit    : 'OK',
+         indicator : '&lt;img src="img/indicator.gif"&gt;',
+         tooltip   : 'Click to edit...'
+     });
+ });</pre>
+          <p>These two examples cover most of needs you usually have. Since most of people like to tweak and hack, lets go forward…</p>
+          <h3>What is sent to server?</h3>
+          <p>When submitting change following data will be <span class="caps">POST</span>:ed to server:</p>
+          <pre class="CodeRay">
+ id=elements_id&amp;value=user_edited_content</pre>
+          <p>In some cases you might want to change default parameter names. If you want to data to be <span class="caps">POST</span>:ed as:</p>
+          <pre class="CodeRay">
+ elementid=elements_id&amp;newvalue=user_edited_content</pre>
+          <p>you need to add two parameters:</p>
+          <pre class="CodeRay">
+ $(document).ready(function() {
+     $('.edit').editable('http://www.example.com/save.php', { 
+         id   : 'elementid',
+         name : 'newvalue'
+     });
+ });</pre>
+          <p> </p>
+          <h3>Usage with Textile, Markdown, ReST, WiKi etc</h3>
+          <p>If the content in <em>edit_area</em> class elements is for example WiKi,  <a href="http://www.textism.com/tools/textile/">Textile</a> or <a href="http://daringfireball.net/projects/markdown/">Markdown</a> markup, you do not want to edit the xhtml source. Instead you need the markup source. That can be fetched into input field by passing <span class="caps">URL</span> to <em>loadurl</em> parameter.</p>
+          <pre class="CodeRay">
+ $(document).ready(function() {
+     $('.edit_area').editable('http://www.example.com/save.php', { 
+         loadurl  : 'http://www.example.com/load.php',
+         type    : 'textarea',
+         submit  : 'OK'
+     });
+ });</pre>
+          <blockquote>
+          <p>In this example <em>load.php</em> should return the markup source not rendered xhtml. However <em>save.php</em> should return rendered xhtml. When saving the browser will display exactly what saving script returns. There is also another option. You can pass markup source in <em>data</em> parameter.</p>
+          </blockquote>
+          <h3>How to use selects?</h3>
+          <p>You can use selects by giving <em>type</em> parameter value of <em>select</em>. Select is built from <span class="caps">JSON</span> encoded array. This array can be given using either <em>data</em> parameter or fetched from external <span class="caps">URL</span> given in <em>loadurl</em> parameter. Array keys are values for &lt;option&gt; tag. Array values are text shown in pulldown.</p>
+          <p><span class="caps">JSON</span> encoded array looks like this:</p>
+          {’E’:‘Letter E’,‘F’:‘Letter F’,‘G’:‘Letter G’, ‘selected’:’F’}
+          <p>Note the last entry. It is special. With value of ‘selected’ in array you can tell Jeditable which option should be selected by default. Lets make two simple examples. First we pass values for pulldown in <em>data</em> parameter:</p>
+          <pre class="CodeRay">
+ $('.editable').editable('http://www.example.com/save.php', { 
+     data   : " {'E':'Letter E','F':'Letter F','G':'Letter G', 'selected':'F'}",
+     type   : 'select',
+     submit : 'OK'
+ });</pre>
+          <p>What if you need to generate values for pulldown dynamically? Then you can fetch values from external <span class="caps">URL</span>. Lets assume we have following <span class="caps">PHP</span> script:</p>
+          <pre class="CodeRay">
+ &lt;?php
+ /* http://www.example.com/json.php */
+ $array['E'] =  'Letter E'; 
+ $array['F'] =  'Letter F'; 
+ $array['G'] =  'Letter G'; 
+ $array['selected'] =  'F';
+ print json_encode($array);
+ ?&gt;</pre>
+          <p>Then instead of <em>data</em> parameter we use <em>loadurl</em>:</p>
+          <pre class="CodeRay">
+ $('.editable').editable('http://www.example.com/save.php', { 
+     loadurl : 'http://www.example.com/json.php',
+     type   : 'select',
+     submit : 'OK'
+ });</pre>
+          <p>But wait! Theres more. Some people are concerned about extra request made to server. You can also combine these two approaches. Let <span class="caps">PHP</span> output <span class="caps">JSON</span> encoded array directly into JavaScript code.</p>
+          <pre class="CodeRay">
+ &lt;?php
+ $array['E'] =  'Letter E'; 
+ $array['F'] =  'Letter F'; 
+ $array['G'] =  'Letter G'; 
+ $array['selected'] =  'F';
+ ?&gt;</pre>
+          
+          <pre class="CodeRay">
+ $('.editable').editable('http://www.example.com/save.php', { 
+     data   : '&lt;?php print  json_encode($array); ?&gt;',
+     type   : 'select',
+     submit : 'OK'
+ });</pre>
+          <h3>How to style elements?</h3>
+          <p>You can style input element with <em>cssclass</em> and <em>style</em> parameters. First one assumes to be name of a class defined in your <span class="caps">CSS</span>. Second one can be any valid style declaration as string. Check the following examples:</p>
+          <pre class="CodeRay">
+ $('.editable').editable('http://www.example.com/save.php', { 
+     cssclass : 'someclass'
+ });
+
+ $('.editable').editable('http://www.example.com/save.php', { 
+     loadurl : 'http://www.example.com/json.php',
+     type    : 'select',
+     submit  : 'OK',
+     style   : 'display: inline'
+ });</pre>
+          <p>Both parameters can have special value of <em>inherit</em>. Setting <em>class</em> to <em>inherit</em> will make form to have same class as it parent. Setting <em>style</em> to <em>inherit</em> will make form to have same style attribute as it parent.</p>
+          <p>Following example will make word <em>ipsum</em> to be editable with pulldown menu. This pulldown inherits style from &lt;span&gt;. Thus it will be displayed inline.</p>
+          <pre class="CodeRay">
+ Lorem &lt;span class="editable" style="display: inline"&gt;ipsum&lt;/span&gt; dolor 
+ sit amet.</pre>
+          
+          <pre class="CodeRay">
+ $('.editable').editable('http://www.example.com/save.php', { 
+     loadurl : 'http://www.example.com/json.php',
+     type    : 'select',
+     submit  : 'OK',
+     style   : 'inherit'
+ });</pre>
+          <h3>Submitting to function instead of <span class="caps">URL</span>
+</h3>
+          <p>Some people want to control absolutely everything. I want to keep you happy. You can get full control of Ajax request. Just submit to function instead of <span class="caps">URL</span>. Parameters passed are same as with callback.</p>
+          <pre class="CodeRay">
+ $('.editable').editable(function(value, settings) { 
+     console.log(this);
+     console.log(value);
+     console.log(settings);
+     return(value);
+  }, { 
+     type    : 'textarea',
+     submit  : 'OK',
+ });</pre>
+          <p>Note that function must return string. Usually the edited content. This will be displayed on page after editing is done.</p>
+          <h3>Parameter reference</h3>
+          <p>(String) <strong>method</strong>: Method to use when submitting edited content. Default is <span class="caps">POST</span>. You most likely want to use <span class="caps">POST</span> or <span class="caps">PUT</span>. <span class="caps">PUT</span> method is compatible with Rails.</p>
+          <p>(Function) <strong>callback</strong>: Function is called after form has been submitted. Callback function receives two parameters. <em>Value</em> contains submitted form content. <em>Settings</em> contain all plugin settings. Inside function <em>this</em> refers to the original element.</p>
+          <pre class="CodeRay">
+ $('.editable').editable('http://www.example.com/save.php', { 
+     type     : 'textarea',
+     submit   : 'OK',
+     callback : function(value, settings) {
+         console.log(this);
+         console.log(value);
+         console.log(settings);
+     }
+ });</pre>
+          <p>(String) <strong>name</strong>: Name of the submitted parameter which contains edited content. Default is <em>value</em>.</p>
+          <pre class="CodeRay">
+ $('.editable').editable('http://www.example.com/save.php', { 
+     name     : 'new_value'
+ });</pre>
+          <p>(String) <strong>id</strong>: Name of the submitted parameter which contains content id. Default is <em>id</em>.</p>
+          <pre class="CodeRay">
+ $('.editable').editable('http://www.example.com/save.php', { 
+     id     : 'element_id'
+ });</pre>
+          <p>(Mixed) <strong>submitdata</strong>: Extra parameters when submitting content. Can be either a hash or function returning a hash.</p>
+          <pre class="CodeRay">
+$(".editable").editable("http://www.example.com/save.php";, {
+   submitdata : {foo: "bar"};
+});</pre>
+          
+          <pre class="CodeRay">
+$(".editable").editable("http://www.example.com/save.php";, {
+   submitdata : function(value, settings) {
+       return {foo: "bar"};
+   }
+});</pre>
+          <p>(String) <strong>type</strong>: Input type to use. Default input types are <em>text</em>, <em>textarea</em> or <em>select</em>. Additional input types are provided using custom input type <span class="caps">API</span>.</p>
+          <p>(Integer) <strong>rows</strong>: Number of rows if using textarea.</p>
+          <p>(Integer) <strong>cols</strong>: Number of columns if using textarea.</p>
+          <p>(Integer) <strong>height</strong>: Height of the input element in pixels. Default is <em>auto</em>. This means height is calculated automatically. Can also be set to <em>none</em>.</p>
+          <p>(Integer) <strong>width</strong>: Width of the input element in pixels. Default is <em>auto</em>. This means width is calculated automatically. Can also be set to <em>none</em>.</p>
+          <p>(Integer) <strong>loadurl</strong>: Normally content of the form will be same as content of the edited element. However using this parameter you can load form content from external <span class="caps">URL</span>.</p>
+          <pre class="CodeRay">
+$(".editable").editable("http://www.example.com/save.php";, {
+    loadurl : "http://www.example.com/load.php"
+});</pre>
+          <p>Note that id of the edited element will be automatically added to query string. For example loadurl above would become something like:</p>
+          <pre class="CodeRay">
+http://www.example.com/load.php?id=element_id</pre>
+          <p>(Integer) <strong>loadtype</strong>: Request type to use when using <em>loadurl</em>. Default is <span class="caps">GET</span>. You most likely want to use only <span class="caps">GET</span> or <span class="caps">POST</span>.</p>
+          <p>(Mixed) <strong>loaddata</strong>: Extra parameter to add to request when using <em>loadurl</em>. Can be either a hash or function returning a hash.</p>
+          <pre class="CodeRay">
+$(".editable").editable("http://www.example.com/save.php";, {
+   loaddata : {foo: "bar"};
+});</pre>
+          
+          <pre class="CodeRay">
+$(".editable").editable("http://www.example.com/save.php";, {
+   loaddata : function(value, settings) {
+       return {foo: "bar"};
+   }
+});</pre>
+          <p>(Mixed) <strong>data</strong>: Form data passed as parameter. Can be either a string or function returning a string. Can be useful when you need to alter the text before editing.</p>
+          <pre class="CodeRay">
+$(".editable").editable("http://www.example.com/save.php";, {
+   data : "Lorem ipsum";
+});</pre>
+          
+          <pre class="CodeRay">
+$(".editable").editable("http://www.example.com/save.php";, {
+    data: function(value, settings) {
+      /* Convert &lt;br&gt; to newline. */
+      var retval = value.replace(/&lt;br[\s\/]?&gt;/gi, '\n');
+      return retval;
+    }
+});</pre>
+          <h3>Miscallenous options</h3>
+          <p>Default action of when user clicks outside of editable area is to cancel edits. You can control this by setting <em>onblur</em> option. Possible values are:</p>
+          <ul>
+<li>onblur : <em>cancel</em> Clicking outside editable area cancels changes. Clicking submit button submits changes.</li>
+          	<li>onblur : <em>submit</em> Clicking outside editable area submits changes.</li>
+          	<li>onblur : <em>ignore</em> Click outside editable area is ignored. Pressing <span class="caps">ESC</span> cancels changes. Clicking submit button submits changes.</li>
+          </ul>
+<p>Event which starts editing the element can be controlled using option <em>event</em>. All jQuery events are available. Most usable ones are <em>click</em> and <em>dblclick</em>.</p>
+          <h3>Demo</h3>
+          <p>You can test how Jeditable works with <a href="http://www.appelsiini.net/projects/jeditable/default.html">live demo</a>.</p>
+          <p class="notice">When asking a question please include an <span class="caps">URL</span> to example page where the problem occurs. If you have longer code examples please use <a href="http://www.pastie.org/">pastie.org</a></p>
+          <div id="disqus_thread">
+            <script src="http://disqus.com/forums/appelsiini/embed.js" type="text/javascript"></script><noscript>
+              <a href="http://disqus.com/forums/appelsiini/?url=ref">View comments.</a>
+            </noscript>
+          </div>
+        </div>
+        <div class="span-5 push-1 last" id="sidebar">
+          <br><br><a href="http://twitter.com/tuupola">
+            <img alt="@tuupola" src="http://www.appelsiini.net/images/twitter3.png"></a>
+        </div>
+      </div>
+      <div id="footer"></div>
+    </div>
+    <script type="text/javascript">
+      var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+      document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script type="text/javascript">
+    try {
+      var pageTracker = _gat._getTracker("UA-190966-1");
+      pageTracker._trackPageview();
+    } catch(err) {}</script>
+</body>
+</html>

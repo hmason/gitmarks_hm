@@ -1,0 +1,350 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="content-type">
+<title>Creating Inline Timepicker with JavaScript and jQuery</title>
+<link href="http://www.appelsiini.net/stylesheets/screen.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/attachments/styles.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/attachments/coderay.css" media="screen" rel="stylesheet" type="text/css">
+<link href="http://feeds.feedburner.com/tuupola" rel="alternate" type="application/atom+xml">
+<link href="http://www.myopenid.com/server" rel="openid.server">
+<link href="http://tuupola.myopenid.com/" rel="openid.delegate">
+<meta content="kpdZZm3glgPWE++IGp64scG0ymM5JEHVKe2HlH8Rm18=" name="verify-v1">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript"></script>
+</head>
+<body>
+    <div class="container">
+      <div class="span-20" id="header">
+        <div class="span-10">
+          <h1>Mika Tuupola</h1>
+          <p>Technology guy with passion for advertising.</p>
+        </div>
+        <div class="span-10 last">
+          <ul id="nav">
+<li id="first">
+              <a href="/">weblog</a>
+            </li>
+            <li>
+              <a href="/projects">projects</a>
+            </li>
+            <li>
+              <a class="last" href="/cv">cv</a>
+            </li>
+          </ul>
+</div>
+        <div class="span-14" id="content">
+          <h2>
+            <a href="/2008/2/creating-inline-timepicker-with-javascript">Creating Inline Timepicker with JavaScript and jQuery</a>
+          </h2>
+          <h4>16 February 2008</h4>
+          <p><img src="http://www.appelsiini.net/images/jquery.gif" alt=""> Inline editing is not only limited to <em>text</em> and <em>textarea</em> inputs. In this tutorial you will learn how to make inline timepicker with JavaScript. We will be using the usual tools: <a href="http://jquery.com/">jQuery</a> and <a href="http://www.appelsiini.net/projects/jeditable">Jeditable</a>.</p>
+          <p>Before continuing you might be interested in reading introduction to <a href="http://www.appelsiini.net/2007/8/custom-input-types">custom input types for Jeditable</a>.</p>
+          <h3>Available methods for creating custom input</h3>
+          <p>When creating custom input type  you want to define one or several of following methods. None of them are mandatory.</p>
+          
+          <pre class="CodeRay"><span class="pd">$</span>.editable.addInputType(<span class="s"><span class="dl">'</span><span class="k">example</span><span class="dl">'</span></span>, {
+    <span class="fu">element</span> : <span class="kw">function</span>(settings, original) { },
+    <span class="fu">content</span> : <span class="kw">function</span>(string, settings, original) { },
+    <span class="fu">buttons</span> : <span class="kw">function</span>(settings, original) { },
+    <span class="fu">submit</span>  : <span class="kw">function</span>(settings, original) { },
+    <span class="fu">plugin</span>  : <span class="kw">function</span>(settings, original) { },
+    <span class="fu">reset</span>   : <span class="kw">function</span>(settings, original) { }
+});</pre>
+          <p>All methods receive two parameters. <em>Settings</em> is Jeditable settings hash. <em>Original</em> is the original element which was clicked. Method <em>content()</em> also receives third parameter <em>string</em> which is the value input should be set to. Inside all methods <em>this</em> represents the form.</p>
+          <p>For this example we will be using three methods.</p>
+          <ul>
+<li>
+<em>element(settings, original)</em> should create input element and attach it to form. Form is available inside function as variable <em>this</em>. Input element returned stores the final value to be submitted to server. Finally function should return the newly created element. If you do not provide this method an hidden input will be created by default.</li>
+          	<li>
+<em>submit(settings, original)</em> is called before submitting the form. It should set the value of input element returned by element(). This is only needed in special cases such as having multiple selects.</li>
+          	<li>
+<em>content(string, settings, original)</em> should set the value of custom input. For example for multiple selects it should set the selected options in each select.</li>
+          </ul>
+<h3>Creating custom input</h3>
+          <p>Throughout the tutorial we will be using following code to trigger Jeditable.</p>
+          
+          <pre class="CodeRay"><span class="pd">$</span>(<span class="s"><span class="dl">"</span><span class="k">#id</span><span class="dl">"</span></span>).editable(<span class="s"><span class="dl">"</span><span class="k">http://www.example.com/save.php</span><span class="dl">"</span></span>, { 
+        <span class="ke">type</span>       : <span class="s"><span class="dl">"</span><span class="k">time</span><span class="dl">"</span></span>,
+        <span class="ke">submit</span>     : <span class="s"><span class="dl">"</span><span class="k">OK</span><span class="dl">"</span></span>,
+        <span class="ke">style</span>      : <span class="s"><span class="dl">"</span><span class="k">display: inline</span><span class="dl">"</span></span>,
+        <span class="ke">tooltip</span>    : <span class="s"><span class="dl">"</span><span class="k">Click to edit...</span><span class="dl">"</span></span> 
+});</pre>
+          <p>We will start by adding custom input type called <em>time</em>.</p>
+          
+          <pre class="CodeRay"><span class="pd">$</span>.editable.addInputType(<span class="s"><span class="dl">'</span><span class="k">time</span><span class="dl">'</span></span>, {
+});</pre>
+          <p>Right now it does not do much anything. Since no methods are defined plugin will simply call the default methods.</p>
+          <p>Click time <span class="demo_1">13:30</span> to see how code works this far.</p>
+          <h3>Add hour and minute pulldowns</h3>
+          <p>Our timepicker will have two selects. One for hour and one for minutes. To keep minutes select short we will use 15 minute steps. To create these elements, we need to use <em>element()</em> method.</p>
+          <p>The two loops build the pulldowns. When they are ready the are appended to the form. As you remember, inside all helper methods <em>this</em> represents the form.</p>
+          <pre class="CodeRay"><span class="pd">$</span>.editable.addInputType(<span class="s"><span class="dl">'</span><span class="k">time</span><span class="dl">'</span></span>, {
+    <span class="fu">element</span> : <span class="kw">function</span>(settings, original) {       
+        <span class="kw">var</span> hourselect = <span class="pd">$</span>(<span class="s"><span class="dl">'</span><span class="k">&amp;lt;select id="hour_"&amp;gt;</span><span class="dl">'</span></span>);
+        <span class="kw">var</span> minselect  = <span class="pd">$</span>(<span class="s"><span class="dl">'</span><span class="k">&amp;lt;select id="min_"&amp;gt;</span><span class="dl">'</span></span>);
+    
+        <span class="c">/* Hour loop */</span>
+        <span class="kw">for</span> (<span class="kw">var</span> hour=<span class="i">1</span>; hour &amp;lt;= <span class="i">24</span>; hour++) {
+            <span class="kw">if</span> (hour %lt;% <span class="i">10</span>) {
+                hour = <span class="s"><span class="dl">'</span><span class="k">0</span><span class="dl">'</span></span> + hour;
+            }
+            <span class="kw">var</span> option = <span class="pd">$</span>(<span class="s"><span class="dl">'</span><span class="k">&amp;lt;option&amp;gt;</span><span class="dl">'</span></span>).val(hour).append(hour);
+            hourselect.append(option);
+        }
+        <span class="pd">$</span>(<span class="lv">this</span>).append(hourselect);
+
+        <span class="c">/* Minutes loop */</span>
+        <span class="kw">for</span> (<span class="kw">var</span> min=<span class="i">0</span>; min %lt;%= <span class="i">45</span>; min = parseInt(min)+<span class="i">15</span>) {
+            <span class="kw">if</span> (min %lt;% <span class="i">10</span>) {
+                min = <span class="s"><span class="dl">'</span><span class="k">0</span><span class="dl">'</span></span> + min;
+            }
+            <span class="kw">var</span> option = <span class="pd">$</span>(<span class="s"><span class="dl">'</span><span class="k">&amp;lt;option&amp;gt;</span><span class="dl">'</span></span>).val(min).append(min);
+            minselect.append(option);
+        }
+        <span class="pd">$</span>(<span class="lv">this</span>).append(minselect);
+            
+        <span class="c">/* Hidden input to store value which is submitted to server. */</span>
+        <span class="kw">var</span> hidden = <span class="pd">$</span>(<span class="s"><span class="dl">'</span><span class="k">&amp;lt;input type="hidden"&amp;gt;</span><span class="dl">'</span></span>);
+        <span class="pd">$</span>(<span class="lv">this</span>).append(hidden);
+        <span class="kw">return</span>(hidden);
+    }
+});</pre>
+          <p>Why did we create hidden input in the end? When new value is submitted to server Jeditable expects there is only one input field to read value from. It could be any kind of field such as <em>text</em> or <em>textarea</em>. In this case it is best to use <em>hidden</em>. Later in the code I will show how to write pulldown values to the hidden input.</p>
+          <p><strong>Note!</strong> <em>Element</em> method must return this single input in the end of function.</p>
+          <p>Click time <span class="demo_2">13:30</span> to see how code works this far.</p>
+          <p>Now selects are created. One problem exists though. Nothing is submitted to server. Our hidden field has empty value.</p>
+          <h3>Sending correct value to server</h3>
+          <p>We need to combine hours and minutes from two pulldowns. This combined value needs to be written to our hidden input. For that we will use <em>submit</em> method. This method is called just before form is submitted.</p>
+          <p>We read values from both pulldowns and put : character in between. Resulting string is then written into previously created hidden input.</p>
+          <pre class="CodeRay"><span class="pd">$</span>.editable.addInputType(<span class="s"><span class="dl">'</span><span class="k">time</span><span class="dl">'</span></span>, {
+    <span class="fu">element</span> : <span class="kw">function</span>(settings, original) {       
+        ...
+    },
+    <span class="fu">submit</span>: <span class="kw">function</span> (settings, original) {
+        <span class="kw">var</span> value = <span class="pd">$</span>(<span class="s"><span class="dl">"</span><span class="k">#hour_</span><span class="dl">"</span></span>).val() + <span class="s"><span class="dl">"</span><span class="k">:</span><span class="dl">"</span></span> + <span class="pd">$</span>(<span class="s"><span class="dl">"</span><span class="k">#min_</span><span class="dl">"</span></span>).val();
+        <span class="pd">$</span>(<span class="s"><span class="dl">"</span><span class="k">input</span><span class="dl">"</span></span>, <span class="lv">this</span>).val(value);
+    }
+});</pre>
+          <p>Hey, what was that <em>$(“input”, this)</em> selector? Especially why is variable <em>this</em> inside selector?</p>
+          <p>There is optional second parameter for jQuery selectors. It is called <em>context</em>. Without second parameter selector is matched against current <span class="caps">HTML</span> page. If it is provided, selector is matched only against contents of second parameter.</p>
+          <p>Inside all methods <em>this</em> refers to the form Jeditable created. Selector above will search for our hidden input inside created form and not full <span class="caps">HTML</span> document.</p>
+          <p>Click time <span class="demo_3">13:30</span> to see how code works this far.</p>
+          <p>In demo selects are created. Correct value is submitted. One problem still exists. Default value for timepicker always is 24:45.</p>
+          <h3>Setting default values</h3>
+          <p><em>Content</em> method set inputs default value. If editable time value is 13:30 and we click it, hour pulldown should be 13 and minute pulldown 30.</p>
+          <p>“<em>13:30</em>” is passed in as parameter called <em>string</em>. Hours and minutes are parsed from this string. Both hour and minute pulldown are then looped. Inside loop correct hour and minute are set as selected.</p>
+          <pre class="CodeRay"><span class="pd">$</span>.editable.addInputType(<span class="s"><span class="dl">'</span><span class="k">time</span><span class="dl">'</span></span>, {
+    <span class="fu">element</span> : <span class="kw">function</span>(settings, original) {       
+        ...
+    },
+    <span class="fu">submit</span>: <span class="kw">function</span> (settings, original) {
+        ...
+    },
+    <span class="fu">content</span> : <span class="kw">function</span>(string, settings, original) {
+        <span class="kw">var</span> hour = parseInt(string.substr(<span class="i">0</span>,<span class="i">2</span>));
+        <span class="kw">var</span> min  = parseInt(string.substr(<span class="i">3</span>,<span class="i">2</span>));
+
+        <span class="pd">$</span>(<span class="s"><span class="dl">"</span><span class="k">#hour_</span><span class="dl">"</span></span>, <span class="lv">this</span>).children().each(<span class="kw">function</span>() {
+            <span class="kw">if</span> (hour == <span class="pd">$</span>(<span class="lv">this</span>).val()) {
+                <span class="pd">$</span>(<span class="lv">this</span>).attr(<span class="s"><span class="dl">'</span><span class="k">selected</span><span class="dl">'</span></span>, <span class="s"><span class="dl">'</span><span class="k">selected</span><span class="dl">'</span></span>);
+            }
+        });
+        <span class="pd">$</span>(<span class="s"><span class="dl">"</span><span class="k">#min_</span><span class="dl">"</span></span>, <span class="lv">this</span>).children().each(<span class="kw">function</span>() {
+            <span class="kw">if</span> (min == <span class="pd">$</span>(<span class="lv">this</span>).val()) {
+                <span class="pd">$</span>(<span class="lv">this</span>).attr(<span class="s"><span class="dl">'</span><span class="k">selected</span><span class="dl">'</span></span>, <span class="s"><span class="dl">'</span><span class="k">selected</span><span class="dl">'</span></span>)
+            }
+        });
+    }
+});</pre>
+          <p>Click time <span class="demo_4">13:30</span> to see finished inline timepicker.</p>
+          <h3>What now?</h3>
+          <p>Code could still be improved. Various aspects could be configurable. Some poeple might prefer minutes pulldown have five minute interval. Other people might prefer AM/PM time format.</p>
+          <p>In meanwhile <a href="http://www.appelsiini.net/download/jquery.jeditable.time.js">download</a> and experiment with code we just did.</p>
+          <script src="http://www.appelsiini.net/download/jquery.jeditable-1.5.5.mini.js" type="text/javascript"></script><script type="text/javascript">
+          $(document).ready(function() {
+          
+            $.editable.addInputType('demo_1', {
+            });
+          
+            $.editable.addInputType('demo_2', {
+                element : function(settings, original) {       
+                    var hourselect = $('<select id="hour_">');
+                    var minselect  = $('<select id="min_">');
+          
+                    /* Hour loop */
+                    for (var hour=1; hour <= 24; hour++) {
+                        if (hour < 10) {
+                            hour = '0' + hour;
+                        }
+                        var option = $('<option>').val(hour).append(hour);
+                        hourselect.append(option);
+                    }
+                    $(this).append(hourselect);
+          
+                    /* Minutes loop */
+                    for (var min=0; min <= 45; min = parseInt(min)+15) {
+                        if (min < 10) {
+                            min = '0' + min;
+                        }
+                        var option = $('<option>').val(min).append(min);
+                        minselect.append(option);
+                    }
+                    $(this).append(minselect);
+          
+                    /* Hidden input to store value which is submitted to server. */
+                    var hidden = $('<input type="hidden">');
+                    $(this).append(hidden);
+                    return(hidden);
+                }
+            });
+            
+            $.editable.addInputType('demo_3', {
+                element : function(settings, original) {       
+                    var hourselect = $('<select id="hour_">');
+                    var minselect  = $('<select id="min_">');
+          
+                    /* Hour loop */
+                    for (var hour=1; hour <= 24; hour++) {
+                        if (hour < 10) {
+                            hour = '0' + hour;
+                        }
+                        var option = $('<option>').val(hour).append(hour);
+                        hourselect.append(option);
+                    }
+                    $(this).append(hourselect);
+          
+                    /* Minutes loop */
+                    for (var min=0; min <= 45; min = parseInt(min)+15) {
+                        if (min < 10) {
+                            min = '0' + min;
+                        }
+                        var option = $('<option>').val(min).append(min);
+                        minselect.append(option);
+                    }
+                    $(this).append(minselect);
+          
+                    /* Hidden input to store value which is submitted to server. */
+                    var hidden = $('<input type="hidden">');
+                    $(this).append(hidden);
+                    return(hidden);
+                },
+                submit: function (settings, original) {
+                    var value = $("#hour_").val() + ":" + $("#min_").val();
+                    $("input", this).val(value);
+                }
+            });
+          
+            $.editable.addInputType('demo_4', {
+                element : function(settings, original) {       
+                    var hourselect = $('<select id="hour_">');
+                    var minselect  = $('<select id="min_">');
+          
+                    /* Hour loop */
+                    for (var hour=1; hour <= 24; hour++) {
+                        if (hour < 10) {
+                            hour = '0' + hour;
+                        }
+                        var option = $('<option>').val(hour).append(hour);
+                        hourselect.append(option);
+                    }
+                    $(this).append(hourselect);
+          
+                    /* Minutes loop */
+                    for (var min=0; min <= 45; min = parseInt(min)+15) {
+                        if (min < 10) {
+                            min = '0' + min;
+                        }
+                        var option = $('<option>').val(min).append(min);
+                        minselect.append(option);
+                    }
+                    $(this).append(minselect);
+          
+                    /* Hidden input to store value which is submitted to server. */
+                    var hidden = $('<input type="hidden">');
+                    $(this).append(hidden);
+                    return(hidden);
+                },
+                submit: function (settings, original) {
+                    var value = $("#hour_").val() + ":" + $("#min_").val();
+                    $("input", this).val(value);
+                },
+                content : function(string, settings, original) {
+                    var hour = parseInt(string.substr(0,2));
+                    var min = parseInt(string.substr(3,2));
+          
+                    $("#hour_", this).children().each(function() {
+                        if (hour == $(this).val()) {
+                            $(this).attr('selected', 'selected');
+                        }
+                    });
+                    $("#min_", this).children().each(function() {
+                        if (min == $(this).val()) {
+                            $(this).attr('selected', 'selected')
+                        }
+                    });
+                }      
+            });
+          
+            $(".demo_1").editable("http://www.appelsiini.net/projects/jeditable/php/echo.php", { 
+                    type       : "demo_1",
+                    submit     : "OK",
+                    style      : "display: inline",
+                    tooltip    : "Click to edit..."
+            });
+          
+            $(".demo_2").editable("http://www.appelsiini.net/projects/jeditable/php/echo.php", { 
+                    type       : "demo_2",
+                    submit    : "OK",
+                    style      : "display: inline",
+                    tooltip    : "Click to edit..."
+            });
+          
+            $(".demo_3").editable("http://www.appelsiini.net/projects/jeditable/php/echo.php", { 
+                    type       : "demo_3",
+                    submit    : "OK",
+                    style      : "display: inline",
+                    tooltip    : "Click to edit..."
+            });
+          
+            $(".demo_4").editable("http://www.appelsiini.net/projects/jeditable/php/echo.php", { 
+                    type       : "demo_4",
+                    submit    : "OK",
+                    style      : "display: inline",
+                    tooltip    : "Click to edit..."
+            });
+            
+          });
+          </script><style type="text/css" media="screen">
+          <p>select {<br />
+            width: 46px;<br />
+          }</p>
+          </style>
+<div class="categories">
+            Filed under
+            <a href="/javascript">Javascript</a>
+            <a href="/jeditable">Jeditable</a>
+            <a href="/jquery">Jquery</a>
+          </div>
+          <div id="disqus_thread">
+            <script src="http://disqus.com/forums/appelsiini/embed.js" type="text/javascript"></script><noscript>
+              <a href="http://disqus.com/forums/appelsiini/?url=ref">View comments.</a>
+            </noscript>
+          </div>
+        </div>
+        <div class="span-5 push-1 last" id="sidebar">
+          <br><br><a href="http://twitter.com/tuupola">
+            <img alt="@tuupola" src="http://www.appelsiini.net/images/twitter3.png"></a>
+        </div>
+      </div>
+      <div id="footer"></div>
+    </div>
+    <script type="text/javascript">
+      var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+      document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script type="text/javascript">
+    try {
+      var pageTracker = _gat._getTracker("UA-190966-1");
+      pageTracker._trackPageview();
+    } catch(err) {}</script>
+</body>
+</html>

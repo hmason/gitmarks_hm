@@ -1,0 +1,1592 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<title>Username Check Availability Search</title>
+<meta name="description" content="Protect your username on the top 500 social networks.">
+<meta name="keywords" content="check username, user availability search, social networking, in-use reports, reserve usernames">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script> -->
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/default.js"></script>
+<script type="text/javascript" src="js/jquery.alphanumeric.pack.js"></script>
+<script type="text/javascript" src="js/ZeroClipboard.js"></script>
+<script type="text/javascript">
+var $j = jQuery.noConflict();			
+</script>
+<script type="text/javascript">
+//general..//
+    var koko = "kok";
+	var seq = 0;
+	var tot  = 0; 
+	var make = 0;
+	var totalC = 0;
+	var availC = 0;
+	var takenC = 0;
+	var doubtC = 0;
+	var minC = 0;
+	var maxC = 0;
+	var hyphen = 0;
+	var allVars ="";
+	var topRA = {};
+	//var cjson = '';
+	function test(){
+		getCData();
+		return "good";
+	}
+	
+	var finalA = [];	
+	function getCData(){	
+		
+		seq = seq + 1;
+		key = $j("#ranval").val();
+		
+		if(key != ""){
+		var params = "ran="+key+"&jpost=0&seq="+seq;
+		var gdata = ""
+		
+		
+		$j.ajax({
+		   dataType: 'jsonp',
+		   jsonp: 'jsonp_callback',
+		   url: "http://9.latest.my-reg.appspot.com/checker",
+		   data: params,
+		   success: function(data){				
+				var time_sec = 0;
+				var ilen = 0;
+				if(data){								
+					$j("#useval").val(data.result);	
+					time_sec = data.time
+					$j.each(data, function(i, val) {	
+						if(!finalA[i]){					
+							try{	
+								ilen = parseInt($j("#"+i+" input[type='hidden']").length);	
+								//alert(ilen+"   "+i)
+								if(val == "Available"){									
+									availC++;
+									setTotalC("a",i);
+									if(ilen){
+										var url = $j("#"+i+" input[id='signup_url']" ).val();									
+										$j("#"+i+" .inner").html('<a href='+url+' target="_blank"> <img class="imagePaddingRight" alt="Available" title="Click to reserve your Userbrand yourself" src="/images/Available1.gif" sts="a"/></a>');
+										$j("#"+i+" a").attr("href",url);
+										////alert("Available"+$j("#"+i+" .inner").html)
+									}
+								}else{
+									if(val == "UnAvailable"){
+										
+										takenC++;
+										setTotalC("t",i);
+										if(ilen){
+										    //alert(i+"  "+$j("div[id="+i+"] .inner").length)
+											//$j("#"+i+" .inner").html("ra");
+											var prfurl = $j("#"+fcatA+" #"+i+" input[id='prf_url']" ).val().replace("uname",searchKey);							
+																			
+											$j("#"+i+" .inner").html('<a href='+prfurl+' target="_blank"><img class="imagePaddingRight"  alt="UnAvailable" title="Click to see the existing profile" src="/images/UnAvailable1.gif" sts="t" /></a>');
+											$j("#"+i+" a").attr("href",prfurl);
+											//$j("div[id=" + i +"] .inner").append(" "+val);
+											////alert("UnAvailable"+$j("#"+i+" .inner").html)
+										}										
+									}
+									else if(val == "Doubt"){										
+										doubtC++;
+										setTotalC("d",i);
+										if(ilen){
+											$j("#"+i+" .inner").html('<img class="imagePaddingRight" width="12" height="13" alt="Doubt" title="unknown" src="/images/Doubt.gif" sts="d" />');
+											//$j("div[id=" + i +"] .inner").append(" "+val);
+											////alert("Doubt"+$j("#"+i+" .inner").html)
+										}										
+									}
+									else if(val == "min"){										
+										minC++;
+										setTotalC("mi",i);
+										if(ilen){
+											$j("#"+i+" .inner").html('<img class="imagePaddingRight" alt="Minimum" title="Minimum length" src="/images/restricted.gif" sts="mi" />');											
+										}										
+									}
+									else if(val == "max"){										
+										maxC++;
+										setTotalC("ma",i);
+										if(ilen){
+											$j("#"+i+" .inner").html('<img class="imagePaddingRight"  alt="Maximum" title="Maximum length" src="/images/restricted.gif" sts="ma" />');											
+										}										
+									}
+									else if(val == "hyphen"){										
+										hyphenC++;
+										setTotalC("h",i);
+										if(ilen){
+											$j("#"+i+" .inner").html('<img class="imagePaddingRight" alt="Hyphen" title="Hyphen not allowed" src="/images/restricted.gif" sts="h" />');											
+										}										
+									}
+								}
+								
+							}catch(e){}
+						finalA[i] = i;
+						
+						}
+					});	
+								
+					if(data["result"]=="completed"){						
+					   searchAct("aft");
+					}			
+				}				
+				setCounts();
+				
+				
+			}
+		 });		
+		
+		
+			
+			}			
+			try{
+				if($j("#useval").val() != "completed"){
+					window.setTimeout('try{test()}catch(e){alert(e)}',1000);
+				}
+				else{
+					$j("#checkIt").bind("click",checkIt);
+					$j("#save-res-lnk a").attr("href",udomain+"/dashboard-mySavedSearch.htm").attr("target","_parent");			
+				}
+			}catch(e){
+				alert(e)
+			}
+			
+		}
+	
+	var catA = [];
+	var advitem = "20"
+	var bwidth = 0;
+	var udomain = "";
+	var searchKey = "";
+	var searchTit = "";
+	var userid = 0;
+	var sv = 0;
+	var clip = null;
+	var tmJSN = {};
+
+
+	function $(id) { return document.getElementById(id); }
+	function init() {				
+		clip = new ZeroClipboard.Client();		
+		clip.setHandCursor( true );			
+		clip.addEventListener('complete', function (client, text) {				
+			//debugstr("Copied text to clipboard: " + text );
+		});			
+		clip.glue('d_clip_button');
+		$j("#shareMain").toggle().css("visibility","visible");
+		
+	}
+	function autoSearch(){
+		var thisSCH =  $j("#search");
+		var title = thisSCH.attr("title");
+		var sval = thisSCH.val();		
+		if(sval !="" && sval != title){
+			$j("#checkIt").trigger("click");
+		}else{
+			thisSCH.val(title);
+		}
+	}
+	$j(document).ready(function(){		
+		init();		
+		sv = $j("#sv").val();	
+		udomain = "http://"+document.domain;
+		//setTimeOut(function() { getCData() }, 1000);
+		allVars = $j.getUrlVars();
+		userid = $j("#userid").val();
+		//$j('#search').alphanumeric({allow:"-"});
+		//$j('.search').alphanumeric({allow:"-"});
+		$j('#search').alphanumeric({allow:"-"});
+		$j('.search').alphanumeric();
+		$j('#search').keyup(function(e){
+			if(e.keyCode==13) $j("#checkIt").trigger("click");
+		});
+
+		$j("#checkIt").bind("click",checkIt);
+		
+		$j("#tryAgain").click(function() {
+			//var searchKey = $j("#search").val();
+			//var params = "searchKey="+searchKey;
+			//doAuth(params);
+			getCData();
+		});
+		$j("body * > #chkBox").bind("click",showCatDiv); 
+		$j("#adv-sel").bind("change",setAdvItem)
+		$j("input[id='advItems']").bind("click",catSelection);
+
+		$j("#searchOptions,#advsearch").bind("click",advSearch);			
+		
+		$j("body * > #tabs").click(function(){
+			var tab = $j(this).attr("tab");
+			if(tab){		
+				$j("body * > #tabs").removeClass("tactive").addClass("tinactive");
+				$j(this).addClass("tactive").removeClass("tinactive");
+				$j("body * > #tab-cont").hide();
+				$j("body * > #tab-cont[tab='"+tab+"']").show();
+			}
+		})			
+		$j(".siteList table tr:nth-child(even)").css("background-color","#c5e9f3");		
+		setTimeout('loadData()',100);
+		setTimeout('setDefaults()',5000);
+		setTimeout('removeCartErrors()',5000);
+		$j("#shareClose,#share_img").click(function(){
+			$j("#share_img").togglenClass("shr_expand","shr_collapse");
+			$j("#shareMain").toggle()
+			if(!make)makeAddThis();	
+			make = true;		
+		})
+		setShareUrl();
+		
+		$j("div[id='myp-but']").bind("click",doActions);
+		$j("img[id='myp-but']").bind("click",doActions);
+		$j("#sstabs a.ssinactive").bind("click",ssActions);
+		$j("#bpackc-error img").bind("click",hideBpcError);
+		//$j("#profile_name").bind("keyup",setVal);
+		$j('#pfname').alphanumeric({allow:"-"});
+		//$j("#save_search").bind("click",saveSearch);
+		
+		bwidth = $j("#bpack-main").width();		
+		if(sv){			
+			setShortLink();
+			setTimeout('saveDefSearch()',2000);
+		}		
+		var werror = $j("#werror").val();		
+		if(werror!=""){
+			$j("#wmsg").html(werror).show();
+			setTimeout('$j("#wmsg").hide()',5000);
+		}
+		checkLogin();
+		
+		$j("body").click(function(e){
+			var lic = $j(e.target).parent().find("li").length;				
+			if(!lic){
+				$j("#user-prof ul").hide();
+			}
+		})
+		
+		getTMR();
+		setTimeout('autoSearch()',1000);
+		
+		
+		//$j("#all-sites").bind("click",showByCat);
+	});
+function showByCat(){
+	var bcat = $j(this).attr("cat");
+	$j(".popup-contentbody").html('<iframe id="popup-ifrm" src="ByCat.php?cat='+bcat+'" width="630" height="100" frameborder="0" scrolling="no"></iframe>');
+	showPopDiv();
+}
+function checkLogin(){
+	var userid = "1";	
+	if(userid==""){
+		loginPopD();
+		$j("#hide-pop").attr("onclick","javascript:;");
+		$j("#hide-pop").click(function(){		
+			window.location = udomain+"/home.htm";
+		})
+	}
+}
+function checkIt(){	
+	var filter = {};
+	var slurlid = "";
+	searchKey = $j("#search").val();
+	searchTit = $j("#search").attr("title");
+	availC = 0;
+	takenC = 0;
+	doubtC = 0;	
+	minC = 0;
+	maxC = 0;
+	hyphenC = 0;
+	
+	topRA[20]  = {"a":0,"t":0,"d":0,"mi":0,"ma":0,"h":0};
+	topRA[50]  = {"a":0,"t":0,"d":0,"mi":0,"ma":0,"h":0};
+	topRA[100] = {"a":0,"t":0,"d":0,"mi":0,"ma":0,"h":0};
+	topRA[250] = {"a":0,"t":0,"d":0,"mi":0,"ma":0,"h":0};
+	topRA[500] = {"a":0,"t":0,"d":0,"mi":0,"ma":0,"h":0};
+
+	finalA = [];	
+	if((searchTit!=searchKey) && searchKey!=""){
+		$j("#oskey").val(searchKey);
+		searchAct("bef");
+		slurlid = $j("#slurlid").val();
+		////$j("body * > .inner").html('<img width="16" height="16" alt="Processing ..." src="/images/ajax-spinning-wait.gif"/>');
+		$j.extend(filter,{"type": "brands","action":"list","skey":searchKey,"cat":catA[0],"uid":slurlid,"ch":1,"hf":1});		
+		$j.post("actions.php",filter,
+				function(data){	
+					if(data.length==0){						
+						$j("#checkIt").unbind("click");
+						$j("#save-res-lnk a").attr("href","javascript:;").removeAttr("target");
+						setCatA();				
+						fcatA = (advitem=="all") ? "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15" : catA;
+						//var params = "searchKey="+searchKey+"&searchKey1=&cat_str="+fcatA;			
+						var params = "searchKey="+searchKey+"&searchKey1=&cat_str=20";			
+						if(userid || advitem<=50){					
+							doAuth(params);
+						}else{
+							loginPopD();
+						}						
+					}else{						
+						formatResults(data);
+					}
+		},"json");
+	}	
+}
+function formatResults(results){
+	var countsJ = {};
+	$j("#all-sites").html(results["data"]);
+	$j("#saved-title").html("&nbsp;");
+	$j("#availa").html(results["avail"]);
+	$j("#unavaila").html(results["taken"]);
+	$j("#restricteda").html(results["restricted"]);
+	$j("#doubt").html(results["doubt"]);
+	$j("#sUrl").val(results["slurl"]);
+	//alert($j("#sUrl").val())
+	$j("#slurlV").attr("href",results["slurl"]);
+	$j("#top_cr label").html(results["diff"]+" hrs");	
+	$j("#top_cr").show();	
+	$j("#countsJ").val(results["counts"]);
+	countsJ = eval('(' + results["counts"] + ')');
+	addOrderPkg(results["packgs"]);
+	setDefCounts(countsJ);
+	
+	searchAct("cache");	
+	$j("#ord-pack input[type='radio']").bind("click",unCheckBox);
+	$j("#ord-pack input[type='checkbox']").bind("click",ckCheckBox);
+	$j("img[id='myp-but']").bind("click",doActions);
+}
+function setDefCounts(countsJ){
+	$j("#ord-pack").show();
+	var cat = "20";
+	var vals = countsJ[cat];	
+	$j("#ord-pack #"+cat+"a").html(vals["a"]);
+	$j("#ord-pack #"+cat+"t").html(vals["t"]);
+	$j("#ord-pack #"+cat+"d").html(vals["d"]);
+	$j("#ord-pack #"+cat+"r").html(parseInt(vals["mi"])+parseInt(vals["ma"])+parseInt(vals["h"]));
+	/*$j.each(countsJ,function(cat,vals){
+		$j("#ord-pack #"+cat+"a").html(vals["a"]);
+		$j("#ord-pack #"+cat+"t").html(vals["t"]);
+		$j("#ord-pack #"+cat+"d").html(vals["d"]);
+		$j("#ord-pack #"+cat+"r").html(parseInt(vals["mi"])+parseInt(vals["ma"])+parseInt(vals["h"]));
+		//alert(cat+"  "+vals["a"]+"  "+vals["t"]+"  "+vals["d"])
+	})*/
+}
+function addOrderPkg(data){
+	//alert(data);
+	$j("#ord-pack").html(data);
+	$j("#ord-pack input[type='radio']").bind("click",unCheckBox);
+	$j("#ord-pack input[type='checkbox']").bind("click",ckCheckBox);
+	$j("img[id='myp-but']").bind("click",doActions);
+	$j("#ord-pack a[cat]").bind("click",showByCat);
+}
+function doAuth(params){		
+	seq =0;
+	var avai = 0;
+	var unavai = 0;
+	var doubt = 0;
+	searchAct("bef");
+	$j.ajax({
+	   dataType: 'jsonp',
+	   jsonp: 'jsonp_callback',
+	   url: "http://9.latest.my-reg.appspot.com/checker",
+	   data: params+"&jpost=1",
+	   success: function(data){
+		if(data){					
+			$j("#ranval").val(data.key);					
+		}
+	   }
+	 });			
+	  getCData();	    
+	  setShortLink();		  
+}
+function searchAct(action){
+	var ilen = 0;
+	if(action=="bef"){
+		$j("#advsearch").unbind("click");
+		$j("#adv-sel").attr("disabled",true);
+		$j("#top_bL").hide();
+		$j(".siteList").removeClass("siteListB");
+		$j("#top_order").hide();
+		$j("#shareMain").hide();
+		$j("#ord-pack").hide();
+		$j("#orderMain").hide();
+		$j("#orderNote").hide();
+		$j("#top_cr").hide();
+		$j("#availa").html("");
+		$j("#unavaila").html("");
+		$j("#restricteda").html(0);
+		$j("#doubt").html("");
+		$j("#total").html("");				
+		$j("#ranval").val("");
+		$j("#useval").val("");
+		$j("body * > .inner").html('<img width="16" height="16" alt="Processing ..." src="/images/ajax-spinning-wait.gif"/>');
+	}else if(action=="chng"){
+		$j("#top_order").hide();
+		$j("#shareMain").hide();
+		$j("#orderMain").hide();
+		$j("#orderNote").hide();
+		$j("#ord-pack").hide();
+		$j("#top_cr").hide();
+		$j("#availa").html("");
+		$j("#unavaila").html("");
+		$j("#restricteda").html(0);
+		$j("#doubt").html("");
+		$j("#total").html("");				
+	}else{		
+		$j("#advsearch").bind("click",advSearch);
+		$j("#adv-sel").attr("disabled",false);
+		$j("#top_bL").show();
+		$j("#orderMain").show();
+		if(catA>50){			
+			$j("#orderNote").show();
+			$j("#spcat").html(catA[0]);
+		}
+		$j(".siteList").addClass("siteListB");
+		$j("#top_order").show();
+		setTimeout('$j("#progressbar").fadeOut("slow")',5000);
+		setTimeout('showShare()',5000);
+		/*$j.each(catA,function(m,n){					       
+			$j.each($j(".siteList[category='"+n+"'] img[alt='Processing ...']"),function(m,n){						
+				$j(this).parent().html('<img class="imagePaddingRight" width="12" height="13" alt="Doubt" title="unknown" src="/images/Doubt.gif" sts="d"/>');
+				
+			})
+		})*/
+		//ilen = parseInt($j("#"+fcatA+" #"+i+" input[type='hidden']").length);
+		$j.each($j("#"+catA+" input[type='hidden']"),function(m,n){
+			if($j(this).parent().find("img[alt='Processing ...']").length){
+				$j(this).parent().find("img[alt='Processing ...']").attr({"alt":"Doubt","title":"unknown","src":"/images/Doubt.gif","sts":"d"});
+			}
+		})
+		if(catA>20){
+			$j("#"+catA+" img[alt='Processing ...']").attr({"alt":"Paid","title":"buy report","src":"/images/Paid.gif","sts":"b"});
+		}else{
+			$j("#"+catA+" img[alt='Processing ...']").attr({"alt":"Doubt","title":"unknown","src":"/images/Doubt.gif","sts":"d"});
+		}
+		
+			$j("img[alt='Processing ...']").remove();
+			$j("div[id='myp-but']").show();			
+		
+		//usernamecheck//only
+		
+		if(action=="aft"){
+			setDiffTopRA();
+			setDefCounts(topRA);
+			saveSearch();		
+		}
+		
+		//usernamecheck//only
+	}
+}
+function advSearch(){
+	$j('#chkGroup').toggle();
+	$j(this).toggleClass("active");
+}
+function loadData(){			
+	if(allVars["skey"]){	
+		allVars["cat"] = (!allVars["cat"]) ? 50 : allVars["cat"];
+		showDIV("ajax_loader");
+		getData(allVars["cat"]);
+	}else{
+		$j("input[id='advItems']:checked").trigger("click");
+	}
+}
+function setDefaults(){	
+	var idsA = [];	
+	if(allVars["skey"]){			
+		$j("#search").val(allVars["skey"]);
+		$j(".chkIteams input[type='radio'][value='"+allVars["cat"]+"']").attr("checked",true);
+		advitem = allVars["cat"];	
+		hideDIV("ajax_loader");		
+		if(advitem=="all"){			
+			$j(".siteList[top]").hide();			
+			try{
+			idsA = allVars["ids"].split(",");
+			$j.each(idsA,function(m,n){					
+				$j("#chkGroup input[type='checkbox'][value='"+n+"']").attr("checked",true);			
+				$j(".siteList[category='"+n+"']").show();		    
+			})
+			}catch(e){
+				//alert(e)
+			}				
+		}else{
+			$j(".siteList[category='"+advitem+"']").show();
+		}
+		setTimeout('setTotal()',900);
+		setTimeout('checkItAuto()',1000);		
+	}
+}
+
+
+function checkItAuto(){
+	$j("#checkIt").trigger("click");
+}
+	
+function setShortLink(){	
+	var skey = $j("#search").val();
+	var skeyT = $j("#search").attr("title");
+	var cat = $j(".chkIteams input[type='radio']:checked").val();
+	var idsA = [];
+	var filter = {};
+	var url = "http://"+document.domain+"/SearchResults.htm";
+	var enkey = $j("#slurlid").val();
+	//if(fcatA==50){
+		if(cat=="all"){
+			$j.each($j("#chkGroup input[type='checkbox']:checked"),function(m,n){
+				idsA.push($j(this).val());
+			})
+		}	
+		ids = (idsA.length) ? "&ids="+idsA : "";
+		
+		url += "?skey="+skey+"&key="+enkey+"&cat="+cat+ids;
+		
+		if(skey!=skeyT){		
+			$j.extend(filter,{"url": url});	
+			$j.post("slURL.php",filter,
+					function(data){				
+						$j("#sUrl").val(data[0]);
+						$j("#slurlV").attr("href",data[0]);
+						makeAddThis();	
+						//copy to clicpboard...		
+						clip.setText(data[0]);	
+						
+			},"json");
+		} 	
+	//}else{
+		setShareUrl();
+	//}
+}
+function setShareUrl(){
+	$j("#sUrl").val("http://i.tm.biz/FWN4kL");
+	makeAddThis();
+}
+function showShare(){
+	$j("#shareMain").show();
+	$j("#share_img").attr("class","shr_collapse");
+}
+var pct=0;
+function update(){
+	$j("#progressbar:hidden").show();
+	$j("#progressbar").reportprogress(total);
+	if(pct==total){
+		$j("#run").val("start");
+		pct=0;
+	}
+}
+
+$j.fn.reportprogress = function(val,maxVal) {
+//var max=345; this variable is placed in setTotal() to make it dynamic.	
+	if(maxVal)
+		max=maxVal;
+	return this.each(
+		function(){
+			var div=$j(this);
+			var innerdiv=div.find(".progress");			
+			if(innerdiv.length!=1){
+				innerdiv=$j("<div class='progress'></div>");
+				div.append("<div class='text'>&nbsp;</div>");
+				$j("<span class='text'>&nbsp;</span>").css("width",div.width()).appendTo(innerdiv);
+				div.append(innerdiv);
+			}
+			progsWidth=Math.round(val/stotal*100);
+			innerdiv.css("width",progsWidth+"%");
+			div.find(".text").html(" "+$j("#total").html()+$j("#seltotal").html()+" sites - ["+progsWidth+"%]");
+		}
+	);
+};
+var addthis_config =
+{
+  services_compact : 'email',
+  services_expanded : 'email'  
+}
+
+function makeAddThis()
+{
+  var a = "<a></a>";
+  $j("#addthisa").html(a);
+  $j("#addthisa a").attr('class','addthis_button');
+  $j("#addthisa a").bind("mouseover",addthisOver);
+  $j("#addthisa a").click(function(){
+	return addthis_sendto();
+  });
+  $j("#addthisa a").html('<img src="images/lg-share-en.png" />');
+}
+function addthisOver(){
+	var url = $j("#sUrl").val();
+	return addthis_open(this, '', url, 'Userbrands');
+}
+
+function setAdvItem(){	
+	var advtm = $j(this).val();	
+	$j("input[id='advItems'][value='"+advtm+"']").attr("checked",true).trigger("click");	
+	searchAct("chng");
+	
+}
+function catSelection(){
+	
+	var tval = $j(this).val();		
+	var cat = 1;
+	$j("body * > .siteList").hide();
+	$j("#top_bL").hide();
+	$j("#top_order").hide();
+	$j("#adv-sel").val(tval);
+	$j.each($j("span[class='inner'] img[alt='UnAvailable']"),function(m,n){			
+		$j(this).parent().parent().parent().find("input[sys=0]").attr("disabled",false);
+	})
+	
+	$j("span[class='inner']").html("&nbsp;");
+	advitem = $j("input[name='advItems']:checked").val();		
+	$j("#chkGroup input[type='checkbox'][id!='alexaRank']").attr("checked",false);	
+	if(tval!="all"){
+		cat = tval;
+		catA = [];
+		addFollow("uncheck");
+		$j("body * > .siteList[category='"+tval+"']").show();
+		catA.push(tval);
+	}
+	else if(tval=="all"){
+		cat = tval;
+		$j("body * > .siteList[category='"+tval+"']").show();
+		//$j("#chkGroup input[type='checkbox'][id!='alexaRank']").attr("checked",true);
+		addFollow("uncheck");
+		
+	}
+	else if(tval=="custom"){			
+		addFollow("uncheck");			
+		$j("#chkGroup input[type='checkbox'][value=1]").attr("checked",true).trigger("click").attr("checked",true);				
+	}
+	setTotal();
+	if(userid || advitem<=50){
+		getData(cat);	
+	}else{
+		var logstr = "";
+		logstr = "<div class='siteList' category=0 $block top='0' style='display:block;' >"
+					+"<div class='headding'>"
+					  +"<div>&nbsp;</div>"
+				  		+"<div style='position:absolute;background-color:#dcf2f8;top:0px;left:0px;padding:5px;border:1px solid #00a2e8;border-bottom:0px;'>Login</div>"
+					+"</div>"
+					+"<table cellpadding='0' cellspacing='0' width='100%' style='font-size:8pt;'>"
+						+"<tr><td>All searching is free, but we ask that you login or create a free account when searching more than 50 Social Networks.<br>By logging in first, all of your searches will be archived for later review.</td></tr>"
+					+"</table>"
+				  +"</div>";
+		$j("#all-sites").append(logstr);
+		loginPopD();
+	}
+	
+}
+var gcat = 0;
+function getData(cat){	
+	if(gcat!=cat){
+		gcat = cat;
+		var catcount = 0;
+		var filter = {};
+		$j("#adv-sel").val(cat);
+		catcount = parseInt($j("div[category='"+cat+"']").length);	
+		if(!catcount){
+			$j.extend(filter,{"type": "brands","action":"brands","cat":cat,"hf":1});		
+			$j.post("actions.php",filter,
+					function(data){	
+						$j("#all-sites").append(data["data"]);	
+						addOrderPkg(data["packgs"]);
+						//$j("div[category='500']").hide();
+						setTotal();							
+						if(cat=="1"){
+							$j("input[id='advItems']:checked").trigger("click");
+						}					
+			},"json");
+		}
+	}	
+}
+function getTMR(){
+	var filter = {};
+	$j.extend(filter,{"type": "rnk"});		
+	$j.post("actions.php",filter,
+			function(data){	
+				tmJSN = data;
+	},"json");
+}
+function addFollow(type){
+	if(type=="check"){
+		$j.each($j("#chkGroup input[type='checkbox'][id!='alexaRank']"),function(m,n){
+			$j(this).parent().next().find("a").attr("href","#"+$j(this).val());
+		})				
+	}else{
+		$j.each($j("#chkGroup input[type='checkbox'][id!='alexaRank']"),function(m,n){
+			$j(this).parent().next().find("a").removeAttr("href");			
+		})		
+	}
+}
+function showCatDiv(){		
+	var cat = $j(this).val();	
+	getData(cat);
+	advitem = $j("input[name='advItems']:checked").val();
+	$j(".siteList[category=50],.siteList[category=250],.siteList[category=500]").hide();	
+	if($j(this).is(":checked")){
+		$j(this).parent().next().find("a").attr("href","#"+$j(this).val());
+		$j(".siteList[category='"+cat+"']").show();
+	}
+	else {
+		$j(this).parent().next().find("a").removeAttr("href");	
+		$j(".siteList[category='"+cat+"']").hide();
+	}
+	if(advitem!="custom"){		
+		$j("input[name='advItems'][value='custom']").attr("checked",true);
+		advitem = $j("input[name='advItems']:checked").val();
+	}	
+	$j.each($j("div[category='"+cat+"'] span[class='inner'] img[alt='UnAvailable']"),function(m,n){		
+		$j(this).parent().parent().parent().find("input[sys=0]").attr("disabled",false);
+	})
+	$j("div[category='"+cat+"'] span[class='inner']").html("&nbsp;");
+	setTotal();
+}
+var stotal = 50;
+var progsWidth;
+function setTotal(){
+	stotal = 0;	
+	availC = 0;
+	takenC = 0;
+	doubtC = 0;
+	minC = 0;
+	maxC = 0;
+	hyphenC = 0;
+	$j("#availa").html("0");
+	$j("#unavaila").html("0");
+	$j("#restricteda").html("0");
+	$j("#doubt").html("0");	
+	$j("#total").html("0");	
+	setCatA();	
+	//stotal = $j(".siteList:visible a img").length;		
+	stotal = $j("#adv-sel").val();	
+	$j("#seltotal").html("/"+stotal);	
+	if(advitem=="all"){
+		$j("#advItem span").hide();
+		$j("#advItem #adv_"+advitem).html("("+stotal+")").show();
+	}
+	//advitem
+	//$j("input[id='advItems']:checked").val()
+}
+function setComboAll(){
+	alert($j("body * > .siteList[top='all'] a img").length);
+}
+function setCatA(){	
+	catA = [];	
+	if(parseInt($j("#chkGroup input[type='checkbox']:checked").length)){
+		$j.each($j("#chkGroup input[type='checkbox']:checked"),function(m,n){			
+			catA.push($j(this).val());
+		})
+	}else{
+		catA.push(advitem);
+	}	
+}
+var total = 0;
+function setCounts(){
+	var avail = 0;
+	var unavail = 0;
+	var doubt = 0;	
+	var percent = 0.03;
+	var bal = 0;	
+	var ftotal = 0;
+	if(fcatA==20){
+	$j.each(catA,function(m,n){		
+		avail = $j(".siteList[category='"+n+"'] img[alt='Available']").length + avail;
+		unavail = $j(".siteList[category='"+n+"'] img[alt='UnAvailable']").length + unavail;
+		doubt = $j(".siteList[category='"+n+"'] img[alt='Doubt']").length + doubt;
+		//doubt = (doubt>0) ? doubt : "0";		
+		$j("#availa").html(avail.toString());
+		$j("#unavaila").html(unavail.toString());
+		$j("#doubt").html(doubt.toString());
+		total = parseInt(avail)+parseInt(unavail)+parseInt(doubt);	
+		$j("#total").html(total.toString());	
+	})	
+	}else{
+		$j("#availa").html(topRA[fcatA]["a"].toString());
+		$j("#unavaila").html(topRA[fcatA]["t"].toString());
+		$j("#restricteda").html(parseInt(topRA[fcatA]["mi"])+parseInt(topRA[fcatA]["ma"])+parseInt(topRA[fcatA]["h"]));
+		$j("#doubt").html(topRA[fcatA]["d"].toString());
+		//alert(availC+" "+takenC+" "+doubtC)
+		total = parseInt(topRA[fcatA]["a"])+parseInt(topRA[fcatA]["t"])+parseInt(topRA[fcatA]["d"])+parseInt(topRA[fcatA]["mi"])+parseInt(topRA[fcatA]["ma"])+parseInt(topRA[fcatA]["h"]);	
+		$j("#total").html(total.toString());	
+	}
+	//bal = Math.ceil(stotal * percent);	
+	//usernamecheck//only bal = Math.ceil(50 * percent);	
+	bal = 2;
+	//usernamecheck//only ftotal = topRA[50]["a"]+topRA[50]["t"]+topRA[50]["d"]+topRA[50]["mi"]+topRA[50]["ma"]+topRA[50]["h"];//new modification for top 500 search for all categories...
+	
+	//usernamecheck//only
+	try{
+	ftotal = $j("img[alt='Available']").length+$j("img[alt='UnAvailable']").length+$j("img[alt='Doubt']").length+$j("img[alt='Minimum']").length+$j("img[alt='Maximum']").length+$j("img[alt='Hyphen']").length;
+	}catch(e){
+		alert(e)
+	}
+	if((20 - ftotal) <= bal){		
+		$j("#useval").val("completed");
+		seq = 22;
+	}
+	update();
+}
+function doActions(){
+	var action = $j(this).attr("action");
+	var skey = $j("#search");
+	var cartF = true;
+	var cartR = "";
+	var pack = "";
+
+	if(action == "share"){
+		$j("#share_img").trigger("click");
+	}
+	else if(action == "login"){
+		loginPopD();
+	}
+	/*else if(action == "sea"){			
+			addWatRegCart(action);
+	}*/
+	else{
+		skey = (skey.val()=="" || skey.attr("title")==skey.val()) ? "" : skey.val();
+		//pack = $j("#ord-pack input[name='package']:checked").attr("package");
+		$j("#pack").val("20");
+		$j("#svc").val(action);
+		$j("#sstab").val("bpack");
+		$j("#skey").val(skey);
+		$j("#svcfrm").submit();
+	}
+}
+function ssActions(){	
+	var sstab = $j(this).attr("sstab");
+	if(sstab=="search")window.location = udomain+"/brands.htm";
+}
+function hideBpcError(){
+	$j("#bpackc-error").hide();
+}
+
+var domain = "http://"+document.domain;
+
+
+function setMsg(msg){
+	alert(msg)
+	$j("#msg").html(msg);
+	position = (bwidth-$j("#msg").width())/2;
+	$j("#msg").css("left",position).show();		
+	setTimeout('$j("#msg").hide()',5000);
+}
+function getRanKey(params){	
+	seq = 0;
+	avilcount = 0;
+	finalA = {};
+	$j("#useval").val("");
+	$j.ajax({
+		dataType: 'jsonp',
+		jsonp: 'jsonp_callback',
+		url: "http://9.latest.my-reg.appspot.com/checker",
+		data: params+"&jpost=1",
+		success: function(data){
+		if(data){					
+			$j("#ranval").val(data.key);					
+		}
+		}
+	});			
+	getAllCData();
+}
+function allTest(){
+	getAllCData();
+	return "good";
+}
+var avilcount = 0;
+var cdfreq = "";
+function getAllCData(){	
+		
+		
+		var pinputs = $j("input[name='package']");
+		var psites = 0;
+		seq = seq + 1;
+		key = $j("#ranval").val();
+		var completedF = false;
+		if(seq==1)cdfreq = $j("input[name='package']:checked").attr("package");
+		if(key != ""){
+		var params = "ran="+key+"&jpost=0&seq="+seq;		
+		$j.ajax({
+		   dataType: 'jsonp',
+		   jsonp: 'jsonp_callback',
+		   url: "http://9.latest.my-reg.appspot.com/checker",
+		   data: params,
+		   success: function(data){				
+				if(data){					
+					$j("#useval").val(data.result);	
+					$j.each(data, function(i, val) {	
+						if(!finalA[i]){					
+							try{
+								if(val == "Available"){
+									avilcount++;
+									$j(".popup-loader label").html(avilcount+"/"+cdfreq);
+									if(avilcount >= cdfreq){																			
+										completedF = true;
+										seq = 22;
+										hidePopDiv();
+										addWatRegCart();								
+										$j("#useval").val("completed");										
+									}
+								}
+							}catch(e){}
+							finalA[i] = i;						
+						}						
+					});	
+								
+					if(data.result=="completed"){							
+						if(!completedF){							
+							$j.each(pinputs,function(m,n){
+								psites = $j(this).attr("package");
+								range = $j(this).attr("range").split("-")[0];
+								if(psites>=avilcount && range>=avilcount)$j(this).attr("disabled",true);
+							})
+							$j("input[name='package']:not(:disabled)").attr("checked",true);
+							if(parseInt($j("input[name='package']:not(:disabled)").length))allcdatF = true;
+							$j(".popup-contentbody .pop-msg").html("Selected Top "+cdfreq+" sites.. Availabel only "+avilcount+" sites select appropriate package to proceed further...").show();
+							$j(".popup-contentbody #cart-but").show();
+							$j(".popup-loader").css("background","none");
+						}
+					   
+					}			
+				}	
+				
+			}
+		 });		
+		
+		
+			
+			}
+		
+			if($j("#useval").val() != "completed"){
+				window.setTimeout('try{allTest()}catch(e){alert(e)}',1000);
+			}
+			else{					
+				$j("#checkIt").bind("click",checkIt);			
+				$j("#save-res-lnk a").attr("href",udomain+"dashboard-account.htm#myss").attr("target","_parent");		
+			}
+		
+			
+	
+}
+function removeCartErrors(){
+	$j("tr[class='wderror'] span").remove();
+	$j("tr[class='wderror']").removeClass('wderror');
+}
+function updateCart(json){
+	allcdatF = true;
+	$j.each(json,function(m,n){		
+		if(m=="package"){
+			$j("input[name='package'][value='"+n+"']").attr("checked",true);
+		}
+		else{
+		 $j("#"+m).val(n);
+		}
+	})
+}
+function saveSearch(){	
+	var filter = {};	
+	var ssids = "";
+	var avtxt = "";
+	var slurl = "";
+	var flag = false;
+	var totalC = 0;
+	var doubtC = 0;	
+	var restrictedC = 0;
+	
+	availC = topRA[catA]["a"]; 
+	takenC = topRA[catA]["t"];
+	doubtC = topRA[catA]["d"];
+	minC = topRA[catA]["mi"];
+	maxC = topRA[catA]["ma"];
+	hyphenC = topRA[catA]["h"];
+	
+	restrictedC = minC + maxC + hyphenC;
+	totalC = catA-(availC+takenC+doubtC+minC+maxC+hyphenC);		
+	doubtC = (totalC) ? doubtC+totalC : doubtC;		
+	slurl = $j("#sUrl").val();
+	
+	$j.each($j(".siteList:visible").find("div[ssid]"),function(m,n){
+		ssids += (flag) ? "," : "";
+		ssids += '"'+$j(this).attr("ssid")+'"';
+		ssids += ':"'+$j(this).find("img:last").attr("sts")+'"';
+		flag = true;
+	})	
+		10/12/2010
+	$j.extend(filter,{"type": "svsearch","action":"add","avail":availC,"unavail":takenC,"restricted":restrictedC,"doubt":doubtC,"skey":searchKey,"cat":advitem,"jsn":ssids,"slurl":slurl,"topRA":topRA});		
+	$j.post("actions.php",filter,
+			function(data){	
+				
+	});
+	
+	
+}
+function showSaveSearch(){
+	if(!userid && advitem==50){
+		//$j("#save-but").html('<img src="images/save-search.png" id="save_login" />');
+		$j("#save_login").bind("click",saveSearchLogin);
+	}
+}
+function saveSearchLogin(){
+	searchKey = $j("#search").val();
+	$j(".popup-contentbody").html("<iframe id='ordsigfrm' src='"+udomain+"/ordersignuplogin.php?svc=sv&opt=login&skey="+searchKey+"&scat="+advitem+"' frameborder='0' scrolling='no' width='730px' height='265px' ></iframe>").css({"padding":"10px"});
+	showPopDiv();
+}
+function saveDefSearch(){
+	var slurl = "";	
+	var filter = {};	
+	slurl = $j("#sUrl").val();
+	$j.extend(filter,{"type": "svdfsearch","action":"add","slurl":slurl});		
+	$j.post("actions.php",filter,
+			function(data){	
+				
+	});
+}
+function loginPopD(){	
+	var searchthis = $j("#search");
+	searchtit = searchthis.attr("title");
+	searchKey = searchthis.val();
+	searchKey = (searchtit==searchKey) ? "" : searchKey;
+	$j(".popup-contentbody").html("<iframe id='ordsigfrm' src='"+udomain+"/ordersignuplogin.php?svc=search&opt=login&skey="+searchKey+"&scat="+advitem+"' frameborder='0' scrolling='no' width='730px' height='265px' ></iframe>").css({"padding":"10px"});
+	showPopDiv();
+}
+
+function setTotalC(status,site){
+	var rank = tmJSN[site];
+	if(rank<=20){
+		topRA[20][status]  = topRA[20][status]+1; 
+		topRA[50][status]  = topRA[50][status]+1; 
+		topRA[100][status] = topRA[100][status]+1;
+		topRA[250][status] = topRA[250][status]+1;
+		topRA[500][status] = topRA[500][status]+1;
+	}else if(rank<=50){
+		topRA[50][status]  = topRA[50][status]+1; 
+		topRA[100][status] = topRA[100][status]+1;
+		topRA[250][status] = topRA[250][status]+1;
+		topRA[500][status] = topRA[500][status]+1;
+	}else if(rank<=100){
+		topRA[100][status] = topRA[100][status]+1; 
+		topRA[250][status] = topRA[250][status]+1;
+		topRA[500][status] = topRA[500][status]+1;
+	}else if(rank<=250){
+		topRA[250][status] = topRA[250][status]+1; 
+		topRA[500][status] = topRA[500][status]+1;
+	}else if(rank<=500){
+		topRA[500][status] = topRA[500][status]+1; 
+	}
+}
+
+function setDiffTopRA(){
+	var difCatA = new  Array("20","50","100","250","500");
+	var diff = 0;
+	$j.each(difCatA,function(m,cat){
+		diff = topRA[cat]["a"]+topRA[cat]["t"]+topRA[cat]["d"]+topRA[cat]["mi"]+topRA[cat]["ma"]+topRA[cat]["h"];
+		diff = cat-diff;
+		topRA[cat]["d"] = topRA[cat]["d"]+diff;
+	})
+}
+function addWatRegCart(action){
+	var filter = {};	
+	var package = $j("#ord-pack input[type='radio']:checked").val();	
+	var skey = $j("#oskey").val();
+	//var action = $j(this).attr("action");
+	var freq = 7;
+	var email = "";
+	var svc = action;
+	var reppdf = "";
+	var cktype = "";
+	var maxCrd = $j("#ord-pack input[type='radio']:not(:disabled):last").attr("package");
+	if(svc=="reg"){
+		freq = $j("input[name='package']:checked").attr("package");
+	}
+	
+	
+	$j.extend(filter,{"type": "cart","action":"wat","pack":package,"skey":skey,"freq":freq,"email":email,"svc":svc,"max":maxCrd});
+			
+	if($j("input[type='checkbox']").is(":checked")){
+		//alert($j("input[type='checkbox']:checked").attr("name"));
+		$j.each($j("input[type='checkbox']:checked"),function(m,n){
+			//reppdf += ","+$j(this).attr("name")+":1"; 
+			cktype = $j(this).attr("name");
+			if(cktype=="rprice")
+				$j.extend(filter,{"rprice": 1});
+			else if(cktype=="pprice")
+				$j.extend(filter,{"pprice": 1});
+		})
+		
+	}	
+	$j.post("actions.php",filter,
+			function(data){					
+				$j("#sstab").val("summary");
+				$j("#svcfrm").submit();								
+	},"json");
+}
+function unCheckBox(){
+	var checktr = $j(this).parent().parent();	
+	$j("#ord-pack input[type='checkbox']").attr("checked",false);
+	checktr.find("input[type='checkbox']").attr("checked",true);
+}
+function ckCheckBox(){	
+	if($j(this).attr("checked")){
+		var checktr = $j(this).parent().parent().parent();	
+		$j("#ord-pack input[type='radio']").not(checktr.find("input[type='radio']")).attr("checked",false);
+		$j("#ord-pack input[type='checkbox']").not(checktr.find("input[type='checkbox']")).attr("checked",false);
+		checktr.find("input[type='radio']").attr("checked",true);
+	}
+}
+
+$j.extend({
+  getUrlVars: function(){
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+      hash = hashes[i].split('=');
+      vars.push(hash[0]);
+      vars[hash[0]] = hash[1];
+    }
+    return vars;
+  },
+  getUrlVar: function(name){
+    return $j.getUrlVars()[name];
+  }
+});
+jQuery.fn.togglenClass = function(a, b) {
+    return this.each(function() {
+        jQuery(this).attr("class",(jQuery(this).attr("class") == a ? b : a));
+    });
+};
+</script>
+<style type="text/css">
+@import url('css/default.css?id=2');
+/*floating*/
+.popup-loader {width:150px;margin:0px auto;padding:5px 0px;background:url(images/ajax-loader.gif) no-repeat right;}
+.popup-contentbody {font-size:10pt;}
+.popup-contentbody .ubrandt {color:#bc5e3f;}
+.popup-contentbody .pop-msg {display:none;color:#FF0000;font-size:8pt !important;}
+.popup-contentbody #cart-but{display:none;}
+/*Sites List*/ 
+.sites {margin:0px auto;position:relative;z-index:0;/*width:870px;background-color:#fff;*/-moz-border-radius:10px;-webkit-border-radius:10px;}
+.siteList {width:98%;margin:0px auto;padding:5px 0 10px;display:none;color:#000;}
+.siteListB{border-top:1px solid #c2d3eb;}
+.siteList input {position:relative;top:4px;}
+.siteList table {width:100%;background-color:#A3D869;border:1px solid #66bc29;padding:10px;}
+.headding {color:#000;font-size:8pt;margin-bottom:14px;position:relative;}
+.headding .sall {position:absolute;bottom:-6px;right:5px;color:#212c7d;font-size:10px;display:none;}
+.headding .sall a {text-decoration:none;color:#4e5fd5;font-size:10px;}
+.socialSite {width:auto;font-size:10px !important;font-weight:normal;height:auto;text-align:center;padding:5px 0px;margin:0px;}
+#tm_r {width:auto;padding-top:0px;}
+#tab-cont{min-height:375px;}
+#top {float:left;margin-top:15px;margin-bottom:10px;padding-top:0px;background-color:#B2D281;-moz-border-radius:10px;-webkit-border-radius:10px;width:704px;min-height:340px;}
+#top_b {height:0px;margin-top:0px;}
+#top_cr {position:absolute;background-color:#B2D281;border:1px solid #66BC29;left:113px;top:17px;width:100px;height:25px;display:none;}
+#top_cr span{display:block;background-color:#A3D869;border-bottom:1px solid #66BC29;font-size:8pt;font-weight:bold;text-align:center;}
+#top_cr div{text-align:center;font-size:9px;}
+#top_cr label{color:red;}
+#top_bL {background-color:#A3D869;border:1px solid #66bc29;right:9px;top:17px;width:475px;height:25px;line-height:25px;}
+#top_bL img{position:relative;top:2px;}
+#search {width:570px;margin-left:5px;}
+#chkGroup {margin-bottom:10px;}
+#tm_r select {border:1px solid #CCCCCC;padding:9px 5px;width:110px;}
+#top_bR, #chkGroup, #top_bL {display:none;}
+#shareMain{display:block;visibility:hidden;}
+.top50 {padding:0px 5px !important;}
+.shr_expand {background-position:3px 4px;}
+.shr_collapse {background-position:3px 4px;}
+#srvc-dvs {width:310px;margin:0px auto;padding-bottom:10px;position:relative;}
+#myp-but {cursor:pointer;z-index:1;text-align:center;}
+.mypb-top {position:absolute;top:10px;}
+.mypb-reg {right:0px;}
+#cart-but {background-color:#000;color:#99ccff;border:3px solid #99ccff;padding:2px 5px;font-weight:bold;float:right;margin-right:1px;margin-top:1px;font-size:9pt;cursor:pointer;}
+#cart-but a {color:#99ccff;text-decoration:none;}
+.cart-but {width:80px !important;margin-top:10px !important;}
+/*watch tabs*/ 
+ul#sstabs {background:url(images/sstabbg.gif) no-repeat;border-bottom:2px solid #CCCCCC;padding:0px;margin:0px;width:100%;height:30px;}
+#sstabs li {height:30px;list-style:none;display:block;color:#053857;width:160px;float:left;text-align:center;font-size:10pt;font-weight:bold;line-height:30px;}
+#sstabs li a {display:block;color:#000;float:left;width:110px;text-align:center;font-size:10pt;text-decoration:none;border-right:1px solid #c3c3c3;cursor:default;line-height:30px;}
+#sstabs.bpack {background-position:0 0;}
+#sstabs.summary {background-position:0 -30px;}
+#sstabs.success {background-position:0 -60px;}
+li.summary {width:142px !important;}
+li.success {width:120px !important;}
+/*Signup Login*/ 
+#signup-login {display:none;}
+/*buy package*/ 
+#bpack {background-color:#f2f8fc;border:1px solid #cccccc;-moz-border-radius:3px;width:870px;margin:0px auto;padding-bottom:3px;position:relative;}
+#bpack-main {background:url(images/bpackbox.png) no-repeat top right;margin:5px 10px 0 10px;}
+.complete #bpack-main {background:url(images/paypalsuccess.png) no-repeat right 8px;margin:5px 10px 0 10px;}
+#bpack-top hr {border:1px solid #ddd;width:94%;margin-left:0px;}
+.bpack-title {font-size:8pt;color:#707070;text-transform:uppercase;font-weight:bold;}
+.bpack-mtitle {font-size:14pt;color:#b0000e;font-weight:bold;}
+#bpackc-left { }
+.bpackc-tit {color:#464646;font-size:8pt;font-weight:bold;text-transform:uppercase;}
+#bpackc-price {border:1px solid #e0eef8;width:500px;margin-top:10px;font-size:8pt;}
+#bpackc-price tr th {color:#000;font-weight:bold;font-size:8pt;text-align:left;}
+#bpackc-price tr {background-color:#ebf3fa;}
+#bpackc-price td, #bpackc-price th {padding:5px;}
+#bpackc-price input {padding:0px;margin:0px;position:relative;top:-1px;}
+#bpackc-price img {cursor:pointer;}
+#bpackcr-csummary {font-size:8pt;background-color:#eaf8c0;margin-top:2px;padding:2px;text-align:center;}
+#bpackcr-csummary div {text-align:left;}
+#bpackcr-csummary span {text-transform:uppercase;font-weight:bold;}
+#bpc-but {background:url(images/sstbutbg.png) repeat-x;padding:2px 0px;text-align:center;border:1px solid #dadada;-mox-border-radius:5px;font-size:8pt;font-weight:bold;cursor:pointer;}
+#bpc-but.bpc-inactive {cursor:auto !important;color:#777 !important;}
+#bpack-coupon {font-size:8pt;background-color:#B9E3B3;margin-top:10px;padding:5px;position:relative;width:278px;}
+#bpack-coupon input {width:81%;border:1px solid #777;}
+#bpack-coupon #bpc-but {position:absolute;top:33px;right:5px;width:45px;}
+#bpack-coupon span {font-weight:bold;}
+#bpack-coupon label {color:#777;}
+#bpackc-error {font-size:11px;font-weight:bold;left:0;position:absolute;text-align:center;top:-20px;width:100%;z-index:1;color:#006633;display:none;}
+#bpackc-error img {cursor:pointer;position:absolute;right:-6px;top:-7px;}
+#bpackc-error div {margin-top:15px;}
+#bpack-apcoupon{display:none;margin-top:3px;}
+#bpack-apcoupon span{font-weight:bold;padding-right:3px;}
+#bpack-apcoupon img{cursor:pointer;}
+.bpc-error {color:#ff0000 !important;}
+#bpackc-bot {margin-top:5px;font-size:8pt;}
+#bpackc-bot ul {padding:0px;margin:0px;margin-left:5px;}
+#bpackc-bot li {color:#a40015;list-style:inside;}
+#bpackc-bot li span {color:#000;}
+#bpackc-bot .bpackc-tit {margin-bottom:5px;padding-top:5px;}
+#bpackc-right {position:relative;margin-left:10px;}
+.complete #bpackc-right {margin-right:32px;}
+.complete #bpack {padding-bottom:20px !important;}
+.fl {float:left;}
+.fr {float:right;}
+.cl {clear:left;}
+.cb {clear:both;}
+.sst-paypal {text-align:center;cursor:pointer;}
+.tar {text-align:right !important;}
+.wderror {background-color:#ffb6b1 !important;}
+.wdermsg {color:#777;font-size:7pt;margin-left:5px;}
+#rmcart {text-align:center;font-weight:bold;color:#FF0000;border:1px solid;}
+#bpackc-freq td {width:70px;}
+#bpackc-freq select, #bpackc-freq input {width:125px;border:2px solid #ccc;padding:5px;}
+#bpackc-freq select {width:127px;}
+#bpackc-freq input {padding:5px 0px;}
+.tar {text-align:right;}
+#dprice { }
+.aprice {text-decoration:line-through;}
+/*buy package*/ 
+#content {min-height:300px;}
+#fbook {z-index:1;}
+#wmsg {position:absolute;top:0px;left:400px;background-color:#FFFF00;color:#FF0000;font-size:9pt;font-weight:bold;padding:5px;display:none;}
+#ssucount {font-size:8pt;}
+#msg {background-color:#FFFF00;color:#FF0000;font-size:9pt;font-weight:bold;text-align:center;padding:2px;position:absolute;top:0px;left:100px;display:none;}
+#save-res-lnk{position:absolute;top:26px;left:4px;}
+#save-res-lnk a{color:#21A2E7;font-size:8pt;}
+#save-res-lnk a:hover{text-decoration:underline;}
+#save_login{cursor:pointer;position:relative;top:5px;}
+#adv-sel{display:none;}
+
+</style>
+<!--[if gte IE 7]><link href="css/default7.css" type="text/css" rel="stylesheet" /><![endif]-->
+<!--[if gte IE 7]><script type="text/javascript" src="js/ie7.js"></script><![endif]-->
+</head>
+<body>
+<div id="blockUI" style="display: none; background-color: black; width: 100%; height: 200px; position: absolute; left: 0px; top: 0px; margin:auto; z-index: 100; opacity: 0.5; filter:alpha(opacity=50);" >&nbsp;</div>
+
+<div id="ajax_loader"  style="display: none; position: absolute; left: 0px; top: 0px; z-index: 50001; " >
+       <img src="/images/ajax-big-loader.gif" id="abloader" />
+</div>
+<div id="popup-mask" style="background:#333333;opacity:0.7;display:none;filter:alpha(opacity=70);"></div>
+<div class="popupdiv" style="display:none">
+  <div class="t">
+		<div class="t"></div>
+	</div>
+  <div class="popup-indicator">
+    <div style="position:absolute;top:-20px;right:-20px;cursor:pointer;z-index:4;" onclick="hidePopDiv()" id="hide-pop">
+      <div class="showred">&nbsp;</div>
+      <div class="showgreen">&nbsp;</div>
+      <img class="closepopup" src="images/close.png" /></div>
+  </div>
+  <div class="popup-contentbody">&nbsp;</div>  
+  <div class="b">
+		<div class="b"></div>
+	</div>
+</div>
+
+<div id="apopup-mask" style="background:#333333;opacity:0.7;display:none;filter:alpha(opacity=70);"></div>
+<div class="apopupdiv" style="display:none">
+  <div class="t">
+		<div class="t"></div>
+	</div>
+  <div class="popup-indicator">
+    <div style="position:absolute;top:-20px;right:-20px;cursor:pointer;z-index:4;" onclick="hideAPopDiv()" id="hide-pop">
+      <div class="showred">&nbsp;</div>
+      <div class="showgreen">&nbsp;</div>
+      <img class="closepopup" src="images/close.png" /></div>
+  </div>
+  <div class="apopup-contentbody">&nbsp;</div>  
+  <div class="b">
+		<div class="b"></div>
+	</div>
+</div>
+<script type="text/javascript">
+var viewPortH = 0;
+var viewportW = 0;
+$j(document).ready(function(){
+	setDefaultWH();
+	setPopMask();
+	//showPopDiv();
+})
+function setDefaultWH(){
+	viewPortH = $j(window).height();
+	viewportW = $j(window).width();	
+}
+function setPopMask(){
+	var mainH = parseInt(window.parent.$j("#main-bg").height());
+	mainH = (mainH) ? mainH : 0;	
+	bht = window.parent.$j("body").height();
+	bwt = window.parent.$j("body").width();	
+	ht = Math.max(mainH, bht, viewPortH);
+	//alert(mainH+"  "+bht+"  "+viewPortH+"  "+ht);
+	wt = (bwt>=viewportW) ? bwt : viewportW;	
+	window.parent.$j("#popup-mask").height(ht+"px").width(wt+"px");	
+}
+function showAPopDiv(bheight){	
+	$j("#apopup-mask").show();
+	var windowH =  $j(window).height();	
+	try{
+		var popW = parseInt($j(".apopup-contentbody iframe").attr("width").replace("px",""))+10+"px";	
+	}catch(e){
+		var popW = parseInt($j(".apopup-contentbody").css("width").replace("px",""))+"px";		
+	}
+	
+	popPosT = (windowH<=$j('.apopupdiv').height()) ? 20 : ( windowH - $j('.apopupdiv').height() )/2;	
+	popPosL = ( viewportW - $j('.apopupdiv').width() )/2;
+	$j('.apopupdiv').css({'top':popPosT,'left':popPosL,"width":popW});
+	//$j('.popupdiv').css('left',popPosL);
+	$j(".apopupdiv").show();
+}
+function hideAPopDiv(){	
+	$j("#apopup-mask").hide();
+	$j(".apopupdiv").hide();
+}
+function showPopDiv(){	
+	$j("#popup-mask").show();
+	var windowH =  $j(window).height();	
+	try{
+		var popW = parseInt($j(".popup-contentbody iframe").attr("width").replace("px",""))+10+"px";	
+	}catch(e){
+		var popW = parseInt($j(".popup-contentbody").css("width").replace("px",""))+"px";		
+	}
+	
+	popPosT = (windowH<=$j('.popupdiv').height()) ? 20 : ( windowH - $j('.popupdiv').height() )/2;	
+	popPosL = ( viewportW - $j('.popupdiv').width() )/2;
+	$j('.popupdiv').css({'top':popPosT,'left':popPosL,"width":popW});
+	//$j('.popupdiv').css('left',popPosL);
+	$j(".popupdiv").show();
+}
+function hidePopDiv(){	
+	$j("#popup-mask").hide();
+	$j(".popupdiv").hide();
+	try{$j("#checkIt").bind("click",checkIt);}catch(e){}
+}
+function showDIV(divID){
+	$j("#blockUI").height($j("body").height());
+	var topC = ($j("#blockUI").height()-$j("#"+divID).height())/2;
+	var leftC = ($j("#blockUI").width()-$j("#"+divID).width())/2;
+	
+	$j("#"+divID).css({top:topC,left:leftC});
+	$j("#blockUI").show();
+	$j("#"+divID).show();
+}
+function hideDIV(divID){
+	$j("#blockUI").hide();
+	$j("#"+divID).hide();
+}
+function refreshPage(){
+	window.parent.location.reload();
+}
+</script>
+<div id="main-bg">
+  <input type="hidden" id="ranval"/>
+  <input type="hidden" id="useval"/>
+  <input type="hidden" id="sv" value="" />
+  <input type="hidden" id="userid" value="1" />
+  <input type="hidden" id="oskey" value="" />
+  <input type="hidden" id="slurlid" value="MQ==" />
+  <input type="hidden" id="HTTP_SERVER" value="http://www.usernamecheck.com/" />
+  <input type="hidden" id="werror" value="" />
+  <div id="main">
+    <div id="header" >
+  <div class="cr"></div>
+  <div id="logo" ><a href="http://www.usernamecheck.com/index.htm"><img src="/images/ublogo.png" /></a></div>
+</div>
+    <div id="content">
+      <div id="wmsg"></div>
+      <div id="tab-cont" tab="bra" style="display:block">
+        <div style="width:940px;margin:0px auto;">
+          <div id="top">
+            <div id="top_t"><span>Enter your free availability search</span></div>
+            <div id="top_m_t">              
+              <div id="top_m">
+                <input type="text" onblur="if (this.value == ''){this.value = 'brand name here';}" onfocus="if (this.value == 'brand name here'){this.value = '';}" value="brand name here" name="search" id="search" title="brand name here"/>
+                <div id="tm_r" class="top50">
+                  <select id="adv-sel">
+                    <option value="20">Top&nbsp;(50)</option>
+                    <option value="50">Top&nbsp;(50)</option>
+                    <option value="100">Top&nbsp;(100)</option>
+                    <option value="250">Top&nbsp;(250)</option>
+                    <option value="500">Top&nbsp;(500)</option>
+                  </select>
+                </div>
+                <div style="position:relative;top:6px;width:110px;">
+                  <div id="tm_r" > <img src="images/home_sub.png" id="checkIt" />&nbsp; </div>
+                  
+                  <div class="fr" id="save-but"> &nbsp; </div>
+                </div>
+                <div class="cb"></div>
+              </div>
+              <div class="cb"></div>
+            </div>
+            <div style="clear:both"></div>
+            <div id="progressbar"></div>
+            <div id="shareMain" >
+              <div id="sTxt"><span>Share this result:</span></div>
+              <div>
+                <input type="text" id="sUrl" name="sUrl" readonly="" />
+              </div>
+              <div style="position:relative;top:4px;">[<a href="javascript:;" id="d_clip_button">copy</a>]&nbsp;[<a href="http://i.tm.biz/FWN4kL" id="slurlV">view</a>]</div>
+              <div id="wgt"><span id="addthisa"></span>
+                <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=tmbiz"></script>
+              </div>
+              <img src="images/shareClose.gif" id="shareClose" /> </div>
+            <div class="cb"></div>
+            <div id="orderMain">
+              <div class="cb"></div>
+            </div>
+            <div id="top_b">
+              <div id="top_bR">
+                <div id="searchOptions" >Search Options</div>
+              </div>
+            </div>
+            <div id="chkGroup">
+              <table>
+                <tr>
+                  <td colspan="12" class="chkIteams" style="text-align:center"><table cellpadding="0" cellspacing="0" style="width:auto;" align="center" id="advItem">
+                      <tr>
+                        <td><input type="radio" id="advItems" name="advItems" value="20" checked="checked" /><input type="radio" id="advItems" name="advItems" value="50"  /></td>
+                        <td>Popular(Top 50)</td>
+                        <td><input type="radio" id="advItems" name="advItems" value="100" /></td>
+                        <td>Popular(Top 100)</td>
+                        <td><input type="radio" id="advItems" name="advItems" value="150" />
+                          <input type="radio" id="advItems" name="advItems" value="350" />
+                          <input type="radio" id="advItems" name="advItems" value="250" /></td>
+                        <td>Popular(Top 250)</td>
+                        <td><input type="radio" id="advItems" name="advItems" value="500"  /></td>
+                        <td>Popular(Top 500)</td>
+                        <td><input type="radio" id="advItems" name="advItems" value="all" /></td>
+                        <td>All<span id="adv_all">&nbsp;</span></td>
+                        <td><input type="radio" id="advItems" name="advItems" value="custom"  /></td>
+                        <td>Custom<span id="adv_custom">&nbsp;</span></td>
+                      </tr>
+                    </table></td>
+                </tr>
+                <tr>
+                  <td colspan="12" class="chkIteams"><hr /></td>
+                </tr>
+                <tr>
+                  <td id="chkWidth"><input type="checkbox" name="chkBox" id="chkBox" value="1" /></td>
+                  <td class="chkIteams"><a>Blogging</a> <span>(51)</span></td>
+                  <td id="chkWidth"><input type="checkbox" name="chkBox" id="chkBox" value="2" /></td>
+                  <td class="chkIteams"><a>Bookmarking</a> <span>(40)</span></td>
+                  <td id="chkWidth"><input type="checkbox" name="chkBox" id="chkBox" value="3" /></td>
+                  <td class="chkIteams"><a>Business</a> <span>(56)</span></td>
+                  <td id="chkWidth"><input type="checkbox" name="chkBox" id="chkBox" value="4" /></td>
+                  <td class="chkIteams"><a>Community</a> <span>(99)</span></td>
+                  <td id="chkWidth"><input type="checkbox" name="chkBox" id="chkBox" value="5" /></td>
+                  <td class="chkIteams"><a>Design</a> <span>(24)</span></td>
+                </tr>
+                <tr>
+                  <td id="chkWidth"><input type="checkbox" name="chkBox" id="chkBox" value="6" /></td>
+                  <td class="chkIteams"><a>Entertainment</a> <span>(56)</span></td>
+                  <td id="chkWidth"><input type="checkbox" name="chkBox" id="chkBox" value="7" /></td>
+                  <td class="chkIteams"><a>Health</a> <span>(22)</span></td>
+                  <td id="chkWidth"><input type="checkbox" name="chkBox" id="chkBox" value="8" /></td>
+                  <td class="chkIteams"><a>Information</a> <span>(40)</span></td>
+                  <td id="chkWidth"><input type="checkbox" name="chkBox" id="chkBox" value="9" /></td>
+                  <td class="chkIteams"><a>Microblogging</a> <span>(16)</span></td>
+                  <td id="chkWidth"><input type="checkbox" name="chkBox" id="chkBox" value="10" /></td>
+                  <td class="chkIteams"><a>Music</a> <span>(29)</span></td>
+                </tr>
+                <tr>
+                  <td id="chkWidth"><input type="checkbox" name="chkBox" id="chkBox" value="11" /></td>
+                  <td class="chkIteams"><a>News</a> <span>(18)</span></td>
+                  <td id="chkWidth"><input type="checkbox" name="chkBox" id="chkBox" value="12" /></td>
+                  <td class="chkIteams"><a>Photo</a> <span>(20)</span></td>
+                  <td id="chkWidth"><input type="checkbox" name="chkBox" id="chkBox" value="13" /></td>
+                  <td class="chkIteams"><a>Tech</a> <span>(14)</span></td>
+                  <td id="chkWidth"><input type="checkbox" name="chkBox" id="chkBox" value="14" /></td>
+                  <td class="chkIteams"><a>Travel</a> <span>(16)</span></td>
+                  <td id="chkWidth"><input type="checkbox" name="chkBox" id="chkBox" value="15" /></td>
+                  <td class="chkIteams"><a>Video</a> <span>(50)</span></td>
+                </tr>
+              </table>
+            </div>
+            <div class="cb"></div>
+            <div id="ord-pack"></div>
+            <div class="sites">
+              <div id="top_cr"><span>From cache</span>
+                <div>Next search
+                  <label>24 hrs</label>
+                  left</div>
+              </div>
+              <div id="top_bL">
+                <label style="background-color:#A3D869;height:23px;margin:1px 0px 0px 1px;padding:0px 5px;color:#000;font-size:9pt;font-weight:bold;line-height:11px;text-align:center;">Results<br>
+                Summary</label>
+                <label style="width:155px;font-weight:bold;display:none;"><span >Processed Sites&nbsp;<span id="total">0</span><span id="seltotal">/20</span></span></label>
+                <label style="width:106px;"><span ><img src="/images/Available1.gif" />&nbsp;available</span>&nbsp;(<span id="availa">0</span>)</label>
+                <label style="width:90px;"><span ><img src="/images/UnAvailable1.gif" />&nbsp;taken</span>&nbsp;(<span id="unavaila">0</span>)</label>
+                <label style="width:113px;"><span ><img src="/images/restricted.gif" />&nbsp;restricted</span>&nbsp;(<span id="restricteda">0</span>)</label>
+                <span ><img src="/images/Doubt.gif" style="height:13px;" />&nbsp;unknown</span>&nbsp;(<span id="doubt">0</span>)</div>
+              <div id="all-sites">&nbsp;</div>
+              <div style="clear:both"></div>
+            </div>
+          </div>
+          <!--sidebar -->
+          <div id="ub-sidebar">
+  <div id="ub-help">
+  	<label style="text-align:center;font-size:9pt;font-weight:bold;display:block;">Welcome to Username Check.</label>	
+	<hr />
+	Enter your trademark and check to see if it is available as a user name in the top 20 social networks.<br />
+	<hr />
+	Share your search via email by copying the short url or using the Share button<br />
+	<hr />
+	You may view the public profile of all taken networks by selectng the red thumb. <br />
+	<hr />
+	You may signup for any of the available networks by selecting the green thumb.<br />
+	<hr />
+	
+  </div>
+  <div style="clear:left"></div>
+</div>
+        </div>
+        <div class="cb"></div>
+      </div>
+      <div style="clear:both"></div>
+    </div>
+    <div id="feedbackB">
+<a href="javascript:;">&nbsp;</a>
+</div>
+<div id="footer">  
+  <div id="fcont" style="margin-top:5px;">Any and all references to third party trademarks contained in this website are not intended to suggest endorsement or sponsorship by their owners.</div> 
+  <div id="fcont" style="margin-top:5px;">Powered by EnCirca, Inc</div> 
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-16187903-2");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+
+    <form method="post" id="svcfrm" action="order.htm">
+      <input type="hidden" name="svc" id="svc" value="" />
+      <input type="hidden" name="sstab" id="sstab" value="search" />
+      <input type="hidden" name="skey" id="skey" value="brand name here" />
+      <input type="hidden" name="ecart" id="ecart" value="0" />
+      <input type="hidden" name="pack" id="pack" value="0" />
+      <input type="hidden" name="countsJ" id="countsJ" value="0" />
+    </form>
+    <form method="post" action="paypal.htm" id="ppfrm">
+      <input type="hidden" name="action" value="wat" />
+    </form>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,512 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" >
+<head>
+<title>TagSchema - MySQL Forge Wiki</title>
+<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
+<meta name="keywords" content="TagSchema" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="search" type="application/opensearchdescription+xml" href="/w/opensearch_desc.php" title="MySQL Forge Wiki (English)" />
+<link rel='stylesheet' type='text/css' media='print' href='/w/skins/common/wikiprintable.css?42b' />
+<script type= "text/javascript">/*<![CDATA[*/
+var skin = "mysqlforge";
+var stylepath = "/w/skins";
+var wgArticlePath = "/wiki/$1";
+var wgScriptPath = "/w";
+var wgServer = "http://forge.mysql.com";
+var wgCanonicalNamespace = "";
+var wgCanonicalSpecialPageName = false;
+var wgNamespaceNumber = 0;
+var wgPageName = "TagSchema";
+var wgTitle = "TagSchema";
+var wgArticleId = "1719";
+var wgIsArticle = true;
+var wgUserName = null;
+var wgUserLanguage = "en";
+var wgContentLanguage = "en";
+var wgBreakFrames = false;
+var wgCurRevisionId = "2399";
+/*]]>*/</script>
+<script type="text/javascript" src="/w/skins/common/wikibits.js?42b"></script>
+<script type="text/javascript" src="/w/index.php?title=-&amp;action=raw&amp;gen=js"><!-- site js --></script>
+<style type='text/css'>
+/*/*/ /*<![CDATA[*/
+@import "/w/skins/common/common.css?42b";
+@import "/w/skins/common/mysqlforge.css?42b";
+@import "/w/index.php?title=MediaWiki:Common.css&usemsgcache=yes&action=raw&ctype=text/css&smaxage=18000";
+@import "/w/index.php?title=MediaWiki:Mysqlforge.css&usemsgcache=yes&action=raw&ctype=text/css&smaxage=18000";
+a.new, #quickbar a.new { color: #CC2200; }
+#quickbar { position: absolute; left: 8px; }
+#article { margin-left: 148px; margin-right: 4px; }
+
+/*]]>*/ /* */
+</style>
+</head>
+
+<body bgcolor='#FFFFFF' onload='' class='ns-0 ltr page-TagSchema'>
+<div id="header">
+	<div id="header-inner">
+		<h1>MySQL Forge</h1>
+		<h2>Resources for the MySQL Community</h2>
+	</div>
+</div>
+<ul id="nav">
+	<li><a href="../">home</a></li>
+  <li><a href="../people/">people</a></li>
+  <li><a href="../projects/">projects</a></li>
+  <li><a href="../tools/">tools &amp; code</a></li>
+  <li><a href="../wiki/Category:Software_Preview">software previews</a></li>
+  <li><a href="../worklog/">worklog</a></li>
+  <li><a href="../contribute/">contribute</a></li>
+  <li><a class="current" href="">wiki</a></li>	<li class="right"><a href="../people/login.php">login</a></li></ul>
+
+<div id="content">
+<div id="article"><h1 class="pagetitle">TagSchema</h1><table id="toc" class="toc" summary="Contents"><tr><td><div id="toctitle"><h2>Contents</h2></div>
+<ul>
+<li class="toclevel-1"><a href="#Tagging_and_Folksonomy_Schema_Concepts"><span class="tocnumber">1</span> <span class="toctext">Tagging and Folksonomy Schema Concepts</span></a></li>
+<li class="toclevel-1"><a href="#Core_Concepts_and_Definitions"><span class="tocnumber">2</span> <span class="toctext">Core Concepts and Definitions</span></a>
+<ul>
+<li class="toclevel-2"><a href="#Tagging"><span class="tocnumber">2.1</span> <span class="toctext">Tagging</span></a></li>
+<li class="toclevel-2"><a href="#Folksonomy"><span class="tocnumber">2.2</span> <span class="toctext">Folksonomy</span></a></li>
+<li class="toclevel-2"><a href="#Participation.2C_Connection_and_Interaction"><span class="tocnumber">2.3</span> <span class="toctext">Participation, Connection and Interaction</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1"><a href="#Schema_Considerations"><span class="tocnumber">3</span> <span class="toctext">Schema Considerations</span></a>
+<ul>
+<li class="toclevel-2"><a href="#Various_Schema_Architectures"><span class="tocnumber">3.1</span> <span class="toctext">Various Schema Architectures</span></a></li>
+<li class="toclevel-2"><a href="#MySQLicious"><span class="tocnumber">3.2</span> <span class="toctext">MySQLicious</span></a>
+<ul>
+<li class="toclevel-3"><a href="#Sample_Schema"><span class="tocnumber">3.2.1</span> <span class="toctext">Sample Schema</span></a></li>
+<li class="toclevel-3"><a href="#Advantages"><span class="tocnumber">3.2.2</span> <span class="toctext">Advantages</span></a></li>
+<li class="toclevel-3"><a href="#Disadvantages"><span class="tocnumber">3.2.3</span> <span class="toctext">Disadvantages</span></a></li>
+</ul>
+</li>
+<li class="toclevel-2"><a href="#Scuttle"><span class="tocnumber">3.3</span> <span class="toctext">Scuttle</span></a>
+<ul>
+<li class="toclevel-3"><a href="#Sample_Schema_2"><span class="tocnumber">3.3.1</span> <span class="toctext">Sample Schema</span></a></li>
+<li class="toclevel-3"><a href="#Advantages_2"><span class="tocnumber">3.3.2</span> <span class="toctext">Advantages</span></a></li>
+<li class="toclevel-3"><a href="#Disadvantages_2"><span class="tocnumber">3.3.3</span> <span class="toctext">Disadvantages</span></a></li>
+</ul>
+</li>
+<li class="toclevel-2"><a href="#Toxi"><span class="tocnumber">3.4</span> <span class="toctext">Toxi</span></a>
+<ul>
+<li class="toclevel-3"><a href="#Sample_Schema_3"><span class="tocnumber">3.4.1</span> <span class="toctext">Sample Schema</span></a></li>
+<li class="toclevel-3"><a href="#Advantages_3"><span class="tocnumber">3.4.2</span> <span class="toctext">Advantages</span></a></li>
+<li class="toclevel-3"><a href="#Disadvantages_3"><span class="tocnumber">3.4.3</span> <span class="toctext">Disadvantages</span></a></li>
+</ul>
+</li>
+<li class="toclevel-2"><a href="#Recommended_Architecture"><span class="tocnumber">3.5</span> <span class="toctext">Recommended Architecture</span></a>
+<ul>
+<li class="toclevel-3"><a href="#Schema"><span class="tocnumber">3.5.1</span> <span class="toctext">Schema</span></a></li>
+<li class="toclevel-3"><a href="#Sample_Schema_with_User_Dimension"><span class="tocnumber">3.5.2</span> <span class="toctext">Sample Schema with User Dimension</span></a></li>
+<li class="toclevel-3"><a href="#Sample_Schema_with_Summary_Tables"><span class="tocnumber">3.5.3</span> <span class="toctext">Sample Schema with Summary Tables</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toclevel-1"><a href="#Common_Data_Access_Patterns"><span class="tocnumber">4</span> <span class="toctext">Common Data Access Patterns</span></a>
+<ul>
+<li class="toclevel-2"><a href="#Getting_the_.22Tag_Cloud.22"><span class="tocnumber">4.1</span> <span class="toctext">Getting the "Tag Cloud"</span></a></li>
+<li class="toclevel-2"><a href="#Items_Having_Any_of_a_Set_of_Tags"><span class="tocnumber">4.2</span> <span class="toctext">Items Having Any of a Set of Tags</span></a></li>
+<li class="toclevel-2"><a href="#Items_Having_All_of_A_Set_of_Tags"><span class="tocnumber">4.3</span> <span class="toctext">Items Having All of A Set of Tags</span></a>
+<ul>
+<li class="toclevel-3"><a href="#Example_of_Generating_Above_Query_.28PHP.29"><span class="tocnumber">4.3.1</span> <span class="toctext">Example of Generating Above Query (PHP)</span></a></li>
+</ul>
+</li>
+<li class="toclevel-2"><a href="#Finding_Related_Tags_Via_An_Item"><span class="tocnumber">4.4</span> <span class="toctext">Finding Related Tags Via An Item</span></a></li>
+<li class="toclevel-2"><a href="#Finding_Related_Items_of_All_of_a_Set_of_Tags_.28INTERSECTION.29"><span class="tocnumber">4.5</span> <span class="toctext">Finding Related Items of All of a Set of Tags (INTERSECTION)</span></a></li>
+<li class="toclevel-2"><a href="#Finding_Unrelated_Items_.28MINUS.29"><span class="tocnumber">4.6</span> <span class="toctext">Finding Unrelated Items (MINUS)</span></a></li>
+<li class="toclevel-2"><a href="#Finding_COUNTs_of_Related_Items_or_Tags"><span class="tocnumber">4.7</span> <span class="toctext">Finding COUNTs of Related Items or Tags</span></a>
+<ul>
+<li class="toclevel-3"><a href="#Using_Summary_Tables"><span class="tocnumber">4.7.1</span> <span class="toctext">Using Summary Tables</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toclevel-1"><a href="#Replication_Guidelines_for_Scaling_Out"><span class="tocnumber">5</span> <span class="toctext">Replication Guidelines for Scaling Out</span></a>
+<ul>
+<li class="toclevel-2"><a href="#The_Roles_of_the_Master_Server"><span class="tocnumber">5.1</span> <span class="toctext">The Roles of the Master Server</span></a></li>
+<li class="toclevel-2"><a href="#The_Roles_of_the_Slave_Servers"><span class="tocnumber">5.2</span> <span class="toctext">The Roles of the Slave Servers</span></a>
+<ul>
+<li class="toclevel-3"><a href="#Using_Alternate_Storage_Engines"><span class="tocnumber">5.2.1</span> <span class="toctext">Using Alternate Storage Engines</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toclevel-1"><a href="#Further_Reading"><span class="tocnumber">6</span> <span class="toctext">Further Reading</span></a></li>
+</ul>
+</td></tr></table><script type="text/javascript"> if (window.showTocToggle) { var tocShowText = "show"; var tocHideText = "hide"; showTocToggle(); } </script>
+<a name="Tagging_and_Folksonomy_Schema_Concepts"></a><h2><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=1" title="Edit section: Tagging and Folksonomy Schema Concepts">edit</a>]</span> <span class="mw-headline"> Tagging and Folksonomy Schema Concepts </span></h2>
+<p>This page and related pages describe various issues surrounding the Web 2.0 tagging and folksonomy concepts, including discussions on schema architecture, common data access patterns, and replication/scale-out guidelines.
+</p>
+<a name="Core_Concepts_and_Definitions"></a><h2><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=2" title="Edit section: Core Concepts and Definitions">edit</a>]</span> <span class="mw-headline"> Core Concepts and Definitions </span></h2>
+<a name="Tagging"></a><h3><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=3" title="Edit section: Tagging">edit</a>]</span> <span class="mw-headline"> Tagging </span></h3>
+<p>"Tagging" is a form of content and data categorization that is evolving with modern web applications. It is characterized by free-form text (words or small phrases) that is "attached" or "tagged" to an item. The item could be anything -- a blog post, a bookmark, a product, another user, etc. A tag schema is a database schema which attempts to facilitate the storage and retrieval of tag data, and to allow for increasingly complex data analysis of the relationships formed by linked tags and items.
+</p><p>One of the advantages that tagging offers over rigid categorization of content is exactly that: it is free-form and allows users to categorize the content and data the way <i>they</i> want, as opposed to the way the content "owners" want.  This enables the user-driven aspect of content production in much the way that the wiki editing style has enabled user contributions to content.
+</p><p>This advantage however also has its downsides, in that the free-form nature of tagging can lead to an explosion in the amount of data used to categorize content.  Tags must be successfully de-duplicated and maintained in order to best represent the categories of data.
+</p>
+<a name="Folksonomy"></a><h3><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=4" title="Edit section: Folksonomy">edit</a>]</span> <span class="mw-headline"> Folksonomy </span></h3>
+<p>People needed a way of describing the evolving science of connecting users of an application with each other via direct or indirect linking. Thus, the word "folksonomy" came to represent adding the "user" dimension to data analysis and database schemas. Folksonomy refers to the analysis of a user's connections to other things in an application ecosystem, whether those things are other users, items, tags, or whatever.
+</p><p>This user dimension allows the application developer to provide multiple ways of viewing and analysing the data stored in their databases.  It allows the database developer to answer questions such as:
+</p>
+<ul><li> Who shares this user's interests?
+</li><li> What interests do <i>those</i> users have that I might find interesting?
+</li><li> What is a user's immediate and fringe "ecosystem"?
+</li></ul>
+<a name="Participation.2C_Connection_and_Interaction"></a><h3><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=5" title="Edit section: Participation, Connection and Interaction">edit</a>]</span> <span class="mw-headline"> Participation, Connection and Interaction </span></h3>
+<p>Tagging and folksonomy encourage and facilitate multiple users editing and categorization the same content.  This leads to a couple things:
+</p>
+<ul><li> Content explosion
+</li><li> Lots of textual data to manage. How do we organize it?
+</li></ul>
+<p>Tags becoming the new categorization/filing of this content because:
+</p>
+<ul><li> Anyone can tag the data
+</li><li> Tags connect one thing to another, similar to the way that the folksonomy relationships link users together
+</li></ul>
+<p>So, the common concept here is “linking”, which is the "R" in RDBMS.
+</p>
+<a name="Schema_Considerations"></a><h2><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=6" title="Edit section: Schema Considerations">edit</a>]</span> <span class="mw-headline"> Schema Considerations </span></h2>
+<a name="Various_Schema_Architectures"></a><h3><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=7" title="Edit section: Various Schema Architectures">edit</a>]</span> <span class="mw-headline"> Various Schema Architectures </span></h3>
+<p>There are a number of schema designs that have been popularized.  The three main ones are usually called "MySQLicious", "Scuttle", and "Toxi".  These sections describe these schema architectures.  Please note that in all the examples below, the bookmark "item" is used as the "tagged" entity.  This is simply for illustrative purposes.  The item could just as easily be a blog post, product, rss feed item, or anything else.
+</p>
+<a name="MySQLicious"></a><h3><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=8" title="Edit section: MySQLicious">edit</a>]</span> <span class="mw-headline"> MySQLicious </span></h3>
+<p>The MySQLcious tag schema design is entirely denormalized, with a single fact table that comprises that schema.  Tags are stored in a delimited list in a single field, and either textual LIKE expressions or FULLTEXT indexing is used in order to search for matched tags.
+</p>
+<a name="Sample_Schema"></a><h4><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=9" title="Edit section: Sample Schema">edit</a>]</span> <span class="mw-headline"> Sample Schema </span></h4>
+<p>Here is a sample MySQLicious schema.  Note that certain fields existing in the actual MySQLicious schema have been removed that do not specifically pertain to tagging...
+</p>
+<pre><b>CREATE TABLE</b> bookmarks (
+bookmark_id <b>INT UNSIGNED NOT NULL AUTO_INCREMENT</b>
+, url <b>VARCHAR(255) NOT NULL</b>
+, tags <b>TEXT NULL</b>
+, <b>PRIMARY KEY</b> (bookmark_id)
+, <b>FULLTEXT INDEX</b> (tags)
+) <b>ENGINE</b>=MyISAM;
+</pre>
+<p>Note that the MyISAM storage engine is used so that FULLTEXT indexing can be used to query for bookmarks containing matching textual expressions.
+</p>
+<a name="Advantages"></a><h4><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=10" title="Edit section: Advantages">edit</a>]</span> <span class="mw-headline"> Advantages </span></h4>
+<p>The only real advantage to the MySQLicious schema design is its relative simplicity.  Only one table is used and queried.  For very small databases, this schema might be attractive because of its simplicity
+</p>
+<a name="Disadvantages"></a><h4><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=11" title="Edit section: Disadvantages">edit</a>]</span> <span class="mw-headline"> Disadvantages </span></h4>
+<p>The schema has three distinct disadvantages:
+</p>
+<ol><li> Because it is denormalized, it encourages duplication of a lot of data and certain queries to determine relationships between users (were a user_id dimension to be added to the table) would be difficult to code and slow to perform
+</li><li> FULLTEXT indexing is really the only way to get acceptable performance out of the database schema.  Because of this, the choice of storage engines would be limited to MyISAM, which introduces concurrency issues in heavier-write applications and inhibits the ability to enforce foreign key relationships at the database level.
+</li><li> The schema is not flexible.  Having only one table which describes every entity prevents the database developer from being able to easily and efficiently query for information on specific entities.
+</li></ol>
+<a name="Scuttle"></a><h3><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=12" title="Edit section: Scuttle">edit</a>]</span> <span class="mw-headline"> Scuttle </span></h3>
+<p>The Scuttle solution uses a single fact table for bookmarks and a relationship table for tags.  It typically looks like the following:
+</p>
+<a name="Sample_Schema_2"></a><h4><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=13" title="Edit section: Sample Schema">edit</a>]</span> <span class="mw-headline"> Sample Schema </span></h4>
+<pre><b>CREATE TABLE</b> bookmarks (
+bookmark_id <b>INT UNSIGNED NOT NULL AUTO_INCREMENT</b>
+, url <b>VARCHAR(255) NOT NULL</b>
+, <b>PRIMARY KEY</b> (bookmark_id)
+) <b>ENGINE</b>=InnoDB;
+</pre>
+<pre><b>CREATE TABLE</b> bookmark_tags (
+record_id <b>INT UNSIGNED NOT NULL AUTO_INCREMENT</b> 
+, bookmark_id <b>INT UNSIGNED NOT NULL</b> # Foreign key to bookmarks table
+, tag <b>TEXT NOT NULL</b>
+, <b>PRIMARY KEY</b> (record_id)
+, <b>INDEX</b> (tag)
+) <b>ENGINE</b>=InnoDB;
+</pre>
+<p>The bookmark_tags table also might use the MyISAM storage engine in order to take advantage of FULLTEXT indexing (while losing any foreign key enforcement):
+</p>
+<pre><b>CREATE TABLE</b> bookmark_tags (
+record_id <b>INT UNSIGNED NOT NULL AUTO_INCREMENT</b> 
+, bookmark_id <b>INT UNSIGNED NOT NULL</b>
+, tag <b>TEXT NOT NULL</b>
+, <b>PRIMARY KEY</b> (record_id)
+, <b>FULLTEXT INDEX</b> (tag)
+) <b>ENGINE</b>=MyISAM;
+</pre>
+<a name="Advantages_2"></a><h4><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=14" title="Edit section: Advantages">edit</a>]</span> <span class="mw-headline"> Advantages </span></h4>
+<p>The Scuttle solution is certainly more normalized than the MySQLicious solution, however it still does not prevent duplication of tag textual data in the bookmark_tags table.  Foreign keys can be used to enforce the relationship between bookmark and the bookmark's set of tags.  Because only one tag is stored per row in the bookmarks table, equality conditions can be used, unlike MySQLicious, which leads to greater performance advantages, comparable or better than the FULLTEXT indexing required by MySQLicious.
+</p>
+<a name="Disadvantages_2"></a><h4><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=15" title="Edit section: Disadvantages">edit</a>]</span> <span class="mw-headline"> Disadvantages </span></h4>
+<p>The Scuttle solution is still not properly normalized, and has the following flaws:
+</p>
+<ol><li> A "surrogate" key is used in the bookmark_tags table (record_id) instead of using the naturally-occuring primary key tuple on bookmark_id and tag_text
+</li><li> Storage space (and thus memory usage) is increased since the textual tag data is used in the tags table instead of an ID of the tag text itself.  This leads to fewer index records being able to fit into a single index block, therefore reducing the efficiency and speed of index accesses
+</li><li> There is no easy way to accurately deduce statistical information (e.g. counts of bookmarks for each tag) with the existing schema because the one to many relationship mis-represents the true many to many relationship that exists between bookmarks and tags
+</li></ol>
+<a name="Toxi"></a><h3><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=16" title="Edit section: Toxi">edit</a>]</span> <span class="mw-headline"> Toxi </span></h3>
+<p>The final solution popularized on the Internet is known as the "Toxi" solution.  It typically looks like the following, which represents a three-table many-to-many mapping between bookmarks and tags:
+</p>
+<a name="Sample_Schema_3"></a><h4><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=17" title="Edit section: Sample Schema">edit</a>]</span> <span class="mw-headline"> Sample Schema </span></h4>
+<pre><b>CREATE TABLE</b> bookmarks (
+bookmark_id <b>INT UNSIGNED NOT NULL AUTO_INCREMENT</b>
+, url <b>VARCHAR(255) NOT NULL</b>
+, <b>PRIMARY KEY</b> (bookmark_id)
+) <b>ENGINE</b>=InnoDB;
+</pre>
+<pre><b>CREATE TABLE</b> bookmark_tags (
+record_id <b>INT UNSIGNED NOT NULL AUTO_INCREMENT</b> 
+, bookmark_id <b>INT UNSIGNED NOT NULL</b> # Foreign key to bookmarks table
+, tag_id <b>INT UNSIGNED NOT NULL</b> # Foreign key to tags table
+, <b>PRIMARY KEY</b> (record_id)
+, <b>INDEX</b> (bookmark_id, tag_id)
+) <b>ENGINE</b>=InnoDB;
+</pre>
+<pre><b>CREATE TABLE</b> tags (
+tag_id <b>INT UNSIGNED NOT NULL AUTO_INCREMENT</b> 
+, tag_text TEXT NOT NULL
+, <b>PRIMARY KEY</b> (tag_id)
+, INDEX (tag_text)
+) <b>ENGINE</b>=InnoDB;
+</pre>
+<p>Of all the popularized solutions, this schema closest matches the recommended schema design.  It does, however, have a couple flaws.
+</p>
+<a name="Advantages_3"></a><h4><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=18" title="Edit section: Advantages">edit</a>]</span> <span class="mw-headline"> Advantages </span></h4>
+<p>The Toxi solution takes the previous two designs further along the normalization road by correctly separating the many to many relationship into a mapping table (bookmark_tags).  Doing so eliminates the duplicated information (particularly the textual tag data) that plagues the other two designs.
+</p><p>This normalized solution allows summary or statistical data to be stored for each of the entities themselves, as well as other information concerning the bookmark-tag relationship (such as when those key values were stored).  This is perhaps the best use of space within main memory of the DB server, allowing for fast lookups on the tag text itself, and matching of the relationship based on quick integer keys.
+</p>
+<a name="Disadvantages_3"></a><h4><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=19" title="Edit section: Disadvantages">edit</a>]</span> <span class="mw-headline"> Disadvantages </span></h4>
+<p>The main disadvantage to the Toxi schema (as is the case with most properly normalized schema) is that there are now more tables to maintain and administer.  In addition to this, there are a couple flaws in the popularized Toxi design that our recommended solution aims to remedy:
+</p>
+<ol><li> Again, a surrogate key is used in the mapping table (record_id).  This is not needed and slows down performance, particularly in the case of the InnoDB storage engine.
+</li><li> A UNIQUE INDEX is not used on the tag_text in the tags fact table.  This is needed to eliminate duplicate tag text values.
+</li><li> An index is not provided in the mapping table (bookmark_tags) which would allow efficient querying on the tag_id itself, without being coupled with the bookmark_id.  Any query grouping on tag_id that did not supply a constant bookmark_id (or range of bookmark_id values) would not be able to use the index on (bookmark_id, tag_id) in order to efficiently process the data.
+</li></ol>
+<a name="Recommended_Architecture"></a><h3><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=20" title="Edit section: Recommended Architecture">edit</a>]</span> <span class="mw-headline"> Recommended Architecture </span></h3>
+<p>The recommended solution for an efficient, normalized tagging schema is a refinement on the Toxi solution.  The storage engine used in the recommended solution is the InnoDB storage engine, because of its benefits of higher concurrency limits, referential integrity, and a clustered data organization, which makes primary key lookups very fast.  Primary key lookups are the dominant data access pattern in tagging schema, which makes InnoDB an ideal storage engine, especially for the master server in a replicated setup (see more below)
+</p>
+<a name="Schema"></a><h4><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=21" title="Edit section: Schema">edit</a>]</span> <span class="mw-headline"> Schema </span></h4>
+<p>The schema involves three tables which represent the many to many relationship between the item and the tag.  Here, we deviate from the bookmark paradigm and use a general "item" semantics to indicate that the type of item is irrelevant to the schema design.
+</p>
+<pre><b>CREATE TABLE</b> Items (
+item_id <b>INT UNSIGNED NOT NULL AUTO_INCREMENT</b>
+, item_name <b>VARCHAR(255) NOT NULL</b>
+/* Many more attributes of the item... */
+, <b>PRIMARY KEY</b> (item_id)
+) <b>ENGINE</b>=InnoDB;
+</pre>
+<pre><b>CREATE TABLE</b> Item2Tag (
+item_id <b>INT UNSIGNED NOT NULL</b> 
+, tag_id <b>INT UNSIGNED NOT NULL</b> 
+, <b>PRIMARY KEY</b> (item_id, tag_id)
+, <b>INDEX</b> (tag_id)
+, <b>FOREIGN KEY</b> fk_Item (item_id) <b>REFERENCES</b> Items (item_id)
+, <b>FOREIGN KEY</b> fk_Tag (tag_id) <b>REFERENCES</b> Tags (tag_id)
+) <b>ENGINE</b>=InnoDB;
+</pre>
+<pre><b>CREATE TABLE</b> Tags (
+tag_id <b>INT UNSIGNED NOT NULL AUTO_INCREMENT</b> 
+, tag_text <b>TEXT NOT NULL</b>
+, <b>PRIMARY KEY</b> (tag_id)
+, <b> UNIQUE INDEX</b> (tag_text)
+) <b>ENGINE</b>=InnoDB;
+</pre>
+<a name="Sample_Schema_with_User_Dimension"></a><h4><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=22" title="Edit section: Sample Schema with User Dimension">edit</a>]</span> <span class="mw-headline"> Sample Schema with User Dimension </span></h4>
+<p>Additionally, when the application has a need for a user dimension (folksonomy), the schema can be expanded like so:
+</p>
+<pre><b>CREATE TABLE</b> Users (
+user_id <b>INT UNSIGNED NOT NULL AUTO_INCREMENT</b>
+, user_name <b>VARCHAR(255) NOT NULL</b>
+/* Many more attributes of the user... */
+, <b>PRIMARY KEY</b> user_id)
+) <b>ENGINE</b>=InnoDB;
+</pre>
+<pre><b>CREATE TABLE</b> Items (
+item_id <b>INT UNSIGNED NOT NULL AUTO_INCREMENT</b>
+, item_name <b>VARCHAR(255) NOT NULL</b>
+/* Many more attributes of the item... */
+, <b>PRIMARY KEY</b> (item_id)
+) <b>ENGINE</b>=InnoDB;
+</pre>
+<pre><b>CREATE TABLE</b> Tags (
+tag_id <b>INT UNSIGNED NOT NULL AUTO_INCREMENT</b> 
+, tag_text <b>TEXT NOT NULL</b>
+, <b>PRIMARY KEY</b> (tag_id)
+, <b> UNIQUE INDEX</b> (tag_text)
+) <b>ENGINE</b>=InnoDB;
+</pre>
+<pre><b>CREATE TABLE</b> UserItemTag (
+user_id <b>INT UNSIGNED NOT NULL</b>
+, item_id <b>INT UNSIGNED NOT NULL</b> 
+, tag_id <b>INT UNSIGNED NOT NULL</b> 
+, <b>PRIMARY KEY</b> (user_id, item_id, tag_id)
+, <b>INDEX</b> (item_id)
+, <b>INDEX</b> (tag_id)
+, <b>FOREIGN KEY</b> fk_User (user_id) <b>REFERENCES</b> Users (user_id)
+, <b>FOREIGN KEY</b> fk_Item (item_id) <b>REFERENCES</b> Items (item_id)
+, <b>FOREIGN KEY</b> fk_Tag (tag_id) <b>REFERENCES</b> Tags (tag_id)
+) <b>ENGINE</b>=InnoDB;
+</pre>
+<a name="Sample_Schema_with_Summary_Tables"></a><h4><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=23" title="Edit section: Sample Schema with Summary Tables">edit</a>]</span> <span class="mw-headline"> Sample Schema with Summary Tables </span></h4>
+<p>If an application requires aggregate data access patterns -- such as COUNTing the number of tags per item, per user/item combination, etc -- then we recommend denormalizing the schema to use aggregate or summary tables which store specific counters.  This technique is used in order to bypass the current InnoDB-specific limitation of poorly performing aggregate queries.  Below, we use the MEMORY storage engine for the statistic tables since this engine provides excellent speed for primary key access due to its hash-based indexing.  The data for MEMORY tables is lost upon system shutdown; however since all the information in the summary tables can be rebuilt from the data in the main tables, there is no need for concern.  For systems where memory requirements are an issue, simply change the MEMORY storage engine to InnoDB.
+</p>
+<pre><b>CREATE TABLE</b> Items (
+item_id <b>INT UNSIGNED NOT NULL AUTO_INCREMENT</b>
+, item_name <b>VARCHAR(255) NOT NULL</b>
+/* Many more attributes of the item... */
+, <b>PRIMARY KEY</b> (item_id)
+) <b>ENGINE</b>=InnoDB;
+</pre>
+<pre><b>CREATE TABLE</b> Item2Tag (
+item_id <b>INT UNSIGNED NOT NULL</b> 
+, tag_id <b>INT UNSIGNED NOT NULL</b> 
+, <b>PRIMARY KEY</b> (item_id, tag_id)
+, <b>INDEX</b> (tag_id)
+, <b>FOREIGN KEY</b> fk_Item (item_id) <b>REFERENCES</b> Items (item_id)
+, <b>FOREIGN KEY</b> fk_Tag (tag_id) <b>REFERENCES</b> Tags (tag_id)
+) <b>ENGINE</b>=InnoDB;
+</pre>
+<pre><b>CREATE TABLE</b> Tags (
+tag_id <b>INT UNSIGNED NOT NULL AUTO_INCREMENT</b> 
+, tag_text <b>TEXT NOT NULL</b>
+, <b>PRIMARY KEY</b> (tag_id)
+, <b> UNIQUE INDEX</b> (tag_text)
+) <b>ENGINE</b>=InnoDB;
+</pre>
+<pre><b>CREATE TABLE</b> TagStat (
+tag_id <b>INT UNSIGNED NOT NULL AUTO_INCREMENT</b> 
+, num_items <b>INT UNSIGNED NOT NULL DEFAULT 1</b>
+/* For each distinct type of item tracked with tags, add a field... */
+, <b>PRIMARY KEY</b> (tag_id)
+, <b>FOREIGN KEY</b> fk_Tag (tag_id) <b>REFERENCES</b> Tags (tag_id)
+) <b>ENGINE</b>=MEMORY;
+
+</pre>
+<a name="Common_Data_Access_Patterns"></a><h2><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=24" title="Edit section: Common Data Access Patterns">edit</a>]</span> <span class="mw-headline"> Common Data Access Patterns </span></h2>
+<p>The following section describes recommended methods for querying the tag schema for various common data access patterns.
+</p>
+<a name="Getting_the_.22Tag_Cloud.22"></a><h3><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=25" title="Edit section: Getting the &quot;Tag Cloud&quot;">edit</a>]</span> <span class="mw-headline"> Getting the "Tag Cloud" </span></h3>
+<p>A tag cloud is a way of representing the number of items tagged with a phrase.  Tag density typically represented by larger fonts or different colors.  Here is the typical way of querying for the data needed to represent a tag cloud:
+</p>
+<pre><b>SELECT</b> tag_text
+, <b>COUNT(*)</b> as num_items
+<b>FROM</b> Item2Tag i2t
+<b>INNER JOIN</b> Tags t
+<b>ON</b> i2t.tag_id = t.tag_id
+<b>GROUP BY</b> tag_text;
+</pre>
+<p>However, this particular query has scalability issues when used with InnoDB tables, due to problems with COUNT(*) queries using that engine.  We recommend instead using summary tables, as described above, and using the following query instead to produce the same results:
+</p>
+<pre><b>SELECT</b> tag_text, ts.num_items
+<b>FROM</b> Item2Tag i2t
+<b>INNER JOIN</b> Tags t
+<b>ON</b> i2t.tag_id = t.tag_id
+<b>INNER JOIN</b> TagStat ts
+<b>ON</b> t.tag_id = ts.tag_id
+<b>GROUP BY</b> tag_text;
+</pre>
+<a name="Items_Having_Any_of_a_Set_of_Tags"></a><h3><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=26" title="Edit section: Items Having Any of a Set of Tags">edit</a>]</span> <span class="mw-headline"> Items Having <i>Any</i> of a Set of Tags </span></h3>
+<p>A very common access pattern is one in which the purpose of the query is to find any item which is tagged with <i><b>any </b></i> of a set of tags.  For instance, in the example below, we show a typical query to obtain all items which have been tagged with "beach", "cloud", <i>OR</i> "waves".  This query is fairly simple, as the IN() construct accomplishes the OR condition:
+</p>
+<pre><b>SELECT</b> i2t.item_id
+<b>FROM</b> Item2Tag i2t
+<b>INNER JOIN</b> Tag t
+<b>ON</b> i2t.tag_id = t.tag_id
+<b>WHERE</b> t.tag_text IN ('beach','cloud','waves')
+<b>GROUP BY</b> i2t.item_id;
+</pre>
+<a name="Items_Having_All_of_A_Set_of_Tags"></a><h3><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=27" title="Edit section: Items Having All of A Set of Tags">edit</a>]</span> <span class="mw-headline"> Items Having <i>All</i> of A Set of Tags </span></h3>
+<p>Another common access pattern is a variation on the above where the purpose of the query is to find any item which is tagged with <i><b>all </b></i> of a set of tags.  For instance, in the example below, we show a typical query to obtain all items which have been tagged with "beach", "cloud", <i>AND</i> "waves".  The first example is the type of query typically given to accomplish this query type, however it has serious efficiency issues, which are resolved in the second example query.
+</p>
+<pre><b>SELECT</b> i2t.item_id
+<b>FROM</b> Item2Tag i2t
+<b>INNER JOIN</b> Tag t
+<b>ON</b> i2t.tag_id = t.tag_id
+<b>WHERE</b> t.tag_text IN ('beach','cloud','waves')
+<b>GROUP BY</b> i2t.item_id
+<b>HAVING COUNT(DISTINCT i2p.tag_id) = 3;</b>
+</pre>
+<p>The query accomplishes its work by ensuring that the items included in the final output have all three unique tags being queried for.  The HAVING COUNT(DISTINCT i2t.tag_id) = 3 expression is what filters the output correctly.
+</p><p>However, the HAVING COUNT() expression as well as the required GROUP BY expression force MySQL to use a temporary table and filesort in order to generate the query results.  This is inefficient, and the same query results can be accomplished via repeated self-joins, as below demonstrates:
+</p>
+<pre><b>SELECT</b> i2t3.item_id
+<b>FROM</b> Tags t1 CROSS JOIN Tags t2 CROSS JOIN Tags t3
+<b>INNER JOIN</b> Item2Tag i2t1
+<b>ON</b> t1.tag_id = i2t1.tag_id
+<b>INNER JOIN</b> Item2Tag i2t2
+<b>ON</b> i2t1.item_id = i2t2.item_id
+<b>AND</b> i2t2.tag_id = t2.tag_id
+<b>INNER JOIN</b> Item2Tag i2t3
+<b>ON</b> i2t2.item_id = i2t3.item_id
+<b>AND</b> i2t3.tag_id = t3.tag_id
+<b>WHERE</b> t1.tag_text = 'beach'
+<b>AND</b> t2.tag_text = 'cloud'
+<b>AND</b> t3.tag_text = 'waves';
+</pre>
+<p>The key to understanding the above query is following the join from one instance of Item2Tag table to the next.  Essentially, the self-joining process starts with a set of items attached to the "beach" tag.  Then, that reduced set of item IDs is joined to the set of item IDs attached to the "cloud" tag, and then to the set of item IDs attached to the "waves" tag.  This self-joining process iteratively reduces the final result set without the need to GROUP or count distinct output records.
+</p><p>The CROSS JOINs shown in the example is used to get three distinct tag IDs from the Tags table.  These three records are used to reduce the joined datasets.
+</p>
+<a name="Example_of_Generating_Above_Query_.28PHP.29"></a><h4><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=28" title="Edit section: Example of Generating Above Query (PHP)">edit</a>]</span> <span class="mw-headline"> Example of Generating Above Query (PHP) </span></h4>
+<p>The above query most often will be found when a searcher enters in a number of tags into a search box and the server-side script must build a query to find the appropriate items containing all three tags.  The example below (in PHP) shows how this query might be generated.  The example assumes a comma-delimited string of tags and does no error checking, for brevity.
+</p>
+<pre>&lt;?php
+$search_tags = $_POST['tags']; /* Tag values entered in form */
+$search_tags = explode(',', $search_tags);
+$sql = "";
+$num_tags = count($search_tags);
+if ($num_tags &gt; 0 &amp;&amp; $num_tags &lt;= 32) {
+  $sql_select = "SELECT i2t" . ($num_tags - 1) . ".item_id ";
+  $sql_from = " FROM ";
+  $sql_where = " WHERE ";
+  $sql_joins = "";
+  for ($i=0;$i&lt;$num_tags;++$i) {
+    if ($i==0) {
+      $sql_from .= " Tags t0 ";
+      $sql_where .= " t0.tag_text = '" . $search_tags[0] . "'";
+      $sql_joins .= " INNER JOIN Item2Tag i2t0 ON t0.tag_id = i2t0.tag_id ";
+    }
+    else {
+      $sql_from .= " CROSS JOIN Tags t" . $i;
+      $sql_where .= " AND t" . $i . ".tag_text = '" . $search_tags[$i] . "'";
+      $sql_joins .= " INNER JOIN Item2Tag i2t" . $i . " ON i2t" . ($i - 1) . ".item_id = i2t" . $i . ".item_id " . 
+                    " AND i2t" . $i . ".tag_id = t" . $i . ".tag_id ";
+    }
+  }
+  $sql = $sql_select . $sql_from . $sql_joins . $sql_where;
+}
+$results = mysql_query($sql, $some_connection);
+?&gt;
+</pre>
+<a name="Finding_Related_Tags_Via_An_Item"></a><h3><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=29" title="Edit section: Finding Related Tags Via An Item">edit</a>]</span> <span class="mw-headline"> Finding Related Tags Via An Item </span></h3>
+<a name="Finding_Related_Items_of_All_of_a_Set_of_Tags_.28INTERSECTION.29"></a><h3><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=30" title="Edit section: Finding Related Items of All of a Set of Tags (INTERSECTION)">edit</a>]</span> <span class="mw-headline"> Finding Related Items of All of a Set of Tags (INTERSECTION) </span></h3>
+<a name="Finding_Unrelated_Items_.28MINUS.29"></a><h3><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=31" title="Edit section: Finding Unrelated Items (MINUS)">edit</a>]</span> <span class="mw-headline"> Finding Unrelated Items (MINUS) </span></h3>
+<a name="Finding_COUNTs_of_Related_Items_or_Tags"></a><h3><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=32" title="Edit section: Finding COUNTs of Related Items or Tags">edit</a>]</span> <span class="mw-headline"> Finding COUNTs of Related Items or Tags </span></h3>
+<a name="Using_Summary_Tables"></a><h4><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=33" title="Edit section: Using Summary Tables">edit</a>]</span> <span class="mw-headline"> Using Summary Tables </span></h4>
+<a name="Replication_Guidelines_for_Scaling_Out"></a><h2><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=34" title="Edit section: Replication Guidelines for Scaling Out">edit</a>]</span> <span class="mw-headline"> Replication Guidelines for Scaling Out </span></h2>
+<a name="The_Roles_of_the_Master_Server"></a><h3><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=35" title="Edit section: The Roles of the Master Server">edit</a>]</span> <span class="mw-headline"> The Roles of the Master Server </span></h3>
+<a name="The_Roles_of_the_Slave_Servers"></a><h3><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=36" title="Edit section: The Roles of the Slave Servers">edit</a>]</span> <span class="mw-headline"> The Roles of the Slave Servers </span></h3>
+<a name="Using_Alternate_Storage_Engines"></a><h4><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=37" title="Edit section: Using Alternate Storage Engines">edit</a>]</span> <span class="mw-headline"> Using Alternate Storage Engines </span></h4>
+<a name="Further_Reading"></a><h2><span class="editsection">[<a href="/w/index.php?title=TagSchema&amp;action=edit&amp;section=38" title="Edit section: Further Reading">edit</a>]</span> <span class="mw-headline"> Further Reading </span></h2>
+<ul><li> <a href="http://www.pui.ch/phred/archives/2005/04/tags-database-schemas.html" class="external text" title="http://www.pui.ch/phred/archives/2005/04/tags-database-schemas.html" rel="nofollow">Discussion of various schema designs</a>
+</li><li> <a href="http://www.pui.ch/phred/archives/2005/06/tagsystems-performance-tests.html" class="external text" title="http://www.pui.ch/phred/archives/2005/06/tagsystems-performance-tests.html" rel="nofollow">Discussion of performance of various schema designs</a>
+</li><li> <a href="http://www.pui.ch/phred/archives/2005/05/tags-with-mysql-fulltext.html" class="external text" title="http://www.pui.ch/phred/archives/2005/05/tags-with-mysql-fulltext.html" rel="nofollow">Discussion of FULLTEXT with MYSQLicious</a>
+</li><li> <a href="http://tagschema.com/blogs/tagschema/2005/10/many-dimensions-of-relatedness-in.html" class="external text" title="http://tagschema.com/blogs/tagschema/2005/10/many-dimensions-of-relatedness-in.html" rel="nofollow">Discussion of Tagging and Folksonomy Concepts</a>
+</li></ul>
+
+<!-- Saved in parser cache with key mysqlforge-mw_:pcache:idhash:1719-0!1!0!!en!2 and timestamp 20101220142620 -->
+
+<div class="printfooter">
+<p>Retrieved from "<a href="http://forge.mysql.com/wiki/TagSchema">http://forge.mysql.com/wiki/TagSchema</a>"</p>
+
+<p>This page has been accessed 33,973 times. This page was last modified 21:02, 3 September 2006. </p>
+</div>
+
+</div></div>
+
+<div id='footer'><table width='98%' border='0' cellspacing='0'><tr><td width='152' rowspan='1'>&nbsp;</td></tr></table>
+</div>
+</div>
+
+<div id='quickbar'>
+<h6>Find</h6><form id="searchform" method="get" class="inline" action="/wiki/Special:Search"><input type='text' id="searchInput" class="mw-searchInput" name="search" size="14" value="" /><br /><input type='submit' id="searchGoButton" class="searchButton" name="go" value="Go" /><input type='submit' id="mw-searchButton" class="searchButton" name="fulltext" value="Search" /></form>
+<h6>Browse</h6><a href="http://forge.mysql.com/">MySQLForge</a><br /><a href="/wiki/Main_Page">Main Page</a><br /><a href="/wiki/Current_events">Current events</a><br /><a href="/wiki/Special:Recentchanges">Recent changes</a><br /><a href="/wiki/Special:Random">Random page</a><br /><a href="/wiki/Help:Contents">Help</a><br />
+<h6>Edit</h6><strong><a href="/w/index.php?title=TagSchema&amp;action=edit" title="TagSchema">Edit this page</a></strong><br /><a href="/wiki/Help:Editing" title="Help:Editing">Editing help</a><br />
+<h6>This page</h6><a href="/w/index.php?title=Talk:TagSchema&amp;action=edit" class="new" title="Talk:TagSchema">Discuss this page</a><br /><a href="/w/index.php?title=Talk:TagSchema&amp;action=edit&amp;section=new" title="Talk:TagSchema">Post a comment</a><br /><a href="/w/index.php?title=TagSchema&amp;printable=yes">Printable version</a><br />
+<h6>Context</h6><a href="/w/index.php?title=TagSchema&amp;action=history" title="TagSchema">Page history</a><br /><a href="/wiki/Special:Whatlinkshere/TagSchema" title="Special:Whatlinkshere/TagSchema">What links here</a><br /><a href="/wiki/Special:Recentchangeslinked/TagSchema" title="Special:Recentchangeslinked/TagSchema">Related changes</a><br />
+<h6>My pages</h6>
+<h6>Special pages</h6><a href="/wiki/Special:Newpages" title="Special:Newpages">New pages</a><br /><a href="/wiki/Special:Imagelist" title="Special:Imagelist">File list</a><br /><a href="/wiki/Special:Statistics" title="Special:Statistics">Statistics</a><br /><a href="/wiki/MySQL_Forge_Wiki:Bug_reports" title="MySQL Forge Wiki:Bug reports">Bug reports</a><br /><a href="/wiki/Special:Specialpages" title="Special:Specialpages">More...</a><br />
+</div>
+
+		<script type="text/javascript">if (window.runOnloadHook) runOnloadHook();</script>
+<!-- Served by forge1 in 0.247 secs. -->
+</body></html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang=en>
+<head profile="http://www.microformats.org/wiki/hcard-profile">
+<title>Why &ldquo;variables&rdquo; in CSS are harmful</title>
+<link href="mailto:bert@w3.org" rel=author>
+<link href=2007.css media="screen, projection, tv, print"
+rel=stylesheet title=Default type="text/css">
+<link href=handheld.css media=handheld rel=stylesheet title=Default
+type="text/css">
+
+<style type="text/css">
+.sidebar {border: dotted thin; padding: 0.5em; margin: 0.2em 0 0.2em 1em;
+  width: 50%; float: right; clear: right; font-size: smaller}
+</style>
+
+<body>
+<h1 id=why-ldquovariablesrdquo>Why &ldquo;variables&rdquo; in CSS are
+harmful<br>
+&ndash; an essay</h1>
+<!--begin-toc-->
+
+<ul class=menu>
+<li><a href="#introduction">Introduction</a>
+
+<li><a href="#why-this">Why this essay now?</a>
+
+<li><a href="#implementation">Implementation effort</a>
+
+<li><a href="#effort">Effort of maintaining style sheets over time</a>
+
+<li><a href="#reusing">Reusing style sheets</a>
+
+<li><a href="#learning">Learning CSS</a>
+
+<li><a href="#modularity">Modularity</a>
+</ul>
+<!--end-toc-->
+
+<p><em>Adding any form of macros or additional scopes and indirections,
+including symbolic constants, is not just redundant, but changes <a
+href="../../Style/CSS/"><abbr title="Cascading Style
+Sheets">CSS</abbr></a> in ways that make it unsuitable for its intended
+audience. Given that there is currently no alternative to CSS, these
+things must not be added.</em>
+
+<h2 id=introduction>Introduction</h2>
+
+<p>There are certain kinds of extensions to CSS that people have
+regularly asked for over its (now 14 years) history but that
+nevertheless don't belong in CSS. They are extensions to bring CSS
+closer to a programming language (as opposed to extensions to support
+more of typography). They would at first sight be useful for advanced
+users, but in reality they are not, and are in fact harmful for the
+&ldquo;semantic Web,&rdquo; i.e., for the idea that information should
+be re-usable.
+
+<p>The proposed extensions include such things as conditional
+expressions (if-then-else), macros, expressions over properties,
+delegation (i.e., define an element's style by reference to another
+element), mark-up injection, mark-up transformation, and symbolic
+constants (a limited form of macros). This essay only deals with the
+last of these, constants, but the arguments apply in large part to the
+other proposed extensions as well.
+
+<h2 id=why-this>Why this essay now?</h2>
+
+<p>Constants have been regularly proposed and rejected over the long
+history of CSS and neither the content of the Web nor the software that
+processes it has changed (or is expected to change) significantly, so
+there is no reason why constants should be useful now when they weren't
+before. However, it has become necessary to repeat the arguments,
+because of three recent developments: <a
+href="http://webkit.org/">WebKit</a> (the core of Apple's Safari
+browser) briefly experimented with an implementation of constants, a <a
+href="http://disruptive-innovations.com/zoo/cssvariables/">proposal for
+constants</a> has been published by two people who are <em>members of
+the CSS working group of W3C,</em> and there is an <a
+href="http://interfacelab.com/variables-in-css-via-php/">implementation
+of constants</a> done the &ldquo;right way,&rdquo; i.e., modular and
+independent of CSS.
+
+<p>The existence of the WebKit implementation proves that it is
+<em>possible</em> to add macros to CSS. (Something nobody doubted.)
+However, some people believe that the existence of an implementation
+also proves that macros are <em>useful.</em>
+
+<p>The other implementation is written in <a
+href="http://www.php.net/">PHP.</a> It proves that it is <em>not
+necessary</em> to add constants to CSS. Just like the existence of the
+WebKit implementation cannot be taken as proof that constants in CSS
+are useful, so the PHP implementation cannot prove that either. But the
+PHP implementation has the benefit of letting authors determine the
+usefulness for themselves, without modifying CSS on the Web.
+
+<div class=sidebar>
+<p>There are examples of CSS with constants to satisfy all styles of
+programming, e.g.: <a
+href="http://davidwalsh.name/css-variables-php-dynamic"> David
+Walsh</a> (in PHP), <a href="http://sperling.com/examples/pcss/"> Tedd
+Sperling</a> (in PHP), <a
+href="http://www.digital-web.com/articles/generating_dynamic_css_with_php/">
+Digital Web Magazine</a> (in PHP), <a
+href="http://ecoconsulting.co.uk/training/css_includes.shtml"> Eco
+Consulting</a> (in SSI), and <a
+href="http://icant.co.uk/articles/cssconstants/"> Christian
+Heilmann</a> (SSI and PHP).
+</div>
+
+<p>The proposal that was put forward by the two working group members
+is called &ldquo;CSS variables&rdquo; (where &ldquo;variable&rdquo; is
+used in the sense of something whose value you may not know at the time
+that you read it, rather than as something that can change its value
+over time, like a variable in a computer program). That's why the title
+of this essay uses &ldquo;variables&rdquo; although it talks about
+symbolic constants.
+
+<h2 id=implementation>Implementation effort</h2>
+
+<p>We know that is is possible to implement symbolic constants for CSS
+(the WebKit experiment shows that) and also that it is not necessary
+(the PHP implementation shows that authors can use constants without
+them being defined by CSS). But how big is the implementation effort?
+
+<p>If we look at the latest proposal, it only defines <em>global</em>
+constants. There is no scoping. That means that an implementation needs
+a symbol table, but no stack. A stack would require a little bit more
+memory, but mostly it would make implementations more complex.
+(Although every programmer has, one hopes, learnt to program a symbol
+table with lexical scope during his training.) Constants in CSS are
+thus easier than, e.g., <a href="../../TR/xml-names/">XML
+Namespaces,</a> which <em>are</em> lexically scoped.
+
+<p>It is different for those CSS implementations that provide a <a
+href="../../TR/DOM-Level-2-Style/">CSS Object Model</a> (an API for
+manipulating a style sheet in memory). Those implementations
+<em>do</em> need to keep track of scope in some way, because adding or
+removing a line of the style sheet can make a previously redundant
+definition become meaningful.
+
+<p>Even if the implementation cost of constants would be very small, it
+is still better to leave them out of CSS. That is a consideration for
+<em>every</em> addition to CSS: extending CSS makes implementing more
+difficult and programs bigger, which leads to fewer implementations and
+more bugs. That has to be balanced against the usefulness of the
+extension. In the case of, e.g., hyphenation, the balance is in favor
+of adding the extension to CSS: adding all breakpoints as soft hyphens
+with an external program is possible, but not practical. In the case of
+constants, the balance is in favor of leaving them out of CSS: not only
+is replacing constants with an external program practical, it is
+actually desirable, because it makes the style sheet shorter (and
+easier to read and re-use, as we'll argue below).
+
+<h2 id=effort>Effort of maintaining style sheets over time</h2>
+
+<p>When writing computer code, whether C programs or CSS, there are
+things that you need to keep in memory for some time and others that
+you can forget as soon as you reach the end of the line. Syntax
+questions, such as putting the right number of colons and semicolons,
+are of the latter type and that makes them easy to deal with.
+Predefined keywords, such as all properties and other keywords in CSS,
+or standard library functions in C, are also of that type: to a certain
+function belongs a certain name, which is always the same, independent
+of the code you are writing.
+
+<p>But variables and functions in C, or names of counters in CSS,
+require more effort. You need to remember that a certain non-standard
+functionality exists and what its name is. An experienced programmer is
+so used to that effort, that he hardly notices&hellip; until he has to
+revise a program that he wrote more than a month ago.
+
+<p>Of course, in C you need those variables and functions. You need to
+divide up a problem in smaller ones and solve them one by one.
+Otherwise you would have to hold even more in memory. And many
+programming environments help the programmer by showing the list of
+user-defined names in a window. The computer screen thus becomes an
+extension of the programmer's memory.
+
+<p>That last point is important: the screen is an extension of the
+author's memory. What is on screen doesn't have to be remembered (or at
+least uses less effort). That is, e.g., the principle of drop-down
+menus: you don't have to recall the name of a command, you just have to
+recognize it when you see it. Added to that is the effect of
+<em>location:</em> the (relative) location of a function in the 2D
+space of the screen is an additional key with which to retrieve it.
+
+<p>Programmers will recognize this memory effect also in another way:
+Dividing up a problem into smaller ones is only one reason for defining
+functions. Just as important is the fact that a function that fits on
+one screen is easier to write than one that needs scrolling.
+
+<p>Thus there is a cost to user-defined names: memory (when writing the
+code) and understanding (when reading). That cost is offset by the cost
+of the alternative: long functions. How is that for CSS?
+
+<div class=sidebar>
+<p>A bit of statistics on the W3C site reveals the following
+distribution of sizes of style sheets:
+
+<ul>
+<li>number of CSS style sheets: 25725
+
+<li>number of non-empty style sheets: 24805
+
+<li>largest style sheet: 4872 lines (generated by an early version of
+FrameMaker)
+
+<li>largest hand-written style sheet: 1462 lines (bought from a Web
+design company)
+
+<li>average non-empty style sheet: 54 lines
+</ul>
+
+<p>The distribution is as you might expect, lots of very small files,
+very few large files:
+
+<ul>
+<li>Half the files is less then 7 lines.
+
+<li>90% is less than 163 lines.
+
+<li>Only 0.6% is longer than 500 lines.
+</ul>
+
+<p>The authors who write on this Web site site are probably more
+careful about the structure and re-usability (and download speed) of
+their documents than the average Web author and there are indications
+that the average size of style sheets on the Web is two or three times
+higher. That is still small for computer code, though. Although it
+doesn't fit in one window, like the average W3C style sheet, it doesn't
+take more than scrolling once or twice either.
+</div>
+
+<p>On the one hand, typography doesn't lend itself very well to the
+divide-and-conquer approach. The <a
+href="../../TR/CSS21/cascade.html#at-import">@import rule of CSS</a>
+can, e.g., separate the rules for colors from the rules for sizes and
+margins, but in reality they are hardly independent. On the other hand,
+CSS style sheets are short. They are not much bigger than one editor
+window. Very few people (only professional designers, it seems) write
+style sheets longer than a hundred lines. Compare that to C programs,
+which are typically tens of thousands of lines.
+
+<p>Style sheets thus don't need to be split up into named functions.
+Doing that would add a cost (remembering user-defined names) without a
+benefit (avoiding problems that are longer than one screenful).
+
+<p>The above is an argument against macros in general. It should be
+noted that the recent proposal for CSS variables isn't proposing ways
+to make style sheets shorter. It actually makes them longer. It
+replaces values by user-defined names as a way to make style sheets
+self-documenting and easier to treat with search-and-replace functions.
+
+<p>But self-documenting by means of an identifier isn't very effective,
+a comment would be clearer. And the search and replace is hardly an
+issue in a style sheet in which a value typically occurs less than a
+dozen times. What remains is the cost of remembering and understanding
+user-defined names.
+
+<h2 id=reusing>Reusing style sheets</h2>
+
+<p>One of the best features of <a href="../../html/"><abbr
+title="HyperText Mark-up Language">HTML</abbr></a> and CSS is that they
+make it easy to <a
+href="http://www.shirky.com/writings/view_source.html">learn from and
+re-use other people's efforts.</a> CSS is fairly easy to learn to read,
+even if some of its effects can be quite subtle. When there is a page
+you like, you can look at its style sheet and see how it's done.
+
+<p>Style debugging tools, such as certain <a
+href="http://chrispederick.com/work/web-developer/">extensions</a> for
+the <a href="http://www.mozilla.com/en-US/firefox/">Firefox</a> and <a
+href="http://www.opera.com/products/">Opera</a> browsers, make that
+even easier. You can see exactly which part of the style sheet affects
+a given part of a document.
+
+<p>But reusing other people's style sheets is more difficult if those
+style sheets contain user-defined names. Class names are an example.
+Their names may suggest why the author created them (assuming they are
+in a language you understand), but typically you will have to look at
+the document to see where they occur and why. Symbolic constants make
+that problem worse.
+
+<p>Somebody who reads a style sheet with symbolic constants has the
+same problem as the author reading his own style sheet after not
+looking at it for some time, only worse. The author may manage to
+remember the function of some name after a few hints, any other person
+will have to hypothesize and check the function fully from what is
+written in the style sheet itself.
+
+<p>For many people, style sheets with constants will thus simply not be
+usable. It is too difficult to look in two places at once, the place
+where a value is used and the place where it is defined, if you don't
+know why the rule is split in this way. Many people are confused by
+indirection anyway and adding an extra one, in addition to the element
+and class names, has the same effect as obfuscating the style sheet.
+
+<p>Indeed, it is quite likely that somebody who is trying to learn CSS
+will give up learning it when he sees that style sheets that occur on
+the Web don't actually look like the tutorials he started from.
+Difference in upper- and lowercase or in pretty-printing are hindrances
+to learning, too, but limited ones: you soon learn to ignore those
+differences. But symbolic constants are different in each style sheet
+and have to be interpreted and understood each time anew.
+
+<p>Of course, this is a conjecture. It is difficult to test and predict
+how many people will not manage to learn CSS because of macros. But
+from looking at people writing style sheets and other computer code and
+seeing the kinds of things that make them fail, I'm pretty sure that
+this effect is quite strong.
+
+<h2 id=learning>Learning CSS</h2>
+
+<p>There are many things in CSS that make CSS too difficult to learn
+for many people. The concept of putting the style in a style sheet with
+rules linked to types of elements rather than to actual text, is
+already too much for many Web authors, but the benefit of separating
+style and structure is such that, all things considered, CSS is still a
+good idea for the Web.
+
+<p>The value of the semantic Web isn't defined by how well structured
+the best documents are, but by how well structured the vast majority of
+documents is. There is no alternative to CSS when it comes to
+separating style and structure of HTML documents. <a
+href="../../Style/XSL/">XSL</a> is only an alternative at the high end,
+for advanced users. Thus we need to take care that CSS remains usable
+for that majority of documents. At least until an alternative emerges.
+
+<p>People who understand CSS in principle may still have trouble
+understanding the indirection provided by the em unit, many have
+trouble with the advanced <a href="../../TR/css3-selectors/">selectors
+in level&nbsp;3,</a> and many more won't understand, e.g., any of the
+properties that have to do with <a
+href="../../International/questions/qa-bidi-css-markup">
+bi-directionality</a> or <a
+href="../../International/articles/css3-text/Overview.en.php"> vertical
+text.</a> For each feature that is added to CSS there must be a careful
+balance (based on an informed guess, because these things are difficult
+to test) between the number of users that will be excluded by that
+feature and the number for whom it is essential that it be added.
+Vertical text properties are on the whole beneficial: there are people
+who need them and the people who don't understand them are unlikely to
+encounter a style sheet that contains them. Advanced selectors are more
+controversial. They enable more highly structured documents and enlarge
+the applicability of CSS beyond HTML, but they are quite likely to be
+found in style sheets on-line by people who don't understand them.
+
+<p>The balance for symbolic constants is against including them. They
+are too difficult to learn for many people and at the same time they
+are not essential for anybody. People who feel that they need them can
+easily use them without causing them to appear in style sheets that
+other people may encounter. Solutions like XSL or the PHP
+implementation mentioned earlier already exist, along with more generic
+solutions, such as <a
+href="http://httpd.apache.org/docs/2.2/howto/ssi.html">SSI,</a> <a
+href="http://java.sun.com/products/jsp/">JSP,</a> or preprocessors such
+as CPP, m4 or sed.
+
+<h2 id=modularity>Modularity</h2>
+
+<p>The Web is <a href="DesignGuide/modularity">modular</a> and that has
+several benefits: almost every part is optional, can be replaced or
+updated without affecting the others, and can be reused for tasks that
+were invented after the module itself was invented. For example, the
+links in HTML aren't specific to HTML, but they are URLs and URLs have
+since found their way into many other Web technologies. Similarly,
+style is not encoded in HTML, but in CSS, and thus HTML and CSS can be
+developed on their own and each can be used without the other. Images
+(PNG, JPEG) are another example. HTML uses images, but doesn't define
+them. And therefore CSS can use the same images as HTML.
+
+<p>CSS itself has given rise to two modules: selectors and <a
+href="../../TR/css3-mediaqueries/">media queries</a> were developed for
+use in CSS but very quickly it was realized that they can be used on
+their own. Media queries, for example, are also used in HTML and XML.
+
+<p>Symbolic constants is a concept that looks like a candidate for a
+module. SGML entities, <a href="../../TR/curie/">CURIEs</a> and XML
+Namespace prefixes are examples on the Web of the same concept. And off
+the Web there are many more. SSI, tag libraries in JSP and various
+template processors for HTML are examples that are used in close
+relationship with the Web. It's clearly a concept that doesn't apply
+only to CSS.
+
+<p>Treating symbolic constants as an independent module would make them
+available for use in other contexts than CSS, would make them available
+to precisely the people who need them without hindering other people,
+would allow them to be developed without impact on CSS, and allow them
+to be developed more easily into what they are sure to develop into
+anyway: full macros, able to replace anything, not just CSS values, and
+able to make files shorter instead of longer.
+
+<p>If developed, it should be a module that is used off the Web,
+though. Macros are a help for authors, not for the semantic Web. The
+Web's main formats, HTML, CSS, SVG, PNG, JPEG, etc., already have all
+the structure they need. Adding an extra, independent structure would
+just make them more difficult to process.
+
+<address class=vcard><a class="fn url" href="./">Bert Bos</a>, <span
+class=org>W3C/ERCIM</span>, &lt;<a class=email
+href="mailto:bert@w3.org">bert@w3.org</a>&gt;<br>
+created 30 June 2008, last modified $Date: 2008/09/27 10:04:23 $</address>

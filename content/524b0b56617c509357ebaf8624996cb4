@@ -1,0 +1,223 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+  <title>Blackbird - Open Source JavaScript Logging Utility</title>
+  <link rel="shortcut icon" href="/blackbirdjs/favicon.ico" type="image/x-icon" />
+  <script type="text/javascript" src="/js/jquery/1.2.6/jquery-1.2.6.js"></script>
+  <script type="text/javascript" src="/js/jquery/plugins/jquery.scrollTo-min.js"></script>
+  <script type="text/javascript" src="/js/jquery/jquery.easing.1.3.js"></script>
+  <script type="text/javascript">
+    if ( ! document.cookie.match( /blackbird=/ ) ) {
+      document.cookie = 'blackbird={pos:0,size:0,load:true};';
+    }
+  </script>
+  <script type="text/javascript" src="/js/blackbirdjs-1.0/blackbird.js"></script>
+  <script type="text/javascript">    
+    log.info( 'hello' );  
+    
+    $( function() {
+      jQuery.easing.def = 'easeInOutCubic';
+      var content;
+      function executeBlock() {
+        var code = $( this ).children( 'pre' ).text();
+        
+        var func = (new Function( code ))();
+      }
+
+      $( 'a[href^=#]' ).click( function() {
+          var bookmark = this.href.match( /#(\S+)/ );
+          $.scrollTo( '[name=' + bookmark[ 1 ] + ']', 1500  );
+          return false;
+      });
+
+      $.getJSON( '/blackbirdjs/code.js' , function( data ) {
+        for ( entry in data ) {
+          var newline = ( document.textContent !== undefined ) ? '\n' : '\r';
+          var pre = $( 'pre[title=' + entry + ']' ).text( data[ entry ].replace( /\|/g, newline ) );
+          if ( pre.hasClass( 'exec' ) ) {
+            pre.get( 0 ).title = '';
+            
+            pre.wrap( '<div class="cursor">' ).parent()
+              .append( '<div class="exec">' )
+              .append( '<p class="click-to-exec"><em>Click the block to execute the code</em></p>')
+              .css( 'position', 'relative' )
+              .hover(
+                function() { $( this ).addClass( 'clickable' ) },
+                function() { $( this ).removeClass( 'clickable' ) } )
+              .click( executeBlock )
+              .get( 0 ).title = 'click to execute';
+          }/*if*/
+        }
+      });
+    });
+    
+  </script>
+  <link rel="Stylesheet" type="text/css" href="/js/blackbirdjs-1.0/blackbird.css" />
+  <link rel="Stylesheet" type="text/css" href="bb_home.css" />
+</head>
+<body>
+  <div id="header">
+    <h1><span>Blackbird</span></h1>
+    <h2>Open Source JavaScript Logging Utility</h2>
+    <div class="blurb">
+      <p>Blackbird offers a dead-simple way to log messages in JavaScript and an attractive console to view and filter them.  <strong>You might never use <code>alert()</code> again.</strong></p>
+    </div>
+  </div>
+
+  <div id="nav">
+    <ul>
+      <li><a href="#demos">Demos</a></li>
+      <li><a href="#setup">Setup</a></li>
+      <li><a href="#usage">Usage</a></li>
+      <li><a href="#customization">Customization</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+  </div>
+
+  <div id="content">
+    <dl>
+      <dt><a name="demos">Demos</a></dt>
+
+      <dd>
+        <h4>Output all message types</h4>
+        <pre class="exec" title="exec1"></pre>
+      </dd>
+      
+      <dd>
+        <h4>Generate test string</h4>
+        <pre class="exec" title="profiling"></pre>
+      </dd>
+
+      <dt><a name="setup">Setup</a></dt>
+
+      <dd>
+        <h4>Adding Blackbird to your page</h4>
+        <ol>
+          <li><a href="http://blackbirdjs.googlecode.com/files/blackbirdjs-1.0.zip">Download the files</a> and place them on your server or in a local directory on your computer.</li>
+          <li>Include blackbird.js in your page.</li>
+          <li>Inlcude blackbird.css in your page.</li>
+        </ol>
+        <p>Your HTML source should look similar to the following code:</p>
+        <pre title="inpage"></pre>
+      </dd>
+      
+      <dd>
+        <h4>Browser compatibility</h4>
+        <p>Blackbird is has been smoke-tested on the following browsers:</p>
+        <ul>
+          <li>Internet Explorer 6+</li>
+          <li>Firefox 2+</li>
+          <li>Safari 2+</li>
+          <li>Opera 9.5</li>
+        </ul>
+      </dd>
+      
+      <dt><a name="usage">Usage</a></dt>
+
+      <dd>
+        <h4>Public API</h4>
+        <dl class="api">
+          <dt><code>log.toggle()</code></dt>
+          <dd>Hide/show Blackbird</dd>
+          
+          <dt><code>log.move()</code></dt>
+          <dd>Move Blackbird to next fixed positions: top-left, top-right, bottom-left, bottom-right</dd>
+          
+          <dt><code>log.resize()</code></dt>
+          <dd>Expand/contract Blackbird
+          
+          <dt><code>log.clear()</code></dt>
+          <dd>Clear all contents of Blackbird</dd>
+          
+          <dt><code>log.debug( message )</code></dt>
+          <dd>Add a debug message to Blackbird</dd>
+          <dd class="params"><code>message</code>: the string content of the debug message</dd>
+          
+          <dt><code>log.info( message )</code></dt>
+          <dd>Add an info message to Blackbird</dd>
+          <dd class="params"><code>message</code>: the string content of the info message</dd>
+          
+          <dt><code>log.warn( message )</code></dt>
+          <dd>Add a warning message to Blackbird</dd>
+          <dd class="params"><code>message</code>: the string content of the warn message</dd>
+          
+          <dt><code>log.error( message )</code></dt>
+          <dd>Add an error message to Blackbird</dd>
+          <dd class="params"><code>message</code>: the string content of the warn message</dd>
+          
+          <dt><code>log.profile( label )</code></dt>
+          <dd>Start/end a time profiler for Blackbird.  If a profiler named <code>string</code> does not exist, create a new profiler.  Otherwise, stop the profiler <code>string</code> and display the time elapsed (in ms).</dd>
+          <dd class="params"><code>label</code>: the string identifying a specific profile timer</dd>
+        </dl>
+      </dd>
+
+      <dd>
+        <h4>Keyboard controls</h4>
+        <dl class="keyboard">
+          <dt>Hide/show</dt>
+          <dd style="width: 60px;"><span>F2</span></dd>
+          <dt>Move</dt>
+          <dd style="width: 185px;"><span>Shift + F2</span></dd>
+          <dt>Clear</dt>
+          <dd style="width: 285px;"><span>Alt + Shift + F2</span></dd>
+        </dl>
+      </dd>
+      
+      <dd>
+        <h4>Interface controls</h4>
+        <img src="img/ui_controls.png" width="434" height="165" style="padding: 20px 100px; background-color: #000; border:1px solid #666;" />
+        <p>Pressing the Alt key while clicking any message filter control will only show messages of that type.  For example, Alt + click <img src="img/debug.png" width="16" height="16" alt="debug control" /> to show only debug messages.</p>
+      </dd>
+
+      <dd>
+        <h4>Bookmarklets</h4>
+        <p>Drag the following links to your bookmarks toolbar for quick access to Blackbird commands:</p>
+        <ul>
+          <li><code><a href="javascript:log.clear();">clear</a></code></li>
+          <li><code><a href="javascript:log.move();">move</a></code></li>
+          <li><code><a href="javascript:log.resize();">resize</a></code></li>
+          <li><code><a href="javascript:log.toggle();">toggle</a></code></li>
+        </ul>
+      </dd>
+      
+      <dt><a name="customization">Customization</a></dt>
+
+      <dd>
+        <h4>Changing the namespace</h4>
+        <p>The default configuration attaches the public API for Blackbird to the global variable <code>log</code>.  It is possible to have conflicts with existing variable declarations, and it is possible to redefine the global variable <code>log</code> in other blocks of JavaScript.  If you want to define a different variable for Blackbird, such as <code>blackbird</code>, replace the assignment for <code>NAMESPACE</code> with any other string.</p>
+
+        <p><code>var NAMESPACE = 'log';</code></p>
+        <p>can be replaced with:</p>
+        <p><code>var NAMESPACE = 'blackbird';</code></p>
+        <p>or:</p>
+        <p><code>var NAMESPACE = 'myCustomLog';</code></p>
+
+        <p>The global API will be affected by this change.  If you choose to replace <code>log</code> with <code>myCustomLog</code>, then <code>log.debug</code> will become <code>myCustomLog.debug</code>.</p>
+      </dd>
+
+      <dd>
+        <h4>Capture &amp; cancel logging statements</h4>
+        <p>If you're shipping code with logging statements, you might want to capture and cancel commands intended for Blackbird.  The following code will do this:</p>
+
+        <pre title="override"></pre>
+      </dd>
+
+      <dt><a name="about">About</a></dt>
+
+      <dd>
+        <h4>Credits</h4>
+        <p>The code (blackbird.js, blackbird.css) and image assets (blackbird_panel.png, blackbird_icons.png) were created by G. Scott Olson.</p>
+        <p>The concept for Blackbird was sparked by <a href="http://alistapart.com/articles/jslogging">JavaScript Logging</a>, an article by David F. Miller.  The first iteration of this project, named jsLogger, was developed for internal use at <a href="http://www.orbitz.com">Orbitz</a>.  In the fall of 2007, jsLogger was rewritten from the ground up, given a facelift, and named project Blackbird.</p>
+      </dd>
+
+      <dd>
+        <h4>Contributing to the Blackbird Project</h4>
+        <p>Blackbird is an open source project.  If you're intereted in contributing, you can start by checking out the project page on <a href="http://blackbirdjs.googlecode.com">Google Code</a>.</p>
+      </dd>
+    </dl>
+  </div>
+  <script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script>
+  <script type="text/javascript">var pageTracker = _gat._getTracker("UA-13046952-1"); pageTracker._initData(); pageTracker._trackPageview();</script>
+
+</body>
+</head>

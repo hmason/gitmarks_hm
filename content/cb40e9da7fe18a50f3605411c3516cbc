@@ -1,0 +1,2006 @@
+<?xml version="1.0" encoding="ascii" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ascii" />
+<meta name="generator" content="Docutils 0.7: http://docutils.sourceforge.net/" />
+<title>Code Like a Pythonista: Idiomatic Python</title>
+<link rel="stylesheet" href="../../../../default.css" type="text/css" />
+</head>
+<body>
+<div class="document" id="code-like-a-pythonista-idiomatic-python">
+<h1 class="title">Code Like a Pythonista: Idiomatic Python</h1>
+
+<div class="handout sidebar">
+<p class="first sidebar-title">Contents</p>
+<div class="contents local last topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#the-zen-of-python-1" id="id3">The Zen of Python (1)</a></li>
+<li><a class="reference internal" href="#the-zen-of-python-2" id="id4">The Zen of Python (2)</a></li>
+<li><a class="reference internal" href="#coding-style-readability-counts" id="id5">Coding Style: Readability Counts</a></li>
+<li><a class="reference internal" href="#pep-8-style-guide-for-python-code" id="id6">PEP 8: Style Guide for Python Code</a></li>
+<li><a class="reference internal" href="#whitespace-1" id="id7">Whitespace 1</a></li>
+<li><a class="reference internal" href="#whitespace-2" id="id8">Whitespace 2</a></li>
+<li><a class="reference internal" href="#naming" id="id9">Naming</a></li>
+<li><a class="reference internal" href="#long-lines-continuations" id="id10">Long Lines &amp; Continuations</a></li>
+<li><a class="reference internal" href="#long-strings" id="id11">Long Strings</a></li>
+<li><a class="reference internal" href="#compound-statements" id="id12">Compound Statements</a></li>
+<li><a class="reference internal" href="#docstrings-comments" id="id13">Docstrings &amp; Comments</a></li>
+<li><a class="reference internal" href="#practicality-beats-purity" id="id14">Practicality Beats Purity</a></li>
+<li><a class="reference internal" href="#idiom-potpourri" id="id15">Idiom Potpourri</a></li>
+<li><a class="reference internal" href="#swap-values" id="id16">Swap Values</a></li>
+<li><a class="reference internal" href="#more-about-tuples" id="id17">More About Tuples</a></li>
+<li><a class="reference internal" href="#interactive" id="id18">Interactive &quot;_&quot;</a></li>
+<li><a class="reference internal" href="#building-strings-from-substrings" id="id19">Building Strings from Substrings</a></li>
+<li><a class="reference internal" href="#building-strings-variations-1" id="id20">Building Strings, Variations 1</a></li>
+<li><a class="reference internal" href="#building-strings-variations-2" id="id21">Building Strings, Variations 2</a></li>
+<li><a class="reference internal" href="#use-in-where-possible-1" id="id22">Use <tt class="docutils literal">in</tt> where possible (1)</a></li>
+<li><a class="reference internal" href="#use-in-where-possible-2" id="id23">Use <tt class="docutils literal">in</tt> where possible (2)</a></li>
+<li><a class="reference internal" href="#dictionary-get-method" id="id24">Dictionary <tt class="docutils literal">get</tt>  Method</a></li>
+<li><a class="reference internal" href="#dictionary-setdefault-method-1" id="id25">Dictionary <tt class="docutils literal">setdefault</tt> Method (1)</a></li>
+<li><a class="reference internal" href="#dictionary-setdefault-method-2" id="id26">Dictionary <tt class="docutils literal">setdefault</tt> Method (2)</a></li>
+<li><a class="reference internal" href="#defaultdict" id="id27"><tt class="docutils literal">defaultdict</tt></a></li>
+<li><a class="reference internal" href="#building-splitting-dictionaries" id="id28">Building &amp; Splitting Dictionaries</a></li>
+<li><a class="reference internal" href="#testing-for-truth-values" id="id29">Testing for Truth Values</a></li>
+<li><a class="reference internal" href="#truth-values" id="id30">Truth Values</a></li>
+<li><a class="reference internal" href="#index-item-1" id="id31">Index &amp; Item (1)</a></li>
+<li><a class="reference internal" href="#index-item-2-enumerate" id="id32">Index &amp; Item (2): <tt class="docutils literal">enumerate</tt></a></li>
+<li><a class="reference internal" href="#other-languages-have-variables" id="id33">Other languages have &quot;variables&quot;</a></li>
+<li><a class="reference internal" href="#python-has-names" id="id34">Python has &quot;names&quot;</a></li>
+<li><a class="reference internal" href="#default-parameter-values" id="id35">Default Parameter Values</a></li>
+<li><a class="reference internal" href="#string-formatting" id="id36">% String Formatting</a></li>
+<li><a class="reference internal" href="#advanced-string-formatting" id="id37">Advanced % String Formatting</a></li>
+<li><a class="reference internal" href="#id2" id="id38">Advanced % String Formatting</a></li>
+<li><a class="reference internal" href="#list-comprehensions" id="id39">List Comprehensions</a></li>
+<li><a class="reference internal" href="#generator-expressions-1" id="id40">Generator Expressions (1)</a></li>
+<li><a class="reference internal" href="#generator-expressions-2" id="id41">Generator Expressions (2)</a></li>
+<li><a class="reference internal" href="#sorting" id="id42">Sorting</a></li>
+<li><a class="reference internal" href="#sorting-with-dsu" id="id43">Sorting with DSU *</a></li>
+<li><a class="reference internal" href="#sorting-with-keys" id="id44">Sorting With Keys</a></li>
+<li><a class="reference internal" href="#generators" id="id45">Generators</a></li>
+<li><a class="reference internal" href="#example-generator" id="id46">Example Generator</a></li>
+<li><a class="reference internal" href="#reading-lines-from-text-data-files" id="id47">Reading Lines From Text/Data Files</a></li>
+<li><a class="reference internal" href="#eafp-vs-lbyl" id="id48">EAFP vs. LBYL</a></li>
+<li><a class="reference internal" href="#eafp-try-except-example" id="id49">EAFP <tt class="docutils literal">try/except</tt> Example</a></li>
+<li><a class="reference internal" href="#importing" id="id50">Importing</a></li>
+<li><a class="reference internal" href="#modules-scripts" id="id51">Modules &amp; Scripts</a></li>
+<li><a class="reference internal" href="#module-structure" id="id52">Module Structure</a></li>
+<li><a class="reference internal" href="#command-line-processing" id="id53">Command-Line Processing</a></li>
+<li><a class="reference internal" href="#packages" id="id54">Packages</a></li>
+<li><a class="reference internal" href="#simple-is-better-than-complex" id="id55">Simple is Better Than Complex</a></li>
+<li><a class="reference internal" href="#don-t-reinvent-the-wheel" id="id56">Don't reinvent the wheel</a></li>
+<li><a class="reference internal" href="#references" id="id57">References</a></li>
+</ul>
+</div>
+</div>
+<div class="center big line-block">
+<div class="line"><em>David Goodger</em></div>
+<div class="line"><a class="reference external" href="mailto:goodger&#64;python.org">goodger&#64;python.org</a></div>
+<div class="line"><a class="reference external" href="http://python.net/~goodger">http://python.net/~goodger</a></div>
+</div>
+<p>In this interactive tutorial, we'll cover many essential Python idioms
+and techniques in depth, adding immediately useful tools to your belt.</p>
+<p>There are 3 versions of this presentation:</p>
+<ul class="simple">
+<li><a class="reference external" href="presentation.html">S5 presentation</a></li>
+<li><a class="reference external" href="handout.html">Plain HTML handout</a></li>
+<li><a class="reference external" href="presentation.txt">reStructuredText source</a></li>
+</ul>
+<p class="small">&#169;2006-2008, licensed under a <a class="reference external" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons
+Attribution/Share-Alike (BY-SA) license</a>.</p>
+<div class="handout container">
+<p>My credentials: I am</p>
+<ul class="simple">
+<li>a resident of Montreal,</li>
+<li>father of two great kids, husband of one special woman,</li>
+<li>a full-time Python programmer,</li>
+<li>author of the <a class="reference external" href="http://docutils.sourceforge.net/">Docutils</a> project and <a class="reference external" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a>,</li>
+<li>an editor of the Python Enhancement Proposals (or PEPs),</li>
+<li>an organizer of PyCon 2007, and chair of PyCon 2008,</li>
+<li>a member of the Python Software Foundation,</li>
+<li>a Director of the Foundation for the past year, and its Secretary.</li>
+</ul>
+<p>In the tutorial I presented at PyCon 2006 (called Text &amp; Data
+Processing), I was surprised at the reaction to some techniques I
+used that I had thought were common knowledge.  But many of the
+attendees were unaware of these tools that experienced Python
+programmers use without thinking.</p>
+<p>Many of you will have seen some of these techniques and idioms
+before.  Hopefully you'll learn a few techniques that you haven't
+seen before and maybe something new about the ones you have already
+seen.</p>
+</div>
+<div class="section" id="the-zen-of-python-1">
+<h1><a class="toc-backref" href="#id3">The Zen of Python (1)</a></h1>
+<div class="handout container">
+<p>These are the guiding principles of Python, but are open to
+interpretation.  A sense of humor is required for their proper
+interpretation.</p>
+<p>If you're using a programming language named after a sketch comedy
+troupe, you had better have a sense of humor.</p>
+</div>
+<blockquote class="small">
+<div class="line-block">
+<div class="line">Beautiful is better than ugly.</div>
+<div class="line">Explicit is better than implicit.</div>
+<div class="line">Simple is better than complex.</div>
+<div class="line">Complex is better than complicated.</div>
+<div class="line">Flat is better than nested.</div>
+<div class="line">Sparse is better than dense.</div>
+<div class="line">Readability counts.</div>
+<div class="line">Special cases aren't special enough to break the rules.</div>
+<div class="line">Although practicality beats purity.</div>
+<div class="line">Errors should never pass silently.</div>
+<div class="line">Unless explicitly silenced.</div>
+<div class="line"><br /></div>
+<div class="line-block">
+<div class="line">...</div>
+</div>
+</div>
+</blockquote>
+</div>
+<div class="section" id="the-zen-of-python-2">
+<h1><a class="toc-backref" href="#id4">The Zen of Python (2)</a></h1>
+<blockquote class="small">
+<div class="line-block">
+<div class="line">In the face of ambiguity, refuse the temptation to guess.</div>
+<div class="line">There should be one&#8212;and preferably only one&#8212;obvious way to do it.</div>
+<div class="line">Although that way may not be obvious at first unless you're Dutch.</div>
+<div class="line">Now is better than never.</div>
+<div class="line">Although never is often better than <em>right</em> now.</div>
+<div class="line">If the implementation is hard to explain, it's a bad idea.</div>
+<div class="line">If the implementation is easy to explain, it may be a good idea.</div>
+<div class="line">Namespaces are one honking great idea&#8212;let's do more of those!</div>
+</div>
+<p class="attribution">&mdash;Tim Peters</p>
+</blockquote>
+<div class="handout container">
+<p>This particular &quot;poem&quot; began as a kind of a joke, but it really
+embeds a lot of truth about the philosophy behind Python.  The Zen
+of Python has been formalized in PEP 20, where the abstract reads:</p>
+<blockquote>
+<p>Long time Pythoneer Tim Peters succinctly channels the BDFL's
+guiding principles for Python's design into 20 aphorisms, only
+19 of which have been written down.</p>
+<p class="attribution">&mdash;<a class="reference external" href="http://www.python.org/dev/peps/pep-0020/">http://www.python.org/dev/peps/pep-0020/</a></p>
+</blockquote>
+<p>You can decide for yourself if you're a &quot;Pythoneer&quot; or a
+&quot;Pythonista&quot;.  The terms have somewhat different connotations.</p>
+</div>
+<p class="incremental">When in doubt:</p>
+<pre class="incremental literal-block">
+import this
+</pre>
+<div class="handout container">
+<p>Try it in a Python interactive interpreter:</p>
+<pre class="doctest-block">
+&gt;&gt;&gt; import this
+</pre>
+<p>Here's another easter egg:</p>
+<pre class="doctest-block">
+&gt;&gt;&gt; from __future__ import braces
+  File &quot;&lt;stdin&gt;&quot;, line 1
+SyntaxError: not a chance
+</pre>
+<p>What a bunch of comedians! :-)</p>
+</div>
+</div>
+<div class="section" id="coding-style-readability-counts">
+<h1><a class="toc-backref" href="#id5">Coding Style: Readability Counts</a></h1>
+<blockquote>
+<p>Programs must be written for people to read, and only incidentally
+for machines to execute.</p>
+<p class="attribution">&mdash;Abelson &amp; Sussman, <em>Structure and Interpretation of Computer Programs</em></p>
+</blockquote>
+<div class="handout container">
+Try to make your programs easy to read and obvious.</div>
+</div>
+<div class="section" id="pep-8-style-guide-for-python-code">
+<h1><a class="toc-backref" href="#id6">PEP 8: Style Guide for Python Code</a></h1>
+<p>Worthwhile reading:</p>
+<blockquote>
+<a class="reference external" href="http://www.python.org/dev/peps/pep-0008/">http://www.python.org/dev/peps/pep-0008/</a></blockquote>
+<p>PEP = Python Enhancement Proposal</p>
+<div class="handout container">
+<p>A PEP is a design document providing information to the Python
+community, or describing a new feature for Python or its processes
+or environment.</p>
+<p>The Python community has its own standards for what source code
+should look like, codified in PEP 8.  These standards are different
+from those of other communities, like C, C++, C#, Java,
+VisualBasic, etc.</p>
+<p>Because indentation and whitespace are so important in Python, the
+Style Guide for Python Code approaches a standard.  It would be
+wise to adhere to the guide!  Most open-source projects and
+(hopefully) in-house projects follow the style guide quite
+closely.</p>
+</div>
+</div>
+<div class="section" id="whitespace-1">
+<h1><a class="toc-backref" href="#id7">Whitespace 1</a></h1>
+<ul class="incremental">
+<li><p class="first">4 spaces per indentation level.</p>
+</li>
+<li><p class="first">No hard tabs.</p>
+</li>
+<li><p class="first"><strong>Never</strong> mix tabs and spaces.</p>
+<div class="handout container">
+<p>This is exactly what IDLE and the Emacs Python mode support.
+Other editors may also provide this support.</p>
+</div>
+</li>
+<li><p class="first">One blank line between functions.</p>
+</li>
+<li><p class="first">Two blank lines between classes.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="whitespace-2">
+<h1><a class="toc-backref" href="#id8">Whitespace 2</a></h1>
+<ul class="incremental simple">
+<li>Add a space after &quot;,&quot; in dicts, lists, tuples, &amp; argument lists, and
+after &quot;:&quot; in dicts, but not before.</li>
+<li>Put spaces around assignments &amp; comparisons (except in argument
+lists).</li>
+<li>No spaces just inside parentheses or just before argument
+lists.</li>
+<li>No spaces just inside docstrings.</li>
+</ul>
+<pre class="incremental literal-block">
+def make_squares(key, value=0):
+    &quot;&quot;&quot;Return a dictionary and a list...&quot;&quot;&quot;
+    d = {key: value}
+    l = [key, value]
+    return d, l
+</pre>
+</div>
+<div class="section" id="naming">
+<h1><a class="toc-backref" href="#id9">Naming</a></h1>
+<ul class="incremental">
+<li><p class="first"><tt class="docutils literal">joined_lower</tt> for functions, methods, attributes</p>
+</li>
+<li><p class="first"><tt class="docutils literal">joined_lower</tt> or <tt class="docutils literal">ALL_CAPS</tt> for constants</p>
+</li>
+<li><p class="first"><tt class="docutils literal">StudlyCaps</tt> for classes</p>
+</li>
+<li><p class="first"><tt class="docutils literal">camelCase</tt> <strong>only</strong> to conform to pre-existing conventions</p>
+</li>
+<li><p class="first">Attributes: <tt class="docutils literal">interface</tt>, <tt class="docutils literal">_internal</tt>, <tt class="docutils literal">__private</tt></p>
+<div class="handout container">
+<p>But try to avoid the <tt class="docutils literal">__private</tt> form.  I never use it.
+Trust me.  If you use it, you <strong>WILL</strong> regret it later.</p>
+<p>Explanation:</p>
+<p>People coming from a C++/Java background are especially prone to
+overusing/misusing this &quot;feature&quot;.  But <tt class="docutils literal">__private</tt> names don't
+work the same way as in Java or C++.  They just trigger a <a class="reference external" href="http://docs.python.org/dev/reference/expressions.html#atom-identifiers">name
+mangling</a> whose purpose is to prevent accidental namespace
+collisions in subclasses: <tt class="docutils literal">MyClass.__private</tt> just becomes
+<tt class="docutils literal">MyClass._MyClass__private</tt>.  (Note that even this breaks down
+for subclasses with the same name as the superclass,
+e.g. subclasses in different modules.)  It <em>is</em> possible to
+access <tt class="docutils literal">__private</tt> names from outside their class, just
+inconvenient and fragile (it adds a dependency on the exact name
+of the superclass).</p>
+<p>The problem is that the author of a class may legitimately think
+&quot;this attribute/method name should be private, only accessible
+from within this class definition&quot; and use the <tt class="docutils literal">__private</tt>
+convention.  But later on, a user of that class may make a
+subclass that legitimately needs access to that name.  So either
+the superclass has to be modified (which may be difficult or
+impossible), or the subclass code has to use manually mangled
+names (which is ugly and fragile at best).</p>
+<p>There's a concept in Python: &quot;we're all consenting adults here&quot;.
+If you use the <tt class="docutils literal">__private</tt> form, who are you protecting the
+attribute from?  It's the responsibility of subclasses to use
+attributes from superclasses properly, and it's the
+responsibility of superclasses to document their attributes
+properly.</p>
+<p>It's better to use the single-leading-underscore convention,
+<tt class="docutils literal">_internal</tt>. &#12288;This isn't name mangled at all; it just
+indicates to others to &quot;be careful with this, it's an internal
+implementation detail; don't touch it if you don't <strong>fully</strong>
+understand it&quot;.  It's only a convention though.</p>
+<p>There are some good explanations in the answers here:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://stackoverflow.com/questions/70528/why-are-pythons-private-methods-not-actually-private">http://stackoverflow.com/questions/70528/why-are-pythons-private-methods-not-actually-private</a></li>
+<li><a class="reference external" href="http://stackoverflow.com/questions/1641219/does-python-have-private-variables-in-classes">http://stackoverflow.com/questions/1641219/does-python-have-private-variables-in-classes</a></li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="long-lines-continuations">
+<h1><a class="toc-backref" href="#id10">Long Lines &amp; Continuations</a></h1>
+<p class="incremental">Keep lines below 80 characters in length.</p>
+<p class="incremental">Use implied line continuation inside parentheses/brackets/braces:</p>
+<pre class="incremental literal-block">
+def __init__(self, first, second, third,
+             fourth, fifth, sixth):
+    output = (first + second + third
+              + fourth + fifth + sixth)
+</pre>
+<p class="incremental">Use backslashes as a last resort:</p>
+<pre class="incremental literal-block">
+VeryLong.left_hand_side \
+    = even_longer.right_hand_side()
+</pre>
+<div class="handout container">
+Backslashes are fragile; they must end the line they're on.  If you
+add a space after the backslash, it won't work any more.  Also,
+they're ugly.</div>
+</div>
+<div class="section" id="long-strings">
+<h1><a class="toc-backref" href="#id11">Long Strings</a></h1>
+<div class="handout container">
+Adjacent literal strings are concatenated by the parser:</div>
+<pre class="incremental doctest-block">
+&gt;&gt;&gt; print 'o' 'n' &quot;e&quot;
+one
+</pre>
+<div class="handout container">
+<p>The spaces between literals are not required, but help with
+readability.  Any type of quoting can be used:</p>
+<pre class="doctest-block">
+&gt;&gt;&gt; print 't' r'\/\/' &quot;&quot;&quot;o&quot;&quot;&quot;
+t\/\/o
+</pre>
+<p>The string prefixed with an &quot;r&quot; is a &quot;raw&quot; string.  Backslashes are
+not evaluated as escapes in raw strings.  They're useful for
+regular expressions and Windows filesystem paths.</p>
+<p>Note named string objects are <strong>not</strong> concatenated:</p>
+<pre class="doctest-block">
+&gt;&gt;&gt; a = 'three'
+&gt;&gt;&gt; b = 'four'
+&gt;&gt;&gt; a b
+  File &quot;&lt;stdin&gt;&quot;, line 1
+    a b
+      ^
+SyntaxError: invalid syntax
+</pre>
+<p>That's because this automatic concatenation is a feature of the
+Python parser/compiler, not the interpreter.  You must use the &quot;+&quot;
+operator to concatenate strings at run time.</p>
+</div>
+<pre class="incremental literal-block">
+text = ('Long strings can be made up '
+        'of several shorter strings.')
+</pre>
+<div class="handout container">
+<p>The parentheses allow implicit line continuation.</p>
+<p>Multiline strings use triple quotes:</p>
+</div>
+<pre class="incremental literal-block">
+&quot;&quot;&quot;Triple
+double
+quotes&quot;&quot;&quot;
+</pre>
+<pre class="incremental literal-block">
+'''\
+Triple
+single
+quotes\
+'''
+</pre>
+<div class="handout container">
+In the last example above (triple single quotes), note how the
+backslashes are used to escape the newlines.  This eliminates extra
+newlines, while keeping the text and quotes nicely left-justified.
+The backslashes must be at the end of their lines.</div>
+</div>
+<div class="section" id="compound-statements">
+<h1><a class="toc-backref" href="#id12">Compound Statements</a></h1>
+<p>Good:</p>
+<pre class="literal-block">
+if foo == 'blah':
+    do_something()
+do_one()
+do_two()
+do_three()
+</pre>
+<p>Bad:</p>
+<pre class="literal-block">
+if foo == 'blah': do_something()
+do_one(); do_two(); do_three()
+</pre>
+<div class="handout container">
+<p>Whitespace &amp; indentations are useful visual indicators of the
+program flow.  The indentation of the second &quot;Good&quot; line above
+shows the reader that something's going on, whereas the lack of
+indentation in &quot;Bad&quot; hides the &quot;if&quot; statement.</p>
+<p>Multiple statements on one line are a cardinal sin.  In Python,
+<em>readability counts</em>.</p>
+</div>
+</div>
+<div class="section" id="docstrings-comments">
+<h1><a class="toc-backref" href="#id13">Docstrings &amp; Comments</a></h1>
+<p>Docstrings = <strong>How to use</strong> code</p>
+<p>Comments = <strong>Why</strong> (rationale) &amp; <strong>how code works</strong></p>
+<div class="handout container">
+<p>Docstrings explain <strong>how</strong> to use code, and are for the <strong>users</strong>
+of your code.  Uses of docstrings:</p>
+<ul class="simple">
+<li>Explain the purpose of the function even if it seems obvious to
+you, because it might not be obvious to someone else later on.</li>
+<li>Describe the parameters expected, the return values, and any
+exceptions raised.</li>
+<li>If the method is tightly coupled with a single caller, make some
+mention of the caller (though be careful as the caller might
+change later).</li>
+</ul>
+<p>Comments explain <strong>why</strong>, and are for the <strong>maintainers</strong> of your
+code.  Examples include notes to yourself, like:</p>
+<pre class="literal-block">
+# !!! BUG: ...
+
+# !!! FIX: This is a hack
+
+# ??? Why is this here?
+</pre>
+<p>Both of these groups include <strong>you</strong>, so write good docstrings and
+comments!</p>
+<p>Docstrings are useful in interactive use (<tt class="docutils literal">help()</tt>) and for
+auto-documentation systems.</p>
+<p>False comments &amp; docstrings are worse than none at all.  So keep
+them up to date!  When you make changes, make sure the comments &amp;
+docstrings are consistent with the code, and don't contradict it.</p>
+<p>There's an entire PEP about docstrings, PEP 257, &quot;Docstring
+Conventions&quot;:</p>
+<blockquote>
+<a class="reference external" href="http://www.python.org/dev/peps/pep-0257/">http://www.python.org/dev/peps/pep-0257/</a></blockquote>
+</div>
+</div>
+<div class="section" id="practicality-beats-purity">
+<h1><a class="toc-backref" href="#id14">Practicality Beats Purity</a></h1>
+<blockquote>
+<p>A foolish consistency is the hobgoblin of little minds.</p>
+<p class="attribution">&mdash;Ralph Waldo Emerson</p>
+</blockquote>
+<div class="handout container">
+<p>(<em>hobgoblin</em>: Something causing superstitious fear; a bogy.)</p>
+<p>There are always exceptions.  From PEP 8:</p>
+<blockquote>
+<p>But most importantly: know when to be inconsistent -- sometimes
+the style guide just doesn't apply.  When in doubt, use your
+best judgment.  Look at other examples and decide what looks
+best.  And don't hesitate to ask!</p>
+<p>Two good reasons to break a particular rule:</p>
+<ol class="arabic simple">
+<li>When applying the rule would make the code less readable,
+even for someone who is used to reading code that follows
+the rules.</li>
+<li>To be consistent with surrounding code that also breaks it
+(maybe for historic reasons) -- although this is also an
+opportunity to clean up someone else's mess (in true XP
+style).</li>
+</ol>
+</blockquote>
+</div>
+<p><span class="incremental">... but practicality shouldn't beat purity to a pulp!</span></p>
+</div>
+<div class="section" id="idiom-potpourri">
+<h1><a class="toc-backref" href="#id15">Idiom Potpourri</a></h1>
+<p>A selection of small, useful idioms.</p>
+<div class="handout container">
+<p>Now we move on to the meat of the tutorial: lots of idioms.</p>
+<p>We'll start with some easy ones and work our way up.</p>
+</div>
+</div>
+<div class="section" id="swap-values">
+<h1><a class="toc-backref" href="#id16">Swap Values</a></h1>
+<p>In other languages:</p>
+<pre class="literal-block">
+temp = a
+a = b
+b = temp
+</pre>
+<p class="incremental">In Python:</p>
+<pre class="incremental literal-block">
+b, a = a, b
+</pre>
+<div class="handout container">
+Perhaps you've seen this before.  But do you know how it works?</div>
+<ul class="incremental simple">
+<li>The <strong>comma</strong> is the tuple constructor syntax.</li>
+<li>A tuple is created on the right (tuple packing).</li>
+<li>A tuple is the target on the left (tuple unpacking).</li>
+</ul>
+<div class="handout container">
+<p>The right-hand side is <strong>unpacked</strong> into the names in the tuple on
+the left-hand side.</p>
+<p>Further examples of unpacking:</p>
+<pre class="doctest-block">
+&gt;&gt;&gt; l =['David', 'Pythonista', '+1-514-555-1234']
+&gt;&gt;&gt; name, title, phone = l
+&gt;&gt;&gt; name
+'David'
+&gt;&gt;&gt; title
+'Pythonista'
+&gt;&gt;&gt; phone
+'+1-514-555-1234'
+</pre>
+<p>Useful in loops over structured data:</p>
+<p><tt class="docutils literal">l</tt> (L) above is the list we just made (David's info).  So
+<tt class="docutils literal">people</tt> is a list containing two items, each a 3-item list.</p>
+<pre class="doctest-block">
+&gt;&gt;&gt; people = [l, ['Guido', 'BDFL', 'unlisted']]
+&gt;&gt;&gt; for (name, title, phone) in people:
+...     print name, phone
+...
+David +1-514-555-1234
+Guido unlisted
+</pre>
+<p>Each item in <tt class="docutils literal">people</tt> is being unpacked into the <tt class="docutils literal">(name, title,
+phone)</tt> tuple.</p>
+<p>Arbitrarily nestable (just be sure to match the structure on the
+left &amp; right!):</p>
+<pre class="doctest-block">
+&gt;&gt;&gt; david, (gname, gtitle, gphone) = people
+&gt;&gt;&gt; gname
+'Guido'
+&gt;&gt;&gt; gtitle
+'BDFL'
+&gt;&gt;&gt; gphone
+'unlisted'
+&gt;&gt;&gt; david
+['David', 'Pythonista', '+1-514-555-1234']
+</pre>
+</div>
+</div>
+<div class="section" id="more-about-tuples">
+<h1><a class="toc-backref" href="#id17">More About Tuples</a></h1>
+<div class="handout container">
+We saw that the <strong>comma</strong> is the tuple constructor, not the
+parentheses.  Example:</div>
+<pre class="incremental doctest-block">
+&gt;&gt;&gt; 1,
+(1,)
+</pre>
+<div class="handout container">
+The Python interpreter shows the parentheses for clarity, and I
+recommend you use parentheses too:</div>
+<pre class="incremental doctest-block">
+&gt;&gt;&gt; (1,)
+(1,)
+</pre>
+<div class="handout container">
+Don't forget the comma!</div>
+<pre class="incremental doctest-block">
+&gt;&gt;&gt; (1)
+1
+</pre>
+<div class="handout container">
+In a one-tuple, the trailing comma is required; in 2+-tuples, the
+trailing comma is optional.  In 0-tuples, or empty tuples, a pair
+of parentheses is the shortcut syntax:</div>
+<pre class="incremental doctest-block">
+&gt;&gt;&gt; ()
+()
+</pre>
+<pre class="incremental doctest-block">
+&gt;&gt;&gt; tuple()
+()
+</pre>
+<div class="handout container">
+A common typo is to leave a comma even though you don't want a
+tuple.  It can be easy to miss in your code:</div>
+<pre class="incremental doctest-block">
+&gt;&gt;&gt; value = 1,
+&gt;&gt;&gt; value
+(1,)
+</pre>
+<div class="handout container">
+So if you see a tuple where you don't expect one, look for a comma!</div>
+</div>
+<div class="section" id="interactive">
+<h1><a class="toc-backref" href="#id18">Interactive &quot;_&quot;</a></h1>
+<div class="handout container">
+<p>This is a really useful feature that surprisingly few people know.</p>
+<p>In the interactive interpreter, whenever you evaluate an expression
+or call a function, the result is bound to a temporary name, <tt class="docutils literal">_</tt>
+(an underscore):</p>
+</div>
+<pre class="incremental doctest-block">
+&gt;&gt;&gt; 1 + 1
+2
+&gt;&gt;&gt; _
+2
+</pre>
+<p class="incremental"><tt class="docutils literal">_</tt> stores the last <em>printed</em> expression.</p>
+<div class="handout container">
+<p>When a result is <tt class="docutils literal">None</tt>, nothing is printed, so <tt class="docutils literal">_</tt> doesn't
+change.  That's convenient!</p>
+<p>This only works in the interactive interpreter, not within a
+module.</p>
+<p>It is especially useful when you're working out a problem
+interactively, and you want to store the result for a later step:</p>
+</div>
+<pre class="incremental doctest-block">
+&gt;&gt;&gt; import math
+&gt;&gt;&gt; math.pi / 3
+1.0471975511965976
+&gt;&gt;&gt; angle = _
+&gt;&gt;&gt; math.cos(angle)
+0.50000000000000011
+&gt;&gt;&gt; _
+0.50000000000000011
+</pre>
+</div>
+<div class="section" id="building-strings-from-substrings">
+<h1><a class="toc-backref" href="#id19">Building Strings from Substrings</a></h1>
+<div class="handout container">
+Start with a list of strings:</div>
+<pre class="literal-block">
+colors = ['red', 'blue', 'green', 'yellow']
+</pre>
+<div class="handout container">
+We want to join all the strings together into one large string.
+Especially when the number of substrings is large...</div>
+<p class="incremental">Don't do this:</p>
+<pre class="incremental literal-block">
+result = ''
+for s in colors:
+    result += s
+</pre>
+<div class="handout container">
+<p>This is very inefficient.</p>
+<p>It has terrible memory usage and performance patterns.  The
+&quot;summation&quot; will compute, store, and then throw away each
+intermediate step.</p>
+</div>
+<p class="incremental">Instead, do this:</p>
+<pre class="incremental literal-block">
+result = ''.join(colors)
+</pre>
+<div class="handout container">
+<p>The <tt class="docutils literal">join()</tt> string method does all the copying in one pass.</p>
+<p>When you're only dealing with a few dozen or hundred strings, it
+won't make much difference.  But get in the habit of building
+strings efficiently, because with thousands or with loops, it
+<strong>will</strong> make a difference.</p>
+</div>
+</div>
+<div class="section" id="building-strings-variations-1">
+<h1><a class="toc-backref" href="#id20">Building Strings, Variations 1</a></h1>
+<div class="handout container">
+Here are some techniques to use the <tt class="docutils literal">join()</tt> string method.</div>
+<p class="incremental">If you want spaces between your substrings:</p>
+<pre class="incremental literal-block">
+result = ' '.join(colors)
+</pre>
+<p class="incremental">Or commas and spaces:</p>
+<pre class="incremental literal-block">
+result = ', '.join(colors)
+</pre>
+<p class="incremental">Here's a common case:</p>
+<pre class="incremental literal-block">
+colors = ['red', 'blue', 'green', 'yellow']
+print 'Choose', ', '.join(colors[:-1]), \
+      'or', colors[-1]
+</pre>
+<div class="handout container">
+<p>To make a nicely grammatical sentence, we want commas between all
+but the last pair of values, where we want the word &quot;or&quot;.  The
+slice syntax does the job.  The &quot;slice until -1&quot; (<tt class="docutils literal"><span class="pre">[:-1]</span></tt>) gives
+all but the last value, which we join with comma-space.</p>
+<p>Of course, this code wouldn't work with corner cases, lists of
+length 0 or 1.</p>
+</div>
+<div class="handout container">
+Output:</div>
+<pre class="incremental literal-block">
+Choose red, blue, green or yellow
+</pre>
+</div>
+<div class="section" id="building-strings-variations-2">
+<h1><a class="toc-backref" href="#id21">Building Strings, Variations 2</a></h1>
+<p>If you need to apply a function to generate the substrings:</p>
+<pre class="literal-block">
+result = ''.join(fn(i) for i in items)
+</pre>
+<div class="handout container">
+This involves a <em>generator expression</em>, which we'll cover later.</div>
+<p class="incremental">If you need to compute the substrings incrementally, accumulate
+them in a list first:</p>
+<pre class="incremental literal-block">
+items = []
+...
+items.append(item)  # many times
+...
+# items is now complete
+result = ''.join(fn(i) for i in items)
+</pre>
+<div class="handout container">
+We accumulate the parts in a list so that we can apply the <tt class="docutils literal">join</tt>
+string method, for efficiency.</div>
+</div>
+<div class="section" id="use-in-where-possible-1">
+<h1><a class="toc-backref" href="#id22">Use <tt class="docutils literal">in</tt> where possible (1)</a></h1>
+<p>Good:</p>
+<pre class="literal-block">
+for key in d:
+    print key
+</pre>
+<div class="handout container">
+<ul class="simple">
+<li><tt class="docutils literal">in</tt> is generally faster.</li>
+<li>This pattern also works for items in arbitrary containers (such
+as lists, tuples, and sets).</li>
+<li><tt class="docutils literal">in</tt> is also an operator (as we'll see).</li>
+</ul>
+</div>
+<p>Bad:</p>
+<pre class="literal-block">
+for key in d.keys():
+    print key
+</pre>
+<div class="handout container">
+This is limited to objects with a <tt class="docutils literal">keys()</tt> method.</div>
+</div>
+<div class="section" id="use-in-where-possible-2">
+<h1><a class="toc-backref" href="#id23">Use <tt class="docutils literal">in</tt> where possible (2)</a></h1>
+<p>But <tt class="docutils literal">.keys()</tt> is <strong>necessary</strong> when mutating the dictionary:</p>
+<pre class="literal-block">
+for key in d.keys():
+    d[str(key)] = d[key]
+</pre>
+<div class="handout container">
+<tt class="docutils literal">d.keys()</tt> creates a static list of the dictionary keys.
+Otherwise, you'll get an exception &quot;RuntimeError: dictionary
+changed size during iteration&quot;.</div>
+<p class="incremental">For consistency, use <tt class="docutils literal">key in dict</tt>, not <tt class="docutils literal">dict.has_key()</tt>:</p>
+<pre class="incremental literal-block">
+# do this:
+if key in d:
+    ...do something with d[key]
+
+# not this:
+if d.has_key(key):
+    ...do something with d[key]
+</pre>
+<div class="handout container">
+This usage of <tt class="docutils literal">in</tt> is as an operator.</div>
+</div>
+<div class="section" id="dictionary-get-method">
+<h1><a class="toc-backref" href="#id24">Dictionary <tt class="docutils literal">get</tt>  Method</a></h1>
+<p>We often have to initialize dictionary entries before use:</p>
+<div class="handout container">
+This is the na&#239;ve way to do it:</div>
+<pre class="literal-block">
+navs = {}
+for (portfolio, equity, position) in data:
+    if portfolio not in navs:
+        navs[portfolio] = 0
+    navs[portfolio] += position * prices[equity]
+</pre>
+<p class="incremental"><tt class="docutils literal">dict.get(key, default)</tt> removes the need for the test:</p>
+<pre class="incremental literal-block">
+navs = {}
+for (portfolio, equity, position) in data:
+    navs[portfolio] = (navs.get(portfolio, 0)
+                       + position * prices[equity])
+</pre>
+<div class="handout container">
+Much more direct.</div>
+</div>
+<div class="section" id="dictionary-setdefault-method-1">
+<h1><a class="toc-backref" href="#id25">Dictionary <tt class="docutils literal">setdefault</tt> Method (1)</a></h1>
+<div class="handout container">
+Here we have to initialize mutable dictionary values.  Each
+dictionary value will be a list.  This is the na&#239;ve way:</div>
+<p>Initializing mutable dictionary values:</p>
+<pre class="literal-block">
+equities = {}
+for (portfolio, equity) in data:
+    if portfolio in equities:
+        equities[portfolio].append(equity)
+    else:
+        equities[portfolio] = [equity]
+</pre>
+<p class="incremental"><tt class="docutils literal">dict.setdefault(key, default)</tt> does the job much more
+efficiently:</p>
+<pre class="incremental literal-block">
+equities = {}
+for (portfolio, equity) in data:
+    equities.setdefault(portfolio, []).append(
+                                         equity)
+</pre>
+<div class="handout container">
+<p><tt class="docutils literal">dict.setdefault()</tt> is equivalent to &quot;get, or set &amp; get&quot;.  Or
+&quot;set if necessary, then get&quot;.  It's especially efficient if your
+dictionary key is expensive to compute or long to type.</p>
+<p>The only problem with <tt class="docutils literal">dict.setdefault()</tt> is that the default
+value is always evaluated, whether needed or not.  That only
+matters if the default value is expensive to compute.</p>
+<p>If the default value <strong>is</strong> expensive to compute, you may want to
+use the <tt class="docutils literal">defaultdict</tt> class, which we'll cover shortly.</p>
+</div>
+</div>
+<div class="section" id="dictionary-setdefault-method-2">
+<h1><a class="toc-backref" href="#id26">Dictionary <tt class="docutils literal">setdefault</tt> Method (2)</a></h1>
+<div class="handout container">
+Here we see that the <tt class="docutils literal">setdefault</tt> dictionary method can also be
+used as a stand-alone statement:</div>
+<p><tt class="docutils literal">setdefault</tt> can also be used as a stand-alone statement:</p>
+<pre class="literal-block">
+navs = {}
+for (portfolio, equity, position) in data:
+    navs.setdefault(portfolio, 0)
+    navs[portfolio] += position * prices[equity]
+</pre>
+<div class="handout container">
+The <tt class="docutils literal">setdefault</tt> dictionary method returns the default value, but
+we ignore it here.  We're taking advantage of <tt class="docutils literal">setdefault</tt>'s side
+effect, that it sets the dictionary value only if there is no value
+already.</div>
+</div>
+<div class="section" id="defaultdict">
+<h1><a class="toc-backref" href="#id27"><tt class="docutils literal">defaultdict</tt></a></h1>
+<p>New in Python 2.5.</p>
+<div class="handout container">
+<p><tt class="docutils literal">defaultdict</tt> is new in Python 2.5, part of the <tt class="docutils literal">collections</tt>
+module.  <tt class="docutils literal">defaultdict</tt> is identical to regular dictionaries,
+except for two things:</p>
+<ul class="simple">
+<li>it takes an extra first argument: a default factory function; and</li>
+<li>when a dictionary key is encountered for the first time, the
+default factory function is called and the result used to
+initialize the dictionary value.</li>
+</ul>
+<p>There are two ways to get <tt class="docutils literal">defaultdict</tt>:</p>
+<ul>
+<li><p class="first">import the <tt class="docutils literal">collections</tt> module and reference it via the
+module,</p>
+<div class="spoken container">
+<p>&#10132;</p>
+</div>
+</li>
+<li><p class="first">or import the <tt class="docutils literal">defaultdict</tt> name directly:</p>
+<div class="spoken container">
+<p>&#10132;</p>
+</div>
+</li>
+</ul>
+</div>
+<pre class="incremental literal-block">
+import collections
+d = collections.defaultdict(...)
+</pre>
+<pre class="incremental literal-block">
+from collections import defaultdict
+d = defaultdict(...)
+</pre>
+<div class="handout container">
+Here's the example from earlier, where each dictionary value must
+be initialized to an empty list, rewritten as with <tt class="docutils literal">defaultdict</tt>:</div>
+<pre class="incremental literal-block">
+from collections import defaultdict
+
+equities = defaultdict(list)
+for (portfolio, equity) in data:
+    equities[portfolio].append(equity)
+</pre>
+<div class="handout container">
+<p>There's no fumbling around at all now.  In this case, the default
+factory function is <tt class="docutils literal">list</tt>, which returns an empty list.</p>
+<p>This is how to get a dictionary with default values of 0: use
+<tt class="docutils literal">int</tt> as a default factory function:</p>
+</div>
+<pre class="incremental literal-block">
+navs = defaultdict(int)
+for (portfolio, equity, position) in data:
+    navs[portfolio] += position * prices[equity]
+</pre>
+<div class="handout container">
+You should be careful with <tt class="docutils literal">defaultdict</tt> though.  You cannot get
+<tt class="docutils literal">KeyError</tt> exceptions from properly initialized <tt class="docutils literal">defaultdict</tt>
+instances.  You have to use a &quot;key in dict&quot; conditional if you need
+to check for the existence of a specific key.</div>
+</div>
+<div class="section" id="building-splitting-dictionaries">
+<h1><a class="toc-backref" href="#id28">Building &amp; Splitting Dictionaries</a></h1>
+<div class="handout container">
+Here's a useful technique to build a dictionary from two lists (or
+sequences): one list of keys, another list of values.</div>
+<pre class="incremental literal-block">
+given = ['John', 'Eric', 'Terry', 'Michael']
+family = ['Cleese', 'Idle', 'Gilliam', 'Palin']
+</pre>
+<pre class="incremental literal-block">
+pythons = dict(zip(given, family))
+</pre>
+<pre class="incremental literal-block">
+&gt;&gt;&gt; pprint.pprint(pythons)
+{'John': 'Cleese',
+ 'Michael': 'Palin',
+ 'Eric': 'Idle',
+ 'Terry': 'Gilliam'}
+</pre>
+<div class="handout container">
+The reverse, of course, is trivial:</div>
+<pre class="incremental literal-block">
+&gt;&gt;&gt; pythons.keys()
+['John', 'Michael', 'Eric', 'Terry']
+&gt;&gt;&gt; pythons.values()
+['Cleese', 'Palin', 'Idle', 'Gilliam']
+</pre>
+<div class="handout container">
+Note that the order of the results of .keys() and .values() is
+different from the order of items when constructing the dictionary.
+The order going in is different from the order coming out.  This is
+because a dictionary is inherently unordered.  However, the order
+is guaranteed to be consistent (in other words, the order of keys
+will correspond to the order of values), as long as the dictionary
+isn't changed between calls.</div>
+</div>
+<div class="section" id="testing-for-truth-values">
+<h1><a class="toc-backref" href="#id29">Testing for Truth Values</a></h1>
+<pre class="literal-block">
+# do this:        # not this:
+if x:             if x == True:
+    pass              pass
+</pre>
+<div class="handout container">
+It's elegant and efficient to take advantage of the intrinsic truth
+values (or Boolean values) of Python objects.</div>
+<p class="incremental">Testing a list:</p>
+<pre class="incremental literal-block">
+# do this:        # not this:
+if items:         if len(items) != 0:
+    pass              pass
+
+                  # and definitely not this:
+                  if items != []:
+                      pass
+</pre>
+</div>
+<div class="section" id="truth-values">
+<h1><a class="toc-backref" href="#id30">Truth Values</a></h1>
+<div class="handout container">
+The <tt class="docutils literal">True</tt> and <tt class="docutils literal">False</tt> names are built-in instances of type
+<tt class="docutils literal">bool</tt>, Boolean values.  Like <tt class="docutils literal">None</tt>, there is only one
+instance of each.</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="46%" />
+<col width="54%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">False</th>
+<th class="head">True</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><tt class="docutils literal">False</tt> (== 0)</td>
+<td><tt class="docutils literal">True</tt> (== 1)</td>
+</tr>
+<tr><td><tt class="docutils literal">&quot;&quot;</tt> (empty string)</td>
+<td>any string but <tt class="docutils literal">&quot;&quot;</tt> (<tt class="docutils literal">&quot; &quot;</tt>,
+<tt class="docutils literal">&quot;anything&quot;</tt>)</td>
+</tr>
+<tr><td><tt class="docutils literal">0</tt>, <tt class="docutils literal">0.0</tt></td>
+<td>any number but <tt class="docutils literal">0</tt> (1, 0.1, -1, 3.14)</td>
+</tr>
+<tr><td><tt class="docutils literal">[]</tt>, <tt class="docutils literal">()</tt>, <tt class="docutils literal">{}</tt>, <tt class="docutils literal">set()</tt></td>
+<td>any non-empty container
+(<tt class="docutils literal">[0]</tt>, <tt class="docutils literal">(None,)</tt>, <tt class="docutils literal"><span class="pre">['']</span></tt>)</td>
+</tr>
+<tr><td><tt class="docutils literal">None</tt></td>
+<td>almost any object that's not
+explicitly False</td>
+</tr>
+</tbody>
+</table>
+<div class="handout container">
+<p>Example of an object's truth value:</p>
+<pre class="doctest-block">
+&gt;&gt;&gt; class C:
+...  pass
+...
+&gt;&gt;&gt; o = C()
+&gt;&gt;&gt; bool(o)
+True
+&gt;&gt;&gt; bool(C)
+True
+</pre>
+<p>(Examples: execute <a class="reference external" href="truth.py">truth.py</a>.)</p>
+<p>To control the truth value of instances of a user-defined class,
+use the <tt class="docutils literal">__nonzero__</tt> or <tt class="docutils literal">__len__</tt> special methods.  Use
+<tt class="docutils literal">__len__</tt> if your class is a container which has a length:</p>
+<pre class="literal-block">
+class MyContainer(object):
+
+    def __init__(self, data):
+        self.data = data
+
+    def __len__(self):
+        &quot;&quot;&quot;Return my length.&quot;&quot;&quot;
+        return len(self.data)
+</pre>
+<p>If your class is not a container, use <tt class="docutils literal">__nonzero__</tt>:</p>
+<pre class="literal-block">
+class MyClass(object):
+
+    def __init__(self, value):
+        self.value = value
+
+    def __nonzero__(self):
+        &quot;&quot;&quot;Return my truth value (True or False).&quot;&quot;&quot;
+        # This could be arbitrarily complex:
+        return bool(self.value)
+</pre>
+<p>In Python 3.0, <tt class="docutils literal">__nonzero__</tt> has been renamed to <tt class="docutils literal">__bool__</tt> for
+consistency with the <tt class="docutils literal">bool</tt> built-in type.  For compatibility,
+add this to the class definition:</p>
+<pre class="literal-block">
+__bool__ = __nonzero__
+</pre>
+</div>
+</div>
+<div class="section" id="index-item-1">
+<h1><a class="toc-backref" href="#id31">Index &amp; Item (1)</a></h1>
+<div class="handout container">
+Here's a cute way to save some typing if you need a list of words:</div>
+<pre class="doctest-block">
+&gt;&gt;&gt; items = 'zero one two three'.split()
+&gt;&gt;&gt; print items
+['zero', 'one', 'two', 'three']
+</pre>
+<p class="incremental">Say we want to iterate over the items, and we need both the item's
+index and the item itself:</p>
+<pre class="incremental literal-block">
+                  - or -
+i = 0
+for item in items:      for i in range(len(items)):
+    print i, item               print i, items[i]
+    i += 1
+</pre>
+</div>
+<div class="section" id="index-item-2-enumerate">
+<h1><a class="toc-backref" href="#id32">Index &amp; Item (2): <tt class="docutils literal">enumerate</tt></a></h1>
+<p>The <tt class="docutils literal">enumerate</tt> function takes a list and returns (index, item)
+pairs:</p>
+<pre class="doctest-block">
+&gt;&gt;&gt; print list(enumerate(items))
+[(0, 'zero'), (1, 'one'), (2, 'two'), (3, 'three')]
+</pre>
+<div class="handout container">
+We need use a <tt class="docutils literal">list</tt> wrapper to print the result because
+<tt class="docutils literal">enumerate</tt> is a lazy function: it generates one item, a pair, at
+a time, only when required.  A <tt class="docutils literal">for</tt> loop is one place that
+requires one result at a time.  <tt class="docutils literal">enumerate</tt> is an example of a
+<em>generator</em>, which we'll cover in greater detail later.  <tt class="docutils literal">print</tt>
+does not take one result at a time -- we want the entire result, so
+we have to explicitly convert the generator into a list when we
+print it.</div>
+<p class="incremental">Our loop becomes much simpler:</p>
+<pre class="incremental literal-block">
+for (index, item) in enumerate(items):
+    print index, item
+</pre>
+<pre class="incremental literal-block">
+# compare:              # compare:
+index = 0               for i in range(len(items)):
+for item in items:              print i, items[i]
+    print index, item
+    index += 1
+</pre>
+<div class="handout container">
+<p>The <tt class="docutils literal">enumerate</tt> version is much shorter and simpler than the
+version on the left, and much easier to read and understand than
+either.</p>
+<p>An example showing how the <tt class="docutils literal">enumerate</tt> function actually returns
+an iterator (a generator is a kind of iterator):</p>
+<pre class="doctest-block">
+&gt;&gt;&gt; enumerate(items)
+&lt;enumerate object at 0x011EA1C0&gt;
+&gt;&gt;&gt; e = enumerate(items)
+&gt;&gt;&gt; e.next()
+(0, 'zero')
+&gt;&gt;&gt; e.next()
+(1, 'one')
+&gt;&gt;&gt; e.next()
+(2, 'two')
+&gt;&gt;&gt; e.next()
+(3, 'three')
+&gt;&gt;&gt; e.next()
+Traceback (most recent call last):
+  File &quot;&lt;stdin&gt;&quot;, line 1, in ?
+StopIteration
+</pre>
+</div>
+</div>
+<div class="section" id="other-languages-have-variables">
+<h1><a class="toc-backref" href="#id33">Other languages have &quot;variables&quot;</a></h1>
+<div class="handout container">
+In many other languages, assigning to a variable puts a value into
+a box.</div>
+<table border="1" class="incremental borderless docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><pre class="first last literal-block">
+int a = 1;
+</pre>
+</td>
+<td><img alt="a1box.png" class="incremental first last" src="a1box.png" />
+</td>
+</tr>
+</tbody>
+</table>
+<div class="handout container">
+<p>Box &quot;a&quot; now contains an integer 1.</p>
+<p>Assigning another value to the same variable replaces the contents
+of the box:</p>
+</div>
+<table border="1" class="incremental borderless docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><pre class="first last literal-block">
+a = 2;
+</pre>
+</td>
+<td><img alt="a2box.png" class="incremental first last" src="a2box.png" />
+</td>
+</tr>
+</tbody>
+</table>
+<div class="handout container">
+<p>Now box &quot;a&quot; contains an integer 2.</p>
+<p>Assigning one variable to another makes a copy of the value and
+puts it in the new box:</p>
+</div>
+<table border="1" class="incremental borderless docutils">
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><pre class="first last literal-block">
+int b = a;
+</pre>
+</td>
+<td><img alt="b2box.png" class="incremental first last" src="b2box.png" />
+</td>
+<td><img alt="a2box.png" class="incremental first last" src="a2box.png" />
+</td>
+</tr>
+</tbody>
+</table>
+<div class="handout container">
+&quot;b&quot; is a second box, with a copy of integer 2.  Box &quot;a&quot; has a
+separate copy.</div>
+</div>
+<div class="section" id="python-has-names">
+<h1><a class="toc-backref" href="#id34">Python has &quot;names&quot;</a></h1>
+<div class="handout container">
+In Python, a &quot;name&quot; or &quot;identifier&quot; is like a parcel tag (or
+nametag) attached to an object.</div>
+<table border="1" class="incremental borderless docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><pre class="first last literal-block">
+a = 1
+</pre>
+</td>
+<td><img alt="a1tag.png" class="incremental first last" src="a1tag.png" />
+</td>
+</tr>
+</tbody>
+</table>
+<div class="handout container">
+<p>Here, an integer 1 object has a tag labelled &quot;a&quot;.</p>
+<p>If we reassign to &quot;a&quot;, we just move the tag to another object:</p>
+</div>
+<table border="1" class="incremental borderless docutils">
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><pre class="first last literal-block">
+a = 2
+</pre>
+</td>
+<td><img alt="a2tag.png" class="incremental first last" src="a2tag.png" />
+</td>
+<td><img alt="1.png" class="incremental first last" src="1.png" />
+</td>
+</tr>
+</tbody>
+</table>
+<div class="handout container">
+<p>Now the name &quot;a&quot; is attached to an integer 2 object.</p>
+<p>The original integer 1 object no longer has a tag &quot;a&quot;.  It may live
+on, but we can't get to it through the name &quot;a&quot;.  (When an object
+has no more references or tags, it is removed from memory.)</p>
+<p>If we assign one name to another, we're just attaching another
+nametag to an existing object:</p>
+</div>
+<table border="1" class="incremental borderless docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><pre class="first last literal-block">
+b = a
+</pre>
+</td>
+<td><img alt="ab2tag.png" class="incremental first last" src="ab2tag.png" />
+</td>
+</tr>
+</tbody>
+</table>
+<div class="handout container">
+The name &quot;b&quot; is just a second tag bound to the same object as &quot;a&quot;.</div>
+<div class="handout container">
+<p>Although we commonly refer to &quot;variables&quot; even in Python (because
+it's common terminology), we really mean &quot;names&quot; or &quot;identifiers&quot;.
+In Python, &quot;variables&quot; are nametags for values, not labelled boxes.</p>
+<p>If you get nothing else out of this tutorial, I hope you understand
+how Python names work.  A good understanding is certain to pay
+dividends, helping you to avoid cases like this:</p>
+<div class="spoken container">
+&#10132;</div>
+</div>
+</div>
+<div class="section" id="default-parameter-values">
+<h1><a class="toc-backref" href="#id35">Default Parameter Values</a></h1>
+<div class="handout container">
+This is a common mistake that beginners often make.  Even more
+advanced programmers make this mistake if they don't understand
+Python names.</div>
+<pre class="literal-block">
+def bad_append(new_item, a_list=[]):
+    a_list.append(new_item)
+    return a_list
+</pre>
+<div class="handout container">
+The problem here is that the default value of <tt class="docutils literal">a_list</tt>, an empty
+list, is evaluated at function definition time.  So every time you
+call the function, you get the <strong>same</strong> default value.  Try it
+several times:</div>
+<pre class="incremental literal-block">
+&gt;&gt;&gt; print bad_append('one')
+['one']
+</pre>
+<pre class="incremental literal-block">
+&gt;&gt;&gt; print bad_append('two')
+['one', 'two']
+</pre>
+<div class="handout container">
+Lists are a mutable objects; you can change their contents.  The
+correct way to get a default list (or dictionary, or set) is to
+create it at run time instead, <strong>inside the function</strong>:</div>
+<pre class="incremental literal-block">
+def good_append(new_item, a_list=None):
+    if a_list is None:
+        a_list = []
+    a_list.append(new_item)
+    return a_list
+</pre>
+</div>
+<div class="section" id="string-formatting">
+<h1><a class="toc-backref" href="#id36">% String Formatting</a></h1>
+<div class="handout container">
+Python's <tt class="docutils literal">%</tt> operator works like C's <tt class="docutils literal">sprintf</tt> function.</div>
+<div class="handout container">
+<p>Although if you don't know C, that's not very helpful.  Basically,
+you provide a template or format and interpolation values.</p>
+<p>In this example, the template contains two conversion
+specifications: &quot;%s&quot; means &quot;insert a string here&quot;, and &quot;%i&quot; means
+&quot;convert an integer to a string and insert here&quot;.  &quot;%s&quot; is
+particularly useful because it uses Python's built-in <tt class="docutils literal">str()</tt>
+function to to convert any object to a string.</p>
+<p>The interpolation values must match the template; we have two
+values here, a tuple.</p>
+</div>
+<pre class="literal-block">
+name = 'David'
+messages = 3
+text = ('Hello %s, you have %i messages'
+        % (name, messages))
+print text
+</pre>
+<p class="incremental">Output:</p>
+<pre class="incremental literal-block">
+Hello David, you have 3 messages
+</pre>
+<div class="handout container">
+Details are in the <em>Python Library Reference</em>, section 2.3.6.2,
+&quot;String Formatting Operations&quot;.  Bookmark this one!</div>
+<div class="handout container">
+If you haven't done it already, go to python.org, download the HTML
+documentation (in a .zip file or a tarball), and install it on your
+machine.  There's nothing like having the definitive resource at
+your fingertips.</div>
+</div>
+<div class="section" id="advanced-string-formatting">
+<h1><a class="toc-backref" href="#id37">Advanced % String Formatting</a></h1>
+<div class="handout container">
+What many people don't realize is that there are other, more
+flexible ways to do string formatting:</div>
+<p class="incremental">By name with a dictionary:</p>
+<pre class="incremental literal-block">
+values = {'name': name, 'messages': messages}
+print ('Hello %(name)s, you have %(messages)i '
+       'messages' % values)
+</pre>
+<div class="handout container">
+<p>Here we specify the names of interpolation values, which are looked
+up in the supplied dictionary.</p>
+<p>Notice any redundancy?  The names &quot;name&quot; and &quot;messages&quot; are already
+defined in the local namespace.  We can take advantage of this.</p>
+</div>
+<p class="incremental">By name using the local namespace:</p>
+<pre class="incremental literal-block">
+print ('Hello %(name)s, you have %(messages)i '
+       'messages' % locals())
+</pre>
+<div class="handout container">
+<p>The <tt class="docutils literal">locals()</tt> function returns a dictionary of all
+locally-available names.</p>
+<p>This is very powerful.  With this, you can do all the string
+formatting you want without having to worry about matching the
+interpolation values to the template.</p>
+<p>But power can be dangerous.  (&quot;With great power comes great
+responsibility.&quot;)  If you use the <tt class="docutils literal">locals()</tt> form with an
+externally-supplied template string, you expose your entire local
+namespace to the caller.  This is just something to keep in mind.</p>
+</div>
+<div class="handout container">
+<p>To examine your local namespace:</p>
+<pre class="doctest-block">
+&gt;&gt;&gt; from pprint import pprint
+&gt;&gt;&gt; pprint(locals())
+</pre>
+</div>
+<div class="handout container">
+<tt class="docutils literal">pprint</tt> is a very useful module.  If you don't know it already,
+try playing with it.  It makes debugging your data structures much
+easier!</div>
+</div>
+<div class="section" id="id2">
+<h1><a class="toc-backref" href="#id38">Advanced % String Formatting</a></h1>
+<div class="handout container">
+The namespace of an object's instance attributes is just a
+dictionary, <tt class="docutils literal">self.__dict__</tt>.</div>
+<p class="incremental">By name using the instance namespace:</p>
+<pre class="incremental literal-block">
+print (&quot;We found %(error_count)d errors&quot;
+       % self.__dict__)
+</pre>
+<p class="incremental">Equivalent to, but more flexible than:</p>
+<pre class="incremental literal-block">
+print (&quot;We found %d errors&quot;
+       % self.error_count)
+</pre>
+<div class="handout container">
+Note: Class attributes are in the class __dict__.  Namespace
+lookups are actually chained dictionary lookups.</div>
+</div>
+<div class="section" id="list-comprehensions">
+<h1><a class="toc-backref" href="#id39">List Comprehensions</a></h1>
+<div class="handout container">
+List comprehensions (&quot;listcomps&quot; for short) are syntax shortcuts
+for this general pattern:</div>
+<p class="incremental">The traditional way, with <tt class="docutils literal">for</tt> and <tt class="docutils literal">if</tt> statements:</p>
+<pre class="incremental literal-block">
+new_list = []
+for item in a_list:
+    if condition(item):
+        new_list.append(fn(item))
+</pre>
+<p class="incremental">As a list comprehension:</p>
+<pre class="incremental literal-block">
+new_list = [fn(item) for item in a_list
+            if condition(item)]
+</pre>
+<div class="handout container">
+Listcomps are clear &amp; concise, up to a point.  You can have
+multiple <tt class="docutils literal">for</tt>-loops and <tt class="docutils literal">if</tt>-conditions in a listcomp, but
+beyond two or three total, or if the conditions are complex, I
+suggest that regular <tt class="docutils literal">for</tt> loops should be used.  Applying the
+Zen of Python, choose the more readable way.</div>
+<div class="handout container">
+<p>For example, a list of the squares of 0&#8211;9:</p>
+<pre class="doctest-block">
+&gt;&gt;&gt; [n ** 2 for n in range(10)]
+[0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+</pre>
+<p>A list of the squares of odd 0&#8211;9:</p>
+<pre class="doctest-block">
+&gt;&gt;&gt; [n ** 2 for n in range(10) if n % 2]
+[1, 9, 25, 49, 81]
+</pre>
+</div>
+</div>
+<div class="section" id="generator-expressions-1">
+<h1><a class="toc-backref" href="#id40">Generator Expressions (1)</a></h1>
+<div class="handout container">
+Let's sum the squares of the numbers up to 100:</div>
+<p class="incremental">As a loop:</p>
+<pre class="incremental literal-block">
+total = 0
+for num in range(1, 101):
+    total += num * num
+</pre>
+<div class="handout container">
+We can use the <tt class="docutils literal">sum</tt> function to quickly do the work for us, by
+building the appropriate sequence.</div>
+<p class="incremental">As a list comprehension:</p>
+<pre class="incremental literal-block">
+total = sum([num * num for num in range(1, 101)])
+</pre>
+<p class="incremental">As a generator expression:</p>
+<pre class="incremental literal-block">
+total = sum(num * num for num in xrange(1, 101))
+</pre>
+<div class="handout container">
+<p>Generator expressions (&quot;genexps&quot;) are just like list
+comprehensions, except that where listcomps are greedy, generator
+expressions are lazy.  Listcomps compute the entire result list all
+at once, as a list.  Generator expressions compute one value at a
+time, when needed, as individual values.  This is especially useful
+for long sequences where the computed list is just an intermediate
+step and not the final result.</p>
+<p>In this case, we're only interested in the sum; we don't need the
+intermediate list of squares.  We use <tt class="docutils literal">xrange</tt> for the same
+reason: it lazily produces values, one at a time.</p>
+</div>
+</div>
+<div class="section" id="generator-expressions-2">
+<h1><a class="toc-backref" href="#id41">Generator Expressions (2)</a></h1>
+<div class="handout container">
+For example, if we were summing the squares of several billion
+integers, we'd run out of memory with list comprehensions, but
+generator expressions have no problem.  This does take time,
+though!</div>
+<pre class="incremental literal-block">
+total = sum(num * num
+            for num in xrange(1, 1000000000))
+</pre>
+<div class="handout container">
+The difference in syntax is that listcomps have square brackets,
+but generator expressions don't.  Generator expressions sometimes
+do require enclosing parentheses though, so you should always use
+them.</div>
+<div class="handout container">
+<p>Rule of thumb:</p>
+<ul class="simple">
+<li>Use a list comprehension when a computed list is the desired end
+result.</li>
+<li>Use a generator expression when the computed list is just an
+intermediate step.</li>
+</ul>
+</div>
+<div class="handout container">
+<p>Here's a recent example I saw at work.</p>
+<div class="spoken container">
+&#10132;</div>
+<p>We needed a dictionary mapping month numbers (both as string and as
+integers) to month codes for futures contracts.  It can be done in
+one logical line of code.</p>
+<div class="spoken container">
+&#10132;</div>
+<p>The way this works is as follows:</p>
+<ul class="simple">
+<li>The <tt class="docutils literal">dict()</tt> built-in takes a list of key/value pairs
+(2-tuples).</li>
+<li>We have a list of month codes (each month code is a single
+letter, and a string is also just a list of letters).  We
+enumerate over this list to get both the month code and the
+index.</li>
+<li>The month numbers start at 1, but Python starts indexing at 0, so
+the month number is one more than the index.</li>
+<li>We want to look up months both as strings and as integers.  We
+can use the <tt class="docutils literal">int()</tt> and <tt class="docutils literal">str()</tt> functions to do this for us,
+and loop over them.</li>
+</ul>
+</div>
+<p class="incremental">Recent example:</p>
+<pre class="incremental literal-block">
+month_codes = dict((fn(i+1), code)
+    for i, code in enumerate('FGHJKMNQUVXZ')
+    for fn in (int, str))
+</pre>
+<p class="incremental"><tt class="docutils literal">month_codes</tt> result:</p>
+<pre class="incremental literal-block">
+{ 1:  'F',  2:  'G',  3:  'H',  4:  'J', ...
+ '1': 'F', '2': 'G', '3': 'H', '4': 'J', ...}
+</pre>
+</div>
+<div class="section" id="sorting">
+<h1><a class="toc-backref" href="#id42">Sorting</a></h1>
+<div class="handout container">
+It's easy to sort a list in Python:</div>
+<pre class="literal-block">
+a_list.sort()
+</pre>
+<div class="handout container">
+<p>(Note that the list is sorted in-place: the original list is
+sorted, and the <tt class="docutils literal">sort</tt> method does <strong>not</strong> return the list or a
+copy.)</p>
+<p>But what if you have a list of data that you need to sort, but it
+doesn't sort naturally (i.e., sort on the first column, then the
+second column, etc.)?  You may need to sort on the second column
+first, then the fourth column.</p>
+</div>
+<p class="incremental">We can use list's built-in <tt class="docutils literal">sort</tt> method with a custom function:</p>
+<pre class="incremental literal-block">
+def custom_cmp(item1, item2):
+    return cmp((item1[1], item1[3]),
+               (item2[1], item2[3]))
+
+a_list.sort(custom_cmp)
+</pre>
+<div class="handout container">
+This works, but it's extremely slow for large lists.</div>
+</div>
+<div class="section" id="sorting-with-dsu">
+<h1><a class="toc-backref" href="#id43">Sorting with DSU *</a></h1>
+<p>DSU = Decorate-Sort-Undecorate</p>
+<p>* Note: DSU is often no longer necessary.  See the next section,
+<a class="reference internal" href="#sorting-with-keys">Sorting With Keys</a> for the new approach.</p>
+<div class="handout container">
+Instead of creating a custom comparison function, we create an
+auxiliary list that <em>will</em> sort naturally:</div>
+<pre class="incremental literal-block">
+# Decorate:
+to_sort = [(item[1], item[3], item)
+           for item in a_list]
+
+# Sort:
+to_sort.sort()
+
+# Undecorate:
+a_list = [item[-1] for item in to_sort]
+</pre>
+<div class="handout container">
+<p>The first line creates a list containing tuples: copies of the sort
+terms in priority order, followed by the complete data record.</p>
+<p>The second line does a native Python sort, which is very fast and
+efficient.</p>
+<p>The third line retrieves the <strong>last</strong> value from the sorted list.
+Remember, this last value is the complete data record.  We're
+throwing away the sort terms, which have done their job and are no
+longer needed.</p>
+</div>
+<div class="handout container">
+This is a tradeoff of space and complexity against time.  Much
+simpler and faster, but we do need to duplicate the original list.</div>
+</div>
+<div class="section" id="sorting-with-keys">
+<h1><a class="toc-backref" href="#id44">Sorting With Keys</a></h1>
+<div class="handout container">
+Python 2.4 introduced an optional argument to the <tt class="docutils literal">sort</tt> list
+method, &quot;key&quot;, which specifies a function of one argument that is
+used to compute a comparison key from each list element.  For
+example:</div>
+<pre class="incremental literal-block">
+def my_key(item):
+    return (item[1], item[3])
+
+to_sort.sort(key=my_key)
+</pre>
+<p class="incremental">The function <tt class="docutils literal">my_key</tt> will be called once for each item in the
+<tt class="docutils literal">to_sort</tt> list.</p>
+<p class="incremental">You can make your own key function, or use any existing
+one-argument function if applicable:</p>
+<ul class="incremental simple">
+<li><tt class="docutils literal">str.lower</tt> to sort alphabetically regarless of case.</li>
+<li><tt class="docutils literal">len</tt> to sort on the length of the items (strings or containers).</li>
+<li><tt class="docutils literal">int</tt> or <tt class="docutils literal">float</tt> to sort numerically, as with numeric strings
+like &quot;2&quot;, &quot;123&quot;, &quot;35&quot;.</li>
+</ul>
+</div>
+<div class="section" id="generators">
+<h1><a class="toc-backref" href="#id45">Generators</a></h1>
+<div class="handout container">
+We've already seen generator expressions.  We can devise our own
+arbitrarily complex generators, as functions:</div>
+<pre class="literal-block">
+def my_range_generator(stop):
+    value = 0
+    while value &lt; stop:
+        yield value
+        value += 1
+
+for i in my_range_generator(10):
+    do_something(i)
+</pre>
+<div class="handout container">
+<p>The <tt class="docutils literal">yield</tt> keyword turns a function into a generator.  When you
+call a generator function, instead of running the code immediately
+Python returns a generator object, which is an iterator; it has a
+<tt class="docutils literal">next</tt> method.  <tt class="docutils literal">for</tt> loops just call the <tt class="docutils literal">next</tt> method on
+the iterator, until a <tt class="docutils literal">StopIteration</tt> exception is raised.  You
+can raise <tt class="docutils literal">StopIteration</tt> explicitly, or implicitly by falling
+off the end of the generator code as above.</p>
+<p>Generators can simplify sequence/iterator handling, because we
+don't need to build concrete lists; just compute one value at a
+time.  The generator function maintains state.</p>
+</div>
+<div class="handout container">
+<p>This is how a <tt class="docutils literal">for</tt> loop really works.  Python looks at the
+sequence supplied after the <tt class="docutils literal">in</tt> keyword.  If it's a simple
+container (such as a list, tuple, dictionary, set, or user-defined
+container) Python converts it into an iterator.  If it's already an
+iterator, Python uses it directly.</p>
+<p>Then Python repeatedly calls the iterator's <tt class="docutils literal">next</tt> method,
+assigns the return value to the loop counter (<tt class="docutils literal">i</tt> in this case),
+and executes the indented code.  This is repeated over and over,
+until <tt class="docutils literal">StopIteration</tt> is raised, or a <tt class="docutils literal">break</tt> statement is
+executed in the code.</p>
+<p>A <tt class="docutils literal">for</tt> loop can have an <tt class="docutils literal">else</tt> clause, whose code is executed
+after the iterator runs dry, but <strong>not</strong> after a <tt class="docutils literal">break</tt>
+statement is executed.  This distinction allows for some elegant
+uses.  <tt class="docutils literal">else</tt> clauses are not always or often used on <tt class="docutils literal">for</tt>
+loops, but they can come in handy.  Sometimes an <tt class="docutils literal">else</tt> clause
+perfectly expresses the logic you need.</p>
+<p>For example, if we need to check that a condition holds on some
+item, any item, in a sequence:</p>
+<pre class="literal-block">
+for item in sequence:
+    if condition(item):
+        break
+else:
+    raise Exception('Condition not satisfied.')
+</pre>
+</div>
+</div>
+<div class="section" id="example-generator">
+<h1><a class="toc-backref" href="#id46">Example Generator</a></h1>
+<p>Filter out blank rows from a CSV reader (or items from a list):</p>
+<pre class="literal-block">
+def filter_rows(row_iterator):
+    for row in row_iterator:
+        if row:
+            yield row
+
+data_file = open(path, 'rb')
+irows = filter_rows(csv.reader(data_file))
+</pre>
+</div>
+<div class="section" id="reading-lines-from-text-data-files">
+<h1><a class="toc-backref" href="#id47">Reading Lines From Text/Data Files</a></h1>
+<pre class="literal-block">
+datafile = open('datafile')
+for line in datafile:
+    do_something(line)
+</pre>
+<div class="handout container">
+<p>This is possible because files support a <tt class="docutils literal">next</tt> method, as do
+other iterators: lists, tuples, dictionaries (for their keys),
+generators.</p>
+<p>There is a caveat here: because of the way the buffering is done,
+you cannot mix <tt class="docutils literal">.next</tt> &amp; <tt class="docutils literal">.read*</tt> methods unless you're using
+Python 2.5+.</p>
+</div>
+</div>
+<div class="section" id="eafp-vs-lbyl">
+<h1><a class="toc-backref" href="#id48">EAFP vs. LBYL</a></h1>
+<p class="incremental">It's easier to ask forgiveness than permission</p>
+<p class="incremental">Look before you leap</p>
+<div class="handout incremental container">
+Generally EAFP is preferred, but not always.</div>
+<ul class="incremental">
+<li><p class="first">Duck typing</p>
+<p>If it walks like a duck, and talks like a duck, and looks like a
+duck: it's a duck.  <span class="incremental">(Goose?  Close enough.)</span></p>
+</li>
+<li><p class="first">Exceptions</p>
+<div class="handout container">
+<p>Use coercion if an object must be a particular type.  If <tt class="docutils literal">x</tt>
+must be a string for your code to work, why not call</p>
+</div>
+<pre class="incremental literal-block">
+str(x)
+</pre>
+<div class="handout container">
+<p>instead of trying something like</p>
+</div>
+<pre class="incremental literal-block">
+isinstance(x, str)
+</pre>
+</li>
+</ul>
+</div>
+<div class="section" id="eafp-try-except-example">
+<h1><a class="toc-backref" href="#id49">EAFP <tt class="docutils literal">try/except</tt> Example</a></h1>
+<div class="handout container">
+You can wrap exception-prone code in a <tt class="docutils literal">try/except</tt> block to
+catch the errors, and you will probably end up with a solution
+that's much more general than if you had tried to anticipate every
+possibility.</div>
+<pre class="incremental literal-block">
+try:
+    return str(x)
+except TypeError:
+    ...
+</pre>
+<div class="handout container">
+Note: Always specify the exceptions to catch.  Never use bare
+<tt class="docutils literal">except</tt> clauses.  Bare <tt class="docutils literal">except</tt> clauses will catch unexpected
+exceptions, making your code exceedingly difficult to debug.</div>
+</div>
+<div class="section" id="importing">
+<h1><a class="toc-backref" href="#id50">Importing</a></h1>
+<blockquote>
+<pre class="literal-block">
+from module import *
+</pre>
+</blockquote>
+<div class="handout container">
+<p>You've probably seen this &quot;wild card&quot; form of the import statement.
+You may even like it.  <strong>Don't use it.</strong></p>
+<p>To adapt <a class="reference external" href="http://www.python.org/doc/humor/#python-vs-perl-according-to-yoda">a well-known exchange</a>:</p>
+<blockquote>
+<p>(Exterior Dagobah, jungle, swamp, and mist.)</p>
+<p>LUKE: Is <tt class="docutils literal">from module import *</tt> better than explicit imports?</p>
+<p>YODA: No, not better.  Quicker, easier, more seductive.</p>
+<p>LUKE: But how will I know why explicit imports are better than
+the wild-card form?</p>
+<p>YODA: Know you will when your code you try to read six months
+from now.</p>
+</blockquote>
+<p>Wild-card imports are from the dark side of Python.</p>
+</div>
+<p class="incremental"><strong>Never!</strong></p>
+<div class="handout container">
+<p>The <tt class="docutils literal">from module import *</tt> wild-card style leads to namespace
+pollution.  You'll get things in your local namespace that you
+didn't expect to get.  You may see imported names obscuring
+module-defined local names.  You won't be able to figure out where
+certain names come from.  Although a convenient shortcut, this
+should not be in production code.</p>
+<p>Moral: <strong>don't use wild-card imports!</strong></p>
+<div class="spoken container">
+&#10132;</div>
+<p>It's much better to:</p>
+<ul>
+<li><p class="first">reference names through their module
+(fully qualified identifiers),</p>
+<div class="spoken container">
+<p>&#10132;</p>
+</div>
+</li>
+<li><p class="first">import a long module using a shorter name (alias; recommended),</p>
+<div class="spoken container">
+<p>&#10132;</p>
+</div>
+</li>
+<li><p class="first">or explicitly import just the names you need.</p>
+<div class="spoken container">
+<p>&#10132;</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="handout container">
+Namespace pollution alert!</div>
+<p class="incremental">Instead,</p>
+<div class="handout container">
+Reference names through their module (fully qualified identifiers):</div>
+<pre class="incremental literal-block">
+import module
+module.name
+</pre>
+<div class="handout container">
+Or import a long module using a shorter name (alias):</div>
+<pre class="incremental literal-block">
+import long_module_name as mod
+mod.name
+</pre>
+<div class="handout container">
+Or explicitly import just the names you need:</div>
+<pre class="incremental literal-block">
+from module import name
+name
+</pre>
+<div class="handout container">
+Note that this form doesn't lend itself to use in the interactive
+interpreter, where you may want to edit and &quot;reload()&quot; a module.</div>
+</div>
+<div class="section" id="modules-scripts">
+<h1><a class="toc-backref" href="#id51">Modules &amp; Scripts</a></h1>
+<p>To make a simultaneously importable module and executable script:</p>
+<pre class="literal-block">
+if __name__ == '__main__':
+    # script code here
+</pre>
+<div class="handout container">
+<p>When imported, a module's <tt class="docutils literal">__name__</tt> attribute is set to the
+module's file name, without &quot;.py&quot;.  So the code guarded by the
+<tt class="docutils literal">if</tt> statement above will not run when imported.  When executed
+as a script though, the <tt class="docutils literal">__name__</tt> attribute is set to
+&quot;__main__&quot;, and the script code <em>will</em> run.</p>
+<p>Except for special cases, you shouldn't put any major executable
+code at the top-level.  Put code in functions, classes, methods,
+and guard it with <tt class="docutils literal">if __name__ == '__main__'</tt>.</p>
+</div>
+</div>
+<div class="section" id="module-structure">
+<h1><a class="toc-backref" href="#id52">Module Structure</a></h1>
+<pre class="literal-block">
+&quot;&quot;&quot;module docstring&quot;&quot;&quot;
+
+# imports
+# constants
+# exception classes
+# interface functions
+# classes
+# internal functions &amp; classes
+
+def main(...):
+    ...
+
+if __name__ == '__main__':
+    status = main()
+    sys.exit(status)
+</pre>
+<div class="handout container">
+This is how a module should be structured.</div>
+</div>
+<div class="section" id="command-line-processing">
+<h1><a class="toc-backref" href="#id53">Command-Line Processing</a></h1>
+<p>Example: <a class="reference external" href="cmdline.py">cmdline.py</a>:</p>
+<div class="handout container">
+<pre class="literal-block">
+#!/usr/bin/env python
+
+&quot;&quot;&quot;
+Module docstring.
+&quot;&quot;&quot;
+
+import sys
+import optparse
+
+def process_command_line(argv):
+    &quot;&quot;&quot;
+    Return a 2-tuple: (settings object, args list).
+    `argv` is a list of arguments, or `None` for ``sys.argv[1:]``.
+    &quot;&quot;&quot;
+    if argv is None:
+        argv = sys.argv[1:]
+
+    # initialize the parser object:
+    parser = optparse.OptionParser(
+        formatter=optparse.TitledHelpFormatter(width=78),
+        add_help_option=None)
+
+    # define options here:
+    parser.add_option(      # customized description; put --help last
+        '-h', '--help', action='help',
+        help='Show this help message and exit.')
+
+    settings, args = parser.parse_args(argv)
+
+    # check number of arguments, verify values, etc.:
+    if args:
+        parser.error('program takes no command-line arguments; '
+                     '&quot;%s&quot; ignored.' % (args,))
+
+    # further process settings &amp; args if necessary
+
+    return settings, args
+
+def main(argv=None):
+    settings, args = process_command_line(argv)
+    # application code here, like:
+    # run(settings, args)
+    return 0        # success
+
+if __name__ == '__main__':
+    status = main()
+    sys.exit(status)
+
+</pre>
+</div>
+</div>
+<div class="section" id="packages">
+<h1><a class="toc-backref" href="#id54">Packages</a></h1>
+<pre class="literal-block">
+package/
+    __init__.py
+    module1.py
+    subpackage/
+        __init__.py
+        module2.py
+</pre>
+<ul class="incremental simple">
+<li>Used to organize your project.</li>
+<li>Reduces entries in load-path.</li>
+<li>Reduces import name conflicts.</li>
+</ul>
+<p class="incremental">Example:</p>
+<pre class="incremental literal-block">
+import package.module1
+from package.subpackage import module2
+from package.subpackage.module2 import name
+</pre>
+<div class="handout container">
+<p>In Python 2.5 we now have absolute and relative imports via a
+future import:</p>
+<pre class="literal-block">
+from __future__ import absolute_import
+</pre>
+<p>I haven't delved into these myself yet, so we'll conveniently cut
+this discussion short.</p>
+</div>
+</div>
+<div class="section" id="simple-is-better-than-complex">
+<h1><a class="toc-backref" href="#id55">Simple is Better Than Complex</a></h1>
+<blockquote>
+<p>Debugging is twice as hard as writing the code in the first place.
+Therefore, if you write the code as cleverly as possible, you are,
+by definition, not smart enough to debug it.</p>
+<p class="attribution">&mdash;Brian W. Kernighan, co-author of <em>The C Programming Language</em>
+and the &quot;K&quot; in &quot;AWK&quot;</p>
+</blockquote>
+<div class="handout container">
+In other words, keep your programs simple!</div>
+</div>
+<div class="section" id="don-t-reinvent-the-wheel">
+<h1><a class="toc-backref" href="#id56">Don't reinvent the wheel</a></h1>
+<div class="handout container">
+Before writing any code,</div>
+<div class="spoken container">
+&#10132; &#10132; &#10132; &#10132;</div>
+<ul class="incremental">
+<li><p class="first">Check Python's standard library.</p>
+</li>
+<li><p class="first">Check the Python Package Index (the &quot;Cheese Shop&quot;):</p>
+<blockquote>
+<p><a class="reference external" href="http://cheeseshop.python.org/pypi">http://cheeseshop.python.org/pypi</a></p>
+</blockquote>
+</li>
+<li><p class="first">Search the web.  <span class="incremental">Google is your friend.</span></p>
+</li>
+</ul>
+</div>
+<div class="section" id="references">
+<h1><a class="toc-backref" href="#id57">References</a></h1>
+<ul class="small simple">
+<li>&quot;Python Objects&quot;, Fredrik Lundh,
+<a class="reference external" href="http://www.effbot.org/zone/python-objects.htm">http://www.effbot.org/zone/python-objects.htm</a></li>
+<li>&quot;How to think like a Pythonista&quot;, Mark Hammond,
+<a class="reference external" href="http://python.net/crew/mwh/hacks/objectthink.html">http://python.net/crew/mwh/hacks/objectthink.html</a></li>
+<li>&quot;Python main() functions&quot;, Guido van Rossum,
+<a class="reference external" href="http://www.artima.com/weblogs/viewpost.jsp?thread=4829">http://www.artima.com/weblogs/viewpost.jsp?thread=4829</a></li>
+<li>&quot;Python Idioms and Efficiency&quot;,
+<a class="reference external" href="http://jaynes.colorado.edu/PythonIdioms.html">http://jaynes.colorado.edu/PythonIdioms.html</a></li>
+<li>&quot;Python track: python idioms&quot;,
+<a class="reference external" href="http://www.cs.caltech.edu/courses/cs11/material/python/misc/python_idioms.html">http://www.cs.caltech.edu/courses/cs11/material/python/misc/python_idioms.html</a></li>
+<li>&quot;Be Pythonic&quot;, Shalabh Chaturvedi,
+<a class="reference external" href="http://shalabh.infogami.com/Be_Pythonic2">http://shalabh.infogami.com/Be_Pythonic2</a></li>
+<li>&quot;Python Is Not Java&quot;, Phillip J. Eby,
+<a class="reference external" href="http://dirtsimple.org/2004/12/python-is-not-java.html">http://dirtsimple.org/2004/12/python-is-not-java.html</a></li>
+<li>&quot;What is Pythonic?&quot;, Martijn Faassen,
+<a class="reference external" href="http://faassen.n--tree.net/blog/view/weblog/2005/08/06/0">http://faassen.n--tree.net/blog/view/weblog/2005/08/06/0</a></li>
+<li>&quot;Sorting Mini-HOWTO&quot;, Andrew Dalke,
+<a class="reference external" href="http://wiki.python.org/moin/HowTo/Sorting">http://wiki.python.org/moin/HowTo/Sorting</a></li>
+<li>&quot;Python Idioms&quot;, <a class="reference external" href="http://www.gungfu.de/facts/wiki/Main/PythonIdioms">http://www.gungfu.de/facts/wiki/Main/PythonIdioms</a></li>
+<li>&quot;Python FAQs&quot;, <a class="reference external" href="http://www.python.org/doc/faq/">http://www.python.org/doc/faq/</a></li>
+</ul>
+</div>
+</div>
+<div class="footer">
+<hr class="footer" />
+<a class="reference external" href="presentation.txt">View document source</a>.
+Generated on: 2010-03-09 14:08 UTC.
+Generated by <a class="reference external" href="http://docutils.sourceforge.net/">Docutils</a> from <a class="reference external" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> source.
+
+</div>
+</body>
+</html>

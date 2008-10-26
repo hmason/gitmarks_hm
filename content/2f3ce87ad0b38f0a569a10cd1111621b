@@ -1,0 +1,1627 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<head>
+<link rel="stylesheet" href="css/style.css">
+
+<link rel="icon" href="favicon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+
+<meta name="keywords" content="presidential debate, debate, speech, natural language processing, nlp, lexical analysis, words, tag cloud, word cloud, wordle, complexity, visualization, analysis, windbag index, windbag">
+
+<title>Lexical Analysis of 2008 US Presidential and Vice-Presidiential Debates - Who's the Windbag?</title>
+</head>
+
+<body>
+
+
+<div id=pagebox>
+<div id=page>
+
+<div class=tag>
+<span class=left>Lexical Analysis of 2008 US Presidential and Vice-Presidential Debates</span>
+<span class=right><a href="?">home</a> | Martin Krzywinski : <a href="http://mkweb.bcgsc.ca">projects</a> <a href="mailto:martin.krzywinski@gmail.com">contact</a></span>
+</div>
+
+
+<h1 class=fronttitle>Lexical Analysis of<br>
+2008 US Presidential and Vice-Presidential<br>
+Debates &#8212; who's the Windbag?</h1>
+
+<p><b>1 minute summary</b> 
+Metrics of speech structure of candidates fall within narrow tolerances, suggesting high degree of wordsmithing and rehearsal. For example, <a href="http://mkweb.bcgsc.ca/debates/index.mhtml?debate=mccain-obama-01#section-pos-count">noun/verb/adjective/adverb ratio spread is very small</a> with candidates' values within 2%. Relatively small differences seen in <a href="http://mkweb.bcgsc.ca/debates/index.mhtml?debate=mccain-obama-01#section-wordcount-stop">unique word count</a> and <a href="http://mkweb.bcgsc.ca/debates/index.mhtml?debate=mccain-obama-01#section-nphrase-count">noun phrase profile</a>. 
+The Obama/McCain debates began with <a href="http://mkweb.bcgsc.ca/debates/index.mhtml?debate=mccain-obama-01#section-pos-count">balanced performance</a> from both candidates but end with Obama verbally overpowering McCain and delivering speech with <a href="http://mkweb.bcgsc.ca/debates/index.mhtml?debate=mccain-obama-03#section-pos-pair">more concepts and higher complexity</a>. 
+When words exclusive to a candidate are considered, <a href="http://mkweb.bcgsc.ca/debates/index.mhtml?debate=mccain-obama-combined#section-wordusage">Obama's more frequent use of verbs</a> and <a href="http://mkweb.bcgsc.ca/debates/index.mhtml?debate=mccain-obama-combined#section-wordusage">much more frequent use of adjectives and adverbs</a>, compared to McCain, suggests that he is more of a fluid and contextual thinker who, unlike McCain whose language metrics suggest a categorical approach, does not seek to fit issues into pre-existing categories. Obama's greater use of modifiers suggest an outlook that is more open to nuance and inter-relatedness of events and issues.</p>
+Analysis of the Biden/Palin debate suggests that speech of Vice-Presidential candidates is less complex and more repetitive than that of their Presidential counterparts, with Biden being the most repetitive speaker and Palin having the longest sentences, of all four debates.</p> 
+
+<img src="thematic-profiles-vignette.png" alt="Thematic Profile of 2008 US Presidential Debates between Barack Obama and John McCain - identifying topics: nuclear, fear, military, economy, geography, health and environment" vspace=5>
+<div>^Thematic profiles of all three Presidential Debates (<a href="thematic-profiles.png">large</a>) (<a href="thematic-profiles.pdf">PDF</a>) show parts of the debate in which specific topics were discussed: nuclear issues, fear mongering, military matters, economic crisis, health concerns, energy and the environment.</div>
+
+<h2>Introduction</h2>
+
+<div style="width:300px; margin-left: 1em; padding-left: 1em; float:right; border-left: 1px solid #ccc;">
+
+<p><b>Others' work</b>
+<p><a href="http://www.nytimes.com/2008/10/14/science/14prof.html?_r=1&em&oref=slogin">He counts your words (even those pronouns)</a>, an article in the NYT about <a href="http://wordwatchers.wordpress.com/">Pennebaker's approach</a> to analysis of debates and Al Qaeda communication
+<p><a href="http://www.style.org/stateoftheunion/parse/?random=true">Presidential word use</a> in State of the Union addresses by Jonathan Corum.
+<p><a href="http://www.nytimes.com/interactive/2007/12/15/us/politics/DEBATE.html">Naming Names</a>, a NYT article about candidates' reference to each other during debates (uses <a href="http://mkweb.bcgsc.ca/circos">Circos</a>)
+<p><a href="http://members.unine.ch/jacques.savoy/Papers/USspeeches.pdf">Lexical Analysis of Obama's and McCain's Speeches</a> by Jacques Savoy</p>
+
+<p><a href="mailto:martin.krzywinski@gmail.com">+ add your work</a>
+
+</div>
+
+<p>The analysis presented here explores word usage in the 2008 US
+Presidential and Vice-Presidential debates. The purpose is to explore the structure of speech, as characterized by the use of nouns, verbs, adjectives and adverbs, and noun phrases. The speech patterns of opposing candidates are compared in an effort to identify characteristic value and personality traits. 
+
+<p>Specifically, I examine the debate for the following 
+
+<ul>
+<li>- word frequency and distribution for different parts of speech
+<li>- elements unique to a candidate's speech
+<li>- central concepts, both exclusive to a candidate and shared between them
+<li>- complexity of noun phrases, which relate to independent concepts
+<li>- a general measure of complexity and repetition in speech, nicknamed the Windbag Index
+</ul>
+
+<p>The analysis reveals extremely surprising results, or at least what I believe to be surprising results. With three debates behind them, the verbal contest between Obama and McCain, while starting out relatively even, can be seen to tip very strongly in Obama's favour with respect to speech complexity and articulation.
+
+<p>A formal debate &#8212; and in this case three for a pair of candidates &#8212 serves as a great text for this kind of analysis. The debate format is highly controlled: each speaker is subjected to the same stimulus (question) and is given the same amount of time to respond. Debates therefore eliminate some of the variation that would appear in analysis of interviews and other unscripted speech, in which questions and topics may vary across samples. 
+
+<p>For some cases, where the analysis focuses on proportions of parts of speech, collecting a variety of inputs from a speaker is helpful. However, when debates are analysed, we can extend the investigation to include examining words used exclusively by one speaker and not the other &#8212; these are extremely informative because they reflect how a speaker chose to address the issue. 
+
+<hr>
+<h3>Third Debate is a structural  disaster for McCain, verbally speaking.</h3>
+<img src="debate-03.png">
+<table cellspacing=0 cellpadding=0>
+<tr>
+<td width=245>
+<b>First Debate.</b> Obama makes greater contribution tounique words in the debate. He is informal with McCain, using John extremely frequently.
+</td>
+<td width=245>
+<b>Second Debate.</b> The debate is relatively more populated with words spoken by both candidates. Obamachanges stance from "John" to "McCain".
+</td>
+<td width=250>
+<b>Third Debate.</b> Obama overwhelms McCain with his contribution of words to the debate. Obama never says "nuclear", a word that McCain continues to repeat.
+</td>
+</tr>
+</table>
+<hr>
+
+<h2>Methods</h2>
+
+<p>The transcript for each debate is parsed to (a) identify the speaker, (b) remove stop words (words such as "do",
+"and" and "it") are removed, (c) tag non-stop words with their part of speech (this is called tagging), and (d) identify noun phrases (this is called chunking).
+
+<p>The tagged and chunked transcripts are analyzed to determine
+<ul>
+<li>- word frequency distribution for each candidate
+<li>- sentence size and proportion of unique words
+<li>- words exclusive to a candidate and words used by both candidates
+<li>- frequency of concepts, as defined by part of speech pairings (e.g. noun/verb)
+<li>- complexity of noun phrases, as defined by hierarchical clustering
+<li>- word clouds for a variety of word lists extracted from the transcripts (e.g. all nouns unique to Obama)
+</ul>
+
+<p>I attempt to quantify the overall complexity of speech by a novel
+metric called the <b>Windbag Index</b>. This value is product of 9
+factors, each measuring uniqueness in different aspects of speech (<a
+href="?methods#section-windbag">more about Windbag Index</a>).
+
+<p>A full description of each of the steps in the analysis is
+available in the <a href="?methods">detailed methods section</a>. I enourage you to read this section - it's not very technical - to become familiar with the approach and to gain greater versatility in interpreting the results. This works is also not without its <a href="?methods#section-limitations">share of limitations</a>.</p>
+
+<img src="wordle/wordle-debates.png" alt="Vignette of unique words used by US Presidential and Vice-Presidential Candidates - John McCain, Barack Obama, Joe Biden and Sarah Palin - drawn by Wordle" vspace=5>
+<div>^images created with <a href="http://www.wordle.net">Wordle</a> - make your own with <a href="#atom">word feeds</a> from this analysis.</div>
+
+<h2>Results and Analysis</h2>
+
+<p>Detailed results and comments are available for each debate. The
+first Obama vs McCain debate has more in-depth analysis, since it is
+the first debate that I analyzed.</p>
+
+<p><a href="?debate=mccain-obama-01">Results for Barack Obama vs John McCain (1st debate)</a></p>
+<p><a href="?debate=mccain-obama-02">Results for Barack Obama vs John McCain (2nd debate)</a></p>
+<p><a href="?debate=mccain-obama-03">Results for Barack Obama vs John McCain (3nd debate)</a></p>
+<p><a href="?debate=mccain-obama-combined">Results for Barack Obama vs John McCain (combined debates)</a></p>
+<p><a href="?debate=palin-biden">Results for Joe Biden vs Sarah Palin</a></p>
+
+<p>Each debate analysis report contains <i>a great deal of data</i>. To start, you may find these elements the most interesting
+<ul>
+<li>- composition of delivery, by part of speech <a href="?debate=mccain-obama-01#section-pos-count">see example</a>
+<li>- tag clouds of words used by one candidate, but not the other <a href="?debate=mccain-obama-01#section-tagcloud-unique">see example</a>
+</ul>
+
+<p>And, yes, Biden is a windbag. His speech has a Windbag Index of 606, highest of all candidates!
+
+<h2>Visualizing the Debates</h2>
+
+<table cellspacing=0 cellpadding=0>
+<tr>
+<td valign=top width=200>
+<img src="masthead-01.png">
+<div>Word usage tables describe the structural characteristics of speech by frequency of words, sentence size, proportion of unique and exclusive words and breakdown of words by part-of-speech <a href="?debate=mccain-obama-01#section-wordusage">see example</a></div>
+</td>
+<td valign=top width=200>
+<img src="masthead-02.png">
+<div>Tag clouds for words used by a candidate, categorized by parts of speech. Obama is frequently informal with "John", but McCain never calls Obama by his first name
+<a href="?debate=mccain-obama-01#section-tagcloud-all">see example</a></div>
+</td>
+<td valign=top width=200>
+<img src="masthead-03.png">
+<div>Tag clouds for words used in the debate, categorized by ownership. McCain's favourite word is "afraid", whereas Obama prefers "true" <a href="?debate=mccain-obama-01#section-tagcloud-pos-all">see example</a></div>
+</td>
+<td valign=top width=150>
+<img src="masthead-04.png">
+<div>Concept frequency based on part-of-speech pairs. Obama is about energy and economy, but McCain's focus is on threats and the military <a href="?debate=mccain-obama-01#section-tagcloud-pairs">see example</a></div>
+</td>
+</tr>
+</table>
+
+<h2>Word Clouds with Flair - Wordles</h2>
+
+<p>Using the <a href="#atom">Atom feeds below</a>, you can create your own visualizations of the word lists using <a href="http://www.wordle.net">Wordle</a>.
+
+<p><img src="wordle-01.png" alt="Wordles of noun/adjective pairs for Barack Obama and John McCain">
+
+<p>Nouns unique to a speaker were those that were mentioned by one speaker, but not the other. Nouns, and other parts of speech, were identified in the transcripts using the <a href="?methods#section-tag">Brill tagger</a> (<a href="http://mkweb.bcgsc.ca/debates/deb/mccain-obama-01/parsed/obama.tag.txt">example tagged text</a> - Obama portion, 1st debate). For example, Obama said <i>biodiesel</i>, <i>children</i>, <i>education</i>, <i>education</i>, <i>medicare</i>, <i>perspective</i> and <i>science</i>. McCain did not. McCain, on the other hand, said <i>aggression</i>, <i>greed</i>, <i>failure</i>, <i>invasion</i>, <i>maverick</i> and <i>stubborness</i>. Obama did not.
+
+<p><img src="wordle-02.png" alt="Wordles of unique nouns for Barack Obama and John McCain">
+
+<p>Download high-resolution wordles: 
+Obama <a href="wordle/obama-noun-adjective.pdf">noun/adjective pairs</a>
+<a href="wordle/obama-unique-noun.pdf">unique nouns</a>
+McCain
+<a href="wordle/mccain-noun-adjective.pdf">noun/adjective pairs</a>
+<a href="wordle/mccain-unique-noun.pdf">unique nouns</a>
+
+
+<h2>Candidates' Lexical Profiles</h2>
+
+<div class=table>
+<div class=caption>
+<b>Table 1.</b> Variety of word usage statistics for each speaker. Vocabulary size is based on non-stop content.
+</div>
+<table class=formatted_values cellspacing=0 cellpadding=0>
+<tr>
+<th rowspan=2>speaker</th>
+<th colspan=6>statistics</th>
+</tr>
+<tr>
+<th>vocabulary<br>size</th>
+<th>non-stop word<br>fraction</th>
+<th>unique word<br>fraction</th>
+<th>avg word<br>frequency</th>
+<th>avg sentence<br>size</th>
+</tr>
+<tr>
+<td class=rheader>Barack Obama</td>
+<td align=left>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="last">
+1,243
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/green-01.png" width=124 height=10 alt="1243">
+
+</td>
+<td align=left>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="last">
+43.4%
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/green-01.png" width=87 height=10 alt="43.3789347854961">
+
+</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="last">
+38.1%
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/green-01.png" width=76 height=10 alt="38.0587875076546">
+
+</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="last">
+2.63
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/green-01.png" width=88 height=10 alt="2.628">
+
+</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="last">
+7.74
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/green-01.png" width=77 height=10 alt="7.739">
+
+</td>
+</tr>
+<tr>
+<td class=rheader>John McCain</td>
+<td align=left>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="last">
+1,243
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=124 height=10 alt="1243">
+
+</td>
+<td align=left>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="last">
+44.3%
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=89 height=10 alt="44.3135027687065">
+
+</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="last">
+39.8%
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=80 height=10 alt="39.8269785325216">
+
+</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="last">
+2.51
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=84 height=10 alt="2.511">
+
+</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="last">
+7.08
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=71 height=10 alt="7.077">
+
+</td>
+</tr>
+<tr>
+<td class=rheader>Joe Biden</td>
+<td align=left>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="last">
+1,174
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/green-01.png" width=117 height=10 alt="1174">
+
+</td>
+<td align=left>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="last">
+47.1%
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/green-01.png" width=94 height=10 alt="47.1457627118644">
+
+</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="last">
+33.8%
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/green-01.png" width=68 height=10 alt="33.7647397181478">
+
+</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="last">
+2.96
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/green-01.png" width=99 height=10 alt="2.962">
+
+</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="last">
+7.59
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/green-01.png" width=76 height=10 alt="7.592">
+
+</td>
+</tr>
+<tr>
+<td class=rheader>Sarah Palin</td>
+<td align=left>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="last">
+1,201
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=120 height=10 alt="1201">
+
+</td>
+<td align=left>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="last">
+43.9%
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=88 height=10 alt="43.8739330269206">
+
+</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="last">
+35.9%
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=72 height=10 alt="35.9473211613289">
+
+</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="last">
+2.78
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=93 height=10 alt="2.782">
+
+</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="last">
+8.46
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=85 height=10 alt="8.458">
+
+</td>
+</tr>
+</table>
+</div>
+
+<div class=table>
+<div class=caption>
+<b>Table 2.</b> Part of speech statistics for each speaker. Within each cell, values are (nouns|verbs|adjectives|adverbs). For POS ratio, first row of values is the fraction of speech tagged with a given POS, the second is the fraction relative to adverbs (least frequent group), and third row is the number of unique words for this POS (i.e. POS vocabulary size).
+</div>
+<table class=formatted_values cellspacing=0 cellpadding=0>
+<tr>
+<th rowspan=2>speaker</th>
+<th colspan=6>statistic</th>
+</tr>
+<tr>
+<th>POS ratio</th>
+<th>POS unique<br>fraction</th>
+<th>average POS<br>frequency</th>
+</tr>
+<tr>
+<td class=rheader>Barack Obama</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="internal">
+52.9%
+</td>
+<td class="internal">
+25.2%
+</td>
+<td class="internal">
+15.1%
+</td>
+<td class="last">
+6.8%
+</td>
+</tr>
+<tr class=row1>
+<td class="internal">
+7.7
+</td>
+<td class="internal">
+3.7
+</td>
+<td class="internal">
+2.2
+</td>
+<td class="last">
+1.0
+</td>
+</tr>
+<tr class=row2>
+<td class="internal">
+645
+</td>
+<td class="internal">
+361
+</td>
+<td class="internal">
+213
+</td>
+<td class="last">
+73
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=95 height=10 alt="52.8543938422065"><img class="bar"src="gfx/red-01.png" width=45 height=10 alt="25.1763951250802"><img class="bar"src="gfx/green-01.png" width=27 height=10 alt="15.1379089159718"><img class="bar"src="gfx/orange-01.png" width=12 height=10 alt="6.8313021167415">
+
+</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="internal">
+39%
+</td>
+<td class="internal">
+46%
+</td>
+<td class="internal">
+45%
+</td>
+<td class="last">
+34%
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=43 height=10 alt="39.1383495145631"><img class="bar"src="gfx/red-01.png" width=50 height=10 alt="45.9872611464968"><img class="bar"src="gfx/green-01.png" width=49 height=10 alt="45.1271186440678"><img class="bar"src="gfx/orange-01.png" width=37 height=10 alt="34.2723004694836">
+
+</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="internal">
+2.56
+</td>
+<td class="internal">
+2.17
+</td>
+<td class="internal">
+2.22
+</td>
+<td class="last">
+2.92
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=47 height=10 alt="2.555"><img class="bar"src="gfx/red-01.png" width=40 height=10 alt="2.175"><img class="bar"src="gfx/green-01.png" width=40 height=10 alt="2.216"><img class="bar"src="gfx/orange-01.png" width=53 height=10 alt="2.918">
+
+</td>
+</tr>
+<tr>
+<td class=rheader>John McCain</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="internal">
+53.8%
+</td>
+<td class="internal">
+26.5%
+</td>
+<td class="internal">
+14.2%
+</td>
+<td class="last">
+5.5%
+</td>
+</tr>
+<tr class=row1>
+<td class="internal">
+9.7
+</td>
+<td class="internal">
+4.8
+</td>
+<td class="internal">
+2.6
+</td>
+<td class="last">
+1.0
+</td>
+</tr>
+<tr class=row2>
+<td class="internal">
+663
+</td>
+<td class="internal">
+363
+</td>
+<td class="internal">
+192
+</td>
+<td class="last">
+65
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=97 height=10 alt="53.7616511318242"><img class="bar"src="gfx/red-01.png" width=48 height=10 alt="26.5312916111851"><img class="bar"src="gfx/green-01.png" width=26 height=10 alt="14.1810918774967"><img class="bar"src="gfx/orange-01.png" width=10 height=10 alt="5.52596537949401">
+
+</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="internal">
+41%
+</td>
+<td class="internal">
+46%
+</td>
+<td class="internal">
+45%
+</td>
+<td class="last">
+39%
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=43 height=10 alt="41.0526315789474"><img class="bar"src="gfx/red-01.png" width=48 height=10 alt="45.5457967377666"><img class="bar"src="gfx/green-01.png" width=47 height=10 alt="45.0704225352113"><img class="bar"src="gfx/orange-01.png" width=41 height=10 alt="39.1566265060241">
+
+</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="internal">
+2.44
+</td>
+<td class="internal">
+2.20
+</td>
+<td class="internal">
+2.22
+</td>
+<td class="last">
+2.55
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=47 height=10 alt="2.436"><img class="bar"src="gfx/red-01.png" width=42 height=10 alt="2.196"><img class="bar"src="gfx/green-01.png" width=42 height=10 alt="2.219"><img class="bar"src="gfx/orange-01.png" width=49 height=10 alt="2.554">
+
+</td>
+</tr>
+<tr>
+<td class=rheader>Joe Biden</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="internal">
+57.5%
+</td>
+<td class="internal">
+25.2%
+</td>
+<td class="internal">
+12.1%
+</td>
+<td class="last">
+5.3%
+</td>
+</tr>
+<tr class=row1>
+<td class="internal">
+10.9
+</td>
+<td class="internal">
+4.8
+</td>
+<td class="internal">
+2.3
+</td>
+<td class="last">
+1.0
+</td>
+</tr>
+<tr class=row2>
+<td class="internal">
+640
+</td>
+<td class="internal">
+359
+</td>
+<td class="internal">
+163
+</td>
+<td class="last">
+65
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=103 height=10 alt="57.4681238615665"><img class="bar"src="gfx/red-01.png" width=45 height=10 alt="25.1669702489375"><img class="bar"src="gfx/green-01.png" width=22 height=10 alt="12.1129326047359"><img class="bar"src="gfx/orange-01.png" width=9 height=10 alt="5.25197328476017">
+
+</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="internal">
+34%
+</td>
+<td class="internal">
+43%
+</td>
+<td class="internal">
+41%
+</td>
+<td class="last">
+38%
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=39 height=10 alt="33.8087691494982"><img class="bar"src="gfx/red-01.png" width=50 height=10 alt="43.3051869722557"><img class="bar"src="gfx/green-01.png" width=47 height=10 alt="40.8521303258145"><img class="bar"src="gfx/orange-01.png" width=43 height=10 alt="37.5722543352601">
+
+</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="internal">
+2.96
+</td>
+<td class="internal">
+2.31
+</td>
+<td class="internal">
+2.45
+</td>
+<td class="last">
+2.66
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=51 height=10 alt="2.958"><img class="bar"src="gfx/red-01.png" width=40 height=10 alt="2.309"><img class="bar"src="gfx/green-01.png" width=42 height=10 alt="2.448"><img class="bar"src="gfx/orange-01.png" width=46 height=10 alt="2.662">
+
+</td>
+</tr>
+<tr>
+<td class=rheader>Sarah Palin</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="internal">
+55.0%
+</td>
+<td class="internal">
+26.5%
+</td>
+<td class="internal">
+12.9%
+</td>
+<td class="last">
+5.6%
+</td>
+</tr>
+<tr class=row1>
+<td class="internal">
+9.8
+</td>
+<td class="internal">
+4.7
+</td>
+<td class="internal">
+2.3
+</td>
+<td class="last">
+1.0
+</td>
+</tr>
+<tr class=row2>
+<td class="internal">
+651
+</td>
+<td class="internal">
+377
+</td>
+<td class="internal">
+182
+</td>
+<td class="last">
+61
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=99 height=10 alt="54.9953314659197"><img class="bar"src="gfx/red-01.png" width=48 height=10 alt="26.4550264550265"><img class="bar"src="gfx/green-01.png" width=23 height=10 alt="12.91627762216"><img class="bar"src="gfx/orange-01.png" width=10 height=10 alt="5.63336445689387">
+
+</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="internal">
+37%
+</td>
+<td class="internal">
+44%
+</td>
+<td class="internal">
+44%
+</td>
+<td class="last">
+34%
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=42 height=10 alt="36.8421052631579"><img class="bar"src="gfx/red-01.png" width=50 height=10 alt="44.3529411764706"><img class="bar"src="gfx/green-01.png" width=50 height=10 alt="43.855421686747"><img class="bar"src="gfx/orange-01.png" width=38 height=10 alt="33.7016574585635">
+
+</td>
+<td>
+
+
+<table cellspacing=0 cellpadding=0>
+<tr class=row0>
+<td class="internal">
+2.71
+</td>
+<td class="internal">
+2.25
+</td>
+<td class="internal">
+2.28
+</td>
+<td class="last">
+2.97
+</td>
+</tr>
+</table>
+
+
+<img class="bar"src="gfx/blue-01.png" width=48 height=10 alt="2.714"><img class="bar"src="gfx/red-01.png" width=40 height=10 alt="2.255"><img class="bar"src="gfx/green-01.png" width=40 height=10 alt="2.280"><img class="bar"src="gfx/orange-01.png" width=52 height=10 alt="2.967">
+
+</td>
+</tr>
+</table>
+</div>
+
+<div class=table>
+<div class=caption>
+<b>Table 3.</b> <a href="?methods#section-windbag">Windbag Index</a> measures the extent of repetition in speech. The index for every debate for a candidate is shown.
+</div>
+<table class=formatted_values cellspacing=0 cellpadding=0>
+<tr>
+<th>speaker</th>
+<th>Windbag Index</th>
+</tr>
+<tr>
+<td class=rheader>Barack Obama</td>
+<td>
+422, 405, 457 (avg 428)<br>
+<img class="bar"src="gfx/green-01.png" width=84 height=10 alt="422">
+
+<br>
+<img class="bar"src="gfx/green-01.png" width=81 height=10 alt="405">
+
+<br>
+<img class="bar"src="gfx/green-01.png" width=91 height=10 alt="457">
+
+</td></tr>
+<tr>
+<td class=rheader>John McCain</td>
+<td>
+368, 352, 505 (avg 408)<br>
+<img class="bar"src="gfx/blue-01.png" width=74 height=10 alt="368">
+
+<br>
+<img class="bar"src="gfx/blue-01.png" width=70 height=10 alt="352">
+
+<br>
+<img class="bar"src="gfx/blue-01.png" width=101 height=10 alt="505">
+
+</td></tr>
+<tr>
+<td class=rheader>Joe Biden</td>
+<td>
+606<br>
+<img class="bar"src="gfx/green-01.png" width=121 height=10 alt="606">
+
+</td></tr>
+<tr>
+<td class=rheader>Sarah Palin</td>
+<td>
+535<br>
+<img class="bar"src="gfx/blue-01.png" width=107 height=10 alt="535">
+
+</td></tr>
+</table>
+</div>
+
+<p>Words in the tag clouds below are colored by part of speech: &nbsp;
+<img src="gfx/blue-01.png" width=6 height=6> noun &nbsp;
+<img src="gfx/red-01.png" width=6 height=6> verb &nbsp;
+<img src="gfx/green-01.png" width=6 height=6> adjective &nbsp;
+<img src="gfx/orange-01.png" width=6 height=6> adverb &nbsp;
+
+<table cellspacing=0 cellpadding=0>
+<tr>
+<td valign=top>
+<img src="tagcloud-profile-obama.png"><div>^ Words unique to Barack Obama (not spoken by McCain) in all debates, colored by part of speech. Note the preponderance of nouns and central role of "agree", "invest" and "potentially".</div>
+</td>
+<td valign=top>
+<img src="tagcloud-profile-mccain.png"><div>^ Words unque to John McCain (not spoken by Obama) in all debates, colored by part of speech. McCain's contribution was largely verbs and adverbs. The large role of "badly", "excess", and "legitimize".</div>
+</td>
+</tr>
+<tr>
+<td valign=top>
+<img src="tagcloud-profile-noun.png"><div>^ All nouns in debates, colored by contributing speaker (green = Obama, blue = McCain, grey = spoken by both). Relative use of Obama's contribution to nouns is more balanced than McCain's, largely because McCain actually used "John" and "McCain" in his speech (if he didn't those words would heavily unbalance Obama's unique nouns). Note "science", "notion", "consequence", "approach", "regulations" - all words used with relatively high frequency by Obama but never by McCain.</div>
+</td>
+<td valign=top>
+<img src="tagcloud-profile-verb.png"><div>^ All verbs in debates, colored by contributing speaker (green = Obama, blue = McCain, grey = spoken by both). McCain had a greater contribution of frequently used verbs (words that only he used). Note "oppose", "legitimize" and "winning". The verbs that were exclusive to Obama were less frequently used, except for "agree", "invest" and "recognize".</div>
+</td>
+</tr>
+</table>
+
+<h2>Discussion</h2>
+
+<p>The analysis presents a great deal of data, but from it two central themes arise.
+<ul>
+<li>- lexical speech patterns between candidates (especially those paired in a debate) are extremely similar
+<li>- complexity of vice-presidential candidates is lower than presidential candidates (uniqueness is lower, repetition is higher)
+</ul>
+
+<h3>Lexical Structure: Speech Confirmity through Rehearsal and Audience Profiling</h3>
+
+<p>The first theme quickly became evident after analyzing the first
+debate. The speech pattern of Obama and McCain conformed to nearly
+identical word usage patterns. For example, vocabulary size for Obama
+and McCain (number of unique non-stop words used) is identical at
+1,243. Their non-stop word fraction is also nearly identical at 43.4%
+and 44.3% for Obama and McCain, respectively. Likewise, the difference
+in their unique word fraction and average word frequency is only +4.3% and +4.8%, respectively.
+
+<p>The reason for such conformity is anyone' guess, but several
+factors come to mind. First, the word usage profile could be a direct
+product of political selection. The fact that these debaters were
+drawn from a political and therefore have had to function within a
+verbally demanding environment, where nimbleness is perhaps rewarded
+over precision, may speak to the similarity in their delivery. Their
+political contemporaries and the public may both have a finely tuned
+ear, though perhaps not the same one, to what is considered effective
+speech by a successful candidate.
+
+<p>Another factor, and one that I suspect is in play at all times, is
+the degree of premedidated wordsmithing in the preparation for these
+debates. I do not doubt that each of the candidates' preparation went
+well beyond casual enumeration of talking points. Certainly to
+consistently win the hearts and minds (and ears) of their audience,
+each debater must have give significant consideration to not just
+<i>what</i> was said, but <i>how</i>. I would not be surprised if
+candidates memorized what they considered to be particularly effective
+phrases for delivering content and trenchant retorts for contrasting
+their opponents. It is also likely that somewhere in the bowels of the
+political arena are linguistic specialists who have profiled precise
+(or as precise as can be measured) comprehension and literacy levels
+of the population, broken down by region and demographic.
+
+<h3>The Vice-Presidentials: Lowered Expectations and in the Shadow of their Running Mates</h3>
+
+<p>Frequency analysis of the speech of Biden and Palin indicates a
+lower overall complexity - smaller vocabulary size and higher degree
+of repetition - than in the speech of Obama and McCain. Presumably these Vice-Presidential hopefuls want to come across as sufficiently articulate and effective to be compelling, but not so much as to steal the limelight from their running mates.
+
+<p>The largest difference in complexity is between Biden and McCain,
+whose averge word frequency was 2.96 and 2.51, respectively. This, and
+other metrics that measure Biden' speech, earn him many of his
+nicknames that suggest him to be verbose but not articulate. And,
+although McCain's complexity drops significantly in the third
+debate, in which his verb/noun pairings suggest that he spends more
+time attacking than expounding his own plans, McCain is the least
+repetitive of all candidates.
+
+<p>Palin had the longest sentences, with an average length of 8.46
+non-stop words. With nearly 1.5 words more than McCain, her sentences
+were the only ones that broke the 8 non-stop word barrier. This is a significant finding, especially in light of the fact that she had significantly smaller vocabulary than McCain and Obama. 
+
+<h3>Part of Speech Usage: Adverb Signature Distinguishes Candidates </h3>
+
+<p>The relative ratio of each part of speech is extremely similar to
+all candidates: nouns compose 53-57% of speech, verbs 25-26%,
+adjectives 12-15% and adverbs 5-7%. The greatest fluctuation in usage,
+and in the unique component, was adverbs.
+
+<p>Given that adverbs are the least used part of speech of the four
+examined, they serve as a natural unit. When compared to adverb use,
+adjectives are consistently only 2.2-2.6 times as frequent as
+adverbs. This strongly suggests the speakers' desire to qualify things
+much more than actions. Verb use is about 4.8 times as frequent as
+adverbs, which suggests that only 1 verb in 5 gets a modifier. This
+brings to mind the notion that politicians make promises by saying
+what they will do, but fail to deliver clarity that would explain
+<i>how</i> it will be achieved. Obama, however, has a lower
+verb-to-adverb frequency, 3.7, suggesting that he might be one to more
+frequently characterize actions, by either defining limits or
+strengthening the verb. Obama had the lowest noun-to-adverb ratio,
+7.7, compared to 9.7 for McCain, 9.8 for Palin and 10.9 for
+Biden. This suggests that Obama's delivery was focused more on
+action and movement rather than static concepts.
+
+<h3>McCain is Categorical and Obama is Contextual &#8212; certainty vs nuance</h3>
+
+<p>Adverb's are not Obama's only strength. Consistently a greater part of his delivery is composed of more verbs, adjectives and adverbs than McCain (<a href="?debate=mccain-obama-combined#section-wordusage">see table</a>). If we look at words that are specific to a candidate, Obama's ratio of nouns:verbs:adjectives:adverbs in this word group is 48:30:21:7, whereas the values for McCain are 59:27:16:3.
+
+<p><a href="http://wordwatchers.wordpress.com/">Previous work by Pennebaker</a> drew firm conclusions that Obama is a contextual thinker &#8212; one who uses more verbs and modifiers &#8212 - who sees the world as having loosely defined boundaries between concepts. Contextual thinkers like to use adjectives and adverbs to loosen otherwise narrowly defined words (or those perceived as narrow) in an effort to express exceptions and nuance. McCain, on the other hand, has been characterized as a categorical thinker &#8212; one who heavily uses nouns. 
+
+<p>Even when all words by a candidate are considered, not just the ones only attributable to them, the proportion in part of speech discrepancy is strong. Obama's ratio is 51:27:16:7 and McCain's is 56:26:13:5. Adjectives and adverbs make up 22.4% of Obama's parts of speech whereas for McCain this fraction is only 18.3%. The difference in verb use is relatively small, but adjective and adverb usage is significantly different. Presumably when McCain uses a verb he sees a narrow definition. Obama, on the other hand, is more likely to add dimension to its meaning with an adverb.
+
+<h3>What Was and Wasn't Said</h3>
+
+<p>The analysis of all three debates by Obama and McCain reveals
+distinguishing elements of their speech. It is not a large stretch to
+imply that these relate directly to their personality, outlook and their policies.
+
+<p>Extremely informative are the word clouds of <a
+href="?debate=mccain-obama-combined#section-tagcloud-pos-noun">nouns</a>
+and <a
+href="?debate=mccain-obama-combined#section-tagcloud-pos-verb">verbs</a>,
+by speaker. 
+
+<table>
+<tr>
+<td><img src="venn-nouns.png" alt="Unique contribution to presidential debate noun use by John McCain and Barack Obama"></td>
+<td><img src="venn-verbs.png" alt="Unique contribution to presidential debate verb use by John McCain and Barack Obama"></td>
+</tr>
+</table>
+
+<p>When frequencies of nouns unique to McCain are tallied, the top
+word is "Obama" which he used 111 times, with other top nouns being
+Iranians (8), greed (7), marines (6), institutions (6) and aggression
+(6). Since McCain actually used both "John" and "McCain", these words
+do not overwhelm nouns unique to Obama, who used words like science
+(5), consequence (6), notion (9), approach (6), and focus (7). I am
+partial to Obama's nouns than McCains - they indicate openness to
+nuance (e.g. "notion") and recognition of the complexity in issues
+(e.g. "approach" and "consequence").
+
+<p>Relative use of McCain's unique verbs is greater than for Obama's
+set, and thus McCain's verbs outweigh Obama's in the <a
+href="?debate=mccain-obama-combined#section-tagcloud-pos-verb">unique
+verb word cloud</a>. McCain uses oppose/opposes (8), secure (4),
+legitimize (4), realize (5) and watch (5). Obama has agree (15),
+invest (14), recognize (8), focused (6) and thinking (6). McCain
+stands out with strong and aggressive verbs, and repeats them to the
+same extent. Frequencies of Obama's unique contribution is more
+greatly skewed, with verbs like "agree" and "invest" being used nearly
+twice as frequently as other unique verbs.
+
+<p>Unique word frequency statistics are extremely revealing about the
+manner in which the candidates chose to distinguish
+themselves. McCain's distinguishing nouns and verbs are more balanced
+with a focus on threats, military and unilateral action. He choses to
+spread his unique contribution evenly across these topics. Obama, on
+the other hand, has more focused use on his top verb contributions.
+
+
+
+<h3>Vocabulary Size, Repetition and the Windbag Index</h3>
+
+<p>The vocabulary size for each part of speech is remarkably similar
+for every candidate. The number of unique nouns, verbs, adjectives and
+adverbs ranged within 640-663, 359-377, 163-213 and 61-73,
+respectively. The largest difference was for adjectives, with Obama
+having the largest adjective vocabulary (213) and Biden the lowest
+(163).
+
+<a name="windbag"></a>
+<p>In an effort to provide a single number that quantifies repetition
+in speech, I created the Windbag Index (<a
+href="?methods#section-windbag">details</a>), which is a composite of
+measures of repetition in various aspects of speech. 
+
+<p><img src="windbag-index.png" alt="Windbag Index for US Presidential and Vice-Presidential Debates. Yes, Biden is a windbag.">
+<div>^These presidential candidates are literally a breed apart from their vice-presidential counterparts.</div>
+
+<p>The Windbag Index successfully captures the essence of the large
+number of individual metrics presented by this analysis. It can be
+seen that Obama and McCain cluster together, with a Windbag Index
+difference of 4.9%. Likewise Biden and Palin cluster together, with
+the difference between them being 13.3%. More importantly, the
+vice-presidential candidates are separated from the presidential
+candidates by a very large relative margin.
+
+<p>McCain's loss of verbal agility in the last debate stands out clearly in this graphic - his Windbag Index rose from a previous high of 368 to 505. Obama's index was highest in the third debate as well but his values had much lower variation suggesting better pacing and more consistent performance.
+
+<a name="download"></a>
+<h2>Downloads</h2>
+
+<p>Content of word list archive and data structure syntax is described in the <a href="?methods">methods</a> section.
+
+<p>Barack Obama vs John McCain (1st debate) <a href="deb/mccain-obama-01/transcript.txt">transcript</a> <a href="deb/mccain-obama-01/mccain-obama-01.tgz">word lists</a> <a href="deb/mccain-obama-01/tagclouds.tgz">tag clouds</a> <a href="?debate=mccain-obama-01&rawdata">data structure</a></p>
+<p>Barack Obama vs John McCain (2nd debate) <a href="deb/mccain-obama-02/transcript.txt">transcript</a> <a href="deb/mccain-obama-02/mccain-obama-02.tgz">word lists</a> <a href="deb/mccain-obama-02/tagclouds.tgz">tag clouds</a> <a href="?debate=mccain-obama-02&rawdata">data structure</a></p>
+<p>Barack Obama vs John McCain (3nd debate) <a href="deb/mccain-obama-03/transcript.txt">transcript</a> <a href="deb/mccain-obama-03/mccain-obama-03.tgz">word lists</a> <a href="deb/mccain-obama-03/tagclouds.tgz">tag clouds</a> <a href="?debate=mccain-obama-03&rawdata">data structure</a></p>
+<p>Barack Obama vs John McCain (combined debates) <a href="deb/mccain-obama-combined/transcript.txt">transcript</a> <a href="deb/mccain-obama-combined/mccain-obama-combined.tgz">word lists</a> <a href="deb/mccain-obama-combined/tagclouds.tgz">tag clouds</a> <a href="?debate=mccain-obama-combined&rawdata">data structure</a></p>
+<p>Joe Biden vs Sarah Palin <a href="deb/palin-biden/transcript.txt">transcript</a> <a href="deb/palin-biden/palin-biden.tgz">word lists</a> <a href="deb/palin-biden/tagclouds.tgz">tag clouds</a> <a href="?debate=palin-biden&rawdata">data structure</a></p>
+
+<a name="atom"></a>
+<h2>Atom Feeds</h2>
+
+<p>Each word list is available as an Atom feed. It can be used as input to <a href="http://www.wordle.net/create">create Wordles</a>. See <a href="?methods#section-atom">methods</a> for explanation about the part of speech codes.</p> 
+
+
+<h3>Barack Obama vs John McCain (1st debate)</h3>
+<ul>
+<li>Barack Obama
+<ul>
+<li>all
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=noun">n</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=verb">v</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=verball">va</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=adjective">adj</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=adverb">adv</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=all">all</a>
+exclusive
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=unique.noun">n</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=unique.verb">v</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=unique.verball">va</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=unique.adjective">adj</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=unique.adverb">adv</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=unique.all">all</a>
+<li>pairs
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=pair.noun.noun">n/n</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=pair.noun.verb">n/v</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=pair.noun.adjective">n/adj</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=pair.noun.adverb">n/adv</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=pair.noun.all">n/all</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=pair.verb.verb">v/v</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=pair.verb.adjective">v/adj</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=pair.verb.adverb">v/adv</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=pair.verb.all">v/all</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=pair.adjective.adjective">adj/adj</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=pair.adjective.adverb">adj/adv</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=pair.adjective.all">adj/all</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=pair.adverb.adverb">adv/adv</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=pair.adverb.all">adv/all</a>
+<a href="atom?debate=mccain-obama-01&speaker=obama&list=pair.all.all">all/all</a>
+</ul>
+<li>John McCain
+<ul>
+<li>all
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=noun">n</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=verb">v</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=verball">va</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=adjective">adj</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=adverb">adv</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=all">all</a>
+exclusive
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=unique.noun">n</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=unique.verb">v</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=unique.verball">va</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=unique.adjective">adj</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=unique.adverb">adv</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=unique.all">all</a>
+<li>pairs
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=pair.noun.noun">n/n</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=pair.noun.verb">n/v</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=pair.noun.adjective">n/adj</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=pair.noun.adverb">n/adv</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=pair.noun.all">n/all</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=pair.verb.verb">v/v</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=pair.verb.adjective">v/adj</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=pair.verb.adverb">v/adv</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=pair.verb.all">v/all</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=pair.adjective.adjective">adj/adj</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=pair.adjective.adverb">adj/adv</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=pair.adjective.all">adj/all</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=pair.adverb.adverb">adv/adv</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=pair.adverb.all">adv/all</a>
+<a href="atom?debate=mccain-obama-01&speaker=mccain&list=pair.all.all">all/all</a>
+</ul>
+<li>both
+<a href="atom?debate=mccain-obama-01&list=both.noun">n</a>
+<a href="atom?debate=mccain-obama-01&list=both.verball">va</a>
+<a href="atom?debate=mccain-obama-01&list=both.adjective">adj</a>
+<a href="atom?debate=mccain-obama-01&list=both.adverb">adv</a>
+<a href="atom?debate=mccain-obama-01&list=both.all">all</a>
+either
+<a href="atom?debate=mccain-obama-01&list=all.noun">n</a>
+<a href="atom?debate=mccain-obama-01&list=all.verball">va</a>
+<a href="atom?debate=mccain-obama-01&list=all.adjective">adj</a>
+<a href="atom?debate=mccain-obama-01&list=all.adverb">adv</a>
+<a href="atom?debate=mccain-obama-01&list=all.all">all</a>
+</ul>
+<h3>Barack Obama vs John McCain (2nd debate)</h3>
+<ul>
+<li>Barack Obama
+<ul>
+<li>all
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=noun">n</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=verb">v</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=verball">va</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=adjective">adj</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=adverb">adv</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=all">all</a>
+exclusive
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=unique.noun">n</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=unique.verb">v</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=unique.verball">va</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=unique.adjective">adj</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=unique.adverb">adv</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=unique.all">all</a>
+<li>pairs
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=pair.noun.noun">n/n</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=pair.noun.verb">n/v</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=pair.noun.adjective">n/adj</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=pair.noun.adverb">n/adv</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=pair.noun.all">n/all</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=pair.verb.verb">v/v</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=pair.verb.adjective">v/adj</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=pair.verb.adverb">v/adv</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=pair.verb.all">v/all</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=pair.adjective.adjective">adj/adj</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=pair.adjective.adverb">adj/adv</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=pair.adjective.all">adj/all</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=pair.adverb.adverb">adv/adv</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=pair.adverb.all">adv/all</a>
+<a href="atom?debate=mccain-obama-02&speaker=obama&list=pair.all.all">all/all</a>
+</ul>
+<li>John McCain
+<ul>
+<li>all
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=noun">n</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=verb">v</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=verball">va</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=adjective">adj</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=adverb">adv</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=all">all</a>
+exclusive
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=unique.noun">n</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=unique.verb">v</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=unique.verball">va</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=unique.adjective">adj</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=unique.adverb">adv</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=unique.all">all</a>
+<li>pairs
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=pair.noun.noun">n/n</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=pair.noun.verb">n/v</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=pair.noun.adjective">n/adj</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=pair.noun.adverb">n/adv</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=pair.noun.all">n/all</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=pair.verb.verb">v/v</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=pair.verb.adjective">v/adj</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=pair.verb.adverb">v/adv</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=pair.verb.all">v/all</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=pair.adjective.adjective">adj/adj</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=pair.adjective.adverb">adj/adv</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=pair.adjective.all">adj/all</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=pair.adverb.adverb">adv/adv</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=pair.adverb.all">adv/all</a>
+<a href="atom?debate=mccain-obama-02&speaker=mccain&list=pair.all.all">all/all</a>
+</ul>
+<li>both
+<a href="atom?debate=mccain-obama-02&list=both.noun">n</a>
+<a href="atom?debate=mccain-obama-02&list=both.verball">va</a>
+<a href="atom?debate=mccain-obama-02&list=both.adjective">adj</a>
+<a href="atom?debate=mccain-obama-02&list=both.adverb">adv</a>
+<a href="atom?debate=mccain-obama-02&list=both.all">all</a>
+either
+<a href="atom?debate=mccain-obama-02&list=all.noun">n</a>
+<a href="atom?debate=mccain-obama-02&list=all.verball">va</a>
+<a href="atom?debate=mccain-obama-02&list=all.adjective">adj</a>
+<a href="atom?debate=mccain-obama-02&list=all.adverb">adv</a>
+<a href="atom?debate=mccain-obama-02&list=all.all">all</a>
+</ul>
+<h3>Barack Obama vs John McCain (3nd debate)</h3>
+<ul>
+<li>Barack Obama
+<ul>
+<li>all
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=noun">n</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=verb">v</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=verball">va</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=adjective">adj</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=adverb">adv</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=all">all</a>
+exclusive
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=unique.noun">n</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=unique.verb">v</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=unique.verball">va</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=unique.adjective">adj</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=unique.adverb">adv</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=unique.all">all</a>
+<li>pairs
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=pair.noun.noun">n/n</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=pair.noun.verb">n/v</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=pair.noun.adjective">n/adj</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=pair.noun.adverb">n/adv</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=pair.noun.all">n/all</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=pair.verb.verb">v/v</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=pair.verb.adjective">v/adj</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=pair.verb.adverb">v/adv</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=pair.verb.all">v/all</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=pair.adjective.adjective">adj/adj</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=pair.adjective.adverb">adj/adv</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=pair.adjective.all">adj/all</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=pair.adverb.adverb">adv/adv</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=pair.adverb.all">adv/all</a>
+<a href="atom?debate=mccain-obama-03&speaker=obama&list=pair.all.all">all/all</a>
+</ul>
+<li>John McCain
+<ul>
+<li>all
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=noun">n</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=verb">v</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=verball">va</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=adjective">adj</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=adverb">adv</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=all">all</a>
+exclusive
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=unique.noun">n</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=unique.verb">v</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=unique.verball">va</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=unique.adjective">adj</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=unique.adverb">adv</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=unique.all">all</a>
+<li>pairs
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=pair.noun.noun">n/n</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=pair.noun.verb">n/v</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=pair.noun.adjective">n/adj</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=pair.noun.adverb">n/adv</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=pair.noun.all">n/all</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=pair.verb.verb">v/v</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=pair.verb.adjective">v/adj</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=pair.verb.adverb">v/adv</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=pair.verb.all">v/all</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=pair.adjective.adjective">adj/adj</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=pair.adjective.adverb">adj/adv</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=pair.adjective.all">adj/all</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=pair.adverb.adverb">adv/adv</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=pair.adverb.all">adv/all</a>
+<a href="atom?debate=mccain-obama-03&speaker=mccain&list=pair.all.all">all/all</a>
+</ul>
+<li>both
+<a href="atom?debate=mccain-obama-03&list=both.noun">n</a>
+<a href="atom?debate=mccain-obama-03&list=both.verball">va</a>
+<a href="atom?debate=mccain-obama-03&list=both.adjective">adj</a>
+<a href="atom?debate=mccain-obama-03&list=both.adverb">adv</a>
+<a href="atom?debate=mccain-obama-03&list=both.all">all</a>
+either
+<a href="atom?debate=mccain-obama-03&list=all.noun">n</a>
+<a href="atom?debate=mccain-obama-03&list=all.verball">va</a>
+<a href="atom?debate=mccain-obama-03&list=all.adjective">adj</a>
+<a href="atom?debate=mccain-obama-03&list=all.adverb">adv</a>
+<a href="atom?debate=mccain-obama-03&list=all.all">all</a>
+</ul>
+<h3>Barack Obama vs John McCain (combined debates)</h3>
+<ul>
+<li>Barack Obama
+<ul>
+<li>all
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=noun">n</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=verb">v</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=verball">va</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=adjective">adj</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=adverb">adv</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=all">all</a>
+exclusive
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=unique.noun">n</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=unique.verb">v</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=unique.verball">va</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=unique.adjective">adj</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=unique.adverb">adv</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=unique.all">all</a>
+<li>pairs
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=pair.noun.noun">n/n</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=pair.noun.verb">n/v</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=pair.noun.adjective">n/adj</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=pair.noun.adverb">n/adv</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=pair.noun.all">n/all</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=pair.verb.verb">v/v</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=pair.verb.adjective">v/adj</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=pair.verb.adverb">v/adv</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=pair.verb.all">v/all</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=pair.adjective.adjective">adj/adj</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=pair.adjective.adverb">adj/adv</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=pair.adjective.all">adj/all</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=pair.adverb.adverb">adv/adv</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=pair.adverb.all">adv/all</a>
+<a href="atom?debate=mccain-obama-combined&speaker=obama&list=pair.all.all">all/all</a>
+</ul>
+<li>John McCain
+<ul>
+<li>all
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=noun">n</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=verb">v</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=verball">va</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=adjective">adj</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=adverb">adv</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=all">all</a>
+exclusive
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=unique.noun">n</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=unique.verb">v</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=unique.verball">va</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=unique.adjective">adj</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=unique.adverb">adv</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=unique.all">all</a>
+<li>pairs
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=pair.noun.noun">n/n</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=pair.noun.verb">n/v</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=pair.noun.adjective">n/adj</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=pair.noun.adverb">n/adv</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=pair.noun.all">n/all</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=pair.verb.verb">v/v</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=pair.verb.adjective">v/adj</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=pair.verb.adverb">v/adv</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=pair.verb.all">v/all</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=pair.adjective.adjective">adj/adj</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=pair.adjective.adverb">adj/adv</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=pair.adjective.all">adj/all</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=pair.adverb.adverb">adv/adv</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=pair.adverb.all">adv/all</a>
+<a href="atom?debate=mccain-obama-combined&speaker=mccain&list=pair.all.all">all/all</a>
+</ul>
+<li>both
+<a href="atom?debate=mccain-obama-combined&list=both.noun">n</a>
+<a href="atom?debate=mccain-obama-combined&list=both.verball">va</a>
+<a href="atom?debate=mccain-obama-combined&list=both.adjective">adj</a>
+<a href="atom?debate=mccain-obama-combined&list=both.adverb">adv</a>
+<a href="atom?debate=mccain-obama-combined&list=both.all">all</a>
+either
+<a href="atom?debate=mccain-obama-combined&list=all.noun">n</a>
+<a href="atom?debate=mccain-obama-combined&list=all.verball">va</a>
+<a href="atom?debate=mccain-obama-combined&list=all.adjective">adj</a>
+<a href="atom?debate=mccain-obama-combined&list=all.adverb">adv</a>
+<a href="atom?debate=mccain-obama-combined&list=all.all">all</a>
+</ul>
+<h3>Joe Biden vs Sarah Palin</h3>
+<ul>
+<li>Joe Biden
+<ul>
+<li>all
+<a href="atom?debate=palin-biden&speaker=biden&list=noun">n</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=verb">v</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=verball">va</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=adjective">adj</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=adverb">adv</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=all">all</a>
+exclusive
+<a href="atom?debate=palin-biden&speaker=biden&list=unique.noun">n</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=unique.verb">v</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=unique.verball">va</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=unique.adjective">adj</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=unique.adverb">adv</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=unique.all">all</a>
+<li>pairs
+<a href="atom?debate=palin-biden&speaker=biden&list=pair.noun.noun">n/n</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=pair.noun.verb">n/v</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=pair.noun.adjective">n/adj</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=pair.noun.adverb">n/adv</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=pair.noun.all">n/all</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=pair.verb.verb">v/v</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=pair.verb.adjective">v/adj</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=pair.verb.adverb">v/adv</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=pair.verb.all">v/all</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=pair.adjective.adjective">adj/adj</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=pair.adjective.adverb">adj/adv</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=pair.adjective.all">adj/all</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=pair.adverb.adverb">adv/adv</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=pair.adverb.all">adv/all</a>
+<a href="atom?debate=palin-biden&speaker=biden&list=pair.all.all">all/all</a>
+</ul>
+<li>Sarah Palin
+<ul>
+<li>all
+<a href="atom?debate=palin-biden&speaker=palin&list=noun">n</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=verb">v</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=verball">va</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=adjective">adj</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=adverb">adv</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=all">all</a>
+exclusive
+<a href="atom?debate=palin-biden&speaker=palin&list=unique.noun">n</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=unique.verb">v</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=unique.verball">va</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=unique.adjective">adj</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=unique.adverb">adv</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=unique.all">all</a>
+<li>pairs
+<a href="atom?debate=palin-biden&speaker=palin&list=pair.noun.noun">n/n</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=pair.noun.verb">n/v</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=pair.noun.adjective">n/adj</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=pair.noun.adverb">n/adv</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=pair.noun.all">n/all</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=pair.verb.verb">v/v</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=pair.verb.adjective">v/adj</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=pair.verb.adverb">v/adv</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=pair.verb.all">v/all</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=pair.adjective.adjective">adj/adj</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=pair.adjective.adverb">adj/adv</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=pair.adjective.all">adj/all</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=pair.adverb.adverb">adv/adv</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=pair.adverb.all">adv/all</a>
+<a href="atom?debate=palin-biden&speaker=palin&list=pair.all.all">all/all</a>
+</ul>
+<li>both
+<a href="atom?debate=palin-biden&list=both.noun">n</a>
+<a href="atom?debate=palin-biden&list=both.verball">va</a>
+<a href="atom?debate=palin-biden&list=both.adjective">adj</a>
+<a href="atom?debate=palin-biden&list=both.adverb">adv</a>
+<a href="atom?debate=palin-biden&list=both.all">all</a>
+either
+<a href="atom?debate=palin-biden&list=all.noun">n</a>
+<a href="atom?debate=palin-biden&list=all.verball">va</a>
+<a href="atom?debate=palin-biden&list=all.adjective">adj</a>
+<a href="atom?debate=palin-biden&list=all.adverb">adv</a>
+<a href="atom?debate=palin-biden&list=all.all">all</a>
+</ul>
+
+
+<div id=footer>
+(c) 2008 <a href="mailto:martin.krzywinski@gmail.com">Martin Krzywinski</a> | <a href="http://mkweb.bcgsc.ca">other projects</a>
+</div>
+
+</div></div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-5913700-1");
+pageTracker._trackPageview();
+</script>
+</body></html>
+
+
+

@@ -1,0 +1,2792 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+	<title>AIGA Design Jobs | Professional Job Listings</title>
+
+	<meta http-equiv="Pragma" content="no-cache" />
+	<link rel="stylesheet" type="text/css" href="../styles/AIGA.css" />
+	<script src="../scripts/general.js" type="text/javascript"></script>
+	<script src="../scripts/jquery.js" type="text/javascript"></script>
+</head>
+
+<body>
+<h1 id="pagetitle"><a href="http://www.aiga.org/">aiga</a></h1>
+<div id="pagehead" class="wrapper">
+	<div id="top_right_menu">
+		<a href="http://www.aiga.org/">AIGA.org</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+		<a href="http://my.aiga.org/">My AIGA</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+		<a href="http://portfolios.aiga.org/">Member Portfolios</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+		<a href="http://designarchives.aiga.org/#/home">Design Archives</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+		
+		<a href="http://www.aiga.org/join" id="last">JOIN AIGA</a>
+		
+		<a href="http://designjobs.aiga.org/login/logout.asp" id="logout_link" class="hide">Logout</a>
+	</div>
+	<h2 id="aigaDesignJobs"><a href="http://designjobs.aiga.org/" title="">AIGA Design Jobs</a></h2>
+		
+</div>
+<div class="wrapper">
+
+	<script type="text/javascript" language="javascript">
+	// <![CDATA[
+	
+	//default search variables sent via URL to ajax_jobs.asp.
+	var searchmode = 'browse';
+	var level = 'pro';
+	var searchkeyword = '';
+	var searchzipcode = '';
+	var searchdistance = '20';
+	var searchcategory = 0;
+	var searchstate = 0;
+	var searchcountry = 0;
+	var specialties_max_length = 0;
+	var locations_max_length = 0;
+	var first_time = true;
+	var currentSearchURL = '';
+	var criteriaSelected = false;
+	
+	var searchForm = '';
+
+	var boxSliding = false;
+	
+	function searchtypeSet(elemnt){
+		if(level!=elemnt){
+			level=elemnt;
+			document.getElementById('proSidebar').className = 'hide';		
+			document.getElementById('internSidebar').className = 'hide';		
+			document.getElementById('probonoSidebar').className = 'hide';		
+			document.getElementById('proLink').className = 'Tab';		
+			document.getElementById('internLink').className = 'Tab';		
+			document.getElementById('probonoLink').className = 'Tab';		
+			
+			document.getElementById(elemnt+'Link').className = 'activeTab';		
+			document.getElementById(elemnt+'Sidebar').className = 'show resource';		
+			
+			searchajax();
+		}
+	}
+	
+	function setCategory(newCat,newCatText)
+	{
+		document.getElementById('categoryLink').innerHTML = newCatText;
+		searchcategory = newCat;
+		criteriaSelected=true;
+		$('ul#categoryList').slideUp('fast');
+		searchajax();
+	}
+		
+	function setState(newState,newStateText)
+	{
+	    searchcountry=0;
+		searchstate = newState;
+		criteriaSelected=true;
+		document.getElementById('stateLink').innerHTML = newStateText;
+		$('ul#stateList').slideUp('fast');
+		searchajax();
+	}
+
+	function setCountry(newCountry,newCountryText)
+	{
+	    searchstate=0;
+		searchcountry = newCountry;
+		criteriaSelected=true;
+		document.getElementById('stateLink').innerHTML = newCountryText;
+		$('ul#stateList').slideUp('fast');
+		searchajax();
+	}
+	
+	function clearLocationFilter()
+	{
+	    searchstate=0;
+	    searchcountry=0;
+	    document.getElementById('stateLink').innerHTML = 'all locations';
+	    searchajax();
+	}
+
+	function setDistance(newDistance)
+	{
+		searchdistance = newDistance;
+		document.getElementById('distanceLink').innerHTML = newDistance + ' Miles';
+		criteriaSelected=true;
+		$('ul#distanceList').slideUp('fast');
+	}
+	
+	function keywordSearchSubmit()
+	{
+		searchForm = 'keyword';
+		searchkeyword =  document.getElementById('keywordinput').value;
+		if (searchkeyword != '')
+		{
+			criteriaSelected=true;
+			document.getElementById('zipcodeinput').value='';
+			setDistance('20');
+		    searchstate=0;
+		    searchcountry=0;
+		    searchcategory=0;
+		    searchajax();
+		}
+	}
+	
+		
+	function distanceSearchSubmit()
+	{
+		//clear the keyword first
+		document.getElementById('keywordinput').value="";
+		searchkeyword='';
+		
+		searchForm = 'distance';
+		searchzipcode = document.getElementById('zipcodeinput').value;
+		criteriaSelected=true;
+		
+		searchajax();
+	}
+
+	
+    function enterKeyNotPressed(e,identifier)
+    {
+       var key;
+       if(window.event)
+            key = window.event.keyCode;     //IE
+       else
+            key = e.which;                  //firefox
+       if (key==13 || key==3)            // on the mac the numeric keypad enter = 3
+       {
+       		if (identifier==1)
+	           keywordSearchSubmit();
+	        else
+	        	distanceSearchSubmit();
+       }
+       return(key != 13 && key != 3);
+    }
+	
+	
+	function closeAll()
+	{
+		$('ul#distanceList').css("display", 'none');
+		$('ul#categoryList').css("display", 'none');
+		$('ul#stateList').css("display", 'none');
+	}
+
+	function loadDefaultList()
+	{		
+		searchstate=0;
+		searchcountry=0;
+		searchcategory=0;
+		if (criteriaSelected)
+			searchajax();		
+	}
+		
+	function searchbrowse()
+	{
+		closeAll();
+		if(searchmode == 'browse')
+		{
+			searchmode = 'search';
+			document.getElementById('keywordsearch').className = 'show';
+			document.getElementById('distancesearch').className = 'show';
+			document.getElementById('browsesentence').className = 'hide';
+			document.getElementById('searchbrowseLink').innerHTML = '';	
+			fadeIn('keywordsearch', 0);
+			fadeIn('distancesearch', 0);
+			document.getElementById('searchbrowseLink').innerHTML = '&laquo; Back to browse mode';
+			loadDefaultList();	
+		}
+		else 
+		{
+			searchmode = 'browse';
+			document.getElementById('keywordsearch').className = 'hide';
+			document.getElementById('distancesearch').className = 'hide';
+			document.getElementById('browsesentence').className = 'show';
+			fadeIn('browsesentence', 0);
+			document.getElementById('searchbrowseLink').innerHTML = 'Search';	
+			loadDefaultList();	
+		}
+	}
+	
+	function searchajax()
+	{
+		document.getElementById('joblist').className = 'halfAlpha';
+		//$('#loadingCell').slideDown('medium'); 
+		document.getElementById('loadingCell').className = 'show';
+		//fadeIn('loadingCell', 0);
+
+		//document.getElementById('joblist').innerHTML = '<table cellpadding="0" cellspacing="0" border="0"><tr><td><span id="loadinglist">Loading List<'+'/span><'+'/td><'+'/tr><'+'/table>';
+		//alert(document.getElementById('joblist').innerHTML);
+				
+		
+		
+		var baseURL = '../includes/callbacks/jobs_search_results.asp?package_to_filter_on=1&package_filter_type=true&';
+		searchURL = ''
+		if(searchmode=='browse')
+		{
+		    if (searchcategory != 0)
+			    searchURL += 'specialty=' + searchcategory;//+'&state='+searchstate;
+			if (searchstate != 0)
+			{
+			    if (searchcategory != 0)
+			        searchURL += '&'
+			    searchURL += 'state=' + searchstate
+			}
+			if (searchcountry != 0)
+			{
+			    if (searchcategory != 0)
+			        searchURL += '&'
+			    searchURL += 'country=' + searchcountry
+			}
+		} 
+		else
+		{
+			if(searchForm == 'distance')
+			{
+			    searchURL += 'zip='+searchzipcode+'&distance_in_miles='+searchdistance;
+			} 
+			else 
+			{
+			    searchURL += 'keywords='+searchkeyword;
+			}
+		}
+		currentSearchURL=searchURL;
+		searchURL=baseURL + searchURL;
+		//alert(searchURL);
+		
+		if (window.XMLHttpRequest)
+		{
+			req = new XMLHttpRequest();
+			req.onreadystatechange = searchreturn;
+			req.open("GET", searchURL);
+			req.send(null);	
+		} 
+		else if (window.ActiveXObject)
+		{
+			req = new ActiveXObject("Microsoft.XMLHTTP");
+			if (req)
+			{
+				req.onreadystatechange = searchreturn;
+				req.open("GET", searchURL);
+				req.send();
+
+			}
+		}
+	}
+
+	function searchreturn(){
+		if (req.readyState == 4)
+		{
+			if (req.status == 200)
+			{
+				document.getElementById('loadingCell').className = 'hide';
+				//$('#loadingCell').slideUp('fast'); 
+				var response_json = jQuery.parseJSON(req.responseText);
+				
+				var specialties = response_json.specialties
+				var jobs = response_json.jobs
+				var countries = response_json.countries
+				var states = response_json.states
+				
+			    var job, specialty, country, state, i;
+			    //alert(specialties.length);
+			    //alert(countries.length);
+			    //alert(states.length);
+			    //alert(jobs.length);
+			    var current_locations_length = states.length + countries.length;
+			    var current_specialties_length = specialties.length;
+			    if (first_time)
+			    {
+			        first_time=false;
+			        specialties_max_length = current_specialties_length;
+			        locations_max_length = current_locations_length;
+			    }
+			    
+			    var jobs_container = $("#joblist");
+			    jobs_container.empty();
+			    
+			    if (jobs.length==0)
+			    	$("#noResultsMessage").show();
+			    else
+			    	$("#noResultsMessage").hide();
+			    
+			    
+			    for (i=0;i<jobs.length;i++)
+			    {
+			        var job_div = document.createElement('div');
+			        var location_div = document.createElement('div');
+			        var position_div = document.createElement('div');
+			        var date_div = document.createElement('div');
+			        var company_span = document.createElement('span');
+			        var title_link = document.createElement('a');
+			        var br_separator = document.createElement('br');
+			        			        
+			        job_div.className='individuallisting';
+			        location_div.className='location';
+			        location_div.innerHTML=jobs[i].location;
+
+			        position_div.className='position';
+			        title_link.setAttribute('href','job_details.asp?job_id=' + jobs[i].id + '&' + currentSearchURL);
+			        title_link.innerHTML=jobs[i].title;
+			        position_div.appendChild(title_link);
+    			    company_span.className='company';
+			        company_span.innerHTML=jobs[i].company;
+			        position_div.appendChild(company_span);
+
+                    date_div.className='date';
+                    date_div.innerHTML=jobs[i].date_posted;
+                    
+                    br_separator.className='clear';
+			        
+			        job_div.appendChild(location_div);			        
+			        job_div.appendChild(position_div);
+			        job_div.appendChild(date_div);
+			        job_div.appendChild(br_separator);
+			        
+			        jobs_container.append(job_div);
+			        			        			        
+			    }
+								
+				document.getElementById('joblist').className = '';
+				
+				//fadeIn('joblist', 50);
+
+                //those dropdowns are hidden, so no need to update?
+		        if(searchmode == 'browse')
+		        {
+        				
+			            //update the category list
+			            var specialty_li, specialties_container, specialty_link
+			            specialties_container = document.getElementById("categoryList");
+			            specialties_container.innerHTML="";
+
+				        //insert default choice if there is already a specialty filter
+				        if (searchcategory >0)
+				        {
+		                    specialty_li = document.createElement('li');		
+				            specialty_link = document.createElement('a');
+				            specialty_link.setAttribute('href','#');
+				            specialty_link.setAttribute('onClick','setCategory(0,\'all disciplines\');return false;');
+				            specialty_li.appendChild(specialty_link);
+				            specialty_link.innerHTML='all disciplines';
+				            specialties_container.insertBefore(specialty_li,specialties_container[1])
+				        }
+
+				        for (i=0;i<specialties.length;i++)
+				        {
+		                    specialty_li = document.createElement('li');		
+				            specialty_link = document.createElement('a');
+				            specialty_link.setAttribute('href','#');
+				            specialty_link.setAttribute('onClick','setCategory(' + specialties[i].id + ',\'' + specialties[i].name + '\');return false;');
+				            specialty_li.appendChild(specialty_link);
+				            specialty_link.innerHTML=specialties[i].name;
+				            specialties_container.insertBefore(specialty_li,specialties_container[i+2])
+				        }
+        				
+				        //update the states + countries list
+			            var state_li, states_container, state_link
+			            states_container = document.getElementById("stateList");
+			            states_container.innerHTML="";
+
+                        if ((searchstate > 0) || (searchcountry > 0)) 
+                        {
+		                    state_li = document.createElement('li');		
+				            state_link = document.createElement('a');
+				            state_link.setAttribute('href','#');
+				            state_link.setAttribute('onClick','clearLocationFilter();return false;');
+				            state_li.appendChild(state_link);
+				            state_link.innerHTML='all locations';
+				            states_container.insertBefore(state_li,states_container[1])
+				        }
+
+				        for (i=0;i<states.length;i++)
+				        {
+		                    state_li = document.createElement('li');		
+				            state_link = document.createElement('a');
+				            state_link.setAttribute('href','#');
+				            state_link.setAttribute('onClick','setState(' + states[i].id + ',\'' + states[i].name + '\');return false;');
+				            state_li.appendChild(state_link);
+				            state_link.innerHTML=states[i].name + ' (' + states[i].count + ')';
+				            states_container.insertBefore(state_li,states_container[i+2])
+				        }				
+        				
+				        var state_offset = i+1;
+				        for (i=0;i<countries.length;i++)
+				        {
+		                    state_li = document.createElement('li');		
+				            state_link = document.createElement('a');
+				            state_link.setAttribute('href','#');
+				            state_link.setAttribute('onClick','setCountry(' + countries[i].id + ',\'' + countries[i].name + '\');return false;');
+				            state_li.appendChild(state_link);
+				            state_link.innerHTML=countries[i].name + ' (' + countries[i].count + ')';
+				            states_container.insertBefore(state_li,states_container[i+state_offset])
+				        }				
+	            }
+
+				currentProc = "";
+			}
+		}
+	}	
+	
+	
+	function init()
+	{
+		$('#distanceLink').click(function () { 
+			boxSliding = true; 
+			$('ul#distanceList').slideToggle('medium', function(){ boxSliding = false; } ); 
+		});
+
+		$('#categoryLink').click(function () { 
+			boxSliding = true;
+			$('ul#categoryList').slideToggle('fast', function(){ boxSliding = false; } ); 
+			var pos = $('#categoryLink').position();
+			$('ul#categoryList').css("top", (pos.top+27) + 'px');
+			$('ul#categoryList').css("left", pos.left + 'px');
+		});
+		
+		$('#stateLink').click(function () { 
+			boxSliding = true;
+			$('ul#stateList').slideToggle('fast', function(){ boxSliding = false; } ); 
+			var pos = $('#stateLink').position();
+			$('ul#stateList').css("top", (pos.top+27) + 'px');
+			$('ul#stateList').css("left", pos.left + 'px');
+		});
+		
+		$(window).resize(function() {
+		  closeAll();
+		});
+		
+		//the first load is via server side
+		//searchajax();
+	}
+	
+		
+	/*
+	function click(e) { //3.0
+		if (document.all) {
+			if (event.button == 2 | | event.button == 3 | | event.button == 6 | | event.button == 7) {
+				alert(message);
+				return false;
+			}
+		}
+		if (document.layers) {
+			if (e.which == 3) {
+				alert(message);
+				return false;
+			}
+		}
+	}
+	if (document.layers) {
+		document.captureEvents(Event.MOUSEDOWN);
+	}
+	document.onmousedown=click;
+	*/
+	$(document).click(
+		//function(){ alert('here?'); }
+		//function(){  if(boxSliding == false){ closeAll(); }  }
+		function(){  if(boxSliding == false){ closeAll(); }  }
+	);
+	
+	window.onload = init;
+	
+	// ]]>
+	</script>
+
+
+		<!-- MAIN BODY --> 
+		<div class="mainArea">
+		<div id="coroflotlistings">
+		
+		<div id="searchform">
+	<div id="searchtabbar">
+		<a href="jobs_browse.asp" id="proLink" class="activeTab" title="">Professional</a>
+		<a href="internships.asp" id="internLink" class="Tab" title="">Internships</a>
+		<a href="pro_bono_jobs.asp" id="probonoLink" class="Tab" title="">Pro bono</a>
+
+		<a href="#" onclick="searchbrowse(); return false;" id="searchbrowseLink">Search</a>
+	</div>
+	<div id="searchbrowseBox">
+	
+	<script language="javascript">
+	
+	
+	</script>
+		<form method="post" action="" id="keywordsearch" class="hide">
+		<fieldset>
+		<h4>Keyword search</h4>
+		<input type="text" name="" onKeyPress="return enterKeyNotPressed(event,1);" id="keywordinput" value="" />
+		<a href="#" title="" class="searchlink"  onclick="keywordSearchSubmit(); return false;" >Search</a>
+		<em>(e.g. interaction, Ohio)</em>
+		</fieldset>
+		</form>
+		<form method="post" action="" id="distancesearch" class="hide">
+		<fieldset>
+		<h4>Show all listings within</h4>
+		<div id="distanceBox"><a href="#" id="distanceLink" title="">20 Miles</a></div>
+		<ul id="distanceList">
+		<li><a href="#" onclick="setDistance(5); return false;" title="">5 miles</a></li>
+		<li><a href="#" onclick="setDistance(10); return false;" title="">10 miles</a></li>
+		<li><a href="#" onclick="setDistance(20); return false;" title="">20 miles</a></li>
+		<li><a href="#" onclick="setDistance(50); return false;" title="">50 miles</a></li>
+		<li><a href="#" onclick="setDistance(100); return false;" title="">100 miles</a></li>
+		<li><a href="#" onclick="setDistance(150); return false;" title="">150 miles</a></li>
+		</ul>
+		<span>of</span>
+		<input type="text" name="" id="zipcodeinput" value="" maxlength="6" onKeyPress="return enterKeyNotPressed(event,2);" />
+		<a href="#" onclick="distanceSearchSubmit(); return false;" title="" class="searchlink">Search</a>
+		<em>(Enter zip code)</em>
+		</fieldset>
+		</form>
+		
+		<!-- Used to test length...--> 
+		<!--p id="browsesentence" class="show">Show listings for <a href="#" id="categoryLink" title="">Interaction Design</a> located in <a href="#" id="stateLink" title="">District of Columbia</a></p--> 
+		<p id="browsesentence" class="show">Show listings for <a href="#" id="categoryLink" title="">all disciplines</a> located in <a href="#" id="stateLink" title="">all locations</a></p>
+
+		<ul id="categoryList">
+		
+		<li><a onclick="setCategory(10,'Advertising'); return false;" href="#" class="category">Advertising</a></li>
+		
+		<li><a onclick="setCategory(11,'Architecture'); return false;" href="#" class="category">Architecture</a></li>
+		
+		<li><a onclick="setCategory(17,'Exhibit Design'); return false;" href="#" class="category">Exhibit Design</a></li>
+		
+		<li><a onclick="setCategory(12,'Fashion/Apparel'); return false;" href="#" class="category">Fashion/Apparel</a></li>
+		
+		<li><a onclick="setCategory(13,'Graphic Design'); return false;" href="#" class="category">Graphic Design</a></li>
+		
+		<li><a onclick="setCategory(14,'Industrial Design'); return false;" href="#" class="category">Industrial Design</a></li>
+		
+		<li><a onclick="setCategory(15,'Interaction Design'); return false;" href="#" class="category">Interaction Design</a></li>
+		
+		<li><a onclick="setCategory(16,'Interior Design'); return false;" href="#" class="category">Interior Design</a></li>
+		
+		<li><a onclick="setCategory(19,'Service Design'); return false;" href="#" class="category">Service Design</a></li>
+		
+		<li><a onclick="setCategory(18,'Web Design'); return false;" href="#" class="category">Web Design</a></li>
+		
+		<li><a onclick="setCategory(0,'all disciplines'); return false;" href="#" class="category">all disciplines</a></li>
+		</ul>
+	
+		<ul id="stateList">
+		
+		<li><a onclick="setState(3,'Arizona'); return false;" href="#">Arizona <span>(3)</span></a></li>
+		
+		<li><a onclick="setState(5,'California'); return false;" href="#">California <span>(16)</span></a></li>
+		
+		<li><a onclick="setState(6,'Colorado'); return false;" href="#">Colorado <span>(1)</span></a></li>
+		
+		<li><a onclick="setState(9,'District of Columbia'); return false;" href="#">District of Columbia <span>(8)</span></a></li>
+		
+		<li><a onclick="setState(10,'Florida'); return false;" href="#">Florida <span>(6)</span></a></li>
+		
+		<li><a onclick="setState(11,'Georgia'); return false;" href="#">Georgia <span>(5)</span></a></li>
+		
+		<li><a onclick="setState(14,'Illinois'); return false;" href="#">Illinois <span>(14)</span></a></li>
+		
+		<li><a onclick="setState(15,'Indiana'); return false;" href="#">Indiana <span>(3)</span></a></li>
+		
+		<li><a onclick="setState(17,'Kansas'); return false;" href="#">Kansas <span>(6)</span></a></li>
+		
+		<li><a onclick="setState(18,'Kentucky'); return false;" href="#">Kentucky <span>(1)</span></a></li>
+		
+		<li><a onclick="setState(19,'Louisiana'); return false;" href="#">Louisiana <span>(1)</span></a></li>
+		
+		<li><a onclick="setState(21,'Maryland'); return false;" href="#">Maryland <span>(9)</span></a></li>
+		
+		<li><a onclick="setState(22,'Massachusetts'); return false;" href="#">Massachusetts <span>(12)</span></a></li>
+		
+		<li><a onclick="setState(23,'Michigan'); return false;" href="#">Michigan <span>(3)</span></a></li>
+		
+		<li><a onclick="setState(24,'Minnesota'); return false;" href="#">Minnesota <span>(8)</span></a></li>
+		
+		<li><a onclick="setState(25,'Mississippi'); return false;" href="#">Mississippi <span>(2)</span></a></li>
+		
+		<li><a onclick="setState(26,'Missouri'); return false;" href="#">Missouri <span>(3)</span></a></li>
+		
+		<li><a onclick="setState(28,'Nebraska'); return false;" href="#">Nebraska <span>(1)</span></a></li>
+		
+		<li><a onclick="setState(29,'Nevada'); return false;" href="#">Nevada <span>(3)</span></a></li>
+		
+		<li><a onclick="setState(31,'New Jersey'); return false;" href="#">New Jersey <span>(4)</span></a></li>
+		
+		<li><a onclick="setState(32,'New Mexico'); return false;" href="#">New Mexico <span>(2)</span></a></li>
+		
+		<li><a onclick="setState(33,'New York'); return false;" href="#">New York <span>(22)</span></a></li>
+		
+		<li><a onclick="setState(34,'North Carolina'); return false;" href="#">North Carolina <span>(3)</span></a></li>
+		
+		<li><a onclick="setState(36,'Ohio'); return false;" href="#">Ohio <span>(7)</span></a></li>
+		
+		<li><a onclick="setState(38,'Oregon'); return false;" href="#">Oregon <span>(9)</span></a></li>
+		
+		<li><a onclick="setState(39,'Pennsylvania'); return false;" href="#">Pennsylvania <span>(3)</span></a></li>
+		
+		<li><a onclick="setState(43,'Tennessee'); return false;" href="#">Tennessee <span>(3)</span></a></li>
+		
+		<li><a onclick="setState(44,'Texas'); return false;" href="#">Texas <span>(9)</span></a></li>
+		
+		<li><a onclick="setState(45,'Utah'); return false;" href="#">Utah <span>(4)</span></a></li>
+		
+		<li><a onclick="setState(46,'Vermont'); return false;" href="#">Vermont <span>(3)</span></a></li>
+		
+		<li><a onclick="setState(47,'Virginia'); return false;" href="#">Virginia <span>(10)</span></a></li>
+		
+		<li><a onclick="setState(48,'Washington'); return false;" href="#">Washington <span>(8)</span></a></li>
+		
+		<li><a onclick="setState(50,'Wisconsin'); return false;" href="#">Wisconsin <span>(3)</span></a></li>
+		
+		<li><a onclick="setCountry(33,'Canada'); return false;" href="#">Canada <span>(4)</span></a></li>
+		
+		<li><a onclick="setCountry(90,'India'); return false;" href="#">India <span>(1)</span></a></li>
+		
+		<li><a onclick="setCountry(144,'Norway'); return false;" href="#">Norway <span>(2)</span></a></li>
+		
+		<li><a onclick="setCountry(172,'Singapore'); return false;" href="#">Singapore <span>(1)</span></a></li>
+		
+		<li><a onclick="setCountry(215,'United Arab Emirates'); return false;" href="#">United Arab Emirates <span>(2)</span></a></li>
+				
+		<li class="seperator"><a onclick="setState(0,'all locations'); return false;" href="#">all locations</a></li>
+		</ul>
+	
+		<span class="clear">&nbsp;</span>
+	
+	</div>
+</div>
+<div id="loadingCell" class="hide"><img src="http://designjobs.aiga.org/images/loader.gif" width="24" height="24" alt="" />Loading<br />Design Jobs List</div>
+
+
+<div id="noResultsMessage" class="hide"><h4>Nothing found!</h4>
+
+<p>Sorry, but your search turned up no results. Here are some suggestions:</p>
+<div id="terms">	
+	<ul>       
+		<li>Try modifying your search, using more general criteria, or fewer keywords.</li>
+		<li>Take a look at our <a href="jobs_browse.asp">latest job listings</a> and see if any of those interest you.</li>
+	</ul>
+</div>
+</div>
+
+<div id="joblist">
+
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Abu Dhabi, United Arab Emirates</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29949&all=y">Assistant, Associate or Full Professor of Graphic Design, Zayed University, Abu Dhabi</a>
+			<span class="company">Zayed University</span>
+    	</div>
+		<div class="date" valign="top">December 19, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">West Jordan, UT</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29940&all=y">Senior Graphic Designer</a>
+			<span class="company">Mountain America Credit Union</span>
+    	</div>
+		<div class="date" valign="top">December 17, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Detroit, MI</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29938&all=y">Graphic Design Program Chair</a>
+			<span class="company">International Academy of Design and Technology</span>
+    	</div>
+		<div class="date" valign="top">December 17, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Palo Alto, CA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29937&all=y">Designer</a>
+			<span class="company">Wildfire Interactive</span>
+    	</div>
+		<div class="date" valign="top">December 17, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">New York, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29933&all=y">Graphic Designer</a>
+			<span class="company">Bérard Associates</span>
+    	</div>
+		<div class="date" valign="top">December 17, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Nashville, TN</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29928&all=y">Assistant Professor of Design Communications</a>
+			<span class="company">Belmont University</span>
+    	</div>
+		<div class="date" valign="top">December 17, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Stevenson, MD</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29926&all=y">Assistant Professor (Web/Interactive Design)</a>
+			<span class="company">Stevenson University</span>
+    	</div>
+		<div class="date" valign="top">December 17, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Fairfax, VA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29921&all=y">Creative Designer</a>
+			<span class="company">McDonough Bolyard Peck,Inc.</span>
+    	</div>
+		<div class="date" valign="top">December 17, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Singapore, Singapore</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29915&all=y">Faculty Appointment in Visual Communication</a>
+			<span class="company">Nanyang Technological University</span>
+    	</div>
+		<div class="date" valign="top">December 17, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Walla Walla, WA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29908&all=y">Senior Graphic Designer</a>
+			<span class="company">Coffey Communications, Inc.</span>
+    	</div>
+		<div class="date" valign="top">December 16, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">College Park, MD</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29907&all=y">Coordinator for Graphic Design and Promotion (#100512)</a>
+			<span class="company">University of Maryland - Campus Recreation Services</span>
+    	</div>
+		<div class="date" valign="top">December 16, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Newark, NJ</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29906&all=y">GRAPHIC DESIGN: Assistant Professor, Tenure-Track, Rutgers University-Newark Campus</a>
+			<span class="company">Rutgers University, Newark.  Department of Arts, Culture and Media</span>
+    	</div>
+		<div class="date" valign="top">December 16, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Orlando, FL</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29252&all=y">Web Designer</a>
+			<span class="company">GoConvergence Digital</span>
+    	</div>
+		<div class="date" valign="top">December 16, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Minneapolis, MN</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29896&all=y">Graphic Designer - Print, Web and Marketing Materials</a>
+			<span class="company">JAMF Software</span>
+    	</div>
+		<div class="date" valign="top">December 16, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Chicago, IL</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29892&all=y">ASSISTANT PROFESSOR, ART + DESIGN FOUNDATIONS</a>
+			<span class="company">Columbia College</span>
+    	</div>
+		<div class="date" valign="top">December 15, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Chicago, IL</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29888&all=y">ASSISTANT PROFESSOR, DESIGN HISTORY</a>
+			<span class="company">Columbia College</span>
+    	</div>
+		<div class="date" valign="top">December 15, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Chicago, IL</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29887&all=y">ASSISTANT PROFESSOR, VISUAL COMMUNICATIONS IN ILLUSTRATION</a>
+			<span class="company">Columbia College</span>
+    	</div>
+		<div class="date" valign="top">December 15, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Chicago, IL</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29886&all=y">Assistant Professor, Visual Communications Generalist</a>
+			<span class="company">Columbia College</span>
+    	</div>
+		<div class="date" valign="top">December 15, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Washington, DC</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29885&all=y">Junior Designer for Web and Print</a>
+			<span class="company">Levine and Associates, Inc.</span>
+    	</div>
+		<div class="date" valign="top">December 15, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Bethesda, MD</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29874&all=y">Lead Art Director</a>
+			<span class="company">Marriott</span>
+    	</div>
+		<div class="date" valign="top">December 14, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Park City, UT</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29871&all=y">User Experience Designer</a>
+			<span class="company">Backcountry.com</span>
+    	</div>
+		<div class="date" valign="top">December 14, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Wichita, KS</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29869&all=y">.5 Assisant Professor of Graphic Design</a>
+			<span class="company">Wichita State University</span>
+    	</div>
+		<div class="date" valign="top">December 14, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">New York, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29867&all=y">Project Manager</a>
+			<span class="company">Carbone Smolan Agency</span>
+    	</div>
+		<div class="date" valign="top">December 14, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Towson, MD</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29865&all=y">Web Designer</a>
+			<span class="company">Towson University</span>
+    	</div>
+		<div class="date" valign="top">December 14, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">New York, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29866&all=y">Junior Designer</a>
+			<span class="company">Carbone Smolan Agency</span>
+    	</div>
+		<div class="date" valign="top">December 14, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">New York, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29863&all=y">Design Intern</a>
+			<span class="company">Carbone Smolan Agency</span>
+    	</div>
+		<div class="date" valign="top">December 14, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Austin, TX</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29854&all=y">Retail Package Production Project Manager</a>
+			<span class="company">Fisher Design, Inc.</span>
+    	</div>
+		<div class="date" valign="top">December 14, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Baltimore, MD</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29851&all=y">Full-Time Faculty, Post Baccalaureate in Graphic Design</a>
+			<span class="company">Maryland Institute College of Art</span>
+    	</div>
+		<div class="date" valign="top">December 14, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">n/a, MD</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29850&all=y">Full-Time Faculty, Graphic Design</a>
+			<span class="company">Maryland Institute College of Art</span>
+    	</div>
+		<div class="date" valign="top">December 14, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Boston, MA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29849&all=y">Sr. Design Director, Interactive</a>
+			<span class="company">Maark</span>
+    	</div>
+		<div class="date" valign="top">December 14, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Washington, DC</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29840&all=y">Informational Graphics Designer</a>
+			<span class="company">Pew Research Center</span>
+    	</div>
+		<div class="date" valign="top">December 13, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">New York, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29838&all=y">Design Director, Information Design</a>
+			<span class="company">Siegel+Gale</span>
+    	</div>
+		<div class="date" valign="top">December 13, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Palo Alto, CA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29837&all=y">User Experience Interaction Designer</a>
+			<span class="company">TIBCO Software</span>
+    	</div>
+		<div class="date" valign="top">December 13, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Mesa, AZ</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29823&all=y">Senior Designer</a>
+			<span class="company">Avideo</span>
+    	</div>
+		<div class="date" valign="top">December 11, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Logan, UT</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29822&all=y">Senior Designer / Art Director</a>
+			<span class="company">Advent Creative</span>
+    	</div>
+		<div class="date" valign="top">December 11, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Orchard Park, KS</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29819&all=y">Adjunct Assistant Professor - Graphic Design - Electronic Production</a>
+			<span class="company">Johnson County Community College</span>
+    	</div>
+		<div class="date" valign="top">December 10, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">new york, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29807&all=y">Graphic Designer-Paid Internship</a>
+			<span class="company">Empax</span>
+    	</div>
+		<div class="date" valign="top">December 10, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Monmouth, OR</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29800&all=y">Assistant Professor of Art (Graphic Design/Design Theory)</a>
+			<span class="company">Western Oregon University</span>
+    	</div>
+		<div class="date" valign="top">December 10, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Monmouth, OR</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29797&all=y">Assistant Professor of Art (Interactive Digital Design)</a>
+			<span class="company">Western Oregon University</span>
+    	</div>
+		<div class="date" valign="top">December 10, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Brooklyn, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29785&all=y">Senior Visual Designer</a>
+			<span class="company">HUGE</span>
+    	</div>
+		<div class="date" valign="top">December 9, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Lawrence, KS</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29776&all=y">Assistant Professor, Environmental/Interior Design</a>
+			<span class="company">University of Kansas, Design Department</span>
+    	</div>
+		<div class="date" valign="top">December 9, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Madison, WI</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29775&all=y">Art Director</a>
+			<span class="company">Visuality</span>
+    	</div>
+		<div class="date" valign="top">December 9, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Minneapolis, MN</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29768&all=y">Marketing Manager</a>
+			<span class="company">JAMF Software</span>
+    	</div>
+		<div class="date" valign="top">December 9, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Lawrence, KS</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29754&all=y">Visiting Assistant Professor, Photo Media</a>
+			<span class="company">University of Kansas, Design Department</span>
+    	</div>
+		<div class="date" valign="top">December 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Los Angeles, CA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29753&all=y">Senior Designer</a>
+			<span class="company">Siegel+Gale</span>
+    	</div>
+		<div class="date" valign="top">December 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">New York, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29752&all=y">Senior Designer</a>
+			<span class="company">Siegel+Gale</span>
+    	</div>
+		<div class="date" valign="top">December 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Lawrence, KS</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29751&all=y">Assistant Professor, Photo Media</a>
+			<span class="company">University of Kansas, Design Department</span>
+    	</div>
+		<div class="date" valign="top">December 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Lawrence, KS</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29748&all=y">Visiting Assistant Professor, Visual Communication/Graphic Design</a>
+			<span class="company">University of Kansas, Design Department</span>
+    	</div>
+		<div class="date" valign="top">December 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Washington, DC</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29745&all=y">Design Director - Builder Magazine</a>
+			<span class="company">Hanley Wood, LLC</span>
+    	</div>
+		<div class="date" valign="top">December 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Culver City, CA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29746&all=y">Part-Time Freelance Interactive Designer</a>
+			<span class="company">Eyes of the World Media Group</span>
+    	</div>
+		<div class="date" valign="top">December 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Phoenix, AZ</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29743&all=y">Designer</a>
+			<span class="company">WD Partners</span>
+    	</div>
+		<div class="date" valign="top">December 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Portland, OR</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29742&all=y">Web Developer / Programmer</a>
+			<span class="company">Quango Design & Marketing</span>
+    	</div>
+		<div class="date" valign="top">December 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Greater Atlanta Area, GA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29741&all=y">Graphic Designer</a>
+			<span class="company">(Confidential)</span>
+    	</div>
+		<div class="date" valign="top">December 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Pasadena, CA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29737&all=y">Freelance Graphic Designer</a>
+			<span class="company">Sassafras Creative</span>
+    	</div>
+		<div class="date" valign="top">December 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Lousville, KY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29733&all=y">Design Director- Vodkas</a>
+			<span class="company">Brown-Forman Corporation</span>
+    	</div>
+		<div class="date" valign="top">December 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Pittsburgh, PA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29732&all=y">Production Specialist/Manager</a>
+			<span class="company">Mizrahi, Inc.</span>
+    	</div>
+		<div class="date" valign="top">December 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Portland, OR</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29720&all=y">Creative Director</a>
+			<span class="company">Quango, Inc.</span>
+    	</div>
+		<div class="date" valign="top">December 7, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Flagstaff, AZ</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29719&all=y">Lecturer of Visual Communication. Digital Media/Graphic Design</a>
+			<span class="company">Northern Arizona University School of Communication</span>
+    	</div>
+		<div class="date" valign="top">December 7, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Houston, TX</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29712&all=y">Graphic Designer</a>
+			<span class="company">University of Houston Alumni Association</span>
+    	</div>
+		<div class="date" valign="top">December 7, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Minneapolis, MN</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29709&all=y">Graphic Designer</a>
+			<span class="company">KantorGroup</span>
+    	</div>
+		<div class="date" valign="top">December 7, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Seattle, WA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29708&all=y">Graphic Designer</a>
+			<span class="company">The Portico Group</span>
+    	</div>
+		<div class="date" valign="top">December 7, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">New York Metro Area, NJ</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29480&all=y">GRAPHIC PACKAGE DESIGNER</a>
+			<span class="company">Confidential</span>
+    	</div>
+		<div class="date" valign="top">December 7, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Cincinnati, OH</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29694&all=y">Graphic Designers</a>
+			<span class="company">FRCH Design Worldwide</span>
+    	</div>
+		<div class="date" valign="top">December 6, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Cincinnati, OH</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29693&all=y">Designer</a>
+			<span class="company">Hyperquake</span>
+    	</div>
+		<div class="date" valign="top">December 6, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Vancouver, BC</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29691&all=y">Assistant Professor in Interaction Design</a>
+			<span class="company">Emily Carr University of Art + Design</span>
+    	</div>
+		<div class="date" valign="top">December 6, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Vancouver, BC</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29690&all=y">Assistant Professor in Industrial Design</a>
+			<span class="company">Emily Carr University of Art + Design</span>
+    	</div>
+		<div class="date" valign="top">December 6, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Palo Alto, CA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29689&all=y">Communications Designer</a>
+			<span class="company">Palantir Technologies</span>
+    	</div>
+		<div class="date" valign="top">December 6, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Northwest suburbs of Chicago, IL</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29686&all=y">GLOBAL CREATIVE MANAGER – WEB</a>
+			<span class="company">smartdept. inc.</span>
+    	</div>
+		<div class="date" valign="top">December 6, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Dallas, TX</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29684&all=y">Creative Manager - BergdorfGoodman.com</a>
+			<span class="company">Neiman Marcus</span>
+    	</div>
+		<div class="date" valign="top">December 6, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Pittsburgh, PA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29681&all=y">Tenure-Track Faculty Position – Design and Computation</a>
+			<span class="company">School of Design at Carnegie Mellon University</span>
+    	</div>
+		<div class="date" valign="top">December 6, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Houston, TX</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29673&all=y">Interactive Developer / Contract to Hire</a>
+			<span class="company">Axiom</span>
+    	</div>
+		<div class="date" valign="top">December 3, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Cincinnati, OH</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29667&all=y">Senior Graphic Designer</a>
+			<span class="company">Cincinnati Art Museum</span>
+    	</div>
+		<div class="date" valign="top">December 3, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Santa Fe, NM</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29666&all=y">Production Designer</a>
+			<span class="company">Cisneros Design</span>
+    	</div>
+		<div class="date" valign="top">December 3, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Chicago, IL</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29658&all=y">Senior Graphic Designer</a>
+			<span class="company">CDM</span>
+    	</div>
+		<div class="date" valign="top">December 3, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Dearborn, MI</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29657&all=y">Team Detroit-The Park Design Jobs</a>
+			<span class="company">Team Detroit</span>
+    	</div>
+		<div class="date" valign="top">December 3, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Madison, WI</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29651&all=y">Senior Graphic Designer/Art Director</a>
+			<span class="company">shopbop.com</span>
+    	</div>
+		<div class="date" valign="top">December 3, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Sarasota, FL</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29650&all=y">Graphic Designer - Advanced</a>
+			<span class="company">Ringling College of Art and Design</span>
+    	</div>
+		<div class="date" valign="top">December 3, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">New York, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29648&all=y">Full time Contract Graphic Designer</a>
+			<span class="company">Juvenile Diabetes Research Foundation International (JDRF)</span>
+    	</div>
+		<div class="date" valign="top">December 3, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Philadelphia, PA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29646&all=y">Dean, Tyler School of Art</a>
+			<span class="company">Temple University</span>
+    	</div>
+		<div class="date" valign="top">December 3, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Cupertino, CA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29640&all=y">Interactive Design & Production Specialist</a>
+			<span class="company">Apple Inc.</span>
+    	</div>
+		<div class="date" valign="top">December 2, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Salt Lake City, UT</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29638&all=y">Graphic Designer</a>
+			<span class="company">Fusion-io</span>
+    	</div>
+		<div class="date" valign="top">December 2, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Kansas City, MO</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29637&all=y">Creative Director</a>
+			<span class="company">T2 + Back Alley Films</span>
+    	</div>
+		<div class="date" valign="top">December 2, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Menlo Park, CA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29631&all=y">Senior Interactive Designer</a>
+			<span class="company">Larsen</span>
+    	</div>
+		<div class="date" valign="top">December 2, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Charlotte, VT</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29625&all=y">Graphic Designer</a>
+			<span class="company">CORAL Magazine</span>
+    	</div>
+		<div class="date" valign="top">December 2, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Seattle, WA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29617&all=y">Art Director or Copywriter/AD Team</a>
+			<span class="company">The Hacker Group</span>
+    	</div>
+		<div class="date" valign="top">December 1, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Seattle, WA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29615&all=y">Copywriter or Copywriter/AD Team</a>
+			<span class="company">The Hacker Group</span>
+    	</div>
+		<div class="date" valign="top">December 1, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Kansas City, MO; Jefferson City, MO or Boston, MA, MO</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29609&all=y">Interactive Visual Designer</a>
+			<span class="company">DST Systems</span>
+    	</div>
+		<div class="date" valign="top">December 1, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Arlington, VA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29607&all=y">Senior Visual Designer</a>
+			<span class="company">OPOWER</span>
+    	</div>
+		<div class="date" valign="top">December 1, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Lexington, MA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29606&all=y">Technical Illustrator</a>
+			<span class="company">MIT Lincoln Laboratory</span>
+    	</div>
+		<div class="date" valign="top">December 1, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">New York, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29603&all=y">Creative Director for Brand Development</a>
+			<span class="company">R/GA</span>
+    	</div>
+		<div class="date" valign="top">December 1, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Olympia, WA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29596&all=y">AIGA Election Design Fellow for Washington State</a>
+			<span class="company">AIGA / Washington Secretary of State</span>
+    	</div>
+		<div class="date" valign="top">December 1, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">New York, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29586&all=y">Senior Client Manager</a>
+			<span class="company">Landor Associates</span>
+    	</div>
+		<div class="date" valign="top">November 30, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Los Angeles, CA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29585&all=y">Sr. Multimedia Designer</a>
+			<span class="company">Seoul Broadcasting System (SBS) International, Inc.</span>
+    	</div>
+		<div class="date" valign="top">November 30, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Asbury Park, NJ</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29584&all=y">Design Studio Director</a>
+			<span class="company">Gannett Co., Inc.</span>
+    	</div>
+		<div class="date" valign="top">November 30, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Portland, OR</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29583&all=y">Writer // Marketing + Technical</a>
+			<span class="company">Quango Design + Marketing</span>
+    	</div>
+		<div class="date" valign="top">November 30, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Hillsboro, OR</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29579&all=y">PRODUCTION ARTIST</a>
+			<span class="company">Wilson Sporting Goods, Co.</span>
+    	</div>
+		<div class="date" valign="top">November 30, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Lisle, IL</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29578&all=y">Designer</a>
+			<span class="company">The Morton Arboretum</span>
+    	</div>
+		<div class="date" valign="top">November 30, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Portland, OR</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29572&all=y">User Interface Designer</a>
+			<span class="company">Joint venture company forming between GE Healthcare Home Health and Intel Digital Health Group</span>
+    	</div>
+		<div class="date" valign="top">November 30, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Duluth, GA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29570&all=y">TV Commercial Art Manager</a>
+			<span class="company">Korean Television Network, Inc.</span>
+    	</div>
+		<div class="date" valign="top">November 30, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">New York, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29565&all=y">Senior Art Director</a>
+			<span class="company">aruliden</span>
+    	</div>
+		<div class="date" valign="top">November 30, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Omaha, NE</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29563&all=y">Senior Graphic Designer</a>
+			<span class="company">Harvest Retail Marketing</span>
+    	</div>
+		<div class="date" valign="top">November 30, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Bellevue, WA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29555&all=y">Web/Print Designer</a>
+			<span class="company">Gravity Creative</span>
+    	</div>
+		<div class="date" valign="top">November 29, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Daytona Beach, FL</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29552&all=y">Junior Interactive Designer</a>
+			<span class="company">International Speedway Corporation</span>
+    	</div>
+		<div class="date" valign="top">November 29, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">New York, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29551&all=y">Mid-Level Print, Digital & Flash Designers</a>
+			<span class="company">CO-OP</span>
+    	</div>
+		<div class="date" valign="top">November 29, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Saint Paul, MN</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29549&all=y">Web Designer</a>
+			<span class="company">Internet Broadcasting</span>
+    	</div>
+		<div class="date" valign="top">November 29, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">New York, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29546&all=y">Design and Production Manager</a>
+			<span class="company">RF|Binder</span>
+    	</div>
+		<div class="date" valign="top">November 29, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Indianapolis, IN</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29544&all=y">Department Chair, Visual Communicaton Design</a>
+			<span class="company">Herron School of Art and Design/IUPUI</span>
+    	</div>
+		<div class="date" valign="top">November 29, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Abu Dhabi, United Arab Emirates</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29542&all=y">Assistant, Associate or Full Professors of Interior Design</a>
+			<span class="company">Zayed University</span>
+    	</div>
+		<div class="date" valign="top">November 29, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Oslo, Norway, Norway</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29532&all=y">Motion Graphics Designer</a>
+			<span class="company">Opera Software ASA</span>
+    	</div>
+		<div class="date" valign="top">November 26, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Oslo, Norway, Norway</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29531&all=y">Senior UI Graphics Designer</a>
+			<span class="company">Opera Software ASA</span>
+    	</div>
+		<div class="date" valign="top">November 26, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Las Vegas, NV</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29524&all=y">Lead and Senior Graphic Designer Opportunities</a>
+			<span class="company">Caesars Entertainment</span>
+    	</div>
+		<div class="date" valign="top">November 24, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Hudson, OH</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29518&all=y">Designer</a>
+			<span class="company">Dixon Hughes</span>
+    	</div>
+		<div class="date" valign="top">November 24, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Beachwood, OH</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29507&all=y">Creative Director</a>
+			<span class="company">Developers Diversified Realty</span>
+    	</div>
+		<div class="date" valign="top">November 23, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Starkville, MS</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29500&all=y">Assistant Professor of Web/Graphic Design</a>
+			<span class="company">Mississippi State University</span>
+    	</div>
+		<div class="date" valign="top">November 23, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Starkville, MS</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29499&all=y">Assistant Professor of Graphic Design</a>
+			<span class="company">Mississippi State University</span>
+    	</div>
+		<div class="date" valign="top">November 23, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Greensboro, NC</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29484&all=y">Assistant Professor in Digital Design</a>
+			<span class="company">University of North Carolina at Greensboro</span>
+    	</div>
+		<div class="date" valign="top">November 22, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">New Brunwick, NJ</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29481&all=y">Assistant Professor of Design – Specializing in Interaction/Web Desig</a>
+			<span class="company">Rutgers University, Mason Gross School of the Arts - Visual Arts Dept.</span>
+    	</div>
+		<div class="date" valign="top">November 22, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Indianapolis, IN</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29476&all=y">Lead Designer</a>
+			<span class="company">Richard Harrison Bailey/The Agency</span>
+    	</div>
+		<div class="date" valign="top">November 22, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">San Francisco, CA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29475&all=y">Senior Marketing Coordinator</a>
+			<span class="company">Skidmore, Owings & Merrill LLP</span>
+    	</div>
+		<div class="date" valign="top">November 22, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Burlington, VT</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29469&all=y">Color Director</a>
+			<span class="company">JDK Design</span>
+    	</div>
+		<div class="date" valign="top">November 22, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Washington, DC</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29462&all=y">Senior Interactive Graphic Designers</a>
+			<span class="company">NPR</span>
+    	</div>
+		<div class="date" valign="top">November 20, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Alexandria, VA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29459&all=y">Graphic Designer (Magazines)</a>
+			<span class="company">American Society for Training and Development</span>
+    	</div>
+		<div class="date" valign="top">November 20, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Alexandria, VA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29458&all=y">Graphic Designer</a>
+			<span class="company">American Society for Training and Development</span>
+    	</div>
+		<div class="date" valign="top">November 20, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Pune, India</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29455&all=y">Film / Media Curator | Documentaries for Social Transformation</a>
+			<span class="company">Culture Unplugged Studios</span>
+    	</div>
+		<div class="date" valign="top">November 20, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">San Diego, CA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29448&all=y">Graphic and Web Design Associate</a>
+			<span class="company">Warner Architecture & Design, Inc.</span>
+    	</div>
+		<div class="date" valign="top">November 19, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Boston, MA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29446&all=y">Program Director and Faculty Member, Illustration</a>
+			<span class="company">New England School of Art & Design at Suffolk University</span>
+    	</div>
+		<div class="date" valign="top">November 19, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Chicago, IL</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29445&all=y">Marketing Project Coordinator</a>
+			<span class="company">Performance Trust Capital Partners</span>
+    	</div>
+		<div class="date" valign="top">November 19, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Houston, TX</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29443&all=y">Graphic Designer</a>
+			<span class="company">Design At Work</span>
+    	</div>
+		<div class="date" valign="top">November 19, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">New Hope, MN</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29440&all=y">Retail Fixtures and Environment Designer</a>
+			<span class="company">Process Displays</span>
+    	</div>
+		<div class="date" valign="top">November 19, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Worcester, MA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29439&all=y">Web Design Coordinator</a>
+			<span class="company">Worcester Art Museum</span>
+    	</div>
+		<div class="date" valign="top">November 19, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Nashville, TN</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29432&all=y">XHTML/CSS Web Developer</a>
+			<span class="company">iostudio, LLC</span>
+    	</div>
+		<div class="date" valign="top">November 18, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Detroit, MI</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29428&all=y">Assistant Professor of Art - Graphic Design</a>
+			<span class="company">Wayne State University - James Pearson Duffy Department of Art and Art History</span>
+    	</div>
+		<div class="date" valign="top">November 18, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Orlando, FL</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29421&all=y">Print & Interactive Designer</a>
+			<span class="company">GoConvergence</span>
+    	</div>
+		<div class="date" valign="top">November 18, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Nashville, TN</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29420&all=y">Interactive Designer</a>
+			<span class="company">iostudio, LLC</span>
+    	</div>
+		<div class="date" valign="top">November 18, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Washington, DC, DC</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29419&all=y">Interactive Designer</a>
+			<span class="company">iostudio, LLC</span>
+    	</div>
+		<div class="date" valign="top">November 18, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Watertown, MA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29414&all=y">Digital Creative Director</a>
+			<span class="company">Corey McPherson Nash</span>
+    	</div>
+		<div class="date" valign="top">November 18, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Watertown, MA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29413&all=y">Senior Project Manager</a>
+			<span class="company">Corey McPherson Nash</span>
+    	</div>
+		<div class="date" valign="top">November 18, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Boulder, CO</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29407&all=y">Designer</a>
+			<span class="company">Anthem Branding</span>
+    	</div>
+		<div class="date" valign="top">November 17, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Boca Raton, FL</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29397&all=y">Adjunct Professor – Graphic Design</a>
+			<span class="company">Digital Media Arts College</span>
+    	</div>
+		<div class="date" valign="top">November 17, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Evanston, IL</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29396&all=y">Graphic Designer</a>
+			<span class="company">Rotary International</span>
+    	</div>
+		<div class="date" valign="top">November 17, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Marion, IN</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29391&all=y">Faculty:  Graphic Design</a>
+			<span class="company">Indiana Wesleyan University</span>
+    	</div>
+		<div class="date" valign="top">November 17, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Port Washington, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29383&all=y">Art Director</a>
+			<span class="company">KMC/Dashing Diva</span>
+    	</div>
+		<div class="date" valign="top">November 17, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Tampa, FL</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29382&all=y">Publications Designer</a>
+			<span class="company">BICSI</span>
+    	</div>
+		<div class="date" valign="top">November 17, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Las Vegas, NV</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29377&all=y">Sr. Graphic Designer / Design Manager</a>
+			<span class="company">Tropicana Entertainment Inc.</span>
+    	</div>
+		<div class="date" valign="top">November 16, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Seattle, WA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29376&all=y">Marketing Communications Designer</a>
+			<span class="company">ZGF Architects LLP</span>
+    	</div>
+		<div class="date" valign="top">November 16, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Austin, TX</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29371&all=y">Faculty, Visual Communication - Web and Interactive Media</a>
+			<span class="company">Austin Community College</span>
+    	</div>
+		<div class="date" valign="top">November 16, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Oakland, CA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29366&all=y">Senior Interacative Designer</a>
+			<span class="company">Cost Plus World Market</span>
+    	</div>
+		<div class="date" valign="top">November 16, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Raleigh, NC</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29364&all=y">Assistant Professor of Animation / New Media</a>
+			<span class="company">North Carolina State University, College of Design</span>
+    	</div>
+		<div class="date" valign="top">November 16, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Charlottesville, VA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29363&all=y">Web Art Director</a>
+			<span class="company">Plow & Hearth, LLC</span>
+    	</div>
+		<div class="date" valign="top">November 16, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Westmont, IL</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29362&all=y">Senior Graphic Designer</a>
+			<span class="company">Confidential</span>
+    	</div>
+		<div class="date" valign="top">November 16, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Westmont, IL</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29361&all=y">Graphic Designer</a>
+			<span class="company">Confidential</span>
+    	</div>
+		<div class="date" valign="top">November 16, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Madison, WI</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29357&all=y">Senior Art Director</a>
+			<span class="company">Planet Propaganda</span>
+    	</div>
+		<div class="date" valign="top">November 16, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Waltham, MA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29354&all=y">Graphic Designer</a>
+			<span class="company">Brandeis University</span>
+    	</div>
+		<div class="date" valign="top">November 16, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Minneapolis, MN</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29352&all=y">Art Director</a>
+			<span class="company">catchfire</span>
+    	</div>
+		<div class="date" valign="top">November 15, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Las Vegas, NV</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29351&all=y">Graphic Designer</a>
+			<span class="company">LIK USA™/LIK MEDIA™</span>
+    	</div>
+		<div class="date" valign="top">November 15, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">San Diego, CA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29350&all=y">Web Designer</a>
+			<span class="company">Provide Commerce (ProFlowers, RedEnvelope, Personal Creations)</span>
+    	</div>
+		<div class="date" valign="top">November 15, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">New York, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29336&all=y">Mid to Senior Level Designer</a>
+			<span class="company">S2 Design Group</span>
+    	</div>
+		<div class="date" valign="top">November 15, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">New York, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29327&all=y">Graphic Designer</a>
+			<span class="company">Museum of Mathematics</span>
+    	</div>
+		<div class="date" valign="top">November 12, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">West Hollywood, CA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29301&all=y">L.A. MID TO SENIOR LEVEL GRAPHIC DESIGNER</a>
+			<span class="company">STATE OF TOMORROW</span>
+    	</div>
+		<div class="date" valign="top">November 12, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Portland, OR</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29319&all=y">Instructor, Graphic Design</a>
+			<span class="company">Portland Community College</span>
+    	</div>
+		<div class="date" valign="top">November 12, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Burlington, VT</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29318&all=y">Interactive Designer</a>
+			<span class="company">Fuse</span>
+    	</div>
+		<div class="date" valign="top">November 12, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Columbus, OH</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29313&all=y">Visual Communications Full-Time Faculty</a>
+			<span class="company">Columbus College of Art & Design</span>
+    	</div>
+		<div class="date" valign="top">November 12, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Dallas, TX</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29312&all=y">Graphic Design Associate</a>
+			<span class="company">Highland Capital Management</span>
+    	</div>
+		<div class="date" valign="top">November 12, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">San Jose, CA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29311&all=y">Associate Creative Director</a>
+			<span class="company">LEVEL Studios</span>
+    	</div>
+		<div class="date" valign="top">November 12, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Baltimore, MD</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29300&all=y">Graphic Designer</a>
+			<span class="company">Kittelson & Associates, Inc.</span>
+    	</div>
+		<div class="date" valign="top">November 11, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Woburn, MA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29290&all=y">Graphic Designer</a>
+			<span class="company">Tocci Group</span>
+    	</div>
+		<div class="date" valign="top">November 11, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">McLean, VA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29289&all=y">Digital Art Director</a>
+			<span class="company">TMP Government</span>
+    	</div>
+		<div class="date" valign="top">November 11, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">McLean, VA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29288&all=y">Creative Director</a>
+			<span class="company">TMP Government</span>
+    	</div>
+		<div class="date" valign="top">November 11, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Beverly, MA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29287&all=y">Adjunct Faculty -- Visual Communications</a>
+			<span class="company">Endicott College</span>
+    	</div>
+		<div class="date" valign="top">November 11, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">North Canton, OH</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29285&all=y">Production Artist</a>
+			<span class="company">Fannie May Confections Brands, Inc.</span>
+    	</div>
+		<div class="date" valign="top">November 11, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Chicago, IL</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29284&all=y">GLOBAL CREATIVE MANAGER – CARDING AND PACKAGING</a>
+			<span class="company">smartdept. inc.</span>
+    	</div>
+		<div class="date" valign="top">November 11, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Silver Spring, MD</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29280&all=y">Part-time Bilingual Graphic Designer/Web Designer</a>
+			<span class="company">The Media Network</span>
+    	</div>
+		<div class="date" valign="top">November 11, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Kansas City, MO</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29275&all=y">Creative Director</a>
+			<span class="company">Fleishman-Hillard</span>
+    	</div>
+		<div class="date" valign="top">November 11, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Denton, TX</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29267&all=y">Assistant Professor, tenure-track appointment</a>
+			<span class="company">University of North Texas – College of Visual Arts and Design</span>
+    	</div>
+		<div class="date" valign="top">November 10, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Denton, TX</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29265&all=y">Assistant Professor, tenure-track appointment</a>
+			<span class="company">University of North Texas – College of Visual Arts and Design</span>
+    	</div>
+		<div class="date" valign="top">November 10, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Portland, OR</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29259&all=y">Assistant Graphic Designer</a>
+			<span class="company">Oregon Museum of Science Industry</span>
+    	</div>
+		<div class="date" valign="top">November 10, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Vienna, VA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29257&all=y">Graphic Designer</a>
+			<span class="company">N/A</span>
+    	</div>
+		<div class="date" valign="top">November 10, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Washington, DC</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29249&all=y">Graphic Designer (multi-client facing)</a>
+			<span class="company">SmithBucklin</span>
+    	</div>
+		<div class="date" valign="top">November 10, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Minneapolis, MN</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29248&all=y">Interactive Designer</a>
+			<span class="company">Larsen</span>
+    	</div>
+		<div class="date" valign="top">November 10, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Richmond, VA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29240&all=y">Chair, Department of Graphic Design, Virginia Commonwealth University, Associate or Full Professor</a>
+			<span class="company">Department of Graphic Design, School of the Arts, Virginia Commonwealth University</span>
+    	</div>
+		<div class="date" valign="top">November 10, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Richmond, VA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29239&all=y">Assistant Professor / Art Foundation / Graphic Design</a>
+			<span class="company">Virginia Commonwealth University</span>
+    	</div>
+		<div class="date" valign="top">November 10, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">San Diego, CA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29234&all=y">Graphic Designer</a>
+			<span class="company">Eventful</span>
+    	</div>
+		<div class="date" valign="top">November 9, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Minneapolis, MN</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29224&all=y">Sr. Director- Design Integration</a>
+			<span class="company">Best Buy</span>
+    	</div>
+		<div class="date" valign="top">November 9, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Walla Walla, WA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29223&all=y">Director of Web Services</a>
+			<span class="company">Coffey Communications, Inc.</span>
+    	</div>
+		<div class="date" valign="top">November 9, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">New York, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29216&all=y">Senior Interactive Designer</a>
+			<span class="company">Digital Pulp</span>
+    	</div>
+		<div class="date" valign="top">November 9, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Boston, MA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29215&all=y">Graphic Designer</a>
+			<span class="company">The Institute of Contemporary Art/Boston</span>
+    	</div>
+		<div class="date" valign="top">November 9, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">New York, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29204&all=y">Guidelines Senior Production Designer</a>
+			<span class="company">Siegel+Gale</span>
+    	</div>
+		<div class="date" valign="top">November 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Brooklyn, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29196&all=y">Creative Director</a>
+			<span class="company">HUGE</span>
+    	</div>
+		<div class="date" valign="top">November 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Brooklyn, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29195&all=y">Art Director</a>
+			<span class="company">HUGE</span>
+    	</div>
+		<div class="date" valign="top">November 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Boston, MA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29192&all=y">Interactive Designer</a>
+			<span class="company">Combined Jewish Philanthropies</span>
+    	</div>
+		<div class="date" valign="top">November 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">New York, NY</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29188&all=y">Web designer - Graphics design, HTML, CSS</a>
+			<span class="company">EasyBib</span>
+    	</div>
+		<div class="date" valign="top">November 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Charlotte, NC</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29187&all=y">Product Designer</a>
+			<span class="company">Herff Jones, Yearbook Division</span>
+    	</div>
+		<div class="date" valign="top">November 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Washington, DC</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29185&all=y">Graphic Designer - Print and Motion</a>
+			<span class="company">AED</span>
+    	</div>
+		<div class="date" valign="top">November 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Washington, DC</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29184&all=y">AED Senior Program Assistant</a>
+			<span class="company">AED</span>
+    	</div>
+		<div class="date" valign="top">November 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Lisle, IL</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29183&all=y">Exhibit Designer</a>
+			<span class="company">The Morton Arboretum</span>
+    	</div>
+		<div class="date" valign="top">November 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Atlanta, GA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29181&all=y">Graphic Designer</a>
+			<span class="company">Jenkins Creative</span>
+    	</div>
+		<div class="date" valign="top">November 8, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Norcorss, GA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29173&all=y">Graphic Designer - Alternative Apparel</a>
+			<span class="company">Alternative Apparel</span>
+    	</div>
+		<div class="date" valign="top">November 6, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Vancouver, BC</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29171&all=y">Junior Designer</a>
+			<span class="company">Kaldor</span>
+    	</div>
+		<div class="date" valign="top">November 5, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Vancouver, BC</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29170&all=y">Senior Designer</a>
+			<span class="company">Kaldor Brand Strategy & Design</span>
+    	</div>
+		<div class="date" valign="top">November 5, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Stevenson, MD</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29166&all=y">Assistant Professor, Art (Graphic Design)</a>
+			<span class="company">Stevenson University</span>
+    	</div>
+		<div class="date" valign="top">November 5, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Albuquerque, NM</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29161&all=y">Business Manager</a>
+			<span class="company">Maximo: Art & Design Research</span>
+    	</div>
+		<div class="date" valign="top">November 5, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Baton Rouge, LA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29159&all=y">Graphic Designer</a>
+			<span class="company">BRZoom, LLC</span>
+    	</div>
+		<div class="date" valign="top">November 5, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Wheaton, IL</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29160&all=y">Web Designer</a>
+			<span class="company">Boost Marketing</span>
+    	</div>
+		<div class="date" valign="top">November 5, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Woodstock, GA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29157&all=y">Graphic Design - Print</a>
+			<span class="company">iMi Agency</span>
+    	</div>
+		<div class="date" valign="top">November 5, 2010</div>
+		<br class="clear" />
+		</div>
+
+		<div class="individuallisting">
+		<div class="location" valign="top">Boston, MA</div>
+    	<div class="position" valign="top">
+    		<a href="job_details.asp?job_id=29149&all=y">Assistant Professor, Graphic Design</a>
+			<span class="company">Boston University, School of Visual Arts</span>
+    	</div>
+		<div class="date" valign="top">November 5, 2010</div>
+		<br class="clear" />
+		</div>
+
+
+</div>
+
+		</div>
+		</div>
+				<div id="pageresources">
+			<div id="postajobBlock">
+			<h3>Great opportunities call for great design talent</h3>
+			<table>
+				<tr><td class="first">Nonmember</td><td class="last">$195</td></tr>
+				<tr><td class="first">AIGA member <span>($100 savings)</span></td><td class="last">$95</td></tr>
+			</table>
+			<p>Posting a design job for internships and pro bono work is free!</p>
+			<a href="http://designjobs.aiga.org/public/select_posting_type.asp" title="" id="but-post">Post A Job</a>
+
+			</div>
+
+
+			<div class="resource">
+				<h4>AIGA Career Resources</h4>
+				<ul>
+					<li><a href="http://www.aiga.org/content.cfm/what-is-design" title="">What is graphic design?</a></li>
+					<li><a href="http://www.aiga.org/content.cfm/career-advice" title="">Advice for getting started</a></li>
+					<li><a href="http://www.aiga.org/content.cfm/guide-careerguide" title="">Graphic Design: A Career Guide</a></li>
+				</ul>
+			</div>
+
+	 
+			
+					<div id="proSidebar" class="show resource">
+						<h4>Professional Design Jobs</h4>
+						<p>AIGA Design Jobs is the first place AIGA members turn to find their next opportunity, and the premier place for employers seeking the most qualified designers.</p>
+
+						<p>Since 2004, AIGA Design Jobs has successfully matched talented candidates with nearly 10,000 jobs from firms, agencies and companies across the United States, including Amazon, Bloomberg, Facebook, Herman Miller, IDEO, Interbrand, MTV Networks and Nokia.</p>
+					</div>
+			
+
+			<div class="resource">
+			<div id="rss">
+				<h4>Design Jobs RSS Feeds</h4>
+				<ul>
+				<li><a href="http://feeds.feedburner.com/design-job-postings" title="">Professional job postings</a></li>
+				<li><a href="http://feeds.feedburner.com/design-job-internships" title="">Internship postings</a></li>
+				<li><a href="http://feeds.feedburner.com/design-jobs-probono" title="">Pro bono project postings</a></li>
+				</ul>
+			</div>
+			</div>
+			
+			
+
+		</div>
+		
+		</div>
+		<div style="clear:both;">&nbsp;</div>
+			<div class="wrapper" id="footer">
+		<span>AIGA Design Jobs powered by <a href="http://www.coroflot.com" class="external" title="">Coroflot</a></span>
+		&#169;2010 AIGA, the professional association for design | 888 756 8282 | <a href="http://designjobs.aiga.org/public/support.asp" title="">support</a> | <a href="http://designjobs.aiga.org/public/terms.asp" title="">terms</a>
+	</div>
+
+		
+		<!-- END MAIN BODY -->
+		
+		
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-385556-12");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+</html>

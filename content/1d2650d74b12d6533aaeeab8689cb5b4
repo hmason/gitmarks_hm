@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <title>
+      C in Python
+    </title>
+    <meta name="description" content="python module for inlining c in python">
+    <meta name="keywords" content="cinpy c python inline module">
+  </head>
+
+<body bgcolor="#5591bd">
+
+<table width="92%" border="0" align="center" cellpadding="2" cellspacing="2" bgcolor="#FFFFFF">
+<tr><td colspan="2">
+
+
+<table>
+<tr>
+<td width="22%">
+</td>
+<td>
+</td>
+<td width="8%"></td>
+</tr>
+<tr>
+<td bgcolor="#fecb65" align="center" valign="middle">
+    <img src="cinpy.png" alt="C in Python" hspace="24" vspace="24">
+</td>
+<td colspan="1" align="center">
+
+<H1>Cinpy - C in Python</H1>
+
+</td>
+</tr>
+
+<tr><td></td></tr>
+
+<tr vAlign="top">
+<td> <!-- menu on the left -->
+
+<table cellpadding="0" cellspacing="10">
+<tr><td><a href="#introduction">Introduction</a></td></tr>
+<tr><td><a href="#screenshot">Screenshot</a></td></tr>
+<tr><td><a href="#download">Download</a></td></tr>
+<tr><td><a href="#licence">Licence</a></td></tr>
+<tr><td><a href="#links">Links</a></td></tr>
+<tr><td><a href="#related">Related projects</a></td></tr>
+<tr><td><a href="#thanks">Acknowledgements</a></td></tr>
+</table>
+
+<p align="center">
+    <a href="http://validator.w3.org/check?uri=referer"><img
+        src="http://www.w3.org/Icons/valid-html401"
+        alt="Valid HTML 4.01 Transitional" height="31" width="88" border="0"></a>
+  </p>
+
+</td>
+
+
+<td> <!-- contents -->
+
+    <h2><a name="introduction">Introduction</a></h2>
+
+    <p>Cinpy is a Python library that allows you to implement
+    functions with C in Python modules. Inlined C code is compiled
+    with <a href="http://fabrice.bellard.free.fr/tcc/">tcc (Tiny C
+    Compiler)</a> at runtime. The results are made callable in Python
+    with <a
+    href="http://starship.python.net/crew/theller/ctypes/">ctypes</a>
+    library.
+
+    <p>There are also other projects that already can do this stuff,
+    and probably much more (see the bottom of the page). The reasons
+    for the existence of cinpy are
+
+    <ul>
+      <li>simplicity of usage: modules that include C code do not seem
+      to require any special treatment (preprocessing, compiling,
+      etc.). C code is compiled quietly under the hood whenever C is
+      used in function definition.
+
+      <li>simplicity of implementation: no more than 20 lines of
+    code are needed to do the trick, once you use ctypes and know
+    where libtcc.so is located.
+
+      <li>the needed compiler is <small>tiny</small> and it runs
+      <em>fast</em> and completely in memory (no write access to any
+      other media is required).
+    </ul>
+
+    <h2><a name="screenshot">Screenshot</a></h2>
+
+    The following code is ripped from cinpy_test.py included in the
+    package.
+    
+<pre>
+import ctypes
+import cinpy
+
+# Fibonacci in Python
+def fibpy(x):
+    if x<=1: return 1
+    return fibpy(x-1)+fibpy(x-2)
+
+# Fibonacci in C
+fibc=cinpy.defc("fib",
+                ctypes.CFUNCTYPE(ctypes.c_long,ctypes.c_int),
+                """
+                long fib(int x) {
+                    if (x<=1) return 1;
+                    return fib(x-1)+fib(x-2);
+                }
+                """)
+
+# ...and then just use them...
+# (there _is_ a difference in the performance)
+print fibpy(30)
+print fibc(30)
+</pre>
+
+    <h2><a name="download">Download</a></h2>
+    <a href="cinpy-0.10.tar.gz">cinpy-0.10.tar.gz</a>
+
+    <h2><a name="licence">Licence</a></h2>
+    Cinpy is distributed under <a href="http://www.gnu.org/copyleft/lesser.txt">LGPL</a>.
+
+    <h2><a name="links">Links</a></h2>
+    <p>You can find interesting benchmark results in <a href="http://amundblog.blogspot.com/2008/12/cinpy-or-c-in-python.html">Amund Tveit's blog</a>.
+
+    <h2><a name="related">Related projects</a></h2>
+
+    <ul>
+      <li><a
+      href="http://scipy.org/Weave">Weave</a> is
+      much more complete C/C++-in-Python package.
+	
+      <li><a href="http://pyinline.sourceforge.net/">PyInline</a> uses
+      the compiler in <a
+      href="http://www.python.org/sigs/distutils-sig/">distutils</a>,
+      just like Weave does.
+
+      <hr>
+      Not that closely related projects: (No more inlining C/C++, but compiling Python to native/C/C++)
+
+      <li>If you do not want to write C but still would like to
+      compile some Python functions to native code, use <a
+      href="http://psyco.sourceforge.net/">Psyco</a>.
+
+      <li>There is also a <a href="http://mark.dufour.googlepages.com">Python to C++ compiler</a> in early stage of development (link added 8 Dec 2006).
+    </ul>
+
+    <h2><a name="thanks">Acknowledgements</a></h2>
+    I'd like to thank Pablo Virolainen for this <strong>GREAT</strong> idea.
+
+    
+
+    <hr>
+    <address>Antti Kervinen email:
+    <em>as<a></a>k@cs<kbd>.</kbd>tut<kbd>.</kbd>fi</em></address>
+    <a href="http://www.cs.tut.fi/~ask/">Back to my homepage</a><br>
+    
+<!-- Created: Thu Apr 10 15:13:47 EEST 2003 -->
+<!-- hhmts start -->
+Last modified: Sat Sep  8 22:00:00 EEST 2007
+<!-- hhmts end -->
+
+</td></tr></table>
+</table>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-5268410-3");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+</html>

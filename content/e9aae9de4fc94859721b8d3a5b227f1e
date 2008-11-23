@@ -1,0 +1,510 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<html lang='en'><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8"><base href='http://nedbatchelder.com'><title>Ned Batchelder: Python parsing tools</title><link rel='stylesheet' href='/style.css' type='text/css'><link rel='stylesheet' href='/printstyle.css' type='text/css' media='print'><script type='text/javascript' src='nedbatchelder.js'></script></head><body><center><table id='logo_banner' cellpadding='0' cellspacing='0' width='100%'><tr><td id='logo' align='center'><a href='/'><img src='dodeca3_100.gif' width='100' height='120' alt='[*]'></a></td><td id='banner'><span class='path'><a href='/'>Ned Batchelder</a> : <a href='/blog'>Blog</a> | <a href='/code'>Code</a> | <a href='/text'>Text</a> | <a href='/site'>Site</a></span><br><span class='headslug'>Python parsing tools</span><br><span class='path'>
+                    &#xbb; <a href='/'>Home</a> : <a href='/text'>Text</a></span></td></tr></table><table id='content_menu' cellpadding='0' cellspacing='0'><tr><td id='content' valign='top'><div class='body'><div id='searchwelcome'></div><p class='dateline'>
+                            Created 30 September 2004, last updated 18 July 2010
+                        </p><p class="first">A few years ago, I went looking for Python parsing tools.
+I spent a long time researching the various options.
+When I was done, I had a cheat sheet on the different alternatives.
+This is that cheat sheet, cleaned up a bit. It is very spotty.
+If you have updates to the information here,
+<a href="javascript:nospam(%22ned%22,%22nedbatchelder.com%22);">let me know</a>.
+Because this is a compilation of factoids freely available on the web,
+it is in the public domain.
+</p><p>The tools are presented here in random order.  I tried organizing them,
+but I couldn't find a scheme that seemed to help.
+Some points of comparison:
+</p><ul><li>Lexical analysis technology: the two choices seem to be Python regular expressions, or
+<a class="offsite" href="http://en.wikipedia.org/wiki/Deterministic_finite_state_machine">deterministic finite automata</a>.
+DFA's are faster (linear with the number of characters lexed).</li><li>Parser technology: what algorithm is used to parse? There are a spectrum of choices.
+See wikipedia's
+<a class="offsite" href="http://en.wikipedia.org/wiki/Category:Parsing_algorithms">Parsing Algorithms</a>
+page for a start.</li><li>Specification style: traditional parser generators use a separate file in a new language
+to describe the grammar. Some of these tools do also, but many choose to put production
+rules in docstrings.  Others use Python data structures for grammars.</li><li>Reliance on other tools: some of these are pure Python, some rely on existing
+parser generators such as Bison.</li></ul><h1 id="h_The_tools">The tools</h1><p><a class="offsite" href="http://www.dabeaz.com/ply/">Ply</a><br>Docstrings are used to associate lexer or parser rules with actions.
+The lexer uses Python regular expressions.
+<br>Parses: LALR(1)
+<br>Updated: September 2009, version 3.3.
+<br>License: Lesser GPL.
+<br>Discussion: <a class="offsite" href="http://groups.google.com/group/ply-hack">ply-hack group</a>.
+</p><p><a class="offsite" href="http://pyparsing.wikispaces.com/">pyparsing</a><br>Direct parser objects in python, built to parallel the grammar.
+<br>Updated: June 2010, version 1.5.3.
+<br>License: MIT license.
+</p><p><a class="offsite" href="http://www.antlr.org/">ANTLR</a><br>Parser and lexical analyzer generator in Java.
+Generates parsing code in Python (as well as Java, C++, C#, Ruby, etc).
+<br>Updated: September 2009, version 3.2.
+<br>License: BSD.
+</p><p><a class="offsite" href="http://www.lava.net/~newsham/pyggy/">PyGgy</a><br>Lexes with DFA from a specification in a .pyl file.
+Parses GLR grammars from a specification in a .pyg file.
+Rules in both files have Python action code.
+Unlike most parser generators, the rule actions are all executed in
+a post-processing step.
+The parser isn't represented as a discrete object, but as globals in a module.
+<br>Updated: October 2004, version 0.4.1.
+<br>License: public domain.
+<br>Discussion: <a class="offsite" href="http://groups.google.com/group/pyggy">pyggy group</a>.
+</p><p><a class="offsite" href="http://jaredforsyth.com/blog/2010/jul/8/announcing-codetalker/">Codetalker</a><br>Updated: July 2010
+<br>License: MIT.
+</p><p><a class="offsite" href="http://code.google.com/p/funcparserlib/">funcparserlib</a><br>A recursive descent parsing library based on functional combinators.
+<br>Updated: October 2009, version 0.3.4
+<br>License: MIT.
+</p><p><a class="offsite" href="http://fdik.org/pyPEG/">pyPEG</a><br>A parsing expression grammar toolkit for Python.
+<br>Updated: October 2009, version 0.34.
+<br>License: GPL.
+</p><p><a class="offsite" href="http://www.acooke.org/lepl/">LEPL</a><br>A parser library for Python 2.6 and 3.0.
+<br>Updated: June 2010, version 4.3.1.
+<br>License: LGPL.
+</p><p><a class="offsite" href="http://effbot.org/zone/simple-top-down-parsing.htm">Simple Top-Down Parsing in Python</a><br>Not a tool exactly, but a methodology for writing top-down parsers in Python.
+<br>Updated: July 2008.
+</p><p><a class="offsite" href="http://www.valuedlessons.com/2008/02/pysec-monadic-combinatoric-parsing-in.html">Pysec: Monadic Combinatoric Parsing in Python (aka Parsec in Python)</a><br>An exposition of using monads to build a Python parser.
+<br>Updated: February 2008.
+</p><p><a class="offsite" href="http://github.com/brehaut/picoparse/tree/master">picoparse</a><br>Small parser construction library for Python.
+<br>Updated: May 2010.
+</p><p><a class="offsite" href="http://moncs.cs.mcgill.ca/people/eposse/projects/aperiot/">Aperiot</a><br>A grammar description language and parser generator for Python.
+<br>Updated: September 2007, version 0.1.2.
+<br>License: BSD license.
+</p><p><a class="offsite" href="http://www.canonware.com/Parsing/">Parsing</a><br>LR(1) parser generator as well as CFSM and GLR parser drivers.
+<br>Updated: August 2007, version 1.3.
+<br>License: MIT.
+</p><p><a class="offsite" href="http://della1rv.googlepages.com/therparseparsergenerator">Rparse</a><br>LL(1) parser generator with AST generation.
+<br>Updated: November 2008, version 1.0.6b.
+<br>License: GPL.
+</p><p><a class="offsite" href="http://www.sablecc.org/">SableCC</a><br>Java-based parser and lexical analyzer generator.
+Generates parsing code in Java, with
+<a class="offsite" href="http://www.mare.ee/indrek/sablecc/">alternative generators</a>
+for other languages including Python.
+<br>License: GNU LGPL.
+<br>Updated: version 3.2
+</p><p><a class="offsite" href="http://www.devincook.com/goldparser/">GOLD Parser</a><br>A multi-language "pseudo-open-source" parsing package.
+<br>Lexer: DFA
+<br>Parser: LALR
+<br>License: <a class="offsite" href="http://www.devincook.com/goldparser/license.htm">Freeware</a>,
+based on zlib Open Source License.
+<br>Updated: July 2007, version 3.4.4.
+</p><p><a class="offsite" href="http://www.cosc.canterbury.ac.nz/~greg/python/Plex/">Plex</a><br>Generates lexical analyzers in Python.
+<br>Lexes with DFA, specified in Python data structures.
+Supports multiple start states.
+<br>Updated: Jan 2007, version 1.1.5.
+</p><p><a class="offsite" href="http://freshmeat.net/projects/yeanpypa/">yeanpypa</a><br>Constructs recursive-descent parsers directly in Python.
+<br>License: Public domain.
+<br>Updated: February 2007.
+</p><p><a class="offsite" href="http://zestyparser.adamatlas.org/">ZestyParser</a><br>Constructs recursive-descent parsers directly in Python.
+<br>License: GPL
+<br>Updated: March 2007, 0.7.0
+</p><p><a class="offsite" href="http://copia.ogbuji.net/blog/2005-04-27/Of_BisonGe">BisonGen</a><br>Generates parsers in both Python and C, from an unusual XML-based
+grammar description file.  Very sparsely documented (there doesn't seem to
+be a home page for it), and seems to have no direct connection to Bison,
+despite the name.
+<br>Updated: April 2005, version 0.8.0b1.
+</p><p><a class="offsite" href="http://staff.washington.edu/sabbey/py_dparser/">DParser for Python</a><br>Uses python docstrings as input to
+<a class="offsite" href="http://dparser.sourceforge.net/">DParser</a>, which is implemented in C.
+DParser is a scannerless GLR parser.
+<br>Updated: September 2004, version 1.13.
+<br>More: <a class="offsite" href="http://www-106.ibm.com/developerworks/linux/library/l-cpdpars.html?ca=dgr-lnxw82DParser">Charming Python: A look at DParser for Python</a>.
+</p><p><a class="offsite" href="http://theory.stanford.edu/~amitp/yapps/">Yapps</a><br>Produces recursive-descent parsers, as a human would write.
+Designed to be easy to use rather than powerful or fast.
+Better suited for small parsing tasks like email addresses, simple configuration scripts, etc.
+<br>License: MIT
+<br>Updated: August 2003, version 2.1.1.
+</p><p><a class="offsite" href="http://www.freenet.org.nz/python/pybison/">PyBison</a><br>Reads docstrings in Python files to create an actual Bison grammar,
+runs it through Bison, then post-processes the C output to re-unite
+the generated parser with the Python action routines (I think).
+<br>License: GPL
+<br>Parses: LALR(1)
+<br>Updated: June 2004, version 0.1.8.
+<br>Quirks: Doesn't yet support Windows.
+</p><p><a class="offsite" href="http://www.ncc.up.pt/fado/Yappy/">Yappy</a><br>Uses Python strings in list structures to declare the grammar and lexer rules,
+with semantic rules implemented as Python methods.
+<br>Lexer: based on Python regular expressions.
+<br>Parses: SLR, LR(1) and LALR(1)
+<br>License: GPL
+<br>Updated: June 2004.
+<br>Quirks: Uses python strings to declare the grammar.
+</p><p><a class="offsite" href="http://christophe.delord.free.fr/tpg/index.html">Toy Parser Generator</a><br>Uses a simplistic parsing algorithm, but still seems relatively powerful.
+<br>Updated: October 2006, version 3.1.1.
+</p><p><a class="offsite" href="http://gadfly.sourceforge.net/kwParsing.html">kwParsing</a><br>Part of the Gadfly relational database engine.
+<br>Parses: SLR
+<br>Updated: January 2005, part of <a class="offsite" href="http://sourceforge.net/projects/gadfly/">gadfly</a>.
+</p><p><a class="offsite" href="http://www.dalkescientific.com/Martel/">Martel</a><br>Martel uses a modified form of the Perl regular expression language to
+describe the format of a file. The definition is used to generate a parser for
+that format. An input file is converted into a parse tree, which is traversed
+in prefix order to generate SAX 2.0 events, as used in XML processing. Element
+names and attributes are specified in the regular expression grammar using the
+named group extension popularized by Python.
+<br>Updated: February 2005, part of Biopython 1.40b.
+</p><p><a class="offsite" href="http://simpleparse.sourceforge.net/">SimpleParse</a><br>Lexing and parsing in one step, but only deterministic grammars.
+<br>License: BSD.
+<br>Updated: 2006, version 2.1.0.
+<br>More: <a class="offsite" href="http://www-106.ibm.com/developerworks/linux/library/l-simple.html">Charming Python: Parsing with the SimpleParse module</a>.
+</p><p><a class="offsite" href="http://pages.cpsc.ucalgary.ca/~aycock/spark/">SPARK</a><br>Uses docstrings to associate productions with actions.
+Unlike other tools, also includes semantic analysis and code generation phases.
+<br>Updated: stable April 2000 (0.6.1), pre-alpha May 2002.
+<br>More: <a class="offsite" href="http://www-106.ibm.com/developerworks/linux/library/l-spark.html">Charming Python: Parsing with the Spark module</a>.
+</p><p><a class="offsite" href="http://www.egenix.com/files/python/mxTextTools.html">mxTextTools</a><br>An unusual table-based parser.  There is no generation step, the parser
+is hand-coded using primitives provided by the package.
+The parser is implemented in C for speed.
+This package underlies SimpleParse (just above).
+<br>License: <a class="offsite" href="http://www.egenix.com/files/python/mxLicense.html#Public">eGenix Public License</a>,
+similar to Python, compatible with GPL.
+<br>Updated: 2001.
+</p><p><a class="offsite" href="http://www.cs.utexas.edu/users/mcguire/software/fbmodule">FlexBisonModule</a><br>Macros to allow Flex and Bison to produce idiomatic lexers and parsers for Python.
+The generated lexers and parsers are in C, compiled into loadable modules.
+<br>Updated: March 2002, version 2.1.
+<br>License: Pythonesque
+</p><p><a class="offsite" href="http://www.hyperreal.org/~est/freeware/">Bison In A Box</a><br>Uses standard Bison to generate pure Python parsers.
+It actually reads the bison-generated .c file and generates Python code!
+<br>Updated: June 2001, version 0.1.0.
+</p><p><a class="offsite" href="http://sourceforge.net/projects/byacc/">Berkeley Yacc</a><br>Classic Yacc, extended to generate Python code.
+Python support seems to be undocumented.
+<br>Updated: November 2000.
+</p><p><a class="offsite" href="http://starship.python.net/crew/scott/PyLR.html">PyLR</a><br>Lexer is based on regular expressions.
+<br>Parses: LR
+<br>Updated: December 1997.
+</p><h1 id="h_Standard_Modules">Standard Modules</h1><p>The Python standard library includes a few modules for special-purpose
+parsing problems. These are not general-purpose parsers, but don't overlook them.
+If your need overlaps with their capabilities, they're perfect:</p><ul><li><a class="offsite" href="http://docs.python.org/lib/module-shlex.html">shlex</a>
+lexes command lines using the rules common to many operating system shells.</li><li><a class="offsite" href="http://docs.python.org/lib/module-ConfigParser.html">ConfigParser</a>
+implements a basic configuration file parser language which
+provides a structure similar to what you would find on Microsoft Windows INI files.
+</li><li><a class="offsite" href="http://docs.python.org/lib/module-email.html">email</a>
+provides many services, including parsing email and other RFC-822 structures.</li><li><a class="offsite" href="http://docs.python.org/lib/module-parser.html">parser</a>
+parses Python source text.</li><li><a class="offsite" href="http://docs.python.org/lib/module-cmd.html">cmd</a>
+implements a simple command interface, prompting for and parsing out command names,
+then dispatching to your handler methods.</li></ul><h1 id="h_See_also">See also</h1><ul><li>For general information about lexing and parsing technologies,
+the wikipedia articles
+<a class="offsite" href="http://en.wikipedia.org/wiki/Lexical_analyzer">Lexical Analyzer</a> and
+<a class="offsite" href="http://en.wikipedia.org/wiki/Category:Parsing_algorithms">Parsing Algorithms</a>
+are good starts.
+</li><li>For a more in-depth review of a few of these tools, see
+Martin Löwis's <a class="offsite" href="http://www.python.org/sigs/parser-sig/towards-standard.html">Towards a Standard Parser Generator</a>.
+</li><li>Another comparison of Python parsers is on the Python wiki:
+<a class="offsite" href="http://wiki.python.org/moin/LanguageParsing">LanguageParsing</a>.
+</li><li>For other stuff of interest to Pythonistas, you could do a lot worse than
+<a href="http://nedbatchelder.com/blog">my blog</a>.</li></ul><div class="googleads"></div><div class='comments' id='comments'>
+<h1>Comments</h1>
+
+	<div class='comment'>
+		<img class='gravatar' src='http://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e.jpg?default=http%3A%2F%2Fnedbatchelder.com%2Fpix%2Favatar%2Fa136.jpg&amp;size=40' width='40' height='40' alt='[gravatar]'>
+		<div class='head'>
+			<span class='who'><b><a href='http://uche.ogbuji.net' rel='nofollow' target='_blank'>Uche</a></b></span>
+			<span class='when'><span class='adminlink'></span> 8:16 AM on 2 Oct 2004</span>
+		</div>
+		
+		<p class='commenttext'>
+			Re BisonGen.<br><br>True: docs are sparse.  We developed it really as an internal tool for generating parsers needed in 4Suite, but got some interest in using it standalone, so started releasing versions of it.<br><br>Earlier versions of BisonGen used to generate a bison and flex file for second-srtage processing by the GNU tools, but Jeremy, in a fit of brilliant madness rewrote all the state table analysis and construction code from those packages in Python, so now you're right, it really has little to do with bison.  Perhaps a name change is in order, but again given our shallow follow-thru w.r.t. BisonGen...<br><br>I'll at least cobble together a home page.
+		</p>
+	</div>
+	<div class='comment'>
+		<img class='gravatar' src='http://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e.jpg?default=http%3A%2F%2Fnedbatchelder.com%2Fpix%2Favatar%2Fa68.jpg&amp;size=40' width='40' height='40' alt='[gravatar]'>
+		<div class='head'>
+			<span class='who'><b><a href='http://mjtruog.veryspeedy.net' rel='nofollow' target='_blank'>Michael Truog</a></b></span>
+			<span class='when'><span class='adminlink'></span> 11:44 PM on 4 Oct 2005</span>
+		</div>
+		
+		<p class='commenttext'>
+			Thanks for maintaining your list.  It really helped me find a python parser.
+		</p>
+	</div>
+	<div class='comment'>
+		<img class='gravatar' src='http://www.gravatar.com/avatar/2f68448201151cc4d5c35371e004466f.jpg?default=http%3A%2F%2Fnedbatchelder.com%2Fpix%2Favatar%2Fa252.jpg&amp;size=40' width='40' height='40' alt='[gravatar]'>
+		<div class='head'>
+			<span class='who'><b>Arjun De</b></span>
+			<span class='when'><span class='adminlink'></span> 8:01 PM on 5 Oct 2005</span>
+		</div>
+		
+		<p class='commenttext'>
+			Thanks a lot. Great list, came across pyparser thanks to this.
+		</p>
+	</div>
+	<div class='comment'>
+		<img class='gravatar' src='http://www.gravatar.com/avatar/a49e5077bb11af1db0292b88fcafeb20.jpg?default=http%3A%2F%2Fnedbatchelder.com%2Fpix%2Favatar%2Fa210.jpg&amp;size=40' width='40' height='40' alt='[gravatar]'>
+		<div class='head'>
+			<span class='who'><b>Suman</b></span>
+			<span class='when'><span class='adminlink'></span> 10:13 PM on 9 Oct 2005</span>
+		</div>
+		
+		<p class='commenttext'>
+			Nice compilation!<br>Was very helpful for knowing many things i did not know previously.<br><br>Also, it would be great if you can add an a rating and reviews to the tools so that it can help novices like me to select a parser and get going.It will be much better in the long run.
+		</p>
+	</div>
+	<div class='comment'>
+		<img class='gravatar' src='http://www.gravatar.com/avatar/75e9a11371cbe1566607180863efdf4c.jpg?default=http%3A%2F%2Fnedbatchelder.com%2Fpix%2Favatar%2Fa104.jpg&amp;size=40' width='40' height='40' alt='[gravatar]'>
+		<div class='head'>
+			<span class='who'><b><a href='http://nedbatchelder.com' rel='nofollow' target='_blank'>Ned Batchelder</a></b></span>
+			<span class='when'><span class='adminlink'></span> 11:48 AM on 10 Oct 2005</span>
+		</div>
+		
+		<p class='commenttext'>
+			Suman, I don't have the time to rate and review each of these.  I tried to objectively describe them.  Trying out each of them would be a much larger undertaking.  And I don't know that my criteria would be the same as yours.
+		</p>
+	</div>
+	<div class='comment'>
+		<img class='gravatar' src='http://www.gravatar.com/avatar/2971daf99427e95fb210a8bd6fec6d64.jpg?default=http%3A%2F%2Fnedbatchelder.com%2Fpix%2Favatar%2Fa233.jpg&amp;size=40' width='40' height='40' alt='[gravatar]'>
+		<div class='head'>
+			<span class='who'><b>Henning</b></span>
+			<span class='when'><span class='adminlink'></span> 4:50 PM on 14 Oct 2005</span>
+		</div>
+		
+		<p class='commenttext'>
+			There is also a comparison on <br><a rel='nofollow' href=http://wiki.python.org/moin/LanguageParsing>http://wiki.python.org/moin/LanguageParsing</a>
+		</p>
+	</div>
+	<div class='comment'>
+		<img class='gravatar' src='http://www.gravatar.com/avatar/c6c6e712e26ab0ee6bef6ce9b456e743.jpg?default=http%3A%2F%2Fnedbatchelder.com%2Fpix%2Favatar%2Fa133.jpg&amp;size=40' width='40' height='40' alt='[gravatar]'>
+		<div class='head'>
+			<span class='who'><b>Daniel &#039;Dang&#039; Griffith</b></span>
+			<span class='when'><span class='adminlink'></span> 6:28 AM on 17 Oct 2005</span>
+		</div>
+		
+		<p class='commenttext'>
+			In the standard modules, you might consider adding the cmd module.  It's convenient when you don't want to bother with writing a grammar for a simple command-line tool.  It uses a naming convention to map the user's input to function names; if a match is found, the function is called, otherwise, an error function is called.<br>    --dang
+		</p>
+	</div>
+	<div class='comment'>
+		<img class='gravatar' src='http://www.gravatar.com/avatar/df3275e08a751939da4624063bee12a3.jpg?default=http%3A%2F%2Fnedbatchelder.com%2Fpix%2Favatar%2Fa226.jpg&amp;size=40' width='40' height='40' alt='[gravatar]'>
+		<div class='head'>
+			<span class='who'><b>Steve</b></span>
+			<span class='when'><span class='adminlink'></span> 11:12 PM on 18 Dec 2005</span>
+		</div>
+		
+		<p class='commenttext'>
+			Nice listing of resources.  I hate to admit, but i don't know if i need a parser or not.. Essentially i know i spend a lot of time using regular expressions, but don't know if i can get a better deal with a parser.<br><br>The links i have so far focus on the technical aspects.  So far i can not find detail on where lex / parse should and should not be used.  Proly i should keep reading... Thanks for the info.
+		</p>
+	</div>
+	<div class='comment'>
+		<img class='gravatar' src='http://www.gravatar.com/avatar/a48fb92f716444bd989629c649098b86.jpg?default=http%3A%2F%2Fnedbatchelder.com%2Fpix%2Favatar%2Fa143.jpg&amp;size=40' width='40' height='40' alt='[gravatar]'>
+		<div class='head'>
+			<span class='who'><b>ToddB</b></span>
+			<span class='when'><span class='adminlink'></span> 2:18 AM on 14 Feb 2006</span>
+		</div>
+		
+		<p class='commenttext'>
+			Would be so helpful if was some sort of blurb about how fast these are. I am currently writing a mud, and will definitely need a parser, looked into many of these parsers, honestly speed is a very big issue. Unfortunately haven't seen any kind of benchmarks for most of these.
+		</p>
+	</div>
+	<div class='comment'>
+		<img class='gravatar' src='http://www.gravatar.com/avatar/1242925861651e7221322d7c4b17680e.jpg?default=http%3A%2F%2Fnedbatchelder.com%2Fpix%2Favatar%2Fa157.jpg&amp;size=40' width='40' height='40' alt='[gravatar]'>
+		<div class='head'>
+			<span class='who'><b><a href='http://www.mitre.org' rel='nofollow' target='_blank'>judge</a></b></span>
+			<span class='when'><span class='adminlink'></span> 1:38 PM on 25 May 2006</span>
+		</div>
+		
+		<p class='commenttext'>
+			Ned -- thanks. <br><br>I appreciate the overview. This is helping jumpstart me. <br>I also second the request for some kind of review.<br><br>-- joe
+		</p>
+	</div>
+	<div class='comment'>
+		<img class='gravatar' src='http://www.gravatar.com/avatar/2cda73b937991b1ab4ce8ea4eea64049.jpg?default=http%3A%2F%2Fnedbatchelder.com%2Fpix%2Favatar%2Fa68.jpg&amp;size=40' width='40' height='40' alt='[gravatar]'>
+		<div class='head'>
+			<span class='who'><b>Fabrice de fougerolles</b></span>
+			<span class='when'><span class='adminlink'></span> 3:04 AM on 27 Feb 2007</span>
+		</div>
+		
+		<p class='commenttext'>
+			Hello, Thank for this pages! We use your work in order to choose the best tool for our needs. We work on a Flight Management projet (100 ingenieers)...
+		</p>
+	</div>
+	<div class='comment'>
+		<img class='gravatar' src='http://www.gravatar.com/avatar/cea563880417182e24d2b9bbe8ec0de0.jpg?default=http%3A%2F%2Fnedbatchelder.com%2Fpix%2Favatar%2Fa34.jpg&amp;size=40' width='40' height='40' alt='[gravatar]'>
+		<div class='head'>
+			<span class='who'><b>Andy Elvey</b></span>
+			<span class='when'><span class='adminlink'></span> 6:15 PM on 9 Jun 2007</span>
+		</div>
+		
+		<p class='commenttext'>
+			Hi.  I recently found a **great** public-domain Python-based parsing library. <br><br> It's called "yeanpypa" (YEt ANother PYthon PArsing lib) and is inspired by PyParsing and Boost::Spirit (a C++-based parsing lib that I've used a fair bit).  <br>Indeed, IMO yeanpypa feels very much like Spirit. <br><br> The main difference to some other parsing libs is that with (say) Spirit, you specify the BNF-grammar from the top down. So, to use a nonsensical but easy-to-understand example, if you did a BNF grammar for a book (say a novel), Spirit would do it as (in pseudo-code)- <br><br> Book = one-or-more chapters<br> Chapter = one-or-more pages<br> Pages = one-or-more paragraphs  <br> Paragraph = one-or-more-lines  <br> Line = one-or-more words <br><br>... and so on. In yeanpypa, you would do - <br><br>  Words = one-or-more letters<br>  Line = one-or-more words <br>  Paragraph = one-or-more-lines <br>  Pages = one-or-more paragraphs <br>  Chapter = one-or-more pages<br>  Book = one-or-more chapters<br><br> Yeanpypa is great! I've tried PyParsing but just couldn't get the hang of it. Then I tried yeanpypa and (having used Spirit) I "got it" *immediately!* <br><br> Here are the URLs for yeanpypa - <br> <a rel='nofollow' href='http://freshmeat.net/projects/yeanpypa/'>http://freshmeat.net/projects/yeanpypa/</a><br><br> <a rel='nofollow' href='http://www.slash-me.net/dev/snippets/yeanpypa/documentation.html'>http://www.slash-me.net/dev/snippets/yeanpypa/documentation.html</a>
+		</p>
+	</div>
+	<div class='comment'>
+		<img class='gravatar' src='http://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e.jpg?default=http%3A%2F%2Fnedbatchelder.com%2Fpix%2Favatar%2Fa144.jpg&amp;size=40' width='40' height='40' alt='[gravatar]'>
+		<div class='head'>
+			<span class='who'><b><a href='http://construct.wikispaces.com' rel='nofollow' target='_blank'>gangesmaster</a></b></span>
+			<span class='when'><span class='adminlink'></span> 2:42 PM on 31 Aug 2007</span>
+		</div>
+		
+		<p class='commenttext'>
+			'Construct' is a declarative framework for the definition of arbitrary data structures. These data structures, called 'constructs', allow both parsing and building (symmetrically).<br><br><a rel='nofollow' href='http://construct.wikispaces.com'>http://construct.wikispaces.com</a>
+		</p>
+	</div>
+	<div class='comment'>
+		<img class='gravatar' src='http://www.gravatar.com/avatar/4a54fc343be6ce5af8522c042635e2bd.jpg?default=http%3A%2F%2Fnedbatchelder.com%2Fpix%2Favatar%2Fa53.jpg&amp;size=40' width='40' height='40' alt='[gravatar]'>
+		<div class='head'>
+			<span class='who'><b>regulate</b></span>
+			<span class='when'><span class='adminlink'></span> 12:18 AM on 18 Oct 2007</span>
+		</div>
+		
+		<p class='commenttext'>
+			Ned, pyparsing. <br>pyparsing!!!!!!!!!!
+		</p>
+	</div>
+	<div class='comment'>
+		<img class='gravatar' src='http://www.gravatar.com/avatar/74a1a6b65bbe5ad874af0aa193dc76dc.jpg?default=http%3A%2F%2Fnedbatchelder.com%2Fpix%2Favatar%2Fa73.jpg&amp;size=40' width='40' height='40' alt='[gravatar]'>
+		<div class='head'>
+			<span class='who'><b>Matt Giuca</b></span>
+			<span class='when'><span class='adminlink'></span> 4:33 AM on 18 Apr 2009</span>
+		</div>
+		
+		<p class='commenttext'>
+			Great! Thanks for the list. Looks like you've been maintaining this for *years*. Good job.
+		</p>
+	</div>
+	<div class='comment'>
+		<img class='gravatar' src='http://www.gravatar.com/avatar/371e1c834c5e7e5263b247a034b8cecd.jpg?default=http%3A%2F%2Fnedbatchelder.com%2Fpix%2Favatar%2Fa197.jpg&amp;size=40' width='40' height='40' alt='[gravatar]'>
+		<div class='head'>
+			<span class='who'><b>random reddit user</b></span>
+			<span class='when'><span class='adminlink'></span> 3:19 AM on 1 Sep 2009</span>
+		</div>
+		
+		<p class='commenttext'>
+			Python 2.6 has a json parsing module built in.<br><br><a rel='nofollow' href='http://docs.python.org/library/json.html'>http://docs.python.org/library/json.html</a>
+		</p>
+	</div>
+	<div class='comment'>
+		<img class='gravatar' src='http://www.gravatar.com/avatar/478476dff8af8dbd88cc211e631aece5.jpg?default=http%3A%2F%2Fnedbatchelder.com%2Fpix%2Favatar%2Fa50.jpg&amp;size=40' width='40' height='40' alt='[gravatar]'>
+		<div class='head'>
+			<span class='who'><b><a href='http://craig.mcqueen.id.au/' rel='nofollow' target='_blank'>Craig McQueen</a></b></span>
+			<span class='when'><span class='adminlink'></span> 10:44 PM on 2 Dec 2009</span>
+		</div>
+		
+		<p class='commenttext'>
+			Toy Parser Generator link is now <a rel='nofollow' href='http://christophe.delord.free.fr/tpg/index.html'>http://christophe.delord.free.fr/tpg/index.html</a>
+		</p>
+	</div>
+	<div class='comment'>
+		<img class='gravatar' src='http://www.gravatar.com/avatar/c9179153b6ca84bb71086ca20efbdf35.jpg?default=http%3A%2F%2Fnedbatchelder.com%2Fpix%2Favatar%2Fa155.jpg&amp;size=40' width='40' height='40' alt='[gravatar]'>
+		<div class='head'>
+			<span class='who'><b>Julian S. Taylor</b></span>
+			<span class='when'><span class='adminlink'></span> 10:28 AM on 16 Jul 2010</span>
+		</div>
+		
+		<p class='commenttext'>
+			This was fantastically helpful. Thanks for posting this. I'm toying with piPEG and testing others.
+		</p>
+	</div>
+
+<div id='commentform'>
+<h2>Add a comment:</h2>
+<div>
+	<form method="post" action="http://nedbatchelder.com/text/python-parsers.html#commentform" id="commentformform">
+		<table width="100%" border="0" cellspacing="0" cellpadding="2">
+			<tr>
+				<td width="0%">
+					<div class='label'>name</div>
+				</td>
+				<td width="100%">
+					<input class='edit' type="text" name="ff52ff708a80c86a51473bb0bfa97ddea" id="ff52ff708a80c86a51473bb0bfa97ddea" size="40" value="">
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div class='label'>email</div>
+				</td>
+				<td>
+					<div style="display:none">
+					Ignore this:
+					<input class='edit' type="email" name="fdfbb6a8e3966ec2ad9c5b8256c6e1a23" id="fdfbb6a8e3966ec2ad9c5b8256c6e1a23" size="40">
+					</div>
+					<input class='edit' type="email" name="fc2a6233f26ec362d309828998d92969c" id="fc2a6233f26ec362d309828998d92969c" size="40" value="">
+					<span class='notice'>not displayed and no spam.</span>
+					<div style="display:none">
+					Leave this empty:
+					<input class='edit' type="email" name="f9adaee3c408dd81efe5e5df13b9dc1e5" id="f9adaee3c408dd81efe5e5df13b9dc1e5" size="40">
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div class='label'>www</div>
+				</td>
+				<td>
+					<input class='edit' type="url" name="fb0454a057c876ed169eb863a9564952d" id="fb0454a057c876ed169eb863a9564952d" size="40" value="">
+					<span class='notice'>not searched.</span>
+				</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td>
+					<div class='notice'>Name and either email or www are required.</div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div align="center" style="display:none">
+						Don't put anything here:
+						<textarea name="f285b0ff1a7907e0e51b8ae154dd9807a" id="f285b0ff1a7907e0e51b8ae154dd9807a" rows="7" cols="77" style='width:100%'></textarea>
+					</div>
+					<div align="center">
+						<textarea name="fc1a91288b9fe10172633c422e9885a15" id="fc1a91288b9fe10172633c422e9885a15" rows="7" cols="77" style='width:100%'></textarea>
+					</div>
+					<div align="center" style="display:none">
+						Leave this empty:
+						<textarea name="f3169bd1a6003f09fb1554861abd79b64" id="f3169bd1a6003f09fb1554861abd79b64" rows="7" cols="77" style='width:100%'></textarea>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" class='notice' align='right'>
+					URLs auto-link and some tags are allowed: &lt;a>&lt;b>&lt;i>&lt;p>&lt;br>&lt;pre>.
+				</td>
+			</tr>
+			<tr valign="top">
+				<td colspan="2">
+					<div align="right">
+						<label for="cbnotify">
+							<input type="checkbox" name="f77e730bb16832f24e289fc93d5c64d48" id="cbnotify" >
+							<span class='label'>Email me future comments</span>
+						</label>&#160;&#160;
+						<input id="previewbtn" type="submit" name="f1cdb341a5b1086c6496de87092ce6802" value="preview >>">
+						<span style="display:none">
+						<input type="submit" name="f25376dc02d7e0c7f47515f85383aebf6" value="I'm a spambot">
+						</span>
+					</div>
+				</td>
+			</tr>
+		</table>
+		<input type='hidden' name='f24c03d0d69a13b309d745d18b24d057f' value='text/python-parsers.html'>
+		<input type='hidden' name='spinner' value='cd81bd7d84ca78d85fa1775d21b9fac3'>
+		<input type='hidden' name='f90c7bdcf8915fd6dece3d475932105f6' value='1292854965'>
+
+
+
+	</form>
+</div>
+</div>
+
+</div>
+</div></td><td id='menu' valign='top'><div class='sidebar'>
+
+
+<div class='blogroll'><ul class='first'><li>Search this site:
+            
+<form action="http://www.google.com/cse" id="searchbox_007818501792991951010:s9hiibxg-ty" style="margin-top:6px;"><input type="hidden" name="cx" value="007818501792991951010:s9hiibxg-ty"><table cellpadding='0' cellspacing='0'><tr><td valign='middle'><input type="text" name="q" style='border:1px solid #7e9db9;padding:2px;width:144px;height:16px;'></td><td valign='middle'><input id="submit" type="image" title="Search" src="/pix/search.png"></td></tr></table></form><script type="text/javascript">
+    (function() {
+        var f = document.getElementById('searchbox_007818501792991951010:s9hiibxg-ty');
+        if (f && f.q) {
+            var q = f.q;
+            var b = function() {
+                if (q.value == '') {
+                    q.style.background = '#fff url(http:\x2F\x2Fwww.google.com\x2Fcoop\x2Fintl\x2Fen\x2Fimages\x2Fgoogle_custom_search_watermark.gif) left no-repeat';
+                }
+            };
+            var f = function() {
+                q.style.background = '#fff';
+            };
+            q.onfocus = f;
+            q.onblur = b;
+            if (!/[&?]q=[^&]/.test(location.search)) {
+                b();
+            }
+        }
+    })();
+</script></li><li class='first'><a href='/site/aboutned.html' rel='author'>About me</a></li><li>You might like:
+            <ul class='compact'><li>&#xbb;&#xa0;<a href='/blog'>My blog</a></li><li>&#xbb;&#xa0;<a href='http://susansenator.com/makingpeace.html'>My wife's books</a><br><a href='http://susansenator.com/makingpeace.html'><img src='pix/makingpeacetiny.png' alt='Making Peace With Autism' width='83' height='127' style='margin: 10px 0 0 0'></a> <a href='http://susansenator.com/survivalguide.html'><img src='pix/survivalguidetiny.png' alt='Autism Mom&#39;s Survival Guide' width='86' height='121' style='margin: 10px 0 0 10'></a></li></ul></li><li><iframe src='tabblo_badge_recent.html' width='175' height='211' frameborder='0' scrolling='no'></iframe></li></ul></div>
+
+</div></td></tr><tr><td id='copyright' colspan='2'><p class='copyright'>
+                    
+                        The contents of this page are in the public domain.
+                    
+                </p></td></tr></table></center></body></html>

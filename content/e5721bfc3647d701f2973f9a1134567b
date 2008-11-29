@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<title>Calculating running variance in Python and C++ | AI and Social Science &#8211; Brendan O&#039;Connor</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="http://anyall.org/blog/wp-content/themes/my_tt/style.css" />
+<link rel="pingback" href="http://anyall.org/blog/xmlrpc.php" />
+<link rel="alternate" type="application/rss+xml" title="AI and Social Science - Brendan O&#039;Connor &raquo; Feed" href="http://anyall.org/blog/feed/" />
+<link rel="alternate" type="application/rss+xml" title="AI and Social Science - Brendan O&#039;Connor &raquo; Comments Feed" href="http://anyall.org/blog/comments/feed/" />
+<link rel="alternate" type="application/rss+xml" title="AI and Social Science - Brendan O&#039;Connor &raquo; Calculating running variance in Python and C++ Comments Feed" href="http://anyall.org/blog/2008/11/calculating-running-variance-in-python-and-c/feed/" />
+<script type='text/javascript' src='http://anyall.org/blog/wp-includes/js/comment-reply.js?ver=20090102'></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://anyall.org/blog/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://anyall.org/blog/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='AI and Social Science &#8211; Brendan O&#039;Connor' href='http://anyall.org/blog/' />
+<link rel='start' title='gintis: theoretical unity in the social sciences' href='http://anyall.org/blog/2004/11/gintis-theoretical-unity-in-the-social-sciences/' />
+<link rel='prev' title='Python bindings to Google&#8217;s &#8220;AJAX&#8221; Search API' href='http://anyall.org/blog/2008/11/python-bindings-to-googles-ajax-search-api/' />
+<link rel='next' title='Statistics vs. Machine Learning, fight!' href='http://anyall.org/blog/2008/12/statistics-vs-machine-learning-fight/' />
+<meta name="generator" content="WordPress 3.0.3" />
+<link rel='canonical' href='http://anyall.org/blog/2008/11/calculating-running-variance-in-python-and-c/' />
+<link rel='shortlink' href='http://anyall.org/blog/?p=356' />
+</head>
+
+<body class="single single-post postid-356">
+<div id="wrapper" class="hfeed">
+        <div id="header-container">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="http://anyall.org/blog/" title="AI and Social Science &#8211; Brendan O&#039;Connor" rel="home">AI and Social Science &#8211; Brendan O&#039;Connor</a>
+					</span>
+				</div>
+				<div id="site-description">cognition, language, social systems; statistics, visualization, computation</div>
+
+				<img width="0" height="0"/>
+						<!-- <img src="http://anyall.org/blog_wp_github_v3/wp-content/themes/twentyten_hacked/images/headers/berries.jpg" width="940" height="198" alt="" /> -->
+                                        			</div><!-- #branding -->
+
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+        </div> <!-- #header-container -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="http://anyall.org/blog/2008/11/python-bindings-to-googles-ajax-search-api/" rel="prev"><span class="meta-nav">&larr;</span> Python bindings to Google&#8217;s &#8220;AJAX&#8221; Search API</a></div>
+					<div class="nav-next"><a href="http://anyall.org/blog/2008/12/statistics-vs-machine-learning-fight/" rel="next">Statistics vs. Machine Learning, fight! <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-356" class="post-356 post type-post hentry category-uncategorized">
+					<h1 class="entry-title">Calculating running variance in Python and C++</h1>
+
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">Posted on</span> <a href="http://anyall.org/blog/2008/11/calculating-running-variance-in-python-and-c/" title="11:51 pm" rel="bookmark"><span class="entry-date">November 28, 2008</span></a>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<p>It&#8217;s fairly obvious that an average can be calculated online, but interestingly, there&#8217;s also a way to calculate a running variance and standard deviation.  Read all about it <a href="http://www.johndcook.com/standard_deviation.html">here</a>.</p>
+<p>I&#8217;m playing around with the <a href="http://anyall.org/blog/2008/11/netflix-prize/">Netflix Prize</a> data of 100 million movie ratings, and a huge problem is figuring out how to load and calculate everything in memory.  I&#8217;m having success with <a href="http://numpy.scipy.org/">NumPy</a>, the numeric library for Python, because it compactly stores arrays with C/Fortran binary layouts.  For example, 100 million 32-bit floats = 100M * 4 = 400MB of memory, which is manageable.  And it&#8217;s much easier to play around interactively in <a href="http://ipython.scipy.org">ipython</a>/<a href="http://matplotlib.sourceforge.net/">matplotlib</a> rather than write C++ for everything.</p>
+<p>Unfortunately, the simple ways to calculate variance on an array of that size create wasteful intermediate data structures as long as the original array.</p>
+<pre>
+&gt;&gt;&gt; mean( (x-mean(x)) ** 2 )            # two intermediate structures
+&gt;&gt;&gt; tmp=x-mean(x); tmp**=2; mean(tmp)   # one intermediate structure
+</pre>
+<p>That&#8217;s an extra 400 or 800 megs of memory being thrown around.  (And if x was an array of integers, the x-mean(x) step implicitly converts to 64-bit doubles which, well, doubles things again!)</p>
+<p>So, following John Cook&#8217;s <a href="http://www.johndcook.com/standard_deviation.html">explanation</a>, I wrote <a href="http://github.com/brendano/running_stat">running_stat</a>, a C++ and Python implementation of running variance.  It takes almost no memory and is faster than NumPy&#8217;s native variance function.  <a href="http://github.com/brendano/running_stat/tree/master/__init__.py">Demo</a>:</p>
+<pre>
+In [1]: from numpy import *
+In [2]: x = arange(1e8)                      # python RSIZE = 774 MB
+
+In [3]: timeit -n1 -r5 std(x)                # RSIZE goes as high as 2.2 GB
+1 loops, best of 5: 4.01 s per loop
+
+In [4]: import running_stat
+In [5]: timeit -n1 -r5 running_stat.std(x)   # RSIZE = 774 MB the whole time
+1 loops, best of 5: 1.66 s per loop
+</pre>
+<p>The C++ implementation is very simple and can be ripped out of <a href="http://github.com/brendano/running_stat/tree/master/running_stat.cc">running_stat.cc</a>.</p>
+<p>Link: <a href="http://github.com/brendano/running_stat">github.com/brendano/running_stat</a></p>
+<p>I wonder if Haskell&#8217;s laziness, perhaps along with my friend Patrick&#8217;s <a href="http://quantile95.com/2008/10/31/ann-blas-bindings-for-haskell-version-06/">Haskell BLAS bindings</a>, might magically solve some of the memory usage in the naive implementation.</p>
+											</div><!-- .entry-content -->
+
+
+					<div class="entry-utility">
+						This entry was posted in <a href="http://anyall.org/blog/category/uncategorized/" title="View all posts in Uncategorized" rel="category tag">Uncategorized</a>. Bookmark the <a href="http://anyall.org/blog/2008/11/calculating-running-variance-in-python-and-c/" title="Permalink to Calculating running variance in Python and C++" rel="bookmark">permalink</a>.											</div><!-- .entry-utility -->
+				</div><!-- #post-## -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="http://anyall.org/blog/2008/11/python-bindings-to-googles-ajax-search-api/" rel="prev"><span class="meta-nav">&larr;</span> Python bindings to Google&#8217;s &#8220;AJAX&#8221; Search API</a></div>
+					<div class="nav-next"><a href="http://anyall.org/blog/2008/12/statistics-vs-machine-learning-fight/" rel="next">Statistics vs. Machine Learning, fight! <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+			<h3 id="comments-title">4 Responses to <em>Calculating running variance in Python and C++</em></h3>
+
+
+			<ol class="commentlist">
+					<li class="comment even thread-even depth-1" id="li-comment-819">
+		<div id="comment-819">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/8c681db6edc3b626358dd8c62df88e77?s=40&amp;d=identicon&amp;r=R' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn"><a href='http://quantile95.com' rel='external nofollow' class='url'>Patrick</a></cite> <span class="says">says:</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://anyall.org/blog/2008/11/calculating-running-variance-in-python-and-c/#comment-819">
+			November 30, 2008 at 8:06 am</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>Thanks for the plug but BLAS is pretty irrelevant here.  Any decent array library will support a fold opration to give you the result with a constant amount of memory.  </p>
+<p>Also, in python, couldn&#8217;t you just use a for loop?</p>
+</div>
+
+		<div class="reply">
+			<a rel='nofollow' class='comment-reply-link' href='/blog/2008/11/calculating-running-variance-in-python-and-c/?replytocom=819#respond' onclick='return addComment.moveForm("comment-819", "819", "respond", "356")'>Reply</a>		</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li>
+	<li class="comment byuser comment-author-brendano bypostauthor odd alt thread-odd thread-alt depth-1" id="li-comment-824">
+		<div id="comment-824">
+		<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/fd4b164e15fa2a834d16fb8743ec4f1b?s=40&amp;d=identicon&amp;r=R' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn"><a href='http://anyall.org' rel='external nofollow' class='url'>brendano</a></cite> <span class="says">says:</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://anyall.org/blog/2008/11/calculating-running-variance-in-python-and-c/#comment-824">
+			November 30, 2008 at 8:51 pm</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>could use a python for loop, but it&#8217;s slower than having numpy do an array operation because it&#8217;s in C :)</p>
+<p>i guess figuring out how to push array operation into low-level libraries is a step simpler than matrix operations in low-level libraries&#8230;</p>
+</div>
+
+		<div class="reply">
+			<a rel='nofollow' class='comment-reply-link' href='/blog/2008/11/calculating-running-variance-in-python-and-c/?replytocom=824#respond' onclick='return addComment.moveForm("comment-824", "824", "respond", "356")'>Reply</a>		</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li>
+	<li class="comment even thread-even depth-1" id="li-comment-870">
+		<div id="comment-870">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/4b736113aa1557b9a110b5123d81d5f6?s=40&amp;d=identicon&amp;r=R' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn"><a href='http://www.daniel-lemire.com/' rel='external nofollow' class='url'>Daniel Lemire</a></cite> <span class="says">says:</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://anyall.org/blog/2008/11/calculating-running-variance-in-python-and-c/#comment-870">
+			December 3, 2008 at 5:51 pm</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>I thought you were after an windowed variance.</p>
+<p>If you are ever interested, you can compute the windowed max-min in constant time, irrespective of the window size! This is not entirely trivial, by the way. See my code:</p>
+<p><a href="http://code.google.com/p/maxminfilters/" rel="nofollow">http://code.google.com/p/maxminfilters/</a></p>
+</div>
+
+		<div class="reply">
+			<a rel='nofollow' class='comment-reply-link' href='/blog/2008/11/calculating-running-variance-in-python-and-c/?replytocom=870#respond' onclick='return addComment.moveForm("comment-870", "870", "respond", "356")'>Reply</a>		</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li>
+	<li class="comment byuser comment-author-brendano bypostauthor odd alt thread-odd thread-alt depth-1" id="li-comment-871">
+		<div id="comment-871">
+		<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/fd4b164e15fa2a834d16fb8743ec4f1b?s=40&amp;d=identicon&amp;r=R' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn"><a href='http://anyall.org' rel='external nofollow' class='url'>brendano</a></cite> <span class="says">says:</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://anyall.org/blog/2008/11/calculating-running-variance-in-python-and-c/#comment-871">
+			December 3, 2008 at 5:55 pm</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>Pretty cool, thanks!</p>
+<p>Is windowed variance even harder?</p>
+</div>
+
+		<div class="reply">
+			<a rel='nofollow' class='comment-reply-link' href='/blog/2008/11/calculating-running-variance-in-python-and-c/?replytocom=871#respond' onclick='return addComment.moveForm("comment-871", "871", "respond", "356")'>Reply</a>		</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li>
+			</ol>
+
+
+
+								<div id="respond">
+				<h3 id="reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/blog/2008/11/calculating-running-variance-in-python-and-c/#respond" style="display:none;">Cancel reply</a></small></h3>
+									<form action="http://anyall.org/blog/wp-comments-post.php" method="post" id="commentform">
+																			<p class="comment-notes">Your email address will not be published. Required fields are marked <span class="required">*</span></p>							<p class="comment-form-author"><label for="author">Name</label> <span class="required">*</span><input id="author" name="author" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-email"><label for="email">Email</label> <span class="required">*</span><input id="email" name="email" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-url"><label for="url">Website</label><input id="url" name="url" type="text" value="" size="30" /></p>
+												<p class="comment-form-comment"><label for="comment">Comment</label><textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>						<p class="form-allowed-tags">You may use these <abbr title="HyperText Markup Language">HTML</abbr> tags and attributes:  <code>&lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;strike&gt; &lt;strong&gt; </code></p>						<p class="form-submit">
+							<input name="submit" type="submit" id="submit" value="Post Comment" />
+							<input type='hidden' name='comment_post_ID' value='356' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+						</p>
+						<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="e84e0bb0d3" /></p>					</form>
+							</div><!-- #respond -->
+						
+</div><!-- #comments -->
+
+
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+
+		<div id="primary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+
+<li id="text-3" class="widget-container widget_text"><h3 class="widget-title">About</h3>			<div class="textwidget"><p>This is a blog on artificial intelligence and "Social Science++", with an emphasis on computation and statistics. My website is <a href="http://anyall.org/">anyall.org</a>.</p>
+</div>
+		</li><li id="twitter-widget-3" class="widget-container twitter-widget"><h3 class=widget-title>Tweets from <a href='http://twitter.com/brendan642'>@brendan642</a></h3>
+						<ul>
+							<li>
+								<span class="twitter-text">Geoff Nunberg on "culturomics" <a href="http://chronicle.com/article/Counting-on-Google-Books/125735/">http://chronicle.com/article/Counting-on-Google-Books/125735/</a></span>
+								<span class="twitter-date"><a href="http://twitter.com/brendan642/statuses/15911169462108160">[17 Dec]</a></span><br />
+							</li>
+							<li>
+								<span class="twitter-text">Impressed with Google Books N-Gram tool, despite limitation to (term,year) counts. It's like having base pairs and looking for SNP's.</span>
+								<span class="twitter-date"><a href="http://twitter.com/brendan642/statuses/15900697262301184">[17 Dec]</a></span><br />
+							</li>
+							<li>
+								<span class="twitter-text">Congrats Gabriel!  Who published the phrase "I smoke crack rocks" in a peer-reviewed paper, winning the: <a href="http://phdchallenge.org/">http://phdchallenge.org/</a></span>
+								<span class="twitter-date"><a href="http://twitter.com/brendan642/statuses/15492180747493378">[16 Dec]</a></span><br />
+							</li>
+						</ul>
+						</li><li id="search-3" class="widget-container widget_search"><h3 class="widget-title">Blog Search</h3><form role="search" method="get" id="searchform" action="http://anyall.org/blog/" >
+	<div><label class="screen-reader-text" for="s">Search for:</label>
+	<input type="text" value="" name="s" id="s" />
+	<input type="submit" id="searchsubmit" value="Search" />
+	</div>
+	</form></li>
+<li class="widget-container">
+<h3 class="widget-title">Featured Posts</h3>
+<ul class="my-post-list">
+ <li><a href="http://anyall.org/blog/2009/08/beautiful-data-book-chapter/">Beautiful Data book chapter</a></li>  <li><a href="http://anyall.org/blog/2009/05/announcing-tweetmotif-for-summarizing-twitter-topics-with-a-dash-of-nlp/">Announcing TweetMotif for summarizing twitter topics</a></li>  <li><a href="http://anyall.org/blog/2009/02/comparison-of-data-analysis-packages-r-matlab-scipy-excel-sas-spss-stata/">Comparison of data analysis packages: R, Matlab, SciPy, Excel, SAS, SPSS, Stata</a></li>  <li><a href="http://anyall.org/blog/2008/12/statistics-vs-machine-learning-fight/">Statistics vs. Machine Learning, fight!</a></li>  <li><a href="http://anyall.org/blog/2008/10/it-is-accurate-to-determine-a-blogs-bias-by-what-it-links-to/">It is accurate to determine a blog&#8217;s bias by what it links to</a></li>  <li><a href="http://anyall.org/blog/2008/06/turker-classifiers-and-binary-classification-threshold-calibration/">Turker classifiers and binary classification threshold calibration</a></li>  <li><a href="http://anyall.org/blog/2008/04/are-women-discriminated-against-in-graduate-admissions-simpsons-paradox-via-r-in-three-easy-steps/">Are women discriminated against in graduate admissions? Simpson&#8217;s paradox via R in three easy steps!</a></li>  <li><a href="http://anyall.org/blog/2008/03/color-name-study-i-did/">color name study i did</a></li>  <li><a href="http://anyall.org/blog/2008/01/food-fight/">Food Fight</a></li>  <li><a href="http://anyall.org/blog/2008/01/moral-psychology-on-amazon-mechanical-turk/">Moral psychology on Amazon Mechanical Turk</a></li>  <li><a href="http://anyall.org/blog/2007/08/its-all-in-a-name-kingdom-of-norway-vs-democratic-peoples-republic-of-korea/">It&#8217;s all in a name: &quot;Kingdom of Norway&quot; vs. &quot;Democratic People&#8217;s Republic of Korea&quot;</a></li>  <li><a href="http://anyall.org/blog/2007/07/game-outcome-graphs-prisoners-dilemma-with-fun-arrows/">Game outcome graphs &#8212; prisoner&#8217;s dilemma with FUN ARROWS!!!</a></li>  <li><a href="http://anyall.org/blog/2007/05/simpsons-paradox-is-so-totally-solved/">Simpson&#8217;s paradox is so totally solved</a></li>  <li><a href="http://anyall.org/blog/2006/07/4-move-rock-paper-scissors/">4-move rock, paper, scissors!</a></li> </ul>
+</li>
+
+<li class="widget-container">
+<h3 class="widget-title">Other Posts</h3>
+<ul class="my-post-list">
+ <li><a href="http://anyall.org/blog/2010/11/greenspan-on-the-daily-show/">Greenspan on the Daily Show</a></li>  <li><a href="http://anyall.org/blog/2010/08/an-mlai-approach-to-p-np/">An ML/AI approach to P != NP</a></li>  <li><a href="http://anyall.org/blog/2010/04/updates-cmu-facebook/">Updates: CMU, Facebook</a></li>  <li><a href="http://anyall.org/blog/2010/04/quick-note-cer-et-al-2010/">quick note: cer et al 2010</a></li>  <li><a href="http://anyall.org/blog/2010/03/how-facebook-privacy-failed-me/">How Facebook privacy failed me</a></li>  <li><a href="http://anyall.org/blog/2009/12/list-of-probabilistic-model-mini-language-toolkits/">List of probabilistic model mini-language toolkits</a></li>  <li><a href="http://anyall.org/blog/2009/09/seeing-how-art-and-pharmaceuticals-are-linguistically-similar-in-web-text/">Seeing how &#8220;art&#8221; and &#8220;pharmaceuticals&#8221; are linguistically similar in web text</a></li>  <li><a href="http://anyall.org/blog/2009/09/quiz-art-and-pharmaceuticals/">Quiz: &#8220;art&#8221; and &#8220;pharmaceuticals&#8221;</a></li>  <li><a href="http://anyall.org/blog/2009/09/dont-mawk-awk-the-fastest-and-most-elegant-big-data-munging-language/">Don&#8217;t MAWK AWK &#8211; the fastest and most elegant big data munging language!</a></li>  <li><a href="http://anyall.org/blog/2009/09/patches-to-rainbow-the-old-text-classifier-that-wont-go-away/">Patches to Rainbow, the old text classifier that won&#8217;t go away</a></li>  <li><a href="http://anyall.org/blog/2009/09/another-r-flashmob-today/">Another R flashmob today</a></li>  <li><a href="http://anyall.org/blog/2009/08/haghighi-and-klein-2009-simple-coreference-resolution-with-rich-syntactic-and-semantic-features/">Haghighi and Klein (2009): Simple Coreference Resolution with Rich Syntactic and Semantic Features</a></li>  <li><a href="http://anyall.org/blog/2009/08/blogger-to-wordpress-migration-helper/">Blogger to WordPress migration helper</a></li>  <li><a href="http://anyall.org/blog/2009/07/r-questions-on-stackoverflow/">R questions on StackOverflow</a></li>  <li><a href="http://anyall.org/blog/2009/07/fft-friedman-fortran-tricks/">FFT: Friedman + Fortran + Tricks</a></li>  <li><a href="http://anyall.org/blog/2009/07/road-in-a-forest/">Road in a forest</a></li>  <li><a href="http://anyall.org/blog/2009/07/beta-conjugate-explorer/">Beta conjugate explorer</a></li>  <li><a href="http://anyall.org/blog/2009/06/michael-jackson-in-persepolis/">Michael Jackson in Persepolis</a></li>  <li><a href="http://anyall.org/blog/2009/06/psychometrics-quote/">Psychometrics quote</a></li>  <li><a href="http://anyall.org/blog/2009/06/june-4/">June 4</a></li>  <li><a href="http://anyall.org/blog/2009/05/where-tweets-get-sent-from/">Where tweets get sent from</a></li>  <li><a href="http://anyall.org/blog/2009/05/zipfs-law-and-world-city-populations/">Zipf&#8217;s law and world city populations</a></li>  <li><a href="http://anyall.org/blog/2009/04/performance-comparison-keyvalue-stores-for-language-model-counts/">Performance comparison: key/value stores for language model counts</a></li>  <li><a href="http://anyall.org/blog/2009/04/1-billion-web-page-dataset-from-cmu/">1 billion web page dataset from CMU</a></li>  <li><a href="http://anyall.org/blog/2009/04/pirates-killed-by-president/">Pirates killed by President</a></li>  <li><a href="http://anyall.org/blog/2009/04/binary-classification-evaluation-in-r-via-rocr/">Binary classification evaluation in R via ROCR</a></li>  <li><a href="http://anyall.org/blog/2009/02/la-jetee/">La Jetee</a></li>  <li><a href="http://anyall.org/blog/2009/01/logic-bomb/">&#8220;Logic Bomb&#8221;</a></li>  <li><a href="http://anyall.org/blog/2009/01/sf-conference-for-data-mining-mercenaries/">SF conference for data mining mercenaries</a></li>  <li><a href="http://anyall.org/blog/2009/01/love-it-and-hate-it-r-has-come-of-age/">Love it and hate it, R has come of age</a></li>  <li><a href="http://anyall.org/blog/2008/12/facebook-sentiment-mining-predicts-presidential-polls/">Facebook sentiment mining predicts presidential polls</a></li>  <li><a href="http://anyall.org/blog/2008/12/information-cost-genocide/">Information cost and genocide</a></li>  <li><a href="http://anyall.org/blog/2008/11/calculating-running-variance-in-python-and-c/">Calculating running variance in Python and C++</a></li>  <li><a href="http://anyall.org/blog/2008/11/python-bindings-to-googles-ajax-search-api/">Python bindings to Google&#8217;s &#8220;AJAX&#8221; Search API</a></li>  <li><a href="http://anyall.org/blog/2008/11/netflix-prize/">Netflix Prize</a></li>  <li><a href="http://anyall.org/blog/2008/11/youtube-the-wire-chicken-mcnuggets/">The Wire: Mr. Nugget</a></li>  <li><a href="http://anyall.org/blog/2008/11/correlations-cotton-picking-vs-2008-presidential-votes/">Correlations &#8211; cotton picking vs. 2008 Presidential votes</a></li>  <li><a href="http://anyall.org/blog/2008/11/disease-tracking-with-web-queries-and-social-messaging-google-twitter-facebook/">Disease tracking with web queries and social messaging (Google, Twitter, Facebook&#8230;)</a></li>  <li><a href="http://anyall.org/blog/2008/11/obama-street-celebrations-in-san-francisco/">Obama street celebrations in San Francisco</a></li>  <li><a href="http://anyall.org/blog/2008/10/twitter-graphs-of-the-debate/">Twitter graphs of the debate</a></li>  <li><a href="http://anyall.org/blog/2008/10/is-religion-the-opiate-of-the-elite/">Is religion the opiate of the elite?</a></li>  <li><a href="http://anyall.org/blog/2008/10/financial-market-theory-on-the-daily-show/">Financial market theory on the Daily Show</a></li>  <li><a href="http://anyall.org/blog/2008/10/the-universal-declaration-of-human-rights-animated/">The Universal Declaration of Human Rights Animated</a></li>  <li><a href="http://anyall.org/blog/2008/10/blog-move-has-landed/">Blog move has landed</a></li>  <li><a href="http://anyall.org/blog/2008/10/mydebatesorg-online-polling-and-potentially-the-coolest-question-corpus-ever/">MyDebates.org, online polling, and potentially the coolest question corpus ever</a></li>  <li><a href="http://anyall.org/blog/2008/09/palinspeakcom/">PalinSpeak.com</a></li>  <li><a href="http://anyall.org/blog/2008/09/machine-translationvision-stanford-ai-courses-online/">&quot;Machine&quot; translation/vision (Stanford AI courses online)</a></li>  <li><a href="http://anyall.org/blog/2008/08/fukuyama-authoritarianism-is-still-against-history/">Fukuyama: Authoritarianism is still against history</a></li>  <li><a href="http://anyall.org/blog/2008/08/a-better-obama-vs-mccain-poll-aggregation/">A better Obama vs McCain poll aggregation</a></li>  <li><a href="http://anyall.org/blog/2008/08/east-vs-west-cultural-psychology/">East vs West cultural psychology!</a></li>  <li><a href="http://anyall.org/blog/2008/07/the-macgyver-of-data-analysis/">The MacGyver of data analysis</a></li>  <li><a href="http://anyall.org/blog/2008/07/link-todays-international-organizations/">Link: Today&#8217;s international organizations</a></li>  <li><a href="http://anyall.org/blog/2008/07/bias-correction-sneak-peek/">Bias correction sneak peek!</a></li>  <li><a href="http://anyall.org/blog/2008/06/pairwise-comparisons-for-relevance-evaluation/">Pairwise comparisons for relevance evaluation</a></li>  <li><a href="http://anyall.org/blog/2008/06/clinton-obama-support-visualization/">Clinton-Obama support visualization</a></li>  <li><a href="http://anyall.org/blog/2008/05/sub-reddit-for-systems-science-and-or/">Sub-reddit for Systems Science and OR</a></li>  <li><a href="http://anyall.org/blog/2008/05/conplot-a-console-plotter/">conplot &#8211; a console plotter</a></li>  <li><a href="http://anyall.org/blog/2008/05/the-best-natural-language-search-commentary-on-the-internet/">The best natural language search commentary on the internet</a></li>  <li><a href="http://anyall.org/blog/2008/04/a-regression-slope-is-a-weighted-average-of-pairs-slopes/">a regression slope is a weighted average of pairs&#8217; slopes!</a></li>  <li><a href="http://anyall.org/blog/2008/04/datawocky-more-data-usually-beats-better-algorithms/">Datawocky: More data usually beats better algorithms</a></li>  <li><a href="http://anyall.org/blog/2008/03/allendes-cybernetic-economy-project/">Allende&#8217;s cybernetic economy project</a></li>  <li><a href="http://anyall.org/blog/2008/03/quick-r-the-only-decent-r-documentation-on-the-internet/">Quick-R, the only decent R documentation on the internet</a></li>  <li><a href="http://anyall.org/blog/2008/03/spending-money-on-others-makes-you-happy/">Spending money on others makes you happy</a></li>  <li><a href="http://anyall.org/blog/2008/03/phd-comics-humanities-vs-social-sciences/">PHD Comics: Humanities vs. Social Sciences</a></li>  <li><a href="http://anyall.org/blog/2008/03/data-data-data/">data data data</a></li>  <li><a href="http://anyall.org/blog/2008/01/graphics-atari-breakout-and-religious-text-nlp/">Graphics! Atari Breakout and religious text NLP</a></li>  <li><a href="http://anyall.org/blog/2008/01/will-the-humanities-save-us/">Will the humanities save us?</a></li>  <li><a href="http://anyall.org/blog/2008/01/indicators-of-a-crackpot-paper/">Indicators of a crackpot paper</a></li>  <li><a href="http://anyall.org/blog/2007/12/what-is-experimental-philosophy/">What is experimental philosophy?</a></li>  <li><a href="http://anyall.org/blog/2007/12/data-driven-charity/">Data-driven charity</a></li>  <li><a href="http://anyall.org/blog/2007/12/race-and-iq-debate-links/">Race and IQ debate &#8211; links</a></li>  <li><a href="http://anyall.org/blog/2007/11/how-did-freud-become-a-respected-humanist/">How did Freud become a respected humanist?!</a></li>  <li><a href="http://anyall.org/blog/2007/11/actually-that-2008-elections-voter-fmri-study-is-batshit-insane-and-sleazy-too/">Actually that 2008 elections voter fMRI study is batshit insane (and sleazy too)</a></li>  <li><a href="http://anyall.org/blog/2007/11/pop-cog-neuro-is-so-sigh/">Pop cog neuro is so sigh</a></li>  <li><a href="http://anyall.org/blog/2007/11/authoritarian-great-power-capitalism/">Authoritarian great power capitalism</a></li>  <li><a href="http://anyall.org/blog/2007/10/neo-institutional-economic-fun/">neo institutional economic fun!</a></li>  <li><a href="http://anyall.org/blog/2007/10/verificationism-dinosaur-comics/">Verificationism dinosaur comics</a></li>  <li><a href="http://anyall.org/blog/2007/09/eeg-for-the-wii-and-in-your-basement/">EEG for the Wii and in your basement</a></li>  <li><a href="http://anyall.org/blog/2007/09/dollar-auction/">Dollar auction</a></li>  <li><a href="http://anyall.org/blog/2007/08/connectucom-sql-injection-vulnerability-a-story-of-pathetic-hubris-and-fun-with-the-password-password/">ConnectU.com SQL injection vulnerability: a story of pathetic hubris (and fun with the password &#8216;password&#8217;)</a></li>  <li><a href="http://anyall.org/blog/2007/08/whens-the-last-time-you-dug-through-19th-century-english-mortuary-records/">When&#8217;s the last time you dug through 19th century English mortuary records</a></li>  <li><a href="http://anyall.org/blog/2007/08/are-ideas-interesting-or-are-they-true/">Are ideas interesting, or are they true?</a></li>  <li><a href="http://anyall.org/blog/2007/07/cooperation-dynamics-martin-nowak/">Cooperation dynamics &#8211; Martin Nowak</a></li>  <li><a href="http://anyall.org/blog/2007/07/china-fines-for-bad-maps/">China: fines for bad maps</a></li>  <li><a href="http://anyall.org/blog/2007/07/cerealitivity/">Cerealitivity</a></li>  <li><a href="http://anyall.org/blog/2007/07/washington-in-1774/">Washington in 1774</a></li>  <li><a href="http://anyall.org/blog/2007/07/happiness-incarnate-on-the-colbert-report/">Happiness incarnate on the Colbert Report</a></li>  <li><a href="http://anyall.org/blog/2007/06/evangelicals-vs-aquarians/">Evangelicals vs. Aquarians</a></li>  <li><a href="http://anyall.org/blog/2007/06/time-will-tell-epistemology-wont/">&quot;Time will tell, epistemology won&#8217;t&quot;</a></li>  <li><a href="http://anyall.org/blog/2007/06/richard-rorty-has-died/">Richard Rorty has died</a></li>  <li><a href="http://anyall.org/blog/2007/06/freak-freakonomics-ariel-rubinstein-is-the-shit/">Freak-Freakonomics (Ariel Rubinstein is the shit!)</a></li>  <li><a href="http://anyall.org/blog/2007/05/stanford-impostor/">&quot;Stanford Impostor&quot;</a></li>  <li><a href="http://anyall.org/blog/2007/05/rock-paper-scissors-psychology/">Rock Paper Scissors psychology</a></li>  <li><a href="http://anyall.org/blog/2007/04/more-fun-with-gapminder-trendalyzer/">More fun with Gapminder / Trendalyzer</a></li>  <li><a href="http://anyall.org/blog/2007/04/gapminderorg-terrific-world-data-visualizations/">Gapminder.org &#8212; terrific world data visualizations</a></li>  <li><a href="http://anyall.org/blog/2007/04/random-search-engine-searcher/">Random search engine searcher</a></li>  <li><a href="http://anyall.org/blog/2007/04/evil/">Evil</a></li>  <li><a href="http://anyall.org/blog/2007/03/seth-roberts-and-academic-blogging/">Seth Roberts and academic blogging</a></li>  <li><a href="http://anyall.org/blog/2007/03/statistics-is-big-n-logic/">Statistics is big-N logic?</a></li>  <li><a href="http://anyall.org/blog/2007/03/feminists-anarchists-computational-complexity-bounded-rationality-nethack-and-other-things-to-do/">Feminists, anarchists, computational complexity, bounded rationality, nethack, and other things to do</a></li>  <li><a href="http://anyall.org/blog/2007/03/computability-and-induction-and-ideal-rationality-and-the-simpsons/">Computability and induction and ideal rationality and the simpsons</a></li>  <li><a href="http://anyall.org/blog/2007/02/iraq-is-the-9th-deadliest-civil-war-since-ww2/">Iraq is the 9th deadliest civil war since WW2</a></li>  <li><a href="http://anyall.org/blog/2007/02/pascals-wager/">Pascal&#8217;s Wager</a></li>  <li><a href="http://anyall.org/blog/2007/02/when-linguists-appear-on-ironic-parody-talk-shows/">When linguists appear on ironic parody talk shows</a></li>  <li><a href="http://anyall.org/blog/2007/01/the-jungle-economy/">The Jungle Economy</a></li>  <li><a href="http://anyall.org/blog/2007/01/funny-comic/">funny comic</a></li>  <li><a href="http://anyall.org/blog/2007/01/anarchy-vs-social-order-in-somalia/">Anarchy vs. social order in Somalia</a></li>  <li><a href="http://anyall.org/blog/2006/09/double-thesis-action/">Double thesis action</a></li>  <li><a href="http://anyall.org/blog/2006/08/a-big-fun-list-of-links-im-reading/">A big, fun list of links I&#8217;m reading</a></li>  <li><a href="http://anyall.org/blog/2006/07/two-middle-east-politics-visualizations/">Two Middle East politics visualizations</a></li>  <li><a href="http://anyall.org/blog/2006/07/neuroscience-and-economics-both-ways/">neuroscience and economics both ways</a></li>  <li><a href="http://anyall.org/blog/2006/06/social-network-ized-economic-markets/">Social network-ized economic markets</a></li>  <li><a href="http://anyall.org/blog/2006/06/rock-paper-scissors/">Rock, Paper, Scissors</a></li>  <li><a href="http://anyall.org/blog/2006/06/neuroeconomics-reviews/">Neuroeconomics reviews</a></li>  <li><a href="http://anyall.org/blog/2006/05/lordi-goes-to-eurovision/">Lordi goes to Eurovision</a></li>  <li><a href="http://anyall.org/blog/2006/05/drunken-monkeys-experiment/">Drunken monkeys experiment!</a></li>  <li><a href="http://anyall.org/blog/2006/04/easterly-vs-sachs-on-global-poverty/">Easterly vs. Sachs on global poverty</a></li>  <li><a href="http://anyall.org/blog/2006/04/high-irony/">high irony</a></li>  <li><a href="http://anyall.org/blog/2006/04/the-identity-politics-of-satananic-zombie-alien-man-beasts/">The identity politics of satananic zombie alien man-beasts</a></li>  <li><a href="http://anyall.org/blog/2006/03/new-kind-of-science-for-real/">new kind of science, for real</a></li>  <li><a href="http://anyall.org/blog/2006/03/mark-turner-toward-the-founding-of-cognitive-social-science/">Mark Turner: Toward the Founding of Cognitive Social Science</a></li>  <li><a href="http://anyall.org/blog/2006/02/libertarianism-and-evolution-dont-mix/">Libertarianism and evolution don&#8217;t mix</a></li>  <li><a href="http://anyall.org/blog/2005/11/academic-blogging/">academic blogging</a></li>  <li><a href="http://anyall.org/blog/2005/11/science-writing-bad/">science writing bad!</a></li>  <li><a href="http://anyall.org/blog/2005/10/34/">Bush approval ratings</a></li>  <li><a href="http://anyall.org/blog/2005/09/kurzweil-interview/">Kurzweil interview</a></li>  <li><a href="http://anyall.org/blog/2005/09/cognitive-modelling-is-rational-choice/">cognitive modelling is rational choice++</a></li>  <li><a href="http://anyall.org/blog/2005/09/submit-your-poker-data/">Submit your poker data!</a></li>  <li><a href="http://anyall.org/blog/2005/08/bayesian-analysis-of-intelligent-design-revised/">Bayesian analysis of intelligent design (revised!)</a></li>  <li><a href="http://anyall.org/blog/2005/08/searchin-for-our-friend-homo-economicus/">searchin&#8217; for our friend, homo economicus</a></li>  <li><a href="http://anyall.org/blog/2005/07/balkanized-usa/">balkanized USA</a></li>  <li><a href="http://anyall.org/blog/2005/07/war-death-statistics/">war death statistics</a></li>  <li><a href="http://anyall.org/blog/2005/07/guns-germs-steel-pbs-show/">guns, germs, &amp; steel pbs show?!</a></li>  <li><a href="http://anyall.org/blog/2005/07/the-psychology-of-design-as-explanation/">the psychology of design as explanation</a></li>  <li><a href="http://anyall.org/blog/2005/07/another-blog-cog-psych-and-politicalsocial-stuff/">another blog: cog psych and political/social stuff</a></li>  <li><a href="http://anyall.org/blog/2005/07/a-bayesian-analysis-of-intelligent-design/">a bayesian analysis of intelligent design</a></li>  <li><a href="http://anyall.org/blog/2005/07/22/">Statistical inference and social science</a></li>  <li><a href="http://anyall.org/blog/2005/07/finding-some-decision-science-blogs/">finding some decision science blogs</a></li>  <li><a href="http://anyall.org/blog/2005/07/20/">Social economics and rationality</a></li>  <li><a href="http://anyall.org/blog/2005/07/city-crisis-simulation-eg-terrorist-attack/">City crisis simulation (e.g. terrorist attack)</a></li>  <li><a href="http://anyall.org/blog/2005/07/freakonomics-blog/">freakonomics blog</a></li>  <li><a href="http://anyall.org/blog/2005/07/supreme-court-agreement/">Supreme Court justices&#8217; agreement levels</a></li>  <li><a href="http://anyall.org/blog/2005/07/echo-pse-cbs/">$ echo {political,social,economic}{cognition,behavior,systems}</a></li>  <li><a href="http://anyall.org/blog/2005/07/modelling-environmentalism-thinking/">Modelling environmentalism thinking</a></li>  <li><a href="http://anyall.org/blog/2005/06/monkey-economics-and-brothels/">monkey economics (and brothels)</a></li>  <li><a href="http://anyall.org/blog/2005/06/more-argumentation-aiformal-modelling-links/">more argumentation &amp; AI/formal modelling links</a></li>  <li><a href="http://anyall.org/blog/2005/06/zombies/">zombies!</a></li>  <li><a href="http://anyall.org/blog/2005/06/looking-for-related-blogslinks/">looking for related blogs/links</a></li>  <li><a href="http://anyall.org/blog/2005/06/idea-morals-are-heuristics-for-socially-optimal-behavior/">idea: Morals are heuristics for socially optimal behavior</a></li>  <li><a href="http://anyall.org/blog/2005/06/1st-international-conference-on-computational-models-of-argument-comma06/">1st International Conference on Computational Models of Argument (COMMA06)</a></li>  <li><a href="http://anyall.org/blog/2005/05/online-deliberation-2005-conference-blog-more-is-up/">Online Deliberation 2005 conference blog &amp; more is up!</a></li>  <li><a href="http://anyall.org/blog/2004/12/go-science/">go science</a></li>  <li><a href="http://anyall.org/blog/2004/11/addiction-2-problems-of-economics/">addiction &amp; 2 problems of economics</a></li>  <li><a href="http://anyall.org/blog/2004/11/gintis-theoretical-unity-in-the-social-sciences/">gintis: theoretical unity in the social sciences</a></li> </ul>
+</li>
+
+<a href="http://anyall.org/blog/2010">2010</a>, <a href="http://anyall.org/blog/2009/">09</a>, <a href="http://anyall.org/blog/2008/">08</a>, <a href="http://anyall.org/blog/2007/">07</a>, <a href="http://anyall.org/blog/2006/">06</a>, <a href="http://anyall.org/blog/2005/">05</a>, <a href="http://anyall.org/blog/2004/">04</a>
+			</ul>
+		</div><!-- #primary .widget-area -->
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="http://anyall.org/blog/" title="AI and Social Science &#8211; Brendan O&#039;Connor" rel="home">
+					AI and Social Science &#8211; Brendan O&#039;Connor				</a>
+			</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="http://wordpress.org/"
+						title="Semantic Personal Publishing Platform" rel="generator">
+					Proudly powered by WordPress.				</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+</body>
+</html>
+
+<!-- Dynamic page generated in 1.376 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2010-12-20 14:12:19 -->
+<!-- super cache -->

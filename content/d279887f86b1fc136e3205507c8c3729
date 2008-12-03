@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title>Magic/Replace - Data Cleanup for Everyone from Dabble DB</title>
+	<link rel="stylesheet" href="css/default.css" type="text/css" media="all" charset="iso-8859-1" />
+<!--[if lte IE 6]>
+	<link rel="stylesheet" href="css/ie6.css" type="text/css" media="all" charset="iso-8859-1" />
+	<link rel="stylesheet" href="css/ie7.css" type="text/css" media="all" charset="iso-8859-1" />
+<![endif]-->
+	<script src="js/jquery.js" type="text/javascript" language="javascript" charset="iso-8859-1"></script>
+	<script src="js/main.js" type="text/javascript" language="javascript" charset="iso-8859-1"></script>
+	<script src="js/swfobject.js" type="text/javascript" language="javascript" charset="utf-8"></script>
+</head>
+<body id="inputPage">
+<div id="globalBox">
+		<h1>
+			<a href="http://dabbledb.com/">
+			<!--[if lte IE 6]><img id="dabbleLogoIE6" src="img/dabble-db-logo-white-8bit.png" alt="Dabble DB" width="90" height="38" border="0" /><![endif]-->
+			<img id="dabbleLogo" src="img/dabble-db-logo-white.png" alt="Dabble DB" width="90" height="38" border="0" />
+			</a>
+			<a href="http://cleanupdata.com/" class="homeLink">Magic/Replace</a> <small><em>{</em><strong>clean up data &mdash; no magic wand required</strong><em>}</em> &nbsp;&nbsp;&nbsp; contact us at <a class="contactLink" href="mailto:info@cleanupdata.com">info@cleanupdata.com</a></small>
+		</h1>
+		<div class="tabBox">
+			<ul class="tabs">
+				<li id="inputLink"><a href="./">Input</a></li>
+				<li id="editLink"><a href="./editor" onclick="document.forms[0].action=this.href; document.forms[0].submit(); return false">Edit</a></li>
+				<li id="outputLink"><a href="#">Output</a></li>
+			</ul>
+		</div>
+	<form action="/process" method="post" enctype="multipart/form-data">
+		<div id="mainBox">			
+			<div class="uploadFileBox">
+				<h3 class="boxHeader">Upload a file</h3>
+				
+				<div class="fieldBox">
+					<p class="faint">.XLS, .CSV or .TSV file</p>
+					<input name="file" id="uploadFile" type="file" class="file" /><br />
+					<input id="uploadFileSubmit" type="submit" class="submit" name="uploadFileSubmit" value="Begin upload" />
+				</div>
+			</div>
+			
+			<div class="sampleDataBox">
+				<h3 class="boxHeader">Sample data</h3>
+				<div class="fieldBox">
+					<p>Don&rsquo;t have any data at hand?</p>
+					<a href="/editor?id=sample">Try with sample data</a>
+				</div>
+			</div>
+			
+			<div class="helpBox">
+				<h3 class="boxHeader">What is this?</h3>
+				<div class="fieldBox">
+					<div id="videoStillBox">
+						<a href="#video" id="openVideoLink"><img src="img/video-still.png" alt="Watch the video demo" width="285" height="199" /><br />
+						<span class="videoStillCaption">Watch the demo</span></a>
+					</div>
+					
+					<p><em>Magic/Replace</em> is a tool to make changes to all of the rows of a data table at once.</p>
+					
+					<p>Brought to you by <a href="http://dabbledb.com/">Dabble DB, the online database tool</a>.</p>
+				</div>
+			</div>
+			
+			<div class="pasteDataBox">
+				<h3 class="boxHeader">Copy and paste your data</h3>
+				
+				<div class="fieldBox">
+					<p class="faint">Copy from a spreadsheet, CSV, or TSV file</p>
+					<input id="pasteDataSubmit" type="submit" class="submit" name="pasteDataSubmit" value="Submit data" />
+					<textarea name="data" id="pasteData" rows="26" cols="80"></textarea><br />
+				</div>
+			</div>
+			
+			<div class="clear">&nbsp;</div>
+			
+		</div>
+	</form>
+</div>
+<div id="videoBox" style="display: none">
+	<div id="videoToolbar"><input class="button" id="closeVideoButton" type="button" value="Close video" /></div>
+	<div id="video" style="display: none">
+		<div id="videoContent"><p>This video requires <a href="http://www.adobe.com/go/getflashplayer" target="_blank">Flash Player 9.0.115 or higher</a>, and also requires JavaScript to be enabled on your browser.</p></div>
+	</div>
+
+	<script type="text/javascript"> 
+	// <![CDATA[ 
+	swfobject.embedSWF("video/player.swf?file=demo-700.f4v&image=video/demo-700.jpg", "videoContent", "700", "566", "9.0.115", {
+		autoStart: 'false'
+	}, {
+		wmode: 'transparent',
+		allowscriptaccess: 'always'
+	}, {
+		id: 'videoContent',
+		name: 'videoContent'
+	});
+	// ]]> 
+	</script>	
+</div>
+<script type="text/javascript" language="javascript" charset="iso-8859-1">
+// <![CDATA[
+
+function playerReady(thePlayer) {
+	Video.object = window.document[thePlayer.id];
+}
+
+var Video = {
+	show: function() {
+		$('#videoBox').fadeIn('fast', function() { $('#video').show('fast'); });
+	},
+	showImmediately: function() {
+		$('#video').show();
+		$('#videoBox').show();
+	},
+	hide: function() {
+		try {
+			Video.object.sendEvent('STOP');
+		} catch(e) {}
+		$('#video').hide('fast', function() { $('#videoBox').fadeOut('fast'); });
+	}
+};
+
+$(function () {
+	$('#openVideoLink').click(Video.show);
+	$('#closeVideoButton').click(Video.hide);
+	
+	var pasteData = $('#pasteData');
+	if (!pasteData.val() || pasteData.val() == Multiedit.initialTablePasteValue) {
+		pasteData.addClass('unchanged').val(Multiedit.initialTablePasteValue);
+		pasteData.focus().select();
+	}
+	
+	Multiedit.initialize();
+
+	if (window.location.href.search(/\#video/) != -1) {
+		Video.showImmediately();
+	}
+});
+// ]]>
+</script>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+//try {
+var pageTracker = _gat._getTracker("UA-447041-5");
+pageTracker._trackPageview();
+//} catch(err) {}
+</script>
+   
+</body>
+</html>

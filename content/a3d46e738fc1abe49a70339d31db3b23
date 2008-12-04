@@ -1,0 +1,331 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<!-- Meta tags -->
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		
+		<link rel="shortcut icon" type="image/ico" href="http://www.sprymedia.co.uk/media/images/favicon.ico">
+		<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://www.sprymedia.co.uk/rss.xml">
+		
+		<title>Allan Jardine | Reflections | Visual Event</title>
+		<style type="text/css" title="currentStyle">
+			@import "/media/css/site.css";
+			@import "/media/css/SyntaxHighlighter.css";
+			@import "/media/reflections/yui_treeview/tree.css";
+					</style>
+		<script type="text/javascript" src="/media/javascript/js-core-min.js"></script>
+		<script type="text/javascript" src="/media/javascript/yahoo-dom-event.js"></script>
+		<script type="text/javascript" src="/media/javascript/treeview.js"></script>
+				
+	</head>
+	<body>
+		<div id="page_wrapper">
+			<div id="header" class="header_visual_event">
+								<div id="header_name">
+					<a href="/">allan jardine <span>ui developer</span></a>
+				</div>
+				<div id="header_links">
+					<ul>
+						<li><a  href="/index">home</a></li>
+						<li><a  href="/portfolio">portfolio</a></li>
+						<li><a class="active" href="/reflections">reflections</a></li>
+						<li><a  href="/about">about</a></li>
+						<li><a  href="/contact">contact</a></li>
+					</ul>
+				</div>
+				<div id="header_text">
+					Visual Event				</div>
+				<div id="header_generic">
+					<div id="header_trianglel"></div>
+					<div id="header_filler"></div>
+					<div id="header_triangler"></div>
+				</div>
+			</div>
+			
+			<!-- Main content -->
+			<div id="container">
+				<div class="column_full big">
+					Events in Javascript are often seen as a bit of an enigma. This is odd given that Javascript is very much an event driven language, but it is typically down to their complex nature and difficulty to debug. To this end I've created <i>Visual Event</i> to help track events which are subscribed to DOM nodes.				</div>
+				
+				<div class="column_2_3">
+					<ul class="float_list">
+	<li><a href="#introduction">Introduction</a></li>
+	<li><a href="#usage">Usage</a></li>
+	<li><a href="#tech">Technical information</a></li>
+	<li><a href="#future">Future work</a></li>
+</ul>
+<div class="clear"></div>
+
+
+
+<h1><a name="introduction"></a>Introduction</h1>
+
+<p>When working with events in Javascript, it is often easy to loose track of what events are subscribed where. This is particularly true if you are using a large number of events, which is typical in a modern interface employing progressive enhancement. Javascript libraries also add another degree of complexity to listeners from a technical point of view, while from a developers point of view they of course can make life much easier! But when things go wrong it can be difficult to trace down why this might be.</p>
+
+<p>It is due to this I've put together a Javascript bookmarklet called <i>Visual Event</i> which visually shows the elements on a page that have events subscribed to them, what those events are and the function that the event would run when triggered. This is primarily intended to assist debugging, but it can also be very interesting and informative to see the subscribed events on other pages.</p>
+
+
+
+<h1><a name="usage"></a>Usage</h1>
+
+<p>Using <i>Visual Event</i> on any web-page is extremely simple:</p>
+
+<ul>
+	<li>
+		Drag the <i>Visual Event</i> link below to your bookmark bar:<br>
+		<a href="javascript:(function(){if(typeof%20VisualEvent!='undefined'){if(document.getElementById('Event_display')){VisualEvent.fnClose();}else{VisualEvent.fnInit();}}else{var%20n=document.createElement('script');n.setAttribute('language','JavaScript');n.setAttribute('src','http://www.sprymedia.co.uk/design/event/media/js/event-loader.js');document.body.appendChild(n);}})();;"><img src="/design/event/reflection/button.jpg" alt="Visual Event"></a>
+	</li>
+	<li>Load a web-page which uses one of the supported Javascript libraries</li>
+	<li>Click <i>Visual Event</i> in your bookmark bar</li>
+	<li>View the event handlers which are attached to the document elements.</li>
+</ul>
+
+<p>You can see a demo of this in action <a href="/dataTables/demo_events.html">showing the events</a> attached by my own DataTables jQuery plugin.</p>
+
+<p><i>Visual Event</i> is currently beta level software and as such there are a few important notes to make. This first of these is that <i>Visual Event</i> will <b>not</b> currently work in Internet Explorer. IE has it's own events model and I've concentrated initially on the W3C model. The second point is that only events added by libraries which <i>Visual Event</i> recognises will actually be shown (see later for why). The currently supported libraries are:</p>
+
+<ul>
+	<li>DOM 0 events</li>
+	<li>jQuery 1.2.x +</li>
+	<li>YUI 2.6.x (2.x might work!)</li>
+	<li>MooTools 1.2.x</li>
+	<li>Prototype 1.6.x</li>
+	<li>JAK (Events 2.2)</li>
+	<li>Glow</li>
+</ul>
+
+
+<p>When using <i>Visual Event</i> you will notice that I've used colour coding and icons to represent different actions in a concise and easy to view manner. The background colours which show that an element has an event attached to it follow the mapping shown below.</p>
+
+<table cellpadding="3" cellspacing="0" border="0" style="width: 70%; margin: 0 auto;" class="display">
+	<thead>
+		<tr>
+			<th width="40%">Colour</th>
+			<th width="60%">Meaning</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="odd">
+			<td>Blue</td>
+			<td>Mouse event</td>
+		</tr>
+		<tr class="even">
+			<td>Red</td>
+			<td>UI event (keys etc)</td>
+		</tr>
+		<tr class="odd">
+			<td>Yellow</td>
+			<td>HTML event (select etc)</td>
+		</tr>
+		<tr class="even">
+			<td>Purple</td>
+			<td>Mouse + UI events</td>
+		</tr>
+		<tr class="odd">
+			<td>Orange</td>
+			<td>UI + HTML events</td>
+		</tr>
+		<tr class="even">
+			<td>Green</td>
+			<td>Mouse + HTML events</td>
+		</tr>
+		<tr class="odd">
+			<td>Black</td>
+			<td>Mouse + UI + HTML events</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>The icons representing individual events also follow this colouring pattern, but also indicate what the attached event is pictorially. The follows the mapping shown below.</p>
+
+<table cellpadding="3" cellspacing="0" border="0" style="width: 70%; margin: 0 auto;" class="display">
+	<thead>
+		<tr>
+			<th width="40%">Icon</th>
+			<th width="60%">Event</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><img src="/design/event/media/images/click.png"/></td>
+			<td>click</td>
+		</tr>
+		<tr class="even">
+			<td><img src="/design/event/media/images/dblclick.png"/></td>
+			<td>dblclick</td>
+		</tr>
+		<tr class="odd">
+			<td><img src="/design/event/media/images/mousedown.png"/></td>
+			<td>mousedown</td>
+		</tr>
+		<tr class="even">
+			<td><img src="/design/event/media/images/mousemove.png"/></td>
+			<td>mousemove</td>
+		</tr>
+		<tr class="odd">
+			<td><img src="/design/event/media/images/mouseout.png"/></td>
+			<td>mouseout</td>
+		</tr>
+		<tr class="even">
+			<td><img src="/design/event/media/images/mouseover.png"/></td>
+			<td>mouseover</td>
+		</tr>
+		<tr class="odd">
+			<td><img src="/design/event/media/images/mouseup.png"/></td>
+			<td>mouseup</td>
+		</tr>
+		<tr class="even">
+			<td><img src="/design/event/media/images/change.png"/></td>
+			<td>change</td>
+		</tr>
+		<tr class="odd">
+			<td><img src="/design/event/media/images/focus.png"/></td>
+			<td>focus</td>
+		</tr>
+		<tr class="even">
+			<td><img src="/design/event/media/images/blur.png"/></td>
+			<td>blur</td>
+		</tr>
+		<tr class="odd">
+			<td><img src="/design/event/media/images/select.png"/></td>
+			<td>select</td>
+		</tr>
+		<tr class="even">
+			<td><img src="/design/event/media/images/submit.png"/></td>
+			<td>submit</td>
+		</tr>
+		<tr class="odd">
+			<td><img src="/design/event/media/images/keydown.png"/></td>
+			<td>keydown</td>
+		</tr>
+		<tr class="even">
+			<td><img src="/design/event/media/images/keypress.png"/></td>
+			<td>keypress</td>
+		</tr>
+		<tr class="odd">
+			<td><img src="/design/event/media/images/keyup.png"/></td>
+			<td>keyup</td>
+		</tr>
+		<tr class="odd">
+			<td><img src="/design/event/media/images/load.png"/></td>
+			<td>load</td>
+		</tr>
+		<tr class="even">
+			<td><img src="/design/event/media/images/unload.png"/></td>
+			<td>unload</td>
+		</tr>
+		<tr class="odd">
+			<td><img src="/design/event/media/images/custom.png"/></td>
+			<td>custom / unknown</td>
+		</tr>
+	</tbody>
+</table>
+
+
+
+<h1><a name="tech"></a>Technical information</h1>
+
+<p>It turns out that there is no standard method provided by the W3C recommended DOM interface to find out what event listeners are attached to a particular node. While this may appear to be an oversight, there was a proposal to include a property called 'eventListenerList' (<a href="http://www.w3.org/TR/2002/WD-DOM-Level-3-Events-20020208/changes.html">reference</a>) to the level 3 DOM specification, but this has unfortunately been removed in the latest drafts. As such we are forced to looked at the individual Javascript libraries, which typically maintain a cache of attached events (so they can later be removed and perform other useful abstractions).</p>
+
+<p>In the current version of <i>Visual Event</i> I have included support for jQuery, YUI, MooTools, Prototype (many thanks to John Schulz for his advice in adding Prototype support) and JAK (with thanks to Michal Aichiner for providing an API function). I've investigated including information Dojo, however this library does not appear not to cache the information that is required by visual event. If anyone does know of a way - please get in touch!</p>
+
+<p>I would strongly encourage developers who use some of the other libraries to <a href="/contact">get in touch</a> with me, and submit a function which can be used by <i>Visual Event</i> to parse a specific library's cache. The following structure must be returned by the function:</p>
+
+<textarea class="JS" rows="1" cols="60" name="code">// Return code from event cache parsing function
+[
+	{
+		// Node which is in question
+		"nNode": -,
+		
+		// The name of the library where the event comes from (e.g. 'YUI')
+		"sSource": '',
+		
+		// Array of the listeners attached to this node
+		"aListeners": [
+			{
+				// Type of event (e.g. 'click')
+				"sType": '',
+				
+				// String of the function to run (from Function.toString())
+				"sFunction": '',
+				
+				// Indicate if the event has been removed by the library - typically false
+				"bRemoved": ''
+			},
+			...
+		]
+	},
+	...
+]
+</textarea>
+
+<p>Alternatively, you can make use of a global variable which <i>Visual Event</i> will recognise. This global variable is called <b>VisualEvents</b> which you can populate using either the structure given above, or the slightly simpler version below (ideal for putting into an event registration function) - or any combination of the two:</p>
+
+<textarea class="JS" rows="1" cols="60" name="code">[
+	{
+		// Node which is in question
+		"nNode": -,
+		
+		// The name of the library where the event comes from (e.g. 'YUI')
+		"sSource": '',
+		
+		// Type of event (e.g. 'click')
+		"sType": '',
+		
+		// String of the function to run (from Function.toString())
+		"sFunction": '',
+		
+		// Indicate if the event has been removed by the library - typically false
+		"bRemoved": ''
+	},
+	...
+]
+</textarea>
+
+
+
+
+<h1><a name="future"></a>Future work</h1>
+
+<p>There is quite a lot which could be done with <i>Visual Event</i> in order to improve it and make it more useful for developers. The following is my current list (and in no particular order!):</p>
+
+<ul>
+	<li>Support for Internet Explorer</li>
+	<li>Add parsers for other Javascript libraries</li>
+	<li>Improve the UI look and feel</li>
+</ul>
+
+<p>IIf you have any other ideas, or if you are interested in helping me develop <i>Visual Event</i> further, please don't hesitate to <a href="/contact">get in touch</a>!</p>
+
+				</div>
+				
+				<!-- Video and contact -->
+				<div class="column_1_3r">
+						<div class="center"><img src="/design/event/reflection/small.jpg" alt="Article image" style="margin-top: 10px;"></div><h1><a href="/news">elsewhere on the web</a></h1><div class="news_link">	<a href="http://badassjs.com/post/971960912/uglifyjs-a-fast-new-javascript-compressor-for-node-js">UglifyJS</a><br>	A new Javascript compressor which is much faster than Google Closure but still gets similar results. Also safer if you have to use eval - interesting!</div><div class="news_link">	<a href="http://www.scriptmag.com/2010/10/29/primetime-juggling-writing-and-a-job-figure-it-out/">Figure it out</a><br>	Not enough time for doing what you want? How bad do you want it? Right - so figure it out. Great article.</div><div class="news_link">	<a href="http://blog.mozilla.com/blog/2010/10/07/firefox-4-beta-for-android-and-maemo/">Firefox 3 mobile b1</a><br>	Congratulations to the Moz team getting Firefox for mobile halfway out of the door. They have a lot to do to keep up with Webkit on mobile devices, but competition is good.</div><div class="news_link">	<a href="http://bits.blogs.nytimes.com/2010/10/07/microsoft-and-adobe-chiefs-meet-to-discuss-partnerships/">Microsoft and Adobe</a><br>	The web has gone bonkers over the news that Steve Ballmer floated the idea of buying Adobe - and no wonder. This would send _huge_ shockwaves through the digital media world.</div><div class="news_link">	<a href="http://theoatmeal.com/comics/design_hell">The evolution of the design of a web-site</a><br>	Step by step for how a fantastic web-design goes straight to hell. Hilarious (and so sadly true).</div><div class="news_link">	<a href="http://www.adaptivepath.com/blog/2010/06/22/the-design-plan-official-versus-how-it-feels/">The design process</a><br>	Those Gantt charts look great when put up on the projector during a team meeting - but does it ever go to plan... of course not!</div>						
+													<h1><a name="donate"></a><a href="/donate">Donate</a></h1>
+							<p>If you find the software on this site useful, and/or enjoy using it,
+								please consider assisting my <a href="/donate">beer fund</a> as a way of thanks!.</p>
+										</div>
+				
+				
+				<!-- Footer -->
+								<div id="footer" style="text-align:center;">
+					<span style="font-size:10px;">&copy; Allan Jardine 2007-2010 - All rights reserved</span>
+				</div>			</div>
+		</div>
+		
+		<script type="text/javascript" src="/media/javascript/syntax/shCore.js"></script>
+		<script type="text/javascript" src="/media/javascript/syntax/shBrushXml.js"></script>
+		<script type="text/javascript" src="/media/javascript/syntax/shBrushPhp.js"></script>
+		<script type="text/javascript" src="/media/javascript/syntax/shBrushCss.js"></script>
+		<script type="text/javascript" src="/media/javascript/syntax/shBrushJScript.js"></script>
+		<script type="text/javascript">
+			dp.SyntaxHighlighter.HighlightAll('code', false, false);
+		</script>
+		
+				<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			_uacct = "UA-365466-1";
+			urchinTracker();
+		</script>	</body>
+</html>

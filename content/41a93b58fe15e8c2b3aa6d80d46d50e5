@@ -1,0 +1,453 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<!-- Meta tags -->
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		
+		<link rel="shortcut icon" type="image/ico" href="http://www.sprymedia.co.uk/media/images/favicon.ico">
+		<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://www.sprymedia.co.uk/rss.xml">
+		
+		<title>Allan Jardine | Reflections | Canvas Charts</title>
+		<style type="text/css" title="currentStyle">
+			@import "/media/css/site.css";
+			@import "/media/css/SyntaxHighlighter.css";
+			@import "/media/reflections/yui_treeview/tree.css";
+			@import "/media/reflections/chart/chart.css";		</style>
+		<script type="text/javascript" src="/media/javascript/js-core-min.js"></script>
+		<script type="text/javascript" src="/media/javascript/yahoo-dom-event.js"></script>
+		<script type="text/javascript" src="/media/javascript/treeview.js"></script>
+		<script type="text/javascript" src="/media/reflections/chart/excanvas.js"></script><script type="text/javascript" src="/media/reflections/chart/chart.js"></script><script type="text/javascript" src="/media/reflections/chart/canvaschartpainter.js"></script><script type="text/javascript" src="/media/reflections/chart/demos.js"></script>		
+	</head>
+	<body>
+		<div id="page_wrapper">
+			<div id="header" class="header_chart">
+								<div id="header_name">
+					<a href="/">allan jardine <span>ui developer</span></a>
+				</div>
+				<div id="header_links">
+					<ul>
+						<li><a  href="/index">home</a></li>
+						<li><a  href="/portfolio">portfolio</a></li>
+						<li><a class="active" href="/reflections">reflections</a></li>
+						<li><a  href="/about">about</a></li>
+						<li><a  href="/contact">contact</a></li>
+					</ul>
+				</div>
+				<div id="header_text">
+					Canvas Charts				</div>
+				<div id="header_generic">
+					<div id="header_trianglel"></div>
+					<div id="header_filler"></div>
+					<div id="header_triangler"></div>
+				</div>
+			</div>
+			
+			<!-- Main content -->
+			<div id="container">
+				<div class="column_full big">
+					The canvas tag offers raster image controls inside an HTML document and I've been experimenting with it over the last few days as a possibility of using it for chart controls. I've modified the excellent <a href="http://me.eae.net/">Chart by Emil Eklund</a> to suit my own purposes. Redraw and smoother graphics have been added.				</div>
+				
+				<div class="column_2_3">
+					<ul class="float_list">
+	<li><a href="#introduction">Introduction</a></li>
+	<li><a href="#usage">Usage</a></li>
+	<li><a href="#api">API</a></li>
+	<li><a href="#examples">Examples</a></li>
+	<li><a href="#download">Download & license</a></li>
+</ul>
+<div class="clear"></div>
+
+
+<h1><a name="introduction"></a>Introduction</h1>
+
+<p>There are a number of applications for charting controls, and this is realised by the web-industry as a wide range of charting programs and scripts are available. Out of interest, and for my <a href="http://sprymedia.co.uk/portfolio/Cricket+Scoring">cricket scoring project</a>, I started to look into the options that are available. My needs, I thought, are fairly simple: I need a charting tool which will update on-the-fly as my data changes, it must also provide multiple graph types (i.e. line + stacked + bar) and it should look <i>cool</i> (web 2.0 and all that...).</p>
+
+<p>A number of web-based technologies exist which lend themselves to charting options. The most obvious is <a href="http://www.adobe.com/products/flex/">Adobe's Flex</a> with it's charting tool. The control over the graphs along with the slick animated transitions is perfect, assuming of course that you are willing to spend the money on it ($749.US), which I am not. However there are many other Flash based charting options available, many of which are free including <a href="http://www.fusioncharts.com">FusionCharts</a> and <a href="http://www.amcharts.com/">amCharts</a>. Both are slick and offer a wide range of controls, but to get charts which will update on-the-fly you need to buy their expensive commercial products. SVG of course is another viable option and there are several implementations of SVG charts including <a href="http://ajaxian.com/archives/dojo-charting-engine-released">Dojo's library</a>. Unfortunately most of these look like Excel 97 charts. Then there is the implementations using the Canvas tag. Of those available, Emil Eklund's <a href="http://me.eae.net/">Chart</a> appeared to be the closest to fitting the bill, but still lacking a few features I needed, so I present them here.</p>
+
+<p>There are a number of decisions which I have made during the course of the modifications that should be explained. The most important of these is my decision to use the canvas element and not include support for SVG etc, which is actually in Emil Eklund's original software. While I realise that Canvas visuals can't be seen by the majority of internet users (IE users), support for the tag is growing, and it enjoys particularly good support in WebKit (due to the fact that it was introduced by Apple of course). Due to that fact that I plan to use this chart control for my cricket scoring software, I can say that I will specifically target WebKit. The reason behind this is I am interested in using <a href="http://labs.adobe.com/wiki/index.php/Apollo">Adobe Apollo</a> to deploy the software as this not only gives a tightly controlled environment, but also offline storage abilities (I realise that Firefox 3 will offer this as well - but I fancy experimenting here...). Furthermore, I have not explicitly included support for animation in the chart as this is not something I want to spend time on right now. It is possible to animate that chart due to the redraw ability I've added, but as this redraws the whole chart for every frame, it's fairly slow. While I might add animation in future, it will likely be a ground up redesign rather than a modification of an existing script.</p>
+
+
+
+<h1><a name="usage"></a>Usage</h1>
+
+<p>To include a chart on a web-page is a very simple process. First you need to download the source files which are <a href="#download">available at the bottom of this page</a>. Unzip the downloaded file and upload the files to the locations you wish on your web-server. There are a handful of files which must be included, and then a number of JavaScript functions which must be called in order to initialise the chart, set up the data and then draw it. The following code must be present in the HTML head tag:</p>
+
+<textarea class="HTML" rows="1" cols="60" name="code"><!-- CSS -->
+<link rel="stylesheet" type="text/css" href="media/css/chart.css" />
+
+<!-- JavaScript -->
+<script type="text/javascript" src="media/js/excanvas.js"></script>
+<script type="text/javascript" src="media/js/chart.js"></script>
+<script type="text/javascript" src="media/js/canvaschartpainter.js"></script>
+</textarea>
+
+In the body tag an element (mostly likely a div) will need to be present which will have the chart rendered into it. This div can be styled as required, with width, height, position etc. It must have an ID applied to the tag such that the chart can be created for that specific tag:
+
+<textarea class="HTML" rows="1" cols="60" name="code"><!-- Chart display DIV -->
+<div id="demo_chart" class="chart"></div>
+</textarea>
+
+At this point you are now in a position to initialise a chart object, set it's default type and other global initialisation parameters
+
+<textarea class="JS" rows="1" cols="60" name="code">// Chart initialisation
+chChart = new Chart('chart');
+
+chChart.setDefaultType (CHART_AREA | CHART_STACKED);
+chChart.setGridDensity (7, 8);
+chChart.setVerticalRange (0, 35);
+chChart.setHorizontalLabels (['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
+</textarea>
+
+Line by line:
+
+<ul class="lines">
+	<li>2. Initialise a chart object in the variable chChart</li>
+	<li>4. Set the default chart type to be a stacked area chart</li>
+	<li>5. Set the number of x-axis ticks (data points) to be 7, and the y-axis ticks to be 8</li>
+	<li>6. Set the y-axis range to be 0 to 50</li>
+	<li>7. Set the x-axis labels</li>
+</ul>
+
+Now the basics of the chart are in place, you can show data on the chart by adding series using the add method:
+
+<textarea class="JS" rows="1" cols="60" name="code">// Add data
+chChart.add ('Spam', '#4040FF', [ 4, 5, 8, 12, 8, 4, 12 ]);
+chChart.add ('Innocent', '#8080FF', [ 1, 2, 3, 4, 3, 4, 3 ]);
+chChart.add ('Missed Spam', '#A5A5FF', [ 2, 3, 6, 5, 3, 4, 7 ]);
+chChart.add ('False Positives', '#DEDEFF', [ 2, 3, 6, 5, 3, 4, 7 ]);
+</textarea>
+
+Finally now draw the graph on the page using the draw method:
+
+<textarea class="JS" rows="1" cols="60" name="code">// Draw chart
+chChart.draw();
+</textarea>
+
+This results in a graph which looks like that shown below:
+
+<div id="demo1" class="chart"></div>
+
+
+
+<h1><a name="examples"></a>Examples</h1>
+
+<p>In the following section I present two examples of  the types of charts that this script can draw, and some of the facilities that are available to the developer.</p>
+
+<p>The first example is a chart which will read information from text boxes where you can input different values, and the chart will redraw on the page (which is the whole point of this). The information shown is a line chart of the number of runs scored by a sub-set of English batsmen during the 2007 world cup (statistics from <a href="http://www.howstat.com/">How Stat</a>). Increase their numbers if you want to make it look good...</p>
+
+<table cellspacing="5" class="small">
+	<tr>
+		<td></td> 
+		<td>N. Zealand</td> 
+		<td>Canada</td> 
+		<td>Kenya</td> 
+		<td>Ireland</td> 
+		<td>Sri Lanka</td> 
+		<td>Australia</td> 
+		<td>Bangladesh</td> 
+		<td>S. Africa</td> 
+		<td>W. Indies</td>  
+</tr>	
+<tr>
+		<td>I. Bell</td>                                                          
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="bell1" id="bell1" value="5" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="bell2" id="bell2" value="28" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="bell3" id="bell3" value="16" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="bell4" id="bell4" value="31" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="bell5" id="bell5" value="47" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="bell6" id="bell6" value="77" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="bell7" id="bell7" value="0" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="bell8" id="bell8" value="7" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="bell9" id="bell9" value="0" /></td>
+	</tr>
+	<tr>
+		<td>A. Flintoff</td>                                                          
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="flintoff1" id="flintoff1" value="0" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="flintoff2" id="flintoff2" value="0" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="flintoff3" id="flintoff3" value="0" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="flintoff4" id="flintoff4" value="43" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="flintoff5" id="flintoff5" value="2" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="flintoff6" id="flintoff6" value="4" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="flintoff7" id="flintoff7" value="23" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="flintoff8" id="flintoff8" value="5" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="flintoff9" id="flintoff9" value="15" /></td>
+	</tr>
+	<tr>
+		<td>P. Collingwood</td>                                                          
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="collingwood1" id="collingwood1" value="31" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="collingwood2" id="collingwood2" value="62" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="collingwood3" id="collingwood3" value="18" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="collingwood4" id="collingwood4" value="90" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="collingwood5" id="collingwood5" value="14" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="collingwood6" id="collingwood6" value="2" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="collingwood7" id="collingwood7" value="23" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="collingwood8" id="collingwood8" value="30" /></td>
+		<td><input type="text" onkeyup="chartCricketRedraw();" style="width: 20px;" name="collingwood9" id="collingwood9" value="6" /></td>
+	</tr>
+</table>
+
+<div id="demo_cricket" class="chart"></div>
+
+<p>The second example is the same as <a href="http://webfx.eae.net/dhtml/chart/demo.html">Emil Eklund's example</a>, but now with nice graphics. Some of these nicer graphics will only be visible in Safari/WebKit, although the chart will draw just fine in Firefox and Opera. This is because Gecko does not support drop shadow on canvas elements. Hopefully it will for Firefox 3.</p>
+
+
+<div id="demo_eklund" class="chart"></div>
+
+
+
+
+<h1><a name="download"></a>Download and license</h1>
+
+<p>The charting software presented here is freely available, under an MIT style license which is available with the downloaded files. Please make use of this as you wish, but I would be interested to know where and how it gets used. So please <a href="/contact">drop me a line</a> if you do plan on using it. To get the software, simply download the ZIP file below and unzip it to your computer/server.</p>
+
+<ul>
+	<li><a href="/media/reflections/chart/chart.zip">Download</a></li>
+</ul>
+
+<p>Enjoy!</p>
+				</div>
+				
+				<!-- Video and contact -->
+				<div class="column_1_3r">
+						<div class="center"><img src="/media/reflections/chart/chart.jpg" alt="Article image" style="margin-top: 10px;"></div><h1><a name="api"></a>API</h1>
+
+<div id="api_tree" class="tree">
+	<ul>
+		<li class="expand">
+			<i>object</i> void:Chart ( string ) - chart object
+			<ul>
+				<li>
+					<i>parameter</i> string:el<br>
+					Element ID to be made into a Chart
+				</li>
+				<li>
+					<i>method</i> void:draw ()<br>
+					Draw the chart into the selected HTML element
+				</li>
+				<li>
+					<i>method</i> void:setDefaultType ( flag )<br>
+					Set the chart default type
+					<ul>
+						<li>
+							<i>parameter</i> flag:
+							<ul>
+								<li>CHART_LINE</li>
+								<li>CHART_AREA</li>
+								<li>CHART_BAR</li>
+								<li>CHART_STACKED</li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<i>method</i> void:setGridDensity ( int, int )<br>
+					Set the number of x and y axis ticks
+					<ul>
+						<li><i>parameter</i> int:horizontal</li>
+						<li><i>parameter</i> int:vertical</li>
+					</ul>
+				</li>
+				<li>
+					<i>method</i> void:setVerticalRange ( int, int )<br>
+					Set y-axis range
+					<ul>
+						<li><i>parameter</i> int:min</li>
+						<li><i>parameter</i> int:max</li>
+					</ul>
+				</li>
+				<li>
+					<i>method</i> void:setHorizontalLabels ( array )<br>
+					Set the x-axis labels
+					<ul>
+						<li><i>parameter</i> array:labels</li>
+					</ul>
+				</li>
+				<li>
+					<i>method</i> void:setLabelPrecision ( int )<br>
+					Set the rounding precision to be used
+					<ul>
+						<li><i>parameter</i> array:precision</li>
+					</ul>
+				</li>
+				<li>
+					<i>method</i> void:setShowLegend ( boolean )<br>
+					Show the legend or not
+					<ul>
+						<li><i>parameter</i> boolean:b</li>
+					</ul>
+				</li>
+				<li>
+					<i>method</i> void:setBarWidth ( int )<br>
+					Set the width of an individual bar in px
+					<ul>
+						<li><i>parameter</i> int:width</li>
+					</ul>
+				</li>
+				<li>
+					<i>method</i> void:setBarDistance ( int )<br>
+					Separation between bars in px
+					<ul>
+						<li><i>parameter</i> int:distance</li>
+					</ul>
+				</li>
+				<li>
+					<i>method</i> void:setStyle ( function, function, string )<br>
+					Set the style of an element with the name of the value of string, using anon functions
+					<ul>
+						<li>
+							<i>parameter</i> function:fn<br>
+							Anonymous function (passed a canvas variable) which can be used to set an elements style
+						</li>
+						<li>
+							<i>parameter</i> function:fnClear<br>
+							Anonymous function (passed a canvas variable) which must clear the style set using the first parameter
+						</li>
+						<li>
+							<i>parameter</i> string:sSeries<br>
+							The name of the series to be modified
+						</li>
+					</ul>
+				</li>
+				<li>
+					<i>method</i> void:setBorder ( string, int, string )<br>
+					Set the border of an element - applies to bar chart series only
+					<ul>
+						<li>
+							<i>parameter</i> string:sSeries<br>
+							The name of the series to be modified
+						</li>
+						<li>
+							<i>parameter</i> int:iWidth<br>
+							Width of the border to be applied
+						</li>
+						<li>
+							<i>parameter</i> string:sColour<br>
+							Colour of the border, in hex (with leading hash) or CSS defined
+						</li>
+					</ul>
+				</li>
+				<li>
+					<i>method</i> void:setGrid ( string, int )<br>
+					Set the style of the background grid in the chart
+					<ul>
+						<li>
+							<i>parameter</i> string:sColour<br>
+							Colour of the grid lines, in hex (with leading hash) or CSS defined
+						</li>
+						<li>
+							<i>parameter</i> int:iSize<br>
+							Width of the chart grid to be applied
+						</li>
+					</ul>
+				</li>
+				<li>
+					<i>method</i> void:setBackground ( string )<br>
+					Set the style of the background grid in the chart
+					<ul>
+						<li>
+							<i>parameter</i> string:sColour<br>
+							Background colour, in hex (with leading hash) or CSS defined
+						</li>
+					</ul>
+				</li>
+				<li>
+					<i>method</i> void:setBorderColour ( string )<br>
+					Set the colour of the border surrounding the chart
+					<ul>
+						<li>
+							<i>parameter</i> string:sColour<br>
+							Border colour, in hex (with leading hash) or CSS defined
+						</li>
+					</ul>
+				</li>
+				<li>
+					<i>method</i> void:add ( string, string, array, flags, function, function )<br>
+					Add a new series to the chart
+					<ul>
+						<li>
+							<i>parameter</i> string:label<br>
+							Label of the series, for the key
+						</li>
+						<li>
+							<i>parameter</i> string:color<br>
+							Colour the series data will be drawn with, in hex (with leading hash) or CSS defined
+						</li>
+						<li>
+							<i>parameter</i> array:values<br>
+							The list of values that are to be applied
+						</li>
+						<li>
+							<i>parameter</i> flags:flags<br>
+							Set the series chart type
+							<ul>
+								<li>CHART_LINE</li>
+								<li>CHART_AREA</li>
+								<li>CHART_BAR</li>
+								<li>CHART_STACKED</li>
+							</ul>
+						</li>
+						<li>
+							<i>parameter</i> function:fnStyle<br>
+							Anonymous function (passed a canvas variable) which can be used to set an elements style
+						</li>
+						<li>
+							<i>parameter</i> function:fnStyleClear<br>
+							Anonymous function (passed a canvas variable) which must clear the style set using the first parameter
+						</li>
+					</ul>
+				</li>
+				<li>
+					<i>method</i> void:changeSeriesValue ( string, int|array[, int|array] )<br>
+					Change the values of a particular series on-the-fly using either a single value for all entries, changing a specific entry at a specific index, changing several entries at different indexes or changing all entries
+					<ul>
+						<li>
+							<i>parameter</i> string:sSeriesName<br>
+							Border colour, in hex (with leading hash) or CSS defined
+						</li>
+						<li>
+							<i>parameter</i> int|array:mValues<br>
+							New values to be changed to
+							<ul>
+								<li>int && mIndexes not passed - all values in series set to mValues</li>
+								<li>int && mIndexes passed as int - value of index mIndexes is changed</li>
+								<li>array && mIndexes not passed - full range of values changed in series</li>
+								<li>array && mIndexes passed as array - value of indexes mIndexes changed sequentially</li>
+							</ul>
+						</li>
+						<li>
+							<i>parameter</i> string:mIndexes - optional<br>
+							Indexes to change
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+	</ul>
+</div>						
+													<h1><a name="donate"></a><a href="/donate">Donate</a></h1>
+							<p>If you find the software on this site useful, and/or enjoy using it,
+								please consider assisting my <a href="/donate">beer fund</a> as a way of thanks!.</p>
+										</div>
+				
+				
+				<!-- Footer -->
+								<div id="footer" style="text-align:center;">
+					<span style="font-size:10px;">&copy; Allan Jardine 2007-2010 - All rights reserved</span>
+				</div>			</div>
+		</div>
+		
+		<script type="text/javascript" src="/media/javascript/syntax/shCore.js"></script>
+		<script type="text/javascript" src="/media/javascript/syntax/shBrushXml.js"></script>
+		<script type="text/javascript" src="/media/javascript/syntax/shBrushPhp.js"></script>
+		<script type="text/javascript" src="/media/javascript/syntax/shBrushCss.js"></script>
+		<script type="text/javascript" src="/media/javascript/syntax/shBrushJScript.js"></script>
+		<script type="text/javascript">
+			dp.SyntaxHighlighter.HighlightAll('code', false, false);
+		</script>
+		
+				<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			_uacct = "UA-365466-1";
+			urchinTracker();
+		</script>	</body>
+</html>

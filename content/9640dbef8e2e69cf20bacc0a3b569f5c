@@ -1,0 +1,1536 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <title>S60 Python</title>
+</head>
+
+
+<body>
+
+
+
+
+
+
+
+
+
+
+
+<h1>PUTools: Python Utility Tools for PyS60 Python</h1>
+
+
+
+
+
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+
+
+
+
+Symbian S60 now supports also Python programming. Here you can find a <span style="font-weight: bold;">Python interpreter</span> that takes <span style="font-weight: bold;">input</span> and shows <span style="font-weight: bold;">output on PC</span>, connects over Bluetooth to phone, and <span style="font-weight: bold;">executes on the phone</span>. You also get <span style="font-weight: bold;">simple shell</span> functionality for the phone (cd, ls, rm, etc.). The tool also allows you to <span style="font-weight: bold;">synchronize files</span>
+both from PC to phone (very useful in application development) and from
+phone to PC (your images, logfiles from the program you are working on,
+etc.).<br>
+
+<h3>Latest development</h3>
+
+PUTools has now been tested on 3rd edition. (Dec 3, 2006).
+
+
+
+
+
+<h3>Downloads and prerequisites</h3>
+
+
+
+
+
+
+
+<ul>
+
+  <li>First, you need to get Python for S60. The Forum <a href="http://www.forum.nokia.com/python">Nokia
+S60 Python homepage</a> contains binaries, links to
+documentation, Python <a href="http://discussion.forum.nokia.com/forum/forumdisplay.php?f=102">discussion
+board</a>, etc. However, it doesn't have the latest release. PyS60 has now a <a href="https://sourceforge.net/project/showfiles.php?group_id=154155">homepage</a><a href="https://sourceforge.net/project/showfiles.php?group_id=154155">
+at sourceforge</a> which contains the latest release,
+documentation, and the sources. Nokia Research Center has a <a href="http://research.nokia.com/research/projects/python-for-s60/">project
+description</a> for PyS60.</li>
+
+
+
+
+
+
+
+  <li>You also need to have Python on your PC as well. I
+use the official release from <a href="http://www.python.org/download/">http://www.python.org/download/</a>.</li>
+
+
+
+
+
+
+
+  <li>On Windows you will need Win32all package. You can test whether
+you have that by typing<span style="font-family: monospace;">
+import win32com </span>on your Python prompt, if you get
+ImportError, go to <a href="http://sourceforge.net/projects/pywin32/">http://sourceforge.net/projects/pywin32/</a>,
+download, install (now the import should work). If you have
+installation problems, instructions and FAQ can be found <a href="http://starship.python.net/crew/mhammond/win32/Downloads.html">here</a>.</li>
+
+
+
+
+
+
+
+  <li>Now you are ready to get <a href="http://pyserial.sourceforge.net/">PySerial</a>, which encapsulates&nbsp;access for the serial port. It's needed for the Bluetooth communication. I've
+tested it on Windows, they claim that it also works on Linux, Mac Os,
+etc.&nbsp;(Test it with<span style="font-family: monospace;"> import
+serial </span>as above.)</li>
+
+
+
+
+
+
+
+  <li>The PC front end GUI uses <a href="http://wxpython.org/">wxPython</a>,
+so download and install. Get the latest version. For example Enthought
+Python distribution has a too old version, that won't work.</li>
+
+
+
+
+
+
+
+  <li>Finally, the <a href="putools.tgz">distribution file</a>
+of these tools. See the <a href="changelog.txt">changelog</a>
+to find out what changed when. The web page for the earlier version is <a href="python_old.html">here</a>.<br>
+
+
+
+
+
+
+
+
+
+
+
+  </li>
+
+
+
+
+
+
+
+</ul>
+
+
+
+
+
+
+
+<h3>Tools</h3>
+
+
+
+
+
+
+
+
+
+
+
+The tools provided here mostly concern with Bluetooth (BT)
+communication between a phone and a PC, as well as shell-types of tools.<br>
+
+
+
+
+
+
+
+
+
+
+
+Here are the current components:<br>
+
+
+
+
+
+
+
+
+
+
+
+<ul>
+
+
+
+
+
+
+
+
+
+
+
+  <li>push<br>
+
+
+
+
+
+
+
+
+
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Python Utility Shell. It uses PyShell components from wxWindows to
+create a nice <br>
+
+
+
+
+
+
+
+
+
+
+&nbsp; &nbsp; &nbsp; &nbsp; front end on the PC side for an interpreter running on
+the phone, communicating over BT.<br>
+
+
+
+
+
+
+
+
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Has builtin support for
+synchronizing files between phone and PC, as well as simple shell
+capabilities (ls, cat, rm, ...).</li>
+
+
+
+
+
+
+
+
+
+
+
+  <li>phcomm<br>
+
+
+
+
+
+
+
+
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Library that simplifies creating client-server applications between a
+phone and a PC.<br>
+
+
+
+
+
+
+
+  </li>
+
+
+
+
+
+
+
+
+
+
+  <li>filebrowser<br>
+
+
+
+
+
+
+
+
+
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Minor modifications to the filebrowser that comes with PyS60
+distribution, slightly<br>
+
+
+
+
+
+
+
+
+
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+better browsing, can delete files, ...</li>
+
+
+
+
+
+
+
+
+
+
+
+  <li>various additional libraries</li>
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+<h3>Setting up Bluetooth</h3>
+
+
+
+
+
+
+
+
+
+
+
+Bluetooth is nice for communicating between the phone and PC. Not only
+can you use it to edit python files on PC and sync them to the phone
+(or any other files such as MP3s, etc.), transfer files (log files,
+photos, etc.) from the phone to your PC, get a console and shell that
+uses PC display and keyboard but executes on the phone, you can also
+use phone to control an application running on the PC. However,
+different Bluetooth HW and drivers behave differently and are often not
+straightforward to set up.<br>
+
+
+
+
+
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+
+
+
+
+On my laptop (Windows XP, Widcomm BT driver), this is what you need to do.<br>
+
+
+
+
+
+
+
+
+
+
+
+Open Bluetooth &nbsp;configuration, you can find that from the
+Control Panel.<br>
+
+
+
+
+
+
+
+
+
+
+
+<img style="border: 2px solid ; width: 570px; height: 91px;" alt="Choose Bluetooth Configuration from Control Panel" src="bt1.jpg" hspace="5" vspace="5"> <br>
+
+
+
+
+
+
+
+
+
+
+
+From the Accessibility tab select "Let other Bluetooth devices discover
+this computer." <br>
+
+
+
+
+
+
+
+
+
+
+
+<img style="border: 2px solid ; width: 406px; height: 160px;" alt="Enable other devices to discover the computer" src="bt2.jpg" hspace="5" vspace="5"><br>
+
+
+
+
+
+
+
+
+
+
+
+In the Local Services tab add at least two Serial Services that
+associate a BT serial connection with a COM port. Select Auto Startup.
+Unselect Secure Connection. Give them a name that lets you recognize which COM port the service
+corresponds to.<br>
+
+
+
+
+
+
+
+
+
+
+
+<img style="border: 2px solid ; width: 442px; height: 390px;" alt="Add serial ports" src="bt3.jpg" hspace="5" vspace="5"><br>
+
+
+
+
+
+
+
+
+
+
+
+If you don't have Widcomm drivers (which have worked quite nicely for
+me), you might find something like this under Control Panel -&gt;
+Bluetooth Devices. Turn the Discovery on and allow others to connect.<br>
+
+
+
+
+
+
+
+
+
+
+
+<img style="border: 2px solid ; width: 342px; height: 272px;" alt="Turn discovery on, allow connections" src="bt4.jpg" hspace="5" vspace="5"><br>
+
+
+
+
+
+
+
+
+
+
+
+Then add a couple of incoming serial (COM) ports. As I did this on
+another laptop, the ports were named automatically (COM5, COM10, etc.).<br>
+
+
+
+
+
+
+
+
+
+
+
+<img style="border: 2px solid ; width: 557px; height: 374px;" alt="add incoming COM ports" src="bt5.jpg" hspace="5" vspace="5"> <br>
+The BT connection may require you to pair the PC and phone. On the
+phone go to Connections -&gt; Bluetooth, there go to Paired Devices,
+and set up a new pairing to your PC.<br>
+
+
+
+
+
+
+
+
+
+
+
+<h3>Getting started with push (Python Utility Shell)</h3>
+
+
+
+
+
+
+
+
+
+
+
+Download the <a href="putools.tgz">distribution file</a>.
+<br>
+
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+On PC<br>
+
+
+
+
+
+
+
+<ul>
+
+
+
+
+
+
+
+  <li>Open it with Winzip or tar (<span style="font-family: monospace;">tar
+xvzf pytools.tgz</span>).&nbsp;</li>
+  <li>With a 2nd edition phone (e.g., 6680)</li>
+
+
+
+
+
+
+
+  
+  <ul>
+    <li>Move <span style="font-family: monospace;">putools/phpush.py</span> to the phone (e.g., right-click it on the file
+explorer, Send To Bluetooth, select your phone) and install it as
+script.&nbsp;</li>
+    <li>Move <span style="font-family: monospace;">putools/libs/*.py</span>&nbsp;to the
+phone, install them as libraries.</li>
+  </ul>
+
+
+
+
+
+
+
+  <li>With a 3rd edition phone (e.g., N93)</li>
+  <ul>
+    <li>Connect your phone to PC, open the Nokia PC Suite -&gt; File Manager.</li>
+    <li>Create directories on the Memory Card: \Python and \Python\lib.<span style="font-family: monospace;"></span> </li>
+    <li>Copy <span style="font-family: monospace;">putools/phpush.py </span>to Python directory and&nbsp;<span style="font-family: monospace;"></span><span style="font-family: monospace;">putools/libs/*.py</span>&nbsp;to&nbsp;to Python\lib.</li>
+  </ul>
+
+
+
+
+
+
+
+  <li>On PC, go to the directory where you unzipped the distribution file, further go to <span style="font-family: monospace;">putools/pcfiles</span>, edit <span style="font-family: monospace;">sync.config</span> and
+set the <span style="font-family: monospace;">COM_PORT</span>
+variable to one of the ports you associated with Bluetooth.&nbsp;</li>
+
+
+
+
+
+
+
+  <li>Start the Python Utility Shell on the PC (still in <span style="font-family: monospace;">putools/pcfiles</span>, type <span style="font-family: monospace;">python push</span>
+from the command line).&nbsp;</li>
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  <ul>
+
+
+
+
+
+
+
+    <li>(With some drivers, such as Widcomm, it doesn't
+matter which one you start first, some others like Microsoft require
+you start the PC application first.) </li>
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  </ul>
+
+
+
+
+
+
+
+</ul>
+
+
+
+
+
+
+
+
+
+On the phone <br>
+
+
+
+
+
+
+
+<ul>
+
+
+
+
+
+
+
+  <li>Start Python.&nbsp;</li>
+
+
+
+
+
+
+
+  <li>Select Run Script, run phpush.py (it may be in the "my" directory). Select <span style="font-style: italic;">Connect to Other...</span>, Find your PC, select the&nbsp;service that uses the
+same
+COM port as in your <span style="font-family: monospace;">sync.config</span> (if the PC offers only one service, that
+one is selected automatically).&nbsp;</li>
+
+
+
+
+
+
+
+  <li>Now the <span style="font-style: italic;">push</span> window on PC (see image below) should pop up.&nbsp;</li>
+
+
+
+
+
+
+
+  <li>Type <span style="font-family: monospace;">sync</span> in that window, then the rest of scripts and libraries
+transfer to the phone.&nbsp;</li>
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  <ul>
+
+
+
+
+
+
+
+    <li>Study <span style="font-family: monospace;">sync.config</span> and the
+comments in it to
+figure out how to modify it to transfer arbitrary files between PC and
+phone. </li>
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  </ul>
+
+
+
+
+
+
+
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+Here's what you should see now.<br>
+
+
+
+
+
+
+
+
+
+
+<img style="border: 2px solid ; width: 750px; height: 525px;" alt="ivt serial, COM port" src="push1.jpg" hspace="5" vspace="5"><br>
+
+
+
+
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+<h3>What can you do?</h3>
+
+
+
+
+
+
+
+<span style="font-weight: bold;">Python interpreter. </span>push provides a Python interpreter that runs on the phone but takes the input from the PC and echos output on the PC.<br>
+
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+<span style="font-weight: bold;">File synchronization. </span>
+
+
+
+push has also integrated file synchronization. In the example above,
+<span style="font-family: monospace;">sync</span> first detected that no files had been edited since last sync. I
+made a trivial edit to phpush.py one directory level above, the next
+sync sent it over to the phone. Finally, quit sends a signal to phone
+to stop phpush.py and also push on the PC side will end. A variant called <span style="font-family: monospace;">syncl</span> exists, that also reloads a module if you upload a module that was already imported.<br>
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+<span style="font-weight: bold;">Shell commands. </span>Various shell commands such as cd, ls, rm, etc. exist. To find out which ones, type <span style="font-family: monospace;">man</span>, <span style="font-family: monospace;">man ls</span>, etc.<br>
+
+
+
+
+
+
+
+<span style="font-weight: bold;"></span><br>
+
+
+
+
+
+<span style="font-weight: bold;">Snapshots from your phone screen.</span>&nbsp;Now
+you can also get snapshots of the phone screen (or image files on the
+phone) and display them on PC (great for demoing your Python program
+through a projector attached to the PC). You can even save them on
+files. Type <span style="font-family: monospace;">man snap</span> and <span style="font-family: monospace;">man view</span>
+to find out more, these are interactive shell commands.. You can also
+instrument your Python program's display routine to send the snapshot
+automatically to the PC by calling <span style="font-family: monospace;">sys.stdout.snap()</span> to get animated PC display. Thanks to Larry Rudolph for suggesting the snapshot functionality. Some sample snapshots below.<br>
+
+
+
+
+
+<br>
+
+
+
+
+
+<table style="text-align: left; width: 100px;" border="1" cellpadding="2" cellspacing="2">
+
+
+
+
+
+  <tbody>
+
+
+
+
+
+    <tr>
+
+
+
+
+
+      <td><img style="width: 176px; height: 208px;" alt="" src="snap1.jpg"></td>
+
+
+
+
+
+      <td><img style="width: 176px; height: 208px;" alt="" src="snap2.jpg"></td>
+
+
+
+
+
+      <td><img style="width: 176px; height: 208px;" alt="" src="snap3.jpg"></td>
+
+
+
+
+
+      <td><img style="width: 176px; height: 208px;" alt="" src="snap4.jpg"></td>
+
+
+
+
+
+    </tr>
+
+
+
+
+
+  
+  
+  
+  
+  
+  </tbody>
+</table>
+
+
+
+
+
+<br>
+
+
+
+
+
+<span style="font-weight: bold;">Startup file. </span>In the beginning the interpreter runs a startup script if one exist on the phone at C:\startup.py. In this
+example that file simply contains <span style="font-family: monospace;">print 'my startup script'</span>. The distribution includes a sample startup file in <span style="font-family: monospace;">putools/other/startup.py</span>.<br>
+
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+<span style="font-weight: bold;">Application development workflow. </span>When developing a simple application (hello.py), the workflow can be as follows. Create hello.py in the <span style="font-family: monospace;">putools</span> directory. (It can really be anywhere on the PC, study <span style="font-family: monospace;">putools/pcfiles/sync.config</span> comments for details.) In push, type <span style="font-family: monospace;">sync</span>. Test it by <span style="font-family: monospace;">run hello.py </span>(or <span style="font-family: monospace;">import hello</span> or <span style="font-family: monospace;">reload(hello)</span>, this is regular Python now, <span style="font-family: monospace;">run</span> is just a shortcut for <span style="font-family: monospace;">execfile</span>). Edit file on the PC, repeat.<br>
+
+
+
+
+
+
+
+<h3>More details about the program</h3>
+
+
+
+
+
+
+
+push is a modification of the great PyShell / PyCrust tools that come
+with wxPython. It does a lot of processing on the PC side (formatting
+and color coding input and output, for example, as well as good
+multiline editing. It echoes the stderr and stdout outputs of the
+Python interpreter back to PC over Bluetooth.<br>
+
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+
+push also supports unicode characters. In the example above the title
+on the phone is reset, the new string contains unicode characters, and
+things work just right.<br>
+
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+If your program grabs the ownership of stdout/stderr/stdin or wants to
+create its own code.InteractiveInterpreter, you might want to use
+btconsole.py that comes with the S60Py distribution (or look <a href="python_old.html">here</a>
+for the earlier version of these tools). btconsole.py is more general,
+it just echos stdout/stderr/stdin over BT to a terminal, but that is a
+relatively primitive tool..<br>
+
+
+
+
+
+
+
+
+
+
+
+<h3>Troubleshooting and tips</h3>
+
+
+
+
+
+
+
+
+
+
+
+<ul>
+
+
+
+
+
+
+
+
+
+
+
+  <li><span style="font-weight: bold;">Python can't
+find serial though I just installed it?</span>&nbsp;<br>
+
+
+
+
+
+
+
+
+
+
+
+If you have several Python implementations installed, you may
+get
+problems. For example, if you have both the python.org Python, and the
+cygwin Python, the win32all and PySerial modules will probably install
+to the python.org Python and be not available in your cygwin Python.
+The easy solutions include removing cygwin Python or moving your
+python.org Python earlier in your path.</li>
+
+
+
+
+
+
+
+
+
+
+
+  <li><span style="font-weight: bold;">Python on the
+phone got stuck.</span><br>
+
+
+
+
+
+
+
+
+
+
+
+If you have a phone model that has a movable cover for the MMC card,
+you're in luck. Just open the cover (don't even remove the MMC card),
+all open apps should get killed, close the cover. Restart Python and phpush.py and continue.<br>
+
+
+
+
+
+
+
+
+
+
+
+Otherwise you may have to reboot the phone.</li>
+  <li><span style="font-weight: bold;">Can't find
+the PC services from the phone (BT connection doesn't work though it used to).</span><br>
+
+
+
+
+Sometimes
+using the stored default connection doesn't work. It seems that both
+the phone and PC cache some information which gets out-of-date.<br>
+
+
+
+
+It may be that the BT pairing of the phone and PC is broken (this tip from Emily Yan)<br>
+
+
+
+
+    
+    
+    
+    
+    <ol>
+
+
+
+
+      <li>Remove paired device (Control Panel -&gt; BT Connections)</li>
+
+
+
+
+      <li>Remove the pairing also from the phone (Connections -&gt; Bluetooth)</li>
+
+
+
+
+      <li>Redo the pairing (with passwords, etc.)</li>
+
+
+
+
+    
+    
+    
+    
+    </ol>
+
+
+Also check "My Bluetooth Places" (on desktop) -&gt; "My Device" (on the
+left panel of file explorer) and check that your BT serial ports don't
+have a red cross checked on them.
+
+    <br>
+
+If that doesn't work, you can try<br>
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <ol>
+
+
+
+
+
+
+
+
+
+
+
+      <li>Don't use the stored default connection, but try
+searching
+again for your PC and its services.</li>
+
+
+
+
+
+
+
+
+
+
+
+      <li>Kill phone apps (either with MMC cover or reboot phone).</li>
+
+
+
+
+
+
+
+
+
+
+
+      <li>Log out of Windows, log in, retry.</li>
+
+
+
+
+
+
+
+
+
+
+
+      <li>Reboot Windows.<br>
+
+
+
+
+      </li>
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    </ol>
+
+
+
+
+  </li>
+
+
+
+
+
+
+
+
+
+
+
+  <li><span style="font-weight: bold;">I just
+changed a file, synched, the changes don't take effect!</span><br>
+
+
+
+
+
+
+
+
+
+
+
+After the first import, you cannot import a module again, the system
+notices you already have the module and does nothing. Instead, you have
+to <span style="font-family: monospace;">reload(module)</span>.
+If you change push-related files, you probably&nbsp;should close phone Python and restart.</li>
+
+
+
+
+
+
+
+
+
+
+
+  <li><span style="font-weight: bold;">System can't
+find my module (how do those paths work anyway?).</span><br>
+
+
+
+
+
+
+
+
+
+
+
+On push, type <span style="font-family: monospace;">sys.path</span>.
+That lists the search paths that Python is using. By default it
+searches first from the Python installation directory, and then from
+the /system/libs directories of disks C:, E:, Z: (phone RAM, MMC card,
+phone ROM). In general, if you have a module that's only a library (say,
+phcomm.py), put it to /system/libs (of the disk where you installed
+Python), if you have a module that can be used directly as a script but
+can be also a library module to others, you can put it to Python's home, it's in sys.path, import will find it.<br>
+
+
+
+
+
+
+
+
+
+
+  </li>
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+<h3>Links</h3>
+
+
+
+
+
+
+
+
+
+
+
+<ul>
+
+
+
+
+
+
+
+
+
+
+
+  <li>PyS60 <a href="http://www.mobilenin.com/pys60/menu.htm">tutorial</a>
+by Jurgen Scheible.</li>
+
+
+
+
+
+
+
+
+
+
+
+  <li>Code Snippets for <a href="http://www.bigbold.com/snippets/tag/series60">series60</a>
+and <a href="http://www.bigbold.com/snippets/tag/pys60">pys60</a>.</li>
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+<h3>Acknowledgements</h3>
+
+
+
+
+
+
+
+
+
+
+
+The following people have contributed ideas or code: Mark Adler, Albert
+Huang, Jukka Laurila, Larry Rudolph, Jurgen Scheible, Paul Wisner, Emily Yan.<br>
+
+
+
+
+
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+
+
+
+
+You can find the latest version at Kari Pulli's page at <a href="http://people.csail.mit.edu/kapu/symbian/python.html">http://people.csail.mit.edu/kapu/symbian/python.html</a>.
+</body>
+</html>

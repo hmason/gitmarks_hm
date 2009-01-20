@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="shortcut icon" href="http://feedvis.com/feedvis.ico">
+
+<!--  scripts  -->
+<script type="text/javascript" src="./js/jquery-1.2.6.min.js"></script>
+<script type="text/javascript" src="./js/jquery.plugins.es"></script>
+<script type="text/javascript" src="./js/tagcloud.es"></script>
+<script type="text/javascript" src="./js/calendar.es"></script>
+<script type="text/javascript" src="./js/accounts.es"></script>
+
+<script type="text/javascript">
+digg_url = 'http://feedvis.com/';
+digg_bgcolor = '#ff9900';
+digg_skin = 'compact';
+digg_window = 'new';
+</script>
+
+<!--  styles  -->
+<link rel="stylesheet" type="text/css" href="./styles/main.css">
+<link rel="stylesheet" type="text/css" href="./styles/vis.css">
+<!--[if IE 7.0]>
+  <link rel="stylesheet" type="text/css" href="./styles/ie7.css" />
+<![endif]-->
+
+
+<title>FeedVis</title>
+</head>
+<body>
+<div id="wrapper">
+	<div id="about">
+		<h1><a href="?account=edublogs-demo"><span class='main'>FeedVis</span><span class='subtitle'>an interactive tagcloud for your feeds</span></a></h1>
+		<div id='nav'>
+			<ul id="nav-links">
+				<li><a href="#faq">FAQ</a></li>
+				<li><a href="http://jasonpriem.com/feedvis-dev/">comment</a></li>
+				<li><a href="http://jasonpriem.com/feedvis-dev/">source code</a></li>
+			</ul>
+
+
+
+		</div>
+		<div id="account-info">
+			<h2>Welcome to your personal FeedVis page!</h2>
+			<p>Bookmark this page; every time you return, your feed data will be updated.</p>
+		</div>
+		<div id="make-account">
+			<h2>FeedVis is on indefinate hiatus</h2>
+			<p>Due to <a href="http://www.readwriteweb.com/archives/track_hot_topics_on_niche_blogs.php">the</a> <a href="http://infosthetics.com/archives/2008/12/feedvis_rss_feed_tag_cloud_generator.html">unexpected</a> <a href="http://www.rss4lib.com/2008/12/feedvis_an_rss_tag_cloud_on_st.html">amount</a> <a href="http://datamining.typepad.com/data_mining/2008/12/feedviz-an-integrated-feed-visualization-and-reading-system.html">of</a> <a href="http://www.outilsfroids.net/news/du-text-mining-gratuit-dans-vos-flux-rss-avec-feedvis-et-un-petit-exercice-de-surveillance-de-la-e-reputation">interest</a> FeedVis has recieved, I've accumulated more accounts than I can take care of and secure;  as a spare-time, learning project, FeedVis was never designed to scale very well.</p>
+<p>So, I'm closing out all the accounts accept the demo one (based on Scott McLeod's list of <a href="http://www.dangerouslyirrelevant.org/2008/06/top-50-p-12-edu.html">top 50 education blogs</a>).  If this is a problem for anyone, feel free to contact me and I'll try to help you set up FeedVis on your own server, or maybe set up a special account for you on mine.  Thanks so much to everyone for their comments and suggestions.</p>
+		</div>
+
+
+		<div id="expl">
+			<h2>Ok, what's this thing do?</h2>
+			<p>FeedVis is like most word cloud generators, but with some extra goodness:</p>
+			<ul>
+				<li>You don't just get one lump o' words: you can make tagclouds from subsets of your feeds, selecting by blog, time, or both.  You can then compare those clouds to ones from other subsets; the animation makes it easy to see differences.</li>
+				<li>Any time you're interested in a word, you can click for more information, including summaries and links to posts that use it.</li>
+			</ul>
+			<p>Most of what FeedVis does is based on two numbers for each word:</p>
+			<ul>
+				<li>The first is <strong>frequency</strong>.  Frequency says how many times a word is used per 1000 words. If you hover over a word, you'll see its frequency to the left of the <em>frequency change</em> value.</li>
+				<li>The second is <strong>frequency change</strong>. Often, a word will be more (or less) popular than usual in a certain time period (for instance, "election" in early November). Frequency change measures that difference as a percentage: greener words are unusually popular; redder words are the opposite.</li>
+			</ul>
+		</div>
+	</div>
+
+	</div>
+	<div id="vis">
+		<div id="faq">
+			<h2>FAQ</h2>
+			<dl>
+				<dt>Why are all the posts clustered toward the right?  Where are the older posts?</dt>
+				<dd>Feeds only supply their last 20 or so posts; if they post frequently, that may only go back a few days.  Don't worry, though; FeedVis saves the old posts, so over the next month the list will gradually fill out.</dd>
+
+				<dt>What's OPML?</dt>
+				<dd><a href="http://en.wikipedia.org/wiki/Opml">OPML</a> is a file format that can hold lists of feeds.  When you export feeds in your feedreader, it gives you OPML.</dd>
+
+				<dt>The words are too small.</dt>
+				<dd>Use ctrl+mouse-scroll-wheel to zoom in or out. (You can even run the animation from any zoom level.)</dd>
+
+				<dt>Why does it take so long to update feeds?</dt>
+				<dd>First, it takes some time to actually request and receive the rss/atom data from each blog.  Then it takes a while to do the keyword extraction. I'm sure both these can be improved; grab the code have at it.</dd>
+
+				<dt>What timezone does FeedVis use?</dt>
+				<dd>Yours.  When you view the posts-per-day chart in Helsinki, each day starts at midnight and ends at 11:59 pm Helsinki time.</dd>
+
+				<dt>Can I use a custom set of stopwords?</dt>
+				<dd>If you run this on your own server, just edit stopwords.txt</dd>
+
+				<dt>Can I get the raw feed data out of old account?</dt>
+				<dd>Yes.  Everything is stored in two serialized php arrays, located at http://jasonpriem.com/feedvis/accounts/<em>your-account-name</em>.</dd>
+
+				<dt>How permanent is FeedVis?</dt>
+				<dd>Not at all. I tried hard to keep all the accounts working, but the underlaying architecture was just never really meant to scale the level of demand I got. If your account data is important to you, though, contact me and we'll get it out in a format you can use.</dd>
+
+
+
+			</dl>
+		</div>
+
+		<p class='loading' id="main-load">FeedVis is loading and analyzing your feeds; this takes 1-3 minutes.<img src="./images/big-loading.gif" alt="an animated loading graphic" /></p>
+
+		<script type='text/javascript'>cal.account = 'edublogs-demo'
+	$(document).ready(function(){
+						cal.makeCalArr();
+						cal.makeCal();
+						cal.setControls("#period-len")
+					});
+				</script>
+		<div id="cal">
+			<div id="cal-top">
+				<h2 id="title">
+					<a class="orig" href="#">
+						edublogs-demo					</a>
+					<span>(next update in 1 hours) Posts per day:</span>
+				</h2>
+				<div id="cal-controls">
+					<div id="period-len">
+						<h2>days in sample:</h2>
+						<ul>
+							<li><a href="#">all</a></li>
+							<li><a href="#" class="selected">7</a></li>
+							<li><a href="#">1</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<ul class="calendar">
+			</ul>
+
+			<div id="point">
+				<img id="triangle" src="./images/triangle.png">
+			</div>
+		</div>
+		<div id="date-info">
+			<div class="dropshadow" id="date-info-ds"></div>
+			<div class="header">
+				<p class="init">Select a period from the chart.</p>
+			</div>
+
+			<div id="blog-names">
+				<h3>filter by blog:<span>(all)</span></h3>
+				<ul>
+				<li><span>2¢ Worth</span> <a href='http://davidwarlick.com/2cents'>(visit)</a></li>
+<li><span>Around the Corner-MGuhlin.org</span> <a href='http://www.mguhlin.org/'>(visit)</a></li>
+<li><span>assortedstuff</span> <a href='http://www.assortedstuff.com'>(visit)</a></li>
+<li><span>blog of proximal development</span> <a href='http://www.teachandlearn.ca/blog'>(visit)</a></li>
+<li><span>Blue Skunk Blog</span> <a href='http://doug-johnson.squarespace.com/blue-skunk-blog/'>(visit)</a></li>
+<li><span>CogDogBlog</span> <a href='http://cogdogblog.com'>(visit)</a></li>
+<li><span>Connectivism</span> <a href='http://www.connectivism.ca'>(visit)</a></li>
+<li><span>Cool Cat Teacher Blog</span> <a href='http://coolcatteacher.blogspot.com/'>(visit)</a></li>
+<li><span>Dangerously Irrelevant</span> <a href='http://dangerouslyirrelevant.org'>(visit)</a></li>
+<li><span>dy/dan</span> <a href='http://blog.mrmeyer.com'>(visit)</a></li>
+<li><span>EdTechTalk</span> <a href='http://edtechtalk.com'>(visit)</a></li>
+<li><span>elearnspace</span> <a href='http://www.elearnspace.org/blog'>(visit)</a></li>
+<li><span>Ewan McIntosh | Digital Media & Education</span> <a href='http://edu.blogs.com/edublogs/'>(visit)</a></li>
+<li><span>Generation YES Blog</span> <a href='http://blog.genyes.com'>(visit)</a></li>
+<li><span>Graham Wegner - Open Educator</span> <a href='http://gwegner.edublogs.org'>(visit)</a></li>
+<li><span>Half an Hour</span> <a href='http://halfanhour.blogspot.com/'>(visit)</a></li>
+<li><span>HeyJude</span> <a href='http://heyjude.wordpress.com'>(visit)</a></li>
+<li><span>History Is Elementary</span> <a href='http://historyiselementary.blogspot.com/'>(visit)</a></li>
+<li><span>Ideas and Thoughts from an EdTech</span> <a href='http://ideasandthoughts.org'>(visit)</a></li>
+<li><span>Joanne Jacobs</span> <a href='http://www.joannejacobs.com'>(visit)</a></li>
+<li><span>K12 Online Conference 2010</span> <a href='http://k12onlineconference.org'>(visit)</a></li>
+<li><span>Larry Ferlazzo's Websites of the Day...</span> <a href='http://larryferlazzo.edublogs.org'>(visit)</a></li>
+<li><span>Moving at the Speed of Creativity</span> <a href='http://www.speedofcreativity.org'>(visit)</a></li>
+<li><span>O'DonnellWeb</span> <a href='http://www.odonnellweb.com'>(visit)</a></li>
+<li><span>open thinking</span> <a href='http://educationaltechnology.ca/couros'>(visit)</a></li>
+<li><span>Practical Theory</span> <a href='http://practicaltheory.org/serendipity/'>(visit)</a></li>
+<li><span>So You Want To Teach?</span> <a href='http://www.soyouwanttoteach.com'>(visit)</a></li>
+<li><span>Stephen's Web ~ OLDaily</span> <a href='http://www.downes.ca/'>(visit)</a></li>
+<li><span>Steve Hargadon</span> <a href='http://www.stevehargadon.com/'>(visit)</a></li>
+<li><span>Teach42</span> <a href='http://www.teach42.com'>(visit)</a></li>
+<li><span>The Education Wonks</span> <a href='http://educationwonk.blogspot.com/'>(visit)</a></li>
+<li><span>The Fischbowl</span> <a href='http://thefischbowl.blogspot.com/'>(visit)</a></li>
+<li><span>The Thinking Stick</span> <a href='http://www.thethinkingstick.com'>(visit)</a></li>
+<li><span>Weblogg-ed</span> <a href='http://weblogg-ed.com'>(visit)</a></li>
+				</ul>
+
+			</div>
+			<ul id="tagcloud">
+			</ul>
+		</div>
+	</div>
+
+
+
+</div><!--end of the wrapper div-->
+
+
+<script type="text/javascript"><!--Google analytics code-->
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-1907792-3");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+</body>
+</html>

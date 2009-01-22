@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<!-- copyright (c) 2009 Google inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Author: Ben Lisbakken
+-->
+<head>
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <META NAME="Description" CONTENT="The AJAX Code Playground is an educational tool to show code examples for various Google Javascript APIs.">
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/yui-reset.css" type="text/css">
+  <link rel="stylesheet" href="css/styles_09e53d835fff296dc089b2d1e0475df1.css" type="text/css">
+  <!-- JavaScript -->
+  <title>Google Code Playground</title>
+  <script src="codemirror/js/prod_codemirrorz_5b6d8fa21fb3d7fd8f309cf6e62b8c1b.js" type="text/javascript" charset="utf-8"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="js/jquery-ui-packed.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" charset="utf-8">
+  function pgSamplesLoadedCB(codeObj) {
+    window.codeArray = codeObj.codeArray;
+  }
+  
+  </script>
+  
+    <script src="/apis/ajax/playground/getTOC?cb=pgSamplesLoadedCB" type="text/javascript" charset="utf-8"></script>
+  
+  <!--
+    Undesirable to put inline script in between script includes
+    but this is the best way to load saved examples
+  -->
+  <script type="text/javascript" charset="utf-8">
+    
+    var curAPITypes = '';
+    var expandedCategory = '';
+  </script>
+  <script src="js/interactive_logic_4dcb5f98c4d59b23fb2221fd7ab2776f.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" charset="utf-8">
+    var loginUrl = 'https://www.google.com/accounts/ServiceLogin?service=ah&continue=http://code.google.com/_ah/login%3Fcontinue%3Dhttp://code.google.com/apis/ajax/playground/&ltmpl=gm&ahname=Google+AJAX+API+Playground&sig=b866ffd442521127942b4e8bbc148a01';
+    var logoutUrl = '';
+    function init() {
+      if (jQuery.browser.msie) {
+        CFInstall.check({
+          mode : 'overlay',
+          destination: window.location.href
+        });
+      } else {
+        is.init(document.getElementById('editor'));
+      }
+    }
+
+    $(window).bind('load', function() {
+      init();
+    });
+  </script>
+</head>
+<body>
+
+<div id="container">
+  <div id="whiteTopBar">
+    <div id="loggedInBar"> <a href="http://spreadsheets.google.com/viewform?hl=en&formkey=cFM5OU5yN3BrRzhOOEhFc2VBMmlQU2c6MA" style="color: #C00000;font-weight: bold;" target="_blank">Tell us what you think</a> <span style="font-weight: normal">|</span> <a href="https://www.google.com/accounts/ServiceLogin?service=ah&continue=http://code.google.com/_ah/login%3Fcontinue%3Dhttp://code.google.com/apis/ajax/playground/&ltmpl=gm&ahname=Google+AJAX+API+Playground&sig=b866ffd442521127942b4e8bbc148a01">Sign in</a></div> 
+    
+    <div id="googleCodeLogo" class="clearfix">
+      <a href="http://code.google.com/"><img border=0 src="images/code_logo.png" title="Google Logo"></a>
+    </div>
+    
+    <h1>Code Playground</h1>
+  </div>
+  
+  <div class="pane-row" id="codeRow">
+    <div class="pane" id="selectCodeContainer">
+      <div class="pane-header">
+        <h2>Pick an API</h2>
+        <input type="text" placeholder="Search" id="search">
+      </div>
+      <div class="pane-content">
+        <div id="selectCode" class="pane-row-heighter"></div>
+      </div>
+    </div>
+  
+    <div class="pane" id="codeContainer">
+      <div class="pane-header">
+        <h2>Edit Code</h2>
+        <div id="demoTitle"></div>
+        <div class="pane-buttons">
+          <button id="docsButton" onClick="is.viewDocs();" title="View the documentation for this sample.">
+            <span class="docs-icon icon-text">View Docs</span>
+          </button>
+          <button id="toggleEditHTMLButton" onClick="is.toggleEditHTML();" title="Toggle between Javascript and HTML editing.">
+            <span class="html-icon icon-text">Edit HTML</span>
+          </button>
+          <button id="codeMenuButton" class="dropdown">
+            <span class="dropdown-icon icon-only">&nbsp;</span>
+          </button>
+          <div class="dropdown-content" id="codeMenuDropdown">
+            <div onClick="is.uiEffects.toggleDropdown($('#codeMenuDropdown'));is.linkCode();return false;">
+              <span class="export-icon icon-text">Export</span>
+            </div>
+            
+            <div onClick="is.uiEffects.toggleDropdown($('#codeMenuDropdown'));is.confirmLogin('https://www.google.com/accounts/ServiceLogin?service=ah&continue=http://code.google.com/_ah/login%3Fcontinue%3Dhttp://code.google.com/apis/ajax/playground/&ltmpl=gm&ahname=Google+AJAX+API+Playground&sig=b866ffd442521127942b4e8bbc148a01', true);return false;">
+              <span class="save-icon icon-text">Save</span>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <div class="pane-content">
+        <div id="edit" class="pane-row-heighter">
+          <span id="editJS"></span>
+          <span id="editMixed"></span>
+        </div>
+      </div>
+    </div>
+    
+    <script type="text/javascript" charset="utf-8">
+    var options = {}
+    if (!location.host.match(/localhost/) && !location.href.match(/\/\/172/)) {
+      options.defaultSample = true;
+    }
+    var mixedEditor = new CodeMirror(document.getElementById('editMixed'), {
+      parserfile: ["prod_mixed_5ca7530f0218ca2f6b1bfc8ffc1bbbf0.js"],
+      stylesheet: ["codemirror/css/xmlcolors.css", "codemirror/css/jscolors.css", "codemirror/css/csscolors.css"],
+      autoMatchParens : true,
+      path : 'codemirror/js/',
+      height : '320px',
+      content: '',
+      textWrapping: false,
+      lineNumbers: true,
+      breakPoints: false,
+      onLoad: function() {is.runBox.runCode(options);}
+    });
+    var jsEditor = new CodeMirror(document.getElementById('editJS'), {
+      parserfile: ["prod_js_only_8cbac90cb8e8e9b015f995a7ff89cab1.js"],
+      stylesheet: 'codemirror/css/jscolors.css',
+      autoMatchParens : true,
+      path : 'codemirror/js/',
+      height : '320px',
+      content: '',
+      textWrapping: false,
+      lineNumbers: true,
+      breakPoints: true,
+      onLoad: function() {is.runBox.runCode(options);}
+    });
+    </script>
+  </div>
+  
+  <div class="pane-row-sizer"></div>
+  
+  <div class="pane-row" id="outputRow">
+    <div class="pane" id="outputContainer">
+      <div class="pane-header">
+        <h2>Output</h2>
+        <div class="pane-buttons">
+          <button onClick="is.runBox.runCode({debugMode: true});" title="Run this sample in 'Debug Mode' which enables breakpoints and inserts Firebug Lite.">
+            <span class="debug-icon icon-text">Debug Code</span>
+          </button>
+        
+          <button onClick="is.runBox.runCode();" title="Run this sample.">
+            <span class="run-icon icon-text">Run Code</span>
+          </button>
+        </div>
+      </div>
+      <div class="pane-content">
+        <div id="runbox"></div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="pane-row-sizer"></div>
+  
+  <div id="footer">
+    ©2009 Google -
+    <a href="http://code.google.com/">Code Home</a> - <a href="http://www.google.com/accounts/TOS">Site Terms of Service</a> -
+    <a href="http://www.google.com/privacy.html">Privacy Policy</a> -
+    <a href="http://code.google.com/more/">Site Directory</a> -
+    <a href="http://code.google.com/p/google-ajax-examples/issues/list" target="_blank">Report Bug</a>
+  </div>
+</div>
+
+<div id="HTMLforInlineJavascript" style="display:none;">&nbsp;</div>
+
+<!--
+There's a bug in jQuery UI where if you drag over an iFrame
+then you can't drag anymore.  Putting an invisible div over the
+iFrame fixes it.
+-->
+<div id="dragsafe"></div>
+
+<form action="http://savedbythegoog.appspot.com/add" id="linkCodeForm" method="POST" target="_blank">
+  <input type="hidden" id="codeHolder" name="code" />
+</form>
+<div id="grayOverlay"></div>
+
+<div id="saveDiv" class="dialog">
+  <h2 style="height:20px">Save Code</h2>
+  <form action="save" method="POST" id="saveForm">
+    <input type="hidden" name="boilerplateLoc" value="" id="boilerplateLoc">
+    <input name="jscode" id="jscodeSaveForm" style="display: none;" />
+    <input type="hidden" name="id" value="" id="idSaveForm">
+    <input type="hidden" name="type" value="">
+    <input type="hidden" name="sc" id="safetyCookie">
+    <table id="saveFormTable">
+      <tr>
+        <td style="vertical-align: top;" class="formLabel">Sample Name:</td>
+        <td>
+          <div>
+            <input type="text" id="saveSampleName" name="sampleName" value="My Sample" />
+            <div class="explain">
+              This is the display name of the sample.  It must have a unique name.
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;" class="formLabel">Tags:</td>
+        <td>
+          <div>
+            <input type="text" id="tagsSaveForm" name="tags" value="tag1, tag2, tag3" />
+            <div class="explain">
+              Tags associated with this sample.  They will be used for the search bar.
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <div class="dialog-buttons">
+      <button onClick="$('#saveForm').submit();">
+        <span class="save-icon icon-text">Save</span>
+      </button>
+    
+      <button class="negative" onClick="is.uiEffects.closeDialog('saveDiv');return false;">
+        <span class="cancel-icon icon-text">Cancel</span>
+      </button>
+    </div>
+  </form>
+</div>
+
+<div id="getChromeFrameDiv" class="dialog">
+  <h2>Get Chrome Frame</h2>
+  <p>The Playground no longer supports Internet Explorer.  Please <a href="http://www.google.com/chromeframe" target="_blank">install the Chrome Frame plugin</a> to use the Playground.</p>
+  
+  <div class="dialog-buttons">
+    <button class="negative" onClick="is.uiEffects.closeDialog('getChromeFrameDiv');return false;">
+      <span class="cancel-icon icon-text">Close</span>
+    </button>
+  </div>
+</div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+if (window.location.href.match(/code\.google\.com/)) {
+  var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+}
+</script>
+<script type="text/javascript" charset="utf-8">
+try { 
+  var pageTracker = _gat._getTracker("UA-18071-1");
+} catch(err) {
+  if (window.location.href.match(/code\.google\.com/)) {
+    var nocacheParam = '?nocache=' + (new Date()).getTime();
+    var url = 'http://code.google.com/apis/ajax/playground/ga_error' + nocacheParam;
+    $.get(url, function(data, success) {});
+  }
+}
+</script>
+</body>
+</html>

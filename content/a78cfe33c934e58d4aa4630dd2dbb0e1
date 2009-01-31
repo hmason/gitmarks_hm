@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" href="../base.css" type="text/css"/>
+<title>spring 2008 - cgra4070 - AJAX in an Hour</title>
+<style type="text/css">
+.code { background-color:#eee;
+	border:1px solid black;
+	padding:5px 0 0 5px; }
+</style>
+</head>
+
+<body>
+
+	<div id="container">
+		<div id="titlebar">
+			<img class="left" src="../webheader.gif" alt="web header"/><img class="right" src="../webheader_right.gif" alt="web header right"/>
+		</div>
+		<div id="main">
+			<div id="menu">
+				<ul class="menulist">
+					<li><span class="bullet">&gt;&gt;</span> <a href="../index.html">home</a></li>
+					<li><span class="bullet">&gt;&gt;</span> <a href="index.html"><span class="current">cgra4070</span></a></li>
+					<li><span class="bullet">&gt;&gt;</span> <a href="../csis3020/index.html">csis3020</a></li>
+					<li><span class="bullet">&gt;&gt;</span> <a href="../xtra.html">extra credit</a></li>
+					<li><span class="bullet">&gt;&gt;</span> <a href="../resources.html">resources</a></li>
+				</ul>
+			</div>
+			
+			<div id="content">
+				<h2><a href="index.html">CGRA4070</a> AJAX in an Hour</h2>
+				<p>AJAX, which stands for <em>Asynchronous JavaScript and XML</em>, is the practice of dynamically updating elements of a web page without reloading the page.</p>
+				<p>These notes are the companion notes for this seminar - they don't contain all of the information from the seminar, but do contain the essentials for your reference.</p>
+				<h3>XHTML/CSS</h3>
+				<p>We'll begin with a standard XHTML/CSS web page. It might look something like this:</p>
+				<pre class="code">
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+&lt;head&gt;
+&lt;meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /&gt;
+&lt;title&gt;I'm a web page&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+&lt;div id="top"&gt;This is the top.&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+				</pre>
+				<p>If this code is valid, we can use the <a href="http://developer.mozilla.org/en/docs/Gecko_DOM_Reference">XML Document Object Model</a> to refer to and manipulate elements.
+				<h3>JavaScript</h3>
+				<p>JavaScript is the glue between your web page and the server-side code. You use JavaScript to manipulate and update elements on the page, and to query and handle results from the server-side program.</p>
+				<p>We need to address elements to manipulate them. This is easiest by unique ID:</p>
+				<pre class="code">
+&lt;div <strong>id="top"</strong>&gt;This is the top.&lt;/div&gt;
+				</pre>
+				<p>And the JavaScript to identify this element is:</p>
+				<pre class="code">
+document.getElementById("top")
+				</pre>
+				<p>The <a href="http://developer.mozilla.org/en/docs/DOM:document.getElementById">getElementById</a> function returns the selected element in the document parse tree. This element has several <a href="http://developer.mozilla.org/en/docs/DOM:element#Properties">properties</a> that are useful to us. For example, the <span class="c">innerHTML</span> property contains the HTML contents of the element.</p>
+				<p>If we use a JavaScript alert function to display this property, <a href="ajax/webpage1.html">we get</a>:</p>
+				<img src="ajax/alert_box.png" alt="alert box" style="float:left;margin-right:15px;" />
+				<pre class="code">
+&lt;script type="text/javascript"&gt;
+function element() {
+	alert(document.getElementById("top").innerHTML);
+}
+&lt;/script&gt;
+...
+&lt;body onload="element()"&gt;
+				</pre>
+				<p style="clear:both">Please note that you can also accomplish this with DOM function that manipulate the parse tree directly by creating, adding, moving, and destroying elements. Which one to use is a topic of <a href="http://www.quirksmode.org/dom/innerhtml.html">some debate</a> among web developers.</p>
+				<h3>Changing an Element in Response to an Event</h3>
+				<p>Now let's change the contents of an element in response to an event. <a href="ajax/webpage2.html">Try this</a>:</p>
+				<pre class="code">
+&lt;script type="text/javascript"&gt;
+function update() {
+	document.getElementById("contents").innerHTML = "You clicked!";
+}
+&lt;/script&gt;
+...
+&lt;div id="contents"&gt;I'm here when you initially load.&lt;/div&gt;
+&lt;input type="button" value="Click Me" onclick="update()" /&gt;
+				</pre>
+				<p>Please note that there are ways to declare an event entirely in JavaScript - without using the "onclick" attribute of the XHTML tag - which are generally preferred, but are beyond the scope of today's discussion.</p>
+				<h3>Getting Data from the Server</h3>
+				<p>Now that we can trigger an event on a web page and update an element's contents, the next step is to update an element's contents with information dynamically loaded from a server-side program.</p>
+				<p>Let's start with this <a href="http://softweb.jwu.edu/released/hmason/cgra4070/ajax/hello.php">very simple PHP program</a>:</p>
+				<pre class="code">
+&lt;?php
+
+print "Hello, Rhode Island!";
+
+?&gt;
+				</pre>
+				<p>To get the output of this program (a simple string) and update the contents of an element with it, we need to use an <a href="http://www.w3.org/TR/XMLHttpRequest/"><span class="c">XMLHttpRequest()</span> object</a>. The name is a bit of a misnomer, because there is no requirement to use XML here (though you can if you want to).</p>
+				<p>I recommend that you spend the time to learn to write this code by hand, and then make an informed decision about which AJAX library to use.</p>
+				<h3>AJAX Libraries</h3>
+				<p>An AJAX library is just a collection of JavaScript functions to simplify sending and retrieving data from a server. A good library is designed to deal with browser incompatibilities and common bugs and issues. The current top libraries are:</p>
+				<ul>
+					<li><a href="http://www.prototypejs.org/">Prototype</a> (the first major lib)</li>
+					<li><a href="http://jquery.com/">jQuery</a> (more badass)</li>
+					<li><a href="http://script.aculo.us/">script.aculo.us</a> (a distant third - great for elaborate visual effects)</li>
+				</ul>
+				<p>We'll use Prototype for this demo. <a href="http://www.prototypejs.org/download">Download it here</a>.</p>
+				<p>Include it in your page, and then use the <a href="http://www.prototypejs.org/api/ajax/updater">Ajax.Updater object</a>:</p>
+				<pre class="code">
+&lt;script type="text/javascript" language="javascript" src="prototype.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript"&gt;
+function update_contents() {
+        var url = 'hello.php';
+        var myAjax = new Ajax.Updater('contents', url, {  method: 'get' });
+}
+&lt;/script&gt;
+				</pre>
+				<p>See how easy <a href="ajax/webpage3.html">that</a> was?</p>
+				<h3>Sending Data to a Program</h3>
+				<p>The last piece of the puzzle is sending data to a program, and having it respond. Consider <a href="http://softweb.jwu.edu/released/hmason/cgra4070/ajax/mimic.php?data=something">this PHP script</a>:</p>
+				<pre class="code">
+&lt;?php
+
+print "You sent: " . $_REQUEST['data'];
+
+?&gt;
+				</pre>
+				<p>Prototype includes the charming shortcut "$" for <span class="c">document.getElementById</span>.</p>
+				<p>Now let's <a href="ajax/webpage4.html">send it some data</a>:
+				<pre class="code">
+function update_contents() {
+        var url = 'mimic.php';
+        var estring = $('data'); // get data from form
+        var pars = 'data=' + estring.value;
+        var myAjax = new Ajax.Updater('contents', url, { method: 'get', parameters: pars });
+
+}
+				</pre>
+				<div class="space">&nbsp;</div>
+			</div>
+			<div id="footer" align="center">
+			<p>&copy; hilary mason for winter 2007-2008</p>
+			</div>
+		</div>
+	</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-1489244-2";
+urchinTracker();
+</script>
+</body>
+</html>

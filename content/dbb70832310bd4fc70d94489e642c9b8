@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<!-- Meta tags -->
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		
+		<link rel="shortcut icon" type="image/ico" href="http://www.sprymedia.co.uk/media/images/favicon.ico">
+		<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://www.sprymedia.co.uk/rss.xml">
+		
+		<title>Allan Jardine | Reflections | Secret</title>
+		<style type="text/css" title="currentStyle">
+			@import "/media/css/site.css";
+			@import "/media/css/SyntaxHighlighter.css";
+			@import "/media/reflections/yui_treeview/tree.css";
+					</style>
+		<script type="text/javascript" src="/media/javascript/js-core-min.js"></script>
+		<script type="text/javascript" src="/media/javascript/yahoo-dom-event.js"></script>
+		<script type="text/javascript" src="/media/javascript/treeview.js"></script>
+		<script type="text/javascript" src="http://yui.yahooapis.com/combo?2.7.0/build/yahoo-dom-event/yahoo-dom-event.js&2.7.0/build/animation/animation-min.js"></script><script type="text/javascript" src="/secret/secret.min.js"></script><script type="text/javascript" src="/secret/reflection.js"></script>		
+	</head>
+	<body>
+		<div id="page_wrapper">
+			<div id="header" class="header_secret">
+								<div id="header_name">
+					<a href="/">allan jardine <span>ui developer</span></a>
+				</div>
+				<div id="header_links">
+					<ul>
+						<li><a  href="/index">home</a></li>
+						<li><a  href="/portfolio">portfolio</a></li>
+						<li><a class="active" href="/reflections">reflections</a></li>
+						<li><a  href="/about">about</a></li>
+						<li><a  href="/contact">contact</a></li>
+					</ul>
+				</div>
+				<div id="header_text">
+					Secret				</div>
+				<div id="header_generic">
+					<div id="header_trianglel"></div>
+					<div id="header_filler"></div>
+					<div id="header_triangler"></div>
+				</div>
+			</div>
+			
+			<!-- Main content -->
+			<div id="container">
+				<div class="column_full big">
+					There is a lot of text on the web (out of necessity of course) and I was thinking about how a message could be hidden in that text. Travelling along that line of thought, I started to experiment with getting information about individual characters, and displaying a message based on those characters on screen in a rather fun way. Thus 'Secret' was born.				</div>
+				
+				<div class="column_2_3">
+					<h1>Introduction</h1>
+
+<p>Secret is a Javascript library which provides the functions required for scanning an HTML document for certain characters, locating those characters on the rendered page and then displaying them in a rather fun Harry Potter style (the former parts might be more interesting for developers!).</p>
+
+<p>Using Secret is very simple, type what ever you want into the text box below and hit the 'Show message' button - it will gather the characters from the page and display them in a mysterious way...</p>
+
+<div class="box_secret">
+	<form id="noAction">
+		Display 'Secret' message:<br>
+		<input type="text" id="idSecretInput" name="secret_input" value="" class="secret_input">
+		<input type="image" src="/secret/button_show_message.jpg" class="secret_button">
+		<div class="clear"></div>
+	</form>
+</div>
+
+
+<p>There are a few things to note here - firstly you will need a fairly modern browser in order for this to work. Opera works a treat, as do very recent builds of Webkit (after 20th Feb 2009). Firefox also mostly works fine although it appears to have a slight offset in it's calculations for the position of characters (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=480030">bug filed</a> - vote for it!), and I've not bothered trying to support IE (Secret is open source if you want to give it a go...).</p>
+
+<p>Another point to note is that if Secret can't find a character on the page, then it will signal a warning. For example if a page doesn't contain a 'Z' or 'P' etc. but your message requires it, then it can't be displayed. You can use my <a href="/secret/secret.html">test page for Secret</a> which contains most (but not all) standard ASCII characters. On this page you simply type your message and press return.</p>
+
+<p>An alternative use for Secret is to use it as a bookmarklet. In this way, your message could be displayed on any page on the web. To do this, simply type your message into the box below and then drag the Secret button to your bookmark bar.</p>
+
+<div class="box_secret">
+	Create Secret bookmarklet <span class="small" style="color:#333">(type text and drag button to bookmark bar)</span>:<br>
+	<input type="text" id="idSecretBookmarkInput" name="secret_bookmark_input" class="secret_input"> <a href="javascript:;" id="idSecretBookmarkOutput"><img src="/secret/button_bookmarket.jpg" class="secret_button" alt="Secret"></a>
+	<div class="clear"></div>
+</div>
+
+<p>In a similar manner Secret can be triggered however you like, secret codes etc. Download the source below and have fun!</p>
+
+
+<h1>So what's going on</h1>
+
+<p>The way Secret works is to firstly discover what HTML elements are currently displayed inside the browser viewport (it is preferable to take characters from the text which can be seen rather from any random point in the document), and read the text from each of the text nodes with in these visible elements. For each character in your message, Secret will scan through the text which has been found and randomly select one for display. If one can't be found then it would fall back to look outside the hidden areas as well, and finally fail if a suitable character can't be found.</p>
+
+<p>Once a character has be found, it position in the document must be determined. Browsers don't provide a convenient method for doing this with text nodes, and specifically individual characters, so what Secret does is to wrap a 'span' tag around the target. From there the getBoundingClientRect() method can be used to determine its location.</p>
+
+<p>After that, its a case of calculating where on the screen the character should be displayed, relative to the other characters in the string (line breaks etc. must be considered) and animating the element into position. The animation is provided by the YUI library, which made this animation exceptionally simple to implement (thank you to the YUI team!). The core of Secret is independent of any library so you can use that for any application you which, only the animation requires YUI.</p>
+
+
+<h1>Why?</h1>
+
+<p>It's a valid question! The main reason is for experimentation. I wanted to experiment with getting information from the browser about how it layouts out text, and also to have a bit of fun while doing so. Mission accomplished on both accounts.</p>
+
+
+
+<h1>Download</h1>
+
+<p>Secret is open source software (under the MIT license) and the source can be downloaded from the link below:</p>
+
+<ul>
+	<li><a href="/secret/secret.js">Secret</a></li>
+</ul>
+
+<p>If you do apply Secret to any interesting use case, please <a href="/contact">let me know about it</a> - it's always good to hear how the software on this site is being used!</p>				</div>
+				
+				<!-- Video and contact -->
+				<div class="column_1_3r">
+						<div class="center"><img src="/secret/secret_small.jpg" alt="Article image" style="margin-top: 10px;"></div><h1><a href="/news">elsewhere on the web</a></h1><div class="news_link">	<a href="http://badassjs.com/post/971960912/uglifyjs-a-fast-new-javascript-compressor-for-node-js">UglifyJS</a><br>	A new Javascript compressor which is much faster than Google Closure but still gets similar results. Also safer if you have to use eval - interesting!</div><div class="news_link">	<a href="http://www.scriptmag.com/2010/10/29/primetime-juggling-writing-and-a-job-figure-it-out/">Figure it out</a><br>	Not enough time for doing what you want? How bad do you want it? Right - so figure it out. Great article.</div><div class="news_link">	<a href="http://blog.mozilla.com/blog/2010/10/07/firefox-4-beta-for-android-and-maemo/">Firefox 3 mobile b1</a><br>	Congratulations to the Moz team getting Firefox for mobile halfway out of the door. They have a lot to do to keep up with Webkit on mobile devices, but competition is good.</div><div class="news_link">	<a href="http://bits.blogs.nytimes.com/2010/10/07/microsoft-and-adobe-chiefs-meet-to-discuss-partnerships/">Microsoft and Adobe</a><br>	The web has gone bonkers over the news that Steve Ballmer floated the idea of buying Adobe - and no wonder. This would send _huge_ shockwaves through the digital media world.</div><div class="news_link">	<a href="http://theoatmeal.com/comics/design_hell">The evolution of the design of a web-site</a><br>	Step by step for how a fantastic web-design goes straight to hell. Hilarious (and so sadly true).</div><div class="news_link">	<a href="http://www.adaptivepath.com/blog/2010/06/22/the-design-plan-official-versus-how-it-feels/">The design process</a><br>	Those Gantt charts look great when put up on the projector during a team meeting - but does it ever go to plan... of course not!</div>						
+													<h1><a name="donate"></a><a href="/donate">Donate</a></h1>
+							<p>If you find the software on this site useful, and/or enjoy using it,
+								please consider assisting my <a href="/donate">beer fund</a> as a way of thanks!.</p>
+										</div>
+				
+				
+				<!-- Footer -->
+								<div id="footer" style="text-align:center;">
+					<span style="font-size:10px;">&copy; Allan Jardine 2007-2010 - All rights reserved</span>
+				</div>			</div>
+		</div>
+		
+		<script type="text/javascript" src="/media/javascript/syntax/shCore.js"></script>
+		<script type="text/javascript" src="/media/javascript/syntax/shBrushXml.js"></script>
+		<script type="text/javascript" src="/media/javascript/syntax/shBrushPhp.js"></script>
+		<script type="text/javascript" src="/media/javascript/syntax/shBrushCss.js"></script>
+		<script type="text/javascript" src="/media/javascript/syntax/shBrushJScript.js"></script>
+		<script type="text/javascript">
+			dp.SyntaxHighlighter.HighlightAll('code', false, false);
+		</script>
+		
+				<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			_uacct = "UA-365466-1";
+			urchinTracker();
+		</script>	</body>
+</html>

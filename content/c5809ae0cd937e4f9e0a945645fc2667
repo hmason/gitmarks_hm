@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head> <meta http-equiv="content-type" content="text/html; charset=utf-8"> <link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml"> <link rel="shortcut icon" href="/media/img/effbot.ico"> <link rel="stylesheet" href="/media/css/effbot-min.css" type="text/css" media="screen"> <link rel="stylesheet" href="/media/css/effbotprint-min.css" type="text/css" media="print"> <title>re.sub&nbsp;Patterns</title> <script type="text/javascript">effbot_page_id=251;</script> </head> <body> <div id="doc2" class="yui-t2"> <div id="hd"> <!-- header --> </div> <!-- hd --> <div id="bd"> <!-- body --> <div id="yui-main"> <div class="yui-b"> <div class="content"><div class="yui-g"> <h1 class="maintitle">re.sub&nbsp;Patterns</h1> </div> <!-- yui-g --><div class="yui-ge"><div class="yui-u first"><h2 id="strip-html">Converting HTML to Plain Text&#160;<a class="nav" href="#strip-html" title="bookmark!">#</a></h2><p class="info">January 15, 2003 | Fredrik Lundh</p>
+
+This function removes HTML tags, and also converts character entities
+and character references.  If you only want to convert entities, see the
+<a href="#unescape-html">next example</a>.
+
+</div><div class="yui-u">&#160;</div></div><div class="yui-g"><pre class="python wide wide">
+<span class="pykeyword">import</span> re
+
+<span class="pycomment">##</span>
+<span class="pycomment"># Removes HTML markup from a text string.</span>
+<span class="pycomment">#</span>
+<span class="pycomment"># @param text The HTML source.</span>
+<span class="pycomment"># @return The plain text.  If the HTML source contains non-ASCII</span>
+<span class="pycomment">#     entities or character references, this is a Unicode string.</span>
+
+<span class="pykeyword">def</span> <span class="pyfunction">strip_html</span>(text):
+    <span class="pykeyword">def</span> <span class="pyfunction">fixup</span>(m):
+        text = m.group(0)
+        <span class="pykeyword">if</span> text[:1] == <span class="pystring">"&lt;"</span>:
+            <span class="pykeyword">return</span> <span class="pystring">""</span> <span class="pycomment"># ignore tags</span>
+        <span class="pykeyword">if</span> text[:2] == <span class="pystring">"&amp;#"</span>:
+            <span class="pykeyword">try</span>:
+                <span class="pykeyword">if</span> text[:3] == <span class="pystring">"&amp;#x"</span>:
+                    <span class="pykeyword">return</span> unichr(int(text[3:-1], 16))
+                <span class="pykeyword">else</span>:
+                    <span class="pykeyword">return</span> unichr(int(text[2:-1]))
+            <span class="pykeyword">except</span> ValueError:
+                <span class="pykeyword">pass</span>
+        <span class="pykeyword">elif</span> text[:1] == <span class="pystring">"&amp;"</span>:
+            <span class="pykeyword">import</span> htmlentitydefs
+            entity = htmlentitydefs.entitydefs.get(text[1:-1])
+            <span class="pykeyword">if</span> entity:
+                <span class="pykeyword">if</span> entity[:2] == <span class="pystring">"&amp;#"</span>:
+                    <span class="pykeyword">try</span>:
+                        <span class="pykeyword">return</span> unichr(int(entity[2:-1]))
+                    <span class="pykeyword">except</span> ValueError:
+                        <span class="pykeyword">pass</span>
+                <span class="pykeyword">else</span>:
+                    <span class="pykeyword">return</span> unicode(entity, <span class="pystring">"iso-8859-1"</span>)
+        <span class="pykeyword">return</span> text <span class="pycomment"># leave as is</span>
+    <span class="pykeyword">return</span> re.sub(<span class="pystring">"(?s)&lt;[^&gt;]*&gt;|&amp;#?\w+;"</span>, fixup, text)</pre></div><div class="yui-ge"><div class="yui-u first"><h2 id="unescape-html">Unescape HTML Entities&#160;<a class="nav" href="#unescape-html" title="bookmark!">#</a></h2><p class="info">October 28, 2006 | Fredrik Lundh</p><p>This function converts HTML entities and character references to ordinary characters.</p></div><div class="yui-u">&#160;</div></div><div class="yui-g"><pre class="python wide wide">
+<span class="pykeyword">import</span> re, htmlentitydefs
+
+<span class="pycomment">##</span>
+<span class="pycomment"># Removes HTML or XML character references and entities from a text string.</span>
+<span class="pycomment">#</span>
+<span class="pycomment"># @param text The HTML (or XML) source text.</span>
+<span class="pycomment"># @return The plain text, as a Unicode string, if necessary.</span>
+
+<span class="pykeyword">def</span> <span class="pyfunction">unescape</span>(text):
+    <span class="pykeyword">def</span> <span class="pyfunction">fixup</span>(m):
+        text = m.group(0)
+        <span class="pykeyword">if</span> text[:2] == <span class="pystring">"&amp;#"</span>:
+            <span class="pycomment"># character reference</span>
+            <span class="pykeyword">try</span>:
+                <span class="pykeyword">if</span> text[:3] == <span class="pystring">"&amp;#x"</span>:
+                    <span class="pykeyword">return</span> unichr(int(text[3:-1], 16))
+                <span class="pykeyword">else</span>:
+                    <span class="pykeyword">return</span> unichr(int(text[2:-1]))
+            <span class="pykeyword">except</span> ValueError:
+                <span class="pykeyword">pass</span>
+        <span class="pykeyword">else</span>:
+            <span class="pycomment"># named entity</span>
+            <span class="pykeyword">try</span>:
+                text = unichr(htmlentitydefs.name2codepoint[text[1:-1]])
+            <span class="pykeyword">except</span> KeyError:
+                <span class="pykeyword">pass</span>
+        <span class="pykeyword">return</span> text <span class="pycomment"># leave as is</span>
+    <span class="pykeyword">return</span> re.sub(<span class="pystring">"&amp;#?\w+;"</span>, fixup, text)</pre></div><div class="yui-ge"><div class="yui-u first"><h2 id="simple-templating">Simple Templating&#160;<a class="nav" href="#simple-templating" title="bookmark!">#</a></h2><p class="info">June 19, 2002 | Fredrik Lundh</p><p>Here are a couple of functions that implement <a href="http://www.python.org/peps/pep-0292.html">PEP 292</a>-style
+string interpolation:</p></div><div class="yui-u">&#160;</div></div><div class="yui-g"><pre class="python wide wide">
+<span class="pykeyword">import</span> sre, sys
+
+<span class="pycomment"># match $var and ${var} and $$</span>
+_dosub = sre.compile(<span class="pystring">r'\$(?:\$|(\w+)|\{([^}]*)\})'</span>).sub
+
+<span class="pykeyword">def</span> <span class="pyfunction">expandvars</span>(string, vars):
+    <span class="pycomment"># expand $var and ${var}; leave unknowns as is</span>
+    <span class="pykeyword">def</span> <span class="pyfunction">repl</span>(m, vars=vars):
+        <span class="pykeyword">if</span> <span class="pykeyword">not</span> m.lastindex:
+            <span class="pykeyword">return</span> <span class="pystring">"$"</span>
+        <span class="pykeyword">try</span>:
+            <span class="pykeyword">return</span> vars[m.group(m.lastindex)]
+        <span class="pykeyword">except</span> (KeyError, NameError):
+            <span class="pykeyword">return</span> m.group(0)
+    <span class="pykeyword">return</span> _dosub(repl, string)
+
+<span class="pykeyword">def</span> <span class="pyfunction">replacevars</span>(string, vars):
+    <span class="pycomment"># same as expandvars, but raises an exception if variable not known</span>
+    <span class="pykeyword">def</span> <span class="pyfunction">repl</span>(m, vars=vars):
+        <span class="pykeyword">if</span> <span class="pykeyword">not</span> m.lastindex:
+            <span class="pykeyword">return</span> <span class="pystring">"$"</span>
+        <span class="pykeyword">return</span> vars[m.group(m.lastindex)]
+    <span class="pykeyword">return</span> _dosub(repl, string)
+
+<span class="pykeyword">def</span> <span class="pyfunction">replacevars_from_scope</span>(string):
+    <span class="pycomment"># same as replacevars, but gets the variables from caller's local scope</span>
+    frame = sys._getframe(1)
+    mapping = frame.f_globals.copy()
+    mapping.update(frame.f_locals)
+    <span class="pykeyword">return</span> replacevars(string, mapping)
+
+<span class="pycomment">#</span>
+<span class="pycomment"># try it out...</span>
+
+s = <span class="pystring">'${name} was born in ${country}'</span>
+<span class="pykeyword">print</span> replacevars(s, {<span class="pystring">'name'</span>: <span class="pystring">'Guido'</span>, <span class="pystring">'country'</span>: <span class="pystring">'the Netherlands'</span>})
+
+name = <span class="pystring">'Barry'</span>
+country = <span class="pystring">'the USA'</span>
+<span class="pykeyword">print</span> replacevars_from_scope(s)</pre></div><div class="yui-ge"><div class="yui-u first"><h2 id="callbacks">Using Callback Functions&#160;<a class="nav" href="#callbacks" title="bookmark!">#</a></h2><p class="info">June 26, 2002 | Fredrik Lundh</p><p><i>
+Q. Look at the two functions quote and unquote. I wrote them
+without regular expression because I think it faster.
+</i></p><p>Faster to write, perhaps.</p><p>And faster to run, if you only use them on strings with no
+more than 2-3 characters.</p><p>But if you use a different set of test strings with more ordinary
+characters than escaped characters, e.g.</p><pre class="python">
+     strings = [<span class="pystring">'foo'</span>, <span class="pystring">''</span>, <span class="pystring">'\\'</span>, <span class="pystring">' '</span>, <span class="pystring">'"'</span>, <span class="pystring">'\\"'</span>, <span class="pystring">'\\\\'</span>]
+     strings = [(x+<span class="pystring">"spamspamspamspamspam"</span>)*10 <span class="pykeyword">for</span> x <span class="pykeyword">in</span> strings]</pre><p>you&#8217;ll find that a RE approach can be much faster.  The following
+version is about four times faster than your code, under 2.2:</p></div><div class="yui-u">&#160;</div></div><div class="yui-g"><pre class="python wide wide">
+<span class="pykeyword">import</span> re
+
+<span class="pykeyword">def</span> <span class="pyfunction">re_quote</span>(string, sub=re.compile(<span class="pystring">r"[\\\"]"</span>).sub):
+    <span class="pykeyword">def</span> <span class="pyfunction">fixup</span>(m):
+        <span class="pykeyword">return</span> <span class="pystring">"\\"</span> + m.group(0)
+    <span class="pykeyword">return</span> sub(fixup, string)
+
+<span class="pykeyword">def</span> <span class="pyfunction">re_unquote</span>(string, sub=re.compile(<span class="pystring">r"(?s)\\(.)|\\"</span>).sub):
+    <span class="pykeyword">def</span> <span class="pyfunction">fixup</span>(m):
+        ch = m.group(1)
+        <span class="pykeyword">if</span> ch <span class="pykeyword">is</span> None:
+            <span class="pykeyword">raise</span> ValueError(<span class="pystring">"backslash at end of string"</span>)
+        <span class="pykeyword">if</span> ch <span class="pykeyword">not</span> <span class="pykeyword">in</span> <span class="pystring">r"\\\""</span>:
+            <span class="pykeyword">raise</span> ValueError(<span class="pystring">"unsupported character after backslash"</span>)
+        <span class="pykeyword">return</span> ch
+    <span class="pykeyword">return</span> sub(fixup, string)</pre></div><div class="yui-ge"><div class="yui-u first"><p>Note the use of callback functions instead of substitution templates.
+It&#8217;s usually faster (and in my opinion, also more pythonic) to use e.g.</p><pre class="python">
+    <span class="pykeyword">def</span> <span class="pyfunction">fixup</span>(m):
+        <span class="pykeyword">return</span> <span class="pystring">"spam %s %s"</span> % m.group(1, 2)
+    re.sub(pattern, fixup, string)</pre><p>or, if you prefer lambdas:</p></div><div class="yui-u">&#160;</div></div><div class="yui-g"><pre class="python wide wide">
+    re.sub(pattern, <span class="pykeyword">lambda</span> m: <span class="pystring">"spam %s %s"</span> % m.group(1, 2), string)</pre></div><div class="yui-ge"><div class="yui-u first"><p>than the re.sub non-standard interpolation syntax:</p><pre class="python">
+    re.sub(pattern, <span class="pystring">"spam \\1 \\2"</span>, string)</pre><p>(and where possible, it&#8217;s also slightly faster to use m.groups()
+instead of enumerating all the groups in m.group(&#8230;))</p><p>YMMV, as usual.</p></div><div class="yui-u">&#160;</div></div><div class="yui-g"></div> <!-- yui-g --></div> <!-- content --> </div> <!-- yui-b --> </div> <!-- yui-main --> <div class="yui-b"> <div id='menu'> <ul> <li><b><a href="/" title="Go to effbot.org.">::: effbot.org</a></b></li> <li><b><a href="." title="Go to zone index page.">::: zone :::</a></b></li> </ul> <ul><li><b>::: contents</b></li></ul> <ul><li><ul><li><a href="#strip-html">Converting HTML to Plain Text</a></li><li><a href="#unescape-html">Unescape HTML Entities</a></li><li><a href="#simple-templating">Simple Templating</a></li><li><a href="#callbacks">Using Callback Functions</a></li></ul></li></ul> </div> <!-- menu --> </div> <!-- yui-b --> </div> <!-- bd --> <div id="ft"> <!-- footer --> <p><a href="http://www.djangoproject.com/"><img src="/media/img/djangosite80x15.gif" border="0" alt="A Django site." title="A Django site." style="vertical-align: bottom;"></a>
+this page was rendered by a <a href="http://www.djangoproject.com/">django</a> application in 0.13s 2010-12-20 14:16:19.302132.  hosted by <a href="http://www.webfaction.com/shared_hosting?affiliate=slab">webfaction</a>.</p> </div> <!-- ft --> </div> <!-- doc --> <script src="/media/js/effbot-min.js" type="text/javascript"> </script> </body> </html>

@@ -1,0 +1,394 @@
+ 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://gmpg.org/xfn/11">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="author" content="Spiros Papadimitriou"/>
+	<meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+	<title>b i t q u i l l &raquo; Data harvesting with MapReduce</title>
+	<link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+	<style type="text/css" media="screen">
+		@import url( http://www.bitquill.net/blog/wp-content/themes/bitquill/style.css );
+			</style>
+	<link rel="stylesheet" href="http://www.bitquill.net/blog/wp-content/themes/bitquill/print.css" type="text/css" media="print"/>
+<!--
+	<link rel="alternate" type="application/atom+xml" title="Science &amp; Technology" href="http://www.bitquill.net/blog/?feed=atom&cat=45" />
+	<link rel="alternate" type="application/atom+xml" title="All Categories" href="http://www.bitquill.net/blog/?feed=atom" />
+-->
+	<link rel="alternate" type="application/atom+xml" title="Science &amp; Technology" href="http://feeds2.feedburner.com/bitquill" />
+	<link rel="alternate" type="application/atom+xml" title="All Categories" href="http://feeds2.feedburner.com/bitquill-all" />
+	<link rel="pingback" href="http://www.bitquill.net/blog/xmlrpc.php" />
+		<link rel='archives' title='February 2010' href='http://www.bitquill.net/blog/?m=201002' />
+	<link rel='archives' title='September 2009' href='http://www.bitquill.net/blog/?m=200909' />
+	<link rel='archives' title='May 2009' href='http://www.bitquill.net/blog/?m=200905' />
+	<link rel='archives' title='April 2009' href='http://www.bitquill.net/blog/?m=200904' />
+	<link rel='archives' title='March 2009' href='http://www.bitquill.net/blog/?m=200903' />
+	<link rel='archives' title='December 2008' href='http://www.bitquill.net/blog/?m=200812' />
+	<link rel='archives' title='November 2008' href='http://www.bitquill.net/blog/?m=200811' />
+	<link rel='archives' title='October 2008' href='http://www.bitquill.net/blog/?m=200810' />
+	<link rel='archives' title='September 2008' href='http://www.bitquill.net/blog/?m=200809' />
+	<link rel='archives' title='August 2008' href='http://www.bitquill.net/blog/?m=200808' />
+	<link rel='archives' title='July 2008' href='http://www.bitquill.net/blog/?m=200807' />
+	<link rel='archives' title='June 2008' href='http://www.bitquill.net/blog/?m=200806' />
+	<link rel='archives' title='May 2008' href='http://www.bitquill.net/blog/?m=200805' />
+	<link rel="alternate" type="application/rss+xml" title="b i t q u i l l &raquo; Data harvesting with MapReduce Comments Feed" href="http://www.bitquill.net/blog/?feed=rss2&amp;p=17" />
+<link rel='stylesheet' id='openid-css'  href='http://www.bitquill.net/blog/wp-content/plugins/openid/f/openid.css?ver=519' type='text/css' media='all' />
+<script type='text/javascript' src='http://www.bitquill.net/blog/wp-includes/js/jquery/jquery.js?ver=1.3.2'></script>
+<script type='text/javascript' src='http://www.bitquill.net/blog/wp-content/plugins/openid/f/openid.js?ver=519'></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.bitquill.net/blog/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.bitquill.net/blog/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='b i t q u i l l' href='http://www.bitquill.net/blog' />
+<link rel='start' title='Hello world!' href='http://www.bitquill.net/blog/?p=1' />
+<link rel='prev' title='Bad planning' href='http://www.bitquill.net/blog/?p=50' />
+<link rel='next' title='NYC initiation: rental application' href='http://www.bitquill.net/blog/?p=53' />
+<meta name="generator" content="WordPress 2.9.2" />
+<link rel='canonical' href='http://www.bitquill.net/blog/?p=17' />
+<script type="text/javascript" charset="utf-8" src="http://w.sharethis.com/button/sharethis.js#tabs=web%2Cpost%2Cemail&amp;charset=utf-8&amp;services=reddit%2Cdigg%2Cfacebook%2Cmyspace%2Cdelicious%2Cstumbleupon%2Ctechnorati%2Cgoogle_bmarks%2Cfriendfeed%2Cmixx%2Cfurl%2Cmagnolia&amp;style=default&amp;publisher=b9faa7e1-0aed-4b3a-bdee-4e00c5fc1c34&amp;headerbg=%23002E5C&amp;inactivebg=%23E4EBF2&amp;linkfg=%23002E5C&amp;amp;type=wordpress2.9.2&amp;wp=2.9.2"></script></head>
+
+<body>
+<script type='text/javascript' src='http://track.mybloglog.com/js/jsserv.php?mblID=2008060618232074'></script>
+
+<div id="header">
+<!-- <h1><a href="http://www.bitquill.net/blog">b i t q u i l l</a></h1> -->
+<a href="http://www.bitquill.net/"><img src="/pix/bitquill.png" alt="bitquill - Spiros Papadimitriou" title="Spiros Papadimitriou on the web"/></a>
+
+<div id="searchbox">
+<form action="http://www.bitquill.net/search.html" id="cse-search-box">
+<div>
+<input type="hidden" name="cx" value="018364711142139819069:xeneqgcb8po" />
+<input type="hidden" name="cof" value="FORID:9" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="text" name="q" size="31" />
+<input type="submit" name="sa" value="Search" />
+</div>
+</form>
+</div>
+<script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=cse-search-box&lang=en"></script>
+
+<ul>
+<li><a class="current" href="/blog" title="Blog">Blog</a></li>
+<li><a href="http://tumblr.bitquill.net/" title="Tumblelog">Tumblr</a></li>
+<li><a href="/trac" title="Trac project management">Stuff</a></li>
+<li><a href="/about.html" title="About this site">About</a></li>
+</ul>
+</div>
+
+<div id="wrapper">
+
+<div id="content">
+
+			
+		<div class="post" id="post-17">
+	
+			<h2 class="posttitle"><a href="http://www.bitquill.net/blog/?p=17" rel="bookmark" title="Permanent link to Data harvesting with MapReduce">Data harvesting with MapReduce</a></h2>
+			
+			<p class="postmeta"> 
+			September 11, 2008 at 12:04 pm 
+			&#183; Filed under <a href="http://www.bitquill.net/blog/?cat=45" title="View all posts in Sci &amp; Tech" rel="category">Sci &amp; Tech</a>						</p>
+		
+			<div class="postentry">
+			<p><a href="http://www.bitquill.net/blog/wp-content/uploads/2008/07/pack_of_harvesters.jpg" ><img class="size-full wp-image-19" title="pack_of_harvesters" src="http://www.bitquill.net/blog/wp-content/uploads/2008/07/pack_of_harvesters.jpg" alt="Combine harvesters" width="600" height="300" /></a><br />
+(original <a title="Brazil's Answer to Global Hunger (BusinessWeek)" href="http://www.businessweek.com/magazine/content/08_22/b4086072681496.htm?chan=search" onclick="javascript:pageTracker._trackPageview('/blog/outbound/article/www.businessweek.com');">image source</a>)</p>
+<p>&#8220;The <a title="Combine harvester (Wikipedia)" href="http://en.wikipedia.org/wiki/Combine_harvester" onclick="javascript:pageTracker._trackPageview('/blog/outbound/article/en.wikipedia.org');">combine harvester</a>, [...] is a machine that combines the tasks of harvesting, threshing and cleaning grain crops.&#8221;  If you have acres upon acres of wheat and want to separate the grain from the chaff, a group of combines is what you really want. If you have a bonsai tree and want to trim it, a harvester may be less than ideal.</p>
+<p>MapReduce is like a pack of harvesters, well-suited for weeding through a <em>huge</em> volumes of data, residing on a distributed storage system.  However, a lot of machine learning work is more akin to trimming bonsai into elaborate patterns. Vice versa, it&#8217;s not uncommon to see trimmers used to harvest a wheat field. Well-established and respected researchers, as recently as this year write in their paper &#8220;<a title="Planetary Scale Views on a Large Instant-messaging Network (ACM DL)" href="http://doi.acm.org/10.1145/1367497.1367620" onclick="javascript:pageTracker._trackPageview('/blog/outbound/article/doi.acm.org');">Planetary Scale Views on a Large Instant-messaging Network</a>&#8220;:</p>
+<blockquote><p>We gathered data for 30 days of June 2006. Each day yielded about 150 gigabytes of compressed text logs (4.5 terabytes in total). Copying the data to a dedicated eight-processor server with 32 gigabytes of memory took 12 hours. Our log-parsing system employed a pipeline of four threads that parse the data in parallel, collapse the session join/leave events into sets of conversations, and save the data in a compact compressed binary format. This process compressed the data down to 45 gigabytes per day. Processing the data took an additional 4 to 5 hours per day.</p></blockquote>
+<p>Doing the math, that&#8217;s <em>five full days</em> of processing to parse and compress the data on a beast of a machine. Even more surprisingly, I found this exact quote <a title="Post on " href="http://caddyshack.stanford.edu/lsna/blog/2008/03/planetary-scale-views-on-instant.html" onclick="javascript:pageTracker._trackPageview('/blog/outbound/article/caddyshack.stanford.edu');">singled out</a> among all the interesting results in the paper! Let me make clear that I&#8217;m not criticizing the study; in fact, both the dataset and the exploratory analysis are interesting in many ways.  However, <strong>it is somewhat surprising that, at least among the research community, such a statement is still treated more like a badge of honor rather than an admission of masochism.</strong></p>
+<p>The authors should be applauded for their effort.  <strong>Me, I&#8217;m an impatient sod.</strong> Wait one day for the results, I think I can do that. Two days, what the heck. But five? For an exploratory statistical analysis? I&#8217;d be long gone before that. And what if I found a serious bug half way down the road?  That&#8217;s after more than two days of waiting, in case you weren&#8217;t counting. Or what if I decided I needed a minor modification to extract some other statistic?  Wait another five days?  Call me a Matlab-spoiled brat, but forget what I said just now about waiting one day. I changed my mind already. A few hours, tops. But <a title="Web science: what and how? (Bitquill)" href="http://www.bitquill.net/blog/?p=24" >we need a lot more studies like this</a>.  Consequently, we need the tools to facilitate them.</p>
+<p><strong>Hence my decision to frolic with Hadoop.</strong> This post focuses on exploratory data analysis tasks: the kind I usually do with Matlab or <a title="IPython frontpage" href="http://ipython.scipy.org/moin/FrontPage" onclick="javascript:pageTracker._trackPageview('/blog/outbound/article/ipython.scipy.org');">IPython</a>/<a title="SciPy website" href="http://www.scipy.org/" onclick="javascript:pageTracker._trackPageview('/blog/outbound/article/www.scipy.org');">SciPy</a> scripts, which involve many iterations of feature extraction, data summarization, model building and validation.  This may be contrary to Hadoop&#8217;s design priorities: it is not intended for quick turnaround or interactive response times with modestly large datasets.  However, it can still make life much easier.</p>
+<h3>Scale up on large datasets</h3>
+<p>First, we start with a very simple benchmark, which scans a 350GB text log.  Each record is one line, consisting of a comma-separated list of <tt>key=value</tt> pairs.  The job extracts the value for a specific key using a simple regular expression and computes the histogram of the corresponding values (i.e., how many times each distinct value appears in the log).  The input consists of approximately 500M records and the chosen key is associated with about 130 distinct values.</p>
+<p><a href="http://www.bitquill.net/blog/wp-content/uploads/2008/07/hadoop-hist-scalability.png" ><img class="size-full wp-image-20" title="hadoop-hist-scalability" src="http://www.bitquill.net/blog/wp-content/uploads/2008/07/hadoop-hist-scalability.png" alt="Scalability: histogram" width="512" height="310" /></a></p>
+<p>The plot above shows aggregate throughput versus number of nodes. HDFS and MapReduce cluster sizes  are always equal, with HDFS rebalanced before each run. The job uses a split size of 256MB (or four HDFS blocks) and one reducer.  All machines have a total of four cores (most Xeon, a few AMD) and one local disk.  Disks range from ridiculously slow laptop-type drives (the most common type), to ridiculously fast SAS drives. Hadoop 0.16.2 (yes, this post took a while to write) and Sun&#8217;s 1.6.0_04 JRE were used in all experiments.</p>
+<p>For such an embarrassingly parallel task, scaleup is linear. No surprises here, but it&#8217;s worth pointing out some numbers.  As you can see from the plot, extracting simple statistics from this 350GB dataset took less than ten minutes with 39 nodes, down from several hours on one node. Without knowing the details of how the data were processed, <strong>if we assume similar throughput, then processing time of the raw instant messaging log could be roughly reduced from five days to just a few hours.</strong> In fact, when parsing a document corpus (about 1TB of raw text) to extract a document-term graph, we witnessed similar scale-up, going down from well over a day on a beast of a machine, to a couple of hours on the Hadoop cluster.</p>
+<p>Hadoop is also reasonably simple to program with.  It&#8217;s main abstraction is natural, even if your familiarity with functional programming concepts is next to none.  Furthermore, most distributed execution details are, by default, hidden: if the code runs correctly on your laptop (with a smaller dataset, of course), then it <em>will</em> run correctly on the cluster.</p>
+<h3>Single core performance</h3>
+<p>Linear scaleup is good, but how about absolute performance? I implemented the same simple benchmark in C++, using Boost for regex matching.  For a rough measure of sustained sequential disk throughput, I simply <tt>cat</tt> the same large file to <tt>/dev/null</tt>.</p>
+<p>I collected measurements from various machines I had access to: (i) a five year old Mini-ITX system I use with my television at home, running Linux FC8 for this experiment, (ii) a two year old desktop at work, again with FC8, (iii) my three year old Thinkpad running Windows XP and Cygwin, and (iv) a recent IBM blade running RHEL4.</p>
+<p><a href="http://www.bitquill.net/blog/wp-content/uploads/2008/08/hadoop-hist-singlecore.png" ><img class="size-full wp-image-48" title="hadoop-hist-singlecore" src="http://www.bitquill.net/blog/wp-content/uploads/2008/08/hadoop-hist-singlecore.png" alt="Single core performance" width="512" height="311" /></a><a href="http://www.bitquill.net/blog/wp-content/uploads/2008/07/hadoop-hist-singlecore.png" > </a></p>
+<p>The hand-coded version in C++ is about 40% faster on the older machines and 33% faster on the blade [Note: I'm missing the C++ times for my laptop and it's drive crashed since then -- I was too lazy to reload the data and rerun everything, so I simply extrapolated from single-thread Hadoop assuming a 40% improvement, which seems reasonable enough for these back-of-the-envelope calculations].  Not bad, considering that Hadoop is written in Java and also incurs additional overheads to process each file split separately.</p>
+<p><strong>Perhaps I&#8217;m flaunting my ignorance but, surprisingly, this workload was </strong><strong>CPU-bound and</strong><strong> <em>not</em> I/O-bound</strong>—with the exception of my laptop, which has a really crappy 2.5&#8243; drive (and Windows XP).  <strong>Scanning raw text logs is a rather representative workload for real-world data analysis</strong> (e.g., <a title="AWK (Wikipedia)" href="http://en.wikipedia.org/wiki/Awk" onclick="javascript:pageTracker._trackPageview('/blog/outbound/article/en.wikipedia.org');">AWK</a> was built at AT&amp;T for this purpose).</p>
+<p>The blade has a really fast SAS drive (suspiciously fast, except perhaps if it runs at 15K RPM) and the results are particularly instructive.  The drive reaches 120MB/sec sustained read throughput. Stated differently, the 3GHz CPU can only dwell on each byte for 24 cycles on average, if it&#8217;s to keep up with the drive&#8217;s read rate.  Even on the other machines, the break-even point is between 30-60 cycles [Note: The laptop drive seems to be an exception, but I wouldn't be so sure that at least part of the inefficiency isn't due to Cygwin].</p>
+<p>On the other hand, the benchmark throughput translates into 150-500 cycles per byte, on average.  If I get the chance, I&#8217;d like to instrument the code with PAPI, validate these numbers and perhaps obtain a breakdown (into average cycles for regex state machine transition per byte, average cycles for hash update per record, etc). I would never have thought the numbers to be so high and I still don&#8217;t quite believe it. <strong>In any case, if we believe these measurements, <em>at least</em> 4-6 cores are needed to handle the sequential read throughput from a single drive!</strong></p>
+<p>The common wisdom in algorithms and databases textbooks, as far as I remember, was that when disk I/O is involved, CPU cycles can be more or less treated as a commodity.  Perhaps this is an overstatement, but I didn&#8217;t expect it to be so off the mark.</p>
+<p>This also raises another interesting question, which was the original motivation for measuring on a broad set of machines: what would be the appropriate cost-performance balance between CPU and disk for a <em>purpose-built</em> machine?  <strong>I thought one might be able to get away with a setup similar to <a title="Active Disks for Large Scale Data Processing (IEEE Computer)" href="http://www.pdl.cmu.edu/PDL-FTP/Active/activedisks01.pdf" onclick="javascript:pageTracker._trackPageview('/blog/outbound/article/www.pdl.cmu.edu');">active disks</a></strong>: a really cheap and power-efficient Mini-ITX board, attached to a couple of moderately priced drives.  For example, see <a title="PetaBox GB1000 (Capricorn Tech)" href="http://www.capricorn-tech.com/gb1000.php" onclick="javascript:pageTracker._trackPageview('/blog/outbound/article/www.capricorn-tech.com');">this configuration</a>, which was once used in the <a title="Internet Archive: WayBack Machine" href="http://www.archive.org/web/web.php" onclick="javascript:pageTracker._trackPageview('/blog/outbound/article/www.archive.org');">WayBack machine</a> (I just found out that the VIA-based models have apparently been withdrawn, but the pages are still there for now). <strong>This does not seem to be the case.</strong></p>
+<p>The blades may be ridiculously expensive, perhaps even a complete waste of money for a moderately tech-savvy person. However, you can&#8217;t just throw together any old motherboard and hard disk, and magically turn them into a &#8220;supercomputer.&#8221; This is common sense, but some of the hype might have you believe the opposite.</p>
+<h3>Performance on smaller datasets</h3>
+<p>Once the original, raw data is processed, the representation of the features relevant to the analysis task typically occupies much less space.  In this case, a bipartite graph extracted from the same 350GB text logs (the details don&#8217;t really matter for this discussion) takes up about 3GB, or two orders of magnitude less space.</p>
+<p><a href="http://www.bitquill.net/blog/wp-content/uploads/2008/07/hadoop-cocluster-scalability.png" ><img class="size-full wp-image-22" title="hadoop-cocluster-scalability" src="http://www.bitquill.net/blog/wp-content/uploads/2008/07/hadoop-cocluster-scalability.png" alt="Scalability: coclustering iteration" width="512" height="310" /></a></p>
+<p>The graph shows aggregate throughput for one iteration of an algorithm similar to <em>k</em>-means clustering.  This is fundamentally very similar to computing a simple histogram.  In both cases, the output size is very small compared to the input size: the histogram has size proportional to the number of distinct values, whereas the cluster centers occupy space proportional to <em>k</em>.  Furthermore, both computations iterate over the entire dataset and perform a hash-based group-by aggregation.  For <em>k</em>-means, each point is &#8220;hashed&#8221; based on its distance to the closest cluster center, and the aggregation involves a vector sum.</p>
+<p>Nothing much to say here, except that the linear scaleup tapers off after about 10-15 nodes, essentially due to lack of data: the fixed per-split overheads start dominating the total processing time. Hadoop is <a title="Yahoo! Launches World's Largest Hadoop Production Application" href="http://developer.yahoo.com/blogs/hadoop/2008/02/yahoo-worlds-largest-production-hadoop.html" onclick="javascript:pageTracker._trackPageview('/blog/outbound/article/developer.yahoo.com');">not really built to process datasets of modest size</a>, but fundamentally <a title="The Phoenix System for MapReduce Programming" href="http://csl.stanford.edu/~christos/sw/phoenix/" onclick="javascript:pageTracker._trackPageview('/blog/outbound/article/csl.stanford.edu');">I see nothing to prevent MapReduce from doing so</a>.  More importantly, <strong>when the dataset becomes <em>really</em> huge, I would expect Hadoop to scale almost-linearly with more nodes.</strong></p>
+<p>Hadoop can clearly help pre-process the raw data quickly. Once the relevant features are extracted, they may occupy at least an order of magnitude less space. <strong>It <em>may</em> be possible to get away with single-node processing on the <em>appropriate</em> representation of the features</strong>, at least for exploratory tasks.  <a title="Scaling up all-pairs similarity search - WWW 2007" href="http://doi.acm.org/10.1145/1242572.1242591" onclick="javascript:pageTracker._trackPageview('/blog/outbound/article/doi.acm.org');">Sometimes</a> it may even be better to use a centralized approach.</p>
+<h3>Summary</h3>
+<p>My focus is on exploratory analysis of large datasets, which is a pre-requisite for the design of mining algorithms.  Such tasks typically involve (i) raw data pre-processing and feature extraction stages, and (ii) model building and testing stages. Distributed data processing platforms and, in particular, Hadoop are well-suited for such tasks, especially the feature extraction stages.  In fact, tools such as <a title="Interpreting the Data: Parallel Analysis with Sawzall" href="http://research.google.com/archive/sawzall-sciprog.pdf" onclick="javascript:pageTracker._trackPageview('/blog/outbound/article/research.google.com');">Sawzall</a> (which is akin to AWK, but on top of Google&#8217;s MapReduce and protocol buffers), excel at the feature extraction and summarization stages.</p>
+<p>The original, raw data may reside in a traditional database, but more often than not they don&#8217;t: packet traces, event logs, web crawls, email corpora, sales data, issue-tracking ticket logs, and so on.  Hadoop is especially well-suited for &#8220;harvesting&#8221; those features out of the original data. In its present form, it can also help in model building stages, if the dataset is <em>really</em> large.</p>
+<p>In addition to reducing processing time, Hadoop is also quite easy to use. My experience is that the programming effort compares very favorably to the usual approach of writing my own, quick Python scripts for data pre-processing.  Furthermore, there are ongoing efforts for even further simplification (e.g., <a title="Cascading website" href="http://www.cascading.org/" onclick="javascript:pageTracker._trackPageview('/blog/outbound/article/www.cascading.org');">Cascading</a> and <a title="Pig homepage" href="http://wiki.apache.org/pig/" onclick="javascript:pageTracker._trackPageview('/blog/outbound/article/wiki.apache.org');">Pig</a>).</p>
+<p>I was somewhat surprised with the CPU vs I/O trade-offs for what I would consider real-world data processing tasks.  Perhaps also influenced by the original work on <a title="Active Disks for Large Scale Data Processing (IEEE Computer)" href="http://www.pdl.cmu.edu/PDL-FTP/Active/activedisks01.pdf" onclick="javascript:pageTracker._trackPageview('/blog/outbound/article/www.pdl.cmu.edu');">active disks</a> (one of the inspirations for MapReduce), which suggested using the disk controller to process data.  However, there is a cross-over point for the performance of active disks versus centralized processing; I was way off with my initial guess on how much CPU power it takes for a reasonably low cross-over point (which is workload-dependent, of course, and <strong>any results herein should be treated as indicative and not conclusive</strong>).</p>
+<p><strong>Footnote:</strong> For what it&#8217;s worth, I&#8217;ve put up <a href="http://www.bitquill.net/trac/browser/trunk/pcc" >some of the code</a> (and hope to <a href="http://www.bitquill.net/trac/wiki/PCC/Start" >document</a> it sometime). Also, thanks to <a title="Stavros Harizopoulos's homepage" href="http://nms.csail.mit.edu/~stavros/" onclick="javascript:pageTracker._trackPageview('/blog/outbound/article/nms.csail.mit.edu');">Stavros Harizopoulos</a> for pointing out the simple cycles-per-byte metric.</p>
+			
+			<p class="postmeta">Tags: <a href="http://www.bitquill.net/blog/?tag=cloud-computing" rel="tag">Cloud computing</a>, <a href="http://www.bitquill.net/blog/?tag=data-mining" rel="tag">Data mining</a>, <a href="http://www.bitquill.net/blog/?tag=development" rel="tag">Development</a>, <a href="http://www.bitquill.net/blog/?tag=distributed" rel="tag">Distributed</a>, <a href="http://www.bitquill.net/blog/?tag=hadoop" rel="tag">Hadoop</a>, <a href="http://www.bitquill.net/blog/?tag=mapreduce" rel="tag">MapReduce</a>, <a href="http://www.bitquill.net/blog/?tag=web" rel="tag">Web</a></p>
+			</div>
+
+			<p class="postfeedback">
+			<script type="text/javascript">SHARETHIS.addEntry({ title: "Data harvesting with MapReduce", url: "http://www.bitquill.net/blog/?p=17" });</script>			<a href="http://www.bitquill.net/blog/?p=17" rel="bookmark" title="Permanent link to Data harvesting with MapReduce" class="permalink">Permalink</a>
+			</p>
+			
+		</div>
+		
+		
+<!-- You can start editing here. -->
+
+
+	<h2 id="comments">
+		1 Comment					<a href="#postcomment" title="Jump to the comments form">&raquo;</a>
+			</h2>
+	
+	<ol id="commentlist">
+
+	
+		<li class="alt" id="comment-4600">
+		
+		<h3 class="commenttitle"><a href="http://Help-datamining" onclick="javascript:pageTracker._trackPageview('/blog/outbound/commentauthor/Help-datamining');"  rel='external nofollow' class='url'>vnamala</a> said,</h3>
+		
+		<p class="commentmeta">
+			December 4, 2009 
+			@ <a href="#comment-4600">12:56 am</a>
+					</p>
+		
+		<p>Hi,</p>
+<p>I was curious about the code you provided. Are the results above generated using the code? Also I wanted to know how to install and run your code and get more insight on the whole process. </p>
+<p>Nice work!</p>
+		
+		</li>
+
+		
+	
+	</ol>
+	
+	<p class="small" id="postlinks">
+	<a href='http://www.bitquill.net/blog/?feed=rss2&amp;p=17'><abbr title="Really Simple Syndication">RSS</abbr> feed for comments on this post</a>		&#183; <a href="http://www.bitquill.net/blog/wp-trackback.php?p=17" rel="trackback">TrackBack <abbr title="Uniform Resource Identifier">URI</abbr></a>
+		</p>
+
+
+
+	<h2 id="postcomment">Leave a Comment</h2>
+	
+		
+		<form action="http://www.bitquill.net/blog/wp-comments-post.php" method="post" id="commentform">
+		
+			
+			<p>
+			<input type="text" name="author" id="author" value="" size="30" tabindex="1" />
+			<label for="author">Name (required)</label>
+			</p>
+			
+			<p>
+			<input type="text" name="email" id="email" value="" size="30" tabindex="2" />
+			<label for="email">E-mail (required)</label>
+			</p>
+			
+			<p>
+			<input type="text" name="url" id="url" value="" size="30" tabindex="3" />
+			<label for="url"><abbr title="Uniform Resource Identifier">URI</abbr></label>
+			</p>
+
+		
+		<p>
+		<textarea name="comment" id="comment" cols="70" rows="10" tabindex="4"></textarea>
+		</p>
+	
+		<p>
+		<input name="submit" type="submit" id="submit" tabindex="5" value="Submit Comment" />
+		<input type="hidden" name="comment_post_ID" value="17" />
+		</p>
+	
+				<span id="openid_comment">
+			<label>
+				<input type="checkbox" id="login_with_openid" name="login_with_openid" checked="checked" />
+				Authenticate this comment using <span class="openid_link">OpenID</span>.			</label>
+		</span>
+		<script type="text/javascript">jQuery(function(){ add_openid_to_comment_form('http://www.bitquill.net/blog/index.php', '7c92f0a6f2') })</script>
+	
+		</form>
+
+	
+				
+	
+</div>
+
+<div id="sidebar">
+<ul>
+
+	
+	<li id="archives">
+		<h2>Archives</h2>
+		<ul>
+			<li><a href='http://www.bitquill.net/blog/?m=201002' title='February 2010'>February 2010</a></li>
+	<li><a href='http://www.bitquill.net/blog/?m=200909' title='September 2009'>September 2009</a></li>
+	<li><a href='http://www.bitquill.net/blog/?m=200905' title='May 2009'>May 2009</a></li>
+	<li><a href='http://www.bitquill.net/blog/?m=200904' title='April 2009'>April 2009</a></li>
+	<li><a href='http://www.bitquill.net/blog/?m=200903' title='March 2009'>March 2009</a></li>
+	<li><a href='http://www.bitquill.net/blog/?m=200812' title='December 2008'>December 2008</a></li>
+	<li><a href='http://www.bitquill.net/blog/?m=200811' title='November 2008'>November 2008</a></li>
+	<li><a href='http://www.bitquill.net/blog/?m=200810' title='October 2008'>October 2008</a></li>
+	<li><a href='http://www.bitquill.net/blog/?m=200809' title='September 2008'>September 2008</a></li>
+	<li><a href='http://www.bitquill.net/blog/?m=200808' title='August 2008'>August 2008</a></li>
+	<li><a href='http://www.bitquill.net/blog/?m=200807' title='July 2008'>July 2008</a></li>
+	<li><a href='http://www.bitquill.net/blog/?m=200806' title='June 2008'>June 2008</a></li>
+	<li><a href='http://www.bitquill.net/blog/?m=200805' title='May 2008'>May 2008</a></li>
+		</ul>
+	</li>
+	
+		
+	<li id="categories">
+		<h2>Categories</h2>
+		<ul>
+			<li class="cat-item cat-item-45"><a href="http://www.bitquill.net/blog/?cat=45" title="View all posts filed under Sci &amp; Tech">Sci &amp; Tech</a> (15)
+</li>
+	<li class="cat-item cat-item-6"><a href="http://www.bitquill.net/blog/?cat=6" title="View all posts filed under Life bits">Life bits</a> (11)
+</li>
+	<li class="cat-item cat-item-3"><a href="http://www.bitquill.net/blog/?cat=3" title="View all posts filed under Pointless">Pointless</a> (7)
+</li>
+	<li class="cat-item cat-item-66"><a href="http://www.bitquill.net/blog/?cat=66" title="View all posts filed under Other">Other</a> (1)
+</li>
+ 
+		</ul>
+	</li>
+
+	<li id="tagcloud">
+		<h2>Popular Tags</h2>
+		<ul><li>
+		<a href='http://www.bitquill.net/blog/?tag=android' class='tag-link-59' title='4 topics' style='font-size: 10.793650793651pt;'>Android</a>
+<a href='http://www.bitquill.net/blog/?tag=cloud-computing' class='tag-link-29' title='3 topics' style='font-size: 9.5238095238095pt;'>Cloud computing</a>
+<a href='http://www.bitquill.net/blog/?tag=commentary' class='tag-link-50' title='2 topics' style='font-size: 8pt;'>Commentary</a>
+<a href='http://www.bitquill.net/blog/?tag=computer-science' class='tag-link-49' title='5 topics' style='font-size: 11.809523809524pt;'>Computer Science</a>
+<a href='http://www.bitquill.net/blog/?tag=data-mining' class='tag-link-32' title='2 topics' style='font-size: 8pt;'>Data mining</a>
+<a href='http://www.bitquill.net/blog/?tag=data-ownership' class='tag-link-15' title='2 topics' style='font-size: 8pt;'>Data ownership</a>
+<a href='http://www.bitquill.net/blog/?tag=development' class='tag-link-7' title='5 topics' style='font-size: 11.809523809524pt;'>Development</a>
+<a href='http://www.bitquill.net/blog/?tag=distributed' class='tag-link-30' title='2 topics' style='font-size: 8pt;'>Distributed</a>
+<a href='http://www.bitquill.net/blog/?tag=hadoop' class='tag-link-31' title='2 topics' style='font-size: 8pt;'>Hadoop</a>
+<a href='http://www.bitquill.net/blog/?tag=life-bits' class='tag-link-52' title='10 topics' style='font-size: 15.111111111111pt;'>Life bits</a>
+<a href='http://www.bitquill.net/blog/?tag=mapreduce' class='tag-link-28' title='2 topics' style='font-size: 8pt;'>MapReduce</a>
+<a href='http://www.bitquill.net/blog/?tag=mobile-devices' class='tag-link-57' title='3 topics' style='font-size: 9.5238095238095pt;'>Mobile devices</a>
+<a href='http://www.bitquill.net/blog/?tag=opinion' class='tag-link-58' title='12 topics' style='font-size: 16pt;'>Opinion</a>
+<a href='http://www.bitquill.net/blog/?tag=pointless' class='tag-link-3' title='5 topics' style='font-size: 11.809523809524pt;'>Pointless</a>
+<a href='http://www.bitquill.net/blog/?tag=privacy' class='tag-link-16' title='2 topics' style='font-size: 8pt;'>Privacy</a>
+<a href='http://www.bitquill.net/blog/?tag=research' class='tag-link-11' title='5 topics' style='font-size: 11.809523809524pt;'>Research</a>
+<a href='http://www.bitquill.net/blog/?tag=science' class='tag-link-5' title='2 topics' style='font-size: 8pt;'>Science</a>
+<a href='http://www.bitquill.net/blog/?tag=social-media' class='tag-link-55' title='2 topics' style='font-size: 8pt;'>Social media</a>
+<a href='http://www.bitquill.net/blog/?tag=technology' class='tag-link-56' title='2 topics' style='font-size: 8pt;'>Technology</a>
+<a href='http://www.bitquill.net/blog/?tag=web' class='tag-link-4' title='8 topics' style='font-size: 13.968253968254pt;'>Web</a>		</li></ul>
+	</li>
+	
+	
+<!--
+		
+-->
+	
+	<li id="meta">
+		<h2>Meta</h2>
+		<ul>
+						<li><a href="http://www.bitquill.net/blog/wp-login.php">Log in</a></li>
+<!--
+			<li class="feed"><a href="http://www.bitquill.net/blog/?feed=atom&cat=45" title="Feed of the latest posts in science &amp; technology">Subscribe to sci &amp; tech</a></li>
+			<li class="feed"><a href="http://www.bitquill.net/blog/?feed=atom" title="Feed of the latest posts in all categories">Subscribe to all posts</a></li>
+-->
+			<li class="feed"><a href="http://feeds2.feedburner.com/bitquill" title="Feed of the latest posts in science &amp; technology">Subscribe to sci &amp; tech</a></li>
+			<li class="feed"><a href="http://feeds2.feedburner.com/bitquill-all" title="Feed of the latest posts in all categories">Subscribe to all posts</a></li>
+			<li class="feed"><a href="http://www.bitquill.net/blog/?feed=comments-atom" title="Feed of the latest comments to all posts">Subscribe to comments</a></li>
+					</ul>
+	</li>
+
+<!--
+	<li id="search">
+		<form method="get" action="/blog/index.php">
+<p>
+<input type="text" value="" name="s" id="s" />
+<input type="submit" value="Search" />
+</p>
+</form>
+	</li>
+-->
+	
+</ul>
+<!--
+<script type="text/javascript" src="http://www.lijit.com/informers/wijits?username=spapadim&js=1"></script><a style='color: #999' href='http://www.lijit.com' id='lijit_wijit_pvs_link'>Lijit Search</a>
+<br/>
+<script src="http://pub.mybloglog.com/comm3.php?mblID=2008060618232074&amp;r=widget&amp;is=small&amp;o=l&amp;ro=5&amp;cs=blue&amp;ww=250&amp;wc=single"></script>
+-->
+
+<!-- Include the Google Friend Connect javascript library. -->
+<script type="text/javascript" src="http://www.google.com/friendconnect/script/friendconnect.js"></script>
+<!-- Define the div tag where the gadget will be inserted. -->
+<div id="div-5585533147749558380" style="width:250px;border:1px solid #e8e7d0;""></div>
+<!-- Render the gadget into a div. -->
+<script type="text/javascript">
+var skin = {};
+skin['BORDER_COLOR'] = '#e8e7d0';
+skin['ENDCAP_BG_COLOR'] = '#d5ded7';
+skin['ENDCAP_TEXT_COLOR'] = '#002e5c';
+skin['ENDCAP_LINK_COLOR'] = '#316aa3';
+skin['ALTERNATE_BG_COLOR'] = '#ffffff';
+skin['CONTENT_BG_COLOR'] = '#fafaf0';
+skin['CONTENT_LINK_COLOR'] = '#316aa3';
+skin['CONTENT_TEXT_COLOR'] = '#333333';
+skin['CONTENT_SECONDARY_LINK_COLOR'] = '#316aa3';
+skin['CONTENT_SECONDARY_TEXT_COLOR'] = '#666666';
+skin['CONTENT_HEADLINE_COLOR'] = '#002e5c';
+skin['NUMBER_ROWS'] = '4';
+google.friendconnect.container.setParentUrl('/' /* location of rpc_relay.html and canvas.html */);
+google.friendconnect.container.renderMembersGadget(
+ { id: 'div-5585533147749558380',
+   site: '17834240782682032519' },
+  skin);
+</script>
+
+</div>
+
+</div>
+
+<div id="footer">
+<p>
+Blog theme based on a design by <a href="http://beccary.com" title="Theme designed by Beccary">Beccary</a> and <a href="http://weblogs.us" title="Theme sponsored by Weblogs.us">Weblogs.us</a><br/>
+<!-- &#183;
+<a href="http://validator.w3.org/check/referer" title="This page validates as XHTML 1.0 Transitional"><abbr title="eXtensible HyperText Markup Language">XHTML</abbr></a>
+&#183;
+<a href="http://jigsaw.w3.org/css-validator/check/referer" title="This page validates as CSS"><abbr title="Cascading Style Sheets">CSS</abbr></a>
+-->
+Spiros Papadimitriou, 2008<br/>
+<a href="http://www.dopplr.com/traveller/spapadim/public"><img src="/pix/dopplr_icon.png" title="Dopplr"></a>
+<a href="http://www.twitter.com/spapadim/"><img src="/pix/twitter_icon.png" title="Twitter"></a>
+<a href="http://del.icio.us/spapadim/"><img src="/pix/delicious_icon.png" title="del.icio.us"></a>
+<a href="http://www.mybloglog.com/buzz/members/spapadim/"><img src="/pix/mybloglog_icon.png" title="MyBlogLog"></a>
+<a href="http://www.linkedin.com/in/spapadim"><img src="/pix/linkedin_icon.png" title="LinkedIn"></a>
+<a href="http://www.facebook.com/profile.php?id=622258129"><img src="/pix/facebook_icon.png" title="Facebook"></a>
+</p>
+</div>
+
+
+
+<!-- Google Analytics for WordPress | http://yoast.com/wordpress/google-analytics/ -->
+<script type="text/javascript">
+	var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+	document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+	try {
+		var pageTracker = _gat._getTracker("UA-2290897-2");
+	} catch(err) {}
+</script>
+<script src="http://www.bitquill.net/blog/wp-content/plugins/google-analytics-for-wordpress/custom_se.js" type="text/javascript"></script>
+<script type="text/javascript">
+	try {
+		// Cookied already: 
+		pageTracker._trackPageview();
+	} catch(err) {}
+</script>
+<!-- End of Google Analytics code -->
+
+</body>
+</html>
+
+
+
+<!-- Dynamic Page Served (once) in 0.948 seconds -->

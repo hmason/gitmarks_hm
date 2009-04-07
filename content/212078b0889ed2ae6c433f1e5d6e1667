@@ -1,0 +1,69 @@
+<html>
+<title>Vowpal Wabbit (Fast Online Learning)</title>
+<body>
+<h1>Vowpal Wabbit (Fast Online Learning)</h1>
+
+<table border=1>
+<tr>
+<td valign=top>
+<a href="code.html">Code</a><br>
+<a href="usage.html">Usage</a><br>
+<a href="vw_tutorial.pdf">Tutorial</a><br>
+<a href="examples.html">Examples</a><br>
+<a href="todo.html">Todo</a><br>
+<a href="http://hunch.net/?p=1068">VW4.0 post</a><br>
+<a href="http://hunch.net/?p=859">VW3.10 post</a><br>
+<a href="http://hunch.net/?p=309">VW2.3 post</a><br>
+</td>
+<td>
+This is a <a href="http://research.yahoo.com/node/1914">project at Yahoo! Research</a> to design a fast, scalable, useful learning algorithm.<p>
+
+There are two ways to have a fast learning algorithm: (a) start with a
+slow algorithm and speed it up, or (b) build an intrinsically fast
+learning algorithm.  This project is about approach (b), and it's
+reached a state where it may be useful to others as a platform for 
+research and experimentation.<p>
+
+The core algorithm is <a href="http://portal.acm.org/citation.cfm?doid=258533.258616">specialist</a> <a
+href="http://en.wikipedia.org/wiki/Gradient_descent">gradient descent
+(GD)</a> on a loss function (several are available),  The code
+should be easily usable.  Its only external dependence is on the <a
+href="http://www.boost.org/doc/html/program_options.html">boost
+program_options library</a>, which is often installed by default.
+
+<h2>Features</h2>
+There are several features that (in combination) are fairly interesting.
+<ol>
+<li><strong>Input Format</strong>.  The input format for the learning algorithm is substantially more flexible than might be expected.  Examples can have features consisting of free form text, which is interpreted in a bag-of-words way.  There can even be multiple sets of free form text in different namespaces.</li>
+<li><strong>Speed</strong>.  The learning algorithm is pretty fast---similar to the few other online algorithm implementations out there.  As one datapoint, it can be effectively applied on learning problems with a sparse terafeature (i.e. 10<sup>12</sup> sparse features).  As another example, it's about a factor of 3 faster than <a href="http://leon.bottou.org/">Leon Bottou</a>'s <a href="http://leon.bottou.org/projects/sgd">svmsgd</a> on the <a href="examples.html">RCV1-V2 example</a> in wall clock execution time.</li>
+<li><strong>Scalability</strong>.  This is not the same as fast.  Instead, the important characterictic here is that the memory footprint of the program is bounded independent of data.  This means the training set is not loaded into main memory before learning starts.  In addition, the size of the set of features is bounded independent of the amount of training data using the <a href="http://hunch.net/~jl/projects/hash_reps/index.html">hashing trick</a>.
+<li><strong>Feature Pairing</strong>.  Subsets of features can be internally paired so that the algorithm is linear in the cross-product of the subsets.  This is useful for ranking problems.  <a href="http://www.idiap.ch/~grangier/">David Grangier</a> seems to have a similar trick in the <a href="http://www.idiap.ch/pamir/">PAMIR code</a>.  The alternative of explicitly expanding the features before feeding them into the learning algorithm can be both computation and space intensive, depending on how it's handled.</li>
+</ol>
+
+<h2>Learning Rate</h2>
+
+The code implements several methods for adjusting the learning rates.
+The default is a fixed learning rate which decays by a factor of
+<i>2<sup>0.5</sup></i> if multiple epochs are used.  This seems to be
+a fairly stable default.  For some datasets, having a learning rate
+which decays as <i>1/(number of examples)<sup>p</sup></i> or <i>1/(C + number of
+examples)<sup>p</sup></i> in stochastic gradient descent style can work better.
+Choosing C and the learning rate well appear to be substantially more
+problem dependent so this is not the default.  Known good values of
+<i>p</i> are in the range <i>[0,1]</i>, with <i>1</i> representing
+very aggressive decay, <i>0.5</i> representing a <a href="http://www.cs.ualberta.ca/~maz/publications/ICML03.pdf">minimax optimal
+choice in an adversarial setting</a> and smaller values implying
+forgetting, which can be important in time-varying settings.
+
+<h2>The Future</h2> This project is "live" and ongoing at <a
+href="https://github.com/">github</a>.  Several people have
+contributed to the project, and we welcome further contributions.
+
+<h2>Authors</h2>
+
+Shubham Chopra, Ariel Faigon, <a href="http://cseweb.ucsd.edu/~djhsu/">Daniel Hsu</a>, <a href="http://hunch.net/~jl">John Langford</a>, <a href="http://www.research.rutgers.edu/~lihong/">Lihong Li</a>, Gordon Rios, and <a href="http://paul.rutgers.edu/~strehl/">Alex Strehl</a> have all worked on VW.  Many others have contributed via feature requests or bug reports.
+</td> </tr>
+</table>
+
+</body>
+</html>

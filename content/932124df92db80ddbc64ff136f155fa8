@@ -1,0 +1,652 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+ lang="en" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>projects:sgd [Léon Bottou]</title>
+
+  <meta name="generator" content="DokuWiki Release 2009-02-14b" />
+<meta name="robots" content="index,follow" />
+<meta name="date" content="2010-02-22T10:31:37-0500" />
+<meta name="keywords" content="projects,sgd" />
+<link rel="search" type="application/opensearchdescription+xml" href="/lib/exe/opensearch.php" title="Léon Bottou" />
+<link rel="start" href="/" />
+<link rel="contents" href="/projects/sgd?do=index" title="Index" />
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="/feed.php" />
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="/feed.php?mode=list&amp;ns=projects" />
+<link rel="alternate" type="text/html" title="Plain HTML" href="/_export/xhtml/projects/sgd" />
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="/_export/raw/projects/sgd" />
+<link rel="stylesheet" media="all" type="text/css" href="/lib/exe/css.php?s=all&amp;t=sidebar" />
+<link rel="stylesheet" media="screen" type="text/css" href="/lib/exe/css.php?t=sidebar" />
+<link rel="stylesheet" media="print" type="text/css" href="/lib/exe/css.php?s=print&amp;t=sidebar" />
+<script type="text/javascript" charset="utf-8" src="/lib/exe/js.php?edit=0&amp;write=0" ></script>
+
+  <link rel="shortcut icon" href="/lib/tpl/sidebar/images/favicon.ico" />
+
+  </head>
+
+<body class='sidebar_inside_right'>
+<div class="dokuwiki">
+  
+  <div class="stylehead">
+
+    <div class="header">
+      <div class="logo">
+        <a href="/"  name="top" accesskey="h" title="[ALT+H]">Léon Bottou</a>      </div>
+    </div>
+
+      
+    <div class="bar" id="bar__top">
+          </div>
+
+        <div class="breadcrumbs">
+      <span class="bchead">Trace:</span> <span class="bcsep">&raquo;</span> <span class="curid"><a href="/projects/sgd"  class="breadcrumbs" title="projects:sgd">sgd</a></span>          </div>
+    
+    
+  </div>
+  
+  
+  <div class="page">
+    <!-- wikipage start -->
+    <!-- TOC START -->
+<div class="toc">
+<div class="tocheader toctoggle" id="toc__header">Table of Contents</div>
+<div id="toc__inside">
+
+<ul class="toc">
+<li class="level1"><div class="li"><span class="li"><a href="#stochastic_gradient_descent_examples_on_toy_problems" class="toc">Stochastic Gradient Descent Examples on Toy Problems</a></span></div>
+<ul class="toc">
+<li class="level2"><div class="li"><span class="li"><a href="#download_and_compilation" class="toc">Download and Compilation</a></span></div></li>
+<li class="level2"><div class="li"><span class="li"><a href="#stochastic_gradient_svms" class="toc">Stochastic Gradient SVMs</a></span></div></li>
+<li class="level2"><div class="li"><span class="li"><a href="#stochastic_gradient_crfs" class="toc">Stochastic Gradient CRFs</a></span></div></li>
+<li class="level2"><div class="li"><span class="li"><a href="#further_readings" class="toc">Further Readings</a></span></div></li>
+<li class="level2"><div class="li"><span class="li"><a href="#changelog" class="toc">Changelog</a></span></div></li></ul>
+</li></ul>
+</div>
+</div>
+<!-- TOC END -->
+
+
+
+<h1><a name="stochastic_gradient_descent_examples_on_toy_problems" id="stochastic_gradient_descent_examples_on_toy_problems">Stochastic Gradient Descent Examples on Toy Problems</a></h1>
+<div class="level1">
+
+<p>
+
+<a href="/research/stochastic" class="wikilink1" title="research:stochastic">Stochastic Gradient Descent (SGD)</a> has been historically associated
+with back-propagation algorithms in multilayer neural networks.
+These nonlinear nonconvex problems can be very difficult.
+Therefore it is useful to see how Stochastic Gradient Descent 
+performs on simple linear and convex problems such
+as linear <a href="http://en.wikipedia.org/wiki/Support_Vector_Machine" class="interwiki iw_wp" title="http://en.wikipedia.org/wiki/Support_Vector_Machine">Support Vector Machines (SVMs)</a>
+or <a href="http://en.wikipedia.org/wiki/Conditional_Random_Field" class="interwiki iw_wp" title="http://en.wikipedia.org/wiki/Conditional_Random_Field">Conditional Random Fields (CRFs)</a>.
+</p>
+
+<p>
+<font color=red><b>Disclaimer 1</b>:</font>
+<em> These are just <em class="u">toy examples</em> for illustrating the properties of SGD.
+This code is designed for clarity rather than speed. 
+I do not advocate using CRFs when simpler solutions exist.</em>
+</p>
+
+<p>
+<font color=red><b>Disclaimer 2</b>:</font>
+<em>The following results have been obtained using <em class="u">plain stochastic gradient</em>.
+This page does not advocate fancy modifications of an old algorithm,
+it just shows that the old algorithm itself is amazingly fast!</em>
+</p>
+
+</div>
+
+<h2><a name="download_and_compilation" id="download_and_compilation">Download and Compilation</a></h2>
+<div class="level2">
+<ul>
+<li class="level1"><div class="li"> Download and unpack the tarball <a href="/_media/projects/sgd-1.3.tar.gz" class="media mediafile mf_gz" title="projects:sgd-1.3.tar.gz">sgd-1.3.tar.gz</a>.</div>
+</li>
+</ul>
+<ul>
+<li class="level1"><div class="li"> Download the following files from the <a href="http://jmlr.csail.mit.edu/papers/volume5/lewis04a/lyrl2004_rcv1v2_README.htm" class="urlextern" title="http://jmlr.csail.mit.edu/papers/volume5/lewis04a/lyrl2004_rcv1v2_README.htm"  rel="nofollow">RCV1-V2</a> web site and install them in directory <code>“sgd/data/rcv1”</code>.</div>
+<ul>
+<li class="level2"><div class="li"> <a href="http://jmlr.csail.mit.edu/papers/volume5/lewis04a/a12-token-files/lyrl2004_tokens_test_pt0.dat.gz" class="urlextern" title="http://jmlr.csail.mit.edu/papers/volume5/lewis04a/a12-token-files/lyrl2004_tokens_test_pt0.dat.gz"  rel="nofollow">lyrl2004_tokens_test_pt0.dat.gz</a>   </div>
+</li>
+<li class="level2"><div class="li"> <a href="http://jmlr.csail.mit.edu/papers/volume5/lewis04a/a12-token-files/lyrl2004_tokens_test_pt1.dat.gz" class="urlextern" title="http://jmlr.csail.mit.edu/papers/volume5/lewis04a/a12-token-files/lyrl2004_tokens_test_pt1.dat.gz"  rel="nofollow">lyrl2004_tokens_test_pt1.dat.gz</a>   </div>
+</li>
+<li class="level2"><div class="li"> <a href="http://jmlr.csail.mit.edu/papers/volume5/lewis04a/a12-token-files/lyrl2004_tokens_test_pt2.dat.gz" class="urlextern" title="http://jmlr.csail.mit.edu/papers/volume5/lewis04a/a12-token-files/lyrl2004_tokens_test_pt2.dat.gz"  rel="nofollow">lyrl2004_tokens_test_pt2.dat.gz</a></div>
+</li>
+<li class="level2"><div class="li"> <a href="http://jmlr.csail.mit.edu/papers/volume5/lewis04a/a12-token-files/lyrl2004_tokens_test_pt3.dat.gz" class="urlextern" title="http://jmlr.csail.mit.edu/papers/volume5/lewis04a/a12-token-files/lyrl2004_tokens_test_pt3.dat.gz"  rel="nofollow">lyrl2004_tokens_test_pt3.dat.gz</a></div>
+</li>
+<li class="level2"><div class="li"> <a href="http://jmlr.csail.mit.edu/papers/volume5/lewis04a/a12-token-files/lyrl2004_tokens_train.dat.gz" class="urlextern" title="http://jmlr.csail.mit.edu/papers/volume5/lewis04a/a12-token-files/lyrl2004_tokens_train.dat.gz"  rel="nofollow">lyrl2004_tokens_train.dat.gz</a></div>
+</li>
+<li class="level2"><div class="li"> <a href="http://jmlr.csail.mit.edu/papers/volume5/lewis04a/a08-topic-qrels/rcv1-v2.topics.qrels.gz" class="urlextern" title="http://jmlr.csail.mit.edu/papers/volume5/lewis04a/a08-topic-qrels/rcv1-v2.topics.qrels.gz"  rel="nofollow">rcv1-v2.topics.qrels.gz</a> </div>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="level1"><div class="li"> Download the following files from the <a href="http://www.cnts.ua.ac.be/conll2000/chunking" class="urlextern" title="http://www.cnts.ua.ac.be/conll2000/chunking"  rel="nofollow">CONLL2000 Chunking</a> web site and install them in directory <code>“sgd/data/conll2000”</code>.</div>
+<ul>
+<li class="level2"><div class="li"> <a href="http://www.cnts.ua.ac.be/conll2000/chunking/train.txt.gz" class="urlextern" title="http://www.cnts.ua.ac.be/conll2000/chunking/train.txt.gz"  rel="nofollow">train.txt.gz</a></div>
+</li>
+<li class="level2"><div class="li"> <a href="http://www.cnts.ua.ac.be/conll2000/chunking/test.txt.gz" class="urlextern" title="http://www.cnts.ua.ac.be/conll2000/chunking/test.txt.gz"  rel="nofollow">test.txt.gz</a></div>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="level1"><div class="li"> To compile under Linux, simply type <code>“make”</code> in the toplevel directory. The compilation requires the <a href="http://www.zlib.net" class="urlextern" title="http://www.zlib.net"  rel="nofollow">ZLib</a> library. Most Linux distributions provide this by default. Things should be very similar under other Unix operating systems. </div>
+</li>
+</ul>
+
+</div>
+
+<h2><a name="stochastic_gradient_svms" id="stochastic_gradient_svms">Stochastic Gradient SVMs</a></h2>
+<div class="level2">
+
+<p>
+
+The SVM programs are located in directory <code>“sgd/svm”</code>.
+See the file <code>“sgd/svm/README”</code> for more details.
+</p>
+
+</div>
+
+<h4><a name="benchmark" id="benchmark">Benchmark</a></h4>
+<div class="level4">
+
+<p>
+
+Our SVM benchmark is the recognition of 
+the RCV1 documents belonging to the class <code>CCAT</code>.
+In order to have a large training set we swap the official
+<a href="http://jmlr.csail.mit.edu/papers/volume5/lewis04a/lyrl2004_rcv1v2_README.htm" class="urlextern" title="http://jmlr.csail.mit.edu/papers/volume5/lewis04a/lyrl2004_rcv1v2_README.htm"  rel="nofollow">RCV1-V2</a> 
+training and test sets.
+The features are the 47152 tokens
+belonging to both the training and test sets.
+
+</p>
+<table class="inline">
+	<tr class="row0">
+		<th class="col0" colspan="2"> RCV1-V2 (class “ccat” versus rest) </th>
+	</tr>
+	<tr class="row1">
+		<td class="col0"> Training examples </td><td class="col1 rightalign">  781265 </td>
+	</tr>
+	<tr class="row2">
+		<td class="col0"> Testing examples </td><td class="col1 rightalign">  23149 </td>
+	</tr>
+	<tr class="row3">
+		<td class="col0 leftalign"> Parameters  </td><td class="col1 rightalign">  47152 </td>
+	</tr>
+</table>
+
+<p>
+<br/>
+
+</p>
+
+</div>
+
+<h4><a name="preprocess" id="preprocess">Preprocess</a></h4>
+<div class="level4">
+
+<p>
+
+Program <code>“preprocess”</code> reads the RCV1-V2 token files from directory <code>“data/rcv1”</code> and computes the TF/IDF features on the basis of the our training set.  This programs produces four files. The gzipped files <code>“train.dat.gz”</code> and <code>“test.dat.gz”</code> contain the training and test data in <a href="http://www.svmlight.org" class="urlextern" title="http://www.svmlight.org"  rel="nofollow">SVMLight</a> format.  The files <code>“train.bin.gz”</code> and <code>“test.bin.gz”</code> contain the same information under a binary format that loads faster.
+</p>
+
+</div>
+
+<h4><a name="svmsgd" id="svmsgd">SvmSgd</a></h4>
+<div class="level4">
+
+<p>
+
+Program <code>“svmsgd”</code> implements a straightforward stochastic gradient descent algorithm. 
+
+</p>
+<ol>
+<li class="level1"><div class="li">  The learning rate has the form <em>1/λ(t+t0)</em> where <em>λ</em> is the regularization constant.</div>
+</li>
+<li class="level1"><div class="li">  The constant <em>t0</em> is determined heuristically to ensure that the initial update is comparable to the expected size of the weights.</div>
+</li>
+<li class="level1"><div class="li">  The learning rate for the biases is multiplied by 0.01 because the biases are updated at each iteration while most other weights are updated less frequently.</div>
+</li>
+<li class="level1"><div class="li">  The weights are represented as the product of a scalar and a vector in order to easily implement the weight decay operation that results from the regularization term. </div>
+</li>
+</ol>
+
+<p>
+
+Points (1) and (4) were inspired by <a href="http://www.machinelearning.org/proceedings/icml2007/papers/587.pdf" class="urlextern" title="http://www.machinelearning.org/proceedings/icml2007/papers/587.pdf"  rel="nofollow"> (Shalev-Schwartz et al., 2007)</a>.
+</p>
+
+</div>
+
+<h4><a name="svmsgd2" id="svmsgd2">SvmSgd2</a></h4>
+<div class="level4">
+
+<p>
+
+Program <code>“svmsgd2”</code> illustrates another way to address some of these problems.
+
+</p>
+<ol>
+<li class="level1"><div class="li"> The weight vector is represented directly. The weight decay operation is costly because it affects all the weights coefficients. To compensate, the weight decay is performed stochastically with a low probability and a higher gain. </div>
+</li>
+<li class="level1"><div class="li"> A calibration function performs sparsity measurements on the training data in order to determine the proper schedule for the weight decay operation and also to estimate a multiplier for the bias learning rates.</div>
+</li>
+</ol>
+
+</div>
+
+<h4><a name="svm_results" id="svm_results">SVM Results</a></h4>
+<div class="level4">
+
+<p>
+
+The following tables reports the essential results.
+Programs <a href="http://svmlight.joachims.org" class="urlextern" title="http://svmlight.joachims.org"  rel="nofollow">SVMLight</a> and <a href="http://www.cs.cornell.edu/People/tj/svm_light/svm_perf.html" class="urlextern" title="http://www.cs.cornell.edu/People/tj/svm_light/svm_perf.html"  rel="nofollow">SVMPerf</a>
+are well known SVM solvers written by 
+<a href="http://www.cs.cornell.edu/People/tj" class="urlextern" title="http://www.cs.cornell.edu/People/tj"  rel="nofollow">Thorsten Joachims</a>.
+SVMLight is suitable for SVMs with arbitrary kernels. Similar results could be achieved using <a href="http://www.csie.ntu.edu.tw/~cjlin" class="urlextern" title="http://www.csie.ntu.edu.tw/~cjlin"  rel="nofollow">Chih-Jen Lin</a>&#039;s <a href="http://www.csie.ntu.edu.tw/~cjlin/libsvm" class="urlextern" title="http://www.csie.ntu.edu.tw/~cjlin/libsvm"  rel="nofollow">LibSVM</a> software.
+SVMPerf is a specialized solver for linear SVMs. It is considered to be one of the most efficient optimizer for this particular problem.
+
+</p>
+<table class="inline">
+	<tr class="row0">
+		<th class="col0"> Algorithm (hinge loss) </th><th class="col1"> Training Time </th><th class="col2"> Primal cost </th><th class="col3"> Test Error </th>
+	</tr>
+	<tr class="row1">
+		<td class="col0 leftalign"> <a href="http://svmlight.joachims.org" class="urlextern" title="http://svmlight.joachims.org"  rel="nofollow">SVMLight</a>  </td><td class="col1 rightalign">  23642 secs </td><td class="col2 rightalign">  0.2275 </td><td class="col3 rightalign">  6.02% </td>
+	</tr>
+	<tr class="row2">
+		<td class="col0"> <a href="http://www.cs.cornell.edu/People/tj/svm_light/svm_perf.html" class="urlextern" title="http://www.cs.cornell.edu/People/tj/svm_light/svm_perf.html"  rel="nofollow">SVMPerf</a> </td><td class="col1 rightalign">  66 secs </td><td class="col2 rightalign">  0.2278 </td><td class="col3 rightalign">  6.03% </td>
+	</tr>
+	<tr class="row3">
+		<td class="col0"> Stochastic Gradient (<code>svmsgd</code>) </td><td class="col1 rightalign">  <strong>1.4 secs</strong> </td><td class="col2 rightalign">  0.2275 </td><td class="col3 rightalign">  6.02% </td>
+	</tr>
+	<tr class="row4">
+		<td class="col0"> Stochastic Gradient (<code>svmsgd2</code>) </td><td class="col1 rightalign">  <strong>1.4 secs</strong> </td><td class="col2 rightalign">  0.2275 </td><td class="col3 rightalign">  6.01% </td>
+	</tr>
+</table>
+
+<p>
+<br/>
+
+</p>
+
+</div>
+
+<h4><a name="log-loss_svm_results" id="log-loss_svm_results">Log-loss SVM Results</a></h4>
+<div class="level4">
+
+<p>
+
+Chih-Jen Lin&#039;s <a href="http://www.csie.ntu.edu.tw/~cjlin/liblinear" class="urlextern" title="http://www.csie.ntu.edu.tw/~cjlin/liblinear"  rel="nofollow">LibLinear</a>
+software is a sophisticated solver for regularized linear systems using 
+differentiable losses such as the logarithmic loss.  
+The following results have been achieved by setting the following 
+constants in the <code>“svmsgd2”</code> source code.
+
+</p>
+<pre class="code">#define LOSS LOGLOSS
+#define BIAS 1
+#define REGULARIZEBIAS 1</pre>
+
+<p>
+
+It is in fact very easy to change the loss function or 
+the regularizer in a Stochastic Gradient Descent code. 
+We just change the functions that computes the gradients.
+
+</p>
+<table class="inline">
+	<tr class="row0">
+		<th class="col0"> Algorithm (log loss) </th><th class="col1"> Training Time </th><th class="col2"> Primal cost </th><th class="col3"> Test Error </th>
+	</tr>
+	<tr class="row1">
+		<td class="col0"> <a href="http://www.csie.ntu.edu.tw/~cjlin/liblinear" class="urlextern" title="http://www.csie.ntu.edu.tw/~cjlin/liblinear"  rel="nofollow">LibLinear</a> (eps=0.01) </td><td class="col1 rightalign">  30 secs </td><td class="col2 rightalign">  0.18907 </td><td class="col3 rightalign">  5.68% </td>
+	</tr>
+	<tr class="row2">
+		<td class="col0"> <a href="http://www.csie.ntu.edu.tw/~cjlin/liblinear" class="urlextern" title="http://www.csie.ntu.edu.tw/~cjlin/liblinear"  rel="nofollow">LibLinear</a> (eps=0.001) </td><td class="col1 rightalign">  44 secs </td><td class="col2 rightalign">  0.18890 </td><td class="col3 rightalign">  5.70% </td>
+	</tr>
+	<tr class="row3">
+		<td class="col0"> Stochastic Gradient (<code>svmsgd2</code>) </td><td class="col1 rightalign">  <strong>2.3 secs</strong> </td><td class="col2 rightalign">  0.18893 </td><td class="col3 rightalign">  5.66% </td>
+	</tr>
+</table>
+
+<p>
+<br/>
+
+</p>
+
+</div>
+
+<h2><a name="stochastic_gradient_crfs" id="stochastic_gradient_crfs">Stochastic Gradient CRFs</a></h2>
+<div class="level2">
+
+<p>
+
+The CRF program <code>“crfsgd”</code> is located in directory <code>“sgd/svm”</code>. 
+See the file <code>“sgd/crf/README”</code> for details.
+</p>
+
+</div>
+
+<h4><a name="benchmark1" id="benchmark1">Benchmark</a></h4>
+<div class="level4">
+
+<p>
+
+Our CRF benchmark is the <a href="http://www.cnts.ua.ac.be/conll2000/chunking" class="urlextern" title="http://www.cnts.ua.ac.be/conll2000/chunking"  rel="nofollow">CONLL2000 Text Chunking</a> task, 
+which consists of dividing a text in syntactically correlated 
+segments (noun phrases, verb phrases, etc.).
+We use the feature template that comes with CRF++.
+
+</p>
+<table class="inline">
+	<tr class="row0">
+		<th class="col0" colspan="2"> CONLL2000 Chunking Task </th>
+	</tr>
+	<tr class="row1">
+		<td class="col0"> Training sentences </td><td class="col1 rightalign">  8936 </td>
+	</tr>
+	<tr class="row2">
+		<td class="col0"> Training chunks </td><td class="col1 rightalign">  106978 </td>
+	</tr>
+	<tr class="row3">
+		<td class="col0"> Testing sentences </td><td class="col1 rightalign">  2012 </td>
+	</tr>
+	<tr class="row4">
+		<td class="col0"> Testing chunks </td><td class="col1 rightalign">  23852 </td>
+	</tr>
+	<tr class="row5">
+		<td class="col0"> Parameters </td><td class="col1 rightalign">  1679700 </td>
+	</tr>
+</table>
+
+<p>
+<br/>
+
+</p>
+
+</div>
+
+<h4><a name="crfsgd" id="crfsgd">CrfSgd</a></h4>
+<div class="level4">
+
+<p>
+
+The program <code>“crfsgd”</code> is a general purpose CRF solver.
+It relies on a straightforward stochastic gradient.
+
+</p>
+<ol>
+<li class="level1"><div class="li"> The learning rate has again the form <em>1/λ(t+t0)</em>.</div>
+</li>
+<li class="level1"><div class="li"> The constant <em>t0</em> is determined by a calibration function that tries a number of constant learning rates using a random sample of 1000 training examples. Using a small sample makes this process very fast. We select the learning rate that achieves the strongest reduction of the objective function, we conservatively divide it by two, and choose <em>t0</em> to obtain that initial learning rate.</div>
+</li>
+</ol>
+
+<p>
+
+The program interface is modelled after the <a href="http://crfpp.sourceforge.net" class="urlextern" title="http://crfpp.sourceforge.net"  rel="nofollow">CRF++</a> 
+software by <a href="http://www.chasen.org/~taku" class="urlextern" title="http://www.chasen.org/~taku"  rel="nofollow">Taku Kudo</a>.
+It uses the same template files to specify the features,
+takes the same data files after <a href="http://www.gzip.org" class="urlextern" title="http://www.gzip.org"  rel="nofollow">gzip</a> compression, and
+produces the same tagging files than can be 
+analyzed using the same perl script <code>“conlleval”</code>.  
+See the CRF++ documentation for details.
+
+</p>
+<pre class="code">Usage (training): crfsgd [options] model template traindata [devdata]
+Usage (tagging):  crfsgd -t model testdata
+Options for training:
+ -c &lt;num&gt; : capacity control parameter (1.0)
+ -f &lt;num&gt; : threshold on the occurences of each feature (3)
+ -r &lt;num&gt; : total number of epochs (50)
+ -h &lt;num&gt; : epochs between each testing phase (10)
+ -e &lt;cmd&gt; : performance evaluation command (conlleval -q)
+ -q       : silent mode</pre>
+
+</div>
+
+<h4><a name="results" id="results">Results</a></h4>
+<div class="level4">
+
+<p>
+
+We compare our results with those achieved by the CRF++ program using the same parametrization.
+CRF++ utilizes a Limited-storage BFGS optimizer which is considered to be one of the best
+optimizers for Conditional Random Fields.  
+Yet our simple stochastic gradient descent runs faster.
+
+</p>
+<table class="inline">
+	<tr class="row0">
+		<th class="col0"> Algorithm </th><th class="col1"> Training Time </th><th class="col2"> Primal cost </th><th class="col3"> Test F1 score </th>
+	</tr>
+	<tr class="row1">
+		<td class="col0"> <a href="http://crfpp.sourceforge.net" class="urlextern" title="http://crfpp.sourceforge.net"  rel="nofollow">CRF++</a> (LBFGS optimizer) </td><td class="col1 rightalign">  4335 secs </td><td class="col2 rightalign">  9042 </td><td class="col3 rightalign">  93.74% </td>
+	</tr>
+	<tr class="row2">
+		<td class="col0"> Stochastic Gradient (<code>crfsgd</code>) </td><td class="col1 rightalign">  <strong>568 secs</strong> </td><td class="col2 rightalign">  9098 </td><td class="col3 rightalign">  93.75% </td>
+	</tr>
+</table>
+
+<p>
+<br/>
+
+</p>
+
+<p>
+<strong>Note</strong>: <a href="/papers/bottou-97" class="wikilink1" title="papers:bottou-97">Graph Transformer Networks (1997)</a> can be described as sophisticated nonlinear Conditional Random Fields trained with Stochastic Gradient Descent.
+
+</p>
+
+</div>
+
+<h2><a name="further_readings" id="further_readings">Further Readings</a></h2>
+<div class="level2">
+
+
+<div class='box orange' style='width: 99%;'>
+  <b class='xtop'><b class='xb1'></b><b class='xb2'></b><b class='xb3'></b><b class='xb4'></b></b>
+  <div class='xbox'>
+<div class='box_content'><p>
+Léon Bottou:  <strong>Stochastic Gradient Learning in Neural Networks</strong>,  <em>Proceedings of Neuro-Nîmes 91</em>, EC2, Nimes, France, 1991.
+</p>
+
+<p>
+<a href="/papers/bottou-91c" class="wikilink1" title="papers:bottou-91c">more...</a>
+</p></div>
+  </div>
+  <b class='xbottom'><b class='xb4'></b><b class='xb3'></b><b class='xb2'></b><b class='xb1'></b></b>
+</div>
+
+
+
+<div class='box orange' style='width: 99%;'>
+  <b class='xtop'><b class='xb1'></b><b class='xb2'></b><b class='xb3'></b><b class='xb4'></b></b>
+  <div class='xbox'>
+<div class='box_content'><p>
+Léon Bottou:  <strong>Online Algorithms and Stochastic Approximations</strong>,  <em>Online Learning and Neural Networks</em>, Edited by David Saad, Cambridge University Press, Cambridge, UK, 1998.
+</p>
+
+<p>
+<a href="/papers/bottou-98x" class="wikilink1" title="papers:bottou-98x">more...</a>
+</p></div>
+  </div>
+  <b class='xbottom'><b class='xb4'></b><b class='xb3'></b><b class='xb2'></b><b class='xb1'></b></b>
+</div>
+
+
+
+<div class='box orange' style='width: 99%;'>
+  <b class='xtop'><b class='xb1'></b><b class='xb2'></b><b class='xb3'></b><b class='xb4'></b></b>
+  <div class='xbox'>
+<div class='box_content'><p>
+Léon Bottou and Yann LeCun:  <strong>Large Scale Online Learning</strong>,  <em>Advances in Neural Information Processing Systems 16</em>, Edited by Sebastian Thrun, Lawrence Saul and Bernhard Schölkopf, <acronym title="Massachusetts Institute of Technology">MIT</acronym> Press, Cambridge, MA, 2004.
+</p>
+
+<p>
+<a href="/papers/bottou-lecun-2004" class="wikilink1" title="papers:bottou-lecun-2004">more...</a>
+</p></div>
+  </div>
+  <b class='xbottom'><b class='xb4'></b><b class='xb3'></b><b class='xb2'></b><b class='xb1'></b></b>
+</div>
+
+
+
+<div class='box orange' style='width: 99%;'>
+  <b class='xtop'><b class='xb1'></b><b class='xb2'></b><b class='xb3'></b><b class='xb4'></b></b>
+  <div class='xbox'>
+<div class='box_content'><p>
+Léon Bottou and Olivier Bousquet:  <strong>The Tradeoffs of Large Scale Learning</strong>,  
+<em>Advances in Neural Information Processing Systems</em>, 20, 
+<acronym title="Massachusetts Institute of Technology">MIT</acronym> Press, Cambridge, MA, 2008.
+</p>
+
+<p>
+<a href="/papers/bottou-bousquet-2008" class="wikilink1" title="papers:bottou-bousquet-2008">more...</a>
+</p></div>
+  </div>
+  <b class='xbottom'><b class='xb4'></b><b class='xb3'></b><b class='xb2'></b><b class='xb1'></b></b>
+</div>
+
+
+<p>
+A lot more material is available on my <a href="/research/stochastic" class="wikilink1" title="research:stochastic">pages about Stochastic Gradient Learning</a>.
+</p>
+
+<p>
+Two recent papers explore variants of Stochastic Gradient descent 
+for SVMs  <a href="http://www.machinelearning.org/proceedings/icml2007/papers/587.pdf" class="urlextern" title="http://www.machinelearning.org/proceedings/icml2007/papers/587.pdf"  rel="nofollow">(Shalev-Schwartz et al., 2007)</a> 
+and CRFs <a href="http://users.rsise.anu.edu.au/~nici/pubs/VisSchSchMur06.pdf" class="urlextern" title="http://users.rsise.anu.edu.au/~nici/pubs/VisSchSchMur06.pdf"  rel="nofollow">(Vishwanathan et al., 2006)</a>.
+Both papers stress valuable improvements to the plain Stochastic Gradient Descent.
+However the above benchmarks show that a careful implementation
+plain Stochastic Gradient Descent is already very competitive.
+</p>
+
+</div>
+
+<h2><a name="changelog" id="changelog">Changelog</a></h2>
+<div class="level2">
+<table class="inline">
+	<tr class="row0">
+		<th class="col0 leftalign"> Version                 </th><th class="col1 leftalign"> Comments                                                  </th>
+	</tr>
+	<tr class="row1">
+		<td class="col0 leftalign"> <code>sgd-1.0.tar.gz</code>      </td><td class="col1 leftalign"> Initial release.                                          </td>
+	</tr>
+	<tr class="row2">
+		<td class="col0 leftalign"> <a href="/_media/projects/sgd-1.1.tar.gz" class="media mediafile mf_gz" title="projects:sgd-1.1.tar.gz">sgd-1.1.tar.gz</a>      </td><td class="col1 leftalign"> Relicensed under <acronym title="GNU Lesser General Public License">LGPL</acronym>                                     </td>
+	</tr>
+	<tr class="row3">
+		<td class="col0 leftalign"> <a href="/_media/projects/sgd-1.2.tar.gz" class="media mediafile mf_gz" title="projects:sgd-1.2.tar.gz">sgd-1.2.tar.gz</a>      </td><td class="col1 leftalign"> Fixed bug in <code>svm/reprocess.cpp</code>. Thanks to Wei Xu.     </td>
+	</tr>
+</table>
+
+<p>
+
+<br/>
+
+
+</p>
+
+</div>
+
+    <!-- wikipage stop -->
+  </div>
+  <div id="sidebar">
+
+
+<h2><a name="contents" id="contents">Contents</a></h2>
+<div class="level2">
+<ul>
+<li class="level1"><div class="li"> <a href="/start" class="wikilink1" title="start">Home</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="/research" class="wikilink1" title="research">Research</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="/papers" class="wikilink1" title="papers">Publications</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="/talks" class="wikilink1" title="talks">Talks</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="/projects" class="wikilink1" title="projects">Projects</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="/biography" class="wikilink1" title="biography">Vitae</a></div>
+</li>
+</ul>
+
+</div>
+<!-- SECTION "Contents" [1-166] -->
+<h2><a name="search" id="search">Search</a></h2>
+<div class="level2">
+
+</div>
+<!-- SECTION "Search" [167-] --><form action="/" accept-charset="utf-8" class="search" id="dw__search"><div class="no"><input type="hidden" name="do" value="search" /><input type="text" id="qsearch__in" accesskey="f" name="id" class="edit" title="[F]" /><input type="submit" value="Search" class="button" title="Search" /><div id="qsearch__out" class="ajax_qsearch JSpopup"></div></div></form></div>  <div class="clearer">&nbsp;</div>
+
+  
+  <div class="stylefoot">
+
+    <div class="meta">
+      <div class="user">
+              </div>
+      <div class="doc">
+        projects/sgd.txt &middot; Last modified: 2010/02/22 10:31 by leonb      </div>
+    </div>
+
+   
+    <div class="bar" id="bar__bottom">
+    </div>
+
+  </div>
+
+</div>
+
+<div align="center" class="footerinc">
+  <a target="_blank" href="/feed.php" title="Recent changes RSS feed"><img src="/lib/tpl/sidebar/images/button-rss.png" width="80" height="15" alt="Recent changes RSS feed" border="0" /></a>
+
+  <a target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/2.0/" rel="license" title="Creative Commons License"><img src="/lib/tpl/sidebar/images/button-cc.gif" width="80" height="15" alt="Creative Commons License" border="0" /></a>
+
+  <a target="_blank" href="http://djvu.org" title="DjVu Document Imaging"><img src="/lib/tpl/sidebar/images/button-djvu.png" width="80" height="15" alt="DjVu Enabled" border="0" /></a>
+
+  <a target="_blank" href="http://www.php.net" title="Powered by PHP"><img src="/lib/tpl/sidebar/images/button-php.gif" width="80" height="15" alt="Powered by PHP" border="0" /></a>
+
+  <a target="_blank" href="http://validator.w3.org/check/referer" title="Valid XHTML 1.0"><img src="/lib/tpl/sidebar/images/button-xhtml.png" width="80" height="15" alt="Valid XHTML 1.0" border="0" /></a>
+
+  <a target="_blank" href="http://jigsaw.w3.org/css-validator/check/referer" title="Valid CSS"><img src="/lib/tpl/sidebar/images/button-css.png" width="80" height="15" alt="Valid CSS" border="0" /></a>
+
+  <a target="_blank" href="http://wiki.splitbrain.org/wiki:dokuwiki" title="Driven by DokuWiki"><img src="/lib/tpl/sidebar/images/button-dw.png" width="80" height="15" alt="Driven by DokuWiki" border="0" /></a>
+
+
+
+<!--
+
+<rdf:RDF xmlns="http://web.resource.org/cc/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<Work rdf:about="">
+   <dc:type rdf:resource="http://purl.org/dc/dcmitype/Text" />
+   <license rdf:resource="http://creativecommons.org/licenses/by-nc-sa/2.0/" />
+</Work>
+
+<License rdf:about="http://creativecommons.org/licenses/by-nc-sa/2.0/">
+   <permits rdf:resource="http://web.resource.org/cc/Reproduction" />
+   <permits rdf:resource="http://web.resource.org/cc/Distribution" />
+   <requires rdf:resource="http://web.resource.org/cc/Notice" />
+   <requires rdf:resource="http://web.resource.org/cc/Attribution" />
+   <prohibits rdf:resource="http://web.resource.org/cc/CommercialUse" />
+   <permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+   <requires rdf:resource="http://web.resource.org/cc/ShareAlike" />
+</License>
+
+</rdf:RDF>
+
+-->
+</div>
+
+<div class="no"><img src="/lib/exe/indexer.php?id=projects%3Asgd&amp;1292854486" width="1" height="1" alt=""  /></div>
+</body>
+</html>

@@ -1,0 +1,434 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+                <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+        <link rel="stylesheet" href="/default/css/shared_rev.20101204000318.css" type="text/css" media="screen" />
+        <!--[if lte IE 6]><link rel="stylesheet" type="text/css" media="screen" href="/default/css/ie6.css" /><![endif]-->
+        <!--[if gte IE 7]><link rel="stylesheet" type="text/css" media="screen" href="/default/css/ie7.css" /><![endif]-->
+
+        <meta http-equiv="content-language" content="en" />
+
+        <meta name="author" content="Content with Style" />
+        <meta name="copyright" content="Content with Style" />
+        <meta name="publisher" content="Content with Style" />
+
+        <meta name="robots" content="all" />
+        <meta name="revisit-after" content="2 days" />
+
+        <link rel="alternate" type="rss" href="/feeds/rss" />
+        <link rel="shortcut icon" type="image/ico" href="/favicon.ico" />
+
+        <meta name="description" lang="en" content="Content with Style is a London based blog, focusing on web technology and related topics." />
+        <meta name="keywords" lang="en" content="Content with Style, Web Technique, Pascal Opitz, Matthias Willerich, Mike Stenhouse, Web Culture, Net Culture, Technology, Blog, London, CwS, PHP, Javascript, AJAX, Frontend, HTML, Web Standards, CSS, Technology News, Rant" />
+
+        <link rel="alternate" type="application/rss+xml" title="Content with Style latest RSS" href="/feeds/rss" />
+
+        <title>Content with Style - 4 ssh config tips for faster remote working</title>
+
+
+
+        <link rel="stylesheet" title="Default" href="/3rdparty/highlight/styles/github.css">
+        <link rel="alternate" type="application/rss+xml" title="Content with Style comments RSS - 4 ssh config tips for faster remote working" href="/feeds/rss/comments/4-ssh-config-tips-for-faster-remote-working" />
+    </head>
+
+    <body class="article">
+    
+        <div class="header">
+            <div class="inner">
+                <ul class="clearfix">
+                    <li><a href="/" class="home">Home</a></li>
+                    <li><a href="/archive" class="archive">Archive</a></li>
+                </ul>
+            
+                <p class="latest">
+    <strong>Latest:</strong>
+    <a href="/content/behaviour-of-parent-in-php-533">buggy behaviour of parent:: in PHP 5.3.3</a>
+</p>
+
+
+
+                            
+                <form action="/search" method="post" id="site-search-form">
+    <p>
+        <label for="site-search">Looking for something?</label>
+        <input type="text" name="keyword" id="site-search" />
+        <input type="image" alt="Go" id="site-search-go" src="/default/images/search-go-btn.png" />
+    </p>
+</form>
+            </div>
+        </div>
+    
+        <div class="title-row">
+    <div>
+        <strong>Content with Style</strong>
+        <p>Web Technique</p>
+    </div>    
+</div>
+
+        <div class="content clearfix">
+            <div class="main-col">
+                <ul class="breadcrumb clearfix">
+    <li class="home"><a href="/">Content with Style</a></li>
+    <li><a href="/content/4-ssh-config-tips-for-faster-remote-working" class="active">4 ssh config tips for faster remote working</a></li>
+</ul>
+
+<h1>4 ssh config tips for faster remote working</h1>
+
+<div class="info clearfix">
+    <p class="credit">by <a href="/authors/Matthias+Willerich">Matthias Willerich</a> on April 17 2009, 12:00</p>
+    <p class="links"><a href="#comments" class="comments-link">9 Comments</a></p>    
+</div>
+
+<div class="article">
+    <p>With the vast majority of web developers deploying their own code, and ssh playing a central role in the toolbox, I felt that tweaking this part of my work saves me some time, and if not, definitely some frustration over mistyping passwords and host names.</p>
+<p>So, for myself as much as everyone out there, here is my collected useful knowledge that has helped me ease the pain of remote work.</p>
+		<h3>1. Execute commands remotely as one-liners</h3>
+		<p>This is what some deployment tools such as <a href="http://rubyhitsquad.com/Vlad_the_Deployer.html">vlad</a> use, but for a quick look at something, it cuts out valuable seconds you could look at web comics instead.</p>
+
+		<p>Let's try a simple example:</p>
+		<pre><code>
+matthias:~ matthias$ ssh remoteuser@myserver.pretendco.com ls -l
+remoteuser@myserver.pretendco.com's password: 
+total 804
+lrwxrwxrwx   1 remoteuser remoteuser      31 Nov 10  2007 access-logs -> /links/to/my/access-logs
+drwxr-xr-x   2 remoteuser remoteuser    2048 Apr  6  2008 cgi-bin
+-rw-r--r--   1 remoteuser remoteuser  808417 Jul 17  2007 error_log_dump
+drwxr-x---   3 remoteuser mail     2048 Oct  1  2007 etc
+drwxrwx---   7 remoteuser remoteuser    2048 Apr  4 02:33 mail
+drwxr-x---   3 remoteuser remoteuser    2048 May 23  2008 public_ftp
+drwxr-x---  30 remoteuser nobody   2048 Dec  4 06:33 public_html
+drwxr-xr-x   7 remoteuser remoteuser    2048 Sep 24  2008 tmp
+lrwxrwxrwx   1 remoteuser remoteuser      11 Apr  1  2006 www -> public_html
+matthias:~ matthias$
+		</code></pre>
+		
+		<p>You can even <a href="http://lookherefirst.wordpress.com/2007/11/29/executing-command-remotely-via-ssh/">pipe through to a remote command</a>. Here's an example taken from Look Here First, where the content of a local file is concatenated to a remote file.</p>
+		<pre><code>
+matthias:~ matthias$ cat localfile.txt | ssh remoteuser@myserver.pretendco.com "cat - >> remotefile.txt"
+		</code></pre>
+
+		<h3>2. Add your public key to your remote server</h3>
+		<p>Next let's see how we can get around typing our password all the time. One way of doing this is to <a href="http://sial.org/howto/openssh/publickey-auth/" title="OpenSSH Public Key Authentication">add your public key to your remote server</a>.</p>
+		<pre><code>
+# first, upload public key from client to server
+client$ scp ~/.ssh/id_rsa.pub remoteuser@myserver.pretendco.com:~
+
+# next, setup the public key on server
+server$ mkdir ~/.ssh
+server$ chmod 700 ~/.ssh
+server$ cat ~/id_rsa.pub >> ~/.ssh/authorized_keys
+server$ chmod 600 ~/.ssh/authorized_keys
+server$ rm ~/id_rsa.pub
+		</code></pre>
+		<p>Of course, we can combine with the previous example and run it like this:</p>
+		<pre><code>
+matthias:~ matthias$ cat ~/.ssh/id_dsa.pub | ssh remoteuser@myserver.pretendco.com "cat - >> ~/.ssh/authorized_keys2"
+		</code></pre>
+		<p>Windows users fear not, <a href="http://www.aota.net/Telnet/puttykeyauth.php4" title="Key Authentication with PuTTY">you can do this too</a>, with PuTTY and PuTTYgen.</p>
+
+		<h3>3. Let the ControlMaster handle your sessions</h3>
+		<p>Sadly this might not always possible, maybe your key management on your server is different, or you don't have permissions to the file.</p>
+		<p>Luckily you can get around this by <a href="http://blog.zenlinux.com/?p=270">letting your first ssh connection act as ControlMaster</a>. By adding the following to ~/.ssh/config, you only need to enter your password once, and all parallel sessions won't ask for a password</p>
+		<pre><code>
+Host *
+    ControlMaster auto
+    ControlPath ~/.ssh/master-%r@%h:%p
+		</code></pre>
+
+		<h3>4. Set your user and hostname for your host</h3>
+		<p>Finally, more often than not your username won't be the same on your local machine and on whatever server you'd like to connect to, or your server might not use the default ssh port. Or maybe you're just tired of typing that superlong domain name, and look for a less challenging typing task. ~/.ssh/config to the rescue.</p>
+		<p>As final example:</p>
+		<pre><code>
+Host myserver
+    User remoteuser
+    Port 22022
+    HostName myserver.pretendco.com
+		</code></pre>
+		<p>Most likely you won't need the Port instruction in there, because your server runs ssh on the default port 22, so just drop the line.</p>
+<p>All this allows us something as compact as:</p>
+<pre><code>
+matthias:~ matthias$ ssh myserver mycommand
+</code></pre>
+<p>Have fun, and let's hope this got you into your weekend early!</p></div>                                                            
+
+                <div class="comments" id="comments">
+                    <h2>Comments</h2>
+
+    
+<ul class="comments-list">
+    <li class="odd" id="comment-5881">
+            <div class="comment-text">
+                Ahh... very nice.  The bit about the config file is perfect.  I'm going to use it for the IdentityFile variable, myself.
+
++karma for you :)            </div>
+
+            <p class="comment-info">
+                by 
+                    
+                    <a href="http://www.macdork.com" rel="nofollow">MacDork</a> 
+                    
+                on April 17 2009, 16:36
+                - <a href="#comment-5881">#</a>
+            </p>
+        </li>    
+    <li class="even" id="comment-5883">
+            <div class="comment-text">
+                Great tips Matthias. Thanks!            </div>
+
+            <p class="comment-info">
+                by 
+                    
+                    <a href="http://seventytwo.co.uk" rel="nofollow">Alistair Holt</a> 
+                    
+                on April 17 2009, 20:53
+                - <a href="#comment-5883">#</a>
+            </p>
+        </li>    
+    <li class="odd" id="comment-5885">
+            <div class="comment-text">
+                <p>@MacDork: IdentityFile is a good way of handling multiple, well, identities; perfect for someone who likes to keep business and private (or in case of many freelancers/contractors business, business, business and private) separate. Use one identity for work, and another for personal projects, etc.</p>
+
+<p>Thanks for the reminder. There's of course much more configuration options, here's a link to the <a href="http://unixhelp.ed.ac.uk/CGI/man-cgi?ssh_config+5">man pages</a></p>            </div>
+
+            <p class="comment-info">
+                by 
+                    
+                    <a href="http://www.contentwithstyle.co.uk" rel="nofollow">Matthias Willerich</a> 
+                    
+                on April 18 2009, 08:48
+                - <a href="#comment-5885">#</a>
+            </p>
+        </li>    
+    <li class="even" id="comment-5952">
+            <div class="comment-text">
+                The most simple way to copy your public key is <a href="http://pwet.fr/man/linux/commandes/ssh_copy_id">ssh_copy_id</a>            </div>
+
+            <p class="comment-info">
+                by 
+                    
+                    <a href="http://arnaud.didry.info" rel="nofollow">Arnaud</a> 
+                    
+                on April 25 2009, 18:36
+                - <a href="#comment-5952">#</a>
+            </p>
+        </li>    
+    <li class="odd" id="comment-5953">
+            <div class="comment-text">
+                <p>@Arnaud: I had to look up this one first; it is indeed a great way of adding your public key to a server. This is part of OpenSSH, but sadly not of the default OS X installation (I guess linux folks are fine).</p>
+<p>To get a more elegant solution for #2 on a Mac, download the latest <a href="ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/">portable OpenSSH</a> and find the ssh-copy-id script in /contrib folder. Copy it, err, somewhere where your system finds it, and you're good to go. Thanks for the tip!</p>            </div>
+
+            <p class="comment-info">
+                by 
+                    
+                    <a href="http://www.contentwithstyle.co.uk" rel="nofollow">Matthias Willerich</a> 
+                    
+                on April 26 2009, 01:32
+                - <a href="#comment-5953">#</a>
+            </p>
+        </li>    
+    <li class="even" id="comment-5954">
+            <div class="comment-text">
+                Nice tips, I already use three of them. Using a public key is fundamental to speed up connection process.            </div>
+
+            <p class="comment-info">
+                by 
+                    
+                    <a href="http://ossigeno.sourceforge.net" rel="nofollow">Giorgio Sironi</a> 
+                    
+                on April 26 2009, 13:15
+                - <a href="#comment-5954">#</a>
+            </p>
+        </li>    
+    <li class="odd" id="comment-5980">
+            <div class="comment-text">
+                <p>This is an interesting post. I wasn't aware of the ControlMaster. I'm going to look into that more. </p>
+
+<p>re: #2 (Add your public key to your remote server), @Matthias as you said, ssh_copy_id isn't available for the OS X people in the crowd. For the subset of that crowd that isn't offended by Ruby, I wrote a tool called Rye for doing all kinds of remote SSH stuff (including executing commands on multiple machines in parallel). It comes with a command-line utility that can copy keys too:</p>
+<pre><code>
+$ rye authorize HOST1 [HOST 2 ... HOST N]</code></pre>
+
+<p>It can be installed with the command:</p>
+<pre><code>
+$ sudo gem install rye</code></pre>
+            </div>
+
+            <p class="comment-info">
+                by 
+                    
+                    <a href="http://solutious.com/" rel="nofollow">Delano Mandelbaum</a> 
+                    
+                on April 30 2009, 15:21
+                - <a href="#comment-5980">#</a>
+            </p>
+        </li>    
+    <li class="even" id="comment-6297">
+            <div class="comment-text">
+                Nice tips, I already use three of them. Using a public key is fundamental to speed up connection process. 
+cheers             </div>
+
+            <p class="comment-info">
+                by 
+                    
+                    <a href="http://www.ambertreasure.co.uk/" rel="nofollow">amber jewellery</a> 
+                    
+                on June 25 2009, 22:42
+                - <a href="#comment-6297">#</a>
+            </p>
+        </li>    
+    <li class="odd" id="comment-8663">
+            <div class="comment-text">
+                This is what I was looking for. Thanks for saving my time.            </div>
+
+            <p class="comment-info">
+                by 
+                    
+                    <a href="http://www.actionenergy.pl" rel="nofollow">fotowoltaika</a> 
+                    
+                on August 1 2010, 11:14
+                - <a href="#comment-8663">#</a>
+            </p>
+        </li>    
+    </ul>
+    
+                                         
+                                         
+                    <form class="comments-form" action="/comments/post/252/4-ssh-config-tips-for-faster-remote-working" method="post">
+       <h3>Leave your comment</h3>
+
+       <div class="top clearfix">
+           <p class="name">
+               <label for="comments-form-name">Name</label>
+               <input type="text" id="comments-form-name" name="comments-form-name" value="" />
+           </p>
+           
+           <p class="email">
+               <label for="comments-form-email">Email</label>
+               <input type="text" id="comments-form-email" name="comments-form-email" value="" />
+           </p>
+
+           <p class="http">
+               <label for="comments-form-http">http://</label>
+               <input type="text" id="comments-form-http" name="comments-form-http" value="" />
+           </p>
+       </div>
+       
+       <p class="middle">
+           <label for="comments-form-text">Comment text</label>
+           <textarea id="comments-form-text" name="comments-form-text" rows="5" cols="10"></textarea>
+       </p>
+
+       <div class="bottom clearfix">
+           <p class="comments-info">
+               Comments are moderated.
+               <br />
+               Tags allowed: a, strong, em, code, ul, ol, li, q, blockquote, br, p
+           </p>    
+               
+           <p class="remember">
+               <label for="comments-form-remember">Remember me?</label>
+               <input type="checkbox" id="comments-form-remember" name="comments-form-remember" />
+           </p>
+       
+           <p class="submit">
+               <input type="image" id="comments-form-submit" name="comments-form-submit" alt="submit" src="/default/images/comments-submit-btn.png" />
+               <input type="hidden" name="comments-form-token" value="edcc6277af3105afdb7255b6dd1c802b" />
+           </p>
+       </div>
+   </form>                     
+                                         
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <div class="box author-info">
+    <h2>About the author</h2>
+    
+    <div>
+	    <p>Now working as PHP/Zend Developer at <a href="http://www.photobox.co.uk">Photobox</a>, Matthias makes sure that all PHP-driven code conforms to high standards.</p>
+<p>Needless to say, he's saving the world on a daily basis.</p>		    </div>
+</div>
+
+
+
+                <!-- AddThis Button BEGIN -->
+<div class="bookmarks">
+    <script type="text/javascript">var addthis_pub="contentwithstyle";</script>
+    <a href="http://www.addthis.com/bookmark.php?v=20" onmouseover="return addthis_open(this, '', '[URL]', '[TITLE]')" onmouseout="addthis_close()" onclick="return addthis_sendto()"><img src="http://s7.addthis.com/static/btn/lg-bookmark-en.gif" width="125" height="16" alt="Bookmark and Share" style="border:0"/></a>
+    <script type="text/javascript" src="http://s7.addthis.com/js/200/addthis_widget.js"></script>
+</div>
+<!-- AddThis Button END -->
+                <p class="rss-link">
+    <a href="/feeds/rss">Grab our feed</a>
+</p>
+                <div class="box links">
+    <h2><a href="http://delicious.com/contentwithstyle/">Elsewhere</a></h2>
+    
+    <ul>
+                    <li class="odd"><a href="http://calendar.perfplanet.com/2010/coding-better-object-oriented-javascript-with-closure-compiler/">Coding Better Object-Oriented JavaScript with Closure Compiler</a></li>
+                    <li class="even"><a href="http://blog.lostdecadegames.com/obfuscating-javascript-with-closure-compiler">Obfuscating JavaScript with Closure Compiler Advanced Optimizations</a></li>
+                    <li class="odd"><a href="http://code.google.com/p/lindenb/wiki/SVGToCanvas">SVGToCanvas</a></li>
+                    <li class="even"><a href="http://sebleedelisle.com/demos/JSSnow/snow3d.html">Canvas falling snow in 3D</a></li>
+                    <li class="odd"><a href="http://www.w3.org/TR/2010/WD-webmessaging-20101118/#web-messaging">HTML5 Web Messaging</a></li>
+                    <li class="even"><a href="http://geddyjs.org/">Geddy web framework for Node.js</a></li>
+                    <li class="odd"><a href="http://joose.it/blog/2010/08/02/asynchronous-aka-non-blocking-control-flow/">Asynchronous (aka non-blocking) control flow at Joose</a></li>
+                    <li class="even"><a href="http://www.h-online.com/security/news/item/Firefox-extension-steals-Facebook-Twitter-etc-sessions-1124596.html">Firefox extension steals Facebook, Twitter, etc. sessions</a></li>
+                    <li class="odd"><a href="http://howtonode.org/demystifying-events-in-node">Demystifying events in node.js</a></li>
+                    <li class="even last"><a href="http://thechangelog.com/post/1489735759/node-canvas-render-and-stream-html5-canvas-using-node-js">node-canvas: Render and stream HTML5 Canvas using Node.js</a></li>
+            
+    </ul>
+</div>
+            </div>
+
+            <div class="ads">
+    <div class="space">
+        <img class="header" src="/default/images/advert_header.png" alt="Advertisement" />
+
+    	<script type="text/javascript"><!--
+    	google_ad_client = "pub-2267727408504720";
+    	/* 120x240, created 15/04/09 */
+    	google_ad_slot = "1111339592";
+    	google_ad_width = 120;
+    	google_ad_height = 240;
+    	//-->
+    	</script>
+    	<script type="text/javascript"
+    		src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    	</script>
+
+    </div>
+
+    <div class="hosted-by">
+        <a href="http://www.ilikecode.co.uk">hosted by ILikeCode</a>
+    </div>
+
+    <div class="space second">
+        <img class="header" src="/default/images/advert_header.png" alt="Advertisement" />
+
+        <script type="text/javascript"><!--
+        google_ad_client = "pub-2267727408504720";
+        /* CwS sidebar 2 */
+        google_ad_slot = "8021881432";
+        google_ad_width = 120;
+        google_ad_height = 90;
+        //-->
+        </script>
+        <script type="text/javascript"
+        src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+        </script>
+
+    </div>
+</div>
+        </div>
+
+        <div class="footer">
+    <p class="bottom-logo">Content with Style</p>
+    <p>Copyright 2006-2010 Content with Style, All rights reserved.</p>
+</div>
+
+<script type="text/javascript" src="/3rdparty/jquery/jquery-1.2.6.min.js"></script>
+<script type="text/javascript" src="/3rdparty/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="/default/js/cws_rev.20101204000318.js"></script>
+    </body>
+</html>
+

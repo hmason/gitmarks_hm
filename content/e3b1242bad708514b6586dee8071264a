@@ -1,0 +1,796 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:comem3="xalan://com.em3" xmlns:em3="http://www.em3.com/2002/widget">
+<head>
+<link rel="stylesheet"    href="/circos/css/style.css">
+<link rel="shortcut icon" href="/circos/gfx/favicon.ico">
+<meta name="keywords" content="genome sciences centre, bioinformatics, genome, circos, data visualization, circular, conservation, alignment, rearrangement, genomics, human genome, bioinformatics, graph">
+<title>
+Introduction to Circos, Features and Uses
+ // CIRCOS Circular Genome Data Visualization</title>
+
+<script src="http://www.google.com/jsapi?key=ABQIAAAAOmEg0vZiXlE5VSQaie8j9RQ4xiYu18DF4_UllKaMvA0F4-jylRSs5XdN2pJhKnRNVcF9wgxzpJKngA"></script>
+<script type="text/javascript">
+google.load("jquery", "1.4.2");
+google.load("jqueryui", "1.8.2");
+</script>
+
+</head>
+<body>
+<div id="frame">
+<script>
+
+$(document).ready(function() {
+
+$('div.category:not(.active)').hover(function(){
+$(this).css("background-color","#ec1c24");
+$(this).children().children().css("background-color","#8b1924");
+},function(){
+$(this).css("background-color","#666");
+$(this).children().children().css("background-color","#797b80");
+});
+$('img[id^=quick-]').hover(function(){  
+if($(this).attr("src").match(/-on\./)) {
+$(this).attr("src", $(this).attr("src").replace("-on",""));
+} else {
+$(this).attr("src", $(this).attr("src").replace(".png","-on.png"));
+}
+}, 
+function(){
+if($(this).attr("src").match(/-on\./)) {
+$(this).attr("src", $(this).attr("src").replace("-on",""));
+} else {
+$(this).attr("src", $(this).attr("src").replace(".png","-on.png"));
+}
+});
+
+if( $('#menu3').length ) {
+$('#menu2 span.active').css("background-image","url(/dev/circos/gfx/redtick-dgrey.png");
+}
+
+$('img.home').mouseover(function(event){
+$(this).parent().animate({ backgroundColor: "#ec1c24" }, 100);
+$(this).animate({ backgroundColor: "#ec1c24" }, 100);
+});
+$('img.home').mouseout(function(event){
+$(this).parent().animate({ backgroundColor: "#2e3035" }, 100);
+$(this).animate({ backgroundColor: "#2e3035" }, 100);
+});
+$('#menu2 a.normal').mouseover(function(event){
+$(this).animate({ backgroundColor: "#ec1c24" }, 100);
+});
+$('#menu2 a.normal').mouseout(function(event){
+$(this).animate({ backgroundColor: "#2e3035" }, 100);
+});
+$('#menu0 a').mouseover(function(event){
+$(this).animate({ backgroundColor: "#d0d1d4", color: "#000" }, 100);
+$(this).css("border-bottom","2px solid #d0d1d4");
+});
+$('#menu0 a').mouseout(function(event){
+$(this).animate({ backgroundColor: "#ec1c24", color: "#fff" }, 100);
+$(this).css("border-bottom","none");
+});
+$('#menu1 a').mouseover(function(event){
+$(this).animate({ color: "#ec1c24" }, 100);
+});
+$('#menu1 a').mouseout(function(event){
+$(this).animate({ color: "black" }, 100);
+});
+
+// number of mastheads on this page
+var mh_total = $('div.page-masthead').length;
+
+// current masthead - initially random
+var mh_curr  = Math.floor(Math.random() * mh_total);
+
+add_debug("mh_total " + mh_total);
+add_debug("mh_curr " + mh_curr);
+
+function add_debug(message) {
+//$('#debug').append(message + " ");
+}
+
+function mh_hide(mh) {
+$('#mh-' + mh).removeClass('mh-highlight');
+$('div.page-masthead:eq(' + mh + ')').fadeOut('slow');
+add_debug("hide " + mh);
+}
+
+function mh_show(mh) {
+$('#mh-' + mh).addClass('mh-highlight');
+$('#mh-' + mh).blur();
+$('div.page-masthead:eq(' + mh + ')').fadeIn('slow');
+add_debug("show " + mh);
+}
+
+function mh_step(dir) {
+add_debug("step " + dir);
+mh_hide(mh_curr);
+mh_curr = (mh_curr+dir) % mh_total;
+if(mh_curr < 0) { mh_curr = mh_total - 1; }
+mh_show(mh_curr);
+}
+
+// hide all mastheads, and fade in current
+$('.page-masthead').hide();
+add_debug("show init");
+mh_show(mh_curr);
+
+// register callbacks for prev/next button
+
+$('#mh-next-small').click(function(){mh_step(1)});
+$('#mh-prev-small').click(function(){mh_step(-1)});
+$('.mh-img').click(function(){mh_step(1)});
+$('.mh-menu').hover(function(){
+$(this).toggleClass("pointer");
+$(this).toggleClass("mh-hover");
+});
+
+// create callbacks for masthead menu items 
+
+for (i=1;i<=mh_total;i++) {
+(function(j) {
+add_debug("reg " + j);
+$('#mh-' + j).click(function(){ 
+mh_hide(mh_curr);
+mh_show(j);
+mh_curr = j;
+});
+})(i-1);
+}
+
+$('#mh-1').click(function(){ mh_show(1); });
+$('#mh-2').click(function(){ mh_show(2); });
+
+$('img').each(function() {
+$(this).attr('title', $(this).attr('alt') || "Circular genome visualization and data visualization with Circos");
+});
+
+});
+
+</script>
+<!-- <div id="debug"></div> -->
+
+<div id="logo">
+<a href="/circos"><img src="
+/circos/gfx/background-logo.jpg"></a>
+</div>
+<div id="menu0">
+
+<a class=normal href="/circos/guide">Guide</a>
+
+<a class=normal href="/circos/news">News</a>
+
+<a class=normal href="/circos/images">Images</a>
+
+<a class=normal href="/circos/tutorials">Tutorials</a>
+
+<a class=normal href="/circos/presentations">Presentations</a>
+
+<a class=normal href="/circos/software">Software</a>
+
+<a class=normal href="/circos/in_literature">In Literature</a>
+
+<a class=normal href="/circos/contact">Contact</a>
+
+<span class=separator></span>
+
+<a class=normal href="/circos/circos_online">Circos Online</a>
+
+</div>
+<div id="quicklinks">
+<img alt="Circos quick links" src="/dev/circos/img/quick-jumpto.png">
+<a href="/circos/tutorials/lessons"><img alt="Circos tutorials" id=quick-lessons src="/dev/circos/img/quick-tutorials.png"></a>
+<a href="/circos/tutorials/course"><img alt="Circos course" id=quick-course src="/dev/circos/img/quick-course.png"></a>
+<a href="/circos/images/published"><img alt="Circos published images" id=quick-samples src="/dev/circos/img/quick-samples.png"></a>
+<a href="/circos/software/download/circos"><img alt="download Circos" id=quick-download src="/dev/circos/img/quick-download.png"></a>
+</div>
+
+<div id="crumbs">
+&nbsp;
+
+</div>
+
+<div id="page-container">
+<div id="page-masthead-container">
+
+<div id="newsflash">
+<b>Interested in network visualization?</b> Frustrated by hairballs? See my <a href="http://mkweb.bcgsc.ca/linnet">linnet</a> project.
+</div>
+
+<div class="page-masthead">
+<div class=image><img class=mh-img src="/circos//img/masthead/cancer-genome-challenge-02.jpg"></div>
+<blockquote><div class=background></div><div class=copy>
+<h1>
+Circos Maps Cancer Landscapes
+</h1>
+<p>
+
+<p>Nature features an article by Heidi Ledford, <a
+href="http://www.nature.com/news/2010/100414/full/464972a.html">The
+Cancer Genome Challenge</a>, which discusses the progress and
+challenges of identifying structural variation signatures in cancer
+genomes.
+
+<p>Circos images are used throughout the piece, taken from the <a
+href="http://www.sanger.ac.uk/genetics/CGP/cosmic/">COSMIC project</a>
+(Catalogue of Somatic Mutations in Cancer).
+
+<p><div class="ref_citation_brief"><span class="ref_id">6</span><span class="ref_author">Ledford H</span> <span class="ref_year">2010</span> <span class="ref_title"><a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&dopt=Citation&list_uids=20393534">Big science: The cancer genome challenge</a></span> <span class="ref_journal">Nature</span> <span class="ref_volume">464</span> (<span class="ref_issue">7291</span>) <span class="ref_pages">972-974</span>.</div>
+</p>
+<div class=annot>// cancer-genome-challenge</div>
+</div></blockquote>
+</div> <!-- page-masthead -->
+<div class="page-masthead">
+<div class=image><img class=mh-img src="/circos//img/masthead/cancer-genome-challenge.jpg"></div>
+<blockquote><div class=background></div><div class=copy>
+<h1>
+Circos Maps Cancer Landscapes
+</h1>
+<p>
+
+<p>Nature features an article by Heidi Ledford, <a
+href="http://www.nature.com/news/2010/100414/full/464972a.html">The
+Cancer Genome Challenge</a>, which discusses the progress and
+challenges of identifying structural variation signatures in cancer
+genomes.
+
+<p>Circos images are used throughout the piece, taken from the <a
+href="http://www.sanger.ac.uk/genetics/CGP/cosmic/">COSMIC project</a>
+(Catalogue of Somatic Mutations in Cancer).
+
+<p><div class="ref_citation_brief"><span class="ref_id">6</span><span class="ref_author">Ledford H</span> <span class="ref_year">2010</span> <span class="ref_title"><a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&dopt=Citation&list_uids=20393534">Big science: The cancer genome challenge</a></span> <span class="ref_journal">Nature</span> <span class="ref_volume">464</span> (<span class="ref_issue">7291</span>) <span class="ref_pages">972-974</span>.</div>
+</p>
+<div class=annot>// cancer-genome-challenge</div>
+</div></blockquote>
+</div> <!-- page-masthead -->
+<div class="page-masthead">
+<div class=image><img class=mh-img src="/circos//img/masthead/wired-04.png"></div>
+<blockquote><div class=background></div><div class=copy>
+<h1>
+Circos Collaborates with Wired
+</h1>
+<p>
+<p>When <a href="http://www.wired.com">Wired</a> needed an inforgraphic to illustrate the complex world of relationships on the TV Series Lost, it turned to Circos.
+
+<p>The task was to visually represent about 60 relationships shared between 35 characters. The <a href="
+/circos/presentations/articles/vis_tables1">tableviewer</a> utility, which applies Circos to visualizing tabular data, was perfect for creating the <a href="http://www.wired.com/magazine/2010/04/ff_lost/5/">illustration</a>. And thus, Circos <a href="/circos/tableviewer">says goodbye to the table</a>.</p>
+</p>
+<div class=annot>// wired-04</div>
+</div></blockquote>
+</div> <!-- page-masthead -->
+<div class="page-masthead">
+<div class=image><img class=mh-img src="/circos//img/masthead/wired-03.jpg"></div>
+<blockquote><div class=background></div><div class=copy>
+<h1>
+Circos Collaborates with Wired
+</h1>
+<p>
+<p>When <a href="http://www.wired.com">Wired</a> needed an inforgraphic to illustrate the complex world of relationships on the TV Series Lost, it turned to Circos.
+
+<p>The task was to visually represent about 60 relationships shared between 35 characters. The <a href="
+/circos/presentations/articles/vis_tables1">tableviewer</a> utility, which applies Circos to visualizing tabular data, was perfect for creating the <a href="http://www.wired.com/magazine/2010/04/ff_lost/5/">illustration</a>.</p>
+</p>
+<div class=annot>// wired-03</div>
+</div></blockquote>
+</div> <!-- page-masthead -->
+<div class="page-masthead">
+<div class=image><img class=mh-img src="/circos//img/masthead/wired-02.png"></div>
+<blockquote><div class=background></div><div class=copy>
+<h1>
+Circos Collaborates with Wired
+</h1>
+<p>
+<p>When <a href="http://www.wired.com">Wired</a> needed an inforgraphic to illustrate the complex world of relationships on the TV Series Lost, it turned to Circos.
+
+<p>In collaboration with Christy Sheppard, Wired's Art Director, Martin Krzywinski created the <a href="http://www.wired.com/magazine/2010/04/ff_lost/5/">illustration</a> for the April 22 2010 issue.
+</p>
+<div class=annot>// wired-01</div>
+</div></blockquote>
+</div> <!-- page-masthead -->
+<div class="page-masthead">
+<div class=image><img class=mh-img src="/circos//img/masthead/dhl-02.jpg"></div>
+<blockquote><div class=background></div><div class=copy>
+<h1>
+DHL Uses Circos
+</h1>
+<p>
+<p>Deutsche Post DHL uses Circos in a <a href="img/circos-dhl.jpg">printed advertisement</a> for the Mail & Logistics Group
+</p>
+<div class=annot>// dhl</div>
+</div></blockquote>
+</div> <!-- page-masthead -->
+<div class="page-masthead">
+<div class=image><img class=mh-img src="/circos//img/masthead/wired-01.png"></div>
+<blockquote><div class=background></div><div class=copy>
+<h1>
+Circos Collaborates with Wired
+</h1>
+<p>
+<p>When <a href="http://www.wired.com">Wired</a> needed an inforgraphic to illustrate the complex world of relationships on the TV Series Lost, it turned to Circos.
+
+<p>In collaboration with Christy Sheppard, Wired's Art Director, Martin Krzywinski created the <a href="http://www.wired.com/magazine/2010/04/ff_lost/5/">illustration</a> for the April 22 2010 issue.
+</p>
+<div class=annot>// wired-01</div>
+</div></blockquote>
+</div> <!-- page-masthead -->
+<div class="page-masthead">
+<div class=image><img class=mh-img src="/circos//img/masthead/linnet-05.png"></div>
+<blockquote><div class=background></div><div class=copy>
+<h1>
+Linnet - Linear Layout for Network Visualization
+</h1>
+<p>
+<p>Visualizing large networks is hard. Nobody wants to see another hairball, but you want to show your data.
+
+<p>What do you do?
+
+<p>Try our new <a href="/linnet">linear layout for network visualization</a>. It takes a fresh approach to drawing networks. It scales well, shows topology, and makes the network layout based on meaningful properties.
+
+</p>
+<div class=annot>// linnet</div>
+</div></blockquote>
+</div> <!-- page-masthead -->
+<div class="page-masthead">
+<div class=image><img class=mh-img src="/circos//img/masthead/linnet-03.png"></div>
+<blockquote><div class=background></div><div class=copy>
+<h1>
+Linnet - Linear Layout for Network Visualization
+</h1>
+<p>
+<p>Visualizing large networks is hard. Nobody wants to see another hairball, but you want to show your data.
+
+<p>What do you do?
+
+<p>Try our new <a href="/linnet">linear layout for network visualization</a>. It takes a fresh approach to drawing networks. It scales well, shows topology, and makes the network layout based on meaningful properties.
+
+</p>
+<div class=annot>// linnet</div>
+</div></blockquote>
+</div> <!-- page-masthead -->
+<div class="page-masthead">
+<div class=image><img class=mh-img src="/circos//img/masthead/dhl-01.jpg"></div>
+<blockquote><div class=background></div><div class=copy>
+<h1>
+DHL Uses Circos
+</h1>
+<p>
+<p>Deutsche Post DHL uses Circos in a <a href="img/circos-dhl.jpg">printed advertisement</a> for the Mail & Logistics Group
+</p>
+<div class=annot>// dhl</div>
+</div></blockquote>
+</div> <!-- page-masthead -->
+<div class="page-masthead">
+<div class=image><img class=mh-img src="/circos//img/masthead/linnet-01.png"></div>
+<blockquote><div class=background></div><div class=copy>
+<h1>
+Linnet - Linear Layout for Network Visualization
+</h1>
+<p>
+<p>Visualizing large networks is hard. Nobody wants to see another hairball, but you want to show your data.
+
+<p>What do you do?
+
+<p>Try our new <a href="/linnet">linear layout for network visualization</a>. It takes a fresh approach to drawing networks. It scales well, shows topology, and makes the network layout based on meaningful properties.
+
+</p>
+<div class=annot>// linnet</div>
+</div></blockquote>
+</div> <!-- page-masthead -->
+<div class="page-masthead">
+<div class=image><img class=mh-img src="/circos//img/masthead/linnet-04.png"></div>
+<blockquote><div class=background></div><div class=copy>
+<h1>
+Linnet - Linear Layout for Network Visualization
+</h1>
+<p>
+<p>Visualizing large networks is hard. Nobody wants to see another hairball, but you want to show your data.
+
+<p>What do you do?
+
+<p>Try our new <a href="/linnet">linear layout for network visualization</a>. It takes a fresh approach to drawing networks. It scales well, shows topology, and makes the network layout based on meaningful properties.
+
+</p>
+<div class=annot>// linnet</div>
+</div></blockquote>
+</div> <!-- page-masthead -->
+<div class="page-masthead">
+<div class=image><img class=mh-img src="/circos//img/masthead/linnet-02.png"></div>
+<blockquote><div class=background></div><div class=copy>
+<h1>
+Linnet - Linear Layout for Network Visualization
+</h1>
+<p>
+<p>Visualizing large networks is hard. Nobody wants to see another hairball, but you want to show your data.
+
+<p>What do you do?
+
+<p>Try our new <a href="/linnet">linear layout for network visualization</a>. It takes a fresh approach to drawing networks. It scales well, shows topology, and makes the network layout based on meaningful properties.
+
+</p>
+<div class=annot>// linnet</div>
+</div></blockquote>
+</div> <!-- page-masthead -->
+
+<div id="page-masthead-menu-bg"></div>
+<div id="page-masthead-menu">
+<span class=mh-menu id=mh-prev-small><img src="/circos/gfx/mh-prev-small.png"></span>
+<span class=mh-menu id=mh-0>1</span>
+<span class=mh-menu id=mh-1>2</span>
+<span class=mh-menu id=mh-2>3</span>
+<span class=mh-menu id=mh-3>4</span>
+<span class=mh-menu id=mh-4>5</span>
+<span class=mh-menu id=mh-5>6</span>
+<span class=mh-menu id=mh-6>7</span>
+<span class=mh-menu id=mh-7>8</span>
+<span class=mh-menu id=mh-8>9</span>
+<span class=mh-menu id=mh-9>10</span>
+<span class=mh-menu id=mh-10>11</span>
+<span class=mh-menu id=mh-11>12</span>
+<span class=mh-menu id=mh-12>13</span>
+<span class=mh-menu id=mh-next-small><img src="/circos/gfx/mh-next-small.png"></span>
+</div>
+</div> <!-- page-masthead-container -->
+<div id="menu2">
+
+<span class=active><img class=home src="/template/circos/gfx/home.png"></span>
+<a class=normal href="/circos/intro/published_images">Published Images</a>
+
+<a class=normal href="/circos/intro/data_visualization">Data Visualization</a>
+
+<a class=normal href="/circos/intro/features">Features</a>
+
+<a class=normal href="/circos/intro/circular_approach">Circular Approach</a>
+
+<a class=normal href="/circos/intro/genomic_data">Genomic Data</a>
+
+<a class=normal href="/circos/intro/general_data">General Data</a>
+
+<a class=normal href="/circos/intro/tabular_visualization">Tabular Visualization</a>
+
+</div>
+<div id="page-copy">
+<style type="text/css">
+h2 { clear: none !important; }
+</style>
+<h1>What is Circos?</h1>
+
+<h2>Circular visualization</h2>
+
+<p>Circos is a software package for <a href="/circos/intro/data_visualization">visualizing data and information</a>. It visualizes data in a <a href="/circos/intro/circular_approach">circular layout</a> &mdash; this makes Circos ideal for exploring relationships between objects or positions.
+
+<p>Circos is ideal for creating publication-quality infographics and illustrations with a high <a href="http://www.infovis-wiki.net/index.php/Data-Ink_Ratio">data-to-ink ratio</a>, richly layered data and pleasant symmetries. You have fine control each element in the figure to tailor its focus points and detail to your audience.
+<div class="copy-image-container" style="width: 950px;">
+<div style="width:950px; height:234px;" class="copy-image">
+<a href="/circos/intro/published_images"><img class=s src='/circos//img/circos-sample-panel.png' alt='Circular genome and data visualization with Circos (950 x 234)'></a>
+</div> <!-- copy-image -->
+<div class="caption">
+<b>&#9650;</b>
+Images
+created with Circos, illustrating links, ribbons, tiles and a variety
+of 2D data tracks. If it's round, Circos can probably do it (<a
+href='/circos/images'>more images</a>).
+</div> <!-- caption -->
+</div> <!-- copy-image-container -->
+<p>Circos is flexible. Although originally designed for <a href="/circos/intro/genomic_data">visualizing genomic data</a>, it can create figures from <a href="/circos/intro/general_data">data in any field</a>. If you have data that describes relationships or multi-layered annotations of one or more scales, Circos is for you.
+
+<p>Circos can be automated. It is controlled by plain-text configuration files, which makes it easily incorporated into data acquisition, analysis and reporting pipelines (a data pipeline is a multi-step process in which data is analyzed by multiple and typically independent tools, each passing their output as the input to the next step).
+
+<h2>Popular and Pretty</h2>
+
+<p>Circos has appeared in many publications, both scientific and general. It has changed the way the scientific community visualizes genomic alterations (changes in a genome over time, or differences between two or mor genomes). One timely application of this approach is creating effective figures showing how cancer genomes differ from healthy ones (e.g. <a href="http://www.sanger.ac.uk/genetics/CGP/cosmic/">COSMIC: Census of Somatic Mutations in Cancer</a>).
+<p>Its popularity is in large part due to its balance between flexibility and ease-of-use. Circos does not assume anything about your data, uses extremely simple input data format, but at the same time makes image creation and customization easy.
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>publication-logos</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+</head>
+<body bgcolor="#FFFFFF">
+<!-- Save for Web Slices (publication-logos.psd) -->
+<table id="Table_01" width="917" border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td>
+			<a href="http://bioinformatics.oxfordjournals.org/content/26/20/2620.abstract"
+				onmouseover="window.status='Circos in Bioinformatics - Circoletto';  return true;"
+				onmouseout="window.status='';  return true;">
+				<img id="publication_logos_01" src="img/publication-logos_01.png" width="210" height="71" border="0" alt="Circos in Bioinformatics - Circoletto" /></a></td>
+		<td>
+			<a href="http://genomebiology.com/content/11/8/R82"
+				onmouseover="window.status='Circos in Genome Biology - Evolution of an adenocarcinoma in response to selection by targeted kinase inhibitors';  return true;"
+				onmouseout="window.status='';  return true;">
+				<img id="publication_logos_02" src="img/publication-logos_02.png" width="172" height="71" border="0" alt="Circos in Genome Biology - Evolution of an adenocarcinoma in response to selection by targeted kinase inhibitors" /></a></td>
+		<td>
+			<a href="http://www.nature.com/nbt/journal/v27/n12/abstract/nbt1209-1130.html"
+				onmouseover="window.status='Circos in Nature - A first look at entire human methylomes';  return true;"
+				onmouseout="window.status='';  return true;">
+				<img id="publication_logos_03" src="img/publication-logos_03.png" width="211" height="71" border="0" alt="Circos in Nature - A first look at entire human methylomes" /></a></td>
+		<td>
+			<a href="http://www.sciencemag.org/content/326/5956/1112.short"
+				onmouseover="window.status='Circos in Science - The B73 Maize Genome: Complexity, Diversity, and Dynamics';  return true;"
+				onmouseout="window.status='';  return true;">
+				<img id="publication_logos_04" src="img/publication-logos_04.png" width="153" height="71" border="0" alt="Circos in Science - The B73 Maize Genome: Complexity, Diversity, and Dynamics" /></a></td>
+		<td>
+			<a href="http://www.pnas.org/content/107/30/13479.long"
+				onmouseover="window.status='Circos in PNAS - A Nitrospira metagenome illuminates the physiology and evolution of globally important nitrite-oxidizing bacteria';  return true;"
+				onmouseout="window.status='';  return true;">
+				<img id="publication_logos_05" src="img/publication-logos_05.png" width="170" height="71" border="0" alt="Circos in PNAS - A Nitrospira metagenome illuminates the physiology and evolution of globally important nitrite-oxidizing bacteria" /></a></td>
+		<td>
+			<img src="img/spacer.gif" width="1" height="71" alt="" /></td>
+	</tr>
+	<tr>
+		<td>
+			<a href="http://www.americanscientist.org/issues/id.67/past.aspx"
+				onmouseover="window.status='Circos in American Scientist - Genetics and the Shape of Dogs';  return true;"
+				onmouseout="window.status='';  return true;">
+				<img id="publication_logos_06" src="img/publication-logos_06.png" width="210" height="61" border="0" alt="Circos in American Scientist - Genetics and the Shape of Dogs" /></a></td>
+		<td rowspan="2">
+			<a href="http://genome.cshlp.org/content/19/8/1497"
+				onmouseover="window.status='Circos in Genome Research - Automated identification of conserved synteny after whole-genome duplication';  return true;"
+				onmouseout="window.status='';  return true;">
+				<img id="publication_logos_07" src="img/publication-logos_07.png" width="172" height="72" border="0" alt="Circos in Genome Research - Automated identification of conserved synteny after whole-genome duplication" /></a></td>
+		<td rowspan="2">
+			<a href="http://www.portfolio.com/news-markets/national-news/portfolio/2007/10/15/23andMe-Web-Site"
+				onmouseover="window.status='Circos in Conde Nast Portfolio - 23andme';  return true;"
+				onmouseout="window.status='';  return true;">
+				<img id="publication_logos_08" src="img/publication-logos_08.png" width="211" height="72" border="0" alt="Circos in Conde Nast Portfolio - 23andme" /></a></td>
+		<td rowspan="2">
+			<a href="http://www.wired.com/magazine/2010/04/ff_lost/5/"
+				onmouseover="window.status='Circos in Wired - Getting Lost';  return true;"
+				onmouseout="window.status='';  return true;">
+				<img id="publication_logos_09" src="img/publication-logos_09.png" width="153" height="72" border="0" alt="Circos in Wired - Getting Lost" /></a></td>
+		<td rowspan="2">
+			<a href="http://www.pnas.org/content/107/30/13479.long"
+				onmouseover="window.status='Circos in PNAS - A Nitrospira metagenome illuminates the physiology and evolution of globally important nitrite-oxidizing bacteria';  return true;"
+				onmouseout="window.status='';  return true;">
+				<img id="publication_logos_10" src="img/publication-logos_10.png" width="170" height="72" border="0" alt="Circos in PNAS - A Nitrospira metagenome illuminates the physiology and evolution of globally important nitrite-oxidizing bacteria" /></a></td>
+		<td>
+			<img src="img/spacer.gif" width="1" height="61" alt="" /></td>
+	</tr>
+	<tr>
+		<td rowspan="2">
+			<a href="http://www.plosgenetics.org/article/info:doi/10.1371/journal.pgen.1000832"
+				onmouseover="window.status='Circos in PLoS - U87MG Decoded: The Genomic Sequence of a Cytogenetically Aberrant Human Cancer Cell Line';  return true;"
+				onmouseout="window.status='';  return true;">
+				<img id="publication_logos_11" src="img/publication-logos_11.png" width="210" height="63" border="0" alt="Circos in PLoS - U87MG Decoded: The Genomic Sequence of a Cytogenetically Aberrant Human Cancer Cell Line" /></a></td>
+		<td>
+			<img src="img/spacer.gif" width="1" height="11" alt="" /></td>
+	</tr>
+	<tr>
+		<td>
+			<a href="http://www.plantcell.org/cgi/content/abstract/22/7/2277"
+				onmouseover="window.status='Circos in Plant Cell - Fast Diploidization in Close Mesopolyploid Relatives of Arabidopsis';  return true;"
+				onmouseout="window.status='';  return true;">
+				<img id="publication_logos_12" src="img/publication-logos_12.png" width="172" height="52" border="0" alt="Circos in Plant Cell - Fast Diploidization in Close Mesopolyploid Relatives of Arabidopsis" /></a></td>
+		<td>
+			<a href="http://www.nytimes.com/imagepages/2008/11/11/science/20081111_EPIGENETICS_GRAPHIC.html"
+				onmouseover="window.status='Circos in New York Times - Now, for the rest of the genome';  return true;"
+				onmouseout="window.status='';  return true;">
+				<img id="publication_logos_13" src="img/publication-logos_13.png" width="211" height="52" border="0" alt="Circos in New York Times - Now, for the rest of the genome" /></a></td>
+		<td>
+			<a href="http://www.nature.com/leu/journal/v23/n8/full/leu200933a.html"
+				onmouseover="window.status='Circos in Leukemia - Oncogenes, Fusion Genes and Tumor Suppressor Genes
+
+New insights to the MLL recombinome of acute leukemias';  return true;"
+				onmouseout="window.status='';  return true;">
+				<img id="publication_logos_14" src="img/publication-logos_14.png" width="153" height="52" border="0" alt="New insights to the MLL recombinome of acute leukemias" /></a></td>
+		<td>
+			<a href="http://mkweb.bcgsc.ca/circos/img/news/circos-seed.png"
+				onmouseover="window.status='Circos in SEED';  return true;"
+				onmouseout="window.status='';  return true;">
+				<img id="publication_logos_15" src="img/publication-logos_15.png" width="170" height="52" border="0" alt="Circos in SEED" /></a></td>
+		<td>
+			<img src="img/spacer.gif" width="1" height="52" alt="" /></td>
+	</tr>
+</table>
+<!-- End Save for Web Slices -->
+</body>
+</html>
+
+<p>My images created with Circos have appeared in a variety of publications. <a href="http://www.wired.com/magazine/2010/04/ff_lost/5/">Wired</a>, <a href="http://www.nytimes.com/imagepages/2008/11/11/science/20081111_EPIGENETICS_GRAPHIC.html">New York Times</a>, <a href="http://www.portfolio.com/news-markets/national-news/portfolio/2007/10/15/23andMe-Web-Site">Conde Nast Portfolio</a>, and <a href="http://www.americanscientist.org/issues/id.67/past.aspx">American Scientist</a>. 
+
+<p>In genomics, scientific journals like <a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&dopt=Citation&list_uids=19965430">Science</a>, <a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&dopt=Citation&list_uids=20393534">Nature</a>, <a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&dopt=Citation&list_uids=20126413">PLoS</a>, <a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&dopt=Citation&list_uids=19056696">Genome Research</a> and others have published papers that used Circos images (<a href="/circos/in_literature/scientific">Circos citations</a>).
+<div class="copy-image-container" style="width: 950px;">
+<div style="width:950px; height:300px;" class="copy-image">
+<a href="/circos/intro/published_images"><img class=s src='/circos//img/circos-published.jpg' alt='Circos has been published in (950 x 300)'></a>
+</div> <!-- copy-image -->
+<div class="caption">
+<b>&#9650;</b>
+A sampling of published images from New York Times, Conde Nast Portfolio, American Scientist, Nature and various books (<a href='/circos/intro/published_images'>see more</a>).
+</div> <!-- caption -->
+</div> <!-- copy-image-container -->
+<h2>Scriptable and Automatable - Get Your *NIX Geek On</h2>
+
+<p>Creation of images is controlled through a plain-text configuration file &mdash; there is no interactive user interface. This approach to configuration should be very famililar to you if you have UNIX experience. 
+
+<p>If you're used to pointing (and clicking), you're in for both a surprise and a treat and, initially, perhaps for a little bit of frustration. It's ok, don't worry. Although Circos' barrier to entry is higher than most applications you may have used, once you become comfortable with Circos and gain experience in its use, you <i>will</i> see benefits from Circos' approach and will be able to convert the time you invested into learning Circos into great-looking figures.
+
+<p>Image creation can be completely automated &mdash; you can write
+scripts to generate both data and configuration file and make a call
+to Circos to generate the image &mdash; making Circos suitable for
+incorporation into data analysis pipelines and applications. In this
+way, Circos is similar to <a
+href="http://www.gnuplot.info">gnuplot</a>.</p>
+
+<h2>Dynamic Formatting with Run-Time Rules</h2>
+
+<p>Most aspects of the output image can be adjusted using dynamic
+rules, which format elements of the figure based on data values. This
+feature allows a variety of images to be created without changing the
+input data or configuration file.
+<div class="copy-image-container" style="width: 652px;">
+<div style="width:652px; height:336px;" class="copy-image">
+<img class=s src='/circos//img/circos-rules.png' alt='Using run-time rules, format of elements in the figure can be changed based on data values. (652 x 336)'>
+</div> <!-- copy-image -->
+<div class="caption">
+<b>&#9650;</b>
+By using run-time rules, defined in the configuration files, you can control how elements of the figure are drawn based on data values.
+</div> <!-- caption -->
+</div> <!-- copy-image-container -->
+<p>This feature is extremely powerful and uniquely suited for visual analytics. For example, for a given data track (e.g. histogram) you can ask that all bins with values &gt;10 are colored blue, or more generally you can color the bins by value using your own color scheme. Rules can be chained. For example, later in the rule chain, you can ask that any blue bins that fall within a specific position range be hidden.
+
+<div class=strip>
+<div class="copy-image-container" style="width: 998px;">
+<div style="width:998px; height:150px;" class="copy-image">
+<img class=s src='/circos//img/ad-inline-04.png' alt='Circos is great data. Your data! (998 x 150)'>
+</div> <!-- copy-image -->
+</div> <!-- copy-image-container -->
+
+</div>
+
+<h1>Who should care?</h1>
+
+<p>If you are a researcher, analyst, data geek, art director, illustrator or visual artist who is seeking to explore or communicate a data set, or to think outside the box (and inside a circle), Circos is worth looking into.
+
+<h1>What is it for?</h1>
+
+<p>Circos can be used to display any kind of information. It's particularly suitable for layering different data sets to create highly informative infographics with texture and visual appeal. Circos can make low-resolution bitmaps, suitable for basic web-based reporting, as well as publication-quality images with a lot of bling (but I mean legible, clear and informative bling!).
+<div class="copy-image-container" style="width: 940px;">
+<div style="width:940px; height:281px;" class="copy-image">
+<a href="/circos/intro/genomic_data"><img class=s src='/circos//img/panel-genomic.jpg' alt='Circos is great for genomic data. Your genomic data! (940 x 281)'></a>
+</div> <!-- copy-image -->
+<div class="caption">
+<b>&#9650;</b>
+Circos has <a href='/circos/intro/features'>features</a> that makes it ideal for drawing genomic information. Shown here are ChIP-Seq, chr 22 methylation, whole-genome methylation, multi-species comparison, human genome variation and self-similarity and MLL recombinome (<a href='/circos/intro/genomic_data'>see more</a>).
+</div> <!-- caption -->
+</div> <!-- copy-image-container -->
+<p>Circos was initially designed for <a href='/circos/intro/genomic_data'>displaying genomic data</a> (particularly cancer genomics and comparative genomics) and molecular biology. It has <a href="
+/circos/intro/features">specific features</a> that address typical challenges in drawing these kind of data, which tend to be very sparse and encompass a large number of length scales.
+
+<div class=strip>
+<div class="copy-image-container" style="width: 998px;">
+<div style="width:998px; height:150px;" class="copy-image">
+<img class=s src='/circos//img/ad-inline-01.png' alt='Circos is great data. Your data! (998 x 150)'>
+</div> <!-- copy-image -->
+</div> <!-- copy-image-container -->
+
+</div>
+
+<h1>Only for genomics? No!</h1>
+
+<p>Data is data. Circos is flexible. There is nothing about Circos that is specific to genomics &mdash; it just happens that I work in genomics and therefore the tool has been applied to this field. 
+
+<p>Circos can illustrate genomic rearrangements, where a relationship between two elements (genomic positions) represents a structural fusion. Circos can also visually represent the flow of refugees, where a relationship between two elements (countries) represents the extent of ingress and egress.
+<div class="copy-image-container" style="width: 940px;">
+<div style="width:940px; height:281px;" class="copy-image">
+<a href="/circos/intro/general_data"><img class=s src='/circos//img/panel-general.jpg' alt='Circos is great for general data. Your general data! (940 x 281)'></a>
+</div> <!-- copy-image -->
+<div class="caption">
+<b>&#9650;</b>
+Circos is suitable for showing any kind of relationships among data. Shown here are car purchase trends, chemical reactivity, and dating trends, among others (<a href='/circos/intro/general_data'>see more</a>).
+</div> <!-- caption -->
+</div> <!-- copy-image-container -->
+<p>To name a few, Circos has been used to visualize customer flow in the auto industry, volume of courier shipments, database schemas, and presidential debates.
+
+<h1>How is it different?</h1>
+
+<p>My purpose in creating Circos was not as much to create yet another way to draw data, but rather to create a tool which can help make data look beautiful. The compactness of the <a href="
+/circos/intro/circular_approach">circular form</a> is inherently more appealing than a linear layout. Although some figures are ideally suited for a square layout, most of the time a circular figure can match or exceed efficiency in delivering information, have a higher ink-to-data ratio and sit more tightly on the page.
+
+<p>It is easy to plot, format and layer your data with Circos. A large
+variety of plot and feature parameters are customizable, helping you
+make the image that best communicates your data. You supply your data
+to Circos as plain-text files, tell Circos what you want
+plotted using the configuration file, and then create the image.
+<div class="copy-image-container" style="width: 950px;">
+<div style="width:950px; height:277px;" class="copy-image">
+<a href="/circos/presentations/articles/amsci_cover"><img class=s src='/circos//img/circos-dog-panel.jpg' alt='A panel comparing each chromosome of the dog genome with the entire human genome. The Circos American Scientist cover is based on these data. (950 x 277)'></a>
+</div> <!-- copy-image -->
+<div class="caption">
+<b>&#9650;</b>
+Each panel shows the sequence similarity between one dog chromosome, placed at the bottom half of the circle, with the entire human genome, placed at the top. These data were combined into a single figure which appeared on the <a href='http://www.americanscientist.org/issues/id.67/past.aspx'>cover of the American Scientist</a>. The image accompanies the article <a href='http://www.americanscientist.org/template/AssetDetail/assetid/55869'>Genetics and the Shape of Dogs</a> by Elaine Ostrander (<a href='/circos/presentations/articles/amsci_cover'>see more</a>).
+</div> <!-- caption -->
+</div> <!-- copy-image-container -->
+<h1>Useful to you?</h1>
+
+<p>How do you know whether Circos can be useful to you? First, look at <a href="/circos/intro/published_images">published images</a> and see what others are doing with Circos (for other images, see <a href="
+/circos/images/samples">sample image archive</a>). For examples of Circos' capabilities, see the <a href="/circos/tutorials/images">tutorial images</a>. These image sets will give you an idea of the types of data visualizations that Circos can create.
+<div class="copy-image-container" style="width: 950px;">
+<div style="width:950px; height:419px;" class="copy-image">
+<a href="/circos//img/panel-tableviewer-large.jpg"><img class=s src='/circos//img/panel-tableviewer.jpg' alt='Circos can be used to generate visualizations of tabular data. (950 x 419)'></a>
+</div> <!-- copy-image -->
+<div class="caption">
+<b>&#9650;</b>
+A collection of images created by users of the <a href='/tableviewer'>online tableviewer utility</a>, which uses Circos to visualize tabular information.
+(<a href="/circos//img/panel-tableviewer-large.jpg">zoom</a>).
+</div> <!-- caption -->
+</div> <!-- copy-image-container -->
+<p>For quick exposure to Circos, try the <a href="/tableviewer">online tableviewer</a>, which is an instance of Circos designed to visualize tabular data. You can upload a table (e.g. exported from a spreadsheet) and have it drawn <i>&agrave; la</i> Circos. If you don't have any data (who these days doesn't?), you can choose to use pre-generated or random tabular data.
+
+<p>To learn how Circos can be used in specific applications, browse the <a href="
+/circos/guide">walkthrough guides</a> which spend some time telling you about <a href="/circos/guide/visual">features and applications</a>, <a href="/circos/guide/genomic">use in genomics</a> and <a href="/circos/guide/tables">application to table visualization</a>. 
+
+<p>To get your feet wet and hands dirty, <a href="/circos/software/download">download Circos</a> and a <a href="
+/circos/tutorials/lessons">read the tutorials</a>, or dive into a <a href="
+/circos/tutorials/course">full course on Circos</a>.
+
+<div class=strip>
+<div class="copy-image-container" style="width: 998px;">
+<div style="width:998px; height:150px;" class="copy-image">
+<img class=s src='/circos//img/ad-inline-03.png' alt='Circos is great data. Your data! (998 x 150)'>
+</div> <!-- copy-image -->
+</div> <!-- copy-image-container -->
+
+</div>
+
+<h1>Brief History</h1>
+
+<p>Circos was originally conceived for visualizing genomic data such
+as alignments and structural variation. Over time, support was added
+for 2D data tracks such as line, scatter, heatmap and histogram plots.
+
+<p>As Circos' popularity grew &mdash; sparked by a <a
+href="http://www.nytimes.com/imagepages/2007/01/22/science/20070123_SCI_ILLO.html">New
+York Times full-page infographic</a> &mdash; it started to be used for
+visualizing other data, not just genomics.
+
+<h1>Future of Circos</h1>
+
+<p>I work on Circos in a passive-aggressive manner - sometimes passive sometimes aggressive. I welcome your comments. 
+
+<p>Visit the <a href="http://groups.google.com/group/circos-data-visualization">Circos forum</a> or contact <a href="mailto:martink@bcgsc.ca">Martin Krzywinski</a> if you would like to report a bug, request a feature or share the ways in which you are using, or hope to use, Circos.
+
+<h1>License and Use</h1>
+
+<p>Circos is free software, licensed under <a href="http://www.gnu.org/copyleft/gpl.html">GPL</a>.
+
+<p>Circos is written in Perl, can be deployed on any operating system
+for which Perl is available (e.g. Windows, Mac OS X, Linux and other
+UNIX flavours) and produces bitmap (PNG) and vector (SVG) images using
+plain text configuration and input files.
+
+<div class=strip>
+<div class="copy-image-container" style="width: 998px;">
+<div style="width:998px; height:150px;" class="copy-image">
+<img class=s src='/circos//img/ad-inline-02.png' alt='Circos is great data. Your data! (998 x 150)'>
+</div> <!-- copy-image -->
+</div> <!-- copy-image-container -->
+
+</div>
+<div id="page-copy-footer">
+</div>
+
+</div> <!-- page-copy -->
+
+</div> <!-- page-container -->
+</div>
+<div id="footer">
+If you are using Circos, please cite us: 
+Krzywinski, M. et al. 
+<a href="http://genome.cshlp.org/content/early/2009/06/15/gr.092759.109.abstract">Circos: an Information Aesthetic for Comparative Genomics.</a> 
+<b>Genome Res</b> (2009) 19:1639-1645 
+|
+<a style="padding:0;margin:0;" href="http://genome.cshlp.org/citmgr?gca=genome;gr.092759.109v1">download citation</a>
+<hr>
+<a href="
+/circos">circos</a> 
+| 
+visualizing genomic data, creating circular data visualizations and making things pretty 
+| 
+<a href="http://scholar.google.ca/scholar?cites=46809609228167220&as_sdt=2005&sciodt=2001&hl=en">who is citing Circos?</a>
+|
+<a href="http://mkweb.bcgsc.ca">other projects by Martin Krzywinski</a>
+<br>
+&#169; 2004-2010 <a href="mailto:martink@bcgsc.ca">Martin Krzywinski</a> | <a href="http://www.bcgsc.ca">Canada's Michael Smith Genome Sciences Centre</a>
+</div>
+</body></html>

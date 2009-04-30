@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Haystack and Whoosh notes &#8212; Crowley Code!</title>
+<link type="text/css" rel="stylesheet" href="/css/typography.css" />
+<link type="text/css" rel="stylesheet" href="/css/style.css" />
+<link type="application/atom+xml" rel="alternate" title="Crowley Code!" href="http://feeds.feedburner.com/rcrowley" />
+<link rel="openid.server" href="http://idproxy.net/openid/server/" />
+<link rel="openid.delegate" href="http://rcrowley.idproxy.net/" />
+</head>
+<body>
+<div class="head">
+	<div class="title"><a href="/">Crowley Code!</a>&nbsp;</div>
+	<div class="subtitle">&nbsp;<small>(Take 12)</small></div>
+	<ul>
+		<li><a href="http://feeds.feedburner.com/rcrowley">Syndicate!</a></li>
+	</ul>
+</div>
+<div class="content"><div class="post">
+<h1><a href="/2009/04/26/haystack-and-whoosh-notes">Haystack and Whoosh notes</a> <small>2009/04/26</small></h1>
+<p>Real search is always better than running <code>LIKE</code> queries
+from MySQL so today I picked up Haystack <a id="f-26-1-src" href="#f-26-1" class="footnote">[1]</a>
+and Whoosh <a id="f-26-2-src" href="#f-26-2" class="footnote">[2]</a>.&nbsp; I chose this combination for
+the low barrier to entry and the easy upgrade path should that be
+required.&nbsp; Both are pure Python and speak <code>setup.py</code>.</p>
+
+<p>The first problem I ran into has actually been fixed but not
+committed.&nbsp; The Gist embedded below patches Whoosh as recommended
+in the bug report <a id="f-26-3-src" href="#f-26-3" class="footnote">[3]</a>.&nbsp; The bug
+manifests itself as &#8220;IOError: [Errno 24] Too many open files&#8221;
+when you try to load even modestly sized datasets all at once.&nbsp;
+I can&#8217;t make my laptop give me more than 8192 file descriptors
+and my Slice will only give me 1024 so I could never see just how bad
+things got on a 1.5 million row sample.&nbsp; With the patch, though,
+everything is golden.</p>
+
+<p>The second and last problem I encountered was more of a documentation
+problem.&nbsp; Some of the official tutorial is a bit overkill, so
+here&#8217;s the fastest get-up-and-go tutorial I can distill:</p>
+
+<ol>
+
+<li><p>Add <code>'haystack',</code> to <code>INSTALLED_APPS</code> in your
+<code>settings.py</code>.&nbsp; Also add these two lines to let Haystack
+know where to keep your Whoosh index files:</p>
+<pre>HAYSTACK_SEARCH_ENGINE = 'whoosh'
+HAYSTACK_WHOOSH_PATH = '/path/to/server/writable/directory'</pre></li>
+
+<li><p>Add two lines to your global <code>urls.py</code>:</p>
+<pre>import haystack
+haystack.autodiscover()</pre></li>
+
+<li><p>Create a file called <code>search_indexes.py</code> next to
+<code>models.py</code>.&nbsp; This file will contain model-like classes
+defining your search schema.&nbsp; It is important to list every field you
+will want in your search results (the primary key, for example) in the
+search schema.&nbsp; The field defined with <code>document=True</code> and
+the <code>prepare</code> method determine the searchable data.</p>
+<p><strong>Update: <a href="http://github.com/toastdriven">Daniel Lindsley</a>
+pointed out that Haystack reserves <code>id</code> for itself so I&#8217;ve
+changed my example to use a <code>slug</code> field.&nbsp; Same point
+applies, just don&#8217;t use an <code>id</code> field in your subclasses
+of <code>SearchIndex</code>.</strong></p>
+<pre>from haystack import indexes
+from haystack.sites import site
+from models import Foo
+class FooIndex(indexes.SearchIndex):
+	<strong>text = indexes.CharField(document=True)</strong>
+	slug = indexes.CharField(model_attr='slug')
+	name = indexes.CharField(model_attr='name')
+	city = indexes.CharField(model_attr='city')
+	state = indexes.CharField(model_attr='state')
+	def prepare(self, obj):
+		self.prepared_data = super(FooIndex, self).prepare(obj)
+		<strong>self.prepared_data['text'] = obj.name</strong>
+		return self.prepared_data
+site.register(Foo, FooIndex)</pre>
+<p>I&#8217;ve called the indexable data &#8220;text&#8221; and use the
+<code>prepare</code> method to explicitly allow searching by name
+only.&nbsp; The official documentation ask for a template file to use
+during preparation but I think this is overkill.</p></li>
+
+<li><p>Replace your old ORM-based search view with something like this:</p>
+<pre>from haystack.views import SearchView
+def search(req):
+	return SearchView(template='search.html')(req)</pre></li>
+
+<li><p>Replace your search page&#8217;s template with something like this:</p>
+<pre>{% extends 'layout.html' %}
+{% url core.views.search as base %}
+{% block content %}
+&lt;form action="{{ base }}" method="get"&gt;
+&lt;h1&gt;&lt;label for="query"&gt;{% block title %}Search{% endblock %}&lt;/label&gt;
+for &lt;input id="query" name="query" type="text" value="{{ query }}" /&gt;
+&lt;input type="submit" value="Search" class="button" /&gt;&lt;/h1&gt;
+&lt;/form&gt;
+{% if page.object_list %}
+	&lt;ol start="{{ page.start_index }}"&gt;
+	{% for o in page.object_list %}
+		&lt;li&gt;&lt;a href="{{ base }}/{{ o.slug }}"&gt;{{ o.name }}&lt;/a&gt;&lt;/li&gt;
+	{% endfor %}
+	&lt;/ol&gt;
+	&lt;p&gt;Page {{ page.number }} of {{ page.paginator.num_pages }}&lt;/p&gt;
+	&lt;ul&gt;
+	{% if page.has_previous %}
+		&lt;li&gt;&lt;a href="{{ base }}?query={{ query|urlencode }}&amp;amp;page={{ page.previous_page_number }}"&gt;&amp;larr; Previous&lt;/a&gt;&lt;/li&gt;
+	{% endif %}
+	{% if page.has_next %}
+		&lt;li&gt;&lt;a href="{{ base }}?query={{ query|urlencode }}&amp;amp;page={{ page.next_page_number }}"&gt;Next &amp;rarr;&lt;/a&gt;&lt;/li&gt;
+	{% endif %}
+	&lt;/ul&gt;
+{% else %}
+	{% if query %}
+		&lt;p&gt;We couldn&rsquo;t find anything named &lt;strong&gt;{{ query }}&lt;/strong&gt;&lt;/p&gt;
+	{% endif %}
+{% endif %}
+{% endblock %}</pre>
+<p>The view gets the <code>query</code>, a <code>page</code> from a regular
+Django Paginator and the <code>paginator</code> itself.&nbsp; A
+<code>form</code> comes along too but I prefer to ignore this.&nbsp; If
+you defined your own User model that lives at <code>req.user</code>, it
+must implement <code>get_and_delete_messages</code> <a id="f-26-4-src" href="#f-26-4" class="footnote">[4]</a>
+because <code>django.contrib.auth.models.User</code> leaks into
+<code>django.core.context_preprocessors</code> a bit.</p></li>
+
+</ol>
+
+<p>Here&#8217;s the previously mentioned <del>patch-and-</del>install script
+<strong>(Updated to reflect bugfixes merged into the trunk of
+Whoosh!)</strong>:</p>
+
+<script src="http://gist.github.com/102284.js"></script>
+
+
+<ol class="footnote">
+	<li id="f-26-1"><a href="http://haystacksearch.org/">http://haystacksearch.org/</a> <a href="#f-26-1-src" class="footnote-src">&#8617;</a></li>
+	<li id="f-26-2"><a href="http://whoosh.ca/">http://whoosh.ca/</a> <a href="#f-26-2-src" class="footnote-src">&#8617;</a></li>
+	<li id="f-26-3"><a href="http://trac.whoosh.ca/ticket/25">http://trac.whoosh.ca/ticket/25</a> <a href="#f-26-3-src" class="footnote-src">&#8617;</a></li>
+	<li id="f-26-4"><a href="http://github.com/rcrowley/django-twitterauth/commit/83ba6a07df3e97455abd4ab2b3ffaba7096407bc">http://github.com/rcrowley/django-twitterauth/commit/83ba6a07df3e97455abd4ab2b3ffaba7096407bc</a> <a href="#f-26-4-src" class="footnote-src">&#8617;</a></li>
+</ol>
+
+</div>
+</div>
+<div class="foot">
+	<div class="about">
+		<p><big>Richard Crowley?</big>&nbsp;
+		Kentuckian engineer who cooks and eats in between bicycling
+		and beering.</p>
+		<p>I blog mostly about programming and databases.&nbsp; Browse
+		by <a href="/archives">month</a> or <a href="/tags">tag</a>.</p>
+		<ul>
+			<li><a href="http://github.com/rcrowley">GitHub</a></li>
+			<li><a href="http://twitter.com/rcrowley">Twitter</a></li>
+			<li><a href="http://del.icio.us/rcrowley">del.icio.us</a></li>
+			<li><a href="http://flickr.com/photos/rcrowley/">Flickr</a></li>
+		</ul>
+	</div>
+	<div class="projects">
+		<p><big>To blame for...</big></p>
+		<ul>
+			<li><a href="/2009/06/23/building-opendns-stats-at-velocity">OpenDNS
+		Stats</a></li>
+			<li>The <a href="http://code.flickr.com/trac/browser/trunk/uploadr">open
+			source</a> <a href="http://flickr.com/tools/uploadr">Flickr
+			Uploadr</a></li>
+			<li><a href="http://car.rcrowley.org/">Where&#8217;s my car?</a>, for
+			preventing parking tickets in San Francisco</li>
+			<li><a href="http://oembed.com/">OEmbed</a> (beer is the one true
+			Internet standard)</li>
+			<li><a href="http://github.com/rcrowley/bashpress">Bashpress</a></li>
+			<li><a href="http://dopploadr.rcrowley.org/">Dopploadr</a>, for fuzzy
+			geotags</li>
+			<li><a href="http://github.com/rcrowley/powncefs">PownceFS</a> (RIP)</li>
+		</ul>
+	</div>
+	<br />
+</div>
+<div class="foot">
+	<p>&copy; 2009 Richard Crowley.&nbsp; Managed by <a
+	href="http://github.com/rcrowley/bashpress">Bashpress</a>.</p>
+</div>
+<script type="text/javascript" src="/js/delicious.js"></script>
+<script type="text/javascript" src="http://feeds.delicious.com/v2/json/url/e335210b9a8e5813f8962a8b6969717d?count=100&amp;callback=delicious"></script>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-7374837-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</body>
+</html>

@@ -1,0 +1,2135 @@
+<!DOCTYPE html>
+<html b:version='2' class='v2' dir='ltr'>
+<head>
+<meta content='IE=EmulateIE7' http-equiv='X-UA-Compatible'/>
+<meta content='width=1100' name='viewport'/>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
+<script type="text/javascript">(function() { var a=window;function c(b){this.t={};this.tick=function(d,i,e){e=e?e:(new Date).getTime();this.t[d]=[e,i]};this.tick("start",null,b)}var f=new c;a.jstiming={Timer:c,load:f};try{var g=null;if(a.chrome&&a.chrome.csi)g=Math.floor(a.chrome.csi().pageT);if(g==null)if(a.gtbExternal)g=a.gtbExternal.pageT();if(g==null)if(a.external)g=a.external.pageT;if(g)a.jstiming.pt=g}catch(h){};a.tickAboveFold=function(b){b=b;var d=0;if(b.offsetParent){do d+=b.offsetTop;while(b=b.offsetParent)}b=d;b<=750&&a.jstiming.load.tick("aft")};var j=false;function k(){if(!j){j=true;a.jstiming.load.tick("firstScrollTime")}}a.addEventListener?a.addEventListener("scroll",k,false):a.attachEvent("onscroll",k);
+ })();</script>
+<meta content='true' name='MSSmartTagsPreventParsing'/>
+<meta content='blogger' name='generator'/>
+<link href='http://www.blogger.com/favicon.ico' rel='icon' type='image/vnd.microsoft.icon'/>
+<link href='http://blog.doughellmann.com/2009/04/implementing-mapreduce-with.html' rel='canonical'/>
+<link rel="alternate" type="application/atom+xml" title="Doug Hellmann - Atom" href="http://blog.doughellmann.com/feeds/posts/default" />
+<link rel="alternate" type="application/rss+xml" title="Doug Hellmann - RSS" href="http://blog.doughellmann.com/feeds/posts/default?alt=rss" />
+<link rel="service.post" type="application/atom+xml" title="Doug Hellmann - Atom" href="http://www.blogger.com/feeds/5440028356946346379/posts/default" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.blogger.com/rsd.g?blogID=5440028356946346379" />
+<link rel="alternate" type="application/atom+xml" title="Doug Hellmann - Atom" href="http://blog.doughellmann.com/feeds/3858839206773586932/comments/default" />
+<!--[if IE]><script type="text/javascript" src="http://www.blogger.com/static/v1/jsbin/3168568070-ieretrofit.js"></script>
+<![endif]-->
+<!--[if IE]> <script> (function() { var html5 = ("abbr,article,aside,audio,canvas,datalist,details," + "figure,footer,header,hgroup,mark,menu,meter,nav,output," + "progress,section,time,video").split(','); for (var i = 0; i < html5.length; i++) { document.createElement(html5[i]); } })(); </script> <![endif]-->
+<title>Doug Hellmann: Implementing MapReduce with multiprocessing</title>
+<link type='text/css' rel='stylesheet' href='http://www.blogger.com/static/v1/widgets/3671631648-widget_css_2_bundle.css' />
+ <link rel="stylesheet" type="text/css" href="http://www.blogger.com/dyn-css/authorization.css?targetBlogID=5440028356946346379&zx=364cce75-f180-446a-8ffb-91860b241095"/>
+<style type="text/css">#navbar-iframe { display:block }
+</style>
+
+<style id='page-skin-1' type='text/css'><!--
+/*
+-----------------------------------------------
+Blogger Template Style
+Name:     Simple
+Designer: Josh Peterson
+URL:      www.noaesthetic.com
+----------------------------------------------- */
+/* Variable definitions
+====================
+<Variable name="keycolor" description="Main Color" type="color" default="#66bbdd"/>
+<Group description="Page Text" selector="body">
+<Variable name="body.font" description="Font" type="font"
+default="normal normal 12px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+<Variable name="body.text.color" description="Text Color" type="color" default="#222222"/>
+</Group>
+<Group description="Backgrounds" selector=".body-fauxcolumns-outer">
+<Variable name="body.background.color" description="Outer Background" type="color" default="#66bbdd"/>
+<Variable name="content.background.color" description="Main Background" type="color" default="#ffffff"/>
+<Variable name="header.background.color" description="Header Background" type="color" default="transparent"/>
+</Group>
+<Group description="Links" selector=".main-outer">
+<Variable name="link.color" description="Link Color" type="color" default="#2288bb"/>
+<Variable name="link.visited.color" description="Visited Color" type="color" default="#888888"/>
+<Variable name="link.hover.color" description="Hover Color" type="color" default="#33aaff"/>
+</Group>
+<Group description="Blog Title" selector=".header h1">
+<Variable name="header.font" description="Font" type="font"
+default="normal normal 60px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+<Variable name="header.text.color" description="Title Color" type="color" default="#3399bb" />
+</Group>
+<Group description="Blog Description" selector=".header .description">
+<Variable name="description.text.color" description="Description Color" type="color"
+default="#777777" />
+</Group>
+<Group description="Tabs Text" selector=".tabs-inner .widget li a">
+<Variable name="tabs.font" description="Font" type="font"
+default="normal normal 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+<Variable name="tabs.text.color" description="Text Color" type="color" default="#999999"/>
+<Variable name="tabs.selected.text.color" description="Selected Color" type="color" default="#000000"/>
+</Group>
+<Group description="Tabs Background" selector=".tabs-outer .PageList">
+<Variable name="tabs.background.color" description="Background Color" type="color" default="#f5f5f5"/>
+<Variable name="tabs.selected.background.color" description="Selected Color" type="color" default="#eeeeee"/>
+</Group>
+<Group description="Post Title" selector="h3.post-title, .comments h4">
+<Variable name="post.title.font" description="Font" type="font"
+default="normal normal 22px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+</Group>
+<Group description="Date Header" selector=".date-header">
+<Variable name="date.header.color" description="Text Color" type="color"
+default="#222222"/>
+<Variable name="date.header.background.color" description="Background Color" type="color"
+default="transparent"/>
+</Group>
+<Group description="Post Footer" selector=".post-footer">
+<Variable name="post.footer.text.color" description="Text Color" type="color" default="#666666"/>
+<Variable name="post.footer.background.color" description="Background Color" type="color"
+default="#f9f9f9"/>
+<Variable name="post.footer.border.color" description="Shadow Color" type="color" default="#eeeeee"/>
+</Group>
+<Group description="Gadgets" selector="h2">
+<Variable name="widget.title.font" description="Title Font" type="font"
+default="normal bold 11px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+<Variable name="widget.title.text.color" description="Title Color" type="color" default="#000000"/>
+<Variable name="widget.alternate.text.color" description="Alternate Color" type="color" default="#999999"/>
+</Group>
+<Group description="Images" selector=".main-inner">
+<Variable name="image.background.color" description="Background Color" type="color" default="#ffffff"/>
+<Variable name="image.border.color" description="Border Color" type="color" default="#eeeeee"/>
+<Variable name="image.text.color" description="Caption Text Color" type="color" default="#222222"/>
+</Group>
+<Group description="Accents" selector=".content-inner">
+<Variable name="body.rule.color" description="Separator Line Color" type="color" default="#eeeeee"/>
+<Variable name="tabs.border.color" description="Tabs Border Color" type="color" default="#eeeeee"/>
+</Group>
+<Variable name="body.background" description="Body Background" type="background"
+color="#eeaa00" default="$(color) none repeat scroll top left"/>
+<Variable name="body.background.override" description="Body Background Override" type="string" default=""/>
+<Variable name="body.background.gradient.cap" description="Body Gradient Cap" type="url"
+default="url(http://www.blogblog.com/1kt/simple/gradients_light.png)"/>
+<Variable name="body.background.gradient.tile" description="Body Gradient Tile" type="url"
+default="url(http://www.blogblog.com/1kt/simple/body_gradient_tile_light.png)"/>
+<Variable name="content.background.color.selector" description="Content Background Color Selector" type="string" default=".content-inner"/>
+<Variable name="content.padding" description="Content Padding" type="length" default="10px"/>
+<Variable name="content.padding.horizontal" description="Content Horizontal Padding" type="length" default="10px"/>
+<Variable name="content.shadow.spread" description="Content Shadow Spread" type="length" default="40px"/>
+<Variable name="content.shadow.spread.webkit" description="Content Shadow Spread (WebKit)" type="length" default="5px"/>
+<Variable name="content.shadow.spread.ie" description="Content Shadow Spread (IE)" type="length" default="10px"/>
+<Variable name="main.border.width" description="Main Border Width" type="length" default="0"/>
+<Variable name="header.background.gradient" description="Header Gradient" type="url" default="none"/>
+<Variable name="header.shadow.offset.left" description="Header Shadow Offset Left" type="length" default="-1px"/>
+<Variable name="header.shadow.offset.top" description="Header Shadow Offset Top" type="length" default="-1px"/>
+<Variable name="header.shadow.spread" description="Header Shadow Spread" type="length" default="1px"/>
+<Variable name="header.padding" description="Header Padding" type="length" default="30px"/>
+<Variable name="header.border.size" description="Header Border Size" type="length" default="1px"/>
+<Variable name="header.bottom.border.size" description="Header Bottom Border Size" type="length" default="0"/>
+<Variable name="header.border.horizontalsize" description="Header Horizontal Border Size" type="length" default="0"/>
+<Variable name="description.text.size" description="Description Text Size" type="string" default="140%"/>
+<Variable name="tabs.margin.top" description="Tabs Margin Top" type="length" default="0" />
+<Variable name="tabs.margin.side" description="Tabs Side Margin" type="length" default="30px" />
+<Variable name="tabs.background.gradient" description="Tabs Background Gradient" type="url"
+default="url(http://www.blogblog.com/1kt/simple/gradients_light.png)"/>
+<Variable name="tabs.border.width" description="Tabs Border Width" type="length" default="1px"/>
+<Variable name="tabs.bevel.border.width" description="Tabs Bevel Border Width" type="length" default="1px"/>
+<Variable name="date.header.padding" description="Date Header Padding" type="string" default="inherit"/>
+<Variable name="date.header.letterspacing" description="Date Header Letter Spacing" type="string" default="inherit"/>
+<Variable name="date.header.margin" description="Date Header Margin" type="string" default="inherit"/>
+<Variable name="post.margin.bottom" description="Post Bottom Margin" type="length" default="25px"/>
+<Variable name="image.border.small.size" description="Image Border Small Size" type="length" default="2px"/>
+<Variable name="image.border.large.size" description="Image Border Large Size" type="length" default="5px"/>
+<Variable name="page.width.selector" description="Page Width Selector" type="string" default=".region-inner"/>
+<Variable name="page.width" description="Page Width" type="string" default="auto"/>
+<Variable name="main.section.margin" description="Main Section Margin" type="length" default="15px"/>
+<Variable name="main.padding" description="Main Padding" type="length" default="15px"/>
+<Variable name="main.padding.top" description="Main Padding Top" type="length" default="30px"/>
+<Variable name="main.padding.bottom" description="Main Padding Bottom" type="length" default="30px"/>
+<Variable name="paging.background"
+color="#ffffff"
+description="Background of blog paging area" type="background"
+default="transparent none no-repeat scroll top center"/>
+<Variable name="footer.bevel" description="Bevel border length of footer" type="length" default="0"/>
+<Variable name="startSide" description="Side where text starts in blog language" type="automatic" default="left"/>
+<Variable name="endSide" description="Side where text ends in blog language" type="automatic" default="right"/>
+*/
+/* Content
+----------------------------------------------- */
+body {
+font: normal normal 12px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #222222;
+background: #eeaa00 none repeat scroll top left;
+padding: 0 40px 40px 40px;
+}
+html body .region-inner {
+min-width: 0;
+max-width: 100%;
+width: auto;
+}
+a:link {
+text-decoration:none;
+color: #cc6611;
+}
+a:visited {
+text-decoration:none;
+color: #888888;
+}
+a:hover {
+text-decoration:underline;
+color: #ff9900;
+}
+.body-fauxcolumn-outer .fauxcolumn-inner {
+background: transparent url(http://www.blogblog.com/1kt/simple/body_gradient_tile_light.png) repeat scroll top left;
+_background-image: none;
+}
+.body-fauxcolumn-outer .cap-top {
+position: absolute;
+z-index: 1;
+height: 400px;
+width: 100%;
+background: #eeaa00 none repeat scroll top left;
+}
+.body-fauxcolumn-outer .cap-top .cap-left {
+width: 100%;
+background: transparent url(http://www.blogblog.com/1kt/simple/gradients_light.png) repeat-x scroll top left;
+_background-image: none;
+}
+.content-outer {
+-moz-box-shadow: 0 0 40px rgba(0, 0, 0, .15);
+-webkit-box-shadow: 0 0 5px rgba(0, 0, 0, .15);
+-goog-ms-box-shadow: 0 0 10px #333333;
+box-shadow: 0 0 40px rgba(0, 0, 0, .15);
+margin-bottom: 1px;
+}
+.content-inner {
+padding: 10px 10px;
+}
+.content-inner {
+background-color: #ffffff;
+}
+/* Header
+----------------------------------------------- */
+.header-outer {
+background: #cc6611 url(http://www.blogblog.com/1kt/simple/gradients_light.png) repeat-x scroll 0 -400px;
+_background-image: none;
+}
+.Header h1 {
+font: normal normal 60px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #ffffff;
+text-shadow: 1px 2px 3px rgba(0, 0, 0, .2);
+}
+.Header h1 a {
+color: #ffffff;
+}
+.Header .description {
+font-size: 140%;
+color: #ffffff;
+}
+.header-inner .Header .titlewrapper {
+padding: 22px 30px;
+}
+.header-inner .Header .descriptionwrapper {
+padding: 0 30px;
+}
+/* Tabs
+----------------------------------------------- */
+.tabs-inner .section:first-child {
+border-top: 0 solid #eeeeee;
+}
+.tabs-inner .section:first-child ul {
+margin-top: -0;
+border-top: 0 solid #eeeeee;
+border-left: 0 solid #eeeeee;
+border-right: 0 solid #eeeeee;
+}
+.tabs-inner .widget ul {
+background: #f5f5f5 url(http://www.blogblog.com/1kt/simple/gradients_light.png) repeat-x scroll 0 -800px;
+_background-image: none;
+border-bottom: 1px solid #eeeeee;
+margin-top: 0;
+margin-left: -30px;
+margin-right: -30px;
+}
+.tabs-inner .widget li a {
+display: inline-block;
+padding: .6em 1em;
+font: normal normal 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #999999;
+border-left: 1px solid #ffffff;
+border-right: 1px solid #eeeeee;
+}
+.tabs-inner .widget li:first-child a {
+border-left: none;
+}
+.tabs-inner .widget li.selected a, .tabs-inner .widget li a:hover {
+color: #000000;
+background-color: #eeeeee;
+text-decoration: none;
+}
+/* Columns
+----------------------------------------------- */
+.main-outer {
+border-top: 0 solid #eeeeee;
+}
+.fauxcolumn-left-outer .fauxcolumn-inner {
+border-right: 1px solid #eeeeee;
+}
+.fauxcolumn-right-outer .fauxcolumn-inner {
+border-left: 1px solid #eeeeee;
+}
+/* Headings
+----------------------------------------------- */
+h2 {
+margin: 0 0 1em 0;
+font: normal bold 11px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #000000;
+text-transform: uppercase;
+}
+/* Widgets
+----------------------------------------------- */
+.widget .zippy {
+color: #999999;
+text-shadow: 2px 2px 1px rgba(0, 0, 0, .1);
+}
+.widget .popular-posts ul {
+list-style: none;
+}
+/* Posts
+----------------------------------------------- */
+.date-header span {
+background-color: transparent;
+color: #222222;
+padding: inherit;
+letter-spacing: inherit;
+margin: inherit;
+}
+.main-inner {
+padding-top: 30px;
+padding-bottom: 30px;
+}
+.main-inner .column-center-inner {
+padding: 0 15px;
+}
+.main-inner .column-center-inner .section {
+margin: 0 15px;
+}
+.post {
+margin: 0 0 25px 0;
+}
+h3.post-title, .comments h4 {
+font: normal normal 22px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+margin: .75em 0 0;
+}
+.post-body {
+font-size: 110%;
+line-height: 1.4;
+position: relative;
+}
+.post-body img, .post-body .tr-caption-container, .Profile img, .Image img,
+.BlogList .item-thumbnail img {
+padding: 2px;
+background: #ffffff;
+border: 1px solid #eeeeee;
+-moz-box-shadow: 1px 1px 5px rgba(0, 0, 0, .1);
+-webkit-box-shadow: 1px 1px 5px rgba(0, 0, 0, .1);
+box-shadow: 1px 1px 5px rgba(0, 0, 0, .1);
+}
+.post-body img, .post-body .tr-caption-container {
+padding: 5px;
+}
+.post-body .tr-caption-container {
+color: #222222;
+}
+.post-body .tr-caption-container img {
+padding: 0;
+background: transparent;
+border: none;
+-moz-box-shadow: 0 0 0 rgba(0, 0, 0, .1);
+-webkit-box-shadow: 0 0 0 rgba(0, 0, 0, .1);
+box-shadow: 0 0 0 rgba(0, 0, 0, .1);
+}
+.post-header {
+margin: 0 0 1.5em;
+line-height: 1.6;
+font-size: 90%;
+}
+.post-footer {
+margin: 20px -2px 0;
+padding: 5px 10px;
+color: #666666;
+background-color: #f9f9f9;
+border-bottom: 1px solid #eeeeee;
+line-height: 1.6;
+font-size: 90%;
+}
+#comments .comment-author {
+padding-top: 1.5em;
+border-top: 1px solid #eeeeee;
+background-position: 0 1.5em;
+}
+#comments .comment-author:first-child {
+padding-top: 0;
+border-top: none;
+}
+.avatar-image-container {
+margin: .2em 0 0;
+}
+#comments .avatar-image-container img {
+border: 1px solid #eeeeee;
+}
+/* Accents
+---------------------------------------------- */
+.section-columns td.columns-cell {
+border-left: 1px solid #eeeeee;
+}
+.blog-pager {
+background: transparent none no-repeat scroll top center;
+}
+.blog-pager-older-link, .home-link,
+.blog-pager-newer-link {
+background-color: #ffffff;
+padding: 5px;
+}
+.footer-outer {
+border-top: 0 dashed #bbbbbb;
+}
+/* Mobile
+----------------------------------------------- */
+body.mobile  {
+padding: 0;
+}
+.mobile .content-inner {
+padding: 0;
+}
+.mobile .content-outer {
+-webkit-box-shadow: 0 0 3px rgba(0, 0, 0, .15);
+box-shadow: 0 0 3px rgba(0, 0, 0, .15);
+padding: 0 40px;
+}
+body.mobile .AdSense {
+margin-left: -40px;
+}
+.mobile .tabs-inner .widget ul {
+margin-left: 0;
+margin-right: 0;
+}
+.mobile .post {
+margin: 0;
+}
+.mobile .main-inner .column-center-inner .section {
+margin: 0;
+}
+.mobile .main-inner {
+padding-top: 20px;
+padding-bottom: 20px;
+}
+.mobile .main-inner .column-center-inner {
+padding: 0;
+}
+.mobile .date-header span {
+padding: 0.4em 10px;
+margin: 0 -10px;
+}
+.mobile h3.post-title {
+margin: 0;
+}
+.mobile .blog-pager {
+background: transparent;
+}
+.mobile .footer-outer {
+border-top: none;
+}
+.mobile .main-inner, .mobile .footer-inner {
+background-color: #ffffff;
+}
+.mobile-link-button {
+background-color: #cc6611;
+}
+.mobile-link-button a:link, .mobile-link-button a:visited {
+color: #ffffff;
+}
+
+--></style>
+<style id='template-skin-1' type='text/css'><!--
+body {
+min-width: 930px;
+}
+.content-outer, .content-fauxcolumn-outer, .region-inner {
+min-width: 930px;
+max-width: 930px;
+_width: 930px;
+}
+.main-inner .columns {
+padding-left: 0;
+padding-right: 360px;
+}
+.main-inner .fauxcolumn-center-outer {
+left: 0;
+right: 360px;
+/* IE6 does not respect left and right together */
+_width: expression(this.parentNode.offsetWidth -
+parseInt("0") -
+parseInt("360px") + 'px');
+}
+.main-inner .fauxcolumn-left-outer {
+width: 0;
+}
+.main-inner .fauxcolumn-right-outer {
+width: 360px;
+}
+.main-inner .column-left-outer {
+width: 0;
+right: 100%;
+margin-left: -0;
+}
+.main-inner .column-right-outer {
+width: 360px;
+margin-right: -360px;
+}
+#layout {
+min-width: 0;
+}
+#layout .content-outer {
+min-width: 0;
+width: 800px;
+}
+#layout .region-inner {
+min-width: 0;
+width: auto;
+}
+--></style>
+<script type="text/javascript">
+if (window.jstiming) window.jstiming.load.tick('headEnd');
+</script></head>
+<body class='loading'>
+<div class='navbar section' id='navbar'><div class='widget Navbar' id='Navbar1'><script type="text/javascript">
+    function setAttributeOnload(object, attribute, val) {
+      if(window.addEventListener) {
+        window.addEventListener("load",
+          function(){ object[attribute] = val; }, false);
+      } else {
+        window.attachEvent('onload', function(){ object[attribute] = val; });
+      }
+    }
+  </script>
+<iframe src="http://www.blogger.com/navbar.g?targetBlogID=5440028356946346379&amp;blogName=Doug+Hellmann&amp;publishMode=PUBLISH_MODE_HOSTED&amp;navbarType=LIGHT&amp;layoutType=LAYOUTS&amp;searchRoot=http%3A%2F%2Fblog.doughellmann.com%2Fsearch&amp;blogLocale=en_US&amp;homepageUrl=http%3A%2F%2Fblog.doughellmann.com%2F&amp;targetPostID=3858839206773586932" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" height="30px" width="100%" id="navbar-iframe" allowtransparency="true" title="Blogger Navigation and Search"></iframe>
+<div></div></div></div>
+<div class='body-fauxcolumns'>
+<div class='fauxcolumn-outer body-fauxcolumn-outer'>
+<div class='cap-top'>
+<div class='cap-left'></div>
+<div class='cap-right'></div>
+</div>
+<div class='fauxborder-left'>
+<div class='fauxborder-right'></div>
+<div class='fauxcolumn-inner'>
+</div>
+</div>
+<div class='cap-bottom'>
+<div class='cap-left'></div>
+<div class='cap-right'></div>
+</div>
+</div>
+</div>
+<div class='content'>
+<div class='content-fauxcolumns'>
+<div class='fauxcolumn-outer content-fauxcolumn-outer'>
+<div class='cap-top'>
+<div class='cap-left'></div>
+<div class='cap-right'></div>
+</div>
+<div class='fauxborder-left'>
+<div class='fauxborder-right'></div>
+<div class='fauxcolumn-inner'>
+</div>
+</div>
+<div class='cap-bottom'>
+<div class='cap-left'></div>
+<div class='cap-right'></div>
+</div>
+</div>
+</div>
+<div class='content-outer'>
+<div class='content-cap-top cap-top'>
+<div class='cap-left'></div>
+<div class='cap-right'></div>
+</div>
+<div class='fauxborder-left content-fauxborder-left'>
+<div class='fauxborder-right content-fauxborder-right'></div>
+<div class='content-inner'>
+<header>
+<div class='header-outer'>
+<div class='header-cap-top cap-top'>
+<div class='cap-left'></div>
+<div class='cap-right'></div>
+</div>
+<div class='fauxborder-left header-fauxborder-left'>
+<div class='fauxborder-right header-fauxborder-right'></div>
+<div class='region-inner header-inner'>
+<div class='header section' id='header'><div class='widget Header' id='Header1'>
+<div id='header-inner'>
+<div class='titlewrapper'>
+<h1 class='title'>
+<a href='http://blog.doughellmann.com/'>Doug Hellmann</a>
+</h1>
+</div>
+<div class='descriptionwrapper'>
+<p class='description'><span><p><i>Code Interstices</i></p>
+
+<p>All the little things that happen between bouts of coding.  Covering internet technologies, Python, Mac OS X, and open source.</p></span></p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+<div class='header-cap-bottom cap-bottom'>
+<div class='cap-left'></div>
+<div class='cap-right'></div>
+</div>
+</div>
+</header>
+<div class='tabs-outer'>
+<div class='tabs-cap-top cap-top'>
+<div class='cap-left'></div>
+<div class='cap-right'></div>
+</div>
+<div class='fauxborder-left tabs-fauxborder-left'>
+<div class='fauxborder-right tabs-fauxborder-right'></div>
+<div class='region-inner tabs-inner'>
+<div class='tabs section' id='crosscol'></div>
+<div class='tabs section' id='crosscol-overflow'></div>
+</div>
+</div>
+<div class='tabs-cap-bottom cap-bottom'>
+<div class='cap-left'></div>
+<div class='cap-right'></div>
+</div>
+</div>
+<div class='main-outer'>
+<div class='main-cap-top cap-top'>
+<div class='cap-left'></div>
+<div class='cap-right'></div>
+</div>
+<div class='fauxborder-left main-fauxborder-left'>
+<div class='fauxborder-right main-fauxborder-right'></div>
+<div class='region-inner main-inner'>
+<div class='columns fauxcolumns'>
+<div class='fauxcolumn-outer fauxcolumn-center-outer'>
+<div class='cap-top'>
+<div class='cap-left'></div>
+<div class='cap-right'></div>
+</div>
+<div class='fauxborder-left'>
+<div class='fauxborder-right'></div>
+<div class='fauxcolumn-inner'>
+</div>
+</div>
+<div class='cap-bottom'>
+<div class='cap-left'></div>
+<div class='cap-right'></div>
+</div>
+</div>
+<div class='fauxcolumn-outer fauxcolumn-left-outer'>
+<div class='cap-top'>
+<div class='cap-left'></div>
+<div class='cap-right'></div>
+</div>
+<div class='fauxborder-left'>
+<div class='fauxborder-right'></div>
+<div class='fauxcolumn-inner'>
+</div>
+</div>
+<div class='cap-bottom'>
+<div class='cap-left'></div>
+<div class='cap-right'></div>
+</div>
+</div>
+<div class='fauxcolumn-outer fauxcolumn-right-outer'>
+<div class='cap-top'>
+<div class='cap-left'></div>
+<div class='cap-right'></div>
+</div>
+<div class='fauxborder-left'>
+<div class='fauxborder-right'></div>
+<div class='fauxcolumn-inner'>
+</div>
+</div>
+<div class='cap-bottom'>
+<div class='cap-left'></div>
+<div class='cap-right'></div>
+</div>
+</div>
+<!-- corrects IE6 width calculation -->
+<div class='columns-inner'>
+<div class='column-center-outer'>
+<div class='column-center-inner'>
+<div class='main section' id='main'><div class='widget Blog' id='Blog1'>
+<div class='blog-posts hfeed'>
+<!-- google_ad_section_start(name=default) -->
+
+          <div class="date-outer">
+        
+<h2 class='date-header'><span>Tuesday, April 28, 2009</span></h2>
+
+          <div class="date-posts">
+        
+<div class='post-outer'>
+<div class='post hentry'>
+<a name='3858839206773586932'></a>
+<h3 class='post-title entry-title'>
+Implementing MapReduce with multiprocessing
+</h3>
+<div class='post-header'>
+<div class='post-header-line-1'></div>
+</div>
+<div class='post-body entry-content'>
+<div class="section" id="implementing-mapreduce-with-multiprocessing"><h1>Implementing MapReduce with multiprocessing</h1><p><i>While looking for example applications for Python's multiiprocessing module to use in this week's PyMOTW, someone suggested implementing MapReduce. Below is the simple implementation I came up with (the source is included in the PyMOTW tarball as of version 1.89).</i></p><p>The Pool class can be used to create a simple single-server MapReduce implementation.  Although it does not give the full benefits of distributed processing, it does illustrate how easy it is to break some problems down into distributable units of work.</p><div class="section" id="simplemapreduce"><h2>SimpleMapReduce</h2><p>In MapReduce, input data is broken down into chunks for processing by different worker instances.  Each chunk of input data is <em>mapped</em> to an intermediate state using a simple transformation.  The intermediate data is then collected together and partitioned based on a key value so that all of the related values are together.  Finally, the partitioned data is <em>reduced</em> to a result set.</p><div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">collections</span><br /><span class="kn">import</span> <span class="nn">multiprocessing</span><br /><br /><span class="k">class</span> <span class="nc">SimpleMapReduce</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span><br />    <br />    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">map_func</span><span class="p">,</span> <span class="n">reduce_func</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span><br />        <span class="sd">&quot;&quot;&quot;</span><br /><span class="sd">        map_func</span><br /><br /><span class="sd">          Function to map inputs to intermediate data. Takes as argument one input value and</span><br /><span class="sd">          returns a tuple with the key and a value to be reduced.</span><br /><span class="sd">        </span><br /><span class="sd">        reduce_func</span><br /><span class="sd">          Function to reduce partitioned version of intermediate data to final output. Takes</span><br /><span class="sd">          as argument a key as produced by map_func and a sequence of the values associated</span><br /><span class="sd">          with that key.</span><br /><span class="sd">         </span><br /><span class="sd">        num_workers</span><br /><span class="sd">          The number of workers to create in the pool. Defaults to the number of CPUs</span><br /><span class="sd">          available on the current host.</span><br /><span class="sd">        &quot;&quot;&quot;</span><br />        <span class="bp">self</span><span class="o">.</span><span class="n">map_func</span> <span class="o">=</span> <span class="n">map_func</span><br />        <span class="bp">self</span><span class="o">.</span><span class="n">reduce_func</span> <span class="o">=</span> <span class="n">reduce_func</span><br />        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">num_workers</span><span class="p">)</span><br />    <br />    <span class="k">def</span> <span class="nf">partition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapped_values</span><span class="p">):</span><br />        <span class="sd">&quot;&quot;&quot;Organize the mapped values by their key.</span><br /><span class="sd">        Returns a dictionary mapping each key to a sequence of values.</span><br /><span class="sd">        &quot;&quot;&quot;</span><br />        <span class="n">partitioned_data</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span><br />        <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">mapped_values</span><span class="p">:</span><br />            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">:</span><br />                <span class="n">partitioned_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><br />        <span class="k">return</span> <span class="n">partitioned_data</span><br />    <br />    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="mf">1</span><span class="p">):</span><br />        <span class="sd">&quot;&quot;&quot;Process the inputs through the map and reduce functions given.</span><br /><span class="sd">        </span><br /><span class="sd">        inputs</span><br /><span class="sd">          An iterable containing the input data to be processed.</span><br /><span class="sd">        </span><br /><span class="sd">        chunksize=1</span><br /><span class="sd">          The portion of the input data to hand to each worker.  This</span><br /><span class="sd">          can be used to tune performance during the mapping phase.</span><br /><span class="sd">        &quot;&quot;&quot;</span><br />        <span class="n">mapped_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_func</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="n">chunksize</span><span class="p">)</span><br />        <span class="n">partitioned_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="n">mapped_values</span><span class="p">)</span><br />        <span class="n">reduced_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reduce_func</span><span class="p">,</span> <span class="n">partitioned_data</span><span class="o">.</span><span class="n">items</span><span class="p">())</span><br />        <span class="k">return</span> <span class="n">reduced_values</span><br /></pre></div></div></div><div class="section" id="counting-words-in-files"><h2>Counting Words in Files</h2><p>The following example script uses SimpleMapReduce to counts the &#8220;words&#8221; in the reStructuredText source for this article, ignoring some of the markup.</p><div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">multiprocessing</span><br /><span class="kn">import</span> <span class="nn">string</span><br /><br /><span class="kn">from</span> <span class="nn">multiprocessing_mapreduce</span> <span class="kn">import</span> <span class="n">SimpleMapReduce</span><br /><br /><span class="k">def</span> <span class="nf">file_to_words</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span><br />    <span class="sd">&quot;&quot;&quot;Read a file and return a sequence of (word, occurances) values.</span><br /><span class="sd">    &quot;&quot;&quot;</span><br />    <span class="n">STOP_WORDS</span> <span class="o">=</span> <span class="n">set</span><span class="p">([</span><br />        <span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;an&#39;</span><span class="p">,</span> <span class="s">&#39;and&#39;</span><span class="p">,</span> <span class="s">&#39;are&#39;</span><span class="p">,</span> <span class="s">&#39;as&#39;</span><span class="p">,</span> <span class="s">&#39;be&#39;</span><span class="p">,</span> <span class="s">&#39;for&#39;</span><span class="p">,</span> <span class="s">&#39;if&#39;</span><span class="p">,</span> <span class="s">&#39;in&#39;</span><span class="p">,</span> <br />        <span class="s">&#39;is&#39;</span><span class="p">,</span> <span class="s">&#39;it&#39;</span><span class="p">,</span> <span class="s">&#39;of&#39;</span><span class="p">,</span> <span class="s">&#39;or&#39;</span><span class="p">,</span> <span class="s">&#39;py&#39;</span><span class="p">,</span> <span class="s">&#39;rst&#39;</span><span class="p">,</span> <span class="s">&#39;the&#39;</span><span class="p">,</span> <span class="s">&#39;to&#39;</span><span class="p">,</span> <span class="s">&#39;with&#39;</span><span class="p">,</span><br />        <span class="p">])</span><br />    <span class="n">TR</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">maketrans</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">punctuation</span><span class="p">,</span> <span class="s">&#39; &#39;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">punctuation</span><span class="p">))</span><br /><br />    <span class="k">print</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">current_process</span><span class="p">()</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;reading&#39;</span><span class="p">,</span> <span class="n">filename</span><br />    <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span><br /><br />    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;rt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span><br />        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span><br />            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;..&#39;</span><span class="p">):</span> <span class="c"># Skip rst comment lines</span><br />                <span class="k">continue</span><br />            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">TR</span><span class="p">)</span> <span class="c"># Strip punctuation</span><br />            <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">():</span><br />                <span class="n">word</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><br />                <span class="k">if</span> <span class="n">word</span><span class="o">.</span><span class="n">isalpha</span><span class="p">()</span> <span class="ow">and</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">STOP_WORDS</span><span class="p">:</span><br />                    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="mf">1</span><span class="p">)</span> <span class="p">)</span><br />    <span class="k">return</span> <span class="n">output</span><br /><br /><br /><span class="k">def</span> <span class="nf">count_words</span><span class="p">(</span><span class="n">item</span><span class="p">):</span><br />    <span class="sd">&quot;&quot;&quot;Convert the partitioned data for a word to a</span><br /><span class="sd">    tuple containing the word and the number of occurances.</span><br /><span class="sd">    &quot;&quot;&quot;</span><br />    <span class="n">word</span><span class="p">,</span> <span class="n">occurances</span> <span class="o">=</span> <span class="n">item</span><br />    <span class="k">return</span> <span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">occurances</span><span class="p">))</span><br /><br /><br /><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span><br />    <span class="kn">import</span> <span class="nn">operator</span><br />    <span class="kn">import</span> <span class="nn">glob</span><br /><br />    <span class="n">input_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s">&#39;*.rst&#39;</span><span class="p">)</span><br />    <br />    <span class="n">mapper</span> <span class="o">=</span> <span class="n">SimpleMapReduce</span><span class="p">(</span><span class="n">file_to_words</span><span class="p">,</span> <span class="n">count_words</span><span class="p">)</span><br />    <span class="n">word_counts</span> <span class="o">=</span> <span class="n">mapper</span><span class="p">(</span><span class="n">input_files</span><span class="p">)</span><br />    <span class="n">word_counts</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="mf">1</span><span class="p">))</span><br />    <span class="n">word_counts</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span><br />    <br />    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">TOP 20 WORDS BY FREQUENCY</span><span class="se">\n</span><span class="s">&#39;</span><br />    <span class="n">top20</span> <span class="o">=</span> <span class="n">word_counts</span><span class="p">[:</span><span class="mf">20</span><span class="p">]</span><br />    <span class="n">longest</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">top20</span><span class="p">)</span><br />    <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">top20</span><span class="p">:</span><br />        <span class="k">print</span> <span class="s">&#39;</span><span class="si">%-*s</span><span class="s">: </span><span class="si">%5s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">longest</span><span class="o">+</span><span class="mf">1</span><span class="p">,</span> <span class="n">word</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span><br /></pre></div></div><p>Each input filename is converted to a sequence of <tt class="docutils literal"><span class="pre">(word,</span> <span class="pre">1)</span></tt> pairs by <tt class="docutils literal"><span class="pre">file_to_words</span></tt>.  The data is partitioned by <tt class="docutils literal"><span class="pre">SimpleMapReduce.partition()</span></tt> using the word as the key, so the partitioned data consists of a key and a sequence of 1 values representing the number of occurrences of the word.  The reduction phase converts that to a pair of <tt class="docutils literal"><span class="pre">(word,</span> <span class="pre">count)</span></tt> values by calling <tt class="docutils literal"><span class="pre">count_words</span></tt> for each element of the partitioned data set.</p><div class="highlight-python"><pre>$ python multiprocessing_wordcount.py<br />PoolWorker-1 reading communication.rst<br />PoolWorker-1 reading index.rst<br />PoolWorker-1 reading mapreduce.rst<br />PoolWorker-2 reading basics.rst<br /><br />TOP 20 WORDS BY FREQUENCY<br /><br />process         :    74<br />multiprocessing :    42<br />worker          :    35<br />after           :    31<br />running         :    30<br />start           :    29<br />python          :    28<br />processes       :    27<br />literal         :    26<br />header          :    26<br />pymotw          :    26<br />end             :    26<br />daemon          :    23<br />now             :    22<br />consumer        :    20<br />starting        :    18<br />exiting         :    17<br />event           :    16<br />that            :    16<br />by              :    15</pre><br /></div><div class="admonition-see-also admonition seealso"><p class="first admonition-title">See also</p><dl class="last docutils"><dt><a class="reference external" href="http://en.wikipedia.org/wiki/MapReduce">MapReduce - Wikipedia</a></dt><dd>Overview of MapReduce on Wikipedia.</dd><dt><a class="reference external" href="http://labs.google.com/papers/mapreduce.html">MapReduce: Simplified Data Processing on Large Clusters</a></dt><dd>Google Labs presentation and paper on MapReduce.</dd></dl></div><p><em>Special thanks to Jesse Noller for helping review this information.</em></p></div></div><p><a class="reference external" href="http://www.doughellmann.com/PyMOTW/">PyMOTW Home</a></p>
+<div style='clear: both;'></div>
+</div>
+<div class='post-footer'>
+<div class='post-footer-line post-footer-line-1'><span class='post-author vcard'>
+Posted by
+<span class='fn'>Doug Hellmann</span>
+</span>
+<span class='post-timestamp'>
+at
+<a class='timestamp-link' href='http://blog.doughellmann.com/2009/04/implementing-mapreduce-with.html' rel='bookmark' title='permanent link'><abbr class='published' title='2009-04-28T08:13:00-04:00'>8:13 AM</abbr></a>
+</span>
+<span class='post-comment-link'>
+</span>
+<span class='post-icons'>
+<span class='item-action'>
+<a href='http://www.blogger.com/email-post.g?blogID=5440028356946346379&postID=3858839206773586932' title='Email Post'>
+<img alt='' class='icon-action' height='13' src='http://img1.blogblog.com/img/icon18_email.gif' width='18'/>
+</a>
+</span>
+<span class='item-control blog-admin pid-911325318'>
+<a href='http://www.blogger.com/post-edit.g?blogID=5440028356946346379&postID=3858839206773586932' title='Edit Post'>
+<img alt='' class='icon-action' height='18' src='http://img2.blogblog.com/img/icon18_edit_allbkg.gif' width='18'/>
+</a>
+</span>
+</span>
+</div>
+<div class='post-footer-line post-footer-line-2'><span class='post-labels'>
+Labels:
+<a href='http://blog.doughellmann.com/search/label/PyMOTW' rel='tag'>PyMOTW</a>,
+<a href='http://blog.doughellmann.com/search/label/python' rel='tag'>python</a>
+</span>
+</div>
+<div class='post-footer-line post-footer-line-3'><span class='post-location'>
+</span>
+</div>
+</div>
+</div>
+<div class='comments' id='comments'>
+<a name='comments'></a>
+<h4>
+
+          1 comments:
+        
+</h4>
+<div id='Blog1_comments-block-wrapper'>
+<dl class='avatar-comment-indent' id='comments-block'>
+<dt class='comment-author ' id='c8159302585672912324'>
+<a name='c8159302585672912324'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><img src="http://img1.blogblog.com/img/blank.gif" width="16" height="16" alt="" title="Anonymous">
+
+</span></div>
+Anonymous
+said...
+</dt>
+<dd class='comment-body' id='Blog1_cmt-8159302585672912324'>
+<p>
+Nice example - thanks!
+</p>
+</dd>
+<dd class='comment-footer'>
+<span class='comment-timestamp'>
+<a href='http://blog.doughellmann.com/2009/04/implementing-mapreduce-with.html?showComment=1242035340000#c8159302585672912324' title='comment permalink'>
+May 11, 2009 5:49 AM
+</a>
+<span class='item-control blog-admin pid-1887324845'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=5440028356946346379&postID=8159302585672912324' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+</dl>
+</div>
+<p class='comment-footer'>
+<a href='https://www.blogger.com/comment.g?blogID=5440028356946346379&postID=3858839206773586932' onclick=''>Post a Comment</a>
+</p>
+<div id='backlinks-container'>
+<div id='Blog1_backlinks-container'>
+</div>
+</div>
+</div>
+</div>
+<div id="latency-3858839206773586932"></div><script type="text/javascript">if (window['tickAboveFold']) {window['tickAboveFold'](document.getElementById("latency-3858839206773586932")); } </script>
+
+        </div></div>
+      
+<!-- google_ad_section_end -->
+</div>
+<div class='blog-pager' id='blog-pager'>
+<span id='blog-pager-newer-link'>
+<a class='blog-pager-newer-link' href='http://blog.doughellmann.com/2009/05/case-for-working-with-your-hands.html' id='Blog1_blog-pager-newer-link' title='Newer Post'>Newer Post</a>
+</span>
+<span id='blog-pager-older-link'>
+<a class='blog-pager-older-link' href='http://blog.doughellmann.com/2009/04/pymotw-multiprocessing-part-2.html' id='Blog1_blog-pager-older-link' title='Older Post'>Older Post</a>
+</span>
+<a class='home-link' href='http://blog.doughellmann.com/'>Home</a>
+</div>
+<div class='clear'></div>
+<div class='post-feeds'>
+<div class='feed-links'>
+Subscribe to:
+<a class='feed-link' href='http://blog.doughellmann.com/feeds/3858839206773586932/comments/default' target='_blank' type='application/atom+xml'>Post Comments (Atom)</a>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+<div class='column-left-outer'>
+<div class='column-left-inner'>
+<aside>
+</aside>
+</div>
+</div>
+<div class='column-right-outer'>
+<div class='column-right-inner'>
+<aside>
+<div class='sidebar section' id='sidebar-right-1'><div class='widget HTML' id='HTML4'>
+<script type='text/javascript'>
+                //disqus widget v1.1
+                var disqus_shortname = 'doughellmann';
+                var disqus_blogger_current_url = 'http://blog.doughellmann.com/2009/04/implementing-mapreduce-with.html';
+            </script>
+<style type='text/css'>
+                    #comments {display:none;}
+                </style>
+<script type='text/javascript'>
+                    (function() {
+                        var get_comment_block = function() {
+                            return document.getElementById('comments');
+                        };
+                        var comment_block = get_comment_block();
+                        if (!!comment_block) {
+                        var disqus_div = document.createElement('div'); disqus_div.id = 'disqus_thread';
+                        comment_block.innerHTML = '';
+                        comment_block.appendChild(disqus_div);
+                        var disqus_url = disqus_blogger_current_url;
+                        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                        dsq.src = 'http://'+disqus_shortname+'.disqus.com/embed.js';
+                        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                        comment_block.style.display = 'block';
+                        }
+                    })();
+                </script>
+<style type='text/css'>
+                    .post-comment-link { visibility: hidden; }
+                </style>
+<script type='text/javascript'>
+                (function() {
+                    var get_blog_block = function() {
+                        var block;
+                        for(var i = 0;Math.min(i,19) != 19; i++) {
+                            block = document.getElementById('Blog'+i);
+                            if (!!block) break;
+                        }
+                        return block;
+                    };
+                    var change_links = function(post) {
+                        var spans = post.getElementsByTagName('span');
+                        var anchors, changelist = [], permalink = '', tempanchor;
+                        for(var i = 0; Math.min(i, spans.length) != (spans.length); i++) {
+                            if (/post-timestamp/.test(spans[i].className)) {
+                                anchors = spans[i].getElementsByTagName('a');
+                                for (var k=0; Math.min(k, anchors.length) != (anchors.length); k++) {
+                                    if (/timestamp-link/.test(anchors[k].className))
+                                        permalink = anchors[k].href;
+                                }
+                            }
+                            if (/post-comment-link/.test(spans[i].className))
+                                changelist.push(spans[i]);
+                        }
+                        tempanchor = document.createElement('a');
+                        tempanchor.className = 'comment-link';
+                        tempanchor.href = permalink + '#disqus_thread';
+                        for (var j=0; Math.min(j, changelist.length) != (changelist.length); j++) {
+                            changelist[j].innerHTML = '';
+                            changelist[j].appendChild(tempanchor);
+                            changelist[j].style.visibility = 'visible';
+                        }
+                        if (changelist.length == 0) {
+                            for(var h = 0; Math.min(h, spans.length) != (spans.length); h++) {
+                                if (/post-timestamp/.test(spans[h].className))
+                                    spans[h].appendChild(tempanchor);
+                            }
+                        }
+                    }
+                    var blog_block = get_blog_block();
+                    if (!!blog_block) {
+                    var posts = blog_block.getElementsByTagName('div');
+                    for(var i = 0; Math.min(i, posts.length) != (posts.length); i++) {
+                        if (!/hentry/.test(posts[i].className) || posts[0].id=='post') continue;
+                        change_links(posts[i]);
+                    }
+                    (function () {
+                    var s = document.createElement('script'); s.async = true;
+                    s.src = 'http://disqus.com/forums/'+disqus_shortname+'/count.js';
+                    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+                    }());
+                    }
+                })();
+                </script>
+</div></div>
+<table border='0' cellpadding='0' cellspacing='0' class='section-columns columns-2'>
+<tbody>
+<tr>
+<td class='first columns-cell'>
+<div class='sidebar section' id='sidebar-right-2-1'><div class='widget HTML' id='HTML5'>
+<h2 class='title'>Contact</h2>
+<div class='widget-content'>
+<p>Contact me at: doug <em>dot</em> hellmann <em>at</em> gmail <em>dot</em> com or via one of the other services listed <a href="http://www.doughellmann.com/about/">here</a>.</p>
+
+<p><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/88x31.png" /></a></p>
+</div>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='http://www.blogger.com/rearrange?blogID=5440028356946346379&widgetType=HTML&widgetId=HTML5&action=editWidget' onclick='return _WidgetManager._PopupConfig(document.getElementById("HTML5"));' target='configHTML5' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div><div class='widget LinkList' id='LinkList1'>
+<h2>Links</h2>
+<div class='widget-content'>
+<ul>
+<li><a href='http://www.doughellmann.com/projects/'>My Projects</a></li>
+<li><a href='http://www.doughellmann.com/PyMOTW/'>PyMOTW</a></li>
+<li><a href='http://www.oreillynet.com/pub/au/3123'>My O'Reilly Profile</a></li>
+<li><a href='http://www.google.com/reader/shared/14818162495115447707'>Link Blog</a></li>
+<li><a href='http://del.icio.us/dhellmann'>Del.icio.us</a></li>
+</ul>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='http://www.blogger.com/rearrange?blogID=5440028356946346379&widgetType=LinkList&widgetId=LinkList1&action=editWidget' onclick='return _WidgetManager._PopupConfig(document.getElementById("LinkList1"));' target='configLinkList1' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div>
+</div><div class='widget BlogArchive' id='BlogArchive1'>
+<h2>Blog Archive</h2>
+<div class='widget-content'>
+<div id='ArchiveList'>
+<div id='BlogArchive1_ArchiveList'>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/search?updated-min=2010-01-01T00%3A00%3A00-05%3A00&updated-max=2011-01-01T00%3A00%3A00-05%3A00&max-results=31'>2010</a>
+<span class='post-count' dir='ltr'>(31)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2010_10_01_archive.html'>October 2010</a>
+<span class='post-count' dir='ltr'>(4)</span>
+<ul class='posts'>
+<li><a href='http://blog.doughellmann.com/2010/10/pymotw-configparser-work-with.html'>PyMOTW: ConfigParser - Work with configuration fil...</a></li>
+<li><a href='http://blog.doughellmann.com/2010/10/pymotw-sqlite3-embedded-relational.html'>PyMOTW: sqlite3 - Embedded Relational Database</a></li>
+<li><a href='http://blog.doughellmann.com/2010/10/pymotw-random-pseudorandom-number.html'>PyMOTW: random - Pseudorandom number generators</a></li>
+<li><a href='http://blog.doughellmann.com/2010/10/pymotw-select-wait-for-io-efficiently.html'>PyMOTW: select - Wait for I/O Efficiently</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2010_09_01_archive.html'>September 2010</a>
+<span class='post-count' dir='ltr'>(5)</span>
+<ul class='posts'>
+<li><a href='http://blog.doughellmann.com/2010/09/pymotw-socket-network-communication.html'>PyMOTW: socket - Network Communication</a></li>
+<li><a href='http://blog.doughellmann.com/2010/09/oblong-spiral-puzzle.html'>Oblong Spiral Puzzle</a></li>
+<li><a href='http://blog.doughellmann.com/2010/09/pymotw-sysconfig-interpreter-compile.html'>PyMOTW: sysconfig - Interpreter Compile-time Confi...</a></li>
+<li><a href='http://blog.doughellmann.com/2010/09/pymotw-pdb-interactive-debugger.html'>PyMOTW: pdb - Interactive Debugger</a></li>
+<li><a href='http://blog.doughellmann.com/2010/09/pymotw-re-regular-expressions.html'>PyMOTW: re - Regular Expressions</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2010_08_01_archive.html'>August 2010</a>
+<span class='post-count' dir='ltr'>(4)</span>
+<ul class='posts'>
+<li><a href='http://blog.doughellmann.com/2010/08/pymotw-codecs-string-encoding-and.html'>PyMOTW: codecs - String encoding and decoding</a></li>
+<li><a href='http://blog.doughellmann.com/2010/08/pymotw-math-mathematical-functions.html'>PyMOTW: math - Mathematical functions</a></li>
+<li><a href='http://blog.doughellmann.com/2010/08/pymotw-doctest-testing-through.html'>PyMOTW: doctest - Testing through documentation</a></li>
+<li><a href='http://blog.doughellmann.com/2010/08/pymotw-argparse-command-line-option-and.html'>PyMOTW: argparse - Command line option and argumen...</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2010_07_01_archive.html'>July 2010</a>
+<span class='post-count' dir='ltr'>(1)</span>
+<ul class='posts'>
+<li><a href='http://blog.doughellmann.com/2010/07/pymotw-gc-garbage-collector.html'>PyMOTW: gc - Garbage Collector</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2010_06_01_archive.html'>June 2010</a>
+<span class='post-count' dir='ltr'>(1)</span>
+<ul class='posts'>
+<li><a href='http://blog.doughellmann.com/2010/06/pymotw-site-site-wide-configuration.html'>PyMOTW: site - Site-wide configuration</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2010_05_01_archive.html'>May 2010</a>
+<span class='post-count' dir='ltr'>(1)</span>
+<ul class='posts'>
+<li><a href='http://blog.doughellmann.com/2010/05/sphinx-extension-for-linking-to.html'>a Sphinx extension for linking to BitBucket resour...</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2010_04_01_archive.html'>April 2010</a>
+<span class='post-count' dir='ltr'>(4)</span>
+<ul class='posts'>
+<li><a href='http://blog.doughellmann.com/2010/04/virtualenvwrapper-docs-translated-to.html'>virtualenvwrapper docs translated to Spanish</a></li>
+<li><a href='http://blog.doughellmann.com/2010/04/itunes-91-smart-playlist-order-fix.html'>iTunes 9.1 Smart Playlist Order Fix</a></li>
+<li><a href='http://blog.doughellmann.com/2010/04/more-virtualenvwrapper-enhancements.html'>more virtualenvwrapper enhancements</a></li>
+<li><a href='http://blog.doughellmann.com/2010/04/major-new-release-of-virtualenvwrapper.html'>major new release of virtualenvwrapper</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2010_03_01_archive.html'>March 2010</a>
+<span class='post-count' dir='ltr'>(5)</span>
+<ul class='posts'>
+<li><a href='http://blog.doughellmann.com/2010/03/pymotw-fileinput-process-lines-from.html'>PyMOTW: fileinput - Process lines from input strea...</a></li>
+<li><a href='http://blog.doughellmann.com/2010/03/pymotw-turns-3.html'>PyMOTW turns 3</a></li>
+<li><a href='http://blog.doughellmann.com/2010/03/pymotw-creating-xml-documents-with.html'>PyMOTW: Creating XML Documents with ElementTree</a></li>
+<li><a href='http://blog.doughellmann.com/2010/03/pymotw-parsing-xml-documents-with.html'>PyMOTW: Parsing XML Documents with ElementTree</a></li>
+<li><a href='http://blog.doughellmann.com/2010/03/pymotw-tabnanny-indentation-validator.html'>PyMOTW: tabnanny - Indentation validator</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2010_02_01_archive.html'>February 2010</a>
+<span class='post-count' dir='ltr'>(1)</span>
+<ul class='posts'>
+<li><a href='http://blog.doughellmann.com/2010/02/book-review-practical-virtualization.html'>Book Review: Practical Virtualization Solutions</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2010_01_01_archive.html'>January 2010</a>
+<span class='post-count' dir='ltr'>(5)</span>
+<ul class='posts'>
+<li><a href='http://blog.doughellmann.com/2010/01/pymotw-cgitb-detailed-traceback-reports.html'>PyMOTW: cgitb - Detailed traceback reports</a></li>
+<li><a href='http://blog.doughellmann.com/2010/01/book-review-matplotlib-for-python.html'>Book Review: Matplotlib for Python Developers</a></li>
+<li><a href='http://blog.doughellmann.com/2010/01/virtualenvwrapper-tips-and-tricks.html'>virtualenvwrapper tips and tricks</a></li>
+<li><a href='http://blog.doughellmann.com/2010/01/book-review-dive-into-python-3.html'>Book Review: Dive Into Python 3</a></li>
+<li><a href='http://blog.doughellmann.com/2010/01/evaluating-tools-for-developing-with.html'>Evaluating Tools for Developing with SOAP in Pytho...</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate expanded'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy toggle-open'>&#9660;&#160;</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/search?updated-min=2009-01-01T00%3A00%3A00-05%3A00&updated-max=2010-01-01T00%3A00%3A00-05%3A00&max-results=50'>2009</a>
+<span class='post-count' dir='ltr'>(79)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2009_12_01_archive.html'>December 2009</a>
+<span class='post-count' dir='ltr'>(4)</span>
+<ul class='posts'>
+<li><a href='http://blog.doughellmann.com/2009/12/book-review-citizen-engineer.html'>Book Review: Citizen Engineer</a></li>
+<li><a href='http://blog.doughellmann.com/2009/12/you-gotta-love-backwards-compatibility.html'>you gotta love backwards compatibility</a></li>
+<li><a href='http://blog.doughellmann.com/2009/12/switching-development-contexts-with.html'>Switching development contexts with virtualenvwrap...</a></li>
+<li><a href='http://blog.doughellmann.com/2009/12/garlic-chili-recipe.html'>Garlic Chili Recipe</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2009_11_01_archive.html'>November 2009</a>
+<span class='post-count' dir='ltr'>(6)</span>
+<ul class='posts'>
+<li><a href='http://blog.doughellmann.com/2009/11/pymotw-plistlib-manipulate-os-x.html'>PyMOTW: plistlib - Manipulate OS X property list f...</a></li>
+<li><a href='http://blog.doughellmann.com/2009/11/pymotw-sys-part-7-modules-and-imports.html'>PyMOTW: sys, Part 7: Modules and Imports</a></li>
+<li><a href='http://blog.doughellmann.com/2009/11/automatically-back-up-thumb-drives-on.html'>Automatically back up thumb drives on your Mac</a></li>
+<li><a href='http://blog.doughellmann.com/2009/11/pymotw-sys-part-6-low-level-thread.html'>PyMOTW: sys, Part 6: Low-level Thread Support</a></li>
+<li><a href='http://blog.doughellmann.com/2009/11/pymotw-sys-part-5-tracing-your-program.html'>PyMOTW: sys, Part 5: Tracing Your Program As It Ru...</a></li>
+<li><a href='http://blog.doughellmann.com/2009/11/pymotw-sys-part-4-exception-handling.html'>PyMOTW: sys, Part 4: Exception Handling</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2009_10_01_archive.html'>October 2009</a>
+<span class='post-count' dir='ltr'>(4)</span>
+<ul class='posts'>
+<li><a href='http://blog.doughellmann.com/2009/10/pymotw-sys-part-3-memory-management-and.html'>PyMOTW: sys, Part 3: Memory Management and Limits</a></li>
+<li><a href='http://blog.doughellmann.com/2009/10/pymotw-sys-part-2-runtime-environment.html'>PyMOTW: sys Part 2: Runtime Environment</a></li>
+<li><a href='http://blog.doughellmann.com/2009/10/pymotw-sys-part-1-interpreter-settings.html'>PyMOTW: sys, Part 1: Interpreter Settings</a></li>
+<li><a href='http://blog.doughellmann.com/2009/10/duplication-of-effort-or-evolution.html'>Duplication of effort or evolution?</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2009_09_01_archive.html'>September 2009</a>
+<span class='post-count' dir='ltr'>(4)</span>
+<ul class='posts'>
+<li><a href='http://blog.doughellmann.com/2009/09/updating-python-3x-docs-for-ghop.html'>Updating Python 3.x docs for GHOP</a></li>
+<li><a href='http://blog.doughellmann.com/2009/09/pymotw-resource-system-resource.html'>PyMOTW: resource - System resource management</a></li>
+<li><a href='http://blog.doughellmann.com/2009/09/book-review-success-of-open-source.html'>Book Review: The Success of Open Source</a></li>
+<li><a href='http://blog.doughellmann.com/2009/09/pymotw-fractions-rational-numbers.html'>PyMOTW: fractions - Rational Numbers</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2009_08_01_archive.html'>August 2009</a>
+<span class='post-count' dir='ltr'>(9)</span>
+<ul class='posts'>
+<li><a href='http://blog.doughellmann.com/2009/08/pymotw-decimal-fixed-and-floating-point.html'>PyMOTW: decimal - Fixed and floating point math</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2009_07_01_archive.html'>July 2009</a>
+<span class='post-count' dir='ltr'>(9)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2009_06_01_archive.html'>June 2009</a>
+<span class='post-count' dir='ltr'>(9)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2009_05_01_archive.html'>May 2009</a>
+<span class='post-count' dir='ltr'>(4)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate expanded'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy toggle-open'>&#9660;&#160;</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2009_04_01_archive.html'>April 2009</a>
+<span class='post-count' dir='ltr'>(5)</span>
+<ul class='posts'>
+<li><a href='http://blog.doughellmann.com/2009/04/implementing-mapreduce-with.html'>Implementing MapReduce with multiprocessing</a></li>
+<li><a href='http://blog.doughellmann.com/2009/04/pymotw-multiprocessing-part-2.html'>PyMOTW: multiprocessing, part 2</a></li>
+<li><a href='http://blog.doughellmann.com/2009/04/pymotw-multiprocessing-part-1.html'>PyMOTW: multiprocessing, part 1</a></li>
+<li><a href='http://blog.doughellmann.com/2009/04/configuring-firefox-so-its-tabwindow.html'>Configuring Firefox so its Tab/Window Behavior isn...</a></li>
+<li><a href='http://blog.doughellmann.com/2009/04/pymotw-pipes.html'>PyMOTW: pipes</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2009_03_01_archive.html'>March 2009</a>
+<span class='post-count' dir='ltr'>(6)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2009_02_01_archive.html'>February 2009</a>
+<span class='post-count' dir='ltr'>(7)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2009_01_01_archive.html'>January 2009</a>
+<span class='post-count' dir='ltr'>(12)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/search?updated-min=2008-01-01T00%3A00%3A00-05%3A00&updated-max=2009-01-01T00%3A00%3A00-05%3A00&max-results=50'>2008</a>
+<span class='post-count' dir='ltr'>(122)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2008_12_01_archive.html'>December 2008</a>
+<span class='post-count' dir='ltr'>(9)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2008_11_01_archive.html'>November 2008</a>
+<span class='post-count' dir='ltr'>(13)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2008_10_01_archive.html'>October 2008</a>
+<span class='post-count' dir='ltr'>(7)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2008_09_01_archive.html'>September 2008</a>
+<span class='post-count' dir='ltr'>(7)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2008_08_01_archive.html'>August 2008</a>
+<span class='post-count' dir='ltr'>(8)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2008_07_01_archive.html'>July 2008</a>
+<span class='post-count' dir='ltr'>(13)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2008_06_01_archive.html'>June 2008</a>
+<span class='post-count' dir='ltr'>(16)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2008_05_01_archive.html'>May 2008</a>
+<span class='post-count' dir='ltr'>(13)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2008_04_01_archive.html'>April 2008</a>
+<span class='post-count' dir='ltr'>(10)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2008_03_01_archive.html'>March 2008</a>
+<span class='post-count' dir='ltr'>(6)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2008_02_01_archive.html'>February 2008</a>
+<span class='post-count' dir='ltr'>(8)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2008_01_01_archive.html'>January 2008</a>
+<span class='post-count' dir='ltr'>(12)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/search?updated-min=2007-01-01T00%3A00%3A00-05%3A00&updated-max=2008-01-01T00%3A00%3A00-05%3A00&max-results=50'>2007</a>
+<span class='post-count' dir='ltr'>(139)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2007_12_01_archive.html'>December 2007</a>
+<span class='post-count' dir='ltr'>(19)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2007_11_01_archive.html'>November 2007</a>
+<span class='post-count' dir='ltr'>(25)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2007_10_01_archive.html'>October 2007</a>
+<span class='post-count' dir='ltr'>(12)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2007_09_01_archive.html'>September 2007</a>
+<span class='post-count' dir='ltr'>(8)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2007_08_01_archive.html'>August 2007</a>
+<span class='post-count' dir='ltr'>(11)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2007_07_01_archive.html'>July 2007</a>
+<span class='post-count' dir='ltr'>(9)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2007_06_01_archive.html'>June 2007</a>
+<span class='post-count' dir='ltr'>(8)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2007_05_01_archive.html'>May 2007</a>
+<span class='post-count' dir='ltr'>(12)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2007_04_01_archive.html'>April 2007</a>
+<span class='post-count' dir='ltr'>(7)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2007_03_01_archive.html'>March 2007</a>
+<span class='post-count' dir='ltr'>(9)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2007_02_01_archive.html'>February 2007</a>
+<span class='post-count' dir='ltr'>(6)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2007_01_01_archive.html'>January 2007</a>
+<span class='post-count' dir='ltr'>(13)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/search?updated-min=2006-01-01T00%3A00%3A00-05%3A00&updated-max=2007-01-01T00%3A00%3A00-05%3A00&max-results=23'>2006</a>
+<span class='post-count' dir='ltr'>(23)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://blog.doughellmann.com/2006_12_01_archive.html'>December 2006</a>
+<span class='post-count' dir='ltr'>(23)</span>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='http://www.blogger.com/rearrange?blogID=5440028356946346379&widgetType=BlogArchive&widgetId=BlogArchive1&action=editWidget' onclick='return _WidgetManager._PopupConfig(document.getElementById("BlogArchive1"));' target='configBlogArchive1' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div>
+</div><div class='widget Label' id='Label1'>
+<h2>Labels</h2>
+<div class='widget-content list-label-widget-content'>
+<ul>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/AppleScript'>AppleScript</a>
+<span dir='ltr'>(12)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/astronomy'>astronomy</a>
+<span dir='ltr'>(4)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/AstronomyPictureOfTheDay'>AstronomyPictureOfTheDay</a>
+<span dir='ltr'>(3)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/Automator'>Automator</a>
+<span dir='ltr'>(3)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/BlogBackup'>BlogBackup</a>
+<span dir='ltr'>(4)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/blogging'>blogging</a>
+<span dir='ltr'>(17)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/books'>books</a>
+<span dir='ltr'>(22)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/calendar'>calendar</a>
+<span dir='ltr'>(3)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/CastSampler'>CastSampler</a>
+<span dir='ltr'>(7)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/CherryPy'>CherryPy</a>
+<span dir='ltr'>(1)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/codehosting'>codehosting</a>
+<span dir='ltr'>(7)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/CommandLineApp'>CommandLineApp</a>
+<span dir='ltr'>(4)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/csvcat'>csvcat</a>
+<span dir='ltr'>(2)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/django'>django</a>
+<span dir='ltr'>(22)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/django-links'>django-links</a>
+<span dir='ltr'>(2)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/DVCS'>DVCS</a>
+<span dir='ltr'>(2)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/emacs'>emacs</a>
+<span dir='ltr'>(1)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/email'>email</a>
+<span dir='ltr'>(8)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/feedcache'>feedcache</a>
+<span dir='ltr'>(6)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/fish'>fish</a>
+<span dir='ltr'>(1)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/food'>food</a>
+<span dir='ltr'>(1)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/GHOP'>GHOP</a>
+<span dir='ltr'>(8)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/HappyDoc'>HappyDoc</a>
+<span dir='ltr'>(1)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/lifehack'>lifehack</a>
+<span dir='ltr'>(3)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/LinkingToMe'>LinkingToMe</a>
+<span dir='ltr'>(2)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/MailArchiveByDate'>MailArchiveByDate</a>
+<span dir='ltr'>(4)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/mailbox2ics'>mailbox2ics</a>
+<span dir='ltr'>(2)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/opensource'>opensource</a>
+<span dir='ltr'>(8)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/OS%20X'>OS X</a>
+<span dir='ltr'>(20)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/OSS'>OSS</a>
+<span dir='ltr'>(4)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/podcasting'>podcasting</a>
+<span dir='ltr'>(6)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/politics'>politics</a>
+<span dir='ltr'>(2)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/PostgreSQL'>PostgreSQL</a>
+<span dir='ltr'>(1)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/Proctor'>Proctor</a>
+<span dir='ltr'>(6)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/productivity'>productivity</a>
+<span dir='ltr'>(1)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/programming'>programming</a>
+<span dir='ltr'>(9)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/PSF'>PSF</a>
+<span dir='ltr'>(2)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/PyATL'>PyATL</a>
+<span dir='ltr'>(17)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/PyCon'>PyCon</a>
+<span dir='ltr'>(4)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/PyMOTW'>PyMOTW</a>
+<span dir='ltr'>(165)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/python'>python</a>
+<span dir='ltr'>(322)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/Python%20Magazine'>Python Magazine</a>
+<span dir='ltr'>(53)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/PyUGraph'>PyUGraph</a>
+<span dir='ltr'>(1)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/science'>science</a>
+<span dir='ltr'>(1)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/spam'>spam</a>
+<span dir='ltr'>(2)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/sphinx'>sphinx</a>
+<span dir='ltr'>(5)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/sphinxcontrib.bitbucket'>sphinxcontrib.bitbucket</a>
+<span dir='ltr'>(1)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/sphinxcontrib.paverutils'>sphinxcontrib.paverutils</a>
+<span dir='ltr'>(1)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/sql'>sql</a>
+<span dir='ltr'>(5)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/svnbackup'>svnbackup</a>
+<span dir='ltr'>(5)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/telecommuting'>telecommuting</a>
+<span dir='ltr'>(1)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/testing'>testing</a>
+<span dir='ltr'>(7)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/UI'>UI</a>
+<span dir='ltr'>(2)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/usability'>usability</a>
+<span dir='ltr'>(3)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/virtualenvwrapper'>virtualenvwrapper</a>
+<span dir='ltr'>(17)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/visualization'>visualization</a>
+<span dir='ltr'>(7)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/writing'>writing</a>
+<span dir='ltr'>(5)</span>
+</li>
+<li>
+<a dir='ltr' href='http://blog.doughellmann.com/search/label/Zope%2FPlone'>Zope/Plone</a>
+<span dir='ltr'>(2)</span>
+</li>
+</ul>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='http://www.blogger.com/rearrange?blogID=5440028356946346379&widgetType=Label&widgetId=Label1&action=editWidget' onclick='return _WidgetManager._PopupConfig(document.getElementById("Label1"));' target='configLabel1' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div>
+</div></div>
+</td>
+<td class='columns-cell'>
+<div class='sidebar section' id='sidebar-right-2-2'><div class='widget HTML' id='HTML2'>
+<h2 class='title'>Subscribe</h2>
+<div class='widget-content'>
+<p>
+
+<a href="http://feeds.doughellmann.com/DougHellmann" rel="alternate" type="application/rss+xml"><img alt="" style="vertical-align:middle;border:0" src="http://www.feedburner.com/fb/images/pub/feed-icon16x16.png"/></a>&nbsp;<a href="http://feeds.doughellmann.com/DougHellmann" rel="alternate" type="application/rss+xml">RSS Feed</a>
+
+or
+
+<a href="http://www.feedburner.com/fb/a/emailverifySubmit?feedId=597385&amp;loc=en_US">Email Updates</a>
+
+</p>
+</div>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='http://www.blogger.com/rearrange?blogID=5440028356946346379&widgetType=HTML&widgetId=HTML2&action=editWidget' onclick='return _WidgetManager._PopupConfig(document.getElementById("HTML2"));' target='configHTML2' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div><div class='widget HTML' id='HTML1'>
+<div class='widget-content'>
+<script type="text/javascript"><!--
+google_ad_client = "pub-3205160560229413";
+google_ad_host = "pub-1556223355139109";
+google_ad_host_channel="00000+00031+00032+00005";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text";
+//2007-11-02: blog.doughellmann.com
+google_ad_channel = "6782782700";
+google_color_border = "ffffff";
+google_color_bg = "eeeeee";
+google_color_link = "000000";
+google_color_text = "999999";
+google_color_url = "993333";
+google_ui_features = "rc:0";
+//-->
+</script>
+<script src="http://pagead2.googlesyndication.com/pagead/show_ads.js" 
+ type="text/javascript">
+</script>
+</div>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='http://www.blogger.com/rearrange?blogID=5440028356946346379&widgetType=HTML&widgetId=HTML1&action=editWidget' onclick='return _WidgetManager._PopupConfig(document.getElementById("HTML1"));' target='configHTML1' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div></div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class='sidebar section' id='sidebar-right-3'></div>
+</aside>
+</div>
+</div>
+</div>
+<div style='clear: both'></div>
+<!-- columns -->
+</div>
+<!-- main -->
+</div>
+</div>
+<div class='main-cap-bottom cap-bottom'>
+<div class='cap-left'></div>
+<div class='cap-right'></div>
+</div>
+</div>
+<footer>
+<div class='footer-outer'>
+<div class='footer-cap-top cap-top'>
+<div class='cap-left'></div>
+<div class='cap-right'></div>
+</div>
+<div class='fauxborder-left footer-fauxborder-left'>
+<div class='fauxborder-right footer-fauxborder-right'></div>
+<div class='region-inner footer-inner'>
+<div class='foot section' id='footer-1'><div class='widget HTML' id='HTML3'>
+<div class='widget-content'>
+<script type="text/javascript"><!--
+google_ad_client = "pub-3205160560229413";
+google_ad_host = "pub-1556223355139109";
+google_ad_host_channel="00000+00031+00032+00005";
+google_ad_width = 468;
+google_ad_height = 60;
+google_ad_format = "468x60_as";
+google_ad_type = "text";
+//2007-11-02: blog.doughellmann.com
+google_ad_channel = "6782782700";
+google_color_border = "999999";
+google_color_bg = "dddddd";
+google_color_link = "993333";
+google_color_text = "ffffff";
+google_color_url = "993333";
+google_ui_features = "rc:0";
+//-->
+</script>
+<script src="http://pagead2.googlesyndication.com/pagead/show_ads.js" 
+ type="text/javascript">
+</script>
+</div>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='http://www.blogger.com/rearrange?blogID=5440028356946346379&widgetType=HTML&widgetId=HTML3&action=editWidget' onclick='return _WidgetManager._PopupConfig(document.getElementById("HTML3"));' target='configHTML3' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div></div>
+<table border='0' cellpadding='0' cellspacing='0' class='section-columns columns-2'>
+<tbody>
+<tr>
+<td class='first columns-cell'>
+<div class='foot section' id='footer-2-1'></div>
+</td>
+<td class='columns-cell'>
+<div class='foot section' id='footer-2-2'></div>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- outside of the include in order to lock Attribution widget -->
+<div class='foot section' id='footer-3'><div class='widget Attribution' id='Attribution1'>
+<div class='widget-content' style='text-align: center;'>
+Simple template. Powered by <a href='http://www.blogger.com' target='_blank'>Blogger</a>.
+</div>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='http://www.blogger.com/rearrange?blogID=5440028356946346379&widgetType=Attribution&widgetId=Attribution1&action=editWidget' onclick='return _WidgetManager._PopupConfig(document.getElementById("Attribution1"));' target='configAttribution1' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div></div>
+</div>
+</div>
+<div class='footer-cap-bottom cap-bottom'>
+<div class='cap-left'></div>
+<div class='cap-right'></div>
+</div>
+</div>
+</footer>
+<!-- content -->
+</div>
+</div>
+<div class='content-cap-bottom cap-bottom'>
+<div class='cap-left'></div>
+<div class='cap-right'></div>
+</div>
+</div>
+</div>
+<script type='text/javascript'>
+    window.setTimeout(function() {
+        document.body.className = document.body.className.replace('loading', '');
+      }, 10);
+  </script>
+<script type="text/javascript">
+if (window.jstiming) window.jstiming.load.tick('widgetJsBefore');
+</script><script type="text/javascript" src="http://www.blogger.com/static/v1/widgets/512629240-widgets.js"></script>
+<script type='text/javascript'>
+if (typeof(BLOG_attachCsiOnload) != 'undefined' && BLOG_attachCsiOnload != null) { window['blogger_templates_experiment_id'] = "templatesV2";window['blogger_blog_id'] = '5440028356946346379';BLOG_attachCsiOnload('item_'); }_WidgetManager._Init('http://www.blogger.com/rearrange?blogID=5440028356946346379','http://blog.doughellmann.com/2009/04/implementing-mapreduce-with.html','5440028356946346379');
+_WidgetManager._SetPageActionUrl('http://www.blogger.com/display?blogID=5440028356946346379','KQgk7CW_dU9W-iORyO-evGQUo64:1292615082287','AOuZoY5tlSImBQAp8hsthcsMMhgyf5Ah1w:1292615082287');
+_WidgetManager._SetDataContext([{'name': 'blog', 'data': {'title': 'Doug Hellmann', 'pageType': 'item', 'url': 'http://blog.doughellmann.com/2009/04/implementing-mapreduce-with.html', 'canonicalUrl': 'http://blog.doughellmann.com/2009/04/implementing-mapreduce-with.html', 'homepageUrl': 'http://blog.doughellmann.com/', 'enabledCommentProfileImages': true, 'searchLabel': '', 'searchQuery': '', 'pageName': 'Implementing MapReduce with multiprocessing', 'pageTitle': 'Doug Hellmann: Implementing MapReduce with multiprocessing', 'encoding': 'UTF-8', 'locale': 'en-US', 'isPrivate': false, 'isMobile': false, 'mobileClass': '', 'languageDirection': 'ltr', 'feedLinks': '\74link rel\75\42alternate\42 type\75\42application/atom+xml\42 title\75\42Doug Hellmann - Atom\42 href\75\42http://blog.doughellmann.com/feeds/posts/default\42 /\76\n\74link rel\75\42alternate\42 type\75\42application/rss+xml\42 title\75\42Doug Hellmann - RSS\42 href\75\42http://blog.doughellmann.com/feeds/posts/default?alt\75rss\42 /\76\n\74link rel\75\42service.post\42 type\75\42application/atom+xml\42 title\75\42Doug Hellmann - Atom\42 href\75\42http://www.blogger.com/feeds/5440028356946346379/posts/default\42 /\76\n\74link rel\75\42EditURI\42 type\75\42application/rsd+xml\42 title\75\42RSD\42 href\75\42http://www.blogger.com/rsd.g?blogID\0755440028356946346379\42 /\76\n\74link rel\75\42alternate\42 type\75\42application/atom+xml\42 title\75\42Doug Hellmann - Atom\42 href\75\42http://blog.doughellmann.com/feeds/3858839206773586932/comments/default\42 /\76\n', 'meTag': '', 'openIdOpTag': '', 'imageSrcTag': '', 'latencyHeadScript': '\74script type\75\42text/javascript\42\76(function() { var a\75window;function c(b){this.t\75{};this.tick\75function(d,i,e){e\75e?e:(new Date).getTime();this.t[d]\75[e,i]};this.tick(\42start\42,null,b)}var f\75new c;a.jstiming\75{Timer:c,load:f};try{var g\75null;if(a.chrome\46\46a.chrome.csi)g\75Math.floor(a.chrome.csi().pageT);if(g\75\75null)if(a.gtbExternal)g\75a.gtbExternal.pageT();if(g\75\75null)if(a.external)g\75a.external.pageT;if(g)a.jstiming.pt\75g}catch(h){};a.tickAboveFold\75function(b){b\75b;var d\0750;if(b.offsetParent){do d+\75b.offsetTop;while(b\75b.offsetParent)}b\75d;b\74\075750\46\46a.jstiming.load.tick(\42aft\42)};var j\75false;function k(){if(!j){j\75true;a.jstiming.load.tick(\42firstScrollTime\42)}}a.addEventListener?a.addEventListener(\42scroll\42,k,false):a.attachEvent(\42onscroll\42,k);\n })();\74/script\076', 'mobileHeadScript': '', 'ieCssRetrofitLinks': '\74!--[if IE]\76\74script type\75\42text/javascript\42 src\75\42http://www.blogger.com/static/v1/jsbin/3168568070-ieretrofit.js\42\76\74/script\76\n\74![endif]--\076'}}]);
+_WidgetManager._RegisterWidget('_HeaderView', new _WidgetInfo('Header1', 'header'));
+_WidgetManager._RegisterWidget('_AttributionView', new _WidgetInfo('Attribution1', 'footer-3', null, document.getElementById('Attribution1'), {'attribution': 'Simple template. Powered by \74a href\75\47http://www.blogger.com\47 target\75\47_blank\47\76Blogger\74/a\76.'}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_BlogView', new _WidgetInfo('Blog1', 'main', null, document.getElementById('Blog1'), {'cmtInteractionsEnabled': false, 'commentInteractionIframeUrl': 'http://www.blogger.com/comment-interaction-iframe.g?blogId\0755440028356946346379', 'mobile': false}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML4', 'sidebar-right-1', null, document.getElementById('HTML4'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML2', 'sidebar-right-2-2', null, document.getElementById('HTML2'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML1', 'sidebar-right-2-2', null, document.getElementById('HTML1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML5', 'sidebar-right-2-1', null, document.getElementById('HTML5'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_LinkListView', new _WidgetInfo('LinkList1', 'sidebar-right-2-1', null, document.getElementById('LinkList1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_BlogArchiveView', new _WidgetInfo('BlogArchive1', 'sidebar-right-2-1', null, document.getElementById('BlogArchive1'), {'languageDirection': 'ltr'}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_LabelView', new _WidgetInfo('Label1', 'sidebar-right-2-1', null, document.getElementById('Label1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_NavbarView', new _WidgetInfo('Navbar1', 'navbar'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML3', 'footer-1', null, document.getElementById('HTML3'), {}, 'displayModeFull'));
+</script>
+</body>
+</html>

@@ -1,0 +1,463 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+  <title>Collaborative Filtering with Temporal Dynamics | Yahoo! Research</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="/themes/yresearch/favicon.ico" type="image/x-icon" />
+      <script type="text/javascript" src="http://yui.yahooapis.com/2.3.1/build/yahoo-dom-event/yahoo-dom-event.js"></script> 
+  <script type="text/javascript" src="http://yui.yahooapis.com/2.3.1/build/connection/connection-min.js"></script> 
+  <script type="text/javascript" src="http://yui.yahooapis.com/2.3.1/build/autocomplete/autocomplete-min.js"></script> 
+  <script src="http://yui.yahooapis.com/3.0.0/build/yui/yui-min.js"></script>
+
+  <script type="text/javascript">YAHOO.namespace('research');</script>
+
+  <style media="all" type="text/css">
+	@import "/themes/yresearch/style-1.1.css";
+	@import "/themes/yresearch/style_edits-1.4.css";
+	@import "/themes/yresearch/style_drupal.css";
+</style>
+<!--[if lt IE 7]><link rel="stylesheet" type="text/css" href="/themes/yresearch/fix-ie.css" /><![endif]-->
+
+<script type="text/javascript" charset="utf-8">
+	function doSiteSearch() {
+		document.location.href = '/search/node/' + document.getElementById('search-query-input').value;
+	}
+	
+	YAHOO.util.Event.onAvailable( "search-query-input", function() {
+	    YAHOO.util.Event.on('search-query-input','focus',function() {
+	      var input = YAHOO.util.Dom.get('search-query-input');
+	      YAHOO.util.Dom.removeClass ( input, 'inactive' );
+	      if ( input.value == 'Site Search' ) {
+	        input.value = '';
+	      }
+	    });
+	  }, this);
+</script>
+</head>
+
+<body>
+
+<table id="base" cellspacing="0" cellpadding="0">
+	<tr>
+		<td colspan="3">
+			<table class="banner" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%" valign="top">
+						<!-- SpaceID=0 robot -->
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td id="base_left_border"></td>
+		<td valign="top" align="center" class="mainContainerTd">
+			<table id="base_table" cellspacing="0" cellpadding="0">
+				<tr>
+					<td id="base_table_content">
+							<div id="navbar">
+														        														 																				<div class="lbr"></div>
+							            <div id="tabHome"><a href="/">Home</a></div> 
+										<div class="rbr"></div>
+									  	
+							        													 																				<div class="lbr"></div>
+							            <div id="tabSearchWebMining"><a href="/Search_and_Web_Mining">Search & Web Mining</a></div> 
+										<div class="rbr"></div>
+									  	
+							        													 																				<div id="tabMachineLearning" class="on"><a href="/Machine_Learning">Machine Learning</a></div> 
+										
+							        													 																				<div class="lbr"></div>
+							            <div id="tabEconSocialSys"><a href="/Econ_and_Social_Sys">Econ & Social Sys</a></div> 
+										<div class="rbr"></div>
+									  	
+							        													 																				<div class="lbr"></div>
+							            <div id="tabComputationalAdv"><a href="/Computational_Advertising">Computational Adv</a></div> 
+										<div class="rbr"></div>
+									  	
+							        													 																				<div class="lbr"></div>
+							            <div id="tabWebInfoManagement"><a href="/Web_Information_Management">Web Info Management</a></div> 
+										<div class="rbr"></div>
+									  	
+							        									<div id="banner" class="banner">
+																												</div>
+																</div>
+							
+							<table id="mainContent">
+							<tr>
+								<td>
+									<div id="menuContent">
+																				<ul id="navbar">
+											<li class="network-search">
+												<form name="yhdr_form" onSubmit="javascript:doSiteSearch();return false;">
+													<table cellspacing="0" cellpadding="0">
+														<tr>
+															<td>
+															<label for="p" class="hide">Enter your search query</label>
+																<input id='search-query-input' class='inactive box_search' value='Site Search' type="text" name="p" maxlength="100" title="Enter search terms here">
+															</td>
+															<td>
+																<input type="image" src="/themes/yresearch/images/searchbutton-v2.gif" class="btn_search">
+															</td>
+														</tr>
+													</table>
+												</form>
+											</li>
+							        	<li id="sciences-li">							        	  
+                          <a href='http://labs.yahoo.com' id='sciences-li-a'>Labs Home</a>
+							        	</li>
+							        										  												<li class=" node/2824">
+																									<a href="/About_Yahoo_Research">About Yahoo! Research</a>
+																							</li>
+																	        										  												<li class=" node/2824">
+																									<a href="/News">News</a>
+																							</li>
+																	        										  												<li class=" node/2824">
+																									<a href="/People">People</a>
+																							</li>
+																	        										  												<li class=" node/2824">
+																									<a href="/publication">Publications</a>
+																							</li>
+																	        										  												<li class=" node/2824">
+																									<a href="/contact">Contact Us</a>
+																							</li>
+																	        										  								        								        	
+							        								        	
+							        	
+										</ul>
+																				
+										<div class="socialmedia">
+                      <ul id="smNav">
+                        <li class="tbFacebook"><a href="http://www.facebook.com/YahooLabs">Facebook</a></li>
+                        <li class="tbTwitter"><a href="http://www.twitter.com/YahooResearch">Twitter</a></li>
+                        <li class="tbFlickr"><a href="http://www.flickr.com/photos/yahoolabs/">Flickr</a></li>
+                      </ul>
+                    </div>
+
+										<a href="http://sandbox.yahoo.com" title="Sandbox from Yahoo! Research"><img src="/images/sandboxlink.gif" class="sandboxlink" /></a>
+										
+										<script type="text/javascript" charset="utf-8">
+											function toggleQuickSearch(id) {
+												if (id == 'sub1') {
+													document.getElementById('qs_c1').className = 'qs_c1on';
+													document.getElementById('qs_c1tab').className = 'qs_c2on';
+													document.getElementById('qs_c2left').className = 'qs_c2lefton';
+													document.getElementById('qs_c2tab').className = 'qs_c2off';
+													document.getElementById('qs_c2right').className = 'qs_c2mlefton';
+													document.getElementById('qs_c3left').className = 'qs_c2off';
+													document.getElementById('qs_c3tab').className = 'qs_c3lefton';
+													document.getElementById('searchTabPeople').style.display = 'block';
+													document.getElementById('searchTabProjects').style.display = 'none';
+													document.getElementById('searchTabPublications').style.display = 'none';
+												}
+												if (id == 'sub2') {
+													document.getElementById('qs_c1').className = 'qs_c1off';
+													document.getElementById('qs_c1tab').className = 'qs_c2off';
+													document.getElementById('qs_c2left').className = 'qs_c2righton';
+													document.getElementById('qs_c2tab').className = 'qs_c2on';
+													document.getElementById('qs_c2right').className = 'qs_c2lefton';
+													document.getElementById('qs_c3left').className = 'qs_c2off';
+													document.getElementById('qs_c3tab').className = 'qs_c3lefton';
+													document.getElementById('searchTabPeople').style.display = 'none';
+													document.getElementById('searchTabProjects').style.display = 'block';
+													document.getElementById('searchTabPublications').style.display = 'none';
+												}
+												if (id == 'sub3') {
+													document.getElementById('qs_c1').className = 'qs_c1off';
+													document.getElementById('qs_c1tab').className = 'qs_c2off';
+													document.getElementById('qs_c2left').className = 'qs_c2mlefton';
+													document.getElementById('qs_c2tab').className = 'qs_c2off';
+													document.getElementById('qs_c2right').className = 'qs_c2righton';
+													document.getElementById('qs_c3left').className = 'qs_c2on';
+													document.getElementById('qs_c3tab').className = 'qs_c3righton';
+													document.getElementById('searchTabPeople').style.display = 'none';
+													document.getElementById('searchTabProjects').style.display = 'none';
+													document.getElementById('searchTabPublications').style.display = 'block';
+												}
+												
+											}
+									
+											function doPeopleQS() {
+												var peopleSelect = document.getElementById('peopleSelect');
+												var uId = peopleSelect[document.getElementById('peopleSelect').selectedIndex].value;
+												if (uId != 0) { document.location.href = '/user/' + uId; } else { alert("Please select a person"); }
+											}
+
+											function doProjectQS() {
+												var projectSelect = document.getElementById('projectSelect');
+												var nId = projectSelect[document.getElementById('projectSelect').selectedIndex].value;
+												if (nId != 0) { document.location.href = '/project/' + nId; } else { alert("Please select a project."); }
+											}
+											
+											function doPublicationQS() {
+												var url = "/publication";
+												var advancedQS = document.getElementById('advancedQS').value;
+												var authorVal = document.getElementById('publicationAuthor').value;
+												var keywordVal = document.getElementById('publicationKeyword').value;
+												var yearVal = document.getElementById('publicationYear').value;
+												var term = document.getElementById('publicationTerm');
+												var termVal = term.options[term.selectedIndex].value;
+												var type = document.getElementById('publicationType');
+												var typeVal = type.options[type.selectedIndex].value;
+												if (advancedQS == 'yes') {
+													if (authorVal == '' && keywordVal == '' && yearVal == '' && termVal == 0 && typeVal == '') {
+														alert('Please fill in at least one field to search for.');
+														return false;
+													} else {
+														if (authorVal != '') { url += "/author/" + authorVal; }
+														if (keywordVal != '') { url += "/keyword/" + keywordVal; }
+														if (yearVal != '') { url += "/year/" + yearVal; }
+														if (termVal != 0) { url += "/term_id/" + termVal; }
+														if (typeVal != '') { url += "/type/" + typeVal; }
+													}													
+												} else {
+													if (authorVal == '' && keywordVal == '') {
+														alert('Please fill in an author or title that you would like to search for.');
+														return false;
+													} else {
+														if (authorVal != '') { url += "/author/" + authorVal; }
+														if (keywordVal != '') { url += "/keyword/" + keywordVal; }
+													}
+												}
+												document.getElementById('publicationQSForm').action = url;
+												return true;
+											}
+											function showPublicationAQS() {
+												document.getElementById('advancedQS').value = "yes";
+												document.getElementById('pubLabelYear').style.display = '';
+												document.getElementById('pubInputYear').style.display = '';
+												document.getElementById('pubLabelTerm').style.display = '';
+												document.getElementById('pubInputTerm').style.display = '';
+												document.getElementById('pubLabelType').style.display = '';
+												document.getElementById('pubInputType').style.display = '';
+												document.getElementById('quickSearchAnvlink').innerHTML = '';
+											}
+									
+										</script>								
+
+										<div id="searchTabs">
+											<!--
+											<ol>
+												<li><a id="qsTabPeopleOn" href="javascript:toggleQuickSearch('People');">People</a></li>
+												<li><a id="qsTabProjectsOff" href="javascript:toggleQuickSearch('Projects');">Projects</a></li>
+												<li><a id="qsTabPublicationsOff" href="javascript:toggleQuickSearch('Publications');">Publications</a></li>
+											</ol>
+											-->
+											<div class="qs">
+												<div id="qs_c1"class="qs_c1on"></div>
+												<div id="qs_c1tab" class="qs_c2on">&nbsp;<a href="javascript:toggleQuickSearch('sub1')">People</a>&nbsp;</div>
+												<div id="qs_c2left" class="qs_c2lefton"></div>
+												<div id="qs_c2tab" class="qs_c2off">&nbsp;<a href="javascript:toggleQuickSearch('sub2')">Projects</a>&nbsp;</div>
+												<div id="qs_c2right" class="qs_c2mlefton"></div>
+												<div id="qs_c3left" class="qs_c2off">&nbsp;<a href="javascript:toggleQuickSearch('sub3')">Publications</a>&nbsp;</div>
+												<div id="qs_c3tab" class="qs_c3lefton"></div>
+												<div id="qs_end" class="qs_end">&nbsp;</div>
+											</div>
+											<div id="searchTabPeople" class="searchTab">
+												<div class="quickSearchBy">Search by typing the name in the box:</div>
+
+												<div id="peopleSearch" class="autocomplete">
+													<input id="peopleSearchBox" type="text">
+													<div id="peopleSearchResults"></div>
+													<div id="peopleSearchStatus" class="hide"></div>
+												</div>
+												
+												<script>
+												YAHOO.research.ACFlatData = new function(){
+												    // Instantiate one XHR DataSource and define schema as an array:
+												    this.oACDS = new YAHOO.widget.DS_XHR("/bouncer_user/autocomplete", ["\n", "\t"]);
+												    this.oACDS.responseType = YAHOO.widget.DS_XHR.TYPE_FLAT;
+												    this.oACDS.maxCacheEntries = 0;
+												    //this.oACDS.queryMatchSubset = true;
+
+												    // Instantiate AutoComplete
+												    this.oAutoComp2 = new YAHOO.widget.AutoComplete('peopleSearchBox','peopleSearchResults', this.oACDS);
+												    this.oAutoComp2.queryDelay = 0.2;
+												    this.oAutoComp2.minQueryLength = 2;
+													this.oAutoComp2.autoHighlight = true;
+													this.oAutoComp2.forceSelection = true;
+												    this.oAutoComp2.prehighlightClassName = "yui-ac-prehighlight";
+
+													var itemSelectHandler = function(sType, aArgs) {
+														var oMyAcInstance = aArgs[0]; // your AutoComplete instance
+														var elListItem = aArgs[1]; //the <li> element selected in the suggestion
+														var psBox = document.getElementById('peopleSearchBox');
+														document.location.href='/'+psBox.value.replace(/ /g,"_");
+													};
+													this.oAutoComp2.itemSelectEvent.subscribe(itemSelectHandler);
+													
+													var resultSetHandler = function(sType, aArgs) {
+														//alert(aArgs[2].length);
+														if (aArgs[2].length == 0) {
+															//oAutoComp2.setBody("<div id=\"peopleSearchResultsDefault\">No matching results</div>");
+															document.getElementById('peopleSearchStatus').innerHTML = 'Sorry. No matches were found.';															
+															document.getElementById('peopleSearchStatus').className = 'show';															
+														} else {
+															document.getElementById('peopleSearchStatus').innerHTML = '';																														
+															document.getElementById('peopleSearchStatus').className = 'hide';															
+														}
+													}
+													this.oAutoComp2.dataReturnEvent.subscribe(resultSetHandler);
+
+													var tbBlurHandler = function() {
+														document.getElementById('peopleSearchStatus').innerHTML = '';																														
+														document.getElementById('peopleSearchStatus').className = 'hide';															
+													}
+													this.oAutoComp2.textboxBlurEvent.subscribe(tbBlurHandler);
+													this.oAutoComp2.textboxKeyEvent.subscribe(tbBlurHandler);
+													
+													this.fnCustomFormatter = function(oResultItem, sQuery) {
+												        return oResultItem[1];
+												    };
+												    this.oAutoComp2.formatResult = this.fnCustomFormatter;
+												
+
+
+												};
+												
+												
+												</script>
+
+												<div style="clear:left">
+													<div class="quickSearchBtn">
+														<input type="image" src="/themes/yresearch/images/btn_search.gif" class="btn_search" onClick="javascript:doPeopleQS();">
+													</div>
+												</div>
+											</div>
+											<div id="searchTabProjects" class="searchTab">
+												<div class="quickSearchBy">Select a Project from the list below:</div>
+												<div class="quickSearchSetSelect">
+													<select id="projectSelect" style="width:100%;font-family:tahoma,sans-serif;font-size:11px;" onChange="javascript:doProjectQS();">
+														<option value="0">Select Project</option>
+																											<option value="205">A New Serving of Sponsored Search</option>
+																											<option value="92">A Question of Relevancy</option>
+																											<option value="2616">Advertising Works</option>
+																											<option value="498">Building Better Online Communities</option>
+																											<option value="1994">Friend Sense</option>
+																											<option value="2368">Graph Partitioning</option>
+																											<option value="206">Hitting the Jackpot with a Greedy Bidding Strategy</option>
+																											<option value="2731">Ideological Search</option>
+																											<option value="2145">Match Game</option>
+																											<option value="1912">Mindset: Intent-driven Search</option>
+																											<option value="2949">Motif</option>
+																											<option value="3344">Okapi</option>
+																											<option value="1914">One Fast Wabbit</option>
+																											<option value="90">Pig</option>
+																											<option value="212">PNUTS - Platform for Nimble Universal Table Storage</option>
+																											<option value="1898">Predicting the Future with Basketball Bets</option>
+																											<option value="1830">Query the Obscure</option>
+																											<option value="3004">Quest</option>
+																											<option value="210">Remixer</option>
+																											<option value="2299">Royal Jelly</option>
+																											<option value="3350">Shambling Hordes</option>
+																											<option value="2699">Similarity Caching</option>
+																											<option value="2446">Sparta</option>
+																											<option value="89">Squeeze Every Drop of Meaning from Data</option>
+																											<option value="91">TagLines</option>
+																											<option value="209">TagMaps</option>
+																											<option value="207">Tech Buzz Game</option>
+																											<option value="88">The Dating Game</option>
+																											<option value="3128">The Predictalot Experiment for the NCAA Basketball Tournament</option>
+																											<option value="3265">The Predictalot Experiment for the World Cup</option>
+																											<option value="93">Topic Clustered RSS Reader</option>
+																											<option value="211">ZoneTag</option>
+																											<option value="1849">Zookeeper</option>
+																											<option value="208">Zync</option>
+																										</select>
+												</div>
+												<div style="clear:left">
+													<div class="quickSearchBtn">
+														<input type="image" src="/themes/yresearch/images/btn_search.gif" class="btn_search" onClick="javascript:doProjectQS();">
+													</div>
+												</div>
+											</div>
+											<div id="searchTabPublications" class="searchTab">
+												<form id="publicationQSForm" method="POST" action="/publication" onSubmit="javascript:return doPublicationQS();">
+												<input type="hidden" name="advancedQS" value="no" id="advancedQS" />
+												<div class="quickSearchBy">Search publications by:</div>
+												<div class="quickSearchSetLable" style="clear:left;">Author:</div>
+												<div class="quickSearchSetInput"><input id="publicationAuthor" name="author" type="text" maxlength="100" class="qsInput"></div>
+												<div class="quickSearchSetLable" style="clear:left;">Title:</div>
+												<div class="quickSearchSetInput"><input id="publicationKeyword" name="keyword" type="text" maxlength="100" class="qsInput"></div>
+												<div id="pubLabelYear" class="quickSearchSetLable" style="clear:left;display:none;">Year:</div>
+												<div id="pubInputYear" class="quickSearchSetInput" style="display:none;"><input id="publicationYear" name="year" type="text" maxlength="100" class="qsInput"></div>
+												<div id="pubLabelType" class="quickSearchSetLable" style="clear:left;display:none;">Type:</div>
+												<div id="pubInputType" class="quickSearchSetInput" style="display:none;">
+													<select id="publicationType" name="type">
+														<option selected="selected" value=""/>
+														<option value="102">Journal Article</option>
+														<option value="103">Conference Paper</option>
+														<option value="109">Report</option>
+														<option value="108">Thesis</option>
+														<option value="100">Book</option>
+														<option value="129">Miscellaneous</option>
+														<option value="124">Unpublished</option>
+														<option value="101">Book Chapter</option>
+													</select>
+												</div>
+												<div id="pubLabelTerm" class="quickSearchSetLable" style="clear:left;display:none;">Research Area:</div>
+												<div id="pubInputTerm" class="quickSearchSetInput" style="display:none;">
+													<select id="publicationTerm" name="term_id">
+														<option value="0" selected="selected"></option>
+														<option value="5">Community Systems</option>
+														<option value="6">Computational Ads</option>
+														<option value="2">Machine Learning</option>
+														<option value="4">Media Experiences</option>
+														<option value="3">Microeconomics</option>
+														<option value="1">Search Technologies</option>
+													</select>												
+												</div>
+												<div style="clear:left;margin-top:-10px">
+													<div id="quickSearchAnvlink" class="quickSearchAnvlink"><a class="regLink" onClick="javascript:showPublicationAQS();">Advanced Search</a></div>
+													<div class="quickSearchBtn">
+														<button type="submit" class="btn_search btn_search_pub"><img src="/images/btn_search.gif"></button>
+													</div>
+												</div>
+												</form>
+											</div>
+										</div>
+
+									</div>
+								</td>
+								<td style="width:685px;padding-top:10px;padding-right:10px;">
+																																																			        																		<div class="bb bPublication bbiblio">
+	<div class="icon"></div>
+	<div class="bTop">
+		<h2>Publication</h2>
+	</div>
+	<div class="bContent">
+	    		<h2>Collaborative Filtering with Temporal Dynamics</h2>	    <span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Adc&amp;rfr_id=info%3Asid%2Fstage.research.yr.corp.yahoo.com&amp;rft.title=Collaborative+Filtering+with+Temporal+Dynamics&amp;rft.date=2009&amp;rft.aulast=Koren&amp;rft.aufirst=Yehuda&amp;rft.pub=ACM&amp;rft.place=Paris%2C+France"></span><div class="biblio_authors"><h3>Authors:</h3> <a href="/publication/author/Koren">Koren, Y.</a></div>
+<div class="biblio_source"><h3>Source: </h3> KDD 2009, ACM, Paris, France (2009)</div>
+<div class="biblio_abstract"><h3>Abstract:</h3> Customer preferences for products are drifting over time. Product perception and popularity are constantly changing as new selection emerges. Similarly, customer inclinations are evolving, leading them to ever redefine their taste. Thus, modeling temporal dynamics should be a key when designing recommender systems or general customer preference models. However, this raises unique challenges. Within the eco-system intersecting multiple products and customers, many different characteristics are shifting simultaneously, while many of them influence each other and often those shifts are delicate and associated with a few data instances. This distinguishes the problem from concept drift explorations, where mostly a single concept is tracked. Classical time-window or instance-decay approaches cannot work, as they lose too much signal when discarding data instances.  A more sensitive approach is required,  which can make better distinctions between transient effects and long term patterns. The paradigm we offer is creating a model tracking the time changing behavior throughout the life span of the data. This allows us to exploit the relevant components of all data instances, while discarding only what is modeled as being irrelevant. Accordingly, we revamp two leading collaborative filtering recommendation approaches. Evaluation is made on a large movie rating dataset by Netflix. Results are encouraging and better than those previously reported on this dataset. </div>
+<h3>Notes: </h3>Won KDD'09 Best Research Paper award
+			    	    <br/><h3>Download:</h3><ul class="attachments secondary"><li><a href="http://research.yahoo.com/files/kdd-fp074-koren.pdf">kdd-fp074-koren.pdf</a></li></ul><div id="pub-acm-dialog">ACM COPYRIGHT NOTICE. Copyright &copy; 2010 by the Association for Computing Machinery, Inc. Permission to make digital or hard copies of part or all of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page.  Copyrights for components of this work owned by others than ACM must be honored. Abstracting with credit is permitted.  To copy otherwise, to republish, to post on servers, or to redistribute to lists, requires prior specific permission and/or a fee.  Request permissions from Publications Dept., ACM, Inc., fax +1 (212) 869-0481, or <a href="mailto:permissions@acm.org">permissions@acm.org</a>.</div>	</div>
+	<div class="bBottom"></div>
+</div>	
+
+
+<!--  -->
+																</td>
+							</tr>
+							</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+		<td id="base_right_border"></td>
+	</tr>
+	<tr>
+		<td id="base_left_borderend"><img src="" width="2" height="2"></td>
+		<td id="base_bottom_border"></td>
+		<td id="base_right_borderend"><img src="" width="2" height="2"></td>
+	</tr>
+</table>
+<div class="footer">Copyright &copy; 2010 Yahoo! Inc. All rights reserved. <a href="http://privacy.yahoo.com/privacy/us/">Privacy Policy</a> - <a href="http://docs.yahoo.com/info/terms/">Terms of Service</a> - <a href="http://docs.yahoo.com/info/copyright/copyright.html">Copyright/IP Policy</a> - <a href="http://help.yahoo.com/">Help</a>
+</div>
+
+<script type="text/javascript" src="/themes/yresearch/js/1.1/sidebar.js"></script> 
+
+
+<!-- spaceId: 2022692706 --></body>
+</html>
+
+<!-- pw001.yrl.re1.yahoo.com uncompressed Mon Dec 20 06:12:51 PST 2010 -->

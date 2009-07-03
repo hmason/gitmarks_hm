@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="ROBOTS" content="NOARCHIVE" />
+<meta http-equiv="content-script-type" content="text/javascript" />
+<link rel="stylesheet" href="/site.css" media="all" type="text/css" />
+<script src="/site.js" type="text/javascript"></script>
+<title>Text Escaping and Unescaping in JavaScript</title>
+</head>
+<body>
+<h1>Text Escaping and Unescaping in JavaScript</h1>
+
+<div class="main">
+<p>
+A collection of utilities for text escaping and unescaping
+in JavaScript.  Try typing "abc" in the first form to see
+how it works.  Any form can be edited.
+</p>
+
+<script type="text/javascript" src="punycode.js"></script>
+<script type="text/javascript" src="strutil.js"></script>
+<script type="text/javascript" src="sjis_map.js"></script>
+<script type="text/javascript" src="iso88591_map.js"></script>
+<script type="text/javascript">
+function updateAllExceptFor(str, exception) {
+  var encoding = getEncodingFromForm();
+  if (exception != "str") {
+    document.getElementById("string").value = str;
+  }
+  if (exception != "utf16-escape") {
+    document.getElementById("utf16-escape").value = escapeToUtf16(str);
+  }
+  if (exception != "utf32-escape") {
+    document.getElementById("utf32-escape").value = escapeToUtf32(str);
+  }
+  if (exception != "numref-dec") {
+    document.getElementById("numref-dec").value = escapeToNumRef(str, 10);
+  }
+  if (exception != "numref-hex") {
+    document.getElementById("numref-hex").value = escapeToNumRef(str, 16);
+  }
+  if (exception != "punycode") {
+    document.getElementById("punycode").value = escapeToPunyCode(str);
+  }
+  if (exception != "hex-escape") {
+    document.getElementById("hex-escape").value =
+      escapeToEscapedBytes(str, 16, encoding);
+  }
+  if (exception != "oct-escape") {
+    document.getElementById("oct-escape").value =
+      escapeToEscapedBytes(str, 8, encoding);
+  }
+  if (exception != "base64") {
+    document.getElementById("base64").value = escapeToBase64(str, encoding);
+  }
+  if (exception != "quoted-printable") {
+    document.getElementById("quoted-printable").value =
+      escapeToQuotedPrintable(str, encoding);
+  }
+  if (exception != "url") {
+    document.getElementById("url").value = escapeToUrl(str, encoding);
+  }
+  if (exception != "mime-b") {
+    document.getElementById("mime-b").value =
+      escapeToMime(str, "base64", encoding);
+  }
+  if (exception != "mime-q") {
+    document.getElementById("mime-q").value =
+      escapeToMime(str, "quoted-printable", encoding);
+  }
+}
+
+function getEncodingFromForm() {
+  var options = document.getElementById("encoding");
+  if (options) {
+    return options[options.selectedIndex].value;
+  }
+  return 'UTF-8';
+}
+
+function toggleAll(anchor) {
+  var text_node = anchor.firstChild;
+  var command;
+  if (text_node.nodeValue == "hide all") {
+    text_node.nodeValue = "show all";
+    command = "hide";
+  } else {
+    text_node.nodeValue = "hide all";
+    command = "show";
+  }
+  var tables = document.getElementsByTagName("table");
+  for (var i = 0; i < tables.length; ++i) {
+    var table = tables[i];
+    var anchors = table.getElementsByTagName("a");
+    var textareas = table.getElementsByTagName("textarea");
+    if (anchors.length == 1 && textareas.length == 1) {
+       if (anchors[0].firstChild.nodeValue == command) {
+          toggleDisplay(anchors[0], textareas[0].id);
+       }
+    }
+  }
+}
+
+function toggleDisplay(anchor, target) {
+  var element = document.getElementById(target);
+  var style = element.style;
+  var text_node = anchor.firstChild;
+  if (text_node.nodeValue == "hide") {
+    text_node.nodeValue = "show";
+    style.visibility = "hidden";
+    element.originalHeight = style.height;
+    style.height = "0px";
+  } else {
+    text_node.nodeValue = "hide";
+    style.height = element.originalHeight;
+    style.visibility = "visible";
+  }
+}
+
+function updateByString(str) {
+  updateAllExceptFor(str, "str");
+}
+
+function updateByUtf16(str) {
+  var unescaped = unescapeFromUtf16(str);
+  updateAllExceptFor(unescaped, "utf16-escape");
+}
+
+function updateByUtf32(str) {
+  var unescaped = unescapeFromUtf32(str);
+  updateAllExceptFor(unescaped, "utf32-escape");
+}
+
+function updateByNumRefDec(str) {
+  var unescaped = unescapeFromNumRef(str, 10);
+  updateAllExceptFor(unescaped, "numref-dec");
+}
+
+function updateByNumRefHex(str) {
+  var unescaped = unescapeFromNumRef(str, 16);
+  updateAllExceptFor(unescaped, "numref-hex");
+}
+
+function updateByPunyCode(str) {
+  var unescaped = unescapeFromPunyCode(str);
+  updateAllExceptFor(unescaped, "punycode");
+}
+
+function updateByHex(str) {
+  var encoding = getEncodingFromForm();
+  var unescaped = unescapeFromEscapedBytes(str, 16, encoding);
+  updateAllExceptFor(unescaped, "hex-escape");
+}
+
+function updateByOct(str) {
+  var encoding = getEncodingFromForm();
+  var unescaped = unescapeFromEscapedBytes(str, 8, encoding);
+  updateAllExceptFor(unescaped, "oct-escape");
+}
+
+function updateByBase64(str) {
+  var encoding = getEncodingFromForm();
+  var unescaped = unescapeFromBase64(str, encoding);
+  updateAllExceptFor(unescaped, "base64");
+}
+
+function updateByQuotedPrintable(str) {
+  var encoding = getEncodingFromForm();
+  var unescaped = unescapeFromQuotedPrintable(str, encoding);
+  updateAllExceptFor(unescaped, "quoted-printable");
+}
+
+function updateByUrl(str) {
+  var encoding = getEncodingFromForm();
+  var unescaped = unescapeFromUrl(str, encoding);
+  updateAllExceptFor(unescaped, "url");
+}
+
+function updateByMimeBase64(str) {
+  var encoding = getEncodingFromForm();
+  var unescaped = unescapeFromMime(str, encoding);
+  updateAllExceptFor(unescaped, "mime-b");
+}
+
+function updateByMimeQuotedPrintable(str) {
+  var encoding = getEncodingFromForm();
+  var unescaped = unescapeFromMime(str, encoding);
+  updateAllExceptFor(unescaped, "mime-q");
+}
+
+function updateByForm() {
+  var str = document.getElementById("string").value;
+  updateAllExceptFor(str, "str");
+}
+
+</script>
+<style type="text/css">
+textarea { height: 2.5em; font-size: small; }
+form.encoding { font-size: small; }
+table.form {
+  font-size: small;
+  line-height: 100%;
+  padding: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+table.form th { text-align: left; }
+table.form td { text-align: right; }
+table.form td, td { padding: 0px; margin: 0px; }
+table.form td.thin { line-height: 0px; }
+</style>
+
+<div>
+
+<table class="form">
+<tr><th>Plain text</th>
+<td><a href="javascript:void(0)"
+onclick="javascript:toggleAll(this)">hide all</a></td></tr>
+<tr><td  class="thin" colspan="2"><textarea cols="50" rows="2" id="string"
+onkeyup="javascript:updateByString(this.value)"></textarea></td></tr></table>
+
+<table class="form">
+<tr><th>\uXXXX</th>
+<td><a href="javascript:void(0)"
+onclick="javascript:toggleDisplay(this, 'utf16-escape')">hide</a></td></tr>
+<tr><td class="thin" colspan="2"><textarea cols="50" rows="2" id="utf16-escape"
+onkeyup="javascript:updateByUtf16(this.value)"></textarea></td></tr></table>
+
+<table class="form">
+<tr><th>\UXXXXXXXX</th>
+<td><a href="javascript:void(0)"
+onclick="javascript:toggleDisplay(this, 'utf32-escape')">hide</a></td></tr>
+<tr><td class="thin" colspan="2"><textarea cols="50" rows="2" id="utf32-escape"
+          onkeyup="javascript:updateByUtf32(this.value)"></textarea>
+</td></tr></table>
+
+<table class="form">
+<tr><th>&amp;#DDDD;</th>
+<td><a href="javascript:void(0)"
+onclick="javascript:toggleDisplay(this, 'numref-dec')">hide</a></td></tr>
+<tr><td class="thin" colspan="2"><textarea cols="50" rows="2" id="numref-dec"
+onkeyup="javascript:updateByNumRefDec(this.value)"></textarea></td></tr></table>
+
+<table class="form">
+<tr><th>&amp;#xXXXX;</th>
+<td><a href="javascript:void(0)"
+onclick="javascript:toggleDisplay(this, 'numref-hex')">hide</a></td></tr>
+<tr><td class="thin" colspan="2"><textarea cols="50" rows="2" id="numref-hex"
+onkeyup="javascript:updateByNumRefHex(this.value)"></textarea></td></tr></table>
+
+<table class="form">
+<tr><th>Punycode</th>
+<td><a href="javascript:void(0)"
+onclick="javascript:toggleDisplay(this, 'punycode')">hide</a></td></tr>
+<tr><td class="thin" colspan="2"><textarea cols="50" rows="2" id="punycode"
+onkeyup="javascript:updateByPunyCode(this.value)"></textarea></td></tr></table>
+
+<form class="encoding">
+<strong>Encoding for the followings:</strong>
+<select id="encoding" onchange="javascript:updateByForm()">
+<option value="UTF-8">UTF-8</option>
+<option value="Shift_JIS">Shift_JIS</option>
+<option value="EUC-JP">EUC-JP</option>
+<option value="ISO-2022-JP">ISO-2022-JP</option>
+<option value="ISO-8859-1">ISO-8859-1</option>
+</select>
+</form>
+
+<table class="form">
+<tr><th>\xXX</th>
+<td><a href="javascript:void(0)"
+onclick="javascript:toggleDisplay(this, 'hex-escape')">hide</a></td></tr>
+<tr><td class="thin" colspan="2"><textarea cols="50" rows="2" id="hex-escape"
+onkeyup="javascript:updateByHex(this.value)"></textarea></td></tr></table>
+
+<table class="form">
+<tr><th>\OOO</th>
+<td><a href="javascript:void(0)"
+onclick="javascript:toggleDisplay(this, 'oct-escape')">hide</a></td></tr>
+<tr><td class="thin" colspan="2"><textarea cols="50" rows="2" id="oct-escape"
+onkeyup="javascript:updateByOct(this.value)"></textarea></td></tr></table>
+
+<table class="form">
+<tr><th>Base64</th>
+<td><a href="javascript:void(0)"
+onclick="javascript:toggleDisplay(this, 'base64')">hide</a></td></tr>
+<tr><td class="thin" colspan="2"><textarea cols="50" rows="2" id="base64"
+onkeyup="javascript:updateByBase64(this.value)"></textarea></td></tr></table>
+
+<table class="form">
+<tr><th>Quoted-printable</th>
+<td><a href="javascript:void(0)"
+onclick="javascript:toggleDisplay(this, 'quoted-printable')">hide</a></td></tr>
+<tr><td class="thin" colspan="2"><textarea cols="50" rows="2" id="quoted-printable"
+onkeyup="javascript:updateByQuotedPrintable(this.value)"></textarea></td></tr></table>
+
+<table class="form">
+<tr><th>URL</th>
+<td><a href="javascript:void(0)"
+onclick="javascript:toggleDisplay(this, 'url')">hide</a></td></tr>
+<tr><td class="thin" colspan="2"><textarea cols="50" rows="2" id="url"
+onkeyup="javascript:updateByUrl(this.value)"></textarea></td></tr></table>
+
+<table class="form">
+<tr><th>MIME + Base64</th>
+<td><a href="javascript:void(0)"
+onclick="javascript:toggleDisplay(this, 'mime-b')">hide</a></td></tr>
+<tr><td class="thin" colspan="2"><textarea cols="50" rows="2" id="mime-b"
+onkeyup="javascript:updateByMimeBase64(this.value)"></textarea></td></tr></table>
+
+<table class="form">
+<tr><th>MIME + Quoted-printable</th>
+<td><a href="javascript:void(0)"
+onclick="javascript:toggleDisplay(this, 'mime-q')">hide</a></td></tr>
+<tr><td class="thin" colspan="2"><textarea cols="50" rows="2" id="mime-q"
+onkeyup="javascript:updateByMimeQuotedPrintable(this.value)"></textarea></td></tr></table>
+
+
+</div>
+
+<h2>Notes</h2>
+
+<ul>
+<li>No data is sent to the server (i.e. everything is done in JavaScript).</li>
+<li>Conversion from Unicode to other encodings such as Shift_JIS
+can be slow first time as it needs to initialize internal conversion
+tables.</li>
+<li>Surrogate pairs in UTF-16 are supported.  Try inserting
+<code>\uD840\uDC0B</code> in the second form.
+</li>
+<li>Three-byte characters in EUC-JP are not supported.</li>
+</ul>
+
+
+<h2>Links</h2>
+
+<ul>
+<li><a href="http://macchiato.com/unicode/chart/">JavaScript
+Unicode Charts</a></li>
+<li><a href="http://josefsson.org/idn.php">Try GNU Libidn</a></li>
+
+<li><a href="http://www.ietf.org/rfc/rfc1468.txt">RFC 1468
+Japanese Character Encoding for Internet Messages</a></li>
+
+<li><a href="http://www.ietf.org/rfc/rfc2396.txt">RFC 2396
+Uniform Resource Identifiers (URI): Generic Syntax</a></li>
+
+<li><a href="http://www.ietf.org/rfc/rfc2047.txt">RFC 2047
+- MIME (Multipurpose Internet Mail Extensions)
+Part Three: Message Header Extensions for Non-ASCII Text</a></li>
+
+<li><a href="http://www.ietf.org/rfc/rfc3490.txt">RFC 3490
+- Internationalizing Domain Names in Applications (IDNA)</a></li>
+
+<li><a href="http://www.ietf.org/rfc/rfc3491.txt">RFC 3491
+- Nameprep: A Stringprep Profile for
+Internationalized Domain Names (IDN)</a></li>
+
+<li><a href="http://www.ietf.org/rfc/rfc3492.txt">RFC 3492
+- Punycode: A Bootstring encoding of Unicode
+for Internationalized Domain Names in Applications (IDNA)</a></li>
+
+<li><a href="http://en.wikipedia.org/wiki/Internationalized_domain_name">
+Internationalized domain name - Wikipedia</a></li>
+
+</ul>
+
+<h2>TODO</h2>
+
+<ul>
+<li>Japanese version of this page</li>
+<li>Support more encodings like GBK</li>
+<li>On-deman loading of conversion tables</li>
+<li>IDNA support (would be hard)</li>
+</ul>
+
+</div>
+
+
+<hr />
+<address><a href="http://0xcc.net/">Satoru Takabayashi</a></address>
+</body>
+</html>

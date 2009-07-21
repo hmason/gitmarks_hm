@@ -1,0 +1,243 @@
+<html>
+<head><title>HBC: Hierarchical Bayes Compiler</title></head>
+
+<body bgcolor="#F7F7FF" text="#000033" link="#000099" vlink="#000099" alink="#000099">
+
+<center><h2>HBC: Hierarchical Bayes Compiler</h2>
+<h5>
+Pre-release version 0.7 (03 Apr 2008); see what has been updated <a href="#updates">here</a>)<br/>
+<i>Older versions:</i>
+  <a href="hbc_v0_6.html">0.6</a>
+  <a href="hbc_v0_5.html">0.5</a>
+  <a href="hbc_v0_4.html">0.4</a>
+  <a href="hbc_v0_3.html">0.3</a>
+  <a href="hbc_v0_2.html">0.2</a>
+  <a href="hbc_v0_1.html">0.1</a>
+</h5>
+</center>
+
+HBC is a toolkit for implementing hierarchical Bayesian models.  HBC
+was created because I felt like I spend too much time writing
+boilerplate code for inference problems in Bayesian models.  There are
+several goals of HBC:
+
+<ol>
+<li> Allow a natural implementation of hierarchal models.
+<li> Enable quick and dirty debugging of models for standard data types.
+<li> Focus on large-dimension discrete models.
+<li> More general that simple Gibbs sampling (eg., allowing for
+maximizations, EM and message passing).
+<li> Allow for hierarchical models to be easily embedded in larger
+programs.
+<li> Automatic Rao-Blackwellization (aka collapsing).
+<li> Allow efficient execution via compilation to other languages (such
+as C, Java, Matlab, etc.).
+<li> Support for non-parametric models.
+</ol>
+
+These goals distinguish HBC from other Bayesian modeling software,
+such as Bugs (or <a
+href="http://www.mrc-bsu.cam.ac.uk/bugs/">WinBugs</a>).  In
+particular, our primary goal is that models created in HBC can be used
+directly, rather than only as a first-pass test.  Moreover, we aim for
+scalability with respect to data size.  Finally, since the goal of HBC
+is to compile hierarchical models <i>into</i> standard programming
+languages (like C), these models can easily be used as part of a
+larger system.  This last point is in the spirit of the dynamic
+programming language <a href="http://www.dyna.org">Dyna</a>.<p/>
+
+Note that some of these aren't yet supported (in particular: some of 4
+and full support for 6) but should be coming soon!<p/>
+
+
+<h3>A Quick Example</h3>
+
+To give a flavor of what HBC is all about, here is a complete
+implementation of a Bayesian mixture of Gaussians model in HBC format:
+
+<pre>
+  alpha     ~ Gam(10,10)
+  mu_{k}    ~ NorMV(vec(0.0,1,dim), 1, dim)     , k \in [1,K]
+  si2       ~ IG(10,10)
+  pi        ~ DirSym(alpha, K)
+  z_{n}     ~ Mult(pi)                          , n \in [1,N]
+  x_{n}     ~ NorMV(mu_{z_{n}}, si2, dim)       , n \in [1,N]
+</pre>
+
+If you are used to reading hierarchical models, it should be quite
+clear what this model does.  Moreover, by keeping to a very LaTeX-like
+style, it is quite straightforward to automatically typeset any
+hierarchical model.  If this file were stored in
+<tt>mix_gauss.hier</tt>, and if we had data for <tt>x</tt> stored in a
+file called <tt>X</tt>, we could run this model (with two Gaussians)
+directly by saying:
+
+<pre>
+  hbc simulate --loadM X x N dim --define K 2 mix_gauss.hier
+</pre>
+
+Perhaps closer to my heart would be a six-line implementation of the
+Latent Dirichlet Allocation model, complete with hyperparameter
+estimation:
+
+<pre>
+  alpha     ~ Gam(0.1,1)
+  eta       ~ Gam(0.1,1)
+  beta_{k}  ~ DirSym(eta, V)           , k \in [1,K]
+  theta_{d} ~ DirSym(alpha, K)         , d \in [1,D]
+  z_{d,n}   ~ Mult(theta_{d})          , d \in [1,D] , n \in [1,N_{d}]
+  w_{d,n}   ~ Mult(beta_{z_{d,n}})     , d \in [1,D] , n \in [1,N_{d}]
+</pre>
+
+This code can either be run directly (eg., by a <tt>simulate</tt>
+call as above) or compiled to native C code for (much) faster
+execuation.
+
+<h3>User's Guide</h3>
+
+Can be downloaded in <a href="hbc.pdf">Adobe Acrobat</a> format.
+(Note: this is an old user's guide.)
+
+<h3>Mailing List</h3>
+
+There is a <a
+href="http://mailman.cs.utah.edu/mailman/listinfo/hbc">mailing
+list</a> set up locally for HBC-related discussions.  You can
+subscribe by visiting the previous link.  I anticipate the mailing
+list will be reasonably low volume.  I'll announce updates, and you
+can feel free to post questions, comments or bugs.
+
+
+<h3>Distribution</h3>
+
+You can download either the source code as a <a
+href="hbc_v0_7_src.tgz">tar bundle</a> or a Linux executable, also as
+a <a href="hbc_v0_7_linux.tgz">tar bundle</a>.  You can build the
+source using GHC by saying: <tt>ghc --make -fglasgow-exts Main -o hbc</tt>.  
+If you're on Debian/Ubuntu, be sure you have the
+<tt>libghc6-mtl-dev</tt> package, or you'll get an error about <tt>Control.Monad.State</tt>.
+Both distribution forms include sample hierarchical models and data
+for the following models (plus some more): 
+<ul>
+<li><a href="LDA.hier">Latent Dirichlet Allocation</a>
+<li><a href="HMM.hier">Hidden Markov Models</a>
+<li><a href="mix_gauss.hier">Mixture of Gaussians</a>
+<li><a href="LDA-HMM.hier">Markov Latent Dirichlet Allocation</a>
+<li><a href="IBMmodel1.hier">IBM Model 1 for Machine Translation</a>
+<li><a href="mix_mult_py.hier">Mixture of multinomials with a Pitman-Yor prior</a>
+</ul>
+The source, executables and examples are all completely free for any
+purpose whatsoever.
+
+<h3>Questions, Comments and Bugs</h3>
+
+Please email me directly with supporting information at <a
+href="mailto:me AT hal3 DOT name"><img border=0 valign=bottom
+src="email.png" ALT="me AT hal3 DOT name"></a>, or subscribe to the <a
+href="http://mailman.cs.utah.edu/mailman/listinfo/hbc">mailing
+list</a>.
+
+<h3>Acknowledgments</h3>
+
+Many people have been extremely helpful in the development of HBC.
+Thanks go out to:
+Chia-Hui Chang,
+Robbie Haertel,
+David Hall,
+David Ellis,
+Aleks Jakulin,
+David Mimno,
+Michael Braun.
+
+
+
+<a name="updates"></a><h3>Updates</h3>
+
+<font size=-1>
+
+
+<b>New in Version 0.7</b><br/>
+
+<ol>
+<li> <b>(Major update)</b> Support for Pitman-Yor priors; implements
+(roughly) the No-Gaps algorithm when parameters are not collapsed and
+(roughly) Neal's algorithm 8 when parameters are collapsed.
+</ol>
+
+<b>New in Version 0.6</b><br/>
+
+<ol>
+<li> <b>(Major update)</b> Massive speedups in C based on caching of vector sums; non-collapsed LDA is 50 times faster, collapsed is 200 times faster!
+<li> <b>(Minor update)</b> You can now "<tt>--dump best</tt>" in compiled models.
+<li> <b>(Minor update)</b> Some bugs regarding gamma distributions are fixed.
+<li> <b>(Minor update)</b> Type declaration syntax changed slightly.
+</ol>
+
+<b>New in Version 0.5</b><br/>
+
+<ol>
+<li> <b>(Minor update)</b> Many bug fixes, especially with respect to
+marginalization.
+<li> <b>(Minor update)</b> <tt>--loadD</tt> can now load 3 and 4
+dimensional data sets; see <tt>LDA4d.hier</tt> (included in the
+distribution) for an example.
+<li> <b>(Minor update)</b> A large amount of code optimization is now
+enabled; many constant operations are precomputed and double loops no
+longer incur double memory (and time) overheads.
+</ol>
+
+<b>New in Version 0.4</b><br/>
+
+<ol>
+<li> <b>(Minor update)</b> Collection of bug fixes, mostly to do with
+Markovization and some other low-level type inference details.
+<li> <b>(Minor update)</b> <tt>--define</tt> and <tt>--load?</tt> can
+now take command-line arguments for compiled code.  See
+<tt>LDA.hier</tt> for an example, but, eg., <tt>--loadD arg_{1} w V D N ;</tt>
+means to use the first command line argument to load <tt>w</tt>.
+Bad things will happen if you try to use this with <tt>simulate</tt>.
+</ol>
+
+<b>New in Version 0.3</b><br/>
+
+<ol>
+<li> <b>(Major update)</b> Bug fixes for doubly indexed variables.
+I.e., things like <tt>a_{b_{c}}</tt>.  These were hardly working if at
+all.  Many more things are possible with this fixes.
+
+<li> <b>(Minor update)</b> <tt>--dump</tt> now works with compiled
+code (with the exception of <tt>best</tt> dumping) and so you can
+actually see what the compled sampler is doing.
+
+<li> <b>(Minor udpate)</b> You can elect to maximize some variables
+(instead of sample) by saying <tt>--maximize VAR</tt>.
+
+<li> <b>(Minor update)</b> Now comes with an implementation of <a
+href="IBMmodel1.hier">IBM model 1</a> for machine translation.
+</ol>
+
+<b>New in Version 0.2</b><br/>
+
+<ol>
+<li> <b>(Major update)</b> Dirichlet/Multinomial pairs can now be
+marginalized out!  This means that you can, for instance, obtain the
+&quot;collapsed Gibbs sampler&quot; for LDA.  To marginalize out a
+multinomial variable called, say, <tt>theta</tt>, you need only
+specify &quot;<tt>--collapse theta</tt>&quot; as an argument to
+<tt>hbc</tt>.
+
+<li> <b>(Minor update)</b> The generated C code now keeps track of the
+best sample thus far and displays an asterix whenever a better sample
+is encountered.
+
+<li> <b>(Minor update)</b> Command-line options can be specified
+directly in <tt>.hier</tt> source files.  Simply begin a line with
+<tt>--#</tt> (which would otherwise be treated as a comment) and you
+can just write out any command-line option; see <a
+href="LDA.hier"><tt>LDA.hier</tt></a> for an example.
+</ol>
+</font>
+
+</body>
+</html>
+

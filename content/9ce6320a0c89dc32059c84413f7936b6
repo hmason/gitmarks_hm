@@ -1,0 +1,333 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Django snippets: Middleware to detect visitors who arrived from a search engine</title>
+  
+  <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+
+  <link rel="stylesheet" href="/media/css/snippets.css" type="text/css" />
+  <link rel="stylesheet" href="/media/css/pygments.css" type="text/css" />
+  <link rel="alternate" href="/feeds/latest/" type="application/atom+xml" title="Feed of latest snippets" />
+  
+  
+  <script type="text/javascript" language="javascript">
+    $(function() {
+      $("input#id_q").autocomplete({
+        minLength: 3,
+        source: function(request, response) {
+          var term = request.term;
+	        $.getJSON("/search/autocomplete/", {'q': term}, function(data) {
+	          var results = [];
+	          $.each(data, function(k, v) {results.push(v.title);});
+		        response(results);
+	        });
+        }
+      });
+    });
+  </script>
+</head>
+<body class="snippets">
+  <div id="header">
+    <h1><a href="/">Django snippets</a></h1>
+    <div id="nav-main">
+      <span>
+        
+          <a href="/accounts/login/?next=/snippets/197/">Log in</a> or <a href="/accounts/register/">register</a>
+        
+      </span>
+      <ul>
+        <li id="nav-snippets"><a href="/snippets/">Snippets</a></li>
+        
+        <li id="nav-about"><a href="/about/">About</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <ul id="nav-secondary">
+  
+    <li><a href="/users/">By author</a></li>
+    <li><a href="/languages/">By language</a></li>
+    <li><a href="/tags/">By tag</a></li>
+    <li><a href="/popular/rated/">Highest-rated</a></li>
+    <li><a href="/popular/bookmarked/">Most bookmarked</a></li>
+  
+  </ul>
+
+
+  <h2>Middleware to detect visitors who arrived from a search engine</h2>
+  <div id="content">
+    <div id="main">
+      
+  <table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61</pre></div></td><td class="code"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">urlparse</span>
+<span class="kn">import</span> <span class="nn">cgi</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="k">class</span> <span class="nc">SearchReferrerMiddleware</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">SEARCH_PARAMS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;AltaVista&#39;</span><span class="p">:</span> <span class="s">&#39;q&#39;</span><span class="p">,</span>
+        <span class="s">&#39;Ask&#39;</span><span class="p">:</span> <span class="s">&#39;q&#39;</span><span class="p">,</span>
+        <span class="s">&#39;Google&#39;</span><span class="p">:</span> <span class="s">&#39;q&#39;</span><span class="p">,</span>
+        <span class="s">&#39;Live&#39;</span><span class="p">:</span> <span class="s">&#39;q&#39;</span><span class="p">,</span>
+        <span class="s">&#39;Lycos&#39;</span><span class="p">:</span> <span class="s">&#39;query&#39;</span><span class="p">,</span>
+        <span class="s">&#39;MSN&#39;</span><span class="p">:</span> <span class="s">&#39;q&#39;</span><span class="p">,</span>
+        <span class="s">&#39;Yahoo&#39;</span><span class="p">:</span> <span class="s">&#39;p&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+    
+    <span class="n">NETWORK_RE</span> <span class="o">=</span> <span class="s">r&quot;&quot;&quot;^</span>
+<span class="s">        (?P&lt;subdomain&gt;[-.a-z\d]+\.)?</span>
+<span class="s">        (?P&lt;engine&gt;</span><span class="si">%s</span><span class="s">)</span>
+<span class="s">        (?P&lt;top_level&gt;(?:\.[a-z]{2,3}){1,2})</span>
+<span class="s">        (?P&lt;port&gt;:\d+)?</span>
+<span class="s">        $(?ix)&quot;&quot;&quot;</span>
+    
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">parse_search</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract the search engine, domain, and search term from `url`</span>
+<span class="sd">    and return them as (engine, domain, term). For example,</span>
+<span class="sd">    (&#39;Google&#39;, &#39;www.google.co.uk&#39;, &#39;django framework&#39;). Note that</span>
+<span class="sd">    the search term will be converted to lowercase and have normalized</span>
+<span class="sd">    spaces.</span>
+
+<span class="sd">    The first tuple item will be None if the referrer is not a</span>
+<span class="sd">    search engine.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">parsed</span> <span class="o">=</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">urlsplit</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+            <span class="n">network</span> <span class="o">=</span> <span class="n">parsed</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">parsed</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">engine</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">cls</span><span class="o">.</span><span class="n">SEARCH_PARAMS</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">NETWORK_RE</span> <span class="o">%</span> <span class="n">engine</span><span class="p">,</span> <span class="n">network</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span> <span class="ow">and</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+                <span class="n">term</span> <span class="o">=</span> <span class="n">cgi</span><span class="o">.</span><span class="n">parse_qs</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">term</span> <span class="ow">and</span> <span class="n">term</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">term</span> <span class="o">=</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">term</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">())</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">term</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="c"># Here&#39;s where your code goes!</span>
+    <span class="c"># It can be any middleware method that needs search engine detection</span>
+    <span class="c"># functionality... this is just my example.</span>
+    <span class="k">def</span> <span class="nf">process_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">view_func</span><span class="p">,</span> <span class="n">view_args</span><span class="p">,</span> <span class="n">view_kwargs</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">django.views.generic.date_based</span> <span class="kn">import</span> <span class="n">object_detail</span>
+        <span class="n">referrer</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">META</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;HTTP_REFERER&#39;</span><span class="p">)</span>
+        <span class="n">engine</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">term</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_search</span><span class="p">(</span><span class="n">referrer</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">engine</span> <span class="ow">and</span> <span class="n">view_func</span> <span class="ow">is</span> <span class="n">object_detail</span><span class="p">:</span>
+            <span class="c"># The client got to this object&#39;s page from a search engine.</span>
+            <span class="c"># This might be useful for determining the object&#39;s popularity.</span>
+            <span class="c"># Get the object using object_detail&#39;s queryset.</span>
+            <span class="c"># Log this search using a custom Visit model or something.</span>
+</pre></div>
+</td></tr></table>
+  <div>
+    <h3>More like this</h3>
+    
+      <ol>
+      
+      <li><a href="/snippets/166/">Allow filtering and ordering by counts of related query results</a> by <a href="/users/exogen/">exogen</a>
+        3 years, 8 months ago
+      </li>
+      
+      <li><a href="/snippets/1240/">Search Engine Referrer info in request</a> by <a href="/users/zenx/">zenx</a>
+        2 years ago
+      </li>
+      
+      <li><a href="/snippets/2001/">Mobile browser detection middleware</a> by <a href="/users/pavl/">pavl</a>
+        7 months, 3 weeks ago
+      </li>
+      
+      <li><a href="/snippets/2022/">Class Feeds DRY TemplateTag</a> by <a href="/users/gmandx/">gmandx</a>
+        7 months, 1 week ago
+      </li>
+      
+      <li><a href="/snippets/267/">browscap.ini-parser </a> by <a href="/users/henning/">henning</a>
+        3 years, 6 months ago
+      </li>
+      
+      </ol>
+    
+  </div>
+
+    </div>
+    <div id="sidebar">
+      <div style="padding: 15px;">
+        <form method="get" action="/search/">
+          <table>
+            <tr>
+              <td><label for="id_q">Search:</label></td>
+              <td><input type="text" name="q" id="id_q" style="width: 110px;" value="" /></td>
+              <td><input type="submit" value="Go" /></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td><a href="/search/advanced/">Advanced Search</a></td>
+            </tr>
+          </table>
+        </form>
+      </div>
+      
+  <p>Sometimes it's nice to know if your visitors came from a search engine such as Google or Yahoo. I use this as a component in determining the popularity of blog articles for search keywords, so I know which articles to automatically feature or suggest. Maybe you'd like to use it to highlight the visitor's search terms on the page.</p>
+<p>This isn't actually middleware in the sense that it defines any of the middleware interfaces. It's intended to be the base for a middleware method that you write, depending on what you want to happen when you detect that the visitor came from a search engine. In the example <code>process_view</code> method, I detect when the request is going to use the <code>object_detail</code> view and log the search query for that object in the database.</p>
+
+  <dl>
+    <dt>Author:</dt>
+    <dd><a href="/users/exogen/">exogen</a></dd>
+    <dt>Posted:</dt>
+    <dd>April 23, 2007</dd>
+    <dt>Language:</dt>
+    <dd><a href="/languages/python/">Python</a></dd>
+    <dt>Django Version:</dt>
+    <dd>.96</dd>
+    <dt>Tags:</dt>
+    <dd><a href="/tags/middleware/">middleware</a> <a href="/tags/search-engine/">search-engine</a> <a href="/tags/referrer/">referrer</a> </dd>
+    <dt>Score:</dt>
+    <dd>3 (after 3 ratings)</dd>
+  </dl>
+
+  <h3>Tools</h3>
+  <ul>
+    
+    <li><a href="/snippets/197/download/" type="text/x-python">Download this snippet</a></li>
+    <li><a href="#comments">Comment on this snippet</a></li>
+  </ul>
+
+    </div>
+  </div>
+  
+  <div id="comments">
+    <h2>Comments</h2>
+    
+    
+    <dl>
+    
+      <dt id="c1528"><a href="/users/zenx/">zenx</a> (on December 10, 2008):</dt>
+      <dd><p>On line 42 replace: match = re.match(NETWORK_RE % engine, network)
+</p>
+<p>with: match = re.match(cls.NETWORK_RE % engine, network)
+</p>
+      <p><a href="/comments/cr/15/197/#c1528">#</a></p></dd>
+    
+      <dt id="c2233"><a href="/users/exogen/">exogen</a> (on October 17, 2009):</dt>
+      <dd><p>@zenx: Fixed, thanks!
+</p>
+      <p><a href="/comments/cr/15/197/#c2233">#</a></p></dd>
+    
+    </dl>
+    
+
+<form action="/accounts/login/" method="post"><div style='display:none'><input type='hidden' name='csrfmiddlewaretoken' value='0d4a87ba66ea837b18e81442cb25ab3e' /></div>
+<dl>
+<dt><label for="id_username">Username:</label></dt>
+<dd><input type="text" name="username" id="id_username" /></dd>
+<dt><label for="id_password">Password:</label></dt>
+<dd><input type="password" name="password" id="id_password" /> (<a href="/accounts/password_reset/">Forgotten your password?</a>)</dd>
+<dt></dt>
+<dd><input type="submit" value="Login" /></dd>
+</dl>
+<input type="hidden" name="next" value="/snippets/197/" />
+</form>
+
+
+  </div>
+
+
+  <div id="footer">
+    <div class="chunk">
+      <h3>Snippets</h3>
+      <ul>
+        <li><a href="/users/">By author</a></li>
+        <li><a href="/languages/">By language</a></li>
+        <li><a href="/tags/">By tag</a></li>
+        <li><a href="/popular/rated/">Highest-rated</a></li>
+        <li><a href="/popular/bookmarked/">Most bookmarked</a></li>
+        <li><a rel="alternate" href="/feeds/latest/" type="application/atom+xml"><img src="http://djangosnippets.org/media/img/feed-icon-10x10.png" alt="" /> Feed of latest snippets</a></li>
+      </ul>
+    </div>
+    
+    <div class="chunk">
+      <h3>About</h3>
+      <p>Powered by <a href="http://www.djangoproject.com/">Django</a>.</p>
+      <p>Learn more <a href="/about/">about this site</a>.</p>
+      <p>Read the <a href="/about/faq/">FAQ</a>.</p>
+      <p><a href="/about/tos/">Terms of service</a></p>
+    </div>
+    <p id="copyright">Backend code by <a href="http://www.b-list.org/">James Bennett</a> and <a href="http://charlesleifer.com">Charles Leifer</a>, design by <a href="http://www2.jeffcroft.com/">Jeff Croft</a>.</p>
+  </div>
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-16402186-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+</body>
+</html>

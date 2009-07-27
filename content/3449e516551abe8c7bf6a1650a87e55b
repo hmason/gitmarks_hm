@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<title>  HashMask | Arc90 Lab</title>
+<!-- <meta name="description" content="" /> -->
+<meta name="keywords" content="," /><meta name="description" content="Web Application Design &amp; Development" />
+<meta name="robots" content="index,follow" /><link rel="shortcut icon" type="image/x-icon" href="http://lab.arc90.com/wp-content/themes/arc90_theme/favicon.ico" /> 
+<link rel="icon" type="image/x-icon" href="http://lab.arc90.com/wp-content/themes/arc90_theme/favicon.ico" />
+<link rel="stylesheet" href="http://lab.arc90.com/wp-content/themes/arc90_theme/style.css" type="text/css" media="screen" />
+<link rel="pingback" href="http://lab.arc90.com/xmlrpc.php" />
+<!--[if lte IE 7]>
+	<link rel="stylesheet" href="http://lab.arc90.com/wp-content/themes/arc90_theme/ie.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+<link type="text/css" rel="stylesheet" href="http://lab.arc90.com/wp-content/themes/arc90_theme/scripts/syntaxhighlighter/SyntaxHighlighter.css"/>
+
+
+<script src="http://lab.arc90.com/wp-content/themes/arc90_theme/scripts/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="http://lab.arc90.com/wp-content/themes/arc90_theme/scripts/jquery.cycle.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="http://lab.arc90.com/wp-content/themes/arc90_theme/scripts/jquery.arctweets.js" type="text/javascript" charset="utf-8"></script>
+<script src="http://lab.arc90.com/wp-content/themes/arc90_theme/scripts/arc90.core.js" type="text/javascript" charset="utf-8"></script>
+<script src="http://lab.arc90.com/wp-content/themes/arc90_theme/scripts/jquery.label_over.js" type="text/javascript" charset="utf-8"></script>
+
+<script type='text/javascript' charset='utf-8'>
+	jQuery(document).ready(function() {
+		// Label over input call
+		if(jQuery('#commentform label, #searchform label').length > 0) {
+			jQuery('#commentform label, #searchform label').labelOver('over');
+		}
+	});
+</script>
+
+
+<script type='text/javascript' src='http://lab.arc90.com/wp-includes/js/comment-reply.js?ver=20090102'></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://lab.arc90.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://lab.arc90.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='Arc90 Lab' href='http://lab.arc90.com' />
+<link rel='start' title='Coming Soon : Experiments!' href='http://lab.arc90.com/2006/05/23/coming-soon-experiments/' />
+<link rel='prev' title='HalfMask' href='http://lab.arc90.com/2009/07/08/halfmask-an-experiment-in-password-masking/' />
+<link rel='next' title='ActionScript 3 XPath Library' href='http://lab.arc90.com/2010/04/28/actionscript-3-xpath-library/' />
+<link rel='canonical' href='http://lab.arc90.com/2009/07/09/hashmask-another-more-secure-experiment-in-password-masking/' />
+
+</head>
+<body class="single postid-54">
+<div id="page">
+	<div class="wrap">
+		<div id="header">
+			<div id="arc-logo">
+				<a href="http://arc90.com/" title="Arc90 Lab : Home" name="top">Arc90 Lab</a>
+			</div>
+			<ul id="primaryNav">
+				<li class="page_item first"><a href="http://arc90.com/about/">About</a></li>
+				<li class="page_item"><a href="http://arc90.com/people/">Team</a></li>
+				<li class="page_item"><a href="http://arc90.com/work/">Work</a></li>
+				<li class="page_item"><a href="http://blog.arc90.com/">Blog</a></li>
+				<li class="page_item current_page_item"><a href="http://lab.arc90.com/">Lab</a></li>				
+				<li class="page_item"><a href="http://arc90.com/contact/">Contact</a></li>
+			</ul>
+			<hr />
+		</div>
+		<!-- End #header -->
+
+	<div id="content" class="single labpost">
+
+		<div class="post-54 post hentry category-experiments entry-asset" id="post-54">
+			<em class="published">Thursday, July 9th, 2009</em>
+			<h1>HashMask</h1>
+			
+			<div class="entry">
+				<p>HashMask is an attempt to find a more secure middle ground between clear and masked passwords. It does this by visualizing a hashed representation of the password as a sparkline with color &#8211; the intent being that the user would become familiar with this image and be able to easily confirm that they typed the right (or wrong) password.</p>
+<hr />
+<h4 id="demo">Demo</h4>
+<p><iframe src="http://lab.arc90.com/experiments/hashmask/demo.html" width="600" height="300" style="margin-left: 10px; border: 1px solid #CCC"></iframe></p>
+<h4 id="why">Why?</h4>
+<p>My original experiment, <a href="http://lab.arc90.com/2009/07/halfmask.php">HalfMask</a>, produced lots of good discussion, which is exactly what I had hoped for. As security expert Bruce Schneier said recently, <a href="http://www.schneier.com/blog/archives/2009/07/the_pros_and_co.html">password masking is not a panacea</a>. Finding a solution that provides both security and usability is the goal.</p>
+<p>As with HalfMask, HashMask is purely an experiment. I&#8217;m not suggesting that this is the best middle ground between clear and masked passwords. I am just hoping to get the community thinking about different approaches.</p>
+<h4 id="how">How does it work?</h4>
+<p>HashMask is a <a href="http://www.jquery.com">jQuery</a> plugin that will produce a unique and non reversible visualization of a users password.  The hope being that they would be able to confirm that they entered their password correctly, but no one else would. It also degrades gracefully so that users without javascript or a poor browser (IE6) will just see a password field.</p>
+<p>Technically speaking, it uses a subset of the sha1 hash of the password as the seed for the sparkline&#8217;s shape and color. It should be relatively safe from reverse engineering as a result. There is the potential to estimate a possible range of characters of the first section of the hash, but overall this should be a extremely low risk.</p>
+<h4 id="use">Can I use it?</h4>
+<p>HashMask is still alpha-level software, but it should be relatively safe to use on an experimental basis if you are interested. It should work on Firefox 3, Safari 4 and IE6+. It&#8217;s available here, as well as on <a href="http://code.google.com/p/hashmask">google code</a>.</p>
+<h4 id="download">Download</h4>
+<p><p>Click on the icon to go to the download directory at google code:</p>
+<p><a href="http://code.google.com/p/hashmask/downloads/list"><img alt="Download" src="http://arc90.com/_img/download.gif" /></a></p>
+<p>Additionally, you may <a href="http://code.google.com/p/hashmask/source/browse/trunk/jquery.hashmask.js">view the source directly in google code</a>.</p>
+</p>
+<h4 id="license">License</h4>
+<p>HashMask is released under the BSD license.</p>
+<h4 id="improvement">Room for Improvement</h4>
+<p>I personally like this approach much better than HalfMask. It&#8217;s more secure at the loss of slight usability. That said, there is room for improvement, specifically with regard to more memorable and elegant visualizations. A colored sparkline works, but it&#8217;s not ideal. If you have suggestions, please let me know or feel free to fork and implement!</p>
+<h4 id="discuss">Discuss</h4>
+<p>Any feedback on the concept is welcome &#8211; feel free to post it on the <a href="http://blog.arc90.com/2009/07/newer_in_the_lab_hashmask_-_an.php">Arc90 Blog</a>, or <a href="http://twitter.com/chrisdary">Follow me on Twitter</a>.</p>
+							</div>
+			<!-- <div id="the-author">
+				<div class="comment-author vcard clearfloat">
+									</div>
+				<div class="comment-body">
+					<p><strong></strong> is Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt.</p>
+				 	<p><a href="#">Full Profile</a> <a href="#">Blog Archive</a></p>
+				</div>
+			</div> -->
+		</div>
+		
+<!-- You can start editing here. -->
+
+
+			<!-- If comments are closed. -->
+		<p class="nocomments">Comments are closed.</p>
+
+	
+
+
+		</div>
+		</div>
+		<!-- End #page .wrap -->
+		<hr />
+	</div>
+	<!-- End #page -->
+
+	<div id="footer">
+		<div class="wrap">
+			<div id="connect">
+				<h3>Connect With Us</h3>
+				<ul>
+					<li class="tel"><span>Tel</span> 212.400.6296</li>
+					<li class="email"><span>Email</span> <a href="mailto:contact@arc90.com">contact@arc90.com</a></li>
+					<li class="vcard"><span>VCard</span> <a href="http://lab.arc90.com/wp-content/themes/arc90_theme/assets/arc90.vcf">Download</a></li>
+				</ul>
+			</div>
+			<!-- End #connect -->
+
+			<div id="twitterBox">
+				<ul id="twitter-tabs">
+					<li id="tweets-tab-about" class="first">Tweets <em>about</em> arc90</li>
+					<li id="tweets-tab-from" class="active">Tweets <em>by</em> arc90</li>
+				</ul>
+				<div class="tweetcontainer">
+					<ul id="tweets-content-about" style="display: none;"></ul>
+					<ul id="tweets-content-from"></ul>
+				</div>
+			</div>
+			<!-- End #twitterBox -->
+		</div>
+		<!-- End #footer .wrap -->
+	</div>
+	<!-- End #footer -->
+
+	<div id="meta">
+		<div class="wrap">
+			<ul>
+				<li class="kindlingapp-icon"><a href="http://www.kindlingapp.com/" title="Kindling @ kindlingapp.com">Idea Management</a></li>
+				<li class="sprite-feed"><a href="http://feeds.feedburner.com/Arc90Blog" rel="alternate" type="application/rss+xml" name="bottom">Blog</a></li>
+				<li class="sprite-feed"><a href="http://feeds.feedburner.com/Arc90Lab" rel="alternate" type="application/rss+xml">Lab</a></li>
+				<li class="sprite-twitter"><a href="http://www.twitter.com/arc90">Twitter</a></li>
+				<li class="sprite-flickr"><a href="http://flickr.com/photos/tags/arc90/interesting/">Flickr</a></li>
+				<li class="sprite-miniajax"><a href="http://www.miniajax.com/">Mini Ajax</a></li>
+				<li class="copyright">&copy;2004 &ndash; 2009, Arc90, All Rights Reserved</li>
+			</ul>
+		</div>
+	</div>
+	<!-- End #meta -->
+
+	
+	<script type="text/javascript">
+
+	  var _gaq = _gaq || [];
+		
+	  _gaq.push(['_setAccount', 'UA-6585734-1']);
+	  _gaq.push(['_trackPageview']);
+
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+
+	</script>
+
+<script type="text/javascript" src="http://lab.arc90.com/wp-content/themes/arc90_theme/scripts/syntaxhighlighter/shCore.js"></script>
+<script type="text/javascript" src="http://lab.arc90.com/wp-content/themes/arc90_theme/scripts/syntaxhighlighter/shBrushAS3.js"></script>
+<script type="text/javascript" src="http://lab.arc90.com/wp-content/themes/arc90_theme/scripts/syntaxhighlighter/shBrushCSharp.js"></script>
+<script type="text/javascript" src="http://lab.arc90.com/wp-content/themes/arc90_theme/scripts/syntaxhighlighter/shBrushPhp.js"></script>
+<script type="text/javascript" src="http://lab.arc90.com/wp-content/themes/arc90_theme/scripts/syntaxhighlighter/shBrushJScript.js"></script>
+<script type="text/javascript" src="http://lab.arc90.com/wp-content/themes/arc90_theme/scripts/syntaxhighlighter/shBrushVb.js"></script>
+<script type="text/javascript" src="http://lab.arc90.com/wp-content/themes/arc90_theme/scripts/syntaxhighlighter/shBrushSql.js"></script>
+<script type="text/javascript" src="http://lab.arc90.com/wp-content/themes/arc90_theme/scripts/syntaxhighlighter/shBrushXml.js"></script>
+<script type="text/javascript" src="http://lab.arc90.com/wp-content/themes/arc90_theme/scripts/syntaxhighlighter/shBrushDelphi.js"></script>
+<script type="text/javascript" src="http://lab.arc90.com/wp-content/themes/arc90_theme/scripts/syntaxhighlighter/shBrushPython.js"></script>
+<script type="text/javascript" src="http://lab.arc90.com/wp-content/themes/arc90_theme/scripts/syntaxhighlighter/shBrushJava.js"></script>
+<script type="text/javascript">dp.SyntaxHighlighter.HighlightAll('code');</script>
+
+</body>
+</html>
+
+<!-- Dynamic page generated in 0.260 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2010-12-20 09:12:14 -->

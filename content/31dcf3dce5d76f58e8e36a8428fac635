@@ -1,0 +1,393 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name='description' content='Search thousands of jobs at thousands of great startups.  StartUpHire is the website dedicated to jobs at venture capital backed companies.' />
+	<meta name='keywords' content='search jobs, startup company, startup, job, job search, startup job, venture capital, career, find a job' />
+	<title>Job Search </title>
+	
+	<link rel="stylesheet" rev="stylesheet" href="/styles/temp.css" media="all" charset="utf-8" />
+	<link rel="stylesheet" rev="stylesheet" href="/styles/print.css" media="print" charset="utf-8" />
+	<link rel="stylesheet" rev="stylesheet" href="/styles/zGrayScreen.css" media="all" charset="utf-8" />
+	<link rel="alternate" type="application/atom+xml" href="http://www.startuphire.com/rss/feed.php?searchId=bd8162a549082cf2d7589562264e5f97" title="Unsaved Search" id="auto-discovery">
+	<!--[if IE 7]> <link rel="stylesheet" rev="stylesheet" href="../styles/ie7.css" type='text/css' charset="utf-8" media="screen" /> <![endif]-->
+	<!--[if lte IE 6]> <link rel='stylesheet' rev='stylesheet' href='../styles/ie6.css' type='text/css' charset="utf-8" media='screen' /> <![endif]-->
+	<!-- <link rel="stylesheet" rev="stylesheet" href="/styles/search_results.css" media="all" charset="utf-8" /> -->
+	<noscript>
+		<meta http-equiv="refresh" content="0;url=/noscript" />
+	</noscript>
+	<script src="/javascript/jquery-1.4.2.min.js" type="text/javascript" language="javascript"></script>
+	<script src="/javascript/ui.base.js" type="text/javascript" language="javascript"></script>
+	<script src="/javascript/advancedSearch.php" type="text/javascript" language="javascript"></script> 
+	<script src="/javascript/zGrayScreen.js" type="text/javascript" language="javascript"></script>
+	<script src="/javascript/startUpHire.js" type="text/javascript" language="javascript"></script>
+	<script src="/javascript/jquery.form.js" type="text/javascript" language="javascript"></script>
+	<script src="/javascript/jquery.autocomplete.js" type="text/javascript" language="javascript"></script>
+	<script src="/javascript/jquery.tooltip.js" type="text/javascript" language="javascript"></script>
+	<script src="/javascript/jquery.pngFix.js" type="text/javascript" language="javascript"></script>
+	<script type="text/javascript" language="javascript">
+		$(document).ready(function() {
+
+			$('div.pageLinks a.hiddenpages').css('display','none');
+
+			var default_location = 'City, State or ZIP';
+
+			// set color to gray and hint text.  set the click
+			$('#location').blur(function() {
+				if($('#location').val() == "") {
+					$('#location').css('color','#ccc').val(default_location);
+				}
+			});
+			if($('#location').val() == "") {
+				$('#location').css('color','#ccc').val(default_location);
+			}
+			$('#location').focus(function() {
+				if($(this).val() === default_location) {
+					$(this).css('color','#000').val('');
+				}
+			});
+			if($('#keywords').val() == "") {
+				$('#keywords').css('color','#ccc').val('Keywords, Job Titles, Company');
+			}
+			$('#keywords').blur(function() {
+				if($('#keywords').val() == "") {
+					$('#keywords').css('color','#ccc').val('Keywords, Job Titles, Company');
+				}
+			});
+			$('#keywords').focus(function() {
+				if($(this).val() == "Keywords, Job Titles, Company") {
+					$(this).css('color','#000').val('');
+				}
+			});
+
+			//Normal country select
+			$('#countrySelect').live('change', function() {
+				if($(this).val() != '') {
+					var country_code = $(this).val();
+					$.post('/search/services/countrySwitcher.php',{'country_code':country_code},function(data) {
+						if($('#location').val() === default_location) {
+							$('#location').val(data.loc);
+						}
+						default_location = data.loc;
+						var radiusText = $('#radiusText').html().split(" ");
+						$('#radiusText').html(radiusText[0]+" "+radiusText[1]+" "+data.unit);	
+					},'json');
+				}
+			});
+			
+			//Grayscreen country select
+			$('#countryFullNameSelect').live('change', function() {
+				if($(this).val() != '') {
+					$('#countrySelect option[value='+$(this).val()+']').select();
+					$('#countrySelect').change();
+					$().zGrayScreenHide();
+				}
+			});
+
+			//Countries grayscreen link
+			$('#fullCountryNames').click(function() {
+				// One day this will be generated
+				html = '';
+				html += '<p>Please choose the country to search from the full names listed below.</p>\n';
+				html += "<div style='text-align:center'><select name='country' id='countryFullNameSelect'>\n";
+				html += "<option value=''></option>\n";
+				html += "<option value='AU'>Australia</option>";
+				html += "<option value='BR'>Brazil</option>";
+				html += "<option value='CA'>Canada</option>";
+				html += "<option value='CN'>China</option>";
+				html += "<option value='FR'>France</option>";
+				html += "<option value='DE'>Germany</option>";
+				html += "<option value='HK'>Hong Kong</option>";
+				html += "<option value='IN'>India</option>";
+				html += "<option value='IE'>Ireland</option>";
+				html += "<option value='IL'>Israel</option>";
+				html += "<option value='NL'>Netherlands</option>";
+				html += "<option value='NZ'>New Zealand</option>";
+				html += "<option value='NO'>Norway</option>";
+				html += "<option value='RU'>Russian Federation</option>";
+				html += "<option value='SG'>Singapore</option>";
+				html += "<option value='GB'>United Kingdom</option>";
+				html += "<option value='US'>United States</option>";
+				html += "</select></div><br /><br />";
+				$().zGrayScreen({title:'Countries',html:html});
+				$('#countryFullNameSelect option[value='+$('#countrySelect').val()+']').select();
+				return false;
+			});
+			
+			
+			// Fixed Tool Panel & Logo.  Exclude IE6 from this feature
+			if(!($.browser.msie && parseInt(jQuery.browser.version) == 6)) {
+				$(window).scroll(function () {
+					// which image to use
+					if($(window).scrollTop() > 140) {
+						$('#fixedLogo').css({background:'#fff'});
+					} else {
+						$('#fixedLogo').css({background:'none'});
+					}
+					// fadeIn/Out
+
+					if($(window).scrollTop() >= 92 && $('#fixedLogo').css('display') == 'none') {
+						$('#fixedLogo').fadeIn();
+					}
+					if($(window).scrollTop() < 92 && $('#fixedLogo').css('display') == 'block') {
+						$('#fixedLogo').fadeOut();
+					}
+				});
+			}
+			
+			// save a job
+			$(".saveJob a").click(function() {
+				var $anchor = $(this).parent();
+				$anchor.html('Saving...');
+				$.getJSON("/search/saveJob.php", {jobId:$(this).attr('jobId')}, function() {
+					$anchor.addClass('savedJob').html('Job Saved');
+				});
+				return false;
+			});
+
+			//map this job
+			$(".mapper").click(function() {
+				mapJobs([$(this).attr('jobId')]);
+				return false;
+			});
+			
+			// save search
+			$("a.saveSearch").click(function() {
+				notSaveSearch();				return false;
+			});
+
+			// email alert
+			$("a.emailAlert").click(function() {
+				notSaveSearch(true);				return false;
+			});
+			
+			// results glow
+			$(".result").hover(
+				function() {
+					$(this).css({backgroundImage:'url(../images/result_glow.gif)'});
+				},
+				function() {
+					if($(this).find('input').attr('checked') != true) {
+						$(this).css({backgroundImage:''});
+					}
+				}
+			);
+			$(".result").click(function(e) {
+				if($(e.target).is('a') || $(e.target).is('input')) {
+					fn.call(e.target,e);
+				} else {
+					window.location.href = $(this).find(".jobTitle a").attr('href');
+				}  
+			});
+			
+		
+			
+			// Magnify the tabs on hover
+			$("ul.zTabs li:not(.current)").hover(function() {
+					$(this).addClass('magnified');
+				},
+				function() {
+					$(this).removeClass('magnified');
+				}
+			);
+			
+			// set up VC auto-complete in the advanced search
+			$(".VCAutoComplete").autocomplete("/signin/vcComplete.php", {
+				minChars:3,
+				resultsClass:'completions',
+				matchSubset:0
+			});
+			
+			// set up Company name auto-complete for advanced search
+			$(".CompanyAutoComplete").autocomplete("/signin/autoCompleteCompany.php", {
+				minChars:3, 
+				resultsClass:'completions', 
+				matchSubset:0
+			});
+
+			//IE6 png fix
+			$(document).pngFix();
+
+			$('.stageIcon').tooltip({
+				showURL: false 
+			});
+			
+			//remove the border-bottom from posts preceding a featured post
+			$('.result.featured').prev().css('border-bottom-style','none');
+
+			$('.dollarIcon').tooltip({
+				showURL: false 
+			});
+			setSearchRow('Company Name', 'Metastorm');
+
+		});
+	</script>
+</head>
+
+<body class='search'>
+<div id='pageHeader'>
+	<div id='logo'>
+		<a href='/'>
+			<img id='logo1' src='/images/logo.gif' width='156' height='46' alt='StartUpHire Logo'/>
+			<img id='logo2' src='/images/fixed_logo_white.gif' width='160' height='74' alt='StartUpHire Logo'/>
+		</a>
+	</div>
+	<div id='navBlock'>
+		<div id='supportLinks'>
+			<a href="/blog">Blog</a>
+			<a href='/help/'>FAQ</a>
+			<a href='/preferences'>Preferences</a>
+			<a href='' class='signIn'>Sign In</a>		</div>
+		<div id='mainTabs'>
+			<ul  class='zTabs'>
+				<li class='current'><a href='/search/'><span>Job Search</span></a></li>
+				<li><a href='/agents/'><span>Search Agents</span></a></li>
+				<li><a href='/prospects/'><span>Job Prospects</span></a></li>
+				<li><a href='/investors/'><span>VC Investors</span></a></li>
+				<li><a href='/employers/'><span>Employers</span></a></li>
+				<li><a href='/profiles/'><span>Your Profile</span></a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+<div id='pageContent'>	
+		<div id='leftColumn' style='position:relative'>
+			<div id='fixedLogo' style='display:none'><a href='/'><img src='/images/fixed_logo.png' alt='StartUpHire Logo' border='0' alt='Logo'></a></div>
+							<div id='toolPanelWrap'>
+					<div class='top'></div>
+					<div id='toolPanel'>
+						<ul>
+																	<li><a href='#' class='emailAlert' searchId='bd8162a549082cf2d7589562264e5f97'>E-mail Alert</a></li>
+									<li><a href='#' class='saveSearch' searchId='bd8162a549082cf2d7589562264e5f97'>Save This Search</a></li>
+															</li>
+							<li>
+								<div id='sortBy' >Sort By:<br>
+									<select name='sortby' onChange='val="?sortby="+$(this).val();window.location=val;'>
+										<option>Relevance</option>
+										<option >Date Posted</option>
+										<option >Job Title</option>
+										<option >Company Name</option>
+									</select>
+								</div>
+							</li>
+														<li><span class='disabled'>Map These Jobs</span></li>
+						</ul>
+					</div>
+					<div class='bottom'></div>
+				</div>
+					<div class="adBlock">
+				<div class="adButton"><a href="http://www.hubspot.com" target='_HubSpot'><img src="/images/ads/hubspot.gif" border='0' width="120" height="90" alt="HubSpot"></a></div>		<div class="adButton"><a href="http://rimuhosting.com/?r=503c6d671761beba1b4f7460021fbb23" target='_RimuHosting'><img src="/images/ads/rimuhosting.jpg" border='0' width="120" height="90" alt="RimuHosting"></a></div>		<div class="adButton"><a href="http://www.IntelligentOffice.com/Greater-DC" target='_Intelligent Office'><img src="/images/ads/io.jpg" border='0' width="120" height="90" alt="Intelligent Office"></a></div>		</div>
+			&nbsp;</div>
+		<div id='centerColumn'>
+			<div id='searchBand' style="display:none;">
+				<form action='/search/' method='post' accept-charset="utf-8"> 
+					<div class='searchTermBlock'>
+						<!--span tags to fix an IE bug for input field margins-->
+						<span><input type='text' size='26' name='keywords' id='keywords' value=''></span><br />
+						<a href='' onclick='toggleAdvancedSearch();return false;'>Advanced Search</a>
+					</div>
+					<div class='searchTermBlock'>
+						<span><input type='text' size='18' name='location' id='location' value='' class='location'>
+						<input type='hidden' name='latlon' id='latlon' value=''></span><br />
+						<a id='radiusText' href='' onclick='rotateMiles(this); return false;'>Within 50 miles</a><input type='hidden' name='within' value='50'>
+					</div>
+					<div class='searchTermBlock' id='chooseCountry'>
+						<span><select name='country' id='countrySelect'>
+<option value='AU'>AU</option><option value='BR'>BR</option><option value='CA'>CA</option><option value='CN'>CN</option><option value='FR'>FR</option><option value='DE'>DE</option><option value='HK'>HK</option><option value='IN'>IN</option><option value='IE'>IE</option><option value='IL'>IL</option><option value='NL'>NL</option><option value='NZ'>NZ</option><option value='NO'>NO</option><option value='RU'>RU</option><option value='SG'>SG</option><option value='GB'>GB</option><option value='US' selected>US</option>						</select></span><br />
+						<a href='#' rel='nofollow' id='fullCountryNames'>Countries</a>
+					</div>
+					<div class='searchTermBlock'>
+						<input type='image' alt="job search" src='/images/search_button.gif' name='image' width='85' height='25' class='searchButton'>
+					</div>
+					<br style='clear:both'>
+				</form>
+			</div>
+			<div id='advSummaryBand' style="">
+				<div style='height:3em;overflow:hidden;'><strong>Advanced Search:</strong> <a href='#' style='color:black' onclick='$("#advSummaryBand").slideUp(function(){$("#advancedSearchBand").slideDown()});return false;'>Company Name: Metastorm; </a></div>
+				<a href='#' style='color:gray;' onclick='$("#advSummaryBand").slideUp(function(){$("#searchBand").slideDown()});return false;'>Simple Search</a>
+			</div>
+						<div id='advancedSearchBand' style='display:none'>
+				<form action='/search/' method='post' accept-charset='utf-8'> 
+				<div id='advancedSearch'>
+					<a id='returnLink' href='' onclick='$("#advancedSearchBand").slideUp(function(){$("#searchBand").slideDown()});return false;'>Return to Basic Search</a>
+					<p>Build a custom search by adding criteria below</p>	
+					<div class='addButtonZone'>
+						<a href='#' class='button' id='addCriteria'><span>Add Criteria</span></a><br /><br />
+						<input type='image' alt='job search' src='/images/search_button.gif' name='image' width='85' height='25' class='searchButton' />
+					</div>
+					<input name='Search' type='hidden' value='Advanced' />
+				</div>
+				</form>
+			</div>
+		<div class='searchBalloon' style='width:525px;'>
+			<h2 class='searchBalloon'>The Location You Entered Was Not Recognized</h2>
+			<div class='searchBalloonTextWrapper'>
+				<div class='searchBalloonTextInner'>
+				<p>Enter the city and state, just the state, or the ZIP code in the location field.</p>
+				<p>Here are three examples:</p>
+				<ul>
+					<li>San Jose, CA</li>
+					<li>CT</li>
+					<li>22315</li>
+				</ul>
+				</div>
+			</div>
+		</div>
+		</div>
+		<div id='rightColumn' class='searchPage'>
+			<div class='sponsors'>
+<div class='sponsoredBy'><a href='/partners/'>In Partnership With:</a></div>
+<div class='sponsor'><a target='_blank' href='http://www.nsf.gov'><img src='/partners/logos/nsf_logo.gif' alt='National Science Foundation' border='0'></a></div>
+<div class='sponsor'><a target='_blank' href='http://www.sonnenschein.com/practice_areas/vc/'><img src='/partners/logos/sonnenschein.gif' alt='Sonnenschein Nath &amp; Rosenthal' border='0'></a></div>
+<div class='sponsor'><a target='_blank' href='http://www.nvca.org'><img src='/partners/logos/nvca.gif' alt='National Venture Capital Association' border='0'></a></div>
+<div class='sponsor'><a target='_blank' href='http://www.mmvf.com'><img src='/partners/logos/mmvf.gif' alt='MMV Financial' border='0'></a></div>
+<div class='sponsor'><a target='_blank' href='http://www.comerica.com/vgn-ext-templating/v/index.jsp?vgnextoid=01f48376aa962010VgnVCM1000004302a8c0RCRD'><img src='/partners/logos/comerica.gif' alt='Comerica' border='0'></a></div>
+<div class='sponsor'><a target='_blank' href='http://www.cooley.com'><img src='/partners/logos/cooley.gif' alt='Cooley Godward Kronish' border='0'></a></div>
+<div class='sponsor'><a target='_blank' href='http://www.mofo.com'><img src='/partners/logos/mofo.gif' alt='Morrison &amp; Foerster' border='0'></a></div>
+<div class='sponsor'><a target='_blank' href='http://www.siia.net'><img src='/partners/logos/siia.gif' alt='SIIA' border='0'></a></div>
+<div class='sponsor'><a target='_blank' href='http://www.newventurecom.com'><img src='/partners/logos/newventurecom.gif' alt='New Venture Communications' border='0'></a></div>
+<div class='sponsor'><a target='_blank' href='http://www.hp.com/go/startups'><img src='/partners/logos/startup_central.jpg' alt='HP Startup Central' border='0'></a></div>
+<div class='sponsor'><a target='_blank' href='http://www.dlapiper.com'><img src='/partners/logos/dlapiper.gif' alt='DLA Piper' border='0'></a></div>
+<div class='sponsor'><a target='_blank' href='http://www.argy.com'><img src='/partners/logos/argy.gif' alt='Argy, Wiltse &amp; Robinson, P.C.' border='0'></a></div>
+</div>
+
+		</div>
+					<div class='footer'>
+				<div style='margin: 0px'>&nbsp;</div>
+				<div><a href='/about/'>About Us</a>|<a href='/partners/'>Partners</a>|<h2><a href='/directory'>Browse Jobs</a></h2>|<a href='/privacy/'>Privacy Policy</a>|<a href='/terms/'>Terms of Use</a>|<a href='/contact/'>Contact Us</a><br />
+					<span class='copyright'>&copy; 2010 StartUpHire LLC</span>
+				</div>
+			</div>
+			<!-- Start of HubSpot Logging Code  -->
+						<script type="text/javascript" language="javascript">
+			var hs_portalid=41999; 
+			var hs_salog_version = "2.00";
+			var hs_ppa = "startuphire.app4.hubspot.com"
+			document.write(unescape("%3Cscript src='" + document.location.protocol + "//" + hs_ppa + "/salog.js.aspx' type='text/javascript'%3E%3C/script%3E"));
+			</script>
+							<!-- End of HubSpot Logging Code --></div>
+<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAQAr9srEILXgVbAqKY6h2jhQkMabD2uMwExssiVQAvUCUQ3-sSBTr4tP-4qYPYSCyEQpnj18ee9hhmg" type="text/javascript"></script>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-6455727-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+      <!-- Google Website Optimizer Conversion Script -->
+<script type="text/javascript">
+if(typeof(_gat)!='object')document.write('<sc'+'ript src="http'+
+(document.location.protocol=='https:'?'s://ssl':'://www')+
+'.google-analytics.com/ga.js"></sc'+'ript>')</script>
+<script type="text/javascript">
+try {
+var gwoTracker=_gat._getTracker("UA-6455727-2");
+gwoTracker._trackPageview("/3842817501/goal");
+}catch(err){}</script>
+<!-- End of Google Website Optimizer Conversion Script -->
+</body>
+</html>

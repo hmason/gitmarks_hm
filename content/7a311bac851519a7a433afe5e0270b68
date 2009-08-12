@@ -1,0 +1,480 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+ <title>UsingVimWithDjango - Django - Trac</title><link rel="start" href="/wiki" /><link rel="search" href="/search" /><link rel="help" href="/wiki/TracGuide" /><link rel="stylesheet" href="http://media.djangoproject.com/trac/css/trac.css" type="text/css" /><link rel="stylesheet" href="http://media.djangoproject.com/trac/css/wiki.css" type="text/css" /><link rel="stylesheet" href="/pygments/trac.css" /><link rel="icon" href="/favicon.ico" type="image/x-icon" /><link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" /><link rel="alternate" href="/wiki/UsingVimWithDjango?format=txt" title="Plain Text" type="text/x-trac-wiki" /><style type="text/css">/* SETUP */
+
+body { margin: 0; padding: 0; background:#092e20; color:white; }
+body, th, td { font:12px/1.4em Verdana,sans-serif; }
+
+/* LINKS */
+
+a { text-decoration: none; }
+a:link, a:visited { border: 0px none; }
+a:visited { border: 0px none; }
+a img { border: 0px none; }
+a:link, a:visited { color:#ffc757; }
+#main a:link, #main a:visited { color:#ab5603; text-decoration:none; }
+#main a:hover { background-color:#E0FFB8; color:#234f32; text-decoration:none; }
+a:hover { color:#ffe761; }
+#main h2 a, #content-main h3 a { text-decoration:none !important; }
+#main a.closed { text-decoration: line-through; }
+
+/* DJANGO BRANDING */
+
+#django-header { position:relative; height:6.5em; background:#092e20; }
+#django-header h1 { margin:0; width:111px; height:41px; position:absolute; bottom:10px; left:25px; }
+#django-header a:hover { color: transparent; border: 0px none; }
+
+#django-nav-global { position:absolute; margin:0; top:-9px; right:0; font-family:"Trebuchet MS",sans-serif; white-space:nowrap; }
+#django-nav-global li { display:block; float:left; list-style-type:none; margin:0; padding:0; }
+#django-nav-global a { display:block; float:left; padding:5em 16px 10px 16px; background:#092e20; }
+#django-nav-global a:hover { color:white; background:#234f32; }
+#django-nav-code a { color:white; background:#092e20 url(http://media.djangoproject.com/img/site/nav_bg.gif) bottom repeat-x; }
+
+#billboard { margin:0; padding:0; background: #94da3a url(http://media.djangoproject.com/img/site/bbdsm_bg.gif) repeat-x; border-bottom:9px solid #092e20; }
+#billboard h2 { margin:0; padding: 0; background: transparent; }
+#billboard h2 a { display:block; margin:0; padding:0; text-indent:-5000px; height:60px; width:184px; background:url(http://media.djangoproject.com/img/site/bbd_code.gif) no-repeat; }
+
+/* CONTENT */
+
+#main { background: white; color: black; padding-bottom: 22px; }
+#main * { margin-left:22px; margin-right:24px; }
+#main * * { margin-left:0; margin-right:0; }
+#main h1,h2,h3 { margin-top:.8em; font-family:"Trebuchet MS",sans-serif; font-weight:normal; }
+#main h1 { font-size:218%; margin-top:0; padding-top: 1em; margin-bottom:.6em; color:#092e20; line-height:1.1em; }
+#main h2 { font-size:150%; margin-top:1em; margin-bottom:.2em; line-height:1.2em; color:#092e20; }
+#main h3 { font-size:125%; font-weight:bold; margin-bottom:.2em; color:#487858; }
+#main h4 { font-size:100%; font-weight:bold; margin-bottom:-3px; margin-top:1.2em; text-transform:uppercase; letter-spacing:1px; }
+#main h4 pre, h4 tt, h4 .literal { text-transform:none; }
+#main h5 { font-size:1em; font-weight:bold; margin-top:1.5em; margin-bottom:3px; }
+#main p, ul, dl { margin-top:.6em; margin-bottom:.8em; }
+#main hr { color:#ccc; background-color:#ccc; height:1px; border:0; }
+#main p.date { color:#487858; margin-top:-.2em; }
+#main p.more { margin-top:-.4em; }
+#main h2.deck { margin-top:-.5em !important; margin-bottom:.6em; color:#487858; }
+
+/* TRAC BRANDING REMOVAL AND OVERRIDES */
+
+#header #logo { display: none; } 
+#footer { clear: all; }
+#footer * { display: none; }
+#banner { margin: -4.5em 1em 1.4em 0; }
+#search { margin-bottom: 0.2em; }
+#proj-search { width: 20em; }
+
+#metanav, #metanav a { color: black; }
+
+#mainnav { margin: 0; border: 0px none; background: transparent; }
+#mainnav li { background: #487858; border-right: 3px #092e20 solid; }
+#mainnav li.active { background: white; }
+#mainnav li.last { border-right-width: 0.5em; }
+#mainnav li a:link, #mainnav a:visited { background: transparent; border: 0px none; color: white; }
+#mainnav li.active a:link, #mainnav li.active a:visited { background: transparent; border: 0px none; color: black; }
+#mainnav *:link:hover, #mainnav *:visited:hover { border: 0px none; background: transparent; }
+#mainnav li.active *:link:hover, #mainnav li.active *:visited:hover { border: 0px none; background: transparent; }
+
+#main #ctxtnav { margin-right: 1em; height: auto; }
+#ctxtnav ul { padding-top: 1em; }
+
+#prefs { margin-top: -4em; }
+
+/* SPECIFIC TRAC PAGE FIXES */
+
+#main div.admin div.tabcontents { margin-left: 12em; }
+#main div.browser h1 { padding-top: 0; padding-bottom: 0; margin-bottom: 0; }
+#main #content { width: auto; }
+
+
+/*  CLEARFIX KLUDGE */
+
+#main:after {
+    content: "."; 
+    display: block; 
+    height: 0; 
+    clear: both; 
+    visibility: hidden;
+}
+#main { display: inline-block; }
+
+/* Hides from IE-mac \*/
+* html #main { height: 1%; }
+#main { display: block; }
+/* End hide from IE-mac */
+</style>
+ <script type="text/javascript" src="http://media.djangoproject.com/trac/js/trac.js"></script>
+</head>
+<body>
+<div id="django-header">
+	<h1><a href="http://www.djangoproject.com/"><img src="http://media.djangoproject.com/img/site/hdr_logo.gif" alt="Django" /></a></h1>
+	<ul id="django-nav-global">
+		<li id="django-nav-homepage"><a href="http://www.djangoproject.com/">Home</a></li>
+		<li id="django-nav-download"><a href="http://www.djangoproject.com/download/">Download</a></li>
+		<li id="django-nav-documentation"><a href="http://docs.djangoproject.com/">Documentation</a></li>
+		<li id="django-nav-weblog"><a href="http://www.djangoproject.com/weblog/">Weblog</a></li>
+		<li id="django-nav-community"><a href="http://www.djangoproject.com/community/">Community</a></li>
+		<li id="django-nav-code"><a href="http://code.djangoproject.com/">Code</a></li>
+	</ul>
+</div>
+<div id="billboard"><h2><a href="http://code.djangoproject.com/">Code</a></h2></div>
+
+<div id="banner">
+
+<div id="header"><a id="logo" href="http://djangoproject.com/"><img src="http://media.djangoproject.com/img/site/hdr_logo.gif" alt="Django" /></a><hr /></div>
+
+<form id="search" action="/search" method="get">
+ <div>
+  <label for="proj-search">Search:</label>
+  <input type="text" id="proj-search" name="q" size="10" accesskey="f" value="" />
+  <input type="submit" value="Search" />
+  <input type="hidden" name="wiki" value="on" />
+  <input type="hidden" name="changeset" value="on" />
+  <input type="hidden" name="ticket" value="on" />
+ </div>
+</form>
+
+
+
+<div id="metanav" class="nav"><ul><li class="first"><a href="/login">Login</a></li><li><a href="http://www.djangoproject.com/accounts/register/">Register</a></li><li class="last"><a href="/settings">Settings</a></li></ul></div>
+</div>
+
+<div id="mainnav" class="nav"><ul><li class="active first"><a accesskey="1" href="/wiki">Wiki</a></li><li><a accesskey="2" href="/timeline">Timeline</a></li><li><a href="/browser">Browse Source</a></li><li><a href="/wiki/Reports">Reports</a></li><li><a href="/query">View Tickets</a></li><li><a href="/simpleticket">New Ticket</a></li><li><a accesskey="3" href="/roadmap">Roadmap</a></li><li class="last"><a accesskey="4" href="/search">Search</a></li></ul></div>
+<div id="main">
+
+
+
+
+<div id="ctxtnav" class="nav">
+ <h2>Wiki Navigation</h2>
+ <ul>
+   <li><a href="/wiki">Start Page</a></li>
+   <li><a href="/wiki/TitleIndex">Index by Title</a></li>
+   <li><a href="/wiki/RecentChanges">Index by Date</a></li>
+   <li class="last"><a href="/wiki/UsingVimWithDjango?action=diff&amp;version=48">Last Change</a></li>
+ </ul>
+ <hr />
+</div>
+
+<div id="content" class="wiki">
+
+ 
+  
+  
+   
+   <div class="wikipage">
+    <div id="searchable"><h1 id="UsingVimwithDjango">Using Vim with Django</h1>
+<p>
+This page is intended to be used as a collection of hints for using the Vim editor with Django.
+</p>
+<p>
+<h4>Table of Contents</h4>
+<ol><li class="active"><a href="/wiki/UsingVimWithDjango#UsingVimwithDjango">Using Vim with Django</a><ol><li class="active"><a href="/wiki/UsingVimWithDjango#Tips">Tips</a><ol><li class="active"><a href="/wiki/UsingVimWithDjango#VimModeline">Vim Modeline</a></li><li class="active">
+<a href="/wiki/UsingVimWithDjango#Omnicomplete">Omnicomplete</a></li></ol><li class="active"><a href="/wiki/UsingVimWithDjango#Plugins">Plugins</a><ol><li class="active"><a href="/wiki/UsingVimWithDjango#snippetsEmu">snippetsEmu</a></li><li class="active">
+<a href="/wiki/UsingVimWithDjango#SnipMate.vim">SnipMate.vim</a></li><li class="active">
+<a href="/wiki/UsingVimWithDjango#XMLEdit.vim">XMLEdit.vim</a></li><li class="active">
+<a href="/wiki/UsingVimWithDjango#Syntaxfortemplates">Syntax for templates</a></li><li class="active">
+<a href="/wiki/UsingVimWithDjango#Project.vim">Project.vim</a></li><li class="active">
+<a href="/wiki/UsingVimWithDjango#TagList">Tag List</a></li><li class="active">
+<a href="/wiki/UsingVimWithDjango#Pyflakes">Pyflakes</a></li></ol><li class="active"><a href="/wiki/UsingVimWithDjango#VimIDE">Vim/IDE</a><ol><li class="active"><a href="/wiki/UsingVimWithDjango#PIDA">PIDA</a></li></ol><li class="active"><a href="/wiki/UsingVimWithDjango#Mappings">Mappings</a></li><li class="active">
+<a href="/wiki/UsingVimWithDjango#SurroundMappings">Surround Mappings</a></li><li class="active">
+<a href="/wiki/UsingVimWithDjango#Suggestions">Suggestions</a><ol><li class="active"><a href="/wiki/UsingVimWithDjango#DjangoProjectManager:Bypanosl">Django Project Manager: By panosl</a><ol><li class="active"><a href="/wiki/UsingVimWithDjango#Comments">Comments</a></li></ol></li></ol></li></ol></li></ol>
+</p>
+<h2 id="Tips">Tips</h2>
+<h3 id="VimModeline">Vim Modeline</h3>
+<p>
+To ensure that all developers are using a standard tab format (as long as they are using Vim), you can add a Vim modeline (special comment) to your files, to set people in the same mode for that file.  Example:
+</p>
+<pre class="wiki"># vim: ai ts=4 sts=4 et sw=4
+</pre><p>
+<a class="ext-link" href="http://py.vaults.ca/~x/python_and_vim.html"><span class="icon">Tab Setting Reference for Python and Vim</span></a>
+</p>
+<h3 id="Omnicomplete">Omnicomplete</h3>
+<p>
+Here's a <a class="ext-link" href="http://blog.fluther.com/blog/2008/10/17/django-vim/"><span class="icon">tutorial</span></a> for enabling omnicompletion specifically for django.
+</p>
+<p>
+Also under development: <a class="ext-link" href="http://orestis.gr/blog/2008/10/13/pysmell-v06-released/"><span class="icon">PySmell</span></a>
+</p>
+<h2 id="Plugins">Plugins</h2>
+<h3 id="snippetsEmu">snippetsEmu</h3>
+<p>
+Development takes place on <a class="ext-link" href="http://code.google.com/p/snippetsemu"><span class="icon">Google Code</span></a>, where the subversion repository includes predefined snippets for django/python/etc.
+</p>
+<p>
+<a class="ext-link" href="http://www.vim.org/scripts/script.php?script_id=1318"><span class="icon">SnippetsEmu</span></a> allows one to define abbreviations which can be expanded into larger blocks of text.  The abbreviations can also contain place markers which can be 'jumped to' in a similar manner to the macros defined in <a class="wiki" href="/wiki/TextMate">TextMate</a> on OS X.
+</p>
+<p>
+One can add specific abbreviations for models or templates based on file contents.  Adding the following line to your ~/.vim/after/ftplugin/python.vim file (create it if you don't have it) will allow you to define abbreviations just for models (use the file \Program Files\vim\vimfiles\after\ftplugin\python.vim under Windows):
+</p>
+<pre class="wiki">if getline(1) =~ 'from django.db import models'
+    "Your abbreviations here
+endif
+</pre><p>
+The following is an example collection of Django specific abbreviations for use with the plugin. More examples can be found in the <a class="ext-link" href="http://snippetsemu.googlecode.com/svn/trunk/after/ftplugin/"><span class="icon">subversion repository</span></a>. Please email the author with any of your own additions (f dot ingram dot lists at gmail dot com):
+</p>
+<p>
+Models:
+</p>
+<pre class="wiki">Snippet addmodel class &lt;{}&gt;(models.Model):&lt;CR&gt;&lt;&gt;&lt;CR&gt;&lt;CR&gt;def __unicode__(self):&lt;CR&gt;return "%s" % (&lt;{}&gt;,)
+Snippet mcf models.CharField(max_length=&lt;{}&gt;)&lt;CR&gt;&lt;{}&gt;
+Snippet mff models.FileField(upload_to=&lt;{}&gt;)&lt;CR&gt;&lt;{}&gt;
+Snippet mfpf models.FilePathField(path=&lt;{}&gt;, match="&lt;{}&gt;", recursive=&lt;False&gt;)&lt;CR&gt;&lt;{}&gt;
+Snippet mfloat models.FloatField(max_digits=&lt;{}&gt;, decimal_places=&lt;{}&gt;)&lt;CR&gt;&lt;{}&gt;
+Snippet mfk models.ForeignKey(&lt;{}&gt;)&lt;CR&gt;&lt;{}&gt;
+Snippet m2m models.ManyToManyField(&lt;{}&gt;)&lt;CR&gt;&lt;{}&gt;
+Snippet o2o models.OneToOneField(&lt;{}&gt;)&lt;CR&gt;&lt;{}&gt;
+</pre><p>
+Templates:
+</p>
+<pre class="wiki">Snippet fore {% for &lt;{entry}&gt; in &lt;{list}&gt; %}&lt;CR&gt;{{ &lt;{entry}&gt;.&lt;{}&gt; }}&lt;CR&gt;&lt;{}&gt;{% endfor %}&lt;CR&gt;&lt;{}&gt;
+</pre><p>
+snippetsEmu for <strong>urls.py</strong> and <strong>views.py</strong> files can be found on the attachment section. To use this snippets, copy them into <i>~/.vim/after/ftplugin/</i> directory
+</p>
+<h3 id="SnipMate.vim">SnipMate.vim</h3>
+<p>
+<a class="ext-link" href="http://www.vim.org/scripts/script.php?script_id=2540"><span class="icon">SnipMate</span></a> is another plugin that adds <a class="wiki" href="/wiki/TextMate">TextMate</a>-style snippets for Vim.  The <a class="ext-link" href="http://github.com/robhudson/snipmate_for_django/tree/master"><span class="icon">snipmate_for_django</span></a> Git repository, by Rob Hudson, contains many of the <a class="wiki" href="/wiki/TextMate">TextMate</a> snippets converted to SnipMate.
+</p>
+<h3 id="XMLEdit.vim">XMLEdit.vim</h3>
+<p>
+The <a class="ext-link" href="http://www.vim.org/scripts/script.php?script_id=301"><span class="icon">xmledit.vim</span></a> plugin is really useful for editing XML and HTML files.  It makes tag completion easy and allows you to bounce between start and end tags.
+</p>
+<h3 id="Syntaxfortemplates">Syntax for templates</h3>
+<p>
+Dave Hodder has contributed standard <a class="ext-link" href="http://www.vim.org/scripts/script.php?script_id=1487"><span class="icon">Vim syntax files</span></a>.
+</p>
+<p>
+If you are interested in rolling your own, this is a simple addition to let Vim deal with Django template syntax:
+</p>
+<p>
+Create the file:
+<tt>$VIM/vimfiles/after/syntax/html.vim</tt>
+with the following content:
+</p>
+<pre class="wiki">syn region  djangotagmarkers start="{{" end="}}"
+syn region  djangovariablemarkers start="{%" end="%}"
+command! -nargs=+ HiLink hi def link &lt;args&gt;
+HiLink djangotagmarkers PreProc
+HiLink djangovariablemarkers PreProc
+delcommand HiLink
+</pre><h3 id="Project.vim">Project.vim</h3>
+<p>
+The <a class="ext-link" href="http://www.vim.org/scripts/script.php?script_id=69"><span class="icon">Project</span></a> plugin adds IDE file organisation functionality to Vim.
+</p>
+<p>
+Something like the following could be used to view a project's files. It looks scary but is definitely worth trying.
+</p>
+<pre class="wiki">Django Project=/path/to/project CD=. filter="[^_]*.py" {
+ settings.py
+ urls.py
+ apps=apps {
+  Polls=polls {
+   views.py
+   models.py
+  }
+  ToDo=todo {
+   views.py
+   models.py
+  }
+ media=mediaDir {
+  images=imagesDir {
+  }
+ }
+}
+</pre><p>
+Such a structure can also be created by using the built-in '\C' command which will recurse through the whole directory tree.
+</p>
+<h3 id="TagList">Tag List</h3>
+<p>
+The <a class="ext-link" href="http://vim-taglist.sourceforge.net/"><span class="icon">taglist</span></a> plugin is probably similar to Project but can also look inside Python files to display classes and functions. (It requires the ctags program installed on your system, which probably comes with most Linuxes and is easily installed via <a class="wiki" href="/wiki/MacPorts">MacPorts</a> (or fink as "exuberant-ctags") on OS X.)
+</p>
+<p>
+<a href="http://code.djangoproject.com/attachment/wiki/UsingVimWithDjango/django-vim-taglist.png">screenshot</a>
+</p>
+<p>
+Additionally, I created a shell-function, inspired by Jeremy Jones, to create a new taglist-list when you pass it the path to a Django project directory:
+</p>
+<pre class="wiki">djvim() {
+     gvim "+cd $1" "+TlistAddFilesRecursive . [^_]*py\|*html\|*css" +TlistOpen
+}
+</pre><h3 id="Pyflakes">Pyflakes</h3>
+<p>
+The <a class="ext-link" href="http://www.vim.org/scripts/script.php?script_id=2441"><span class="icon">pyflakes</span></a> plugin highlights common Python errors like misspelling a variable name on the fly. It also warns about unused imports, redefined functions, etc. 
+</p>
+<p>
+This plugin is fast enough that it registers itself with vim hooks for leaving insert mode and saving a buffer, so that the warnings are always up to date.
+</p>
+<h2 id="VimIDE">Vim/IDE</h2>
+<h3 id="PIDA">PIDA</h3>
+<p>
+Although this is not Django-specific (I don't think some of the other stuff in here is very Django-specific either), <a class="ext-link" href="http://pida.co.uk"><span class="icon">PIDA</span></a> looks like a pretty nice IDE environment for VIM+Python, which would therefore help you out in Django :).
+</p>
+<h2 id="Mappings">Mappings</h2>
+<p>
+I have this in my vimrc to make file jumps between relative django files easier. 
+</p>
+<pre class="wiki">let g:last_relative_dir = ''
+nnoremap \1 :call RelatedFile ("models.py")&lt;cr&gt;
+nnoremap \2 :call RelatedFile ("views.py")&lt;cr&gt;
+nnoremap \3 :call RelatedFile ("urls.py")&lt;cr&gt;
+nnoremap \4 :call RelatedFile ("admin.py")&lt;cr&gt;
+nnoremap \5 :call RelatedFile ("tests.py")&lt;cr&gt;
+nnoremap \6 :call RelatedFile ( "templates/" )&lt;cr&gt;
+nnoremap \7 :call RelatedFile ( "templatetags/" )&lt;cr&gt;
+nnoremap \8 :call RelatedFile ( "management/" )&lt;cr&gt;
+nnoremap \0 :e settings.py&lt;cr&gt;
+nnoremap \9 :e urls.py&lt;cr&gt;
+
+fun! RelatedFile(file)
+    #This is to check that the directory looks djangoish
+    if filereadable(expand("%:h"). '/models.py') || isdirectory(expand("%:h") . "/templatetags/")
+        exec "edit %:h/" . a:file
+        let g:last_relative_dir = expand("%:h") . '/'
+        return ''
+    endif
+    if g:last_relative_dir != ''
+        exec "edit " . g:last_relative_dir . a:file
+        return ''
+    endif
+    echo "Cant determine where relative file is : " . a:file
+    return ''
+endfun
+
+fun SetAppDir()
+    if filereadable(expand("%:h"). '/models.py') || isdirectory(expand("%:h") . "/templatetags/")
+        let g:last_relative_dir = expand("%:h") . '/'
+        return ''
+    endif
+endfun
+autocmd BufEnter *.py call SetAppDir()
+</pre><h2 id="SurroundMappings">Surround Mappings</h2>
+<p>
+This is for the popular surround script <a class="ext-link" href="http://www.vim.org/scripts/script.php?script_id=1697"><span class="icon">here</span></a>
+</p>
+<p>
+in your .vimrc 
+</p>
+<pre class="wiki">
+let g:surround_{char2nr("b")} = "{% block\1 \r..*\r &amp;\1%}\r{% endblock %}"
+let g:surround_{char2nr("i")} = "{% if\1 \r..*\r &amp;\1%}\r{% endif %}"
+let g:surround_{char2nr("w")} = "{% with\1 \r..*\r &amp;\1%}\r{% endwith %}"
+let g:surround_{char2nr("c")} = "{% comment\1 \r..*\r &amp;\1%}\r{% endcomment %}"
+let g:surround_{char2nr("f")} = "{% for\1 \r..*\r &amp;\1%}\r{% endfor %}"
+
+</pre><p>
+now in visual mode type 
+</p>
+<ul><li>'sb' for block
+</li><li>'si' for an if statement
+</li><li>'sw' for a with statement
+</li><li>'sc' for a comment
+</li><li>'sf' for a for statement
+</li></ul><h2 id="Suggestions">Suggestions</h2>
+<h3 id="DjangoProjectManager:Bypanosl">Django Project Manager: By panosl</h3>
+<p>
+The idea is to create a plugin, that will wrap the functionality of django-admin/manage.py along with project.vim.
+</p>
+<p>
+This will one to create a new django project from within vim, and generating a Project file with all the files pre-specified. This could be extended to allow, the creation of apps within the project, leveraging the usage of manage.py.
+</p>
+<p>
+So a regular session would be:
+</p>
+<pre class="wiki">:djsp [projectname]
+
+# This will in turn generate the required Project file with all the files of the project.
+</pre><pre class="wiki">:djsa [appname]
+
+# This will create a new app, and update the Project file with the new data regarding the application.
+</pre><p>
+At this point, this is enough, even though we could still wrap a bit more of django-admin/manage, by allowing inner commands to launch/stop the test server and similar additions.
+</p>
+<p>
+In my opinion this would help with django development and help focus more on the development that usually happens within the editor, which in our case, is ofcourse (G)Vim.
+</p>
+<h4 id="Comments">Comments</h4>
+<p>
+These are some notes for anyone considering writing this plugin.
+</p>
+<ul><li>Vim has the 'read' command which can read the output from a command into a buffer using the pling operator. E.g. :read !dir will read a directory listing into the current buffer.
+</li><li>Vim has special buffers for storing different types of output. See :help special-buffers and :help cwindow
+</li><li>The Project plugin has the function <a class="missing wiki" href="/wiki/CreateEntriesFromDir" rel="nofollow">CreateEntriesFromDir?</a>() which can be used to create new entries. Passing '1' as the arguement will create a recursive entry which would be most appropriate for creating Django entries.
+</li><li>The Project plugin allows users to use a different project file from the default. It could be that the new plugin generates a project specific file when a new django project is created.
+</li></ul><p>
+The following code can used to create Project entries in a buffer. Note that various settings will be altered by the call to <a class="missing wiki" href="/wiki/DoSetup" rel="nofollow">DoSetup?</a> so it's probably best to use a new buffer.
+</p>
+<pre class="wiki">function! GetProjectSNR()
+    if exists(":Project")
+        let a_sav = @a
+        redir @a
+        exec "silent function"
+        redir END
+        let funclist = @a
+        let @a = a_sav
+        let func = split(split(matchstr(funclist,'.SNR.\{-}GenerateEntry'),'\n')[-1])[1]
+        return matchlist(func, '\(.*\)G')[1]
+    endif
+endfunction
+
+function! Test()
+    let SNR = GetProjectSNR()
+    call {SNR}DoSetup()
+    call {SNR}DoEntryFromDir(0, line("."), 'test', 'c:\temp', 'c:\temp', '', '', '*', 0, 0)
+    return ''
+endfunction
+</pre><p>
+Grabbing the SNR isn't pretty but seems to work and prevents having to recreate the work done in Project.
+</p>
+<p>
+It would be useful for the plugin to grab any tracebacks and place the cursor in a suitable spot.
+</p>
+</div>
+   </div>
+   
+    <h3 id="tkt-changes-hdr">Attachments</h3>
+    <ul class="tkt-chg-list"><li class="tkt-chg-change"><a href="/attachment/wiki/UsingVimWithDjango/python.vim">python.vim</a> (0.6 kB) -<q>Sample ftplugin file containing <a class="wiki" href="/wiki/SnippetsEmu">SnippetsEmu</a> abbreviations for Django models</q>, added by Lllama on 01/09/06 10:33:56.</li><li class="tkt-chg-change"><a href="/attachment/wiki/UsingVimWithDjango/django.tar.gz">django.tar.gz</a> (4.6 kB) -<q>Unzip this file in your ~/.vim/ directory to install snippetsEmu.vim and Django specific abbreviations</q>, added by Lllama on 01/09/06 11:16:28.</li><li class="tkt-chg-change"><a href="/attachment/wiki/UsingVimWithDjango/django-vim-taglist.png">django-vim-taglist.png</a> (56.7 kB) -<q>screenshot of vim with the taglist plugin</q>, added by whiteinge on 12/15/06 15:30:23.</li><li class="tkt-chg-change"><a href="/attachment/wiki/UsingVimWithDjango/django_url_snippets.vim">django_url_snippets.vim</a> (0.5 kB) -<q><a class="wiki" href="/wiki/SnippetsEmu">SnippetsEmu</a> for urls.py</q>, added by httpdss on 10/05/08 22:10:22.</li><li class="tkt-chg-change"><a href="/attachment/wiki/UsingVimWithDjango/django_view_snippets.vim">django_view_snippets.vim</a> (310 bytes) -<q><a class="wiki" href="/wiki/SnippetsEmu">SnippetsEmu</a> for views.py</q>, added by httpdss on 10/05/08 22:11:03.</li>
+    </ul>
+  
+  
+   <div class="buttons">
+     <form method="get" action="/wiki/UsingVimWithDjango"><div>
+      <input type="hidden" name="action" value="edit" />
+      <input type="submit" value="Edit this page" accesskey="e" />
+     </div></form>
+      <form method="get" action="/attachment/wiki/UsingVimWithDjango"><div>
+       <input type="hidden" name="action" value="new" />
+       <input type="submit" value="Attach file" />
+      </div></form>
+   </div>
+  
+  <script type="text/javascript">
+   addHeadingLinks(document.getElementById("searchable"), "Link to this section");
+  </script>
+ 
+ 
+</div>
+
+<script type="text/javascript">searchHighlight()</script>
+<div id="altlinks"><h3>Download in other formats:</h3><ul><li class="first last"><a href="/wiki/UsingVimWithDjango?format=txt">Plain Text</a></li></ul></div>
+
+</div>
+
+<div id="footer">
+ <hr />
+ <a id="tracpowered" href="http://trac.edgewall.org/"><img src="http://media.djangoproject.com/trac/trac_logo_mini.png" height="30" width="107"
+   alt="Trac Powered"/></a>
+ <p class="left">
+  Powered by <a href="/about"><strong>Trac 0.10.4</strong></a><br />
+  By <a href="http://www.edgewall.org/">Edgewall Software</a>.
+ </p>
+ <p class="right">
+  
+ </p>
+</div>
+
+<div id="django-footer">
+  
+</div>
+ </body>
+</html>
+

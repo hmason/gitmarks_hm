@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>Fabric, Django, Git, Apache, mod_wsgi, virtualenv and pip deployment</title>
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type' />
+    <meta content='django, fabric, deployment' name='keywords' />
+    <link href='/assets/css/reset.css' rel='stylesheet' type='text/css' />
+    <link href='/assets/css/style.css' media='screen' rel='stylesheet' type='text/css' />
+    <link href='/assets/css/code.css' rel='stylesheet' type='text/css' />
+  </head>
+  <body>
+    <div id='main'>
+      <div id='header'>
+        <div class='logo'>
+          <a href='/'>&laquo; morethanseven</a>
+        </div>
+        <div id='nav'>
+          <ul>
+            <li><a href='/about.html'>about</a></li>
+            <li><a href='/archives.html'>archives</a></li>
+            <li><a href='/tags.html'>tags</a></li>
+            <li>
+              <a href='/atom.xml'>rss</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class='clear'></div>
+      <div class='article'>
+        <h1>
+          Fabric, Django, Git, Apache, mod_wsgi, virtualenv and pip deployment
+        </h1>
+        <div class='meta'>
+          <ul class='tags'>
+            <li>Jul 27, 2009</li>
+            <li>&middot;</li>
+            <li>
+              <a class='tag' href='/tags/deployment/'>
+                deployment
+              </a>
+            </li>
+            <li>
+              <a class='tag' href='/tags/django/'>
+                django
+              </a>
+            </li>
+            <li>
+              <a class='tag' href='/tags/fabric/'>
+                fabric
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class='body'>
+          <p>I&#8217;ve been playing with automating Django deployments again, this time using <a href="http://fabfile.org/">Fabric</a>. I found a number of examples on the web but non of them quite fit the bill for me. I don&#8217;t like serving directly from a repository, I like to have either a package or tar I can use to say &#8220;that is what went to the server&#8221;. I also like having a quick rollback command as well as being able to deploy a particular version of the code when the need arises. I also wanted to go from a clean ubuntu install (plus <span class="caps">SSH</span>) to a running Django application in one command from the local development machine. The Apache side of things is nicely documented in <a href="http://gist.github.com/106077">this Gist</a> which made a good starting point.</p>
+          <p>I&#8217;m still missing a few things in this setup mind and at the moment you still have to setup your local machine yourself. I&#8217;m probably going to create a paster template and another fabfile to do that I think. The instructions are a little rough as well at the moment and I&#8217;ve left the database out of it as everyone has there own preference.</p>
+          <p>This particular fabric file makes setting up and deploying a django application much easier, but it does make a few assumptions. Namely that you&#8217;re using Git, Apache and mod_wsgi and your using Debian or Ubuntu. Also you should have  Django installed on your local machine and <span class="caps">SSH</span> installed on both the local machine and any servers you want to deploy to.</p>
+          <p><em>note that I&#8217;ve used the name project_name throughout this example. Replace this with whatever your project is called.</em></p>
+          <p>First step is to create your project locally:</p>
+          <pre>mkdir project_name&#x000A;cd project_name&#x000A;django-admin.py startproject project_name</pre>
+          <p>Now add a requirements file so pip knows to install Django. You&#8217;ll probably add other required modules in here later. Creat a file called requirements.txt and save it at the top level with the following contents:</p>
+          <pre>Django</pre>
+          <p>Then save this fabfile.py file in the top level directory which should give you:</p>
+          <pre>project_name&#x000A;    fabfile.py&#x000A;    requirements.txt&#x000A;    project_name&#x000A;        __init__.py&#x000A;        manage.py&#x000A;        settings.py&#x000A;        urls.py</pre>
+          <p>You&#8217;ll need a <span class="caps">WSGI</span> file called project_name.wsgi, where project_name  is the name you gave to your django project. It will probably look like the following, depending on your specific paths and the location of your settings module</p>
+          <pre>import os&#x000A;import sys&#x000A;# put the Django project on sys.path&#x000A;sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))&#x000A;os.environ["DJANGO_SETTINGS_MODULE"] = "project_name.settings"&#x000A;from django.core.handlers.wsgi import WSGIHandler&#x000A;application = WSGIHandler()</pre>
+          <p>Last but not least you&#8217;ll want a virtualhost file for apache which looks  something like the following. Save this as project_name in the inner directory. You&#8217;ll want to change /path/to/project_name/ to the location on the remote server you intent to deploy to.</p>
+          <pre>&lt;VirtualHost *:80&gt;&#x000A;        WSGIDaemonProcess project_name-production user=project_name group=project_name threads=10 python-path=/path/to/project_name/lib/python2.6/site-packages&#x000A;        WSGIProcessGroup project_name-production&#x000A;        WSGIScriptAlias / /path/to/project_name/releases/current/project_name/project_name.wsgi&#x000A;        &lt;Directory /path/to/project_name/releases/current/project_name&gt;&#x000A;            Order deny,allow&#x000A;            Allow from all&#x000A;        &lt;/Directory&gt;&#x000A;        ErrorLog /var/log/apache2/error.log&#x000A;        LogLevel warn&#x000A;        CustomLog /var/log/apache2/access.log combined&#x000A;&lt;/VirtualHost&gt;</pre>
+          <p>Now create a file called .gitignore, containing the following. This prevents the compiled python code being included in the repository and the archive we use for deployment.</p>
+          <pre>*.pyc</pre>
+          <p>You should now be ready to initialise a git repository in the top level project_name directory.</p>
+          <pre>git init&#x000A;git add .gitignore project_name&#x000A;git commit -m "Initial commit"</pre>
+          <p>All of that should leave you with</p>
+          <pre>project_name&#x000A;    .git&#x000A;    .gitignore&#x000A;    requirements.txt&#x000A;    fabfile.py&#x000A;    project_name&#x000A;        __init__.py&#x000A;        project_name&#x000A;        project_name.wsgi&#x000A;        manage.py&#x000A;        settings.py&#x000A;        urls.py</pre>
+          <p>In reality you might prefer to keep your wsgi files and virtual host files elsewhere. The fabfile has a variable (config.virtualhost_path) for this case.  You&#8217;ll also want to set the hosts that you intend to deploy to (config.hosts) as well as the user (config.user).</p>
+          <p>The first task we&#8217;re interested in is called setup. It installs all the  required software on the remote machine, then deploys your code and restarts the webserver.</p>
+          <pre>fab local setup</pre>
+          <p>After you&#8217;ve made a few changes and commit them to the master Git branch you can run to deply the changes.</p>
+          <pre>fab local deploy</pre>
+          <p>If something is wrong then you can rollback to the previous version.</p>
+          <pre>fab local rollback</pre>
+          <p>Note that this only allows you to rollback to the release immediately before the latest one. If you want to pick a arbitrary release then you can use the following, where 20090727170527 is a timestamp for an existing release.</p>
+          <pre>fab local deploy_version:20090727170527</pre>
+          <p>If you want to ensure your tests run before you make a deployment then you can do the following.</p>
+          <pre>fab local test deploy</pre>
+          <p>The actual fabfile looks like this. I&#8217;ve uploaded a <a href="http://gist.github.com/156623">Gist of it</a>, along with the docs, so if you want to improve it please clone it.</p>
+          <pre># globals&#x000A;config.project_name = 'project_name'&#x000A;# environments&#x000A;def local():&#x000A;    "Use the local virtual server"&#x000A;    config.hosts = ['172.16.142.130']&#x000A;    config.path = '/path/to/project_name'&#x000A;    config.user = 'garethr'&#x000A;    config.virtualhost_path = "/"&#x000A;# tasks&#x000A;def test():&#x000A;    "Run the test suite and bail out if it fails"&#x000A;    local("cd $(project_name); python manage.py test", fail="abort")&#x000A;def setup():&#x000A;    """&#x000A;    Setup a fresh virtualenv as well as a few useful directories, then run&#x000A;    a full deployment&#x000A;    """&#x000A;    require('hosts', provided_by=[local])&#x000A;    require('path')&#x000A;    sudo('aptitude install -y python-setuptools')&#x000A;    sudo('easy_install pip')&#x000A;    sudo('pip install virtualenv')&#x000A;    sudo('aptitude install -y apache2')&#x000A;    sudo('aptitude install -y libapache2-mod-wsgi')&#x000A;    # we want rid of the defult apache config&#x000A;    sudo('cd /etc/apache2/sites-available/; a2dissite default;')&#x000A;    run('mkdir -p $(path); cd $(path); virtualenv .;')&#x000A;    run('cd $(path); mkdir releases; mkdir shared; mkdir packages;', fail='ignore')&#x000A;    deploy()&#x000A;def deploy():&#x000A;    """&#x000A;    Deploy the latest version of the site to the servers, install any&#x000A;    required third party modules, install the virtual host and &#x000A;    then restart the webserver&#x000A;    """&#x000A;    require('hosts', provided_by=[local])&#x000A;    require('path')&#x000A;    import time&#x000A;    config.release = time.strftime('%Y%m%d%H%M%S')&#x000A;    upload_tar_from_git()&#x000A;    install_requirements()&#x000A;    install_site()&#x000A;    symlink_current_release()&#x000A;    migrate()&#x000A;    restart_webserver()&#x000A;def deploy_version(version):&#x000A;    "Specify a specific version to be made live"&#x000A;    require('hosts', provided_by=[local])&#x000A;    require('path')&#x000A;    config.version = version&#x000A;    run('cd $(path); rm releases/previous; mv releases/current releases/previous;')&#x000A;    run('cd $(path); ln -s $(version) releases/current')&#x000A;    restart_webserver()&#x000A;def rollback():&#x000A;    """&#x000A;    Limited rollback capability. Simple loads the previously current&#x000A;    version of the code. Rolling back again will swap between the two.&#x000A;    """&#x000A;    require('hosts', provided_by=[local])&#x000A;    require('path')&#x000A;    run('cd $(path); mv releases/current releases/_previous;')&#x000A;    run('cd $(path); mv releases/previous releases/current;')&#x000A;    run('cd $(path); mv releases/_previous releases/previous;')&#x000A;    restart_webserver()    &#x000A;# Helpers. These are called by other functions rather than directly&#x000A;def upload_tar_from_git():&#x000A;    require('release', provided_by=[deploy, setup])&#x000A;    "Create an archive from the current Git master branch and upload it"&#x000A;    local('git archive --format=tar master | gzip &gt; $(release).tar.gz')&#x000A;    run('mkdir $(path)/releases/$(release)')&#x000A;    put('$(release).tar.gz', '$(path)/packages/')&#x000A;    run('cd $(path)/releases/$(release) &amp;&amp; tar zxf ../../packages/$(release).tar.gz')&#x000A;    local('rm $(release).tar.gz')&#x000A;def install_site():&#x000A;    "Add the virtualhost file to apache"&#x000A;    require('release', provided_by=[deploy, setup])&#x000A;    sudo('cd $(path)/releases/$(release); cp $(project_name)$(virtualhost_path)$(project_name) /etc/apache2/sites-available/')&#x000A;    sudo('cd /etc/apache2/sites-available/; a2ensite $(project_name)') &#x000A;def install_requirements():&#x000A;    "Install the required packages from the requirements file using pip"&#x000A;    require('release', provided_by=[deploy, setup])&#x000A;    run('cd $(path); pip install -E . -r ./releases/$(release)/requirements.txt')&#x000A;def symlink_current_release():&#x000A;    "Symlink our current release"&#x000A;    require('release', provided_by=[deploy, setup])&#x000A;    run('cd $(path); rm releases/previous; mv releases/current releases/previous;', fail='ignore')&#x000A;    run('cd $(path); ln -s $(release) releases/current')&#x000A;def migrate():&#x000A;    "Update the database"&#x000A;    require('project_name')&#x000A;    run('cd $(path)/releases/current/$(project_name);  ../../../bin/python manage.py syncdb --noinput')&#x000A;def restart_webserver():&#x000A;    "Restart the web server"&#x000A;    sudo('/etc/init.d/apache2 restart')</pre>
+        </div>
+      </div>
+      <div id='other-articles'>
+        <div class='older'>
+          <ul>
+            <li>
+              <h3>
+                <a href='/2009/07/23/whats_new_django_11.html' title=''>
+                  &laquo; What's new in Django 1.1
+                </a>
+              </h3>
+            </li>
+            <li>
+              <h3>
+                <a href='/2009/07/15/simple_app_running_scripts_and_recording_results.html' title=''>
+                  &laquo; Asteroid - simple app for running scripts and recording the results
+                </a>
+              </h3>
+            </li>
+            <li>
+              <h3>
+                <a href='/2009/07/13/its_data_we_want.html' title=''>
+                  &laquo; It's the Data we Want
+                </a>
+              </h3>
+            </li>
+          </ul>
+        </div>
+        <div class='newer'>
+          <ul>
+            <li>
+              <h3>
+                <a href='/2009/08/15/your_own_pypi_server.html' title=''>
+                  Your Own PyPi server &raquo;
+                </a>
+              </h3>
+            </li>
+            <li>
+              <h3>
+                <a href='/2009/08/21/django_wsgi_deployment_solaris.html' title=''>
+                  Django and WSGI deployment on Solaris &raquo;
+                </a>
+              </h3>
+            </li>
+            <li>
+              <h3>
+                <a href='/2009/08/31/another_chance_djugl.html' title=''>
+                  Another chance to DJUGL &raquo;
+                </a>
+              </h3>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class='clear'></div>
+      <div class='clear'></div>
+    </div>
+    <script type='text/javascript'>
+      //<![CDATA[
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+      //]]>
+    </script>
+    <script type='text/javascript'>
+      //<![CDATA[
+        try {
+          var pageTracker = _gat._getTracker("UA-435455-1");
+          pageTracker._setDomainName(".morethanseven.net");
+          pageTracker._setAllowHash(false);
+          pageTracker._trackPageview();
+        } catch(err) {}
+      //]]>
+    </script>
+  </body>
+</html>

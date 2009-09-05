@@ -1,0 +1,586 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head profile="http://gmpg.org/xfn/11">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Setting up Django and Sphinx Full-text Search (django-sphinx) | David Cramer&#039;s Blog</title>
+    <meta name="verify-v1" content="6BGHtGatReREmLwEyjFiGT10Xkb51a/Yy593so9w8nY=" />
+    <meta name="y_key" content="243dcdc4d5c18650" />
+    <link rel="stylesheet" href="http://www.davidcramer.net/wp-content/themes/mezzov2/style.css" type="text/css" media="screen" />
+    <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://www.davidcramer.net/feed"  />
+    <link rel="alternate" type="text/xml" title="RSS .92" href="http://www.davidcramer.net/feed/rss"  />
+    <link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="http://www.davidcramer.net/feed/atom" />
+    <link rel="pingback" href="http://www.davidcramer.net/xmlrpc.php" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <meta name="generator" content="WordPress 3.0.1" />
+    <link rel="alternate" type="application/rss+xml" title="David Cramer&#039;s Blog &raquo; Setting up Django and Sphinx Full-text Search (django-sphinx) Comments Feed" href="http://www.davidcramer.net/code/django/433/setting-up-django-and-sphinx-full-text-search-django-sphinx.html/feed" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.davidcramer.net/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.davidcramer.net/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='David Cramer&#039;s Blog' href='http://www.davidcramer.net' />
+<link rel='start' title='Search Engine Standards' href='http://www.davidcramer.net/other/5/search-engine-standards.html' />
+<link rel='prev' title='Scaling Your Frontend: Far-Futures Headers and Template Tags' href='http://www.davidcramer.net/code/429/scaling-your-frontend-far-futures-headers-and-template-tags.html' />
+<link rel='next' title='Problems Uploading Packages with Setuptools on OS X' href='http://www.davidcramer.net/code/python/443/problems-uploading-packages-with-setuptools-on-os-x.html' />
+<meta name="generator" content="WordPress 3.0.1" />
+<link rel='canonical' href='http://www.davidcramer.net/code/django/433/setting-up-django-and-sphinx-full-text-search-django-sphinx.html' />
+<link rel='shortlink' href='http://www.davidcramer.net/?p=433' />
+
+<!-- All in One SEO Pack 1.6.12.1 by Michael Torbert of Semper Fi Web Design[288,490] -->
+<meta name="description" content="A while back I posted a quick, and very simplistic guide to setting up django-sphinx within your project. Since that time we've gained a lot of use of the" />
+<!-- /all in one seo pack -->
+<link rel="stylesheet" href="http://disqus.com/stylesheets/davidcramer/disqus.css?v=2.0" type="text/css" media="screen" /><script type="text/javascript" src="http://www.davidcramer.net/wp-content/plugins/ibox/ibox/ibox.js"></script><script type="text/javascript">iBox.setPath("http://www.davidcramer.net/wp-content/plugins/ibox/ibox/");</script>
+<link rel="stylesheet" href="http://www.davidcramer.net/wp-content/plugins/wp-syntax/wp-syntax.css" type="text/css" media="screen" />
+    </head>
+<body>
+
+<div id="wp_wrap">
+    <div id="wp_container">
+        <div id="wp_header">
+            <div class="wp_header_top">
+                <div id="search">
+                    <form method="get" action="/index.php">
+                        <input name="s" type="text" class="text" value="" onfocus="this.select();"/> <input name="submit" type="image" src="http://www.davidcramer.net/wp-content/themes/mezzov2/images/search.gif" class="submit"/>
+                    </form>
+                </div>
+
+                <a href="http://www.davidcramer.net"><h2 id="logo">David Cramer&#039;s Blog</h2></a>
+                
+                <ul id="nav">
+                    <li class="active"><a href="http://www.davidcramer.net">Blog</a></li>
+                    <li class=""><a href="http://www.davidcramer.net/code" title="Code">Code</a></li>
+<li class=""><a href="http://www.davidcramer.net/resume" title="Resume">Resume</a></li>
+<li class=""><a href="http://www.davidcramer.net/my-projects" title="My Projects">My Projects</a></li>
+<li class=""><a href="http://www.davidcramer.net/lifestream" title="Lifestream">Lifestream</a></li>
+                    <li class="right"><a href="http://www.davidcramer.net/feed" title="Syndicate this site using RSS">RSS</a></li>
+                </ul>
+            </div>
+            <div class="wp_header_fixed"></div>
+        </div>
+
+<div id="content">
+             <!-- init post page -->
+            <div class="post" id="post-433">
+
+                <div class="title">
+                    <div class="date"><p class="days">25</p><p class="month">Mar</p></div>
+                    <h2 class="permalink"><a href="http://www.davidcramer.net/code/django/433/setting-up-django-and-sphinx-full-text-search-django-sphinx.html" rel="bookmark" title="Setting up Django and Sphinx Full-text Search (django-sphinx)">Setting up Django and Sphinx Full-text Search (django-sphinx)</a></h2>
+                    
+                    <div class="meta"><span class="meta-categories">Filed in <a href="http://www.davidcramer.net/category/code/django" title="View all posts in Django" rel="category tag">Django</a>, <a href="http://www.davidcramer.net/category/how-tos" title="View all posts in How-To&#039;s" rel="category tag">How-To's</a></span>                    </div>
+                </div>
+
+                <div class="body"><p>A while back I posted a quick, and very simplistic guide to setting up django-sphinx within your project. Since that time we&#8217;ve gained a lot of use of the platform. It came to my attention today that the <a href="http://groups.google.com/group/django-nyc">django-nyc</a> group was going to do a presentation on how to setup sphinx within your Django project. This, and many, many questions later, I&#8217;ve decided to rewrite my guide to setting up Sphinx with your project.<br />
+<span id="more-433"></span></p>
+<h2>Install Sphinx</h2>
+<p>So to get started we&#8217;re going to need to download and install Sphinx. django-sphinx supports Sphinx 0.97 and newer, so go ahead and grab the latest version from <a href="http://sphinxsearch.com/downloads.html">http://sphinxsearch.com/downloads.html</a>. An install guide for Sphinx can be found <a href="http://sphinxsearch.com/docs/current.html#installation">under Documentation</a>.</p>
+<h2>Install django-sphinx</h2>
+<p>Once you&#8217;ve gotten past the initial setup of Sphinx, you&#8217;re going to need to install the django-sphinx package. This is fairly simple (as it&#8217;s just a python package):</p>
+<pre>
+svn checkout http://django-sphinx.googlecode.com/svn/trunk/ django-sphinx
+cd django-sphinx
+sudo python setup.py install
+</pre>
+<p>Please note, while you can grab django-sphinx on easy_install, it&#8217;s not updated very often.</p>
+<h2>Configure Your Models</h2>
+<p>Next up we need to identify any models which we&#8217;ll be using django-sphinx on directly, and add a manager to them:</p>
+
+<div class="wp_syntax"><div class="code"><pre class="python" style="font-family:monospace;"><span style="color: #ff7700;font-weight:bold;">from</span> djangosphinx <span style="color: #ff7700;font-weight:bold;">import</span> SphinxSearch
+&nbsp;
+<span style="color: #808080; font-style: italic;"># A sample model from iBegin</span>
+<span style="color: #ff7700;font-weight:bold;">class</span> City<span style="color: black;">&#40;</span>models.<span style="color: black;">Model</span><span style="color: black;">&#41;</span>:
+    name            = models.<span style="color: black;">CharField</span><span style="color: black;">&#40;</span>max_length=<span style="color: #ff4500;">32</span><span style="color: black;">&#41;</span>
+    aliases         = SeparatedValuesField<span style="color: black;">&#40;</span>blank=<span style="color: #008000;">True</span>, null=<span style="color: #008000;">True</span><span style="color: black;">&#41;</span>
+    slug            = models.<span style="color: black;">SlugField</span><span style="color: black;">&#40;</span>blank=<span style="color: #008000;">True</span><span style="color: black;">&#41;</span>
+    country         = models.<span style="color: black;">ForeignKey</span><span style="color: black;">&#40;</span>Country<span style="color: black;">&#41;</span>
+    state           = models.<span style="color: black;">ForeignKey</span><span style="color: black;">&#40;</span>State, blank=<span style="color: #008000;">True</span>, null=<span style="color: #008000;">True</span><span style="color: black;">&#41;</span>
+    listings        = models.<span style="color: black;">PositiveIntegerField</span><span style="color: black;">&#40;</span>editable=<span style="color: #008000;">False</span>, default=<span style="color: #ff4500;">0</span><span style="color: black;">&#41;</span>
+&nbsp;
+    latitude        = models.<span style="color: black;">DecimalField</span><span style="color: black;">&#40;</span>max_digits=<span style="color: #ff4500;">9</span>, decimal_places=<span style="color: #ff4500;">6</span>, editable=<span style="color: #008000;">False</span>, default=<span style="color: #ff4500;">0</span>, blank=<span style="color: #008000;">True</span><span style="color: black;">&#41;</span>
+    longitude       = models.<span style="color: black;">DecimalField</span><span style="color: black;">&#40;</span>max_digits=<span style="color: #ff4500;">9</span>, decimal_places=<span style="color: #ff4500;">6</span>, editable=<span style="color: #008000;">False</span>, default=<span style="color: #ff4500;">0</span>, blank=<span style="color: #008000;">True</span><span style="color: black;">&#41;</span>
+&nbsp;
+    date_added      = CreatedDateTimeField<span style="color: black;">&#40;</span>editable=<span style="color: #008000;">False</span><span style="color: black;">&#41;</span>
+    date_changed    = ModifiedDateTimeField<span style="color: black;">&#40;</span>editable=<span style="color: #008000;">False</span><span style="color: black;">&#41;</span>
+&nbsp;
+    <span style="color: #ff7700;font-weight:bold;">class</span> Meta:
+        unique_together = <span style="color: black;">&#40;</span><span style="color: black;">&#40;</span><span style="color: #483d8b;">'country'</span>, <span style="color: #483d8b;">'state'</span>, <span style="color: #483d8b;">'slug'</span><span style="color: black;">&#41;</span>, <span style="color: black;">&#40;</span><span style="color: #483d8b;">'country'</span>, <span style="color: #483d8b;">'state'</span>, <span style="color: #483d8b;">'name'</span><span style="color: black;">&#41;</span><span style="color: black;">&#41;</span>
+        db_table = <span style="color: #483d8b;">'cities'</span>
+&nbsp;
+    search = SphinxSearch<span style="color: black;">&#40;</span>
+        index=<span style="color: #483d8b;">'cities'</span>, <span style="color: #808080; font-style: italic;"># defaults to cities either way</span>
+        weights=<span style="color: black;">&#123;</span> <span style="color: #808080; font-style: italic;"># individual field weighting, this is optional</span>
+            <span style="color: #483d8b;">'name'</span>: <span style="color: #ff4500;">100</span>,
+            <span style="color: #483d8b;">'aliases'</span>: <span style="color: #ff4500;">90</span>,
+        <span style="color: black;">&#125;</span>
+    <span style="color: black;">&#41;</span></pre></div></div>
+
+<h2>Building Indexes</h2>
+<p>You&#8217;ve now installed both Sphinx, and django-sphinx, and need to configure your sources. While we can&#8217;t do all of your configuration for you, we can help you with some of it. The fastest way to do this is with the <code>generate_sphinx_config</code> command.</p>
+<p>So, let&#8217;s try it:</p>
+<pre>
+[dcramer@local] ./manage.py generate_sphinx_config cities >> sphinx.conf
+[dcramer@local] cat sphinx.conf
+
+[Clipped]
+
+source cities
+{
+    type                = mysql
+    strip_html          = 0
+    index_html_attrs    =
+    sql_host            = localhost
+    sql_user            = root
+    sql_pass            = ***********
+    sql_db              = ibegin_iplatform
+    sql_port            =
+    log                 = /var/log/sphinx/searchd.log
+
+    sql_query_pre       =
+    sql_query_post      =
+    sql_query           = \
+        SELECT id, name, aliases, slug, country_id, state_id, listings, latitude, longitude, date_added, date_changed \
+        FROM cities
+    sql_query_info      = SELECT * FROM `cities` WHERE `id` = $id
+
+    # ForeignKey's
+    sql_group_column    = country_id
+    sql_group_column    = state_id
+    sql_group_column    = listings
+
+    # DateField's and DateTimeField's
+    sql_date_column     = date_added
+    sql_date_column     = date_changed
+}
+
+index cities
+{
+    source          = cities
+    path            = /var/data/cities
+    docinfo         = extern
+    morphology      = none
+    stopwords       =
+    min_word_len    = 2
+    charset_type    = sbcs
+    min_prefix_len  = 0
+    min_infix_len   = 0
+}
+</pre>
+<p>This generates a fairly basic, and standard source and index for any models that have a SphinxSearch manager attached to them in the requested app. Please note, that this is not optimized, and you will most likely want to clean up the configuration to remove anything that you don&#8217;t need included in the search. You also are going to need to update your paths for logs and data files.</p>
+<p>Whenever you add a new index, you will also need to index it:</p>
+<pre>indexer cities --config=sphinx.conf</pre>
+<p>Or if you already had the index and are simply updating it:</p>
+<pre>indexer cities --rotate --config=sphinx.conf</pre>
+<h2>Using the Data</h2>
+<p>The rest is simply querying your model, similar to how you&#8217;d do it with a normal QuerySet manager:</p>
+<pre>
+results = City.search.query('new york')
+
+# Unlike Django QuerySet's, Sphinx will never evaluate
+# the results until it's sliced.
+print results
+&gt;&gt; &lt;SphinxQuerySet instance&gt;
+
+print list(results)
+&gt;&gt; [&lt;City: New York Mills&gt;,
+ &lt;City: West New York&gt;,
+ &lt;City: New York&gt;,
+ &lt;City: New York Mills&gt;,
+ &lt;City: New York&gt;,
+ &lt;City: New York City&gt;,
+ &lt;City: New York&gt;,
+ &lt;City: New Jersey and New York City&gt;,
+ &lt;City: New york&gt;,
+ &lt;City: new york&gt;,
+ &lt;City: York New Salem&gt;]
+
+# We have a meta attribute on the QuerySet to give additional data
+print results._sphinx
+&gt;&gt; {'total': 11,
+ 'total_found': 11,
+ 'words': [{'docs': 341, 'hits': 342, 'word': 'new'},
+           {'docs': 40, 'hits': 40, 'word': 'york'}]}
+
+# As well as on each individual instance
+print results[0]._sphinx
+&gt;&gt; {'id': u'5246', 'weight': 200, 'attrs': {'state_id': 3, 'country_id': 0}}
+
+# You can also access this via .sphinx if you don't have a
+# sphinx attribute on your model already.
+print results[0].sphinx
+&gt;&gt; {'id': u'5246', 'weight': 200, 'attrs': {'state_id': 3, 'country_id': 0}}
+</pre>
+<p>For additional information, please be sure to check out the following resources:</p>
+<ul>
+<li><a href="http://sphinxsearch.com/">Official Sphinx Website</a></li>
+<li><a href="http://code.google.com/p/django-sphinx/">django-sphinx Project Page</a></li>
+<li><a href="http://groups.google.com/group/django-sphinx">django-sphinx Group</a></li>
+</ul>
+</div>
+            </div>
+
+        
+        <!-- end for each post -->
+
+        
+        
+                <div class="related_articles">
+            <h3>Related Posts</h3>
+            <ul>
+                            <li><a href="http://www.davidcramer.net/code/django/36337/announcing-the-disqus-code-blog.html">Announcing the DISQUS Code Blog</a> (December 10th, 2010)</li>
+                            <li><a href="http://www.davidcramer.net/code/django/36333/tracking-changes-to-fields-in-django.html">Tracking changes to fields in Django</a> (December 6th, 2010)</li>
+                            <li><a href="http://www.davidcramer.net/code/36327/integrating-pyflakes-into-textmate.html">Integrating PyFlakes Into TextMate</a> (November 30th, 2010)</li>
+                            <li><a href="http://www.davidcramer.net/code/django/36312/stop-with-the-fucking-ponies.html">Stop with the ponies</a> (October 21st, 2010)</li>
+                            <li><a href="http://www.davidcramer.net/code/python/36302/keeping-your-logging-compatible-with-sentry.html">Keeping your logging compatible with Sentry</a> (October 19th, 2010)</li>
+                        </ul>
+        </div>
+                
+        
+<div id="disqus_thread">
+					<div id="dsq-content">
+			<ul id="dsq-comments">
+					<li id="dsq-comment-610">
+					<div id="dsq-comment-header-610" class="dsq-comment-header">
+						<cite id="dsq-cite-610">
+	http://www.howiworkdaily.com/							<span id="dsq-author-user-610">kevin</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-610" class="dsq-comment-body">
+						<div id="dsq-comment-message-610" class="dsq-comment-message"><p>Thanks David for the updated tutorial. The sphinx presentation at django-nyc from Kevin Howerton went over really well. Actually PeterH&#8217;s presentation on Solango and his comparison&#8217;s to Sphinx made for great conversation. Keep up the great work.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-611">
+					<div id="dsq-comment-header-611" class="dsq-comment-header">
+						<cite id="dsq-cite-611">
+	http://www.techsoapbox.com/							<span id="dsq-author-user-611">AhmedF</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-611" class="dsq-comment-body">
+						<div id="dsq-comment-message-611" class="dsq-comment-message"><p>It&#8217;s too bad I heard about it too late Kevin &#8211; I would have loved to have been there.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-612">
+					<div id="dsq-comment-header-612" class="dsq-comment-header">
+						<cite id="dsq-cite-612">
+	http://www.exchangerates24.com/							<span id="dsq-author-user-612">rates</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-612" class="dsq-comment-body">
+						<div id="dsq-comment-message-612" class="dsq-comment-message"><p>Another great script to use. Thanks a lot.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-613">
+					<div id="dsq-comment-header-613" class="dsq-comment-header">
+						<cite id="dsq-cite-613">
+	http://pkarl.com/							<span id="dsq-author-user-613">Pete K</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-613" class="dsq-comment-body">
+						<div id="dsq-comment-message-613" class="dsq-comment-message"><p>Excellent article. I was just about to dig into django/sphinx when a friend linked me over to it.</p>
+<p>How did you handle searchd? Did you set up a conf file for searchd to run off of, then use a different on in your django project?</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-614">
+					<div id="dsq-comment-header-614" class="dsq-comment-header">
+						<cite id="dsq-cite-614">
+	http://www.davidcramer.net							<span id="dsq-author-user-614">David Cramer</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-614" class="dsq-comment-body">
+						<div id="dsq-comment-message-614" class="dsq-comment-message"><p>You typically use the same config file for searchd as you do your indexer. There&#8217;s just a bit more configuration than the tools will generate for you.</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-615">
+					<div id="dsq-comment-header-615" class="dsq-comment-header">
+						<cite id="dsq-cite-615">
+	http://www.agenda.si/							<span id="dsq-author-user-615">Oto Brglez</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-615" class="dsq-comment-body">
+						<div id="dsq-comment-message-615" class="dsq-comment-message"><p>We use Sphinx in our projects. It&#8217;s just awsome! Scalable, costumizable, ultra fast and has great API. We use it with PHP and there is nothing bad that i can say about Sphinx. </p>
+<p>I hope that soon i&#8217;ll get a chance to implement Sphinx with Django or vice versa <img src='http://www.davidcramer.net/wp-includes/images/smilies/icon_wink.gif' alt=';)' class='wp-smiley' /> </p>
+<p>Oto Brglez</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-616">
+					<div id="dsq-comment-header-616" class="dsq-comment-header">
+						<cite id="dsq-cite-616">
+	http://www.seoiswatchingyou.com/							<span id="dsq-author-user-616">david</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-616" class="dsq-comment-body">
+						<div id="dsq-comment-message-616" class="dsq-comment-message"><p>I love the site idea fixoutlook.org , do you hace the script ? bratz.usa (at} gmail.com</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-617">
+					<div id="dsq-comment-header-617" class="dsq-comment-header">
+						<cite id="dsq-cite-617">
+	http://www.baolimotuo.cn/							<span id="dsq-author-user-617">??????</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-617" class="dsq-comment-body">
+						<div id="dsq-comment-message-617" class="dsq-comment-message"><p>I hope that soon i’ll get a chance to implement Sphinx with Django or vice versa  </p>
+<p>Oto Brglez</p>
+</div>
+					</div>
+				</li>
+					<li id="dsq-comment-618">
+					<div id="dsq-comment-header-618" class="dsq-comment-header">
+						<cite id="dsq-cite-618">
+								<span id="dsq-author-user-618">binnyabraham</span>
+							</cite>
+					</div>
+					<div id="dsq-comment-body-618" class="dsq-comment-body">
+						<div id="dsq-comment-message-618" class="dsq-comment-message"><p>How to search on a foreignkey field???</p>
+</div>
+					</div>
+				</li>
+				</ul>
+		</div>
+	</div>
+
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+	var disqus_url = 'http://www.davidcramer.net/code/django/433/setting-up-django-and-sphinx-full-text-search-django-sphinx.html ';
+	var disqus_identifier = '433 http://www.davidcramer.net/?p=433';
+	var disqus_container_id = 'disqus_thread';
+	var disqus_domain = 'disqus.com';
+	var disqus_shortname = 'davidcramer';
+	var disqus_title = "Setting up Django and Sphinx Full-text Search (django-sphinx)";
+		var disqus_config = function () {
+	    var config = this; // Access to the config object
+
+	    /* 
+	       All currently supported events:
+	        * preData — fires just before we request for initial data
+	        * preInit - fires after we get initial data but before we load any dependencies
+	        * onInit  - fires when all dependencies are resolved but before dtpl template is rendered
+	        * afterRender - fires when template is rendered but before we show it
+	        * onReady - everything is done
+	     */
+
+		config.callbacks.preData.push(function() {
+			// clear out the container (its filled for SEO/legacy purposes)
+			document.getElementById(disqus_container_id).innerHTML = '';
+		});
+				config.callbacks.onReady.push(function() {
+			// sync comments in the background so we don't block the page
+			DISQUS.request.get('?cf_action=sync_comments&post_id=433');
+		});
+			};
+	var facebookXdReceiverPath = 'http://www.davidcramer.net/wp-content/plugins/disqus/xd_receiver.htm';
+/* ]]> */
+</script>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+	var DsqLocal = {
+		'trackbacks': [
+		],
+		'trackback_url': "http:\/\/www.davidcramer.net\/code\/django\/433\/setting-up-django-and-sphinx-full-text-search-django-sphinx.html\/trackback"	};
+/* ]]> */
+</script>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+(function() {
+	var dsq = document.createElement('script'); dsq.type = 'text/javascript';
+	dsq.async = true;
+	dsq.src = 'http://' + disqus_shortname + '.' + disqus_domain + '/embed.js?pname=wordpress&pver=2.55';
+	(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+/* ]]> */
+</script>
+
+    
+</div>
+<div id="sidebar">
+    
+    
+    <h2>Recent Posts</h2>
+    <ul class="list-page">
+        	<li><a href='http://www.davidcramer.net/code/django/36337/announcing-the-disqus-code-blog.html' title='Announcing the DISQUS Code Blog'>Announcing the DISQUS Code Blog</a></li>
+	<li><a href='http://www.davidcramer.net/code/django/36333/tracking-changes-to-fields-in-django.html' title='Tracking changes to fields in Django'>Tracking changes to fields in Django</a></li>
+	<li><a href='http://www.davidcramer.net/code/36327/integrating-pyflakes-into-textmate.html' title='Integrating PyFlakes Into TextMate'>Integrating PyFlakes Into TextMate</a></li>
+	<li><a href='http://www.davidcramer.net/code/django/36312/stop-with-the-fucking-ponies.html' title='Stop with the ponies'>Stop with the ponies</a></li>
+	<li><a href='http://www.davidcramer.net/code/python/36302/keeping-your-logging-compatible-with-sentry.html' title='Keeping your logging compatible with Sentry'>Keeping your logging compatible with Sentry</a></li>
+	<li><a href='http://www.davidcramer.net/code/30820/tips-tricks-for-your-django-powered-database.html' title='Tips &amp; Tricks for your Django Powered Database'>Tips &#038; Tricks for your Django Powered Database</a></li>
+	<li><a href='http://www.davidcramer.net/code/12695/feature-switches-at-disqus.html' title='Feature Switches at Disqus'>Feature Switches at Disqus</a></li>
+	<li><a href='http://www.davidcramer.net/code/django/6939/scaling-threaded-comments-on-django-at-disqus.html' title='Scaling Threaded Comments on Django at Disqus'>Scaling Threaded Comments on Django at Disqus</a></li>
+	<li><a href='http://www.davidcramer.net/code/6162/announcing-django-db-log-1-7-1.html' title='Announcing django-db-log 1.7.1'>Announcing django-db-log 1.7.1</a></li>
+	<li><a href='http://www.davidcramer.net/work/2711/starcraft-2-is-here.html' title='StarCraft 2 is here'>StarCraft 2 is here</a></li>
+    </ul>
+
+    <h2>Categories</h2>
+    <ul>
+    	<li class="cat-item cat-item-2"><a href="http://www.davidcramer.net/category/code" title="View all posts filed under Code">Code</a>
+<ul class='children'>
+	<li class="cat-item cat-item-70"><a href="http://www.davidcramer.net/category/code/bash" title="View all posts filed under Bash">Bash</a>
+</li>
+	<li class="cat-item cat-item-34"><a href="http://www.davidcramer.net/category/code/css" title="View all posts filed under CSS">CSS</a>
+</li>
+	<li class="cat-item cat-item-10"><a href="http://www.davidcramer.net/category/code/django" title="View all posts filed under Django">Django</a>
+	<ul class='children'>
+	<li class="cat-item cat-item-74"><a href="http://www.davidcramer.net/category/code/django/djangocon" title="View all posts filed under DjangoCon">DjangoCon</a>
+</li>
+	</ul>
+</li>
+	<li class="cat-item cat-item-3"><a href="http://www.davidcramer.net/category/code/javascript" title="View all posts filed under JavaScript">JavaScript</a>
+</li>
+	<li class="cat-item cat-item-77"><a href="http://www.davidcramer.net/category/code/jinja-code" title="View all posts filed under Jinja">Jinja</a>
+</li>
+	<li class="cat-item cat-item-6"><a href="http://www.davidcramer.net/category/code/mirc" title="View all posts filed under mIRC">mIRC</a>
+</li>
+	<li class="cat-item cat-item-12"><a href="http://www.davidcramer.net/category/code/mysql" title="View all posts filed under MySQL">MySQL</a>
+</li>
+	<li class="cat-item cat-item-4"><a href="http://www.davidcramer.net/category/code/php" title="View all posts filed under PHP">PHP</a>
+	<ul class='children'>
+	<li class="cat-item cat-item-86"><a href="http://www.davidcramer.net/category/code/php/wordpress-php-code-2" title="View all posts filed under WordPress">WordPress</a>
+</li>
+	</ul>
+</li>
+	<li class="cat-item cat-item-56"><a href="http://www.davidcramer.net/category/code/postgresql-code" title="View all posts filed under PostgreSQL">PostgreSQL</a>
+</li>
+	<li class="cat-item cat-item-9"><a href="http://www.davidcramer.net/category/code/python" title="View all posts filed under Python">Python</a>
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-121"><a href="http://www.davidcramer.net/category/games" title="View all posts filed under Games">Games</a>
+<ul class='children'>
+	<li class="cat-item cat-item-122"><a href="http://www.davidcramer.net/category/games/starcraft-ii" title="View all posts filed under StarCraft II">StarCraft II</a>
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-19"><a href="http://www.davidcramer.net/category/how-tos" title="View all posts filed under How-To&#039;s">How-To&#039;s</a>
+</li>
+	<li class="cat-item cat-item-11"><a href="http://www.davidcramer.net/category/mac" title="View all posts filed under Mac">Mac</a>
+</li>
+	<li class="cat-item cat-item-5"><a href="http://www.davidcramer.net/category/music" title="View all posts filed under Music">Music</a>
+</li>
+	<li class="cat-item cat-item-1"><a href="http://www.davidcramer.net/category/other" title="View all posts filed under Other">Other</a>
+</li>
+	<li class="cat-item cat-item-96"><a href="http://www.davidcramer.net/category/seo" title="View all posts filed under SEO">SEO</a>
+</li>
+	<li class="cat-item cat-item-31"><a href="http://www.davidcramer.net/category/work" title="View all posts filed under Work">Work</a>
+<ul class='children'>
+	<li class="cat-item cat-item-8"><a href="http://www.davidcramer.net/category/work/curse" title="View all posts filed under Curse">Curse</a>
+</li>
+	<li class="cat-item cat-item-124"><a href="http://www.davidcramer.net/category/work/disqus" title="View all posts filed under Disqus">Disqus</a>
+</li>
+	<li class="cat-item cat-item-32"><a href="http://www.davidcramer.net/category/work/ibegin" title="View all posts filed under iBegin">iBegin</a>
+	<ul class='children'>
+	<li class="cat-item cat-item-33"><a href="http://www.davidcramer.net/category/work/ibegin/ibegin-labs" title="View all posts filed under iBegin Labs">iBegin Labs</a>
+</li>
+	</ul>
+</li>
+	<li class="cat-item cat-item-103"><a href="http://www.davidcramer.net/category/work/lifestream-work" title="View all posts filed under Lifestream">Lifestream</a>
+</li>
+	<li class="cat-item cat-item-120"><a href="http://www.davidcramer.net/category/work/nibbits" title="View all posts filed under Nibbits">Nibbits</a>
+</li>
+</ul>
+</li>
+    </ul>
+        
+    
+    <h2>Links</h2>
+    <ul>
+        <li id="linkcat-7" class="linkcat">My Projects
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.bootdisks.us/" rel="me" title="Boot Disks and Bootable CD Images">Boot Disks</a></li>
+<li><a href="http://www.nibbits.com">Nibbits</a></li>
+<li><a href="http://www.pastethat.com/" rel="me">Paste That</a></li>
+<li><a href="http://www.freestarcraftmaps.com">StarCraft Maps</a></li>
+<li><a href="http://www.freewarcraft3maps.com">WarCraft 3 Maps</a></li>
+
+	</ul>
+</li>
+<li id="linkcat-1" class="linkcat">Other
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.appsumo.com/" title="Deals on web applications">AppSumo</a></li>
+<li><a href="http://www.facebook.com/profile.php?id=503846976" rel="me" title="Me at Facebook">My Facebook</a></li>
+<li><a href="http://www.linkedin.com/in/dmcramer" rel="me">My LinkedIn</a></li>
+
+	</ul>
+</li>
+    </ul>
+
+    <!--
+    <h2>Archives</h2>
+    <ul>
+    	<li><a href='http://www.davidcramer.net/date/2010/12' title='December 2010'>December 2010</a></li>
+	<li><a href='http://www.davidcramer.net/date/2010/11' title='November 2010'>November 2010</a></li>
+	<li><a href='http://www.davidcramer.net/date/2010/10' title='October 2010'>October 2010</a></li>
+	<li><a href='http://www.davidcramer.net/date/2010/08' title='August 2010'>August 2010</a></li>
+	<li><a href='http://www.davidcramer.net/date/2010/07' title='July 2010'>July 2010</a></li>
+	<li><a href='http://www.davidcramer.net/date/2010/05' title='May 2010'>May 2010</a></li>
+	<li><a href='http://www.davidcramer.net/date/2010/02' title='February 2010'>February 2010</a></li>
+	<li><a href='http://www.davidcramer.net/date/2010/01' title='January 2010'>January 2010</a></li>
+	<li><a href='http://www.davidcramer.net/date/2009/12' title='December 2009'>December 2009</a></li>
+	<li><a href='http://www.davidcramer.net/date/2009/09' title='September 2009'>September 2009</a></li>
+	<li><a href='http://www.davidcramer.net/date/2009/07' title='July 2009'>July 2009</a></li>
+	<li><a href='http://www.davidcramer.net/date/2009/06' title='June 2009'>June 2009</a></li>
+	<li><a href='http://www.davidcramer.net/date/2009/04' title='April 2009'>April 2009</a></li>
+	<li><a href='http://www.davidcramer.net/date/2009/03' title='March 2009'>March 2009</a></li>
+	<li><a href='http://www.davidcramer.net/date/2009/02' title='February 2009'>February 2009</a></li>
+	<li><a href='http://www.davidcramer.net/date/2008/12' title='December 2008'>December 2008</a></li>
+	<li><a href='http://www.davidcramer.net/date/2008/11' title='November 2008'>November 2008</a></li>
+	<li><a href='http://www.davidcramer.net/date/2008/10' title='October 2008'>October 2008</a></li>
+	<li><a href='http://www.davidcramer.net/date/2008/09' title='September 2008'>September 2008</a></li>
+	<li><a href='http://www.davidcramer.net/date/2008/08' title='August 2008'>August 2008</a></li>
+	<li><a href='http://www.davidcramer.net/date/2008/07' title='July 2008'>July 2008</a></li>
+	<li><a href='http://www.davidcramer.net/date/2008/06' title='June 2008'>June 2008</a></li>
+	<li><a href='http://www.davidcramer.net/date/2008/05' title='May 2008'>May 2008</a></li>
+	<li><a href='http://www.davidcramer.net/date/2008/04' title='April 2008'>April 2008</a></li>
+	<li><a href='http://www.davidcramer.net/date/2008/03' title='March 2008'>March 2008</a></li>
+	<li><a href='http://www.davidcramer.net/date/2008/02' title='February 2008'>February 2008</a></li>
+	<li><a href='http://www.davidcramer.net/date/2008/01' title='January 2008'>January 2008</a></li>
+	<li><a href='http://www.davidcramer.net/date/2007/12' title='December 2007'>December 2007</a></li>
+	<li><a href='http://www.davidcramer.net/date/2007/11' title='November 2007'>November 2007</a></li>
+	<li><a href='http://www.davidcramer.net/date/2007/10' title='October 2007'>October 2007</a></li>
+	<li><a href='http://www.davidcramer.net/date/2007/09' title='September 2007'>September 2007</a></li>
+	<li><a href='http://www.davidcramer.net/date/2007/08' title='August 2007'>August 2007</a></li>
+	<li><a href='http://www.davidcramer.net/date/2007/07' title='July 2007'>July 2007</a></li>
+	<li><a href='http://www.davidcramer.net/date/2007/06' title='June 2007'>June 2007</a></li>
+	<li><a href='http://www.davidcramer.net/date/2007/05' title='May 2007'>May 2007</a></li>
+	<li><a href='http://www.davidcramer.net/date/2007/03' title='March 2007'>March 2007</a></li>
+	<li><a href='http://www.davidcramer.net/date/2007/01' title='January 2007'>January 2007</a></li>
+	<li><a href='http://www.davidcramer.net/date/2006/11' title='November 2006'>November 2006</a></li>
+	<li><a href='http://www.davidcramer.net/date/2006/10' title='October 2006'>October 2006</a></li>
+	<li><a href='http://www.davidcramer.net/date/2006/09' title='September 2006'>September 2006</a></li>
+	<li><a href='http://www.davidcramer.net/date/2006/08' title='August 2006'>August 2006</a></li>
+	<li><a href='http://www.davidcramer.net/date/2006/07' title='July 2006'>July 2006</a></li>
+	<li><a href='http://www.davidcramer.net/date/2006/06' title='June 2006'>June 2006</a></li>
+	<li><a href='http://www.davidcramer.net/date/2006/05' title='May 2006'>May 2006</a></li>
+    </ul>
+    -->
+
+    <a href="http://blogs.top.org/" title="Blogs Topsites - TOP.ORG"><img style="border:none;height:31px;width:88px;" src="http://img1.top.org/toporg_50.gif" alt="Blogs Topsites - TOP.ORG" /></a>
+
+
+</div>
+            <div class="clear"></div>
+        </div>
+        <div id="wp_footer">
+            <p>Copyright &copy;2008 David Cramer</p>
+            <p id="validation"><a href="http://validator.w3.org/check?uri=referer">Valid XHTML</a>  |  <a href="http://jigsaw.w3.org/css-validator/validator?uri=http://www.davidcramer.net&amp;usermedium=all">Valid CSS 3.0</a></p>
+            <p><a href="http://www.nibbits.com/wc3/">WarCraft 3 Maps</a> | <a href="http://www.nibbits.com/sc/">StarCraft Maps</a></p>
+        </div>
+    </div>
+    <script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-395936-7");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</body>
+</html>
+
+<!-- Dynamic Page Served (once) in 0.787 seconds -->
+<!-- Cached page served by WP-Cache -->

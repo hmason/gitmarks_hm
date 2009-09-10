@@ -1,0 +1,474 @@
+<HTML>
+<HEAD>
+<TITLE>[1.0] A Guided Tour Of Awk</TITLE>
+</HEAD>
+<BODY>
+<BR>
+<CENTER>
+<script type="text/javascript"><!--
+google_ad_client = "pub-7060065211892894";
+google_ad_width = 728;
+google_ad_height = 90;
+google_ad_format = "728x90_as";
+google_ad_type = "text_image";
+google_ad_channel ="";
+google_color_border = ["FDFFCA","FF4500","CC99CC","578A24"];
+google_color_bg = ["FDFFCA","FFEBCD","E7C6E8","CCFF99"];
+google_color_link = ["0000CC","DE7008","000000","00008B"];
+google_color_url = ["008000","E0AD12","00008B","00008B"];
+google_color_text = ["000000","8B4513","663366","000000"];
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</CENTER>
+<BR>
+<HR>
+<B> 
+<CENTER> 
+<A HREF="tsawk.html">&lt PREV</A> |   
+<A HREF="tsawk_2.html">NEXT &gt</A> |  
+<A HREF="tsawk.html">INDEX</A>   
+| <A HREF="idx_smap.html">SITEMAP</A>
+| <A HREF="idsearch.html">GOOGLE</A>
+| <A HREF="imylinks.html">LINKS</A>
+| <A HREF="idx_ud.html">UPDATES</A>
+| <A HREF="gblog.html">BLOG</A>
+| <A HREF="http://gvgpd.proboards.com/">MESSAGEBOARD</A>
+| <A HREF="imymail.html">EMAIL</A>
+| <A HREF="index.html">HOME</A>
+</CENTER>
+</B>    
+<HR>    
+<P>
+<H1>[1.0] A Guided Tour Of Awk</H1>
+<P>
+<EM>v1.1.2 / chapter 1 of 3 / 01 jul 10 / greg goebel / public domain</EM>
+<P>
+* This chapter provides an overview of Awk and a quick tour of its use.
+<P>
+ <HR>  
+<A HREF="tsawk_1.html#m1">[1.1] AWK OVERVIEW</A><BR>
+<A HREF="tsawk_1.html#m2">[1.2] AWK COMMAND-LINE EXAMPLES</A><BR>
+<A HREF="tsawk_1.html#m3">[1.3] AWK PROGRAM EXAMPLE</A><BR>
+ <HR>  
+<P>
+<H2><A NAME="m1">[1.1] AWK OVERVIEW</A></H2>
+<P>
+* The Awk text-processing language is useful for such tasks as:
+<UL>
+<P>
+<LI> Tallying information from text files and creating reports from the results.
+<LI> Adding additional functions to text editors like &quot;vi&quot;.
+<LI> Translating files from one format to another.
+<LI> Creating small databases.
+<LI> Performing mathematical operations on files of numeric data.
+</UL>
+<P>
+Awk has two faces:  it is a utility for performing simple text-processing
+tasks, and it is a programming language for performing complex
+text-processing tasks.
+<P>
+The two faces are really the same, however.  Awk uses the same mechanisms
+for handling any text-processing task, but these mechanisms are flexible
+enough to allow useful Awk programs to be entered on the command line, or to
+implement complicated programs containing dozens of lines of Awk statements.
+<P>
+Awk statements comprise a programming language.  In fact, Awk is useful for
+simple, quick-and-dirty computational programming.  Anybody who can write a
+BASIC program can use Awk, although Awk's syntax is different from that of
+BASIC.  Anybody who can write a C program can use Awk with little difficulty,
+and those who would like to learn C may find Awk a useful stepping stone --
+with the caution that Awk and C have significant differences beyond their
+many similarities.
+<P>
+There are, however, things that Awk is not.  It is not really well suited for
+extremely large, complicated tasks.  It is also an &quot;interpreted&quot; language --
+that is, an Awk program cannot run on its own, it must be executed by the Awk
+utility itself.  That means that it is relatively slow, though it is
+efficient as interpretive languages go, and that the program can only be used
+on systems that have Awk.  There are translators available that can convert
+Awk programs into C code for compilation as stand-alone programs, but such
+translators have to be purchased separately.
+<P>
+One last item before proceeding:  What does the name &quot;Awk&quot; mean?  Awk
+actually stands for the names of its authors:  &quot;Aho, Weinberger, &amp;
+Kernighan&quot;.  Kernighan later noted:  &quot;Naming a language after its authors ...
+shows a certain poverty of imagination.&quot;  The name is reminiscent of that of
+an oceanic bird known as an &quot;auk&quot;, and so the picture of an auk often shows
+up on the cover of books on Awk.
+<P>
+<A HREF="tsawk_1.html"><B>BACK_TO_TOP</B></A>
+<P>
+<H2><A NAME="m2">[1.2] AWK COMMAND-LINE EXAMPLES</A></H2>
+<P>
+* It is easy to use Awk from the command line to perform simple operations
+on text files.  Suppose we have a file named &quot;coins.txt&quot; that describes a
+coin collection.  Each line in the file contains the following information:
+<B><PRE>
+  metal  weight in ounces   date minted   country of origin   description
+</PRE></B>
+The file has the contents:
+<B><PRE>
+   gold     1    1986  USA                 American Eagle
+   gold     1    1908  Austria-Hungary     Franz Josef 100 Korona
+   silver  10    1981  USA                 ingot
+   gold     1    1984  Switzerland         ingot
+   gold     1    1979  RSA                 Krugerrand
+   gold     0.5  1981  RSA                 Krugerrand
+   gold     0.1  1986  PRC                 Panda
+   silver   1    1986  USA                 Liberty dollar
+   gold     0.25 1986  USA                 Liberty 5-dollar piece
+   silver   0.5  1986  USA                 Liberty 50-cent piece
+   silver   1    1987  USA                 Constitution dollar
+   gold     0.25 1987  USA                 Constitution 5-dollar piece
+   gold     1    1988  Canada              Maple Leaf
+</PRE></B>
+We could then invoke Awk to list all the gold pieces as follows:
+<B><PRE>
+   awk '/gold/' coins.txt
+</PRE></B>
+This tells Awk to search through the file for lines of text that contain the
+string &quot;gold&quot;, and print them out.  The result is:
+<B><PRE>
+   gold     1    1986  USA                 American Eagle
+   gold     1    1908  Austria-Hungary     Franz Josef 100 Korona
+   gold     1    1984  Switzerland         ingot
+   gold     1    1979  RSA                 Krugerrand
+   gold     0.5  1981  RSA                 Krugerrand
+   gold     0.1  1986  PRC                 Panda
+   gold     0.25 1986  USA                 Liberty 5-dollar piece
+   gold     0.25 1987  USA                 Constitution 5-dollar piece
+   gold     1    1988  Canada              Maple Leaf
+</PRE></B>
+* This is all very nice, a critic might say, but any &quot;grep&quot; or &quot;find&quot; utility
+can do the same thing.  True, but Awk is capable of doing much more.  For
+example, suppose we only want to print the description field, and leave all
+the other text out.  We could then change the invocation of Awk to:
+<B><PRE>
+   awk '/gold/ {print $5,$6,$7,$8}' coins.txt
+</PRE></B>
+This yields:
+<B><PRE>
+   American Eagle  
+   Franz Josef 100 Korona
+   ingot   
+   Krugerrand   
+   Krugerrand   
+   Panda   
+   Liberty 5-dollar piece 
+   Constitution 5-dollar piece 
+   Maple Leaf
+</PRE></B>
+This example demonstrates the simplest general form of an Awk program:
+<B><PRE>
+   awk &lt;search pattern&gt; {&lt;program actions&gt;}
+</PRE></B>
+Awk searches through the input file for each line that contains the search
+pattern.  For each of these lines found, Awk then performs the specified
+actions.  In this example, the action is specified as:
+<B><PRE>
+   {print $5,$6,$7,$8}
+</PRE></B>
+The purpose of the &quot;print&quot; statement is obvious.  The &quot;$5&quot;, &quot;$6&quot;, &quot;$7&quot;, and
+&quot;$8&quot; are &quot;fields&quot;, or &quot;field variables&quot;, which store the words in each line
+of text by their numeric sequence.  &quot;$1&quot;, for example, stores the first word
+in the line, &quot;$2&quot; has the second, and so on.  By default, a &quot;word&quot; is
+defined as any string of printing characters separated by spaces.
+<P>
+Since &quot;coins.txt&quot; has the structure:
+<B><PRE>
+  metal  weight in ounces   date minted   country of origin   description
+</PRE></B>
+-- then the field variables are matched to each line of text in the file as
+follows:
+<B><PRE>
+   metal:        $1
+   weight:       $2
+   date:         $3
+   country:      $4
+   description:  $5 through $8
+</PRE></B>
+The program action in this example prints the fields that contain the
+description.  The description field in the file may actually include from one
+to four fields, but that's not a problem, since &quot;print&quot; simply ignores any
+undefined fields.  The alert reader will notice that the &quot;coins.txt&quot; file is
+neatly organized so that the only piece of information that contains multiple
+fields is at the end of the line.  This is a little contrived, but that's the
+way examples are.
+<P>
+* Awk's default program action is to print the entire line, which is what
+&quot;print&quot; does when invoked without parameters.  This means that the first
+example:
+<B><PRE>
+   awk '/gold/'
+</PRE></B>
+-- is the same as:
+<B><PRE>
+   awk '/gold/ {print}'
+</PRE></B>
+Note that Awk recognizes the field variable $0 as representing the entire
+line, so this could also be written as:
+<B><PRE>
+   awk '/gold/ {print $0}'
+</PRE></B>
+This is redundant, but it does have the virtue of making the action more
+obvious.
+<P>
+* Now suppose we want to list all the coins that were minted before 1980.  We
+invoke Awk as follows:
+<B><PRE>
+   awk '{if ($3 &lt; 1980) print $3, &quot;    &quot;,$5,$6,$7,$8}' coins.txt
+</PRE></B>
+This yields:
+<B><PRE>
+   1908      Franz Josef 100 Korona
+   1979      Krugerrand 
+</PRE></B>
+This new example adds a few new concepts:
+<UL>
+<P>
+<LI> No search pattern is specified.  Without a search pattern, Awk will match
+   <EM>all</EM> lines in the input file, and perform the actions on each one.
+<P>
+<LI> We can add text of our own to the &quot;print&quot; statement (in this case, four
+   spaces) simply by enclosing the text in quotes and adding it to the
+   parameter list.
+<P>
+<LI> An &quot;if&quot; statement is used to check for a date field earlier than 1980, and
+   the &quot;print&quot; statement is executed only if that condition is true.
+<P>
+   There's a subtle issue involved here, however.  In most computer
+   languages, strings are strings, and numbers are numbers.  There are
+   operations that unique to each, and one must be specifically converted to
+   the other with conversion functions -- we don't concatenate numbers, and we
+   don't perform arithmetic operations on strings.  
+<P>
+   Awk, on the other hand, makes no strong distinction between strings and
+   numbers.  In computer-science terms, it is a &quot;weakly-typed&quot; language.  All
+   the fields are regarded as strings, but if that string also happens to
+   represent a number, numeric operations can be performed on it.  So we can
+   perform an <EM>arithmetic</EM> comparison on the date field.
+</UL>
+<P>
+* The next example prints out how many coins are in the collection:
+<B><PRE>
+   awk 'END {print NR,&quot;coins&quot;}' coins.txt
+</PRE></B>
+This yields:
+<B><PRE>
+   13 coins
+</PRE></B>
+The first new item in this example is the END statement.  To explain this
+requires extending the general form of an Awk program to:
+<B><PRE>
+   awk 'BEGIN              {&lt;initializations&gt;} 
+        &lt;search pattern 1&gt; {&lt;program actions&gt;} 
+        &lt;search pattern 2&gt; {&lt;program actions&gt;} 
+        ...
+        END                {&lt;final actions&gt;}'
+</PRE></B>
+The BEGIN clause performs any initializations required before Awk starts
+scanning the input file.  The subsequent body of the Awk program consists of
+a series of search patterns, each with its own program action.  Awk scans
+each line of the input file for each search pattern, and performs the
+appropriate actions for each string found.  Once the file has been scanned,
+an END clause can be used to perform any final actions required.
+<P>
+So this example doesn't perform any processing on the input lines themselves.
+All it does is scan through the file and perform a final action:  print the
+number of lines in the file, which is given by the &quot;NR&quot; variable.  NR stands
+for &quot;number of records&quot;.  NR is one of Awk's &quot;pre-defined&quot; variables.  There
+are others, for example the variable NF gives the number of fields in a line,
+but a detailed explanation will have to wait for later.
+<P>
+* Suppose the current price of gold is $425, and we want to figure out the
+approximate total value of the gold pieces in the coin collection.  We invoke
+Awk as follows:
+<B><PRE>
+   awk '/gold/ {ounces += $2} END {print &quot;value = $&quot; 425*ounces}' coins.txt
+</PRE></B>
+This yields:
+<B><PRE>
+   value = $2592.5
+</PRE></B>
+In this example, &quot;ounces&quot; is a &quot;user defined&quot; variable, as opposed to the
+&quot;standard&quot; pre-defined variables.  Almost any string of characters can be
+used as a variable name in Awk, as long as the name doesn't conflict with
+some string that has a specific meaning to Awk, such as &quot;print&quot; or &quot;NR&quot; or
+&quot;END&quot;.  There is no need to declare the variable, or to initialize it.  A
+variable handled as a string variable is initialized to the &quot;null string&quot;,
+meaning that if we try to print it, nothing will be there.  A variable
+handled as a numeric variable will be initialized to zero.
+<P>
+So the program action:
+<B><PRE>
+   {ounces += $2}
+</PRE></B>
+-- sums the weight of the piece on each matched line into the variable
+&quot;ounces&quot;.  Those who program in C should be familiar with the &quot;+=&quot; operator.
+Those who don't can be assured that this is just a shorthand way of saying:
+<B><PRE>
+   {ounces = ounces + $2}
+</PRE></B>
+The final action is to compute and print the value of the gold:
+<B><PRE>
+   END {print &quot;value = $&quot; 425*ounces}
+</PRE></B>
+The only thing here of interest is that the two print parameters, the literal
+'&quot;value = $&quot;' and the expression &quot;425*ounces&quot;, are separated by a space, not
+a comma.  This concatenates the two parameters together on output, without
+any intervening spaces.
+<P>
+<A HREF="tsawk_1.html"><B>BACK_TO_TOP</B></A>
+<P>
+<H2><A NAME="m3">[1.3] AWK PROGRAM EXAMPLE</A></H2>
+<P>
+* All this is fun, but each of these examples only seems to nibble away at
+&quot;coins.txt&quot;.  Why not have Awk figure out <EM>everything</EM> interesting at one
+time?
+<P>
+The immediate objection to this idea is that it would be impractical to enter
+a lot of Awk statements on the command line, but that's easy to fix.  The
+commands can be written into a file, and then Awk can be told to execute the
+commands from that file as follows:
+<B><PRE>
+   awk -f &lt;awk program file name&gt;
+</PRE></B>
+Given an ability to write an Awk program in this way, then what should a
+&quot;master&quot; &quot;coins.txt&quot; analysis program do?  Here's one possible output:
+<B><PRE>
+  Summary Data for Coin Collection:
+  
+     Gold pieces:                   nn
+     Weight of gold pieces:         nn.nn
+     Value of gold pieces:       n,nnn.nn
+
+     Silver pieces:                 nn
+     Weight of silver pieces:       nn.nn
+     Value of silver pieces:     n,nnn.nn
+
+     Total number of pieces:        nn
+     Value of collection:        n,nnn.nn
+
+</PRE></B>
+The following Awk program generates this information:
+<B><PRE>
+   # This is an awk program that summarizes a coin collection.
+   #
+   /gold/    { num_gold++; wt_gold += $2 }      # Get weight of gold.
+   /silver/  { num_silver++; wt_silver += $2 }  # Get weight of silver.
+   END { val_gold = 485 * wt_gold;              # Compute value of gold.
+         val_silver = 16 * wt_silver;           # Compute value of silver.
+         total = val_gold + val_silver;
+         print &quot;Summary data for coin collection:&quot;;  # Print results.
+         printf (&quot;\n&quot;);
+         printf (&quot;   Gold pieces:                   %2d\n&quot;, num_gold);
+         printf (&quot;   Weight of gold pieces:         %5.2f\n&quot;, wt_gold);
+         printf (&quot;   Value of gold pieces:        %7.2f\n&quot;,val_gold);
+         printf (&quot;\n&quot;);
+         printf (&quot;   Silver pieces:                 %2d\n&quot;, num_silver);
+         printf (&quot;   Weight of silver pieces:       %5.2f\n&quot;, wt_silver);
+         printf (&quot;   Value of silver pieces:      %7.2f\n&quot;,val_silver);
+         printf (&quot;\n&quot;);
+         printf (&quot;   Total number of pieces:        %2d\n&quot;, NR);
+         printf (&quot;   Value of collection:         %7.2f\n&quot;, total); }
+</PRE></B>
+This program has a few interesting features:  
+<UL>
+<P>
+<LI> Comments can be inserted in the program by preceding them with a &quot;#&quot;.
+<P>
+<LI> Note the statements &quot;num_gold++&quot; and &quot;num_silver++&quot;.  C programmers should
+   understand the &quot;++&quot; operator; those who are not can be assured that it
+   simply increments the specified variable by one.
+<P>
+<LI> Multiple statements can be written on the same line by separating them 
+   with a semicolon (&quot;;&quot;).
+<P>
+<LI> Note the use of the &quot;printf&quot; statement, which offers more flexible
+   printing capabilities than the &quot;print&quot; statement.  &quot;Printf&quot; has the
+   general syntax:  
+<P>
+   <B>printf(&quot;&lt;format_code&gt;&quot;,&lt;parameters&gt;)</B>
+<P>
+   There is one format code for each of the parameters in the list.  Each
+   format code determines how its corresponding parameter will be printed.
+   For example, the format code &quot;%2d&quot; tells Awk to print a two-digit integer
+   number, and the format code &quot;%7.2f&quot; tells Awk to print a seven-digit
+   floating-point number, with two digits to the right of the decimal point.
+<P>
+   Note also that, in this example, each string printed by &quot;printf&quot; ends with
+   a &quot;\n&quot;, which is a code for a &quot;newline&quot; (ASCII line-feed code).  Unlike
+   the &quot;print&quot; statement, which automatically advances the output to the next
+   line when it prints a line, &quot;printf&quot; does not automatically advance the
+   output, and by default the next output statement will append its output to
+   the same line.  A newline forces the output to skip to the next line.
+</UL>
+<P>
+* This program can be stored in a file named &quot;summary.awk&quot;, and invoked as
+follows:
+<B><PRE>
+   awk -f summary.awk coins.txt
+</PRE></B>
+The output is:
+<B><PRE>
+   Summary data for coin collection:
+
+      Gold pieces:                    9
+      Weight of gold pieces:          6.10
+      Value of gold pieces:        2958.50
+
+      Silver pieces:                  4
+      Weight of silver pieces:       12.50
+      Value of silver pieces:       200.00
+
+      Total number of pieces:        13
+      Value of collection:         3158.50
+</PRE></B>
+* This information provides enough background to make good use of Awk.  The
+next chapter provides a much more complete description of the language.
+<P>
+<A HREF="tsawk_1.html"><B>BACK_TO_TOP</B></A>
+<HR>
+<B> 
+<CENTER> 
+<A HREF="tsawk.html">&lt PREV</A> |   
+<A HREF="tsawk_2.html">NEXT &gt</A> |  
+<A HREF="tsawk.html">INDEX</A>   
+| <A HREF="idx_smap.html">SITEMAP</A>
+| <A HREF="idsearch.html">GOOGLE</A>
+| <A HREF="imylinks.html">LINKS</A>
+| <A HREF="idx_ud.html">UPDATES</A>
+| <A HREF="gblog.html">BLOG</A>
+| <A HREF="http://gvgpd.proboards.com/">MESSAGEBOARD</A>
+| <A HREF="imymail.html">EMAIL</A>
+| <A HREF="index.html">HOME</A>
+</CENTER>
+</B>    
+<HR>    
+<CENTER>
+<BR>
+<script type="text/javascript"><!--
+google_ad_client = "pub-7060065211892894";
+google_ad_width = 728;
+google_ad_height = 15;
+google_ad_format = "728x15_0ads_al_s";
+google_ad_channel = "";
+//-->
+</script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<BR>
+<A HREF="idredir.html"><IMG SRC="advector.png"></A>
+</CENTER>
+<BR>
+<HR>
+<script id="aptureScript" 
+type="text/javascript" 
+src="http://www.apture.com/js/apture.js?siteToken=DB3ZWW0" 
+charset="utf-8">
+</script>
+</BODY>
+</HTML>

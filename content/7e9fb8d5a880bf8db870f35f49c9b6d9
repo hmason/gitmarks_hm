@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>The technology behind Tornado, FriendFeed's web server - Bret Taylor's blog</title>
+<link rel="stylesheet" href="/static/blog.css" type="text/css"/>
+<link rel="alternate" href="http://feeds.feedburner.com/brettaylor" type="application/atom+xml" title="Bret Taylor's blog"/>
+
+<meta property="og:title" content="The technology behind Tornado, FriendFeed's web server"/>
+<meta property="og:site_name" content="Bret Taylor's blog"/>
+
+</head>
+<body>
+<div id="body">
+<div id="header">
+<div class="menu"><span><a href="http://feeds.feedburner.com/brettaylor"><img src="/static/images/rss.png" style="width:30px" alt="Feed"/></a></span><span><a href="/archive"><img src="/static/images/archive.png" style="width:57px" alt="Archive"/></a></span><span><a href="/about"><img src="/static/images/about-me.png" style="width:69px" alt="About me"/></a></span></div>
+<div class="title"><a href="/"><img src="/static/images/bret-taylor.png" style="width:116px" alt="Bret Taylor"/></a></div>
+</div>
+<div id="content">
+
+<div id="sidebar">
+<div class="section">
+<div class="headline"><img src="/static/images/find-me-on-the-web.png" style="width:139px" alt="Find me on the web"/></div>
+<table class="icons">
+<tr>
+<td><a href="http://www.facebook.com/btaylor" rel="me"><img src="/static/images/facebook-big.png"/></a></td>
+<td class="last"><a href="mailto:btaylor@gmail.com" rel="me"><img src="/static/images/gmail-big.png"/></a></td>
+</tr>
+<tr>
+<td><a href="http://feeds.feedburner.com/brettaylor" rel="me"><img src="/static/images/feed-big.png"/></a></td>
+<td class="last"><a href="http://friendfeed.com/bret" rel="me"><img src="/static/images/friendfeed-big.png"/></a></td>
+</tr>
+</table>
+</div>
+</div>
+
+<div id="entries">
+<div class="entry">
+<h1><a href="/entry/tornado-web-server">The technology behind Tornado, FriendFeed's web server</a></h1>
+<div class="date">By Bret Taylor &middot; September 10, 2009</div>
+<div class="body"><p>Today, we are open sourcing the non-blocking web server and the tools that
+power FriendFeed under the name <a href="http://www.tornadoweb.org/">Tornado Web Server</a>.
+We are really excited to open source this project as a part of <a href="http://developer.facebook.com/opensource.php">Facebook's
+open source initiative</a>, and
+we hope it will be useful to others building real-time web services. Check out
+<a href="http://developers.facebook.com/news.php?blog=1&amp;story=301">the announcement</a>
+on the Facebook Developer Blog. You can download Tornado at
+<a href="http://www.tornadoweb.org/">tornadoweb.org</a>.</p>
+
+<h2>Background</h2>
+
+<p>While there are a number of great Python frameworks available that have been
+growing in popularity over the past couple years (particularly
+<a href="http://www.djangoproject.com/">Django</a>), our performance and feature
+requirements consistently diverged from these mainstream frameworks. In
+particular, as we introduced more real-time features to FriendFeed, we
+needed the support for a large number of standing connections afforded by
+the non-blocking I/O programming style and
+<a href="http://www.kernel.org/doc/man-pages/online/pages/man4/epoll.4.html">epoll</a>.</p>
+
+<p>We ended up writing our own web server and framework after looking at
+existing servers and tools like <a href="http://twistedmatrix.com/">Twisted</a>
+because none matched both our performance requirements and our ease-of-use
+requirements.</p>
+
+<p>Tornado looks a bit like <a href="http://webpy.org/">web.py</a> or Google's
+<a href="http://code.google.com/appengine/docs/python/tools/webapp/">webapp</a>,
+but with additional tools and optimizations to take advantage of the
+non-blocking web server and tools. Some of the distinctive features of
+Tornado:</p>
+
+<ul>
+<li><p><strong>All the basic site building blocks</strong> - Tornado comes with built-in support for a lot of the most difficult and tedious aspects of web development, including <a href="http://www.tornadoweb.org/documentation#templates">templates</a>, <a href="http://www.tornadoweb.org/documentation#cookies-and-secure-cookies">signed cookies</a>, <a href="http://www.tornadoweb.org/documentation#user-authentication">user authentication</a>, <a href="http://www.tornadoweb.org/documentation#localization">localization</a>, <a href="http://www.tornadoweb.org/documentation#static-files-and-aggressive-file-caching">aggressive static file caching</a>, <a href="http://www.tornadoweb.org/documentation#cross-site-request-forgery-protection">cross-site request forgery protection</a>, and <a href="http://www.tornadoweb.org/documentation#third-party-authentication">third party authentication</a> like Facebook Connect. You only need to use the features you want, and it is easy to mix and match Tornado with other frameworks.</p></li>
+<li><p><strong>Real-time services</strong> - Tornado supports large numbers of concurrent connections. It is easy to write real-time services via <a href="http://en.wikipedia.org/wiki/Push_technology#Long_polling">long polling</a> or HTTP streaming with Tornado. Every active user of FriendFeed maintains an open connection to FriendFeed's servers.</p></li>
+<li><p><strong>High performance</strong> - Tornado is pretty fast relative to most Python web frameworks. We ran some <a href="http://www.tornadoweb.org/documentation#performance">simple load tests</a> against some other popular Python frameworks, and Tornado's baseline throughput was over four times higher than the other frameworks:</p></li>
+</ul>
+
+<div style="text-align:center;margin-top:2em;margin-bottom:2em"><img src="http://chart.apis.google.com/chart?chxt=y&amp;chd=t%3A100%2C40%2C27%2C25%2C9&amp;chco=609bcc&amp;chm=t+8213%2C000000%2C0%2C0%2C11%7Ct+3353%2C000000%2C0%2C1%2C11%7Ct+2223%2C000000%2C0%2C2%2C11%7Ct+2066%2C000000%2C0%2C3%2C11%7Ct+785%2C000000%2C0%2C4%2C11&amp;chs=600x175&amp;cht=bhs&amp;chtt=Web+server+requests%2Fsec+%28AMD+Opteron%2C+2.4GHz%2C+4+cores%29&amp;chxl=0%3A%7CCherryPy+%28standalone%29%7Cweb.py+%28Apache%2Fmod_wsgi%29%7CDjango+%28Apache%2Fmod_wsgi%29%7CTornado+%281+single-threaded+frontend%29%7CTornado+%28nginx%3B+4+frontends%29%7C"/></div>
+
+<h2>Basic usage</h2>
+
+<p>The main Tornado module is <code>tornado.web</code>, which implements a lightweight
+web development framework. <code>tornado.web</code> is built on our non-blocking
+HTTP server and low-level I/O modules. Here is "Hello, world" in Tornado:</p>
+
+<pre><code>import tornado.httpserver
+import tornado.ioloop
+import tornado.web
+
+class MainHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.write("Hello, world")
+
+application = tornado.web.Application([
+    (r"/", MainHandler),
+])
+
+if __name__ == "__main__":
+    http_server = tornado.httpserver.HTTPServer(application)
+    http_server.listen(8888)
+    tornado.ioloop.IOLoop.instance().start()
+</code></pre>
+
+<p>A Tornado web application maps URLs or URL patterns to subclasses of
+<code>tornado.web.RequestHandler</code>. Those classes define <code>get()</code> or <code>post()</code>
+methods to handle HTTP <code>GET</code> or <code>POST</code> requests to that URL. The example
+above maps the root URL <code>'/'</code> to the <code>MainHandler</code> class, which prints
+the "Hello, world" message.</p>
+
+<p>All of the additional features of Tornado mentioned above (like <a href="http://www.tornadoweb.org/documentation#localization">localization</a> and <a href="http://www.tornadoweb.org/documentation#cookies-and-secure-cookies">signed cookies</a>) are designed to be used on an à la carte basis. For example, to use signed cookies in your application, you just need to specify the secret cookie signing key when you create your application:</p>
+
+<pre><code>application = tornado.web.Application([
+    (r"/", MainHandler),
+], cookie_secret="61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=")
+</code></pre>
+
+<p>and then you can call <code>set_secure_cookie()</code> and <code>get_secure_cookie()</code> in
+your request handlers:</p>
+
+<pre><code>class LoginHandler(tornado.web.RequestHandler):
+    def post(self):
+        # Process login username and password
+        self.set_secure_cookie("user_id", user["id"])
+        self.redirect("/home")
+</code></pre>
+
+<p>You can find detailed documentation for all of these features at <a href="http://www.tornadoweb.org/documentation">tornadoweb.org/documentation</a>. A few of my
+favorite features are discussed in greater detail below.</p>
+
+<h2>Asynchronous requests</h2>
+
+<p>Tornado assumes requests are not asynchronous to make writing
+simple request handlers easy. By default, when a request handler is executed,
+Tornado will finish/close the request automatically.</p>
+
+<p>You can override that default behavior to implement streaming or hanging
+connections, which are common for real-time services like FriendFeed.
+If you want a request to remain open after the main request handler
+method, you simply need to use the <code>tornado.web.asynchronous</code> decorator:</p>
+
+<pre><code>class MainHandler(tornado.web.RequestHandler):
+    @tornado.web.asynchronous
+    def get(self):
+        self.write("Hello, world")
+        self.finish()
+</code></pre>
+
+<p>When you use this decorator, it is your responsibility to call
+<code>self.finish()</code> to finish the HTTP request, or the user's browser
+will simply hang.</p>
+
+<p>Here is a real example that makes a call to the FriendFeed API using
+Tornado's built-in asynchronous HTTP client:</p>
+
+<pre><code>class MainHandler(tornado.web.RequestHandler):
+    @tornado.web.asynchronous
+    def get(self):
+        http = tornado.httpclient.AsyncHTTPClient()
+        http.fetch("http://friendfeed-api.com/v2/feed/bret",
+                   callback=self.async_callback(self.on_response))
+
+    def on_response(self, response):
+        if response.error: raise tornado.web.HTTPError(500)
+        json = tornado.escape.json_decode(response.body)
+        self.write("Fetched " + str(len(json["entries"])) + " entries "
+                   "from the FriendFeed API")
+        self.finish()
+</code></pre>
+
+<p>When <code>get()</code> returns, the request has not finished. When the HTTP client
+eventually calls <code>on_response()</code>, the request is still open, and the response
+is finally flushed to the client with the call to <code>self.finish()</code>.</p>
+
+<p>For a more advanced asynchronous example, take a look at the <code>chat</code> demo
+application included with <a href="http://www.tornadoweb.org/">Tornado</a>. The chat demo
+uses AJAX and <a href="http://en.wikipedia.org/wiki/Push_technology#Long_polling">long polling</a> to implement a remedial real-time chat room on Tornado. You can also <a href="http://chan.friendfeed.com:8888/">see the chat demo in action</a> on FriendFeed's servers.</p>
+
+<h2>Third-party authentication</h2>
+
+<p>Tornado comes with built-in support for authenticating with Facebook Connect,
+Twitter, Google, and FriendFeed in addition to OAuth and OpenID. To log
+a user in via <a href="http://developers.facebook.com/connect.php">Facebook Connect</a>, you just need to implement a request handler
+like:</p>
+
+<pre><code>class LoginHandler(tornado.web.RequestHandler, tornado.auth.FacebookMixin):
+    @tornado.web.asynchronous
+    def get(self):
+        if self.get_argument("session", None):
+            self.get_authenticated_user(self.async_callback(self._on_auth))
+            return
+        self.authenticate_redirect()
+
+    def _on_auth(self, user):
+        if not user: raise tornado.web.HTTPError(500, "Auth failed")
+        self.set_secure_cookie("uid", user["uid"])
+        self.set_secure_cookie("session_key", user["session_key"])
+        self.redirect("/home")
+</code></pre>
+
+<p>All of the authentication methods support a relatively uniform interface
+so you don't need to understand all of the intricacies of the different
+authentication/authorization protocols to leverage them on your site.</p>
+
+<p>See the <code>auth</code> and <code>facebook</code> demo applications included with
+<a href="http://www.tornadoweb.org/">Tornado</a> for detailed examples of third
+party authentication.</p>
+
+<h2>And more...</h2>
+
+<p>Check out the <a href="http://www.tornadoweb.org/documentation">Tornado documentation</a>
+for a complete list of features and modules.</p>
+
+<p>You can discuss the project, send feedback, and report bugs in our <a href="http://groups.google.com/group/python-tornado">mailing
+list on Google Groups</a>.</p>
+</div>
+
+<div class="footer"><iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fbret.appspot.com%2Fentry%2Ftornado-web-server&amp;layout=standard&amp;show_faces=true&amp;width=450&amp;action=like&amp;colorscheme=light&amp;height=80" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;" allowTransparency="true"></iframe></div>
+
+
+<div id="disqus_thread"></div>
+
+</div>
+
+</div>
+</div>
+<div id="footer">
+&copy;2010 Bret Taylor - <a href="/about">About me</a> - <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons license</a>
+
+</div>
+</div>
+
+
+<script type="text/javascript">
+document.write(unescape("%3Cscript src='" + ((document.location.protocol == "https:") ? "https://ssl." : "http://www.") + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+//<![CDATA[
+try {
+var pageTracker = _gat._getTracker("UA-50599-9");
+pageTracker._trackPageview();
+} catch(e) {}
+//]]>
+</script>
+
+<script src="http://disqus.com/forums/brettaylor/embed.js" type="text/javascript"></script>
+</body>
+</html>

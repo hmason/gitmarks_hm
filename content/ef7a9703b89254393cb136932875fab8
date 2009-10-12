@@ -1,0 +1,343 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<title>Ident Engine</title>
+
+<link rel="stylesheet" href="css/site.css" type="text/css" media="all" />
+<link rel="shortcut icon" href="images/logo16.png"/>
+
+<script language="javascript" type="text/javascript" src="ident/jquery-1.3.2.min.js"></script>
+<script language="javascript" type="text/javascript" src="ident/ident-0.1.min.js"></script>
+<script language="javascript" type="text/javascript" src="ident/ident-profile-0.1.min.js"></script>
+<script language="javascript" type="text/javascript" src="ident/ident-content-0.1.min.js"></script>
+<script language="javascript" type="text/javascript" src="ident/ident-yql-parser-0.1.min.js"></script>
+
+
+
+<script language="javascript" type="text/javascript">
+
+     /*
+     *  Copyright 2009, Glenn Jones
+     *  Licensed under the MIT license.
+     *  http://identengine.com/license/
+     *  More information: http://identengine.com/
+     */
+    
+    
+    // Page functions///
+    // -------------------------------------------------
+
+
+    jQuery(document).ready(function () {
+         buildList('Library data', ident._endPoints);
+         
+         //Use Ident Engine to get blog posts
+         doc.bind('ident:update', renderContent);
+    	 ident.loadContent( 'http://identengine.com/Blog/syndication.axd?format=rss', 'identengine.com', 'identengine', 'Entries', 'Rss' );
+    });  
+    
+    
+     function renderContent(e, type){
+		// Entries
+        for (var i = 0; i < ident.entries.length; i++) {
+        	if( i < 2 ){
+        		var div = jQuery('<div class="item"></div>').appendTo('#entries');
+           		renderItem( ident.entries[i], div )  
+            }
+		}
+    }
+    
+       // Renders a standard feed item
+    function renderItem( item, div ){
+        jQuery(div).addClass( 'standard' );
+        
+        jQuery(div).css('display', 'none');
+    
+        if(item['entry-title']){
+            if(item.link)
+                jQuery('<div class="entry-title"><a href="' + item.link + '">' + item['entry-title'] + '</a></div>').appendTo( div );
+            else
+                jQuery('<div class="entry-title">' + item['entry-title'] + '</div>').appendTo( div );
+        }
+        
+         if(item['entry-content']){
+            if(item['entry-title'] != item['entry-content']){
+                content = jQuery('<div class="entry-content">' + item['entry-content'] + '</div>').appendTo( div );
+                var nodes = jQuery(content).children('p');
+                jQuery(content).html('');
+		        for(var x = 0; x <= nodes.length-1; x++){
+					if( x == 0)  // Paragraph limiter
+						jQuery(nodes[x]).appendTo( content );
+				}   
+           	}
+        }         
+        
+        if(item['published-datetime'])
+            jQuery('<div class="published">' + formatDate(item['published-datetime']) + '</div>').appendTo(div);
+
+                
+        jQuery(div).css('display', 'block');
+      
+    }
+
+
+	function formatDate(date){
+	
+		var d_names = new Array("Sunday", "Monday", "Tuesday","Wednesday", "Thursday", "Friday", "Saturday");
+		var m_names = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+		
+		var curr_day = date.getDay();
+		var curr_date = date.getDate();
+			var curr_month = date.getMonth();
+		var curr_year = date.getFullYear();
+		
+		return d_names[curr_day] + ", " + curr_date + " " + m_names[curr_month] + " " + curr_year;
+
+	}
+	
+    
+     var contentTypes = new Array();
+     var schemaTypes = new Array();
+        
+     function buildList(header, json){   
+        
+        jQuery('#results1').html('');
+        jQuery('#results2').html('');
+        
+
+        
+        var mappingcount = 0;
+        for(var x = 0; x <= json.sites.length-1; x++){
+            mappingcount += json.sites[x].urlmappings.length;
+            
+        }
+        
+        jQuery('#domain-stats').html( json.sites.length  + ' sites and  ' + mappingcount + ' endpoint mappings'  );
+       
+        var half = Math.round(json.sites.length / 2);
+        var ul1 = jQuery('<ul></ul>').appendTo('#domains1'); 
+        var ul2 = jQuery('<ul></ul>').appendTo('#domains2');
+        
+        for(var x = 0; x <= json.sites.length-1; x++){
+            if(x >= half)
+                var li = jQuery('<li>' + json.sites[x].domain +  '</li>').appendTo(ul2);
+            else
+                var li = jQuery('<li>' + json.sites[x].domain +  '</li>').appendTo(ul1);
+            
+            if(json.sites[x].urlmappings){
+                if(json.sites[x].urlmappings.length){
+                   for(var i = 0; i <= json.sites[x].urlmappings.length-1; i++){
+                        appendContentTypes(json.sites[x].urlmappings[i].contenttype)
+                        appendSchemaTypes(json.sites[x].urlmappings[i].schema)
+                    }
+                }
+            }  
+        }
+        
+        contentTypes.sort();
+        schemaTypes.sort();
+        
+        var ul3 = jQuery('<ul></ul>').appendTo('#contenttypes'); 
+        var ul4 = jQuery('<ul></ul>').appendTo('#schemas');
+        
+        for(var x = 0; x <= contentTypes.length-1; x++){
+            var li = jQuery('<li>' + contentTypes[x]+  '</li>').appendTo(ul3);
+        }
+        
+        for(var x = 0; x <= schemaTypes.length-1; x++){
+            var li = jQuery('<li>' + schemaTypes[x]+  '</li>').appendTo(ul4);
+        }
+     }
+     
+     function appendContentTypes(type){
+        found = false;
+        for(var x = 0; x <= contentTypes.length-1; x++){
+            if(type == contentTypes[x]){
+                found = true;
+                break;
+            }    
+        }
+        if(!found)
+            contentTypes[contentTypes.length] = type;
+     }
+     
+     function appendSchemaTypes(type){
+        found = false;
+        for(var x = 0; x <= schemaTypes.length-1; x++){
+            if(type == schemaTypes[x]){
+                found = true;
+                break;
+            }    
+        }
+        if(!found)
+            schemaTypes[schemaTypes.length] = type;
+     }
+     
+      
+
+
+</script>
+
+<link type="application/rss+xml" rel="alternate" title="Ident Engine (RSS)" href="http://identengine.com/Blog/syndication.axd?format=rss" />
+<link type="application/atom+xml" rel="alternate" title="Ident Engine (ATOM)" href="http://identengine.com/Blog/syndication.axd?format=atom" />
+
+</head>
+
+<body>
+
+	<div class="header">
+		<div class="centered">
+			<a href="http://identengine.com/"><h1><span>Ident Engine</span></h1></a>
+			<h2 id="strapline"><span>A JavaScript library that retrieves and aggregates profiles from across the web</span></h2>
+		</div>
+	</div>
+
+	<div class="content">
+		<div class="centered">
+		<div class="floatclear" style="clear:both">
+
+			<ul class="menu">
+				<li><a href="index.htm" class="firstItem">home</a></li>
+				<li><a href="documentation/index.htm">documentation</a></li>
+				<li><a href="opentables/index.htm">api</a></li>
+				<li><a href="http://identengine.com/blog/">blog</a></li>
+				<li><a href="about/index.htm" class="lastItem">about</a></li>
+			</ul>
+			</div>
+			
+			<div class="floatclear" style="clear:both">
+				
+				<div id="home-intro-column">
+				
+					<p class="intro">Without much conscious thought, most of us have built identities 
+					across the web. We&#39;ve filled in profiles, uploaded photos, videos, 
+					reviews and bookmarks. The Ident Engine uses semantic web API’s to 
+					bring together these web footprints.</p>
+					
+					<h2>Demos</h2>
+					<div class="demo-list">
+						
+							<div>			
+								<a href="identity-discovery.htm">Identity Discovery</a>
+								<p>Uses Google&#39;s Social Graph API  with data 
+								from profiles to build the list of identities.</p>
+							</div>
+							
+							<div>			
+								<a href="profile-discovery.htm">Profile Discovery</a>
+								<p>Creates a collection of profiles from across the web 
+								using identity search</p>
+							</div>
+							
+							<div>			
+								<a href="combined-profile.htm">Combined Profile</a>
+								<p>Combines the profile collection together to 
+								find the most complete description of an 
+								individual</p>
+							</div>
+							
+							<div>			
+								<a href="form-autofill.htm">Form Auto Fill</a>
+								<p>Uses the combined profile data to auto fill a
+								 profile form. Also inculdes a photo picker example</p>
+							</div>
+
+							
+							<div>			
+								<a href="lifestream.htm">Lifestream</a>						
+								<p>Builds a lifestream by combining identity search with 
+								calls to API endpoints.</p>
+							</div>
+							
+							<!--
+							<div>			
+								<a href="photo-picker.htm">Photo Picker</a>						
+								<p>Presents all the profile photo&#39;s of an individual to 
+								create a simple photo picker UI.</p>
+							</div>
+							-->
+					</div>
+					
+					
+						
+				</div>
+				
+				
+				<div id="download-blog-column">
+				
+					<div id="download-box">
+						<div>Current release: v.0.1.7</div>
+						<a id="download-button" href="http://identengine.com/downloads/identengine0-1.zip" class="button large"><span>Download</span> | Ident Engine</a>
+						<div id="zip-size">540k zip - with documentation</div>
+						<div><a href="change-log.htm">Change log</a></div> 
+					</div>
+					
+					<p>Ident Engine has a <a rel="license" href="license/index.htm">MIT license</a></p>
+					
+					<p><img src="images/ala.gif" border="0" /><br/><strong>A List Apart article about Ident Engine - <a href="http://www.alistapart.com/articles/discovering-magic/">Discovering Magic</a></strong></p>
+					<p><img src="images/rww.gif" border="0" /><br/><strong>ReadWriteWeb - <a href="http://www.readwriteweb.com/archives/ident_engine.php">Ident Engine: Put Activity Streams on Your Site Easily</a></strong></p>
+					
+					<h2>Blog</h2>
+					<div id="entries" ></div>
+				
+				</div>
+				
+			</div>
+			
+	
+			<div id="supports">
+			
+				<h2>Currently supports</h2>
+				
+				<div class="floatclear" style="clear:both">
+						
+					<div class="support-listing">	
+						<h3 id="domain-stats"></h3>
+						<div class="floatclear">
+						    <div id="domains1"></div>
+				            <div id="domains2"></div>
+				        </div>
+			        </div>
+			        
+			        <div id="contenttypes-listing" class="support-listing">
+				        <h3>Content types definitions</h3>
+						<div id="contenttypes"></div>
+					</div>
+					
+					<div id="schemas-listing" class="support-listing">
+						<h3>Schemas</h3>
+						<div id="schemas"></div>
+					</div>
+				
+				</div>
+			
+			</div>
+
+			
+
+		</div>
+	</div>
+	
+	
+	<div class="footer">
+		<div class="centered">
+		
+		<div class="copyright">© Copyright Glenn Jones 2009. All Rights Reserved.</div>
+		
+		</div>
+	</div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-3021774-6");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+
+</html>

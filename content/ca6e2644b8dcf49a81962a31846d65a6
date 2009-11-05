@@ -1,0 +1,219 @@
+<html>
+  <head>
+    <title>Cartographer.js &ndash; thematic mapping for Google Maps</title>
+    <link href="css/shCore.css" rel="stylesheet" type="text/css" />
+    <link href="css/shThemeDefault.css" rel="stylesheet" type="text/css" />
+    <link href="css/main.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" language="javascript" src="js/shCore.js"></script>
+    <script type="text/javascript" language="javascript" src="js/shBrushJScript.js"></script>
+    <script type="text/javascript" language="javascript" src="js/shBrushXml.js"></script>
+    <script language="javascript">
+      SyntaxHighlighter.all();
+    </script>
+  </head>
+  <body>
+    <div class="header">
+      <h1><a href="/"><span>Cartographer.js</span></a></h1>
+    </div>
+    <div class="content">
+      <h2>Cartographer</h2>
+      <p>Thematic mapping library for Google Maps. Follow <a href="http://twitter.com/cartographerjs">@cartograherjs</a> for updates and new releases.</p>
+
+      <h2>Download</h2>
+      <p>This is an early stage release. While reasonably stable, you can expect that future versions will contain functionality and API changes.</p>
+      <p><a class="download" href="http://code.google.com/p/cartographerjs/downloads/list">Download v 0.4 <em>Alpha</em></a></p>
+      <p>Cartographer has been tested with Firefox, Safari, and Internet Explorer. 
+          Cartographer.js is licensed under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT license</a>.
+          Feedback, bugs, and feature requests can be recorded at the Google Code <a href="http://code.google.com/p/cartographerjs/">project page</a>.
+      </p>
+
+      <h2>
+	 	<a style="float:right; display:block; border:0; margin-left:20px;" href="http://www.thumbtack.com/"><img src="http://d3vr7zh5hw55pt.cloudfront.net/media/logo_thumbtack.png" alt="Thumbtack, Marketplace for local services." /></a>
+		Our awesome sponsor
+	</h2>
+      <p>Use Thumbtack to find trusted local services such as <a href="http://www.thumbtack.com/or/portland/house-cleaning/">house cleaners in Portland, Oregon</a>.</p>
+
+      <h2>Demos</h2>
+      <ul>
+        <li><a href="http://visualmotive.com/twittermap/">Where is Twitter?</a> &ndash; map of 250,000 Twitter users.</li>
+        <li><a href="twitter.html">10,000 Twitter users</a> &ndash; area-scaled circles showing a distribution of Twitter users around the globe.</li>
+        <li><a href="cluster.html">Benzene concentrations</a> &ndash; area-scaled circles visualizing relative benzene pollutant levels from EPA data.</li>
+        <li><a href="california_county_populations.html">California county populations</a> &ndash; California county populations on a log scale.</li>
+        <li><a href="choropleth_advanced.html">State Populations</a> &ndash; data from the US Census: 2008 state population estimates, rendered on a choropleth map.</li>
+      </ul>
+
+      <h2>Basic configuration</h2>
+      <p>Include the Rapha&euml;l and Cartographer scripts. (Cartographer depends on Rapha&euml;l for SVG drawing.)</p>
+      <pre class="brush: xml; gutter: false; toolbar: false;">&lt;script type="text/javascript" language="javascript" src="js/raphael-min.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" language="javascript" src="js/cartographer.js"&gt;&lt;/script&gt;
+</pre>
+
+      <p>Pass an instance of the Google Map object to Cartographer global variable. A new Cartographer instance will be created an initialized to this map. You need to create one (and only one) instance per map.</p>
+      <h4>Usage:</h4>
+      <pre class="brush: js; gutter: false; toolbar: false;">var map = new GMap2(document.getElementById("map");
+// ... adjust Google Map settings here
+
+var options = { colorize:"#fff" };
+var cartographer = Cartographer( map, options );
+      </pre>
+      <h4>Options:</h4>
+      <dl>
+        <dt>autoZoom</dt>
+        <dd><code>true</code> or <code>false</code> indicating whether to automatically recenter and zoom the map to best fit the thematic elements added by Cartographer. Default is <code>true</code>.</dd>
+        <dt>colorize</dt>
+        <dd>A hex color string. A layer will be added to the map to add tint and help emphasis the visual components added by Cartographer. Pass <code>null</code> to disable.</dd>
+        <dt>colorizeAlpha</dt>
+        <dd>Number from <code>0</code> to <code>1.0</code> indicating the transparency of the colorizing layer.</dd>
+      </dl>
+      <h4>Methods:</h4>
+      <p>Any Cartographer object has the following methods.</p>
+      <dl>
+        <dt>choropleth</dt>
+        <dd>Add <a href="#choropleth">color-coded regions</a> to the map.</dd>
+        <dt>cluster</dt>
+        <dd>Create a <a href="#cluster">cluster map</a>.</dd>
+        <dt>pies</dt>
+        <dd>Add <a href="#piecharts">pie charts</a> to the map.</dd>
+        <dt>scatter</dt>
+        <dd>Create a <a href="#scatter">scatter map</a>.</dd>
+      </dl>
+
+      <h2>Types of maps</h2>
+      <p>Cartographer supports a number of standard thematic map types.</p>
+      <ul>
+        <li><a href="#choropleth">Choropleth</a></li>
+        <li><a href="#piecharts">Pie charts</a></li>
+        <li><a href="#cluster">Point clusters</a></li>
+      </ul>
+
+      <h3 id="choropleth">Choropleth</h3>
+      <div class="media">
+        <img src="img/ex_choropleth.png" width="400" height="250" />
+      </div>
+      <p>Choropleth maps&mdash;sometimes known as <em>heatmaps</em>&mdash;color regions or polygons based on values. (<a href="http://en.wikipedia.org/wiki/Choropleth_map">info on Wikipedia</a>) Cartographer uses pre-encoded polygons to enhance rendering speeds. US states and counties are supported, see the <a href="choropleth.html">demo page</a> for more information.</p>
+      <h4>Usage:</h4>
+      <pre class="brush: js; gutter: false; toolbar: false;">var data = [ 
+  { region:"US-CA", val:10 },
+  { region:"US-OR", val:15 },
+  { region:"US-WA", val:20 } 
+];
+
+// here we specify a custom color scheme
+var options = { colors: ["#000","999","#fff"] };
+
+cartographer.choropleth( data, options );
+      </pre>
+      <h4>Options:</h4>
+      <dl>
+        <dt>colorScheme</dt>
+        <dd>One of the standard Cartographer <a href="colors.html">color schemes</a>.</dd>
+        <dt>colors</dt>
+        <dd>A custom color scheme specified as an array of hex colors. e.g., <code>[ "#ff00aa", "#00ffaa", "#00aaff" ]</code></dd>
+        <dt>reverseColors</dt>
+        <dd>Boolean, <code>true</code> or <code>false</code>.</dd>
+      </dl>
+
+      <h3 id="piecharts">Pie charts</h3>
+      <div class="media">
+        <img src="img/ex_pies.png" width="400" height="200" />
+      </div>
+      <p>Show a set of pie charts at specified latititude/longitude points.</p>
+      <h4>Usage:</h4>
+      <pre class="brush: js; gutter: false; toolbar: false;">// lat, lng, pie-size, values segmented by categories
+var data = [
+  [ 20, 20, 30, [3,6,10,4, 0, 0] ],
+  [ 30, 21, 30, [3,6,10,4,10, 0] ],
+  [ 40, 35, 30, [3,6,10,4, 8, 4] ],
+  [ 55, 30, 30, [3,6,10,4, 0,15] ] 
+];
+cartographer.pies( data );
+      </pre>
+      <h4>Options:</h4>
+      <dl>
+        <dt>colorScheme</dt>
+        <dd>One of the standard Cartographer <a href="colors.html">color schemes</a>.</dd>
+        <dt>colors</dt>
+        <dd>A custom color scheme specified as an array of hex colors. e.g., <code>[ "#ff00aa", "#00ffaa", "#00aaff" ]</code></dd>
+        <dt>reverseColors</dt>
+        <dd>Boolean, <code>true</code> or <code>false</code>.</dd>
+        <dt>stroke</dt>
+        <dd>Stroke color around the pie chart and between segments specified as a hex string, e.g. <code>#ff0000</code>.</dd>
+        <dt>opacity</dt>
+        <dd>Value between <code>0</code> and <code>1.0</code>.
+      </dl>
+
+      <h3 id="cluster">Cluster map</h3>
+      <div class="media">
+        <img src="img/ex_cluster.png" width="400" height="250" />
+      </div>
+      <p>Area scaled circles that represent clusters of points. Zooming in or out will re-cluster the points. Useful for large quantities of points. Individual points can contain unique values that will be summed to equal the value for a particular item in the cluster. Info balloons will be created as an ordered list of all the labels in the data set for a particular cluster.</p>
+      <h4>Usage:</h4>
+      <pre class="brush: js; gutter: false; toolbar: false;">var data = [
+  { lat:8, lng:20, val:3, label:"Item 1" },
+  { lat:8, lng:-23, val:10, label:"Item 2" },
+  { lat:8, lng:-26, val:10, label:"Item 3" },
+  { lat:8, lng:-28, val:10, label:"Item 4" },
+];
+var options = { color:"#AA00FF", enableGrid:true };
+cartographer.cluster( data, options );
+      </pre>
+      <h4>Custom info balloons:</h4>
+      <pre class="brush: js; gutter: false; toolbar: false;">var data = [
+  { lat:8, lng:20, val:3, label:"Item 1" },
+  { lat:8, lng:-23, val:10, label:"Item 2" },
+  { lat:8, lng:-26, val:10, label:"Item 3" },
+  { lat:8, lng:-28, val:10, label:"Item 4" },
+];
+var customBalloon = function(items) { 
+  var html = "<strong>Current items:</strong><ul>";
+  for( var i = 0, ii = items.length; i < ii; i++ ) { 
+    html += "<li>" + item.label + " (" + item.val + ")</li>";
+  }
+  return html + "</ul>";
+}
+var options = { color:"#AA00FF", enableGrid:true, balloon:customBalloon };
+cartographer.cluster( data, options );
+      </pre>
+      <h4>Options:</h4>
+      <dl>
+        <dt>color</dt>
+        <dd>A hex string, color for the area-scaled circles.</dd>
+        <dt>colorHover</dt>
+        <dd>Color to use when mouse is hovering over area-scaled circles.</dd>
+        <dt>stroke</dt>
+        <dd>Stroke color on the area-scaled circles.</p>
+        <dt>opacity</dt>
+        <dd>Value from <code>0</code> to <code>1.0</code> indicating opacity.</dd>
+        <dt>enableDots</dt>
+        <dd>Whether to render area-scaled circles. Boolean, <code>true</code> or <code>false</code>. Default <code>true</code>.</dd>
+        <dt>enableGrid</dt>
+        <dd>Whether to render the underlying grid. Grid squares are tinted based on their values. Boolean, <code>true</code> or <code>false</code>. Default <code>false</code>.</dd>
+        <dt>combine</dt>
+        <dd>A function with two paramaters that indicates how to combine values as they fall into a grid cell. The default is a summation, <code>function(a,b) { return a + b; }</code>. To average values, use <code>function(a,b) { return .5 * (a+b); }</code>.</dd>
+        <dt>gridSize</dt>
+        <dd>Points in the cluster map are clustered based on whether they fall in the same grid cell. Change <code>gridSize</code> to ajust the resolution of the visible data. Note that small grid sizes can cause performance issues.</dd>
+        <dt>gridColor</dt>
+        <dd>If the grid is enabled, this indicates its color.</dd>
+        <dt>average</dt>
+        <dd>Boolean, <code>true</code> or <code>false</code>. Default is <code>true</code>. If set, will center the area-scaled circles not in the center of a grid cell but at an average point for that cluster, weighted by point values.</dd>
+        <dt>balloon</dt>
+        <dd>A function that returns HTML for the infoWindow balloon for the current grid cell. The function should take one argument, an array of objects in the current grid cell. Each object has the properties that you passed in to the cluster method, such as <code>lat</code>, <code>lng</code>, <code>val</code>, and <code>label</code>. 
+      </dl>
+
+    </div>
+    <div class="footer">
+      <p>Cartographer.js is licensed under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT license</a>.</p>
+      <p>Created by <a href="http://visualmotive.com">Visualmotive</a>. Logo and identity by <a href="http://trevorbrownart.com/">Trevor Brown</a>.</p>
+    </div>
+  </body>
+  <script type="text/javascript">
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  <script type="text/javascript">
+    try {
+      var pageTracker = _gat._getTracker("UA-7966231-3");
+      pageTracker._trackPageview();
+    } catch(err) {}
+  </script>
+</html>

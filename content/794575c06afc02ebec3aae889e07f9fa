@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML LANG="en">
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<!-- This HTML file has been created by texi2html 1.54+ (gsl)
+     from /home/bjg/books/090121-gsl3ed-submitted/new/gsl-ref.texi -->
+
+<TITLE>GNU Scientific Library--Reference Manual - Linear fitting without a constant term</TITLE>
+<LINK rel="stylesheet" title="Default Style Sheet" href="/css/nt-2007-01-11.css" type="text/css">
+<LINK rel="stylesheet" media="print" href="/css/print.css" type="text/css">
+<!--[if lte IE 7]>
+<LINK rel="stylesheet" href="/css/ie.css" type="text/css" />
+<![endif]-->
+<link href="Multiparameterfitting.html" rel=Next>
+<link href="Linearregression.html" rel=Previous>
+<link href="index.html" rel=ToC>
+</HEAD>
+<BODY>
+<div class="top"><div class="Header"><span class="logo">Network Theory Ltd</span><span class="tagline"> - publishing free software manuals</span></div>
+<div class="nav">
+[<a href="http://www.network-theory.co.uk/">Home</a>]
+[<a href="http://www.network-theory.co.uk/books.html">Catalogue</a>]
+[<a href="http://www.network-theory.co.uk/newtitles.html">New Titles</a>]
+[<a href="http://www.network-theory.co.uk/news.html">News</a>]
+[<a href="http://www.network-theory.co.uk/sitemap.html">Site Map</a>]
+[<a href="http://www.network-theory.co.uk/about.html">About</a>]
+[<a href="http://www.network-theory.co.uk/contact.html">Contact</a>]
+</div></div>
+<div class="main"><div class="nav2">
+<table width="100%" class="navdoc">
+<tr>
+<td class="prev"><A HREF="Linearregression.html">&lt;&lt;&lt; previous</A></td>
+<td class="toc"><A HREF="index.html">table of contents</A></td>
+<td class="next"><A HREF="Multiparameterfitting.html">next &gt;&gt;&gt;</A></td>
+</tr>
+</table>
+</div>
+<table class="docbar" cellspacing="0" width="100%"><tr><td><b><a href="http://www.network-theory.co.uk/gsl/manual/">GNU Scientific Library Reference Manual - Third Edition (v1.12)</a></b><br> by M. Galassi, J. Davies, J. Theiler, B. Gough, G. Jungman, P. Alken, M. Booth, F. Rossi<br>Paperback (6"x9"), 592 pages, 60 figures<br>ISBN 0954612078<br>RRP &pound;24.95 ($39.95)<p> <a href="http://www.network-theory.co.uk/gsl/manual/">Get a printed copy&gt;&gt;&gt;</a></p></td><td width="30%"><div class="buyit"><a href="http://www.network-theory.co.uk/gsl/manual/"><span class="buytitle">GNU Scientific Library Reference Manual - Third Edition (v1.12)</span><br></a><a href="http://www.network-theory.co.uk/gsl/manual/"><img id="docicon" alt="" src="/gsl/manual/0954612078-tiny"></a><br><a href="http://www.network-theory.co.uk/gsl/manual/">Buy the book here&nbsp;&gt;&gt;&gt;<br><span class="buytitle">support free software</span><br></a></div></td></tr></table>
+
+<H2>36.3  Linear fitting without a constant term</H2>
+
+<P>
+The functions described in this section can be used to perform
+least-squares fits to a straight line model without a constant term,
+Y = c_1 X.
+
+
+<DL class="table">
+<DT><U>Function:</U> int <B>gsl_fit_mul</B> <I>(const double * <VAR>x</VAR>, const size_t <VAR>xstride</VAR>, const double * <VAR>y</VAR>, const size_t <VAR>ystride</VAR>, size_t <VAR>n</VAR>, double * <VAR>c1</VAR>, double * <VAR>cov11</VAR>, double * <VAR>sumsq</VAR>)</I>
+<DD>This function computes the best-fit linear regression coefficient
+<VAR>c1</VAR> of the model Y = c_1 X for the datasets (<VAR>x</VAR>,
+<VAR>y</VAR>), two vectors of length <VAR>n</VAR> with strides <VAR>xstride</VAR> and
+<VAR>ystride</VAR>.  The errors on <VAR>y</VAR> are assumed unknown so the 
+variance of the parameter <VAR>c1</VAR> is estimated from
+the scatter of the points around the best-fit line and returned via the
+parameter <VAR>cov11</VAR>.  The sum of squares of the residuals from the
+best-fit line is returned in <VAR>sumsq</VAR>.
+</DL>
+
+
+<DL class="table">
+<DT><U>Function:</U> int <B>gsl_fit_wmul</B> <I>(const double * <VAR>x</VAR>, const size_t <VAR>xstride</VAR>, const double * <VAR>w</VAR>, const size_t <VAR>wstride</VAR>, const double * <VAR>y</VAR>, const size_t <VAR>ystride</VAR>, size_t <VAR>n</VAR>, double * <VAR>c1</VAR>, double * <VAR>cov11</VAR>, double * <VAR>sumsq</VAR>)</I>
+<DD>This function computes the best-fit linear regression coefficient
+<VAR>c1</VAR> of the model Y = c_1 X for the weighted datasets
+(<VAR>x</VAR>, <VAR>y</VAR>), two vectors of length <VAR>n</VAR> with strides
+<VAR>xstride</VAR> and <VAR>ystride</VAR>.  The vector <VAR>w</VAR>, of length <VAR>n</VAR>
+and stride <VAR>wstride</VAR>, specifies the weight of each datapoint. The
+weight is the reciprocal of the variance for each datapoint in <VAR>y</VAR>.
+
+
+<P>
+The variance of the parameter <VAR>c1</VAR> is computed using the weights
+and returned via the parameter <VAR>cov11</VAR>.  The weighted sum of
+squares of the residuals from the best-fit line, \chi^2, is
+returned in <VAR>chisq</VAR>.
+</DL>
+
+
+<DL class="table">
+<DT><U>Function:</U> int <B>gsl_fit_mul_est</B> <I>(double <VAR>x</VAR>, double <VAR>c1</VAR>, double <VAR>cov11</VAR>, double * <VAR>y</VAR>, double * <VAR>y_err</VAR>)</I>
+<DD>This function uses the best-fit linear regression coefficient <VAR>c1</VAR>
+and its covariance <VAR>cov11</VAR> to compute the fitted function
+<VAR>y</VAR> and its standard deviation <VAR>y_err</VAR> for the model Y =
+c_1 X at the point <VAR>x</VAR>.
+</DL>
+
+
+<div class="nav2">
+<table width="100%" class="navdoc">
+<tr>
+<td class="prev"><A HREF="Linearregression.html">&lt;&lt;&lt; previous</A></td>
+<td class="toc"><A HREF="index.html">table of contents</A></td>
+<td class="next"><A HREF="Multiparameterfitting.html">next &gt;&gt;&gt;</A></td>
+</tr>
+</table>
+</div>
+<table class="docbar" cellspacing="0" width="100%"><tr><td width="20%"><a class="boxed" href="http://www.network-theory.co.uk/gsl/manual/">ISBN 0954612078</a></td><td align="center"><b>GNU Scientific Library Reference Manual - Third Edition (v1.12)</b></td><td width="20%" align="right"><a class="boxed" href="http://www.network-theory.co.uk/gsl/manual/">See the print edition</a></td></tr></table>
+<A HREF="/robotrack.html"></A>
+</div>
+<div class="Footer">
+Network Theory Limited,
+United Kingdom<br>
+Telephone: +44 117 317 9309 
+Fax: +44 117 973 3323
+Email: sales<!-- s p a m 
+-->@<!-- 
+domain. 
+ -->network-theory.<!-- no s p am.
+-->co.<!-- at 
+ --><!-- dot 
+-->uk<br>
+<span class="print">
+Web: www.network-theory.co.uk<br>
+Buying our books supports the development of free software and documentation!
+</span>
+</div>
+</body>
+</html>
+

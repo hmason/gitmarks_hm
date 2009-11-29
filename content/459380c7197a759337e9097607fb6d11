@@ -1,0 +1,1931 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<html>
+
+<head>
+	<title>A Neural Network on GPU - CodeProject</title> 
+	<link type="text/css" rel="stylesheet" href="http://s.codeproject.com/App_Themes/Std/CSS/CodeProject.min.css?dt=2.3.101220.2">
+
+	
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" >
+<meta name="Description" content="This article describes the implementation of a neural network with CUDA.; Author: billconan, kavinguy; Section: General Graphics; Chapter: Multimedia" >
+<meta name="Keywords" content="VC8.0, WinXP, C#2.0, C++, C#, Windows, Win32, Architect, Dev, Beginner, Intermediate, Advanced,General Graphics,Multimedia,Free source code, tutorials" >
+<meta name="Author" content="The Code Project" >
+<meta name="Rating" content="General" >
+<meta name="Robots" content="index, follow" >
+<meta name="Revisit-After" content="1 days" >
+<meta name="google-site-verification" content="RP2bNCUeOmNkkJesEnU8X3UyTbqIcCKP0CmdwU8in5k" >
+<link rel="alternate" type="application/rss+xml" title="CodeProject Latest articles - All topics" href="http://www.codeproject.com/webservices/articlerss.aspx?cat=1" >
+<link rel="alternate" type="application/rss+xml" title="CodeProject Latest articles - MFC / C++" href="http://www.codeproject.com/webservices/articlerss.aspx?cat=2" >
+<link rel="alternate" type="application/rss+xml" title="CodeProject Latest articles - C#" href="http://www.codeproject.com/webservices/articlerss.aspx?cat=3" >
+<link rel="alternate" type="application/rss+xml" title="CodeProject Latest articles - ASP.NET" href="http://www.codeproject.com/webservices/articlerss.aspx?cat=4" >
+<link rel="alternate" type="application/rss+xml" title="CodeProject Latest articles - .NET" href="http://www.codeproject.com/webservices/articlerss.aspx?cat=5" >
+<link rel="alternate" type="application/rss+xml" title="CodeProject Latest articles - VB.NET" href="http://www.codeproject.com/webservices/articlerss.aspx?cat=6" >
+<link rel="alternate" type="application/rss+xml" title="CodeProject Lounge Postings" href="http://www.codeproject.com/webservices/LoungeRSS.aspx" >
+<link rel="search" type="application/opensearchdescription+xml" title="CodeProject" href="http://www.codeproject.com/info/OpenSearch.xml" >
+
+	<base target="_top">
+	<link rel="icon" href="/favicon.ico" type="image/ico" >
+<link rel="shortcut icon" href="/favicon.ico"  type="image/ico" >
+<link rel="apple-touch-icon" href="/images/FavIcon-Apple.png" type="image/png" >
+<script type="text/javascript" language="Javascript">//<![CDATA[
+if(top!=self)top.location.href=location.href; if(typeof(DemoUrl)!="undefined")document.write(unescape('%3Cme')+'ta http'+'-equiv="re' +'fresh" con'+'tent="1;url='+DemoUrl+unescape('"%3CE'));
+function SelfCheck(){ return window.confirm("You are about to reply to your own message. Is this really what you want?");}
+var Selected = "-1";
+function Pin(elm){
+ CloseMsg(Selected);
+ var wrk=elm.parentNode; if(wrk)wrk=wrk.children[0];
+ var fc=elm?elm.firstChild:null;
+ if (wrk&&!wrk.pinned) {
+  OpenMsg(wrk.name, true);wrk.pinned=true;fc.src='http://s.codeproject.com/script/forums/images/pinned.gif';fc.title='Pinned. Click to unpin'
+ } else {
+  wrk.pinned=false;CloseMsg(wrk.name); fc.src='http://s.codeproject.com/script/forums/images/pin.gif';fc.title='Click to pin message'
+ }
+ return false;
+}
+function CloseMsg(msgId) {
+ if(!msgId||msgId==''||msgId<0)return;
+ var lnk=document.getElementsByName(msgId);
+ if(lnk&&lnk.length>0&&lnk[0].pinned)return;
+ var hed=document.getElementById('F' + msgId.toString() + '_h0');
+ if(hed) hed.className = hed.className.replace("Sel", "UnSel");
+ var bdy=document.getElementById('F' + msgId.toString() + '_h1');
+ if(bdy) bdy.style.display = 'none';
+}
+function OpenMsg(msgId, keep) {
+ if(!msgId||msgId==''||msgId<0)return;
+ var bdy=document.getElementById('F' + msgId.toString() + '_h1');
+ if(bdy){
+  var lnk=document.getElementsByName(msgId);
+  if(lnk&&lnk.length>0&&lnk[0].pinned)keep=true;
+  if(keep&&bdy.style.display!='none')return;
+  if(bdy.style.display=='none') bdy.style.display='';
+  else bdy.style.display = 'none';
+ }
+ var hed=document.getElementById('F' + msgId.toString() + '_h0');
+ if (hed) hed.className = hed.className.replace('UnSel', 'Sel');
+ if(bdy&&hed&&bdy.style.display!='none'){
+  var webkitWeird=document.documentElement.scrollTop < document.body.scrollTop;
+  if (!webkitWeird)document.body.scrollTop = getRealPos(hed, 'Top') - document.body.clientHeight/10;
+  EnsureMessageVisible(msgId, true);
+ }
+}
+function EnsureMessageVisible(msgID, bShowTop) {
+	var webkitWeird = document.documentElement.scrollTop < document.body.scrollTop;
+	var msgHeader = document.getElementById('F' + msgID + '_h0');
+	var msgBody = document.getElementById('F' + msgID + '_h1');
+	if (!msgBody || !msgHeader) return;
+	var scrollContainer = document.documentElement;
+	var top = getRealPos(msgHeader, 'Top');
+	var bottom = getRealPos(msgBody, 'Top') + msgBody.offsetHeight;
+	var scrollTop = webkitWeird? scrollTop = document.body.scrollTop:document.documentElement.scrollTop;
+	if (scrollTop > top && !bShowTop) scrollTop = top - scrollContainer.clientHeight / 10;
+	if (scrollTop + scrollContainer.clientHeight < bottom) scrollTop = bottom - scrollContainer.clientHeight;
+	if (scrollTop > top && bShowTop) scrollTop = top - scrollContainer.clientHeight / 10;
+	if (webkitWeird) document.body.scrollTop = scrollTop; else scrollContainer.scrollTop = scrollTop;
+}
+function getRealPos(i,which) {
+	iPos = 0;
+	while (i!=null)  {
+		iPos += i['offset' + which];
+		i = i.offsetParent;
+	}
+	return iPos;
+}
+
+function SwitchMessage(e, msgId)
+{
+
+  if (msgId) msgId=msgId.toString();
+
+  else {
+
+    if(!e)e=window.event;
+
+    var target=e.target?e.target:e.srcElement;
+
+    while(target&&target.id!='DynMessLink')target=target.parentNode;
+    if(!target||target.id!='DynMessLink')return;
+    if(target.pinned){Selected='';return false;}
+    msgId=target.name;
+  }
+  CloseMsg(Selected)
+  if(Selected==msgId) Selected='';
+  else { OpenMsg(msgId, false); Selected=msgId;}
+  if (e){if(e.preventDefault)e.preventDefault;else e.returnValue=false;}
+  return false;
+}
+
+
+//]]>
+</script>
+
+</head>	
+
+<body>
+
+<a href="#Main"><img alt="Click here to Skip to main content" class="access-link" 
+	src="http://s.codeproject.com/Images/t.gif" /></a>
+
+
+
+
+<div class="container nav-memberbar clearfix">
+<div class="member-stats float-left">7,486,162 members and growing! (20,264 online)</div>
+<div class="float-left"></div>
+<div class="float-right">
+
+
+
+	<a name="SignUp"></a>
+	<form name="subForm" id="subForm" action="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx" method="post" class="tight">
+
+	<!-- This hidden field is used for identifying the form which has made post request.
+		 (This form posts to another page and we need to know which form did the post request) -->
+	<input id="FormName" name="FormName" value="MenuBarForm" type="hidden" />
+
+	Email <input class="small-text" type="text" name="Email" id="Email" style="width:150px" />
+	Password <input class="small-text" type="password" name="Password" id="Password" style="width:60px" />
+	<input type="submit" value="Sign in" class="button" />
+	<script type="text/javascript">
+function Join(){document.location.href='https://www.codeproject.com/script/Membership/Modify.aspx';return false;}
+document.write('<input type="button" class="button" onclick="return Join();" value="Join"');
+document.write('<input type="hidden" name="fld_quicksign" value="true" />');
+</script>
+	<span class="nowrap">
+		<input type="checkbox" checked = "checked" name="RememberMeCheck" id="RememberMeCheck" value="1"/>
+		<label for="RememberMeCheck">Remember&nbsp;me?</label>
+	</span>&nbsp;
+	<a id="ctl00_MemberMenu_SendPassword" href="/script/Membership/SendPassword.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Lost password?</a>
+	</form>
+
+</div>
+
+</div>
+
+
+
+<table width="100%" cellspacing="0" cellpadding="0" border="0">
+<tr>
+	<td class="header"><a href="/"><img id="ctl00_Logo" title="The Code Project" src="http://s.codeproject.com/App_Themes/Std/Img/logo225x90.gif" alt="Home" border="0" /></a></td>
+	<td class="header" align="right">
+		<div class="lqm_ad" width="728px" height="90px" lqm_channel="1" lqm_publisher="495" lqm_zone="77" lqm_format="8" lqm_country='PH' lqm_tags='VC8.0,WinXP,C#2.0,C++,C#,Windows,Win32,Architect,Dev,Beginner,Intermediate,Advanced'></div>
+	</td>
+</tr></table>
+
+<table cellpadding="0" cellspacing="0" class="contrast1-background extended"><tr><td nowrap="nowrap">
+	
+
+<div class="navbar clearfix">
+<ul id="nav">
+
+<li><a id="ctl00_TopNavBar_Home" class="down" href="http://www.codeproject.com">Home</a>
+
+<li><a id="ctl00_TopNavBar_Art" class="down selected" href="/script/Articles/Latest.aspx">Articles</a>
+
+	<ul>
+		<li><a id="ctl00_TopNavBar_ArtTopicList" class="fly last" onmouseover="PopulateMap(this, &#39;siteMap&#39;, &#39;600px&#39;);" href="/script/Content/SiteMap.aspx">Chapters and Sections</a><ul id="ctl00_TopNavBar_MapFlyout"><li>
+				<div id="siteMap" style="height:0px;width:0px;border:1px solid green;background-color:white;overflow:scroll">
+					<img src="/images/animated.gif" style="margin:150px;width:100px;height:100px;" />
+				</div>
+			</li></ul>
+		</li>
+		<li><a id="ctl00_TopNavBar_ArtSearch" class="fly break" href="/info/search.aspx">Search</a></li>
+		<li><a id="ctl00_TopNavBar_ArtLatestArts" class="fly" href="/script/Articles/Latest.aspx">Latest Articles</a></li>
+		<li><a id="ctl00_TopNavBar_ArtLatestTips" class="fly" href="/script/Articles/Latest.aspx?at=6">Latest Tips/Tricks</a></li>
+		<li><a id="ctl00_TopNavBar_ArtTop" class="fly" href="/script/Articles/TopArticles.aspx?ta_so=4">Top Articles</a></li>
+		<li><a id="ctl00_TopNavBar_ArtBeginner" class="fly" href="/info/search.aspx?aidlst=152&amp;sa_us=True">Beginner Articles</a></li>
+		<li><a id="ctl00_TopNavBar_ArtBlogArticles" class="fly break" href="/script/Articles/BlogArticleList.aspx">Technical Blogs</a></li>
+		<li><a id="ctl00_TopNavBar_ArtPostArticle" class="fly" href="/info/Submit.aspx">Post an Article</a></li>
+		<li><a id="ctl00_TopNavBar_ArtPostTipTrick" class="fly" href="/Tips/post.aspx">Post Tip & Trick</a></li>
+		<li><a id="ctl00_TopNavBar_ArtPostBlog" class="fly break" href="/script/Articles/BlogFeed.aspx">Post your Blog</a></li>
+		<li><a id="ctl00_TopNavBar_ArtGuide" class="fly" href="/info/Submit.aspx">Posting/Update Guidelines</a></li>
+		<li><a id="ctl00_TopNavBar_ArtCompetition" class="fly last" href="/script/Awards/CurrentCompetitions.aspx?cmpTpId=1">Article Competition</a></li>
+	</ul>
+
+</li>
+
+
+
+<li><a id="ctl00_TopNavBar_Answers" href="/script/Answers/List.aspx?tab=active">Questions & Answers</a>
+	<ul>
+		<li id="ctl00_TopNavBar_AQL"><a id="ctl00_TopNavBar_ArticleQuestion" class="fly highlight" href="#_comments">Ask a Question about this article</a></li>
+
+		<li class="heading">Quick Answers</li>
+		<li><a id="ctl00_TopNavBar_QAAsk" class="fly" href="/Questions/ask.aspx">Ask a Question</a></li>
+		
+		
+		<li><a id="ctl00_TopNavBar_QAUnanswered" class="fly" href="/script/Answers/List.aspx?tab=unanswered">View Unanswered Questions</a></li>
+		<li><a id="ctl00_TopNavBar_QALatest" class="fly" href="/script/Answers/List.aspx?tab=active">View All Questions...</a></li>
+		
+				<li><a id="ctl00_TopNavBar_QATR_ctl00_Tag" class="fly" href="/script/Answers/List.aspx?tab=active&amp;tags=81" style="padding-left:30px">C# questions</a></li>
+			
+				<li><a id="ctl00_TopNavBar_QATR_ctl01_Tag" class="fly" href="/script/Answers/List.aspx?tab=active&amp;tags=85" style="padding-left:30px">ASP.NET questions</a></li>
+			
+				<li><a id="ctl00_TopNavBar_QATR_ctl02_Tag" class="fly" href="/script/Answers/List.aspx?tab=active&amp;tags=842" style="padding-left:30px">VB.NET questions</a></li>
+			
+				<li><a id="ctl00_TopNavBar_QATR_ctl03_Tag" class="fly" href="/script/Answers/List.aspx?tab=active&amp;tags=78" style="padding-left:30px">C++ questions</a></li>
+			
+				<li><a id="ctl00_TopNavBar_QATR_ctl04_Tag" class="fly" href="/script/Answers/List.aspx?tab=active&amp;tags=69" style="padding-left:30px">C#3.0 questions</a></li>
+			
+		<li class="heading">Programming Discussions</li>
+		<li><a id="ctl00_TopNavBar_MessageBoardsAll" class="fly" href="/script/Forums/List.aspx">All Message Boards...</a></li>
+		<li><a class="fly" style="padding-left:30px" href="/Forums/1580997/Application-Lifecycle.aspx">Application Lifecycle<span class="fly-menu">&gt;</span></a>
+<ul><li><a class="fly" href="/Forums/369270/Design-and-Architecture.aspx">Design and Architecture</a></li>
+<li><a class="fly" href="/Forums/1533717/Running-a-Business.aspx">Running a Business</a></li>
+<li><a class="fly" href="/Forums/1533716/Sales-Marketing.aspx">Sales / Marketing</a></li>
+<li><a class="fly" href="/Forums/1651/Collaboration-Beta-Testing.aspx">Collaboration / Beta Testing</a></li>
+<li><a class="fly" href="/Forums/3304/Work-Training-Issues.aspx">Work &amp; Training Issues</a></li>
+</ul></li>
+<li><a class="fly" style="padding-left:30px" href="/Forums/1647/C-Cplusplus-MFC.aspx">C / C++ / MFC<span class="fly-menu">&gt;</span></a>
+<ul><li><a class="fly" href="/Forums/4486/ATL-WTL-STL.aspx">ATL /  WTL / STL</a></li>
+<li><a class="fly" href="/Forums/3785/Managed-Cplusplus-CLI.aspx">Managed C++/CLI</a></li>
+</ul></li>
+<li><a class="fly" style="padding-left:30px" href="/Forums/1649/Csharp.aspx">C#</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="/Forums/1725/Database.aspx">Database</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="/Forums/1642/IT-Infrastructure.aspx">IT &amp; Infrastructure<span class="fly-menu">&gt;</span></a>
+<ul><li><a class="fly" href="/Forums/186301/Hardware-Devices.aspx">Hardware &amp; Devices</a></li>
+<li><a class="fly" href="/Forums/1644/System-Admin.aspx">System Admin</a></li>
+</ul></li>
+<li><a class="fly" style="padding-left:30px" href="/Forums/1643/Java.aspx">Java</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="/Forums/1650/NET-Framework.aspx">.NET Framework</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="/Forums/13695/Mobile.aspx">Mobile</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="/Forums/1540733/Sharepoint.aspx">Sharepoint</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="/Forums/1004257/Silverlight-WPF.aspx">Silverlight / WPF</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="/Forums/1646/Visual-Basic.aspx">Visual Basic</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="/Forums/1640/Web-Development.aspx">Web Development<span class="fly-menu">&gt;</span></a>
+<ul><li><a class="fly" href="/Forums/12076/ASP-NET.aspx">ASP.NET</a></li>
+<li><a class="fly" href="/Forums/1580227/CSS.aspx">CSS</a></li>
+<li><a class="fly" href="/Forums/1580226/Javascript.aspx">Javascript</a></li>
+<li><a class="fly" href="/Forums/1213656/PHP.aspx">PHP</a></li>
+</ul></li>
+<li><a class="fly" style="padding-left:30px" href="/Forums/1645/Site-Bugs-Suggestions.aspx">Site Bugs / Suggestions</a>
+</li>
+
+
+		<li class="heading">Other Languages<span class="fly-menu">&gt;</span>
+		<ul>
+		<li><a class="fly" href="/Forums/1580229/Hindi.aspx">General Indian Topics</a></li>
+		<li><a class="fly" href="/Forums/1580230/Chinese.aspx">General Chinese Topics</a></li>
+		</ul></li>
+	
+	</ul>
+
+</li>
+
+
+<li><a id="ctl00_TopNavBar_Zones" href="/Zones/index.aspx">Learning Zones</a>
+
+	<ul>
+		<!--<li class="heading">Zones</li>-->
+		<li><a href="/Zones/Commerce/" class="fly">The Commerce Zone</a></li><li><a href="/Zones/Mobile/" class="fly">The Mobile Zone</a></li><li><a href="/Zones/Cloud/" class="fly">The Cloud Zone</a></li><li><a href="/Zones/Hardware/" class="fly">The Hardware Zone</a></li><li><a href="/Zones/Parallelism/" class="fly">The Parallelism Zone</a></li><li><a href="/Zones/WPF-Silverlight/" class="fly">The WPF Silverlight Zone</a></li><li><a href="/Zones/SqlServer/" class="fly">The SQL Zone</a></li><li><a href="/Zones/WhitePapers/" class="fly">WhitePapers / Webcasts</a></li>
+	</ul>
+
+</li>
+
+
+
+
+
+
+
+
+
+
+<li><a id="ctl00_TopNavBar_Community">Features</a>
+
+	<ul>
+		<li><a id="ctl00_TopNavBar_WhosWho" class="fly" href="/script/Membership/Profiles.aspx">Who's Who</a></li>
+		<li><a id="ctl00_TopNavBar_MVPs" class="fly" href="/script/Awards/MVPWinners.aspx">CodeProject MVPs</a></li>
+		<li><a id="ctl00_TopNavBar_Companies" class="fly break" href="/script/Membership/Profiles.aspx?mgtid=1&amp;mgm=True">Company Listings</a></li>
+		<li><a id="ctl00_TopNavBar_Catalog" class="fly" href="/script/Catalog/List.aspx">Component & Service Catalog</a></li>
+		<li><a id="ctl00_TopNavBar_Comps" class="fly" href="/script/Awards/CurrentCompetitions.aspx?cmpTpId=1&amp;awsac=true">Competitions</a></li>
+		<li><a id="ctl00_TopNavBar_News" class="fly" href="/script/News/List.aspx">News</a></li>
+		<li><a id="ctl00_TopNavBar_Insider" class="fly" href="/Feature/Insider/">Daily Insider</a></li>
+		<li><a id="ctl00_TopNavBar_Newsletters" class="fly" href="/script/Mailouts/Archive.aspx?mtpid=1">Newsletter archive</a></li>
+		<li><a id="ctl00_TopNavBar_PressRelease" class="fly" href="/script/PressReleases/Preview.aspx">Press Releases</a></li>
+		<li><a id="ctl00_TopNavBar_Surveys" class="fly" href="/script/Surveys/List.aspx">Surveys</a></li>
+		<li><a id="ctl00_TopNavBar_Stuff" class="fly" href="/Info/Stuff.aspx">CodeProject Stuff</a></li>
+		<li><a id="ctl00_TopNavBar_AddIn" class="fly last" href="/Services/Addins/">CodeProject VS Addin </a></li>
+	</ul>
+
+</li>
+
+
+<li><a id="ctl00_TopNavBar_Help" href="/KB/FAQs/">Help!</a>
+
+	<ul>
+		<li><a id="ctl00_TopNavBar_HelpWhatIs" class="fly" href="/info/guide.aspx">What is 'The Code Project'?</a></li>
+		<li><a id="ctl00_TopNavBar_HelpGeneral" class="fly" href="/KB/FAQs/">General FAQ</a></li>
+		<li><a id="ctl00_TopNavBar_HelpPostQuestion" class="fly" href="/Questions/ask.aspx">Post a Question</a></li>
+		<li><a id="ctl00_TopNavBar_HelpBugs" class="fly" href="/Forums/1645/Site-Bugs-Suggestions.aspx">Bugs and Suggestions</a></li>
+		<li><a id="ctl00_TopNavBar_HelpSiteMap" class="fly" href="/script/Content/SiteMap.aspx">Site Directory</a></li>
+		<li><a id="ctl00_TopNavBar_HelpAdvertise" class="fly" href="/info/MediaKit.aspx">Advertise with us</a></li>
+		<li><a id="ctl00_TopNavBar_HelpAboutUs" class="fly last" href="/info/about.aspx">About Us</a></li>
+	</ul>
+
+</li>
+
+
+<li style="margin-left:10px">
+<a id="ctl00_TopNavBar_Lounge" class="simple" href="/Lounge.aspx">The Lounge</a>
+
+	<ul>
+		<li><a id="ctl00_TopNavBar_LoungeLnk" class="fly" href="/Lounge.aspx">The Lounge  </a></li>
+		<li><a id="ctl00_TopNavBar_CleverLnk" class="fly" href="/feature/CleverCode.aspx">Clever Code</a></li>
+		<li><a id="ctl00_TopNavBar_ShameLnk" class="fly" href="/feature/HallOfSHame.aspx">Hall of Shame</a></li>
+		<li><a id="ctl00_TopNavBar_SoapBoxLnk" class="fly" href="/Forums/1536756/The-Soapbox-2-0.aspx">The Soapbox</a></li>
+		
+	</ul>
+
+</li>
+
+</ul>
+
+</div>
+
+<script type="text/javascript">
+function PopulateMap(prnt, elmId, width, height) {
+	var map;
+	if (!prnt.populated && !prnt.populating) {
+		prnt.populating = true;
+		map = $('#' + elmId);
+		map.css('height', '400px');
+		map.css('width', '400px');
+		map.load("/script/content/ajax/SiteMap.aspx", function () {
+			if (height) map.css('height', height); else map.css('height', 'auto');
+			prnt.populated = true;
+		});
+		prnt.populating = false;
+	}
+	if (prnt.populated) {
+		map = map||$('#' + elmId);
+		var defWidth = ($(window).width() * 0.9);
+		if (defWidth > 1000) defWidth = 1000;
+		if (width) map.css('width', width); else map.css('width', defWidth+'px');
+	}
+}
+</script>
+</td><td align="right">
+	
+
+<div class="search-bar">
+
+<form method="get" action="/info/search.aspx" name="Search" class="tight">
+
+
+<input class="search " id="sb_tb" value="" name="artkw" />
+
+<div class="hover-container">
+	<div id="SearchFilter" class="search-advanced popup small-text align-left">
+	<b>Search within:<br /></b>
+		
+		<input type="radio" id="sb_kw" name="sbo" value="kw" checked="true"><label for="sb_kw">Articles</label><br>
+<input type="radio" id="sb_qa" name="sbo" value="qa"><label for="sb_qa">Quick Answers</label><br>
+<input type="radio" id="sb_fm" name="sbo" value="fm"><label for="sb_fm">Messages</label><br>
+<input type="radio" id="sb_ctlk" name="sbo" value="ctlk"><label for="sb_ctlk">Product Catalog</label><br>
+
+
+		
+		
+	</div>
+</div>
+</form>
+
+</div>
+</td></tr></table>
+
+
+
+
+
+<div class="page-background">
+<div id="AW" class="container-article-wrap"><a name="Main"></a>
+
+
+<div id="A" class="container-article">
+
+	
+	
+
+	<div class="container-header">
+
+		
+		<div id="ctl00_Top" class="header">
+
+			
+			<a name="_top"></a>
+			
+
+<div class="clearfix hover-container">
+
+	<div class="clearfix">
+		
+		<div class="breadcrumb float-left"><a href="/script/Content/SiteMap.aspx"><span class="sitemap-anchor" onmouseover="PopulateMap(this,'map');"><img width="16px" height="16px" src="/images/sitemap16.png" border="0" alt="Site map" style="vertical-align:middle" /><div id="map"><img src="/images/animated.gif" style="margin:150px;width:100px;height:100px;border:0;" /></div></span></a> &#187; <a href="/Chapters/3/Multimedia.aspx">Multimedia</a> &#187; <a href="/KB/graphics/">General Graphics</a> &#187; <a href="/KB/graphics/#General">General</a></div>
+
+		<div class="float-right">
+			
+			<a id="ctl00_TitleArea_PageWidth_Fixed" title="Fixed width layout" href="/KB/graphics/GPUNN.aspx?PageFlow=FixedWidth"><img class="toolbar"
+	src="/images/fixed-width.png" style="width:18px;height:18px" /></a>
+
+<a id="ctl00_TitleArea_PageWidth_Fluid" title="Fluid layout" href="/KB/graphics/GPUNN.aspx?PageFlow=Fluid"><img class="toolbar"
+	src="/images/fluid-width.png" style="width:18px;height:18px" /></a>
+		</div>
+
+	</div>
+
+	
+	<div id="ctl00_TitleArea_InfoArea" class="float-right">
+		
+
+<div class="infobox">
+	<table class="tight small-text" cellpadding="0" cellspacing="1">
+	<tr><td>Licence&nbsp;</td><td><a href="http://creativecommons.org/licenses/by-sa/2.5/" title="The Creative Commons Attribution-ShareAlike 2.5 License">CC (ASA 2.5)</a></td></tr>
+	
+	<tr><td>First Posted&nbsp;</td><td nowrap="nowrap"><b>13 Mar 2008</b></td></tr>
+	<tr><td>Views&nbsp;</td><td><b>106,992</b></td></tr>
+	
+	<tr><td>Bookmarked&nbsp;</td><td><b>137 times</b></td></tr>
+	
+	
+	
+	
+	<tr valign="top">
+		<td>Tags&nbsp;</td>
+		<td nowrap="nowrap">
+			
+
+<div id="ctl00_TitleArea_InfoBox_TagsList_TagWrp" class="tags">
+
+<span id="ctl00_TitleArea_InfoBox_TagsList_TagLabel" class="bold"></span>
+
+<span id="ctl00_TitleArea_InfoBox_TagsList_VisibleTags"><a href="/info/search.aspx?aidlst=9">VC8.0</a>, <a href="/info/search.aspx?aidlst=24">WinXP</a>,<br><a href="/info/search.aspx?aidlst=65">C#2.0</a>, <a href="/info/search.aspx?aidlst=78">C++</a>, <a href="/info/search.aspx?aidlst=81">C#</a></span>
+
+<acronym id="ctl00_TitleArea_InfoBox_TagsList_HiddenTags" title="plus: Windows, Win32, Architect, Dev, Beginner, Intermediate, Advanced">...</acronym>
+</div>
+
+		</td>
+	</tr>
+	</table>
+</div>	
+	</div>
+
+	
+	<h1 id="ctl00_TitleArea_ArticleTitle">A Neural Network on GPU</h1>
+
+	
+	<div class="author">
+		By <b><a href="/script/Membership/View.aspx?mid=1850775">billconan</a>, <a href="/script/Membership/View.aspx?mid=4907063">kavinguy</a></b> | 
+		13 Mar 2008 
+		
+
+		
+		
+	</div>
+
+	
+	<div class="abstract"><span id="ctl00_TitleArea_ArticleDescr">This article describes the implementation of a neural network with CUDA.</span></div>
+</div>
+
+
+
+			
+
+		</div>
+
+		<div class="align-bottom">
+			<div id="ctl00_ActionsRow" class="clearfix tab-wrapper pad-top">
+		
+				
+				<div class="action-links"> 
+					<a id="ctl00_ActionLinks_PrintLnk" class="tooltip" href="/KB/graphics/GPUNN.aspx?display=Print">
+	<img src="http://s.codeproject.com/script/Content/Images/print.gif" 
+		width="24px" height="24px" style="vertical-align:middle;border:0">
+	<div class="speech-bubble-container-up">
+		<div class="speech-bubble-up">Print Article</div>
+		<div class="speech-bubble-pointer-up">
+			<div class="speech-bubble-pointer-up-inner"></div>
+		</div>
+	</div>
+</a>
+
+	
+
+
+<span id="SBI"><img src="http://s.codeproject.com/images/share_drop24.png" id="ctl00_ActionLinks_AddTo_Img" width="37" height="24" alt="add" style="vertical-align:middle" /></span>
+<div id="ATD" class="list-socialbookmark"></div>
+ 
+
+ 
+
+<span class="tooltip">
+	 
+	<div class="speech-bubble-container-up">
+		<div class="speech-bubble-up">Add to your CodeProject bookmarks</div>
+		<div class="speech-bubble-pointer-up">
+			<div class="speech-bubble-pointer-up-inner"></div>
+		</div>
+	</div>
+</span>
+
+<a href="#_comments" class="tooltip">
+	
+	<img src="http://s.codeproject.com/script/Content/Images/discuss.gif" 
+		width="24px" height="24px" alt="Discuss" style="vertical-align:middle;border:0" />
+	<div class="speech-bubble-container-up">
+		<div class="speech-bubble-up">Discuss this article</div>
+		<div class="speech-bubble-pointer-up">
+			<div class="speech-bubble-pointer-up-inner"></div>
+		</div>
+	</div>
+</a>
+<span id="ctl00_ActionLinks_cmtcnt" class="subdue small-text align-middle" style="margin-left:-4px">44</span>
+
+<a id="ctl00_ActionLinks_BrokenLnk" class="tooltip" href="/script/Articles/Report.aspx?aid=24361">
+	<img src="http://s.codeproject.com/script/Content/Images/report.gif"
+		width="24px" height="24px" alt="Broken Article?" style="vertical-align:middle;border:0" />
+	<div class="speech-bubble-container-up" style="width:140px">
+		<div class="speech-bubble-up">Report this article as inappropriate</div>
+		<div class="speech-bubble-pointer-up">
+			<div class="speech-bubble-pointer-up-inner"></div>
+		</div>
+	</div>
+</a>
+				</div>
+
+				<div class="float-left">
+					
+					
+
+<div class="float-left"><table cellpadding="0" cellspacing="0"><tr>
+	<td class="tab-selected">Article</td><td class="tab-unselected"><a href="/script/Articles/ViewDownloads.aspx?aid=24361">Browse Code</a></td><td class="tab-unselected"><a href="/script/Articles/Statistics.aspx?aid=24361">Stats</a></td><td class="tab-unselected"><a href="/script/Articles/ListVersions.aspx?aid=24361">Revisions</a></td>
+</tr></table></div>	
+
+
+					
+					<div class="float-left" style="margin-left:15px">
+						<div id="ctl00_CurRat" class="tooltip" name="CurRat_24361">
+							
+<table cellpadding="0" cellspacing="0" class="small-text">
+<tr>
+	
+	<td class="nowrap">
+		<div style="position:relative;">
+	<table border="0" cellpadding="0" cellspacing="0" class="rating-bar-stars">
+		<tr>
+			<td width="111px" height="24px" class="filled"></td>
+			<td width="9px" height="24px"></td>
+		</tr>
+	</table>
+	<img src="/script/Ratings/Images/stars_orange.gif" style="position:absolute;top:0;left:0;z-index:10;" width="120" height="24" />
+</div>
+
+		
+	</td>
+	
+	<td id="ctl00_ArticleRating_VR" class="nowrap">
+		&nbsp;<span id="ctl00_ArticleRating_VotesR">&nbsp;4.65 (44 votes)</span>
+		
+	</td>
+
+</tr>
+
+</table>
+
+							<div id="ctl00_RB" class="speech-bubble-container-up">
+								<div class="speech-bubble-up" style="width:150px !important">
+									            
+<div>
+<table class="feature" title="Voting Distribution. Recent data only" cellpadding="0" cellspacing="0"><tr><td class="chart-column"><img src="/script/Ratings/Images/pollcol.gif" width="16px" height="1px" border="0px" alt="1 vote, 2.3%" title="1 vote, 2.3%" /><br /><span title="1 vote">1</span></td>
+<td class="chart-column"><img src="/script/Ratings/Images/pollcol.gif" width="16px" height="1px" border="0px" alt="1 vote, 2.3%" title="1 vote, 2.3%" /><br /><span title="1 vote">2</span></td>
+<td class="chart-column"><img src="/script/Ratings/Images/pollcol.gif" width="16px" height="1px" border="0px" alt="1 vote, 2.3%" title="1 vote, 2.3%" /><br /><span title="1 vote">3</span></td>
+<td class="chart-column"><img src="/script/Ratings/Images/pollcol.gif" width="16px" height="3px" border="0px" alt="3 votes, 6.8%" title="3 votes, 6.8%" /><br /><span title="3 votes">4</span></td>
+<td class="chart-column"><img src="/script/Ratings/Images/pollcol.gif" width="16px" height="50px" border="0px" alt="38 votes, 86.4%" title="38 votes, 86.4%" /><br /><span title="38 votes">5</span></td>
+</tr></table>
+</div>
+
+
+
+
+								</div>
+								<div class="speech-bubble-pointer-up">
+									<div class="speech-bubble-pointer-up-inner"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+
+			<div id="ctl00_HeadSideFoot" class="header-sidebar-footer">
+				<div>Sponsored Links</div>
+			</div>
+
+		</div>
+
+		<div id="ctl00_HeadSide" class="header-sidebar">
+			<div class="align-right" style="height:24px">
+				
+
+
+&nbsp;
+
+
+
+
+
+
+
+
+
+
+			</div>
+
+			
+
+<div class="bold pad-top">See Also</div>
+<ul class="outdent small-text" style="margin-left:5px">
+	<li><a id="ctl00_SeeAlso_LikeThis" href="/info/search.aspx?artkw=A+Neural+Network+on+GPU">Articles like this</a></li>
+	<li><a id="ctl00_SeeAlso_ByAuthor" href="/script/Articles/MemberArticles.aspx?amid=1850775">Articles by this author</a></li>
+</ul>
+
+		</div>
+	</div>
+
+	<div class="container-content">
+
+	<div class="article">
+
+		
+		
+		
+		
+
+		
+
+		<form name="aspnetForm" method="post" action="/KB/graphics/GPUNN.aspx" id="aspnetForm" style="margin:0;padding:0">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTAyMTMzODg1Ng9kFgJmD2QWAgIJD2QWAgIBD2QWCAIFD2QWAgIBD2QWBmYPDxYCHgtOYXZpZ2F0ZVVybAUlL0tCL2dyYXBoaWNzL0dQVU5OLmFzcHg/ZGlzcGxheT1QcmludGRkAgQPFgIeCWlubmVyaHRtbAUCNDRkAgUPDxYCHwAFJi9zY3JpcHQvQXJ0aWNsZXMvUmVwb3J0LmFzcHg/YWlkPTI0MzYxZGQCCQ9kFgICAQ9kFgZmDw8WAh8ABTIvc2NyaXB0L0FydGljbGVzL0FkbWluL0VkaXRvckNob2ljZS5hc3B4P2FpZD0yNDM2MWRkAgIPDxYCHwAFOC9zY3JpcHQvQXdhcmRzL0FkbWluL0F3YXJkT2JqZWN0LmFzcHg/b2JpZD0yNDM2MSZvYnRpZD0yZGQCCg8PFgIfAAUvL3NjcmlwdC9BcnRpY2xlcy9BZG1pbi9RdWV1ZUVkaXQuYXNweD9haWQ9MjQzNjFkZAITD2QWCAIDDxYCHgZhY3Rpb24FFy9LQi9ncmFwaGljcy9HUFVOTi5hc3B4FgQCAw9kFgICAg9kFgICAQ8QZGQWAGQCCQ8WAh4LXyFJdGVtQ291bnQCAmQCCw8PFgIfAAUXL0tCL2dyYXBoaWNzL0dQVU5OLmFzcHhkZAIRDxYCHgRUZXh0BQsxMyBNYXIgMjAwOGQCFQ8WAh8EBSVDb3B5cmlnaHQgMjAwOCBieSBiaWxsY29uYW4sIGthdmluZ3V5ZAIVD2QWAgIFDw8WAh4HVmlzaWJsZWhkZGQRyu79kzvnfPSuDAyFuZapPvpJNg==" />
+
+
+				<!-- Article Text Start -->
+				<div id="contentdiv" class="article-text">
+				
+
+<!-- Article Starts -->
+
+
+<ul class="Download">
+<li><a href="GPUNN/GPUNN_demo.zip">Download demo (release build requiring CUDA and 120 dpi) - 584.61 KB</a></li>
+
+<li><a href="GPUNN/GPUNN_GUI.zip">Download GUI source code - 509.68 KB</a> </li>
+
+<li><a href="GPUNN/GPUNN_kernel.zip">Download kernel (the Neural Network core) - 2.78 KB</a></li>
+</ul>
+
+<h2>Introduction</h2>
+
+<p>An Artificial Neural Network is an information processing method that was inspired by the way biological nervous systems function, such as the brain, to process information. It is composed of a large number of highly interconnected processing elements (neurons) working in unison to solve specific problems. Neural Networks have been widely used in &quot;analogous&quot; signal classifications, including handwriting, voice and image recognitions. Neural network can also be used in computer games. It enables games with the ability to adaptively learn from player behaviors. This technique has been used in racing games, such that opponent cars controlled by computers can learn how to drive by human players.</p>
+
+<p>Since a Neural Network requires a considerable number of vector and matrix operations to get results, it is very suitable to be implemented in a parallel programming model and run on Graphics Processing Units (GPUs). Our goal is to utilize and unleash the power of GPUs to boost the performance of a Neural Network solving handwriting recognition problems.</p>
+
+<p>This project was originally our graphics architecture course project. We ran on GPU the same Neural Network described by Mike O'Neill in his brilliant article &quot;<a href="http://www.codeproject.com/KB/library/NeuralNetRecognition.aspx">Neural Network for Recognition of Handwritten Digits</a>&quot;.</p>
+
+<h2>About the Neural Network </h2>
+
+<p>A Neural Network consists of two basic kinds of elements, neurons and connections. Neurons connect with each other through connections to form a network. This is a simplified theory model of the human brain.</p>
+
+<p>A Neural Network often has multiple layers; neurons of a certain layer connect neurons of the next level in some way. Every connection between them is assigned with a weight value. At the beginning, input data are fed into the neurons of the first layer, and by computing the weighted sum of all connected first layer neurons, we can get the neuron value of a second layer neuron and so on. Finally, we can reach the last layer, which is the output. All the computations involved in operating a Neural Network are a bunch of dot products.</p>
+
+<p>The secret of a Neural Network is all about weight values. Right values make it perfect. However, at the beginning, we don't know those values. Therefore, we need to train our network with sample inputs and compare the outcomes with our desired answers. Some algorithm can take the errors as inputs and modify the network weights. If patient enough, the Neural Network can be trained to achieve high accuracy.</p>
+<img height="300" alt="IllustrationNeuralNet.gif" hspace="0" src="GPUNN/IllustrationNeuralNet.gif" width="599" border="0" /> 
+<p>The neural network we implemented was a 5 layer network called convolutional neural network. This kind of network is proven to be suitable for recognizing handwritten digits. For more theoretical details, please check out Mike's article and the references he has listed.</p>
+
+<p>The first three layers of our neural network consist of several feature maps. Each of them is shrunken from the previous layer. Our input is a 29*29 image of a digit. Therefore, we have 29*29=841 neurons in the first layer. The second layer is a convolutional layer with 6 feature maps. Each feature map which is a 13*13 image is sampled from the first layer. Each pixel/neuron in a feature map is a 5*5 convolutional kernel of the input layer. So, there are 13*13*6 = 1014 nodes/neurons in this layer, and (5*5+1(bias node))*6 = 156 weights, 1014*(5*5+1) = 26364 connections linking to the first layer.</p>
+
+<p>Layer 3 is also a convolutional layer, but with 50 smaller feature maps. Each feature map is 5*5 in size, and each pixel in these feature maps is a 5*5 convolutional kernel of corresponding areas of all 6 feature maps of the previous layer. There are thus 5*5*50 = 1250 neurons in this layer, (5*5+1)*6*50 = 7800 weights, and 1250*26 = 32500 connections.</p>
+
+<p>The fourth layer is a fully-connected layer with 100 neurons. Since it is fully-connected, each of the 100 neurons in the layer is connected to all 1250 neurons in the previous layer. There are therefore 100 neurons in it, 100*(1250+1) = 125100 weights and 100x1251 = 125100 connections.</p>
+
+<p>Layer 5 is the final output layer. This layer is also a fully-connected layer with 10 units. Each of the 10 neurons in this layer is connected to all 100 neurons of the previous layer. There are 10 neurons in Layer 5, 10*(100+1) = 1010 weights and 10x101 = 1010 connections.</p>
+
+<p>As you can see, although structurally simple, this Neural Network is a huge data structure.</p>
+
+<h2>Previous GPU Implementation </h2>
+
+<p><a href="http://leenissen.dk/fann/html_latest/files2/gpu-txt.html">Fast Neural Network Library</a> (FANN) has a very simple implementation of Neural Network on GPU with GLSL. Each neural is represented by a single color channel of a texture pixel. This network is very specific; neurons are ranging from 0 to 1 and have an accuracy of only 8 bits. This implementation takes the advantage of hardware accelerated dot product function to calculate neurons. Both neurons and weights are carried on texture maps.</p>
+
+<p>This implementation is straightforward and easy, however limited. First, in our neural network, we require 32-bit float accuracy for each neuron. Since our network has five layers, accuracy lost at the first level could be accumulated and alter the final results. And because it is important that a handwriting recognition system should be sensitive enough to detect slight differences between different inputs, using only 8 bits to represent a neuron is unacceptable. Secondly, normal Neural Networks map neuron values to the range from 0 to 1. However, in our program, the Neural Network which is specifically designed for handwriting recognition has a special activation function mapping each neuron value to the range from -1 to 1. Therefore, if the neuron is represented by a single color value as in FANN library, our neurons will lose accuracy further. Finally, the FANN method uses a dot product to compute neurons, which is suitable for full connected Neural Networks. In our implementation, the Neural Network is partially connected. Computations performed on our Neural Network involve dot products of large vectors. </p>
+
+<h2>Our Implementation </h2>
+
+<p>Due to all the inconvenience about GLSL mentioned above, we finally choose CUDA. The reason that the Neural Network is suitable for GPU is that the training and execution of a Neural Network are two separate processes. Once properly trained, no writing access is required while using a Neural Network. Therefore there is no synchronization issue that needs to be addressed. Moreover, neurons on a same network level are completely isolated, such that neuron value computations can achieve highly parallelization.</p>
+
+<p>In our code, weights for the first layer are stored as an array, and those inputs are copied to device. For each network level, there is a CUDA function handling the computation of neuron values of that level, since parallelism can only be achieved within one level and the connections are different between levels. The connections of the Neural Network are implicitly defined in CUDA functions with the equations of next level neuron computation. No explicit connection data structure exists in our code. This is one main difference between our code and the CPU version by Mike.</p>
+<img height="499" alt="cuda.PNG" hspace="0" src="GPUNN/cuda.PNG" width="456" border="0" /> 
+<p>For example, each neuron value of the second level is a weighted sum of 25 neurons of the first level and one bias. The second neuron level is composed of 6 feature maps; each has a size of 13*13. We assign a <code>blockID</code> for each feature map and a <code>threadID</code> for each neuron on a feature map. Every feature map is handled by a block and each pixel on it is dealt with by a thread.</p>
+
+<p>This is the CUDA function that computes the second network layer:</p>
+
+<pre lang="C++">__global__ <span class="code-keyword">void</span> executeFirstLayer
+    (<span class="code-keyword">float</span> *Layer1_Neurons_GPU,<span class="code-keyword">float</span> *Layer1_Weights_GPU,<span class="code-keyword">float</span> *Layer2_Neurons_GPU)
+{
+    <span class="code-keyword">int</span> blockID=blockIdx.x;
+    <span class="code-keyword">int</span> pixelX=threadIdx.x;
+    <span class="code-keyword">int</span> pixelY=threadIdx.y;
+
+    <span class="code-keyword">int</span> kernelTemplate[<span class="code-digit">25</span>] = {
+        <span class="code-digit">0</span>,  <span class="code-digit">1</span>,  <span class="code-digit">2</span>,  <span class="code-digit">3</span>,  <span class="code-digit">4</span>,
+        <span class="code-digit">29</span>, <span class="code-digit">30</span>, <span class="code-digit">31</span>, <span class="code-digit">32</span>, <span class="code-digit">33</span>,
+        <span class="code-digit">58</span>, <span class="code-digit">59</span>, <span class="code-digit">60</span>, <span class="code-digit">61</span>, <span class="code-digit">62</span>,
+        <span class="code-digit">87</span>, <span class="code-digit">88</span>, <span class="code-digit">89</span>, <span class="code-digit">90</span>, <span class="code-digit">91</span>,
+        <span class="code-digit">116</span>,<span class="code-digit">117</span>,<span class="code-digit">118</span>,<span class="code-digit">119</span>,<span class="code-digit">120</span> };
+
+    <span class="code-keyword">int</span> weightBegin=blockID*<span class="code-digit">26</span>;
+    <span class="code-keyword">int</span> windowX=pixelX*<span class="code-digit">2</span>;
+    <span class="code-keyword">int</span> windowY=pixelY*<span class="code-digit">2</span>;
+
+    <span class="code-keyword">float</span> result=0;
+
+    result+=Layer1_Weights_GPU[weightBegin];
+
+    ++weightBegin;
+
+    <span class="code-keyword">for</span>(<span class="code-keyword">int</span> i=0;i<span class="code-keyword">&lt;</span><span class="code-digit">25</span>;++i)
+    {
+        result+=Layer1_Neurons_GPU
+            [windowY*29+windowX+kernelTemplate[i]]*Layer1_Weights_GPU[weightBegin+i];
+    }
+
+    result=(<span class="code-digit">1</span>.<span class="code-digit">7159</span>*tanhf(<span class="code-digit">0</span>.<span class="code-digit">66666667</span>*result));
+
+    Layer2_Neurons_GPU[<span class="code-digit">13</span>*<span class="code-digit">13</span>*blockID+pixelY*13+pixelX]=result;
+} </pre>
+
+<p>All other levels are computed the same way; the only difference is the equation of calculating neurons. </p>
+<img height="199" alt="program.PNG" hspace="0" src="GPUNN/program.PNG" width="548" border="0" /> 
+<p>The main program first transfers all the input data to GPU and then calls each CUDA function in order and finally gets the answer.</p>
+<a href="GPUNN/recod.jpg"><img height="259" alt="recod.jpg" hspace="0" src="GPUNN/recod_small.jpg" width="640" border="0" /> </a>
+<p>The user interface is a separate program using C#. Users can draw a digit with the mouse on the input pad, the program then generates a 29*29 image and calls the kernel Neural Network program. The kernel, as described above, will read the input image and feed it into our Neural Network. Results are also returned with files and then read back by the user interface.</p>
+
+<p>Here is a screenshot. After drawing a digit, we can get all the 10 neuron values of the last network layer. The index of the maximum neuron value is the most possible digit. We shade candidates with different depth of red colors according to their possibilities. </p>
+
+<p>On the right, the user interface will print out feature maps of the first three layers.</p>
+
+<p>Note that C# under Windows XP has a resolution issue. We tested our program under 120dpi. A 96dpi resolution setting could shift the input image around, so that the accuracy is badly affected. </p>
+No training part is included in our GPU implementation. We use Mike’s code to train all the weights and cached them with files. 
+<h2>Result </h2>
+
+<h4>Accuracy </h4>
+
+<p>Our Neural Network can achieve a 95% accuracy. The database we used to train the network is called MNIST containing 60000 handwriting examples from different people. It is reported by Dr. LeCun that this network can converge after around 25 times of training. This number is confirmed by our test. We achieved only around 1400 miss-recognition samples out of 60000 inputs.</p>
+
+<p>Also note that there is a bug in Mike's code. This is the corrected code for initializing the second layer: </p>
+
+<pre lang="C++"><span class="code-keyword">for</span> ( fm=0; fm<span class="code-keyword">&lt;</span><span class="code-digit">50</span>; ++fm)
+{
+  <span class="code-keyword">for</span> ( ii=0; ii<span class="code-keyword">&lt;</span><span class="code-digit">5</span>; ++ii )
+  {
+    <span class="code-keyword">for</span> ( jj=0; jj<span class="code-keyword">&lt;</span><span class="code-digit">5</span>; ++jj )
+    {
+      <span class="code-comment">//</span><span class="code-comment"> iNumWeight = fm * 26;  // 26 is the number of weights per feature map</span>
+      iNumWeight = fm * <span class="code-digit">156</span>;  <span class="code-comment">//</span><span class="code-comment"> 156 is the number of weights per feature map</span>
+      NNNeuron&amp; n = *( pLayer-<span class="code-keyword">&gt;</span>m_Neurons[ jj + ii*<span class="code-digit">5</span> + fm*<span class="code-digit">25</span> ] );
+
+      n.AddConnection( ULONG_MAX, iNumWeight++ );  <span class="code-comment">//</span><span class="code-comment"> bias weight</span>
+
+      <span class="code-keyword">for</span> ( kk=0; kk<span class="code-keyword">&lt;</span><span class="code-digit">25</span>; ++kk )
+      {
+        <span class="code-comment">//</span><span class="code-comment"> note: max val of index == 1013, corresponding to 1014 neurons in prev layer</span>
+        n.AddConnection(       <span class="code-digit">2</span>*jj + <span class="code-digit">26</span>*ii + kernelTemplate2[kk], iNumWeight++ );
+        n.AddConnection( <span class="code-digit">169</span> + <span class="code-digit">2</span>*jj + <span class="code-digit">26</span>*ii + kernelTemplate2[kk], iNumWeight++ );
+        n.AddConnection( <span class="code-digit">338</span> + <span class="code-digit">2</span>*jj + <span class="code-digit">26</span>*ii + kernelTemplate2[kk], iNumWeight++ );
+        n.AddConnection( <span class="code-digit">507</span> + <span class="code-digit">2</span>*jj + <span class="code-digit">26</span>*ii + kernelTemplate2[kk], iNumWeight++ );
+        n.AddConnection( <span class="code-digit">676</span> + <span class="code-digit">2</span>*jj + <span class="code-digit">26</span>*ii + kernelTemplate2[kk], iNumWeight++ );
+        n.AddConnection( <span class="code-digit">845</span> + <span class="code-digit">2</span>*jj + <span class="code-digit">26</span>*ii + kernelTemplate2[kk], iNumWeight++ );
+      }
+    }
+  }
+} </pre>
+
+<p>Please refer to <a href="http://www.codeproject.com/KB/library/NeuralNetRecognition.aspx?fid=364895&amp;select=2003444&amp;fr=1#xx0xx">this</a> for the details about this bug.</p>
+
+<p>Our GPU implementation is based on the correct version, however there isn't too much difference in terms of accuracy.</p>
+
+<h4>Performance </h4>
+
+<p><img height="345" alt="performance.PNG" hspace="0" src="GPUNN/performance.PNG" width="372" border="0" /> </p>
+
+<p>The major reason for using GPU to compute Neural Network is to achieve robustness. The outcome is promising compared to CPU implementation. As shown in the table above, the executing time of GPU version, EmuRelease version and CPU version running on one single input sample is compared. The GPU version speeds up by 270 times compared to CPU version and 516.6 times compared to EmuRelease version. To be more accurate, we also considered the IO time consumption of the GPU version. As we can see, even when the IO time is considered, our method is 10 times faster. And in practical use, weight values need only be loaded into the device once. </p>
+
+<h2>History</h2>
+
+<ul>
+<li>14<sup>th</sup> March, 2008: Initial post</li>
+</ul>
+
+
+
+
+
+
+				</div>
+				<!-- Article Text End -->
+
+				
+				
+				<h2>License</h2>
+				<div id="LicenseTerms"><p>This article, along with any associated source code and files, is licensed under <a href="http://creativecommons.org/licenses/by-sa/2.5/">The Creative Commons Attribution-ShareAlike 2.5 License</a></p></div>
+				
+
+				
+				<h2 id="ctl00_AboutHeading">About the Authors</h2>
+
+				<div class="float-right">
+				<div class="lqm_ad" width="300px" height="250px" lqm_channel="1" lqm_publisher="495" lqm_zone="77" lqm_format="6" lqm_country='PH' lqm_tags='VC8.0,WinXP,C#2.0,C++,C#,Windows,Win32,Architect,Dev,Beginner,Intermediate,Advanced'></div>
+				</div>
+
+				
+				
+   
+<table cellpadding="0" cellspacing="5" border="0">
+<tr valign="top">
+<td id="ctl00_AboutAuthorRptr_ctl00_AboutAuthor_memberPhotoTable" valign="top" style="width:155px;">
+	<b><a id="ctl00_AboutAuthorRptr_ctl00_AboutAuthor_memberProfileLink" href="/Members/billconan">billconan</a></b><br /><br />
+	<center><img id="ctl00_AboutAuthorRptr_ctl00_AboutAuthor_memberPhoto" src="/script/Membership/ProfileImages/{2f0acf69-c62a-48ae-be46-dcf7cbec1142}.gif" border="0" /></center>
+
+	<div class="small-text">
+		<span id="ctl00_AboutAuthorRptr_ctl00_AboutAuthor_memberJobTitle">Other</span><br />
+		<span id="ctl00_AboutAuthorRptr_ctl00_AboutAuthor_memberCompany"></span><br />
+		<span id="ctl00_AboutAuthorRptr_ctl00_AboutAuthor_memberLocation"><img src="/script/Geo/Images/US.gif" alt="United States" width="16px" height="11px" /> United States</span><br />
+		<br />
+		<span id="ctl00_AboutAuthorRptr_ctl00_AboutAuthor_memberType">Member</span><br />
+		
+
+		
+	</div>
+</td>
+
+<td>
+	Ph.D. Student<br />University of California, Davis<br />	
+</td>
+</tr>
+</table><br />
+				
+				
+   
+<table cellpadding="0" cellspacing="5" border="0">
+<tr valign="top">
+<td id="ctl00_AboutAuthorRptr_ctl01_AboutAuthor_memberPhotoTable" valign="top" style="width:155px;">
+	<b><a id="ctl00_AboutAuthorRptr_ctl01_AboutAuthor_memberProfileLink" href="/script/Membership/View.aspx?mid=4907063">kavinguy</a></b><br /><br />
+	<center><img id="ctl00_AboutAuthorRptr_ctl01_AboutAuthor_memberPhoto" src="/script/Membership/ProfileImages/{94c1a661-bd65-4430-8c3c-bcaf79e1e54f}.bmp" border="0" /></center>
+
+	<div class="small-text">
+		<span id="ctl00_AboutAuthorRptr_ctl01_AboutAuthor_memberJobTitle">Other</span><br />
+		<span id="ctl00_AboutAuthorRptr_ctl01_AboutAuthor_memberCompany"></span><br />
+		<span id="ctl00_AboutAuthorRptr_ctl01_AboutAuthor_memberLocation"><img src="/script/Geo/Images/US.gif" alt="United States" width="16px" height="11px" /> United States</span><br />
+		<br />
+		<span id="ctl00_AboutAuthorRptr_ctl01_AboutAuthor_memberType">Member</span><br />
+		
+
+		
+	</div>
+</td>
+
+<td>
+	Ph.D. student,<br />University of California, Davis<br />	
+</td>
+</tr>
+</table><br />
+				
+				
+
+				<div class="clearfix"></div>
+
+				
+				<div id="ctl00_RateArticleRow" class="clearfix voting-bar">
+				<div class="column8_1" style="padding-top:8px"> <a href="#_top">Article Top</a></div>
+				<div class="column8_7 align-right"><div id="ctl00_RateArticle_RateItemWrapper" class="container-rating small-text" name="RateItem_24361">
+
+	<table width="100%" cellpadding="0" cellspacing="0" small-text>
+	<tr>
+		
+	
+		<td class="voteTbl" style="white-space:nowrap" align="right">
+			<table class="small-text">
+			<tr valign="middle">
+				<td id="ctl00_RateArticle_SignIn" nowrap="nowrap">
+					<a href="#SignUp">Sign Up</a> to vote for this article
+				</td>
+
+				
+				
+				
+				
+				
+			</tr>
+			</table>
+			<span id="ctl00_RateArticle_ErrorMessage" class="error"></span>
+		</td>
+	</tr>
+	</table>
+	<div class="hover-container">
+		<div id="ctl00_RateArticle_RCD" class="rating-comment align-left float-right">
+			Add a reason or comment to your vote: <a href="#" id="clear-rate_ctl00_RateArticle_RCD" title="close">x</a><br />
+			<textarea class="RateComment" rows="5" cols="60" style="width:98%;"></textarea>
+		</div>
+	</div>
+</div>
+</div>
+				</div>
+				
+
+			</form>
+
+			
+			<div style="margin:auto;padding:0px 10px;white-space:nowrap;overflow:hidden;width:460px;height:60px">		  
+				<div class="lqm_ad" width="468px" height="60px" lqm_channel="1" lqm_publisher="495" lqm_zone="77" lqm_format="1" lqm_country='PH' lqm_tags='VC8.0,WinXP,C#2.0,C++,C#,Windows,Win32,Architect,Dev,Beginner,Intermediate,Advanced'></div>
+			</div>
+			
+
+			
+			
+			<h2>Comments and Discussions</h2>
+			<a name="_comments"></a><!-- Forum Start -->
+<div id="_MessageBoard" onclick="return SwitchMessage(event, null)">
+<table id="ForumTable" class="box forum" cellpadding="0" cellspacing="0">
+<tr>
+<td class="forum-header1 highlight"><b>You must <a href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx%3ffid%3d1108468%26df%3d90%26mpp%3d25%26noise%3d3%26sort%3dPosition%26view%3dQuick">Sign In</a> to use this message board.</b></td>
+</tr><tr>
+<td><table width="100%" border="0" cellpadding="3px" cellspacing="0">
+<tr class="forum-header1">
+<td nowrap="nowrap"><img src="http://s.codeproject.com/Images/info-16.gif" alt="FAQ" border="0" width="16" height="16" valign="middle" />&nbsp;<a href="/KB/FAQs/MessageBoardsFAQ.aspx"><b>FAQ</b></a>&nbsp;</td><td colspan="2" nowrap="nowrap" align="right"><form action="/script/Forums/Search.aspx?fid=0" method="get">
+<input type="hidden" name="fid" value="1108468" /><input type="text" class="Frm_Input" name="kw" />&nbsp;<input type="submit" value="Search" name="FrmSrch" class="button" />
+</form></td>
+</tr><tr class="forum-header2">
+<td colspan="3" width="100%"><div align="right">
+<form action="/script/Forums/SetOptions.aspx?floc=%2fKB%2fgraphics%2fGPUNN.aspx&amp;fid=1108468&amp;df=90&amp;mpp=25&amp;noise=3&amp;sort=Position&amp;view=Quick" method="get">
+<input type="hidden" name="fid" value="1108468" /><input type="hidden" name="currentQS" value="?floc=%2fKB%2fgraphics%2fGPUNN.aspx&amp;fid=1108468&amp;df=90&amp;mpp=25&amp;noise=3&amp;sort=Position&amp;view=Quick" /><input type="hidden" name="floc" value="/KB/graphics/GPUNN.aspx" />Noise Tolerance<select size="1" class="Frm_DropDown" name="noise">
+<option value="1">Very High</option><option value="2">High</option><option selected value="3">Medium</option><option value="4">Low</option><option value="5">Very Low</option>
+</select>&nbsp;&nbsp;Layout<select size="1" class="Frm_DropDown" name="view">
+	<option value="Expanded">Expand Posts & Replies</option><option value="Thread">Thread View</option><option value="Normal">No Javascript</option><option value="Preview">No JS + Preview</option>
+</select>&nbsp;&nbsp;Per page<select size="1" class="Frm_DropDown" name="mpp">
+<option value="10">10</option><option selected value="25">25</option><option value="50">50</option>
+</select>&nbsp;&nbsp;&nbsp;<input type="submit" value="Update" name="SetOpt" class="button" />
+</form>
+</div></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><a name="xx0xx"></a><table border="0" cellpadding="2px" cellspacing="0" width="100%">
+<tr class="forum-navbar">
+<td>&nbsp;</td><td>Msgs 1 to 25 of 44 (Total in Forum: 44) (<a href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;noise=3&amp;sort=Position&amp;view=Quick">Refresh</a>)</td><td align="right" nowrap="nowrap"><span class="toolbar">First</span><span class="toolbar">Prev</span><a class="toolbar" name="Frm_HoverNL" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;noise=3&amp;sort=Position&amp;view=Quick&amp;fr=26#xx0xx">Next</a></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%" class="fixed-layout blank-background">
+<tr>
+<td><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="5px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd LoVote Rt HdUnSel " id="F3534842_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="16px" class="Frm_MsgIndent"><a name="xx3534842xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="3534842" href="/Messages/3534842/how-exactly-did-you-obtain-the-weights-files.aspx">how exactly did you obtain the weights files?</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=6291576">fizdumn</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">7:54 14 Jul '10 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F3534842_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="16"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="16px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">how exactly did you obtain the weights files using mike's code?<br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=3534842" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/3534842/how-exactly-did-you-obtain-the-weights-files.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF3534842">1.00/5 (1 vote) </span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="root msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd LoVote Rt HdUnSel " id="F3530957_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="16px" class="Frm_MsgIndent"><a name="xx3530957xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="3530957" href="/Messages/3530957/not-fully-optimized-code.aspx">not fully optimized code??</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=3197686">ilios86</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">23:18 10 Jul '10 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F3530957_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="16"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="16px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">Hi. <br /><br />I analyzed the execution of the program,and i found that computing 4th layer(function executeThirdLayer)<br />is the bottleneck of program.<br /><br />I have a curious about <br />why the above implementation does not use multiple threads in each block <br />while computing 4th, 5th layer.<br /><br />Because of that, the benefit of parallelism is not well exposed.<br /><br />I'm not familiar with Neural Network. So i'm not sure whether the reason of such unparallelized code is limit of NN problem or not. <br /><br />Could you give me any comment?<br /><br />Thank you.<br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=3530957" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/3530957/not-fully-optimized-code.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF3530957">1.00/5 (1 vote) </span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="root msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd LoVote Rt HdUnSel " id="F3291686_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="16px" class="Frm_MsgIndent"><a name="xx3291686xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="3291686" href="/Messages/3291686/Cant-Get-it-to-work.aspx">Can't Get it to work</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=5463804">KarlDuke</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">12:17 2 Dec '09 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F3291686_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="16"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="16px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">When the paint2.exe calls NN.exe the application crashes... <br />The same happens when NN.exe is called separately.<br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=3291686" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/3291686/Cant-Get-it-to-work.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF3291686">2.20/5 (5 votes) </span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="root msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd HiVote Rt HdUnSel " id="F3286797_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="16px" class="Frm_MsgIndent"><a name="xx3286797xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="3286797" href="/Messages/3286797/Stuck-on-2.aspx">Stuck on 2</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=5810725">Zodical</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">15:42 27 Nov '09 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F3286797_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="16"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="16px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">I can build everything, but everytime I run it gives the answer 2, no matter what number I draw.  It even does that if I try to delete all the data files.  I'll try rebooting in case the weights have been loaded in to the graphics card and are not being refreshed.<br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=3286797" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/3286797/Stuck-on-2.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF3286797">5.00/5 (1 vote) </span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="root msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd Rt HdUnSel " id="F3242155_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="16px" class="Frm_MsgIndent"><a name="xx3242155xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="3242155" href="/Messages/3242155/The-CUDA-code-is-not-optimized.aspx">The CUDA code is not optimized</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=1067143">Julekmen</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">23:53 20 Oct '09 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F3242155_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="16"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="16px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">I like the program, but the CUDA code is not optimized - optimizations strategies were not applied. I optimized executeThirdLayer kernel to see the difference between optimized and unoptimized code. What I changed:<br />- Weights in each block (neuron) are padded to 1280 bytes - this makes coalesced reads<br />- Partial sums are copied to shared memory and then summed by one thread in each block(neuron)<br /><br />In cudaprof, the standard method took 3 ms to complete. My optimized method took 0.3 ms to complete!<br />It is easy to write program for CUDA, but it's difficult to make it work rweally fast <img src="/script/Forums/Images/smiley_smile.gif" align="top" alt="Smile" /> <br /><br />My project and code is here:<br /><a href="http://rapidshare.com/files/295861492/NeuralNetworks_CUDA.zip.html">http://rapidshare.com/files/295861492/NeuralNetworks_CUDA.zip.html</a>[<a href="http://rapidshare.com/files/295861492/NeuralNetworks_CUDA.zip.html" target="_blank" title="New Window">^</a>]<br /><br />You can switch between standard and optimized versions by commenting/uncommenting "#define ROMANOWSKI_THIRD_LAYER"<br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=3242155" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/3242155/The-CUDA-code-is-not-optimized.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF3242155">3.67/5 (2 votes) </span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd LoVote HdUnSel " id="F3270916_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="34px" class="Frm_MsgIndent"><a name="xx3270916xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_news.gif" alt="News" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="3270916" href="/Messages/3270916/Re-The-CUDA-code-is-not-optimized.aspx">Re: The CUDA code is not optimized</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=6710853">sergneu</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">2:49 13 Nov '09 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F3270916_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="34"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="34px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">Error <img src="/script/Forums/Images/smiley_sigh.gif" align="top" alt="Sigh" />  <br />To download this file, the uploader either needs to transfer this file into his/her Collector's Account, or upload the file again. The file can later be moved to a Collector's Account. The uploader just needs to click the delete link of the file to get further information.<br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=3242155" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/3270916/Re-The-CUDA-code-is-not-optimized.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF3270916">2.00/5 (1 vote) </span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="root msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd Rt HdUnSel " id="F3214763_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="16px" class="Frm_MsgIndent"><a name="xx3214763xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="3214763" href="/Messages/3214763/help-me.aspx">help me</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=5886198">hamzadj23</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">8:08 28 Sep '09 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F3214763_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="16"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="16px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">Please, would you like to help me to prepare my project handwritten recognition word or letters with <b>TDNN</b> (time delay neuronal network) ,a language is c# or .<br />Thank you very match<br />contact me in:<br />Doc_dh23000@hotmail.com<br /><b></b>
+<br /> <img src="/script/Forums/Images/smiley_cry.gif" align="top" alt="Cry" /> <br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=3214763" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/3214763/help-me.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF3214763"></span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="root msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd LoVote Rt HdUnSel " id="F3193148_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="16px" class="Frm_MsgIndent"><a name="xx3193148xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="3193148" href="/Messages/3193148/Permission-to-redistribute-source-code.aspx">Permission to redistribute source code</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=5298015">cael47</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">14:28 10 Sep '09 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F3193148_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="16"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="16px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">Hello,<br /><br />Just to let you know, we have published a paper on our GPGPU performance simulator, called GPGPU-Sim. You can find it available for download at www.gpgpu-sim.org .<br />It has become quite popular in the last little while, and a lot of people have been asking for the applications that we used as benchmarks in our paper, "Analyzing CUDA Workloads using a Detailed GPU Simulator" (http://www.ece.ubc.ca/~aamodt/papers/gpgpusim.ispass09.pdf), where we used your Neural Network application as one of our benchmarks.<br />We are currently asking the CUDA application authors whether we could package their source code together to make available for download along with our GPU simulator. Would it be OK to do so?<br /><br />Just to let you know, in our paper, we slightly modified your code to increase the amount of thread-level parallelism by allowing concurrent execution on multiple digits.<br /><br />George<br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=3193148" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/3193148/Permission-to-redistribute-source-code.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF3193148">2.00/5 (1 vote) </span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="root msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd Rt HdUnSel " id="F3150437_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="16px" class="Frm_MsgIndent"><a name="xx3150437xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="3150437" href="/Messages/3150437/Another-interesting-Neural-Network-application.aspx">Another interesting Neural Network application</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=6386883">SharkTime</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">9:01 6 Aug '09 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F3150437_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="16"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="16px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">Great, thanks to you.<br /><br />You may be interested about another neural network application, see <a href="http://www.sharktime.com/us_SharkyNeuralNetwork.html">Sharky Neural Network</a>.<br /><br />This is free software for playing with neural networks classification (for Windows XP/Vista).<br />You can see network results during learning like a movie - live view.<br /><br />You may also be interested in other CodeProject article: <a href="http://www.codeproject.com/KB/cpp/MLP.aspx?msg=2746687">Neural Network Classifier</a>[<a href="http://www.codeproject.com/KB/cpp/MLP.aspx?msg=2746687" target="_blank" title="New Window">^</a>]<br /><br />Regards,<br /><a href="http://www.sharktime.com/">SharkTime.com</a><br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=3150437" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/3150437/Another-interesting-Neural-Network-application.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF3150437"></span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="root msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd Rt HdUnSel " id="F3035156_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="16px" class="Frm_MsgIndent"><a name="xx3035156xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="3035156" href="/Messages/3035156/I-can-not-obtain-a-good-recognition-of-this-method.aspx">I can not obtain a good recognition of this method</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=5673508">bogycat</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">18:12 9 May '09 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F3035156_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="16"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="16px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">Hello!<br /><br />I have realize your method depend on MNIST with the weight of Mr. Mike O'Neil's<br /><br />but I can not get the accuracy that Mr. Mike O'Neil get,<br /><br />About only one in ten can be recognized correctly<br /><br />Coud you email to me, and sent your recognition result on the text set of MNIST.<br /><br />Thanks!  <img src="/script/Forums/Images/smiley_smile.gif" align="top" alt="Smile" />  <br /><br />Email: hanxiaoxue724@hotmail.com<br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=3035156" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/3035156/I-can-not-obtain-a-good-recognition-of-this-method.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF3035156"></span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="root msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd Rt HdUnSel " id="F2836153_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="16px" class="Frm_MsgIndent"><a name="xx2836153xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="2836153" href="/Messages/2836153/i-think-it-possible-to-train-the-convolutional-neu.aspx">i think it possible to train the convolutional neural network in CUDA</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=2535384">xam_jjf@yahoo.com.cn</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">15:08 8 Dec '08 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F2836153_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="16"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="16px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">i think it possible to train the convolutional neural network in CUDA ,only need more shared memory.<br />we can compute every delta value separately and finnaly sum them up in the kernel function one layer one kernel function., or  other way.does anyone else agree with me.<img src="/script/Forums/Images/smiley_smile.gif" align="top" alt="Smile" /> ,<br /><br />as the performance,i think the CUDA is the better architecture for neural network compute, more like brain then pc.<br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=2836153" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/2836153/i-think-it-possible-to-train-the-convolutional-neu.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF2836153"></span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="root msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd Rt HdUnSel " id="F2825913_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="16px" class="Frm_MsgIndent"><a name="xx2825913xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="2825913" href="/Messages/2825913/where-can-i-get-Layer_1-neu-Layer_2-neu-modified-t.aspx">where can i get Layer_1.neu , Layer_2.neu ... [modified]'t</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=2535384">xam_jjf@yahoo.com.cn</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">15:01 30 Nov '08 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F2825913_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="16"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="16px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">where can i get Layer_1.neu , Layer_2.neu ...<br />i can't get it work!? i use 9600 GT and sdk has been setuped.<br /><br />who will be  kind to tell me how can i get it work?<br /><br />and my english is poor ,i holp my words will be understood. <br /><br /><div class="ForumMod">modified on Wednesday, December 3, 2008 8:40 PM</div><br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=2825913" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/2825913/where-can-i-get-Layer_1-neu-Layer_2-neu-modified-t.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF2825913"></span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd LoVote HdUnSel " id="F2830667_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="34px" class="Frm_MsgIndent"><a name="xx2830667xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="2830667" href="/Messages/2830667/Re-where-can-i-get-Layer_1-neu-Layer_2-neu-modifie.aspx">Re: where can i get Layer_1.neu , Layer_2.neu ... [modified]'t</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=2535384">xam_jjf@yahoo.com.cn</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">19:42 3 Dec '08 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F2830667_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="34"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="34px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">i get it.<br /><br />Layer_1.neu , Layer_2.neu ... be created by nn.exe.<br />but nn.exe can't be execute in my system.<br /><br />i modify the main function in nn.cu and link the nn.cu ,then it works.   but i don't know why?<br /><br />main(int argc, char** argv)<br />{<br />	NeuralNetwork();<br />    //CUT_EXIT(argc, argv);<br />}<br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=2825913" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/2830667/Re-where-can-i-get-Layer_1-neu-Layer_2-neu-modifie.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF2830667">1.00/5 (1 vote) </span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd LoVote HdUnSel " id="F2832035_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="52px" class="Frm_MsgIndent"><a name="xx2832035xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="2832035" href="/Messages/2832035/Re-where-can-i-get-Layer_1-neu-Layer_2-neu-modifie.aspx">Re: where can i get Layer_1.neu , Layer_2.neu ... [modified]'t</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=2535384">xam_jjf@yahoo.com.cn</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">16:53 4 Dec '08 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F2832035_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="52"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="52px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">i hope it can be used to training the network.<br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=2825913" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/2832035/Re-where-can-i-get-Layer_1-neu-Layer_2-neu-modifie.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF2832035">1.50/5 (2 votes) </span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="root msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd Rt HdUnSel " id="F2721843_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="16px" class="Frm_MsgIndent"><a name="xx2721843xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="2721843" href="/Messages/2721843/Testing-NN-kernel-code.aspx">Testing NN kernel code</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=5298015">cael47</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">15:07 12 Sep '08 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F2721843_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="16"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="16px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">Hi,<br /><br />I downloaded NN.cu and NN_kernel.cu.<br />I modified NN.cu so that it prints out the output as follows:<br />        for(int a=0;a&lt;10;a++)<br />        {<br />                printf("output[%d]=%f\n", a, Layer5_Neurons_CPU[a]);<br />                outputLayer[a] = (double)Layer5_Neurons_CPU[a];<br />        }<br />        output(outputLayer);<br /><br />However, upon execution (I'm using an 8600GTS), I get the following results:<br />output[0]=nan<br />output[1]=nan<br />output[2]=nan<br />output[3]=nan<br />output[4]=nan<br />output[5]=nan<br />output[6]=nan<br />output[7]=nan<br />output[8]=nan<br />output[9]=nan<br /><br />I'm not sure what the correct results are. Are they what the previous poster (AIgpu) got?<br />I noticed you provided what I assume to be intermediate outputs, e.g. layer_1.neu,  layer_2.neu,  layer_3.neu,  layer_4.neu.<br />Would it be possible to upload your copies of those files so I can diff against what I got and debug them as necessary?<br /><br />Thank you,<br />George<br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=2721843" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/2721843/Testing-NN-kernel-code.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF2721843"></span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd HiVote HdUnSel " id="F2721851_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="34px" class="Frm_MsgIndent"><a name="xx2721851xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="2721851" href="/Messages/2721851/Re-Testing-NN-kernel-code.aspx">Re: Testing NN kernel code</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=5298015">cael47</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">15:23 12 Sep '08 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F2721851_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="34"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="34px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">My bad, turns out I needed the files included with the GUI source code (e.g. lw1.wei to lw4.wei and in.neu). Now I get the same results as AIGPU.<br /><br />I noticed that in your implementation you used at most 1250 threads. Since the 8800GTX can support over 12k and the GTX260 and GTX280 many more, would it be possible to further parallelize your implementation? Perhaps an easy way would be to recognize multiple digits/characters at once. I was wondering if you've done any further work on that front?<br />I would be very interested if you had such an implementation, since it would directly help with the research that I am doing.<br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=2721843" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/2721851/Re-Testing-NN-kernel-code.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF2721851">5.00/5 (1 vote) </span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd HdUnSel " id="F2722559_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="52px" class="Frm_MsgIndent"><a name="xx2722559xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="2722559" href="/Messages/2722559/Re-Testing-NN-kernel-code.aspx">Re: Testing NN kernel code</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=1850775">billconan</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">16:47 13 Sep '08 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F2722559_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="52"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="52px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">it seems that each neural node is handled by a single thread in our program. so, as for the digit recognition program, i guess there is no need to use more threads and i don't know how.<br /><br />the neural network computing is not a completely parallel procedure. you have to feed the result of the first layer into the second layer as the input.<br /><br />if you can think of a way that finishes all the computation within only one layer, i think maybe you can make use of more threads.<br /><br />or may be you can try a more complex neural network, i.e more layers and larger feature maps. but will the accuracy increase? i doubt it.<br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=2721843" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/2722559/Re-Testing-NN-kernel-code.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF2722559"></span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd HdUnSel " id="F2724467_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="70px" class="Frm_MsgIndent"><a name="xx2724467xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="2724467" href="/Messages/2724467/Re-Testing-NN-kernel-code.aspx">Re: Testing NN kernel code</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=5298015">cael47</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">8:31 15 Sep '08 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F2724467_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="70"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="70px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">I would imagine one possible way to due it is to just replicate all the layers so that it works on multiple digits at once.<br /><br />This leads to my next question:<br />I'm not quite sure how to interpret the output of the NN kernel.<br /><br />I assume your input digit is specified by Layer1_Neurons_CPU[]:<br />float Layer1_Neurons_CPU[29*29]={<br />1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,0,0,0,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,<br />1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};<br /><br />I assume this is a '2'. The outputs of the program (e.g. the output[] array) all seem to be close to either positive or negative one.<br />Does this have something to do with the 'certainty' of the program in recognizing the digit?<br />In that case, how can I know what the program actually thinks what the number is?<br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=2721843" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/2724467/Re-Testing-NN-kernel-code.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF2724467"></span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd HdUnSel " id="F2724844_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="88px" class="Frm_MsgIndent"><a name="xx2724844xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="2724844" href="/Messages/2724844/Re-Testing-NN-kernel-code.aspx">Re: Testing NN kernel code</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=1850775">billconan</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">13:13 15 Sep '08 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F2724844_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="88"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="88px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">the output is a set of 10 numbers, the index of the largest value indicates the result.<br /><br />you should read the reference article that i mentioned on the top.<br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=2721843" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/2724844/Re-Testing-NN-kernel-code.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF2724844"></span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd HdUnSel " id="F2724868_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="106px" class="Frm_MsgIndent"><a name="xx2724868xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="2724868" href="/Messages/2724868/Re-Testing-NN-kernel-code.aspx">Re: Testing NN kernel code</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=5298015">cael47</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">13:46 15 Sep '08 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F2724868_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="106"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="106px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">Oh, okay. Thanks <img src="/script/Forums/Images/smiley_smile.gif" align="top" alt="Smile" /> <br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=2721843" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/2724868/Re-Testing-NN-kernel-code.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF2724868"></span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="root msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd Rt HdUnSel " id="F2678149_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="16px" class="Frm_MsgIndent"><a name="xx2678149xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="2678149" href="/Messages/2678149/question-about-performance.aspx">question about performance</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=5436312">AIGPU</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">23:50 13 Aug '08 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F2678149_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="16"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="16px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">I've tried to set your code up and running. I encountered some Visual Studio's project problems...<br />Anyway... the code is running, but...<br />when I measure the processing time, I get something like 0.665652 ms for one test, which is 10 times higher than your time. (The time was measured uncommenting some lines in the code and looping 1000 kernel's calls:<br /><pre>	CUT_SAFE_CALL(cutCreateTimer(&amp;timer));<br />	CUT_SAFE_CALL(cutStartTimer(timer));<br /><br />	<span class="code-keyword">for</span> (int i=0; i&lt;1000; i++){<br /><br />	dim3 Layer1_Block(<span class="code-digit">6</span>,<span class="code-digit">1</span>);<br />	dim3 Layer1_Thread(<span class="code-digit">13</span>,<span class="code-digit">13</span>);<br />	executeFirstLayer&lt;&lt;&lt;layer1_block,layer1_thread&gt;&gt;&gt;(Layer1_Neurons_GPU,Layer1_Weights_GPU,Layer2_Neurons_GPU);<br /><br />	dim3 Layer2_Block(<span class="code-digit">50</span>,<span class="code-digit">1</span>);<br />	dim3 Layer2_Thread(<span class="code-digit">5</span>,<span class="code-digit">5</span>);<br />	executeSecondLayer&lt;&lt;&lt;layer2_block,layer2_thread&gt;&gt;&gt;(Layer2_Neurons_GPU, Layer2_Weights_GPU,Layer3_Neurons_GPU);<br /><br />	dim3 Layer3_Block(<span class="code-digit">100</span>,<span class="code-digit">1</span>);<br />	dim3 Layer3_Thread(<span class="code-digit">1</span>,<span class="code-digit">1</span>);<br />	executeThirdLayer&lt;&lt;&lt;layer3_block,layer3_thread&gt;&gt;&gt;(Layer3_Neurons_GPU, Layer3_Weights_GPU,Layer4_Neurons_GPU);<br /><br />	dim3 Layer4_Block(<span class="code-digit">10</span>,<span class="code-digit">1</span>);<br />	dim3 Layer4_Thread(<span class="code-digit">1</span>,<span class="code-digit">1</span>);<br />	executeFourthLayer&lt;&lt;&lt;layer4_block,layer4_thread&gt;&gt;&gt;(Layer4_Neurons_GPU,Layer4_Weights_GPU,Layer5_Neurons_GPU);<br /><br />	CUT_CHECK_ERROR(<span class="code-string">"</span><span class="code-string">Kernel execution failed"</span>);<br />	}<br /><br />	//stop timer<br />	CUT_SAFE_CALL(cutStopTimer(timer));<br />	totaltime = cutGetTimerValue(timer);<br /></pre>	<br />)<br /><br />I have to mention that I'm using a GTX280 on a Core2Duo 2,4GHz.<br /><br />Have you an idea about my problem?<br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=2678149" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/2678149/question-about-performance.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF2678149"></span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd HdUnSel " id="F2679138_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="34px" class="Frm_MsgIndent"><a name="xx2679138xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="2679138" href="/Messages/2679138/Re-question-about-performance.aspx">Re: question about performance</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=1850775">billconan</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">9:45 14 Aug '08 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F2679138_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="34"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="34px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">i forgot how i measured the running time.<br />normally, i would loop the code for more than 1 sec. i forgot why, but this is how people measure the running time in lots of projects that i have seen.<br /><br />what problem did you encounter? are you sure the code running properly, i.e recognize the digits? <br /><br />this project only works under vs2005.<br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=2678149" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/2679138/Re-question-about-performance.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF2679138"></span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd HdUnSel " id="F2679799_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="52px" class="Frm_MsgIndent"><a name="xx2679799xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="2679799" href="/Messages/2679799/Re-question-about-performance.aspx">Re: question about performance</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=5436312">AIGPU</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">0:22 15 Aug '08 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F2679799_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="52"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="52px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">I had to import your files (nn.cu and nn_kernel.cu) in the template project (which comes with the NVIDIA SDK 2.0 Beta). The problems were with the include files.<br /><br />I'm using vs2005 express edition. I increased the number of loops to 10000, but i've got the same result.<br /><br />Yes, it seems to run properly since the output values are:<br /><br />output[0] = -0.988<br />output[1] = -1.000<br />output[2] =  0.924<br />output[3] = -0.978<br />output[4] = -1.135<br />output[5] = -0.966<br />output[6] = -0.973<br />output[7] = -0.943<br />output[8] = -1.116<br />output[9] = -0.875<br /><br />(The input digit is always the same, to be more precise, is the 2 hardcoded in <i>Layer1_Neurons_CPU</i> )<br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=2678149" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/2679799/Re-question-about-performance.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF2679799"></span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd HiVote HdUnSel " id="F2681096_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="52px" class="Frm_MsgIndent"><a name="xx2681096xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="2681096" href="/Messages/2681096/Re-question-about-performance-modified.aspx">Re: question about performance [modified]</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=5436312">AIGPU</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">1:41 16 Aug '08 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F2681096_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="52"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="52px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">"i forgot how i measured the running time.<br />normally, i would loop the code for more than 1 sec. i forgot why, but this is how people measure the running time in lots of projects that i have seen.<br /><br />what problem did you encounter? are you sure the code running properly, i.e recognize the digits?<br /><br />this project only works under vs2005."<br /><br />After more tests, I realized that if I measure the time without the loop (exactly your code) I obtained approximately your time (0.045ms). If I loop the test 10000 times (the code from previous post) I get 0.65ms for one iteration, which is more than ten times than your time. <br />So, it is possible that you measured the time with only one iteration, which provides incorrect results?<br /><br />I measured also the EmuRelease time and it is 23ms/image. This is useful for comparing my CPU speed with your Xeon CPU speed (40ms/image).<br />You state that the CPU implementation took 16ms/image. I assume that this is the Mike's implementation which is quite slow because of extensive use of classes and vectors. Anyway, on my CPU the Mike's version took 2.7ms/image(maybe your 16ms/image is in debug mode?). My CPU implementation which is without classes, with C arrays, took 1.26ms/image (including all IO operation). I have offered you all this data hoping that you can figure out what is the problem.<br /><br />I want to implement the training algorithm using GPU and until now all our tests show that the CPU implementation is very fast even without optimizations. More exactly, our CPU implementation of testing (forward propagation) takes 12.6s on the 10000 images from MNIST test file. If your implementation on GPU takes 0.65ms on one image, then on all images from the test set will take 6.5 seconds plus additional time needed for IO operation and so on. Consequently, the GPU version (GTX 280) will be only two times (approx) faster than the one-thread CPU version on a Core2Duo 2,4GHz.<br /><br />Considering all these aspects, can you please verify that your time was correctly measured? (looping at least 1000 times). I would appreciate very much if you would take the time to redo the experiments, because I invest in the GTX280 and ATI Radeon 4850, and on both of them the corresponding GPU implementations(CUDA and BROOK) of the forward propagation algorithm are quite disappointing (the Brook version is even slower than the CPU version, but it has very few optimizations). <br /><br /><div class="ForumMod">modified on Saturday, August 16, 2008 7:02 AM</div><br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=2678149" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/2681096/Re-question-about-performance-modified.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF2681096">5.00/5 (1 vote) </span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr class="quick">
+<td class="msg-divide"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="1px" alt="" /></td>
+</tr>
+<!-- Start Message head -->
+
+<tr class="MsgHd HdUnSel " id="F2685344_h0">
+<td width="100%"><table class="quickHd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr class="hover-row">
+<td width="70px" class="Frm_MsgIndent"><a name="xx2685344xx"></a><img height="16px" width="16px" align="top" src="/script/Forums/Images/msg_general.gif" alt="General" /></td><td class="Frm_MsgSubject hover-container"><a id="DynMessLink" name="2685344" href="/Messages/2685344/Re-question-about-performance.aspx">Re: question about performance</a> <a onclick="return Pin(this);" href="#" title="Click to pin message"><img src="http://s.codeproject.com/script/Forums/Images/pin.gif" border="0" align="top" alt="Pin" width="13px" height="12px" /></a></td><td width="20" nowrap="nowrap"><img border="0" src="http://s.codeproject.com/script/Membership/Images/member_sm.gif" title="member" alt="member" height="16px" /></td><td class="Frm_MsgAuthor"><a href="/script/Membership/View.aspx?mid=1850775">billconan</a></td><td class="Frm_MsgDate" valign="top" nowrap="nowrap">15:01 19 Aug '08 &nbsp;</td>
+</tr>
+</table></td>
+</tr><!-- End Message head -->
+
+<tr id="F2685344_h1" style="display:none;">
+<td width="100%"><table class="quickBd" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="Frm_MsgIndent" width="70"><img src="http://s.codeproject.com/script/Forums/Images/t.gif" height="1px" width="70px" alt="" /></td><td class="MsgBd BdSel "><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2">may be you are right. the way by which i measured the running time was not right.<br />thank you.<br /></td>
+</tr><tr valign="middle">
+<td class="msg-footer"><a class="toolbar" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fKB%2fgraphics%2fGPUNN.aspx">Sign In</a>·<a class="toolbar" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;sort=Position&amp;tid=2678149" title="View&nbsp;Thread">View&nbsp;Thread</a>·<a class="toolbar" href="/Messages/2685344/Re-question-about-performance.aspx" title="Get permanent link">PermaLink</a></td><td class="msg-footer" align="right"><span id="MVF2685344"></span></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><img src="http://s.codeproject.com/script/Forums/Images/t.gif" border="0" width="1px" height="5px" alt="" /></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><table width="100%" cellpadding="2px" cellspacing="0">
+<tr class="forum-footer">
+<td>Last Visit: 19:00 31 Dec '99  &nbsp; &nbsp; Last Update: 4:10 20 Dec '10 </td><td align="right" nowrap="nowrap"><input id="_mbnUrl" type="hidden" value="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;noise=3&amp;sort=Position&amp;view=Quick&amp;fr=26" /><b>1</b><a class="toolbar" name="Frm_HoverNL" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;noise=3&amp;sort=Position&amp;view=Quick&amp;fr=26#xx0xx">2</a> <a class="toolbar" name="Frm_HoverNL" href="/KB/graphics/GPUNN.aspx?fid=1108468&amp;df=90&amp;mpp=25&amp;noise=3&amp;sort=Position&amp;view=Quick&amp;fr=26#xx0xx">Next »</a></td>
+</tr>
+</table></td>
+</tr>
+</table>
+</div><p class="small-text"><img align="top" src="/script/Forums/Images/msg_general.gif" width="16px" height="16px" alt="General" /> General &nbsp;&nbsp; <img align="top" src="/script/Forums/Images/msg_news.gif" width="16px" height="16px" alt="News" /> News &nbsp;&nbsp; <img align="top" src="/script/Forums/Images/msg_question.gif" width="16px" height="16px" alt="Question" /> Question &nbsp;&nbsp; <img align="top" src="/script/Forums/Images/msg_answer.gif" width="16px" height="16px" alt="Answer" /> Answer &nbsp;&nbsp; <img align="top" src="/script/Forums/Images/msg_joke.gif" width="16px" height="16px" alt="Joke" /> Joke &nbsp;&nbsp; <img align="top" src="/script/Forums/Images/msg_rant.gif" width="16px" height="16px" alt="Rant" /> Rant &nbsp;&nbsp; <img align="top" src="/script/Forums/Images/msg_admin.gif" width="16px" height="16px" alt="Admin" /> Admin &nbsp;&nbsp; </p><p class="small-text">Use Ctrl+Left/Right to switch messages, Ctrl+Up/Down to switch threads, Ctrl+PgUp/PgDown to switch pages.</p>
+<!-- Forum End -->
+
+
+
+
+			
+			<div class="theme1-background" style="height:2px"></div>
+
+			<div class="extended tiny-text">
+				<div class="row" style="margin:auto;">
+					<div class="float-left">
+						<a id="ctl00_PermaLink" href="/KB/graphics/GPUNN.aspx">PermaLink</a> | 
+						<a id="ctl00_PrivacyLink" href="/info/privacy.aspx">Privacy</a> |
+						<a id="ctl00_TermsOfUseLink" href="/info/TermsOfUse.aspx">Terms of Use</a>
+						<br />Last Updated: 13 Mar 2008<br />
+						<br />
+					</div>
+					<div class="float-right align-right">
+						Copyright 2008 by billconan, kavinguy<br />Everything else
+						Copyright &copy; <a href="mailto:webmaster@codeproject.com">CodeProject</a>, 1999-2010 <br />
+						Web20 |
+						<a id="ctl00_AdvertiseLink" href="/info/MediaKit.aspx">Advertise on the Code Project </a>
+					</div>
+				</div>
+			</div>
+			
+
+		
+
+	</div>
+	
+
+	
+	<div id="ctl00_NavRight" class="nav-right">
+
+		
+
+		<script type="text/javascript">document.write(unescape('%0d%0a%3cdiv class%3d%22announce%22%3e%0d%0a%0d%0a%3cdiv class%3d%22announce-content%22%3e%09%0d%0a%0d%0a%0d%0a%3cdiv class%3d%22container-adwords%22%3e%0d%0a%09%3ca id%3d%22ctl00_CatalogItems_FeatureItemRptr_ctl00_Link%22 href%3d%22%2fscript%2fCatalog%2fRedir.aspx%3fctid%3d2966%26amp%3bcttype%3d2%22 target%3d%22_blank%22%3e%3cspan id%3d%22ctl00_CatalogItems_FeatureItemRptr_ctl00_Title%22 class%3d%22title%22%3eSpread for ASP.NET by GrapeCity%3c%2fspan%3e%3cbr %2f%3e%0d%0a%09%09%3cspan id%3d%22ctl00_CatalogItems_FeatureItemRptr_ctl00_Teaser%22 title%3d%22FarPoint Spread for ASP.NET 5 by GrapeCity is a full-featured AJAX powered Microsoft Excel compatible spreadsheet component for ASP.NET with integrated charting%2c dynamic data binding%2c Excel import-export and allows full spreadsheet user experience within the browser.%22 class%3d%22desc%22%3eFarPoint Spread for ASP.NET 5 by GrapeCity is...%3c%2fspan%3e%3cbr %2f%3e%0d%0a%09%09%3cspan id%3d%22ctl00_CatalogItems_FeatureItemRptr_ctl00_Url%22 class%3d%22link%22%3ewww.farpointspread.com%3c%2fspan%3e%3c%2fa%3e%0d%0a%3c%2fdiv%3e%0d%0a%0d%0a%3cdiv class%3d%22container-adwords%22%3e%0d%0a%09%3ca id%3d%22ctl00_CatalogItems_FeatureItemRptr_ctl01_Link%22 href%3d%22%2fscript%2fCatalog%2fRedir.aspx%3fctid%3d2682%26amp%3bcttype%3d2%22 target%3d%22_blank%22%3e%3cspan id%3d%22ctl00_CatalogItems_FeatureItemRptr_ctl01_Title%22 class%3d%22title%22%3eActiveAnalysis for Silverlight%2c WinForms%2c ASP.NET by GrapeCity%3c%2fspan%3e%3cbr %2f%3e%0d%0a%09%09%3cspan id%3d%22ctl00_CatalogItems_FeatureItemRptr_ctl01_Teaser%22 title%3d%22ActiveAnalysis is a complete OLAP%2c data visualization and business intelligence component for Silverlight%2c Windows Forms and ASP.NET. With the ability to connect to virtually any data source and support for three development platforms%2c rolling out your own BI applications is easier than ever!%22 class%3d%22desc%22%3eActiveAnalysis is a complete OLAP%2c data...%3c%2fspan%3e%3cbr %2f%3e%0d%0a%09%09%3cspan id%3d%22ctl00_CatalogItems_FeatureItemRptr_ctl01_Url%22 class%3d%22link%22%3ewww.datadynamics.com%3c%2fspan%3e%3c%2fa%3e%0d%0a%3c%2fdiv%3e%0d%0a%0d%0a%3cdiv class%3d%22container-adwords%22%3e%0d%0a%09%3ca id%3d%22ctl00_CatalogItems_FeatureItemRptr_ctl02_Link%22 href%3d%22%2fscript%2fCatalog%2fRedir.aspx%3fctid%3d3521%26amp%3bcttype%3d2%22 target%3d%22_blank%22%3e%3cspan id%3d%22ctl00_CatalogItems_FeatureItemRptr_ctl02_Title%22 class%3d%22title%22%3eNew Team Foundation Server 2010 Hosting - Click Here!%3c%2fspan%3e%3cbr %2f%3e%0d%0a%09%09%3cspan id%3d%22ctl00_CatalogItems_FeatureItemRptr_ctl02_Teaser%22 title%3d%22Get NEW Hosted Team Foundation Server (TFS) 2010 with Bug%2fIssue Tracking and Version Source Control for only %2420%2fmo with Monthly Billing %26amp%3b No Long Term Contracts. %22 class%3d%22desc%22%3eGet NEW Hosted Team Foundation Server (TFS)...%3c%2fspan%3e%3cbr %2f%3e%0d%0a%09%09%3cspan id%3d%22ctl00_CatalogItems_FeatureItemRptr_ctl02_Url%22 class%3d%22link%22%3ewww.discountasp.net%3c%2fspan%3e%3c%2fa%3e%0d%0a%3c%2fdiv%3e%0d%0a%0d%0a%0d%0a%3c%2fdiv%3e%0d%0a%3c%2fdiv%3e%0d%0a%0d%0a%0d%0a'));</script>
+
+		
+
+		
+<div class="announce">
+<div class="announce-header">See Also...</div>
+<div class="announce-content">	
+
+
+<div class="container-related-item">
+	<a id="ctl00_RelatedArticles_RelatedItemRptr_ctl00_TitleLink" class="title" href="/KB/aspnet/Creating_PDF_documents_in.aspx">Creating PDF Documents in ASP.NET</a><br />
+	<span id="ctl00_RelatedArticles_RelatedItemRptr_ctl00_Teaser" class="desc">How to create PDF documents in ASP.NET.</span><br />
+</div>
+
+<div class="container-related-item">
+	<a id="ctl00_RelatedArticles_RelatedItemRptr_ctl01_TitleLink" class="title" href="/KB/database/CsvReader.aspx">A Fast CSV Reader</a><br />
+	<span id="ctl00_RelatedArticles_RelatedItemRptr_ctl01_Teaser" class="desc">A reader that provides fast, non-cached,...</span><br />
+</div>
+
+<div class="container-related-item">
+	<a id="ctl00_RelatedArticles_RelatedItemRptr_ctl02_TitleLink" class="title" href="/KB/aspnet/ImportExportCSV.aspx">A Simplified SQL-CSV Import/Export Functionality</a><br />
+	<span id="ctl00_RelatedArticles_RelatedItemRptr_ctl02_Teaser" class="desc">A simplified SQL-CSV import/export functionality.</span><br />
+</div>
+
+<div class="container-related-item">
+	<a id="ctl00_RelatedArticles_RelatedItemRptr_ctl03_TitleLink" class="title" href="/KB/database/FinalCSVReader.aspx">Importing CSV Data and saving it in database</a><br />
+	<span id="ctl00_RelatedArticles_RelatedItemRptr_ctl03_Teaser" class="desc">This article shows how to import CSV data and...</span><br />
+</div>
+
+<div class="container-related-item">
+	<a id="ctl00_RelatedArticles_RelatedItemRptr_ctl04_TitleLink" class="title" href="/KB/database/TransferUsingSQLBulkCopy.aspx">Transferring Data Using SqlBulkCopy</a><br />
+	<span id="ctl00_RelatedArticles_RelatedItemRptr_ctl04_Teaser" class="desc">An article on how to transfer data using...</span><br />
+</div>
+
+</div>
+</div>
+
+
+
+
+		
+
+<div class="announce ">
+<div class="announce-header">Announcements</div>
+<div class="announce-content">
+<table cellpadding="2">
+
+
+
+
+
+
+
+
+
+
+
+<tr valign="middle"><td><img id="ctl00_Announcements_News_ctl00_Img" src="/script/News/NewsImages/14133.png" alt="News" align="middle" height="24" width="24" border="0" /></td>
+<td><a id="ctl00_Announcements_News_ctl00_Link" href="http://www.virtualtechsummits.com/Register.aspx?EventID=5">Mobile Virtual Tech Summit On Demand</a></td></tr>
+
+<tr valign="middle"><td><img id="ctl00_Announcements_News_ctl01_Img" src="/script/News/NewsImages/13270.png" alt="News" align="middle" height="24" width="24" border="0" /></td>
+<td><a id="ctl00_Announcements_News_ctl01_Link" href="http://www.codeproject.com/Competitions/440/Windows-Azure-App-Competition.aspx">Got an Azure app? Win an Xbox & Kinect</a></td></tr>
+
+
+
+
+</table>
+</div>
+</div>
+
+		
+<div class="announce">
+<div class="announce-header">The Daily Insider</div>
+<div class="announce-content">
+
+<div><a id="ctl00_News_News_ctl01_Link" href="http://citizen428.net/archives/434">30 free programming books</a></div>
+
+Daily News: <a id="ctl00_News_News_ctl02_Subscribe" href="/Feature/Insider/">Signup now</a>.
+</div>
+</div>
+		
+
+		<div style="margin:auto;width:150px"><div class="lqm_ad" width="150px" height="80px" lqm_channel="1" lqm_publisher="495" lqm_zone="77" lqm_format="21" lqm_country='PH' lqm_tags='VC8.0,WinXP,C#2.0,C++,C#,Windows,Win32,Architect,Dev,Beginner,Intermediate,Advanced'></div>
+		</div>
+	
+		<div style="margin:auto;width:160px;margin-top:10px"><div class="lqm_ad" width="160px" height="600px" lqm_channel="1" lqm_publisher="495" lqm_zone="77" lqm_format="18" lqm_country='PH' lqm_tags='VC8.0,WinXP,C#2.0,C++,C#,Windows,Win32,Architect,Dev,Beginner,Intermediate,Advanced'></div>
+		</div>
+
+	</div>
+	
+
+	</div>
+
+</div>
+
+
+</div>
+</div>
+
+
+<script type="text/javascript" language="Javascript" src="http://ajax.microsoft.com/ajax/jQuery/jquery-1.4.2.min.js"></script><script type='text/javascript'>//<![CDATA[
+if (typeof jQuery == 'undefined') {
+    document.write(unescape("%3Cscript src='/script/JS/jquery-1.4.2.min.js' type='text/javascript' %3E%3C/script%3E"));
+}//]]></script>
+<script type="text/javascript" language="Javascript" src="http://s.codeproject.com/script/Articles/JS/article.min.js?dt=2.3.101220.2"></script>
+<script type="text/javascript" language="Javascript" src="http://cdn1.lakequincy.com/m.min.js"></script>
+<script type="text/javascript" language="Javascript">//<![CDATA[
+var socialLinks = new social();
+socialLinks.PlaceholderId="ATD";socialLinks.ObjectId=24361;
+socialLinks.ObjectTypeId=2;
+socialLinks.addtoMethod=1;
+socialLinks.Horizontal=false;
+socialLinks.Showname=true;
+socialLinks.setupLinks("socialLinks", escape(document.location.href),escape(document.title), 100, 0, "small-text Bold", "AddTo");
+socialLinks.setupMenu();
+if($.LqmAds)$.LqmAds();
+var oSrchFlt = false, oSrchBox=false,srchBoxFoc=false;
+$(document).ready(function() {
+ InitWatermark('sb_tb', 'Search');
+ var sbar = $('#sb_tb'); 
+ var sfilter = $('#SearchFilter');
+ if (sbar && sfilter) {
+  sfilter.removeClass('popup'); sfilter.hide();
+  sbar.blur(function() { if (!oSrchFlt)sfilter.hide();srchBoxFoc=false; });
+  sbar.focus(function() { oSrchFlt=false;srchBoxFoc=true;sfilter.show(); });
+  sbar.mouseleave(function() { oSrchBox=false; });
+  sbar.mouseover(function() { oSrchBox=true; });
+  sfilter.mouseleave(function() { oSrchFlt=false; if (!srchBoxFoc&&!oSrchBox)sfilter.hide();});
+  sfilter.mouseover(function() { oSrchFlt=true; });
+ }
+});
+$("#ctl00_RateArticle_RateItemWrapper").removeClass("container-rating");$('#clear-rate_ctl00_RateArticle_RCD').click(function () { $('#ctl00_RateArticle_RCD').hide(); return false;});
+function ChkRtctl00_RateArticle(val, objId) {if (val<=3||true) {
+$('div[name=RateItem_' + objId + '] .rating-comment').css("display","");}
+else $('div[name=RateItem_' + objId + '] .rating-comment').css("display","none");}
+
+
+//]]>
+</script>
+
+
+
+<script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', 'UA-1735123-1']);
+	_gaq.push(['_trackPageview']);
+	_gaq.push(['_setDomainName', 'www.codeproject.com']);
+	_gaq.push(['_setSessionTimeout', '1200']); 
+
+	(function () {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+	})(); 
+</script>
+
+</body>
+</html>

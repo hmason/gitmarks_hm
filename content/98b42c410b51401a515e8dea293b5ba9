@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head profile="http://gmpg.org/xfn/11">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Disk IO and throughput benchmarks on Amazon&#8217;s EC2 &#8211;  stu.mp</title>
+    <link rel="openid.server" href="http://www.myopenid.com/server" />
+    <link rel="openid.delegate" href="http://joestump.myopenid.com" />
+    <link rel="stylesheet" href="http://stu.mp/wp-content/themes/cartoon/style.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/wp-content/themes/cartoon/css/thickbox.css" type="text/css" media="screen" />
+    <link rel="alternate" type="application/rss+xml" title="stu.mp" href="http://stu.mp/feed/"> 
+    <script type="text/javascript" src="/wp-content/themes/cartoon/js/jquery.js"></script>
+    <script type="text/javascript" src="/wp-content/themes/cartoon/js/jquery-thickbox.js"></script>
+    <script type="text/javascript">
+        tb_pathToImage = '/wp-content/themes/cartoon/images/loadingAnimation.gif';
+    </script>
+    <link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://stu.mp/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://stu.mp/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='stu.mp' href='http://stu.mp' />
+<link rel='start' title='Jared the Subway Guy' href='http://stu.mp/2003/11/jared-the-subway-guy.html' />
+<link rel='prev' title='Welcome to stu.mp' href='http://stu.mp/2009/12/welcome-to-stu-mp.html' />
+<link rel='next' title='Year in Review' href='http://stu.mp/2009/12/year-in-review-5.html' />
+<meta name="generator" content="WordPress 2.8.5" />
+<script type="text/javascript" src="http://stu.mp/wp-content/plugins/lifestream/lifestream.js"></script><link rel="stylesheet" type="text/css" media="screen" href="http://stu.mp/wp-content/plugins/lifestream/themes/cartoon/media/lifestream.css"/></head>
+<body class="single postid-4192">
+	<div id="wrapper">
+	<div class="fence_top">
+		<!-- Header -->
+		<div id="header">
+			<div class="face"><a href="/"><div class="hat"></div></a></div>
+			<div class="plane">
+				<h1 class="logo">I program in, write about, and present on <a href="/category/php">PHP</a>, <a href="/category/python">Python</a>, <a href="/category/django">Django</a> and <a href="/category/scaling">scaling websites</a>.</h1>
+			</div>
+		</div>
+
+		<div id="content">
+			<div class="content">
+				<div id="main">
+					<!-- Updates/Posts -->
+
+	
+		<div class="post-4192 post hentry category-benchmarks category-cloud-computing category-ec2 normal" id="post-4192">
+			<h2>Disk IO and throughput benchmarks on Amazon&#8217;s EC2</h2>
+            <h3>Posted on <a class="date" href="/2009/12">Wednesday, December 9th, 2009</a> at 11:49 am in <a href="http://stu.mp/category/benchmarks" title="View all posts in benchmarks" rel="category tag">benchmarks</a>,  <a href="http://stu.mp/category/cloud-computing" title="View all posts in cloud computing" rel="category tag">cloud computing</a>,  <a href="http://stu.mp/category/ec2" title="View all posts in ec2" rel="category tag">ec2</a></h3>
+
+            <div class="divider"></div> 
+			<div class="entry">
+				<p>When I told people that we were going to run our infrastructure on Amazon&#8217;s EC2 most people recoiled in disgust. I heard lots and lots of horror stories about how you simply couldn&#8217;t run production environments on EC2. Disk IO was horrible, throughput was bad, etc. Someone should seriously tell Amazon, since a lot of their own infrastructure runs in EC2 and AWS. For the most part, Amazon&#8217;s AWS were internal tools that they released publicly.</p>
+<p>We&#8217;ve been ironing out kinks in our production environment for the last few weeks and one of the things that worried me was if these assertions were true. So, I set out to run a fairly comprehensive test of Disk IO and throughput. I ran <code>hdparm -t</code>, <code>bonnie++</code>, and <code>iozone</code> against ephemeral drives in various configurations along with EBS volumes in various configurations.</p>
+<p>For all of my tests I tested the regular ephemeral drives as they were installed (&#8221;Normal&#8221;), LVM in a JBOD setup (&#8221;LVM&#8221;), the two ephemeral drives in a software RAID0 setup (&#8221;RAID0&#8243;), a single 100GB EBS volume (&#8221;EBS&#8221;), and two 100GB EBS volumes in a software RAID0 setup (&#8221;EBS RAID0&#8243;). All of the tests were ran on large instances (m1.large). All tests were ran using the XFS file system.</p>
+<p><strong><code>hdparm -t</code></strong></p>
+<p><img class="alignleft size-full wp-image-4199" title="EC2_RAID_JBOD" src="http://stu.mp/wp-content/uploads/2009/12/EC2_RAID_JBOD.jpg" alt="EC2_RAID_JBOD" width="469" height="316" />While <code>hdparm -t</code> isn&#8217;t the most comprehensive test in the world, I think it&#8217;s a decent gut check for simple throughput. To give a little context, I remember Digg&#8217;s production servers, depending on setup, ranging from 180MB/sec. to 340MB/sec. I&#8217;m guessing if you upgraded to the XL instance type and did a RAID0 across the four drives it has you&#8217;d see even better numbers with the RAID0 ephemeral drives.</p>
+<p>What I also found pretty interesting about these numbers is that the EBS volumes stacked up &#8220;okay&#8221; against the ephemeral drives and that the EBS volumes in a RAID0 didn&#8217;t gain us a ton of throughput. Considering that the EBS volumes run over the network, which I assume is gigabit ethernet, 94MB/sec. is pretty much saturating that network connection and, to say the least, impressive given the circumstances.</p>
+<p>For most applications, I&#8217;d guess that EBS throughput is just fine. The raw throughput only becomes a serious requirement when you&#8217;re moving around lots of large files. Most applications move around lots of small files, which I&#8217;d likely use S3 for anyways. If your application needs to move around lots of large files I&#8217;d consider using a RAID0 ephemeral drive setup with redundancy (e.g. MogileFS spreading files across many nodes in various data centers).</p>
+<p><strong><code>bonnie++</code></strong></p>
+<p><img class="alignleft size-full wp-image-4196" title="20091209-cgq7p1my7mtm5wmsyrjpas5xqf" src="http://stu.mp/wp-content/uploads/2009/12/20091209-cgq7p1my7mtm5wmsyrjpas5xqf.jpeg" alt="20091209-cgq7p1my7mtm5wmsyrjpas5xqf" width="521" height="379" />Disregarding the Input/Output Block performance of the ephemeral RAID0 setup here, it&#8217;s extremely interesting to note that EBS IO performance is better than the ephemeral drives and that EBS in a RAID0 was better in almost every metric as the ephemeral drives.</p>
+<p>That all being said, RAID0 ephemeral drives are the clear winner here. I do wonder, however, if you could set up a RAID0 EBS array that had, say, four or six or eight volumes that&#8217;d be faster than the RAID0 setup.</p>
+<p>If your application is IO bound then I&#8217;d probably recommend using EBS volumes if you can afford it. Otherwise, I&#8217;d use RAID0. Again, the trick with the ephemeral drives is to ensure your data is replicated across multiple nodes. Of course, this is cloud computing we&#8217;re talking about, so you should be doing that anyways.</p>
+<p><img style="float: left; border: 0px initial initial;" title="EC2_RAID_JBOD-1" src="http://stu.mp/wp-content/uploads/2009/12/EC2_RAID_JBOD-1.jpg" alt="EC2_RAID_JBOD-1" width="524" height="378" />Here&#8217;s the CPU numbers of the various configurations. One thing to note here is that EBS, LVM, and software RAID all come with CPU costs. Somewhat interesting to note is that the EBS has substantially less CPU usage in all areas except Input/Output Per Char.</p>
+<p>If your application is both CPU and IO bound then I&#8217;d probably recommend upgrading your instance to an XL.</p>
+<p><img class="alignleft size-full wp-image-4195" title="20091209-8kybaf7peu91m3puugxpr78reu" src="http://stu.mp/wp-content/uploads/2009/12/20091209-8kybaf7peu91m3puugxpr78reu.jpeg" alt="20091209-8kybaf7peu91m3puugxpr78reu" width="529" height="349" />The last <code>bonnie++</code> results are the random seeks per second and, wow, was I surprised. A single EBS runs pretty much dead even with the LVM JBOD and the EBS RAID0 is on par with the RAID0 ephemeral drives.</p>
+<p>To say I was surprised by these numbers would be an understatement. The lesson here is that, if your application does lots of random seeking, you&#8217;ll want to use either EBS RAID0 volumes or RAID0 ephemeral drives.</p>
+<p><strong><code>iozone</code></strong></p>
+<p>Before running these tests I&#8217;d never even heard of this application, but it seemed to be used by quite a few folks so I thought I&#8217;d give it a shot.</p>
+<p style="text-align: center;"><img class="size-full wp-image-4197 aligncenter" title="20091209-ejjcihfsn16hjdnrnfy1g2ptai" src="http://stu.mp/wp-content/uploads/2009/12/20091209-ejjcihfsn16hjdnrnfy1g2ptai.jpeg" alt="20091209-ejjcihfsn16hjdnrnfy1g2ptai" width="620" height="462" /></p>
+<p>Again, some interesting numbers from EBS volumes. What I found pretty interesting here is that the EBS RAID0 setups actually ended up being slower in a few metrics than a single EBS volume. No idea why that may be.</p>
+<p>The other thing to note is that the single EBS volume outperformed the ephemeral RAID0 setup in a few different metrics, most notably being random writes.</p>
+<p><strong>Conclusions</strong></p>
+<p>I think the overall conclusion here is that disk IO and throughput on EC2 is pretty darn good. I have a few other conclusions as well.</p>
+<ul>
+<li>If you can replicate your data across multiple nodes then the RAID0 ephemeral drives are the clear winners.</li>
+<li>If you are just looking to store lots of small files and serve them up, then definitely use S3 with CloudFront.</li>
+<li>You&#8217;d very likely get even more impressive numbers using the XL instances with RAID0 striped across four ephemeral drives.</li>
+<li>Another potential disk setup would be to put different datasets on different ephemeral drives. For instance, put one MySQL database on one ephemeral drive and your other one on another.</li>
+<li>If your setups are IO bound and you&#8217;re looking for lots of redundancy, then EBS volumes are likely the way to go. If you don&#8217;t need the super redundancy on a single box then use RAID0 on ephemeral drives.</li>
+</ul>
+            </div>
+		</div>
+
+	
+					<div class="clear"></div>
+				</div>
+
+					<div id="side">
+					<!-- Projects -->
+					<h2 class="projects"><span>Projects</span></h2>
+					<ul>
+						<li>
+							<a href="http://simplegeo.com"><img class="project-icon" src="/wp-content/themes/cartoon/images/projects/simplegeoinc" alt="Ready-to-use location infrastructure for developers." /></a>
+							<h3><a href="http://simplegeo.com">SimpleGeo</a></h3>
+							<p>Ready-to-use location infrastructure for developers. <!-- (<a href="http://twitter.com/simplegeoinc">@simplegeoinc</a>) --></p>
+							<div class="clear"></div>
+						</li>
+						<li>
+							<a href="http://tweetimag.es"><img class="project-icon" src="/wp-content/themes/cartoon/images/projects/tweetimages" alt="Consistent, predictable Twitter avatars backed by an enterpise CDN." /></a>
+							<h3><a href="http://tweetimag.es">tweetimag.es</a></h3>
+							<p>Consistent, predictable Twitter avatars backed by an enterpise CDN. <!-- (<a href="http://twitter.com/tweetimages">@tweetimages</a>) --></p>
+							<div class="clear"></div>
+						</li>
+					</ul>
+					<div class="divider"></div>
+					<!-- iPhone Apps -->
+					<h2 class="open-source"><span>Open Source Projects</span></h2>
+					<ul class="plain">
+<li class="foss"><h3><a href="https://pear.php.net/package/Net_Curl">Net_Curl</a> <span>php</span></h3></li><li class="foss"><h3><a href="https://pear.php.net/package/Net_Gearman">Net_Gearman</a> <span>php</span></h3></li><li class="foss"><h3><a href="https://pear.php.net/package/Payment_Process">Payment_Process</a> <span>php</span></h3></li><li class="foss"><h3><a href="https://pear.php.net/package/Services_Digg">Services_Digg</a> <span>php</span></h3></li><li class="foss"><h3><a href="https://pear.php.net/package/Services_Facebook">Services_Facebook</a> <span>php</span></h3></li><li class="foss"><h3><a href="https://pear.php.net/package/Services_Twitter">Services_Twitter</a> <span>php</span></h3></li><li class="foss"><h3><a href="https://pear.php.net/package/Services_oEmbed">Services_oEmbed</a> <span>php</span></h3></li><li class="foss"><h3><a href="https://pear.php.net/package/Services_urlTea">Services_urlTea</a> <span>php</span></h3></li><li class="foss"><h3><a href="http://github.com/joestump/db_virtual">db_virtual</a> <span>php</span></h3></li><li class="foss"><h3><a href="http://github.com/joestump/framework">framework</a> <span>php</span></h3></li><li class="foss"><h3><a href="http://github.com/joestump/jax">jax</a> <span>php</span></h3></li><li class="foss"><h3><a href="http://github.com/simplegeo/python-oauth2">python-oauth2</a> <span>python</span></h3></li><li class="foss"><h3><a href="http://github.com/joestump/python-simplexml">python-simplexml</a> <span>python</span></h3></li><li class="foss"><h3><a href="http://github.com/joestump/services_flickr">services_flickr</a> <span>php</span></h3></li>					</ul>
+					<div class="divider"></div>
+					<h2 class="categories"><span>Categories</span></h2>
+                    <ul class="plain">
+<li class="category foss"><h3><a href="/category/devrandom">/dev/random</a> <span class="categories-count">76</span></h3></li><li class="category foss"><h3><a href="/category/2006">2006</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/2007">2007</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/2008election">2008election</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/505-e-denny-way">505 e denny way</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/america">america</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/american-idol">american idol</a> <span class="categories-count">5</span></h3></li><li class="category foss"><h3><a href="/category/apache">apache</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/apple">apple</a> <span class="categories-count">7</span></h3></li><li class="category foss"><h3><a href="/category/architecture">architecture</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/asia">asia</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/back">back</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/barack-obama">barack obama</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/basketball">basketball</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/benchmarks">benchmarks</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/bike">bike</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/biking">biking</a> <span class="categories-count">5</span></h3></li><li class="category foss"><h3><a href="/category/book-reviews">book reviews</a> <span class="categories-count">3</span></h3></li><li class="category foss"><h3><a href="/category/burrito">burrito</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/bush">bush</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/business">business</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/california">california</a> <span class="categories-count">4</span></h3></li><li class="category foss"><h3><a href="/category/cambodia">cambodia</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/cars">cars</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/carsonified">carsonified</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/change">change</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/charity">charity</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/cities">cities</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/clap-your-hands-say-yeah">clap your hands say yeah</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/cloud-computing">cloud computing</a> <span class="categories-count">3</span></h3></li><li class="category foss"><h3><a href="/category/clustering">clustering</a> <span class="categories-count">7</span></h3></li><li class="category foss"><h3><a href="/category/code">code</a> <span class="categories-count">8</span></h3></li><li class="category foss"><h3><a href="/category/coding">coding</a> <span class="categories-count">4</span></h3></li><li class="category foss"><h3><a href="/category/college">college</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/conferences">conferences</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/correlateus">correlateus</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/craigslist">craigslist</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/crocodile">crocodile</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/database">database</a> <span class="categories-count">3</span></h3></li><li class="category foss"><h3><a href="/category/db">db</a> <span class="categories-count">10</span></h3></li><li class="category foss"><h3><a href="/category/death">death</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/debian">debian</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/delicious">delicious</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/dieting">dieting</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/digg">digg</a> <span class="categories-count">10</span></h3></li><li class="category foss"><h3><a href="/category/django">django</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/drugs">drugs</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/ec2">ec2</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/england">england</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/enterprise">enterprise</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/entrepreneurship">entrepreneurship</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/environment">environment</a> <span class="categories-count">6</span></h3></li><li class="category foss"><h3><a href="/category/europe">europe</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/exercise">exercise</a> <span class="categories-count">4</span></h3></li><li class="category foss"><h3><a href="/category/facebook">facebook</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/food">food</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/fowa">fowa</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/framework">framework</a> <span class="categories-count">4</span></h3></li><li class="category foss"><h3><a href="/category/fraternity">fraternity</a> <span class="categories-count">15</span></h3></li><li class="category foss"><h3><a href="/category/free-speech">free speech</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/fremont">fremont</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/friends">friends</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/funny">funny</a> <span class="categories-count">4</span></h3></li><li class="category foss"><h3><a href="/category/gambling">gambling</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/gdd20007">gdd20007</a> <span class="categories-count">4</span></h3></li><li class="category foss"><h3><a href="/category/geek-related">geek related</a> <span class="categories-count">112</span></h3></li><li class="category foss"><h3><a href="/category/gobama">gobama</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/google">google</a> <span class="categories-count">4</span></h3></li><li class="category foss"><h3><a href="/category/hacking">hacking</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/health">health</a> <span class="categories-count">4</span></h3></li><li class="category foss"><h3><a href="/category/healthfitness">health/fitness</a> <span class="categories-count">8</span></h3></li><li class="category foss"><h3><a href="/category/hiring">hiring</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/homecoming">homecoming</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/htmlcss">html/css</a> <span class="categories-count">9</span></h3></li><li class="category foss"><h3><a href="/category/i-almost-care">i almost care</a> <span class="categories-count">3</span></h3></li><li class="category foss"><h3><a href="/category/ian-mcferon">ian mcferon</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/in-the-news">in the news</a> <span class="categories-count">85</span></h3></li><li class="category foss"><h3><a href="/category/innodb">innodb</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/internet">internet</a> <span class="categories-count">4</span></h3></li><li class="category foss"><h3><a href="/category/iphone">iphone</a> <span class="categories-count">5</span></h3></li><li class="category foss"><h3><a href="/category/iraq">iraq</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/javascript">javascript</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/jokes">jokes</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/jquery">jquery</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/kasabian">kasabian</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/kirkland">kirkland</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/lamp">lamp</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/laos">laos</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/libertarianism">libertarianism</a> <span class="categories-count">7</span></h3></li><li class="category foss"><h3><a href="/category/lists">lists</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/london">london</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/man-law">man law</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/management">management</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/maya">maya</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/michigan">michigan</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/midwest">midwest</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/mississippi">mississippi</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/missy-higgins">missy higgins</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/money">money</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/move-to-seattle">move to seattle</a> <span class="categories-count">12</span></h3></li><li class="category foss"><h3><a href="/category/moving">moving</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/music">music</a> <span class="categories-count">4</span></h3></li><li class="category foss"><h3><a href="/category/musings">musings</a> <span class="categories-count">30</span></h3></li><li class="category foss"><h3><a href="/category/mvc">mvc</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/my-cat">my cat</a> <span class="categories-count">9</span></h3></li><li class="category foss"><h3><a href="/category/mysql">mysql</a> <span class="categories-count">16</span></h3></li><li class="category foss"><h3><a href="/category/mysqlconf">mysqlconf</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/mysqli">mysqli</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/nagios">nagios</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/neumos">neumos</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/nosql">nosql</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/obituary">obituary</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/ok-go">ok go</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/open-source">open source</a> <span class="categories-count">3</span></h3></li><li class="category foss"><h3><a href="/category/operation-fat-ass">operation fat ass</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/optimization">optimization</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/parc-on-summit">parc on summit</a> <span class="categories-count">5</span></h3></li><li class="category foss"><h3><a href="/category/partitioning">partitioning</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/pear">pear</a> <span class="categories-count">19</span></h3></li><li class="category foss"><h3><a href="/category/personal">personal</a> <span class="categories-count">100</span></h3></li><li class="category foss"><h3><a href="/category/photography">photography</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/php">php</a> <span class="categories-count">38</span></h3></li><li class="category foss"><h3><a href="/category/politics">politics</a> <span class="categories-count">84</span></h3></li><li class="category foss"><h3><a href="/category/portland">portland</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/pownce">pownce</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/presenations">presenations</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/programming">programming</a> <span class="categories-count">15</span></h3></li><li class="category foss"><h3><a href="/category/python">python</a> <span class="categories-count">3</span></h3></li><li class="category foss"><h3><a href="/category/rants">rants</a> <span class="categories-count">10</span></h3></li><li class="category foss"><h3><a href="/category/recruiting">recruiting</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/religion">religion</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/replication">replication</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/reviews">reviews</a> <span class="categories-count">11</span></h3></li><li class="category foss"><h3><a href="/category/ruby">ruby</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/running">running</a> <span class="categories-count">4</span></h3></li><li class="category foss"><h3><a href="/category/san-diego">san diego</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/san-francisco">san francisco</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/scaling">scaling</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/seattle">seattle</a> <span class="categories-count">8</span></h3></li><li class="category foss"><h3><a href="/category/site-updates">site updates</a> <span class="categories-count">10</span></h3></li><li class="category foss"><h3><a href="/category/slippery-slope">slippery slope</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/snowboarding">snowboarding</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/social-media">social media</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/social-networks">social networks</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/social-web">social web</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/sports">sports</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/ssl">ssl</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/startups">startups</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/stupid-schools">stupid schools</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/surgery">surgery</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/swimming">swimming</a> <span class="categories-count">3</span></h3></li><li class="category foss"><h3><a href="/category/sxsw">sxsw</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/system-admin">system admin</a> <span class="categories-count">10</span></h3></li><li class="category foss"><h3><a href="/category/talks">talks</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/technology">technology</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/thailand">thailand</a> <span class="categories-count">5</span></h3></li><li class="category foss"><h3><a href="/category/the-decemberists">the decemberists</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/theft">theft</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/this-interweb-thingy">this interweb thingy</a> <span class="categories-count">15</span></h3></li><li class="category foss"><h3><a href="/category/travel">travel</a> <span class="categories-count">20</span></h3></li><li class="category foss"><h3><a href="/category/trek-5200">trek 5200</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/triathlon">triathlon</a> <span class="categories-count">3</span></h3></li><li class="category foss"><h3><a href="/category/tv-shows">tv shows</a> <span class="categories-count">12</span></h3></li><li class="category foss"><h3><a href="/category/twitter">twitter</a> <span class="categories-count">3</span></h3></li><li class="category foss"><h3><a href="/category/uncategorized">Uncategorized</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/vacation">vacation</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/vietnam">vietnam</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/war">war</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/webdave">webdave</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/wheels">wheels</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/wikipedia">wikipedia</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/wordpress">wordpress</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/work">work</a> <span class="categories-count">18</span></h3></li><li class="category foss"><h3><a href="/category/year-in-review">year in review</a> <span class="categories-count">10</span></h3></li><li class="category foss"><h3><a href="/category/youtube">youtube</a> <span class="categories-count">1</span></h3></li><li class="category foss"><h3><a href="/category/zoom">zoom</a> <span class="categories-count">2</span></h3></li><li class="category foss"><h3><a href="/category/zorka">zorka</a> <span class="categories-count">1</span></h3></li>                    </ul>
+				</div>
+				<div class="clear"></div>
+			</div>
+
+
+			<!-- Design Related -->
+			<div class="top"></div>
+			<div class="bottom"></div>
+			<div class="pattern"></div>
+		</div>
+
+		<!-- Footer -->
+		<div id="footer">
+		<div class="soil">
+		<div class="container">
+			<!-- About Column -->
+			<div class="about">
+				<h2 class="hello-badge"><span>Hello my name is... Joe Stump</span></h2>
+				<p>Hi, I'm Joe Stump. I'm <abbr title="Chief Technical Officer">CTO</abbr> and co-founder of <a href="http://simplegeo.com">SimpleGeo</a>. Before that I was Lead Architect for Digg. In my spare time I like to run, bike, swim, play disc golf, go hiking, and snowboard. I appreciate Oxford commas.</p>
+				<a href="/2003/11/about-me.html" class="link"><span>More about me &raquo;</span></a>
+				<div class="divider"></div>
+				<p class="dark"><strong>&copy; Copyright Joe Stump 2009</strong><br />All rights reserved</p>
+			</div>
+			<!-- Elsewhere Column -->
+			<div class="elsewhere">
+				<h2 class="elsewhere-heading"><span>Elsewhere on the web</span></h2>
+				<div class="divider"></div>
+				<ul class="links">
+					<li><h3 class="twitter"><a href="http://twitter.com/joestump"><strong>twitter.com</strong>/joestump</a></h3></li>
+					<li><h3 class="flickr"><a href="http://flickr.com/photos/joestump"><strong>flickr.com</strong>/photos/joestump</a></h3></li>
+					<li><h3 class="digg"><a href="http://digg.com/users/joestump"><strong>digg.com</strong>/users/joestump</a></h3></li>
+
+                    <li><h3 class="facebook"><a href="http://facebook.com/joestump"><strong>facebook.com</strong>/joestump</a></h3></li>
+
+                    <li><h3 class="delicious"><a href="http://delicious.com/joestump"><strong>delicious.com</strong>/joestump</a></h3></li>
+                    <li><h3 class="linkedin"><a href="http://www.linkedin.com/in/joestump"><strong>linkedin.com</strong>/in/joestump</a></h3></li>
+
+					<li><h3 class="dopplr"><a href="http://www.dopplr.com/traveller/joestump"><strong>dopplr.com</strong>/traveler/joestump</a></h3></li>
+					<li><h3 class="tumblr"><a href="http://joestump.tumblr.com">joestump.<strong>tumblr.com</strong></a></h3></li>
+					<li><h3 class="lastfm"><a href="http://www.last.fm/user/joestump"><strong>last.fm</strong>/user/joestump</a></h3></li>
+				</ul>
+				<div class="divider"></div>
+				<a href="#" class="link"><span>Contact me &raquo;</span></a>
+			</div>
+			<!-- Presentations Column -->
+			<div class="presentations">
+				<h2 class="presentations-heading"><span>Presentations</span></h2>
+				<div class="divider"></div>
+
+				<div class="presentation">
+					<img src="/wp-content/themes/cartoon/images/slide_icon.gif" alt="" class="thumb" />
+					<p>
+						<span class="pres-title">Scaling your Tech Team</span>
+            on 02/2009 at Future of Web Apps <span class="pres-links">(<a href="http://events.carsonified.com/fowa/2009/miami/videos/joe-stump-2">Video</a>)</span>
+					</p>
+					<div class="clear"></div>
+				</div>
+				<div class="divider"></div>
+				<div class="presentation">
+					<img src="/wp-content/themes/cartoon/images/slide_icon.gif" alt="" class="thumb" />
+					<p>
+						<span class="pres-title">Rethinking the Stack</span>
+            on 05/2009 at EuroDjangoCon <span class="pres-links">(<a href="/presentations/EuroDjangoCon/2009/Rethinking_the_Stack.key.zip">Slides</a>)</span>
+					</p>
+					<div class="clear"></div>
+				</div>
+				<div class="divider"></div>
+				<div class="presentation">
+					<img src="/wp-content/themes/cartoon/images/slide_icon.gif" alt="" class="thumb" />
+					<p>
+						<span class="pres-title">Languages Don't Scale</span>
+            on 10/2008 at Future of Web Apps <span class="pres-links">(<a href="http://www.viddler.com/explore/carsonified/videos/13/">Video</a>, <a href="/presentations/FOWA/2008/Languages_Don't_Scale_-_London/slides.key.zip">Slides</a>)</span>
+					</p>
+					<div class="clear"></div>
+				</div>
+				<div class="divider"></div>
+				<div class="presentation">
+					<img src="/wp-content/themes/cartoon/images/slide_icon.gif" alt="" class="thumb" />
+					<p>
+						<span class="pres-title">Improving the Performance of Your Web App</span>
+            on 02/2008 at Future of Web Apps <span class="pres-links">(<a href="/presentations/FOWA/2008/Improving_the_Performance_of_Your_Web_App/audio.mp3">Audio</a>, <a href="/presentations/FOWA/2008/Improving_the_Performance_of_Your_Web_App/slides.key.zip">Slides</a>)</span>
+					</p>
+					<div class="clear"></div>
+				</div>
+				<div class="divider"></div>
+				<div class="presentation">
+					<img src="/wp-content/themes/cartoon/images/slide_icon.gif" alt="" class="thumb" />
+					<p>
+						<span class="pres-title">Services Oriented Architecture with PHP and MySQL</span>
+            on 04/2008 at MySQL Conference <span class="pres-links">(<a href="/presentations/MySQL_Conference/2008/Services_Oriented_Architecture_with_PHP_and_MySQL/slides.zip">Slides</a>)</span>
+					</p>
+					<div class="clear"></div>
+				</div>
+				<div class="divider"></div>
+
+				<a href="/presentations/" class="link"><span>See all &raquo;</span></a>
+			</div>
+			<div class="clear"></div>
+		</div>
+		</div>
+		</div>
+	</div>
+	</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-11947364-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="pt-br">
+<head>
+<title>Shorten URL using goo.gl</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" >
+<script src="http://www.google.com/jsapi" type="text/javascript"></script>
+<script type="text/javascript">
+var doit = function (b) {
+    function c() {
+        for (var l = 0, m = 0; m < arguments.length; m++) l = l + arguments[m] & 4294967295;
+        return l
+    }
+    function d(l) {
+        l = l = String(l > 0 ? l : l + 4294967296);
+        var m;
+        m = l;
+        for (var o = 0, n = false, p = m.length - 1; p >= 0; --p) {
+            var q = Number(m.charAt(p));
+            if (n) {
+                q *= 2;
+                o += Math.floor(q / 10) + q % 10
+            } else o += q;
+            n = !n
+        }
+        m = m = o % 10;
+        o = 0;
+        if (m != 0) {
+            o = 10 - m;
+            if (l.length % 2 == 1) {
+                if (o % 2 == 1) o += 9;
+                o /= 2
+            }
+        }
+        m = String(o);
+        m += l;
+        return l = m
+    }
+    function e(l) {
+        for (var m = 5381, o = 0; o < l.length; o++) m = c(m << 5, m, l.charCodeAt(o));
+        return m
+    }
+    function f(l) {
+        for (var m = 0, o = 0; o < l.length; o++) m = c(l.charCodeAt(o), m << 6, m << 16, -m);
+        return m
+    }
+    var g = "au";
+    g += "th";
+    g += "_";
+    g += "to";
+    g += "k";
+    g += "en";
+    var i = e(b);
+    i = i >> 2 & 1073741823;
+    i = i >> 4 & 67108800 | i & 63;
+    i = i >> 4 & 4193280 | i & 1023;
+    i = i >> 4 & 245760 | i & 16383;
+    var j = "7";
+    h = f(b);
+    var k = (i >> 2 & 15) << 4 | h & 15;
+    k |= (i >> 6 & 15) << 12 | (h >> 8 & 15) << 8;
+    k |= (i >> 10 & 15) << 20 | (h >> 16 & 15) << 16;
+    k |= (i >> 14 & 15) << 28 | (h >> 24 & 15) << 24;
+    j += d(k);
+    i = "user=";
+    i += "toolbar@google.com";
+    i += "&url=";
+    i += encodeURIComponent(b);
+    i += "&";
+    i += g;
+    i += "=";
+    i += j;
+    return i
+};
+google.load("jquery", "1.3.2");
+var getGoogl = function (url, callb) {
+    $.get('googl', doit(url), function (googl) {
+        callb({
+            "googl": googl.short_url
+        });
+    },
+    'json');
+};
+google.setOnLoadCallback(function () {
+    $("#long_url").focus();
+    $("#shorten").submit(function () {
+        $(".enc").slideUp(200);
+        $(".qr").slideUp(200);
+        $("#qrcode").remove();
+        $("#loading").remove();
+        $("#long_url").after("<img id=\"loading\" src=\"myball.gif\">");
+        var long_url = $("#long_url").val();
+        getGoogl(long_url, function (dat) {
+            $("#googl").val(dat.googl);
+            $(".qr").append('<img id=\"qrcode\" src=\"'+dat.googl+'.qr\"> Image URL: <input type=\"text\" name=\"qrurl\" value=\"'+dat.googl+'.qr\">');
+            $(".enc").slideDown(200);
+            $(".qr").slideDown(200);
+            $("#loading").remove();
+        });
+        return false;
+    });
+    $(".enc input").focus(function () {
+        this.select();
+    });
+});
+
+</script>
+<style type="text/css">
+body {font: 0.8em Verdana, sans-serif}
+.info {font-size: 0.7em;}
+label {display: block;}
+.enc, .qr {display: none;}
+.qr img {display: block; } 
+.qr {margin: 0.5em; font-size: 0.8em; } 
+img {border:0;}
+</style>
+</head>
+<body>
+<form method="get" action="" id="shorten">
+<fieldset><legend>Shorten URLs using goo.gl </legend>
+    <label>URL (including http://): <input type="text" size="40" id="long_url"></label>
+    <label class="enc"><strong>goo.gl</strong>: <input type="text" id="googl"></label>
+    <button type="submit">Shorten</button>
+    <fieldset class="qr"><legend>QR Code</legend></fieldset>
+</fieldset>
+</form>
+<p>Developed by <a href="http://gaigalas.net">Alexandre Gaigalas</a>. Follow <a href="http://twitter.com/alganet">@alganet</a> for updates. See also the <a href="https://chrome.google.com/extensions/detail/fdndabnoclcmkbdgakdhdpjghagfnapj">goo.gl Chrome Extension</a>.</p>
+<p class="info">Service NOT affiliated with <a href="http://google.com">Google</a>. Free, without any warranty. See <a href="http://goo.gl/">goo.gl</a> for more info.</p>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<!--
+<a href="http://sorteie.me/?utm_source=gaigalas.net&amp;utm_medium=banner&amp;utm_campaign=super_banner" target="_blank"><img alt="Sorteie.me - Realize sorteios via twitter" src="http://migre.me/img/728x60_Sorteieme.gif"></a> <div><small>thats an ad!</small></div>-->
+
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-619841-6");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</body>
+</html>
+
+

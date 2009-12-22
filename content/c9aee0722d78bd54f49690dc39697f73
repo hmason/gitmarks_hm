@@ -1,0 +1,876 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+
+	<title>A Crash Course in Django</title>
+
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="robots" content="all" />
+
+	<meta name="description" content="Web development frameworks enable you to build highly functional applications very quickly, and are increasingly seen as a must for any new project. Python-based Django bills itself as “the Web framework for perfectionists with deadlines,” and after following along with Akash’s crash course, I think you’ll have to agree!"/>
+	<link rel="shortcut icon" href="/favicon.ico" />
+	<link rel="search" type="application/opensearchdescription+xml" title="SitePoint Search" href="http://search.sitepoint.com/opensearch.xml"/>
+	<link rel="alternate" type="application/rss+xml" title="RSS - Articles" href="http://www.sitepoint.com/recent.rdf" />
+	<link rel="alternate" type="application/rss+xml" title="RSS - News" href="http://www.sitepoint.com/blogs/category/news/feed/" />
+	<link rel="alternate" type="application/rss+xml" title="RSS - Blogs" href="http://www.sitepoint.com/blogs.rdf" />
+	<link rel="alternate" type="application/rss+xml" title="RSS - Forums" href="http://www.sitepoint.com/forums/featured.rdf" />
+	<link rel="alternate" type="application/rss+xml" title="RSS - Books" href="http://www.sitepoint.com/books.rdf" />
+
+	<link rel="apple-touch-icon" href="http://1.sitepointstatic.com/images/icons/apple-touch-icon.png" />
+
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+	<script type="text/javascript" src="http://partner.googleadservices.com/gampad/google_service.js"></script><script type="text/javascript">GS_googleAddAdSenseService("ca-pub-9603645151104616"); GS_googleEnableAllServices(); </script><script type="text/javascript">GA_googleAddSlot("ca-pub-9603645151104616", "Articles_5_728x90"); GA_googleAddSlot("ca-pub-9603645151104616", "Articles_6_300x250"); GA_googleAddSlot("ca-pub-9603645151104616", "Articles_9a_300x100"); GA_googleAddSlot("ca-pub-9603645151104616", "Articles_9b_300x100"); GA_googleAddSlot("ca-pub-9603645151104616", "Articles_160x600_SkyScraper"); GA_googleAddSlot("ca-pub-9603645151104616", "Articles_300x250_2"); </script><script type="text/javascript">GA_googleFetchAds(); </script><link rel="stylesheet" href="http://1.sitepointstatic.com/bundle/standard.css,format.css,tabs-v5.css,cart.css,print.css?v=2.0.37" media="all" type="text/css" />
+<link rel="stylesheet" href="http://1.sitepointstatic.com/css3/structure.css?v=2.0.37" media="all" type="text/css" />
+<link rel="stylesheet" href="/static/articles/styles/article.css?v=2.0.37" media="screen,projection,print" type="text/css" />
+<link rel="stylesheet" href="http://i2.sitepoint.com/css2/promobar.css?v=2.0.37" media="all" type="text/css" />
+<!--[if lt IE 8]><link rel="stylesheet" href="http://1.sitepointstatic.com/css3/ie.css?v=2.0.37" media="screen,projection" type="text/css" /><![endif]-->
+<!--[if lt IE 7]><link rel="stylesheet" href="http://1.sitepointstatic.com/css3/ie6.css?v=2.0.37" media="screen,projection" type="text/css" /><![endif]-->
+</head>
+<body>
+<!--[if gte IE 8]><!-->
+
+
+<script type="text/javascript" src="http://sitepointstatic.com/frontpage/scripts/promobar.js"></script>
+<!--<![endif]--><script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script type="text/javascript">
+var SPMetrics_options = {
+	'original_referrer': document.referrer,
+	'context': 'articles',
+	'category': 'Server Side Essentials',
+	'group': 6
+};
+</script>
+<script src="http://metrics.aws.sitepoint.com/bouncer" type="text/javascript"></script>
+<div id="header">
+	<p>
+		<a href="http://www.sitepoint.com"><span></span>SitePoint</a>
+	</p>
+
+	<!-- Search -->
+
+	<form method="get" action="http://search.sitepoint.com" id="search">
+	<div>
+
+		<label for="mainsearchbox">Search Site</label>
+		<input id="mainsearchbox" type="text" name="q" value="" class="tbox" />
+		<input type="submit" value="Search" name="submit" class="button" />
+		<ul id="searchlinks">
+		<li><a href="http://search.sitepoint.com">Advanced Search</a></li>
+		<li><a href="http://www.sitepoint.com/sitemap">Sitemap</a></li>
+
+		</ul>
+	</div>
+	</form>
+
+</div>
+
+
+
+<!-- /Search -->
+  <!-- navigation bar -->
+  <div id="navcontainer">
+
+	<ul id="navlist">
+		
+		<li><a id="tabz" title="The best place to begin your SitePoint session" href="http://www.sitepoint.com/">Home</a></li>
+		<li><a id="taba" title="SitePoint&#8217;s renowned web development training products" href="http://products.sitepoint.com/">Products</a></li>
+		<li><a id="tabb" title="SitePoint&#8217;s renowned web development training courses" href="http://courses.sitepoint.com/">Courses</a></li>
+		<li><a accesskey="6" id="tabc" title="Our friendly, vibrant and well-informed community" href="http://www.sitepoint.com/forums/">Forums</a></li>
+		<li><a id="tabd" title="Daily comment across a range of web subjects by some of the top experts in their field" href="http://www.sitepoint.com/blogs/">Blogs</a></li>
+		<li><a id="tabe" title="Weekly podcast with news and commentary for professional web developers and designers" href="http://www.sitepoint.com/podcast/">Podcast</a></li>
+		<li><a id="tabf" title="One of the web&#8217;s largest repositories of &#8217;web know-how&#8217;" class="active" href="http://articles.sitepoint.com/">Articles</a></li>
+		<li><a accesskey="9" id="tabg" title="The Web&#8217;s most complete and up-to-date reference" href="http://reference.sitepoint.com/">Reference</a></li>
+		<li><a id="tabh" title="Buy and sell goods and services in one of the world&#8217;s largest web communities" href="http://marketplace.sitepoint.com/">Marketplace</a></li>
+		<li><a id="tabi" title="The place to go for help with anything to do with SitePoint" href="http://www.sitepoint.com/help/">Help</a></li>
+	</ul>
+
+<!-- reload -->
+	</div>
+
+<!-- /nav  -->
+
+<div id="content"  class="clearfix">
+	
+<div id="banner">
+<div id="adTopBanner1"><script type="text/javascript">GA_googleFillSlot("Articles_5_728x90");</script></div>
+</div>
+
+
+<div id="maincontent">
+<!-- *********  Start maincontent ******** -->
+<div id="flow" class="column">
+	<div id="tab">
+		<div class="wrap" >
+			<h3 class="main-type">Article</h3>
+			
+			<a name="content" class="nomargin"></a>
+                        			            <!-- Crumb trail -->
+            <div class="crumb">
+                                                            <a href="http://www.sitepoint.com/">Home</a>
+                                                                &raquo;
+                                                                                <a href="/category/server-side-coding">Server-side Coding</a>
+                                                                &raquo;
+                                                                                <a href="/category/server-side">Server Side Essentials</a>
+                                                                &raquo;
+                                                                                A Crash Course in Django                                                                    </div>
+            <!-- End Crumb trail -->
+			<div id="topcontrols">
+  <div id="tools">
+    <span id="hiliteon"><a href="javascript:highlighton();" class="sublink" title="Highlight the searched text">Highlight On</a></span>
+    <span id="hiliteoff"><a href="javascript:highlightoff();" class="sublink" title="Switch the highlighted text off">Highlight Off</a></span>
+    <a class="printicon" href="/print/django-crash-course" title="Print-Friendly version">Print</a>
+
+    <a class="emailicon" href="/email/django-crash-course" onclick="acpopup(this.href,'console',450,280);return false;" title="Launch a window to send this article to a Friend">Email</a>
+  </div>
+</div>
+
+			<div id="article_content">
+	<div id="articlesidebar">
+				<div class="featureimage">
+							<img src="http://articles.sitepoint.com/articleresources/2009-12-22-django-crash-course-akash/figures/feature.png" alt="SitePoint Feature Article" />
+					</div>
+                    			
+                    
+    <div id="bio">
+                        <div class="boxes">
+                        <h3>About the Author</h3>
+                        <h4>Akash Mehta</h4>
+                        <p>
+                                <img
+                                        height="67"
+                                        width="56"
+                                        alt="author_akashM"
+                                        src="http://i2.sitepoint.com/graphics/author_akash_mehta.jpg"
+                                />
+                                Akash Mehta is a web developer and freelance writer specializing in web application development. Check out his other work at <a class="sublink" href="http://bitmeta.org/">http://bitmeta.org/</a>. 
+ 
+
+							    <p>
+									<a href="http://www.sitepoint.com/articlelist/478">View all articles by Akash Mehta...</a>
+							    </p>
+
+                        </p>
+                </div>
+            </div>
+		
+	</div> 
+	<h1>A Crash Course in Django</h1>
+	
+		<div class="articledetail">
+						<h4>By <a href="http://www.sitepoint.com/articlelist/478" title="Find out more about this author">Akash Mehta</a></h4>
+			<p class="date">
+					December 22nd, 2009			</p>
+			<p class="date">
+				Reader Rating: 8.5			</p>
+										<p class="date">Page:
+																		<span class="thispage">1</span>
+																								<a class="pagenavtop" href="/article/django-crash-course/2">2</a>
+																								<a class="pagenavtop" href="/article/django-crash-course/3">3</a>
+																						<a class="nextlink" href="/article/django-crash-course/2">Next</a>
+									</p>
+					</div>
+	
+
+	<div class="article" lang="en">
+<div class="titlepage"><div>
+<div></div>
+<div></div>
+<div></div>
+<div></div>
+</div></div>
+<p>Are you after a web framework that drastically cuts the time it takes
+  to build data-driven web apps? If so, the Python-based Django might be worth
+  investigating. With a unique architecture enabling extensive code reuse and
+  an automatic admin system, Django is the state of the art for independent
+  web developers, as well as being a strong tool for large scale web projects.
+  In this article, I&rsquo;ll show you how the basics of setting up your own
+  Django-powered web site.</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title">
+<a name="id2448740"></a>Introducing Django</h2></div></div></div>
+<p>Django is a fully-fledged, high-level web application framework that
+    enables web developers to get robust applications up and running in record
+    time. It&rsquo;s powered by Python, which you might be unfamiliar with, but is
+    easy to pick up. If you need a quick crash course in Python, I recommend
+    <a class="ulink" href="http://www.poromenos.org/tutorials/python" target="_top"><span class="emphasis"><em>Learn
+    Python in 10 minutes</em></span></a>, though <a class="ulink" href="http://heather.cs.ucdavis.edu/~matloff/Python/PythonIntro.pdf" target="_top"><span class="emphasis"><em>A
+    Quick, Painless Tutorial on the Python Language</em></span></a> also
+    offers a lot of depth.</p>
+<p>Django&rsquo;s key feature for web developers is the concept of a single
+    web site being powered by multiple, self-contained, function-based
+    applications. These applications might provide a blog, a user login
+    system, or even a TinyURL-style redirection service. Your web site
+    consists of a set of applications, and when constructing it, you simply
+    pick existing applications&mdash;or build your own&mdash;that provide the
+    functionality you require.</p>
+<p>Another killer feature is the automatic admin system. When you build
+    models in Django, you&rsquo;re gifted with a free admin system to add, delete,
+    and update them, managing the underlying database automatically. The admin
+    system will provide a rich interface for end users to update the data in
+    the database. The automatic admin system is a complete end-to-end solution
+    as a data interface, and is ready for production use out of the box; it&rsquo;s
+    also extremely customizable.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title">
+<a name="id2399713"></a>Before You Begin</h2></div></div></div>
+<div id="adz" class="vertical"><script type="text/javascript">GA_googleFillSlot("Articles_6_300x250");</script></div><p>Before exploring this tutorial, you should have basic web
+    development experience with database back ends, and preferably a basic
+    Python background. Experience building PHP applications with some major
+    framework is sufficient. Django takes advantage of sophisticated
+    approaches to web applications and does require a solid grasp of web
+    development concepts.</p>
+<p>You&rsquo;ll need Django installed for this tutorial. Run through <a class="ulink" href="http://docs.djangoproject.com/en/dev/intro/install/" target="_top">the installation
+    documentation</a> if you&rsquo;ve yet to set this up, clicking on
+    <span class="guilabel">Install an official release</span>. This article was written
+    using 1.2 alpha; 1.1 is generally available and this tutorial should work
+    with any 1.x release.</p>
+<p>When installing, make sure the <code class="filename">django-admin.py</code>
+    tool is on your system path. This should happen automatically, but to
+    check, open up your system&rsquo;s terminal or command line console and run
+    <code class="filename">django-admin.py</code>; if the output reads
+    <code class="computeroutput">Type 'django-admin.py help' for usage</code> (or
+    something similar), you&rsquo;re ready to go.</p>
+<p>To explore the Django framework, we&rsquo;re going to create our own blog
+    application (though there are plenty available) and use it to power a
+    simple blog site. We&rsquo;ll also be using the built-in admin, comments, and
+    authentication applications. Make sure you&rsquo;re comfortable with the command
+    line, as we&rsquo;ll be working with it frequently.</p>
+<p>You can download a copy of the <a class="ulink" href="http://sitepoint-examples.s3.amazonaws.com/django/spblog.zip" target="_top">finished
+    application here</a>, but we&rsquo;ll be covering all the code required, so
+    you&rsquo;d be best to simply follow along and create the files as you
+    go.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title">
+<a name="id2424247"></a>Setting up the Admin Site</h2></div></div></div>
+<p>Start by choosing a folder to store your Django projects&mdash;I use
+    <code class="filename">~/Development/Django/</code>&mdash;and switch to this folder on
+    the command line. We need to start a new Django project for our web site,
+    so run <code class="filename">django-admin.py</code>
+    <span class="command"><strong>startproject</strong></span> <code class="option">spblog</code> when you&rsquo;re ready.
+    Then switch to the newly created <code class="filename">spblog</code> folder and
+    have a look at the files the <code class="filename">django-admin.py</code> utility
+    created (Windows users: use <span class="command"><strong>dir</strong></span> instead of
+    <span class="command"><strong>ls</strong></span>). This is what it all looks like in the
+    terminal:</p>
+<pre class="screen"><code class="prompt">$</code> <strong class="userinput"><code>cd ~/Development/Django</code></strong>
+<code class="prompt">$</code> <strong class="userinput"><code>django-admin.py startproject spblog</code></strong>
+<code class="prompt">$</code> <strong class="userinput"><code>cd spblog</code></strong>
+<code class="prompt">$</code> <strong class="userinput"><code>ls</code></strong>
+<code class="computeroutput">__init__.py  manage.py  settings.py  urls.py</code></pre>
+<p>The <code class="filename">django-admin.py</code> script has created four
+    files, but we only really need to worry about two:
+    <code class="filename">settings.py</code> and <code class="filename">urls.py</code>.</p>
+<p>Your first Django app is now ready to go! Let&rsquo;s start up a test
+    server and take it for a spin:</p>
+<pre class="screen"><code class="prompt">$</code> <strong class="userinput"><code>python manage.py runserver</code></strong>
+<code class="computeroutput">Validating models...
+0 errors found
+
+Django version 1.2 pre-alpha SVN-11600, using settings 'spblog.settings'
+Development server is running at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.</code></pre>
+<p>The <code class="filename">manage.py</code> script provides access to a
+    number of helpful tools in the context of this particular Django project.
+    One of these tools is a built-in web server (for development purposes
+    only!), which is now serving up your web application at
+    <code class="uri">http://127.0.0.1:8000/</code>. Load that URL in your web browser and
+    you&rsquo;ll see the following page.</p>
+<div class="figure">
+<a name="fig_it_worked"></a><p class="title"><b>Figure&nbsp;1.&nbsp;It worked!</b></p>
+<div class="figure-contents"><div class="mediaobject"><img src="http://articles.sitepoint.com/articleresources/2009-12-22-django-crash-course-akash/figures/it-worked.jpg" alt="It worked!"></div></div>
+</div>
+<br class="figure-break"><p>As the welcome page suggests, we still need an app to provide
+    content to look at. Let&rsquo;s start with the built-in administration
+    site.</p>
+<p>To use the admin site, we first need to configure the database.
+    We&rsquo;ll use the file-based SQLite database, and install the admin
+    application. First open <code class="filename">settings.py</code> and change the
+    following settings:</p>
+<pre class="programlisting">DATABASE_ENGINE = 'sqlite3'
+DATABASE_NAME = 'dev.db'</pre>
+<p>We also need to add <code class="literal">django.contrib.admin</code> to the
+    end of the <code class="varname">INSTALLED_APPS</code> setting: it should look like
+    this:</p>
+<pre class="programlisting">INSTALLED_APPS = (
+  'django.contrib.auth',
+  'django.contrib.contenttypes',
+  'django.contrib.sessions',
+  'django.contrib.sites',
+  'django.contrib.admin',
+)</pre>
+<p>Now head back to your command line. We&rsquo;re going to create the
+    database using the <code class="filename">manage.py</code> syncdb command, which
+    will also prompt us to create an administrator user account. Here&rsquo;s what
+    your command history should look like:</p>
+<pre class="screen"><code class="prompt">$</code> <strong class="userinput"><code>python manage.py syncdb</code></strong>
+<code class="computeroutput">Creating table auth_permission
+Creating table auth_group
+Creating table auth_user
+Creating table auth_message
+Creating table django_content_type
+Creating table django_session
+Creating table django_site
+Creating table django_admin_log
+
+You just installed Django's auth system, which means you don't have any superusers defined.
+Would you like to create one now? (yes/no):</code> <strong class="userinput"><code>yes</code></strong>
+<code class="computeroutput">Username (Leave blank to use '&hellip;'): 
+E-mail address: &hellip;
+Password: 
+Password (again): 
+Superuser created successfully.
+Installing index for auth.Permission model
+Installing index for auth.Message model
+Installing index for admin.LogEntry model</code></pre>
+<p>Create an account with a username and password of your choice during
+    the process&mdash;you&rsquo;ll use this to log in to the admin site in a
+    moment.</p>
+<p>There&rsquo;s one more task we need to complete before we can use the
+    admin site: configure the URLs. Django has a unique approach to URL
+    routing, where URLs do not automatically map to specific request handling
+    code (or controller methods/actions, if you&rsquo;ve used another MVC
+    framework). Instead, we use regular expressions to map URLs to views. For
+    more details on URLs in Django, see the <a class="ulink" href="http://docs.djangoproject.com/en/dev/topics/http/urls/" target="_top">URL
+    Dispatcher section in the documentation</a>.</p>
+<p>Open <code class="filename">urls.py</code> and uncomment these lines related
+    to the admin system (Python single-line comments begin with a
+    <code class="literal">#</code>):</p>
+<pre class="programlisting">from django.contrib import admin
+admin.autodiscover()
+&#8942;
+(r'^admin/', include(admin.site.urls)), </pre>
+<p>Now, all URLs beginning with <code class="uri">admin/</code> will be delegated to
+    the admin system. In addition, we call the
+    <code class="methodname">autodiscover</code> method: this will make the admin
+    system inspect the database to discover what database tables it will be
+    managing. We put this command into <code class="filename">urls.py</code>, because
+    it will be run once every time the server is started.</p>
+<p>Save <code class="filename">urls.py</code> and head back to your command
+    line; the development server should have restarted automatically (if not,
+    kill it with <span class="keycap"><strong>Ctrl</strong></span><span class="keycap"><strong>C</strong></span> and run it
+    again).</p>
+<p>Now if we refresh our browser at <code class="uri">http://localhost:8000/</code>,
+    we see a different page:</p>
+<div class="figure">
+<a name="fig_not_found"></a><p class="title"><b>Figure&nbsp;2.&nbsp;Page not found</b></p>
+<div class="figure-contents"><div class="mediaobject"><img src="http://articles.sitepoint.com/articleresources/2009-12-22-django-crash-course-akash/figures/not-found.jpg" alt="Page not found"></div></div>
+</div>
+<br class="figure-break"><p>This is a special 404 page for development purposes only&mdash;once you
+    switch <em class="parameter"><code>DEBUG</code></em> from <code class="literal">True</code> to
+    <code class="literal">False</code> in your settings, it will no longer appear.
+    However, now that you have some URLs configured, Django no longer displays
+    the welcome page, and instead offers a list of valid URLs (assuming the
+    one you&rsquo;re attempting to access is invalid). As our <code class="uri">admin/</code> URL
+    seems to be okay, let&rsquo;s head to <code class="uri">http://localhost:8000/admin/</code> to
+    check out our admin site.</p>
+<p>Log in to the admin site using the username and password you
+    configured while running the syncdb command; you should see the admin home
+    page:</p>
+<div class="figure">
+<a name="fig_admin"></a><p class="title"><b>Figure&nbsp;3.&nbsp;Django administration</b></p>
+<div class="figure-contents"><div class="mediaobject"><img src="http://articles.sitepoint.com/articleresources/2009-12-22-django-crash-course-akash/figures/django-admin.jpg" alt="Django administration"></div></div>
+</div>
+<br class="figure-break"><p>Your admin site is ready to go! Take some time to explore, create
+    some users, and experiment with the tools available.</p>
+</div>
+</div> <!-- pagebreak -->
+				<div id="bottompagenav" class="pagenav">
+			<span>Go to page:</span>
+												<span class="thispage">1</span>
+																<a href="/article/django-crash-course/2">2</a>
+																<a href="/article/django-crash-course/3">3</a>
+														<a class="next" href="/article/django-crash-course/2">Next</a>
+					</div>
+			<div id="adt">
+		<script type="text/javascript">GA_googleFillSlot("Articles_300x250_2");</script>	</div>
+
+	<div class="clearfix"> </div>
+	<div id="dostuff">
+		<a class="printicon"  href="/print/django-crash-course">Print-Friendly&nbsp;Version</a>
+
+		<a class="emailicon" href="/email/django-crash-course" rel="popup|450|450" title="Launch a window to send this article to a Friend">Email&nbsp;to&nbsp;a&nbsp;Friend</a>
+		<a class="articlesuggesticon" href="http://www.sitepoint.com/contact?reason=articlesuggest" title="Tell us which topic you would like to see us publish an article on">Suggest an Article</a>
+		<!--<a class="linkicon" href="/linktothis/1789" rel="popup|450|450" title="Get a code snippet to link to this article">Link to this Article</a>-->
+
+	</div> </div>
+		</div>
+
+					</div><!-- end #tab -->
+</div><!-- end #flow -->
+
+<div id="col1"  class="column">
+<div class="inner">
+
+<div id="most-popular-articles" class="nav">
+<h3>Popular Articles</h3>
+<h4>Most Popular This Month</h4>
+<ol>
+	<li class="navitem-atv">
+		<a href="/article/command-prompt-cheat-sheet">
+			Kev's Command Prompt Cheat Sheet		</a>
+	</li>
+	<li class="navitem-atv">
+		<a href="/article/server-side-language-right">
+			Which Server-Side Language Is Right For You?		</a>
+	</li>
+	<li class="navitem-atv">
+		<a href="/article/sql-server-2000-database">
+			Your First SQL Server 2000 Database		</a>
+	</li>
+	<li class="navitem-atv">
+		<a href="/article/ultimate-testing-checklist">
+			The Ultimate Testing Checklist		</a>
+	</li>
+	<li class="navitem-atv">
+		<a href="/article/sql-server-php">
+			Get Started with PHP on Windows with SQL Server Express		</a>
+	</li>
+</ol>
+<p class="wrapright"><a class="next" href="/category/server-side">More Articles</a></p>
+</div>
+<div id="guru-articles" class="nav">
+<h3>Guru Lists</h3>
+
+<h4>So You Want To Be A Ruby Guru?</h4>
+<p>Try this list, compiled by <a href="http://www.sitepoint.com/forums/member.php?u=15642">vgarcia</a></p>
+<ol>
+			<li class="navitem-atv"><a href="/article/learn-ruby-on-rails">
+			Learn Ruby on Rails: the Ultimate Beginner’s Tutorial		</a></li>
+			<li class="navitem-atv"><a href="/article/ruby-on-rails">
+			Get On Track with Ruby on Rails		</a></li>
+			<li class="navitem-atv"><a href="/article/debug-rails-app-ruby-debug">
+			Debug Your Rails App With ruby-debug		</a></li>
+	</ol>
+<p class="wrapright"><a class="next" href="http://www.sitepoint.com/gurulists/">More Guru Lists</a></p>
+</div>
+<div class="topics nav">
+<h3>Topics</h3>
+<div id="navitem">
+	<h4>
+		<a href="/category/before-you-code" 
+			title="Steps to be taken in planning your web sites or online applications">
+			Before You Code		</a>
+	</h4>
+		<ul>
+			<li>
+			<a href="/category/hosting" 
+				title="Information regarding selecting a hosting option for your site, and tips about hosting requirements"> 
+					Hosting			</a>
+		</li>
+			<li>
+			<a href="/category/domain-names" 
+				title="How to choose, buy, manage and sell your domain names"> 
+					Domain Names			</a>
+		</li>
+			<li>
+			<a href="/category/site-planning" 
+				title="Strategies and tutorials for planning your web site or online business before you start"> 
+					Site Planning			</a>
+		</li>
+			<li>
+			<a href="/category/legal" 
+				title="Articles covering legal issues in relation to online businesses"> 
+					Legal Issues			</a>
+		</li>
+			<li>
+			<a href="/category/privacy" 
+				title="How to deal with issues such as privacy and trust with regard to your website or web business"> 
+					Privacy and Trust			</a>
+		</li>
+		</ul>
+		<h4>
+		<a href="/category/design-and-layout" 
+			title="Graphic design and web site layout">
+			Design and Layout		</a>
+	</h4>
+		<ul>
+			<li>
+			<a href="/category/usability" 
+				title="Strategies for making sure your websites and user interfaces are easy to use"> 
+					Usability and Information Architecture			</a>
+		</li>
+			<li>
+			<a href="/category/accessibility" 
+				title="Ways that you can make your web design accessible to the largest possible number of viewers"> 
+					Accessibility			</a>
+		</li>
+			<li>
+			<a href="/category/design-principles" 
+				title="Web design guidelines and design principles for building websites"> 
+					Design Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/design-practice" 
+				title="Articles covering graphic and web design practice."> 
+					Design Practice			</a>
+		</li>
+			<li>
+			<a href="/category/design-tips" 
+				title="Tutorials and solutions to common problems in web design and graphic design for the web"> 
+					Design Tips &amp; Tricks			</a>
+		</li>
+			<li>
+			<a href="/category/software-tutorials" 
+				title="Tutorials on using major software packages"> 
+					Software Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/flash" 
+				title="Tutorials for creating graphics, animations and web applications using Macromedia Flash"> 
+					Flash Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/adobe-air" 
+				title="Tutorials for creating cross-platform Rich Internet Applications for the Web and the desktop using Adobe AIR"> 
+					Adobe AIR Tutorials			</a>
+		</li>
+		</ul>
+		<h4>
+		<a href="/category/client-side-coding" 
+			title="Coding for the client side (the browser) using XHTML, JavaScript, CSS">
+			Client-side Coding		</a>
+	</h4>
+		<ul>
+			<li>
+			<a href="/category/html" 
+				title="Articles and tutorials on how to mark up your pages using HTML and XHTML"> 
+					HTML &amp; XHTML Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/javascript" 
+				title="Articles and tutorials on using JavaScript, Ajax and the DOM (Document Object Model)"> 
+					JavaScript &amp; Ajax Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/css" 
+				title="Tutorials and tips on using Cascading Style Sheets (CSS) to style and lay out your web designs"> 
+					CSS Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/xml" 
+				title="In-depth articles explaining the usages of XML-based data, processing it and transforming it using XSL XSLT."> 
+					XML, XSLT &amp; Web Services			</a>
+		</li>
+			<li>
+			<a href="/category/flex" 
+				title="Tutorials on how to build Rich Internet Applications in Adobe Flex"> 
+					Flex Tutorials			</a>
+		</li>
+		</ul>
+		<h4>
+		<a href="/category/server-side-coding" 
+			title="Creating online applications using server side scripts or code">
+			Server-side Coding		</a>
+	</h4>
+		<ul>
+			<li>
+			<a href="/category/asp" 
+				title="Tutorials on using Microsoft's ASP and ASP.NET for creating your online web applications"> 
+					ASP &amp; .NET Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/perl" 
+				title="Tutorials for developing web applications in Perl, and using CGI"> 
+					CGI &amp; Perl Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/java" 
+				title="Creating client-side and server-side applications using Java technology"> 
+					Java and J2EE			</a>
+		</li>
+			<li>
+			<a href="/category/other-technologies" 
+				title="Tutorials on configuring the two most popular web servers, Apache and IIS, for optimum performance"> 
+					Apache &amp; IIS Configuration			</a>
+		</li>
+			<li>
+			<a href="/category/php-news" 
+				title="News on the latest developments in PHP and interviews with some leading figures in PHP application development"> 
+					PHP &amp; MySQL News &amp; Interviews			</a>
+		</li>
+			<li>
+			<a href="/category/php-tutorials" 
+				title="Learn how to create web applications using PHP scripting language and MySQL database server"> 
+					PHP &amp; MySQL Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/php-reviews" 
+				title="Reviews of new or popular PHP and MySQL scripts and applications"> 
+					PHP &amp; MySQL Reviews and Apps			</a>
+		</li>
+			<li>
+			<a href="/category/server-side" 
+				title="Everything you need to know about server-side development in relation to other languages"> 
+					Server Side Essentials			</a>
+		</li>
+			<li>
+			<a href="/category/coldfusion" 
+				title="Tutorials and articles related to building online applications using Adobe ColdFusion"> 
+					ColdFusion Tutorials			</a>
+		</li>
+			<li>
+			<a href="/category/ruby" 
+				title="Learn how to create web applications using the object oriented Ruby language and the Ruby On Rails framework"> 
+					Ruby &amp; Rails			</a>
+		</li>
+		</ul>
+		<h4>
+		<a href="/category/site-strategy" 
+			title="Managing a successful website">
+			Site Strategy		</a>
+	</h4>
+		<ul>
+			<li>
+			<a href="/category/community-strategy" 
+				title="Community,Tutorials and views on creating an online community using bulletin boards, forums, chat rooms, and so on"> 
+					Community			</a>
+		</li>
+			<li>
+			<a href="/category/content-strategy" 
+				title="Writing and sourcing quality content for your site"> 
+					Content			</a>
+		</li>
+			<li>
+			<a href="/category/ecommerce-strategy" 
+				title="How to plan, build and manage an ecommerce website and do business on the internet"> 
+					eCommerce			</a>
+		</li>
+		</ul>
+		<h4>
+		<a href="/category/site-marketing" 
+			title="Tips and tutorials on website marketing">
+			Site Marketing		</a>
+	</h4>
+		<ul>
+			<li>
+			<a href="/category/traffic-analysis" 
+				title="Analyze your site statistics to gain a better understanding of the ways in which your visitors are using your web site"> 
+					Traffic Analysis			</a>
+		</li>
+			<li>
+			<a href="/category/searchmarketing" 
+				title="Information about marketing your web site or online business via search engines"> 
+					Search Marketing			</a>
+		</li>
+			<li>
+			<a href="/category/promotions" 
+				title="Deals with techniques to promote your site  outside search engines"> 
+					Other Promotions			</a>
+		</li>
+		</ul>
+		<h4>
+		<a href="/category/sell-your-services" 
+			title="Selling your web design or development services as a freelancer or in a team">
+			Sell Your Services		</a>
+	</h4>
+		<ul>
+			<li>
+			<a href="/category/services-start" 
+				title="Tips and resources for planning to sell services on the web"> 
+					Get Started			</a>
+		</li>
+			<li>
+			<a href="/category/find-clients" 
+				title="Find clients for your online business"> 
+					Find Clients			</a>
+		</li>
+			<li>
+			<a href="/category/work-smarter" 
+				title="Time management and scheduling strategies for web developers"> 
+					Work Smarter			</a>
+		</li>
+		</ul>
+	</div>
+</div>
+
+<div class="nav">
+<h3>SitePoint Jobs</h3>
+<h4>
+»
+<a class="alert" href="http://www.sitepoint.com/about/jobs/"> We're Hiring!</a>
+</h4>
+</div>
+<div class="nav">
+<h3>SitePoint Newsletters</h3>
+<form id="subs" action="/newsletter/manage" method="post">
+	
+	    
+	
+		<p>Get all the latest tips
+			on <strong><em> Advanced Design and Layout </em></strong>
+
+		by signing up to all of SitePoint&rsquo;s informative newsletters.</p>
+		
+	
+	<div style="margin-left: 6px;">
+	
+		<ul style="border:0px none">
+		<li>
+			<input type="hidden" value="subscribe" name="action" />
+			<input type="hidden" value="2" name="refererid" />
+			<input type="checkbox" checked="checked" name="newsletterid[]" value="3" id="checktt" /> <label for="checktt">SitePoint TechTimes</label>
+
+		</li>
+	
+		<li>
+			<input type="checkbox" checked="checked" name="newsletterid[]" value="2" id="checktr" /> <label for="checktr">SitePoint Tribune</label>
+		</li>
+		<li>
+			<input type="checkbox" checked="checked" name="newsletterid[]" value="5" id="checkdv" /> <label for="checkdv">SitePoint Design View</label>
+		</li>
+
+		<li>
+			<input type="checkbox" checked="checked" name="newsletterid[]" value="4" id="checkcc" /> <label for="checkcc">Community Crier</label>
+		</li>
+		</ul>
+	
+	
+	
+		<p><input class="tbox" onfocus="this.value=''" value="Enter Email" name="email" />
+		<input type="submit" value="Subscribe!" name="submit" /></p>
+	
+	
+		<p>
+		<input type="radio" checked="checked" value="html" name="format" id="radiohtml" /> HTML &nbsp;
+
+		 <input type="radio" value="text" name="format" id="radioplain" /> Plain</p>
+	
+	</div>
+</form>
+
+
+<h6 class="wrapcenter tiny"><br />View Our <a href="http://www.sitepoint.com/privacy.php">Privacy
+Policy</a></h6>
+<h6 class="wrapright tiny">
+Sample Our <a href="http://www.sitepoint.com/newsletter/archives">Newsletter Archives</a></h6>
+</div>
+</div> </div> <!-- end .inner -->
+</div>
+<!-- end #col1 -->
+
+<!-- end #maincontent -->
+
+<!-- ***************  Start Column 3 ************   -->
+<div id="col3" class="column">
+   <div class="inner">
+
+<div id="subscribe">
+	<ul>        
+		<li class="nl"><a href="http://www.sitepoint.com/newsletter/">Newsletters</a></li>
+		<li class="tw"><a href="http://twitter.com/sitepointdotcom" rel="nofollow">Twitter</a></li>
+		<li class="mb"><a href="http://m.sitepoint.com/">Mobile</a></li>
+		<li class="pod"><a href="http://www.sitepoint.com/podcast/">Podcast</a></li>
+		<li class="rss"><a href="http://www.sitepoint.com/subscribe/">RSS</a></li>                
+		<li class="fb"><a href="http://www.facebook.com/sitepoint/" rel="nofollow">Facebook</a></li>
+	</ul>
+</div>
+<div id="adcol3any"></div>
+<div id="ad250x250upper"><!-- Filled dynamically by script at end of page --></div>
+<div id="adHTMLFlexible1"><!-- Filled dynamically by script at end of page --></div>
+<div id="ad250x250middle"><!-- Filled dynamically by script at end of page --></div>
+<div id="ad250x250lower"><!-- Filled dynamically by script at end of page --></div>
+
+<div id="adHTMLFlexible2"><!-- Filled dynamically by script at end of page --></div>
+
+<div id="ad125x125left" class="ad125x125"><!-- Filled dynamically by script at end of page --></div>
+<div id="ad125x125right" class="ad125x125"><!-- Filled dynamically by script at end of page --></div>
+<div id="ad120x600left" class="ad120x600"><!-- Filled dynamically by script at end of page --></div>
+<div id="ad120x600right" class="ad120x600"><!-- Filled dynamically by script at end of page --></div>
+
+<div class="nav">
+<h3>Related Forum Discussions</h3>
+<p>
+Related Forum: <strong><a href="http://www.sitepoint.com/forums/forumdisplay.php?f=140">General Development Issues</a></strong>
+</p>
+<ol>
+
+	<li><a href="http://www.sitepoint.com/forums/showthread.php?t=719533">Advice on Sub-Domain Blog.</a></li>
+	<li><a href="http://www.sitepoint.com/forums/showthread.php?t=719524">How to add preview button with code in my website.</a></li>
+	<li><a href="http://www.sitepoint.com/forums/showthread.php?t=719472">Bermuda vacation</a></li>
+	<li><a href="http://www.sitepoint.com/forums/showthread.php?t=719435">Looking for a good avatar pack</a></li>
+	<li><a href="http://www.sitepoint.com/forums/showthread.php?t=719180">youtube videos</a></li>
+</ol>
+</div>
+<div class="nav">
+	<h3>Other Articles by Akash Mehta</h3>
+	<p>
+	Akash Mehta's other SitePoint Articles
+	</p>
+	<ul>
+			<li><a href="/article/learn-adobe-air-part-3" > Learn Adobe AIR, Part III: Beyond the Browser</a>
+			<li><a href="/article/debugging-adobe-air-application" > Adobe AIR: Supercharged Development with Debugging</a>
+			<li><a href="/article/developer-friendly-web-hosts" > Web Host Smackdown: 6 Hosting Plans Reviewed</a>
+			<li><a href="/article/sql-server-php" > Get Started with PHP on Windows with SQL Server Express</a>
+		</ul>
+</div>
+
+<script type="text/javascript">GA_googleFillSlot("Articles_160x600_SkyScraper");</script>
+</div><!-- end .inner -->
+</div><!-- end #col3 -->
+
+
+	<div id="lowerads">
+			<div id="lowerad1"><script type="text/javascript">GA_googleFillSlot("Articles_9a_300x100");</script></div>
+    	    <div id="lowerad2"><script type="text/javascript">GA_googleFillSlot("Articles_9b_300x100");</script></div>
+    </div>
+
+
+</div>
+
+</div><!-- end content -->
+
+<div id="footer">
+
+<div id="tertiary">
+
+<ul>
+	<li><a href="http://www.sitepoint.com/mediakit">Advertise</a> </li>
+
+	<li><a href="http://www.sitepoint.com/about/">About Us</a> </li>
+	<li><a href="http://www.sitepoint.com/contact">Contact Us</a> </li>
+	<li><a href="http://www.sitepoint.com/sitemap" accesskey="3">Site Map</a> </li>
+	<li><a href="http://www.sitepoint.com/about/writeforus">Write For Us</a> </li>
+	<li><a href="http://www.sitepoint.com/syndication/">RSS</a> </li>
+
+	<li><a href="http://www.sitepoint.com/newsletter/">Newsletters</a> </li>
+	<li><a href="http://www.sitepoint.com/search/search.php" accesskey="4">Search</a> </li>
+	<li><a href="http://www.sitepoint.com/privacy/" accesskey="8">Privacy</a> </li>
+	<li><a href="http://www.sitepoint.com/glossary.php?q=A">Glossary</a> </li>
+	<li><a href="http://www.sitepoint.com/about/terms.php/">Terms &amp; Conditions</a> </li>
+
+	<li><a href="http://www.sitepoint.com/about/jobs/">Jobs</a> </li>
+</ul>
+
+</div>
+<p>The contents of this webpage are copyright &copy; 1998-2010 SitePoint Pty. Ltd. All Rights Reserved.</p>
+
+<div>
+<a href="http://www.sitepoint.com.au"  title="Visit our development site">Web Design &amp; Development by SitePoint, Melbourne, Australia</a> - <a href="http://www.99designs.com" >Logo Design, Web page Design - 99designs.com </a>
+
+</div>
+
+</div><!-- end footer -->
+
+<script src="http://2.sitepointstatic.com/bundle/utilities.js,sortable.js" type="text/javascript"></script>
+<script src="http://2.sitepointstatic.com/js/sitepoint-ref-links.js" type="text/javascript"></script>
+
+
+<script type="text/javascript">
+	var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+	document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+	try{
+		var sitepointTracker = _gat._getTracker("UA-30131-1");
+		sitepointTracker._setDomainName(".sitepoint.com");
+		sitepointTracker._setAllowHash(false);
+		sitepointTracker._setCustomVar(1, "Context", "Articles", 3); 
+		sitepointTracker._trackPageview();
+	} catch(err) {}
+</script>
+
+</body>
+</html>

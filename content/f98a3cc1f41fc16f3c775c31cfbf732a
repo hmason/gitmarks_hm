@@ -1,0 +1,275 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
+
+<head>
+<title>Outputting from Postgres to CSV</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" href="http://pookey.co.uk/wordpress/wp-content/themes/lightword/style.css?1291373547" type="text/css" />
+<link rel="shortcut icon" href="http://pookey.co.uk/wordpress/favicon.ico" />
+<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://pookey.co.uk/wordpress/feed" />
+<link rel="alternate" type="text/xml" title="RSS .92" href="http://pookey.co.uk/wordpress/feed/rss" />
+<link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="http://pookey.co.uk/wordpress/feed/atom" />
+<link rel="pingback" href="http://pookey.co.uk/wordpress/xmlrpc.php" />
+<link rel="alternate" type="application/rss+xml" title="Ian P. Christian&#039;s Personal Blog &raquo; Outputting from Postgres to CSV Comments Feed" href="http://pookey.co.uk/wordpress/archives/51-outputting-from-postgres-to-csv/feed" />
+<script type='text/javascript' src='http://pookey.co.uk/wordpress/wp-includes/js/jquery/jquery.js?ver=1.4.2'></script>
+<script type='text/javascript' src='http://pookey.co.uk/wordpress/wp-includes/js/comment-reply.js?ver=20090102'></script>
+<script type='text/javascript' src='http://pookey.co.uk/wordpress/wp-content/plugins/google-analyticator/external-tracking.min.js?ver=6.1.1'></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://pookey.co.uk/wordpress/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://pookey.co.uk/wordpress/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='Ian P. Christian&#039;s Personal Blog' href='http://pookey.co.uk/wordpress' />
+<link rel='start' title='I hate blogs' href='http://pookey.co.uk/wordpress/archives/3-i-hate-blogs' />
+<link rel='prev' title='Monitoring Dell SAS 5/iR RAID with nagios' href='http://pookey.co.uk/wordpress/archives/49-monitoring-dell-sas-5ir-raid-with-nagios' />
+<link rel='next' title='Symfony security concerns and other issues' href='http://pookey.co.uk/wordpress/archives/52-symfony-security-concerns-and-other-issues' />
+<link rel='shortlink' href='http://pookey.co.uk/wordpress/?p=51' />
+
+<!-- All in One SEO Pack 1.6.13 by Michael Torbert of Semper Fi Web Design[208,292] -->
+<meta name="description" content="I can never remember how to output to a CSV file from postgres, and end up having to google it time and time again - so I'm making a note of it here mostly" />
+<link rel="canonical" href="http://pookey.co.uk/wordpress/archives/51-outputting-from-postgres-to-csv" />
+<!-- /all in one seo pack -->
+<style type="text/css">/*<![CDATA[*/* html #searchform{margin-top:-13px;}*+ html #searchform{margin-top:-13px;}  #content-body,x:-moz-any-link{float:left;margin-right:28px;}#content-body, x:-moz-any-link, x:default{float:none;margin-right:25px;} /*]]>*/</style>
+<!--[if IE 6]><style type="text/css">/*<![CDATA[*/#header{background-image: none; filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://pookey.co.uk/wordpress/wp-content/themes/lightword/images/content_top.png',sizingMethod='scale'); }#footer{background:transparent url(http://pookey.co.uk/wordpress/wp-content/themes/lightword/images/content_bottom.gif) no-repeat;height:8px;}.comm_date{background-image: none; filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://pookey.co.uk/wordpress/wp-content/themes/lightword/images/date_comm_box.png',sizingMethod='scale'); }/*]]>*/</style><![endif]--><!-- Google Analytics Tracking by Google Analyticator 6.1.1: http://ronaldheft.com/code/analyticator/ -->
+<script type="text/javascript">
+	var analyticsFileTypes = [''];
+	var analyticsEventTracking = 'enabled';
+</script>
+<script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', 'UA-131123-9']);
+	_gaq.push(['_trackPageview']);
+
+	(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	})();
+</script>
+
+</head>
+
+<body>
+<div id="wrapper">
+<div id="top_cufon"><h1 id="logo"><a name="top" title="Ian P. Christian&#039;s Personal Blog" href="http://pookey.co.uk/wordpress">Ian P. Christian&#039;s Personal Blog</a> <small>Random witterings from pookey</small></h1></div>
+<div id="header">
+<a id="rss-feed" title="Syndicate this site using RSS" href="http://pookey.co.uk/wordpress/feed">Subscribe via RSS</a>
+
+<div id="top_bar">
+<ul id="front_menu">
+<li><a class="" title="Home" href="http://pookey.co.uk/wordpress"><span>Home</span></a></li>
+<li class="page_item page-item-140"><a href="http://pookey.co.uk/wordpress/about" title="About"><span>About</span></a>
+<ul class='children'>
+	<li class="page_item page-item-145"><a href="http://pookey.co.uk/wordpress/about/contact" title="Contact Me"><span>Contact Me</span></a></li>
+</ul>
+</li>
+</ul>
+<form method="get" id="searchform" action="http://pookey.co.uk/wordpress"> <input type="text" value="" name="s" id="s" /> <input type="submit" id="go" value="" alt="Search" title="Search" /></form>
+</div>
+
+</div>
+<div id="content">
+<div id="content-body">
+<div class="post-51 post type-post hentry category-uncategorized" id="post-51">
+<div class="comm_date"><span class="data"><span class="j">6</span>May/08</span><span class="nr_comm"><a class="nr_comm_spot" href="http://pookey.co.uk/wordpress/archives/51-outputting-from-postgres-to-csv#comments">7</a></span></div>
+<h2><a title="Outputting from Postgres to CSV" href="http://pookey.co.uk/wordpress/archives/51-outputting-from-postgres-to-csv" rel="bookmark">Outputting from Postgres to CSV</a></h2>
+<p>
+  I can never remember how to output to a CSV file from postgres, and end up having to google it time and time again - so I'm making a note of it here mostly for my own use <img src='http://pookey.co.uk/wordpress/wp-includes/images/smilies/icon_smile.gif' alt=':)' class='wp-smiley' />
+</p>
+<pre>
+\f ','
+\a
+\t
+\o /tmp/moocow.csv
+SELECT foo,bar FROM whatever;
+\o
+\q
+</pre>
+<p>
+  If a field has newlines, this will break. You can do something like this instead.....
+</p>
+<pre>
+ SELECT foo, bar, '"' || REPLACE(REPLACE(field_with_newilne, '\n', '\\n'), '"', '""') || '"' FROM whatever;
+</pre>
+
+
+
+<div class="cat_tags clear">
+<span class="category">Filed under: <a href="http://pookey.co.uk/wordpress/archives/category/uncategorized" title="View all posts in Uncategorized" rel="category tag">Uncategorized</a></span>
+<span class="continue"><a class="nr_comm_spot" href="http://pookey.co.uk/wordpress/archives/51-outputting-from-postgres-to-csv#respond">Leave a comment</a></span><div class="clear"></div>
+</div>
+<div class="cat_tags_close"></div>
+
+</div>
+
+<div id="tabsContainer">
+<a href="#" class="tabs selected"><span>Comments (7)</span></a>
+<a href="#" class="tabs"><span>Trackbacks (0)</span></a>
+<span class="subscribe_comments"><a href='http://pookey.co.uk/wordpress/archives/51-outputting-from-postgres-to-csv/feed'>( subscribe to comments on this post )</a></span>
+<div class="clear_tab"></div>
+<div class="tab-content selected">
+<a name="comments"></a>
+
+<div id="comentarii">
+<ol class="commentlist">
+<li class="comment even thread-even depth-1" id="li-comment-206"><div id="comment-206">
+<div class="comment_content"><div class="comment-meta commentmetadata"><div class="alignleft avatar"><img alt='' src='http://0.gravatar.com/avatar/65c8f0a3236901482774d55629c52f3d?s=36&amp;d=&amp;r=X' class='avatar avatar-36 photo' height='36' width='36' /></div>
+<div class="alignleft" style="padding-top:5px;"><strong class="comment_author">Ben</strong><br/><a href="#comment-206" title="">June 5th, 2008 - 10:57</a> </div><div class="clear"></div></div>
+<p>After much pain with line endings:</p>
+<p>COPY (SELECT foo,bar FROM whatever)   TO &#8216;/tmp/dump.csv&#8217; WITH CSV HEADER</p>
+<div class="reply"><a rel='nofollow' class='comment-reply-link' href='/wordpress/archives/51-outputting-from-postgres-to-csv?replytocom=206#respond' onclick='return addComment.moveForm("comment-206", "206", "respond", "51")'>( REPLY )</a></div>
+</div><div class="clear"></div></div>
+</li>
+<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-387"><div id="comment-387">
+<div class="comment_content"><div class="comment-meta commentmetadata"><div class="alignleft avatar"><img alt='' src='http://1.gravatar.com/avatar/d421979310a28b58388a0a62a5ef0f47?s=36&amp;d=&amp;r=X' class='avatar avatar-36 photo' height='36' width='36' /></div>
+<div class="alignleft" style="padding-top:5px;"><strong class="comment_author"><a href='http://davefry.net' rel='external nofollow' class='url'>Dave</a></strong><br/><a href="#comment-387" title="">February 27th, 2009 - 22:42</a> </div><div class="clear"></div></div>
+<p>I also can never remember how to do this, and I always google it, and end up here.  So, thank you for keeping this handy!!!</p>
+<div class="reply"><a rel='nofollow' class='comment-reply-link' href='/wordpress/archives/51-outputting-from-postgres-to-csv?replytocom=387#respond' onclick='return addComment.moveForm("comment-387", "387", "respond", "51")'>( REPLY )</a></div>
+</div><div class="clear"></div></div>
+</li>
+<li class="comment even thread-even depth-1" id="li-comment-559"><div id="comment-559">
+<div class="comment_content"><div class="comment-meta commentmetadata"><div class="alignleft avatar"><img alt='' src='http://0.gravatar.com/avatar/s=36' class='avatar avatar-36 photo avatar-default' height='36' width='36' /></div>
+<div class="alignleft" style="padding-top:5px;"><strong class="comment_author"><a href='http://www.distinctpartners.com/products.html' rel='external nofollow' class='url'>Michal</a></strong><br/><a href="#comment-559" title="">December 8th, 2009 - 17:13</a> </div><div class="clear"></div></div>
+<p>Saves so much effort looking for a simple example!</p>
+<div class="reply"><a rel='nofollow' class='comment-reply-link' href='/wordpress/archives/51-outputting-from-postgres-to-csv?replytocom=559#respond' onclick='return addComment.moveForm("comment-559", "559", "respond", "51")'>( REPLY )</a></div>
+</div><div class="clear"></div></div>
+</li>
+<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-564"><div id="comment-564">
+<div class="comment_content"><div class="comment-meta commentmetadata"><div class="alignleft avatar"><img alt='' src='http://0.gravatar.com/avatar/s=36' class='avatar avatar-36 photo avatar-default' height='36' width='36' /></div>
+<div class="alignleft" style="padding-top:5px;"><strong class="comment_author">Ken</strong><br/><a href="#comment-564" title="">December 15th, 2009 - 22:05</a> </div><div class="clear"></div></div>
+<p>I run a lot of queries from the bash command line or from scripts, so here&#8217;s a tip:</p>
+<p>If you run into this error: &#8220;ERROR:  must be superuser to COPY to or from a file,&#8221; try this:</p>
+<p>echo &#8220;COPY (SELECT foo from BAR) TO STDOUT with CSV HEADER&#8221; | psql -o filename.csv database_name</p>
+<div class="reply"><a rel='nofollow' class='comment-reply-link' href='/wordpress/archives/51-outputting-from-postgres-to-csv?replytocom=564#respond' onclick='return addComment.moveForm("comment-564", "564", "respond", "51")'>( REPLY )</a></div>
+</div><div class="clear"></div></div>
+</li>
+<li class="comment even thread-even depth-1" id="li-comment-949"><div id="comment-949">
+<div class="comment_content"><div class="comment-meta commentmetadata"><div class="alignleft avatar"><img alt='' src='http://0.gravatar.com/avatar/e445e3a6ae01a2ad19bd12115e446691?s=36&amp;d=&amp;r=X' class='avatar avatar-36 photo' height='36' width='36' /></div>
+<div class="alignleft" style="padding-top:5px;"><strong class="comment_author">Unais</strong><br/><a href="#comment-949" title="">March 6th, 2010 - 12:03</a> </div><div class="clear"></div></div>
+<p>@Ben,</p>
+<p>Your solution works well in version 8.4.2 and it shows a syntax error in version 8.1</p>
+<p>copy to file command in postgresql 8.1 does not accept a query . it can copy  whole table but not a query </p>
+<p>do u have any solution for 8.1?</p>
+<div class="reply"><a rel='nofollow' class='comment-reply-link' href='/wordpress/archives/51-outputting-from-postgres-to-csv?replytocom=949#respond' onclick='return addComment.moveForm("comment-949", "949", "respond", "51")'>( REPLY )</a></div>
+</div><div class="clear"></div></div>
+</li>
+<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-993"><div id="comment-993">
+<div class="comment_content"><div class="comment-meta commentmetadata"><div class="alignleft avatar"><img alt='' src='http://1.gravatar.com/avatar/9dcd4fa260275b7be474a72fa629a5ab?s=36&amp;d=&amp;r=X' class='avatar avatar-36 photo' height='36' width='36' /></div>
+<div class="alignleft" style="padding-top:5px;"><strong class="comment_author"><a href='http://coding.sergey.me/' rel='external nofollow' class='url'>sergey</a></strong><br/><a href="#comment-993" title="">April 7th, 2010 - 23:54</a> </div><div class="clear"></div></div>
+<p>try creating a view and using it instead of the query. hope this helps.</p>
+<div class="reply"><a rel='nofollow' class='comment-reply-link' href='/wordpress/archives/51-outputting-from-postgres-to-csv?replytocom=993#respond' onclick='return addComment.moveForm("comment-993", "993", "respond", "51")'>( REPLY )</a></div>
+</div><div class="clear"></div></div>
+</li>
+<li class="comment even thread-even depth-1" id="li-comment-1034"><div id="comment-1034">
+<div class="comment_content"><div class="comment-meta commentmetadata"><div class="alignleft avatar"><img alt='' src='http://1.gravatar.com/avatar/39111b049277a9608bfcd9c51d9c477c?s=36&amp;d=&amp;r=X' class='avatar avatar-36 photo' height='36' width='36' /></div>
+<div class="alignleft" style="padding-top:5px;"><strong class="comment_author">Ram</strong><br/><a href="#comment-1034" title="">May 24th, 2010 - 20:22</a> </div><div class="clear"></div></div>
+<p>Your post was useful</p>
+<p>Could you tell me how I can include the data in double quotes ?</p>
+<p>\o /tmp/moocow.csv<br />
+SELECT foo,bar FROM whatever;<br />
+\o</p>
+<p>and the output like</p>
+<p>&#8220;foo&#8221;,&#8221;bar&#8221;<br />
+&#8220;fdata&#8221;,&#8221;bdata&#8221;<br />
+&#8220;fdata1&#8243;,&#8221;bdata2&#8243;</p>
+<p>Appreciate your help !</p>
+<div class="reply"><a rel='nofollow' class='comment-reply-link' href='/wordpress/archives/51-outputting-from-postgres-to-csv?replytocom=1034#respond' onclick='return addComment.moveForm("comment-1034", "1034", "respond", "51")'>( REPLY )</a></div>
+</div><div class="clear"></div></div>
+</li>
+</ol>
+
+</div>
+
+
+
+<br/><div id="respond">
+<h2 style="background:transparent;">Leave a comment</h2>
+
+
+<form action="http://pookey.co.uk/wordpress/wp-comments-post.php" method="post" id="commentform">
+
+
+<p><textarea name="comment" id="comment" cols="100%" rows="10" tabindex="1"></textarea></p>
+<p><input type="text" name="author" id="author" value="" size="22" tabindex="1" />
+<label for="author"><small>Name (required)</small></label></p>
+
+<p><input type="text" name="email" id="email" value="" size="22" tabindex="2" />
+<label for="email"><small>Mail (will not be published) (required)</small></label></p>
+
+<p><input type="text" name="url" id="url" value="" size="22" tabindex="3" />
+<label for="url"><small>Website</small></label></p>
+
+
+<p><input name="submit" type="submit" id="submit" tabindex="4" accesskey="s" value="Submit" /><a rel="nofollow" id="cancel-comment-reply-link" href="/wordpress/archives/51-outputting-from-postgres-to-csv#respond" style="display:none;">( Cancel )</a><br class="clear"/></p>
+<input type='hidden' name='comment_post_ID' value='51' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</form>
+</div>
+</div>
+
+<div class="tab-content">
+<p class="no">No trackbacks yet.</p></div>
+</div>
+<div class="next_previous_links">
+<span class="alignleft">&laquo; <a href="http://pookey.co.uk/wordpress/archives/52-symfony-security-concerns-and-other-issues">Symfony security concerns and other issues</a></span>
+<span class="alignright"><a href="http://pookey.co.uk/wordpress/archives/49-monitoring-dell-sas-5ir-raid-with-nagios">Monitoring Dell SAS 5/iR RAID with nagios</a> &raquo;</span>
+<div class="clear"></div>
+
+</div>
+</div>
+<div class="content-sidebar">
+<h3>Categories</h3>		<ul>
+	<li class="cat-item cat-item-8"><a href="http://pookey.co.uk/wordpress/archives/category/bebook" title="View all posts filed under bebook">bebook</a> (5)
+</li>
+	<li class="cat-item cat-item-3"><a href="http://pookey.co.uk/wordpress/archives/category/geek" title="View all posts filed under geek">geek</a> (63)
+</li>
+	<li class="cat-item cat-item-9"><a href="http://pookey.co.uk/wordpress/archives/category/java" title="View all posts filed under java">java</a> (7)
+</li>
+	<li class="cat-item cat-item-10"><a href="http://pookey.co.uk/wordpress/archives/category/networking" title="View all posts filed under networking">networking</a> (3)
+<ul class='children'>
+	<li class="cat-item cat-item-11"><a href="http://pookey.co.uk/wordpress/archives/category/networking/cisco" title="View all posts filed under cisco">cisco</a> (2)
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-5"><a href="http://pookey.co.uk/wordpress/archives/category/php" title="View all posts filed under php">php</a> (20)
+</li>
+	<li class="cat-item cat-item-6"><a href="http://pookey.co.uk/wordpress/archives/category/phplondon08" title="View all posts filed under phplondon08">phplondon08</a> (2)
+</li>
+	<li class="cat-item cat-item-4"><a href="http://pookey.co.uk/wordpress/archives/category/review" title="View all posts filed under review">review</a> (7)
+</li>
+	<li class="cat-item cat-item-7"><a href="http://pookey.co.uk/wordpress/archives/category/symfony" title="View all posts filed under symfony">symfony</a> (14)
+</li>
+	<li class="cat-item cat-item-1"><a href="http://pookey.co.uk/wordpress/archives/category/uncategorized" title="View all posts filed under Uncategorized">Uncategorized</a> (28)
+</li>
+		</ul>
+				<h3>Recent Posts</h3>		<ul>
+				<li><a href="http://pookey.co.uk/wordpress/archives/235-installing-vmware-esxi-via-pxe" title="Installing VMWare ESXi via PXE">Installing VMWare ESXi via PXE</a></li>
+				<li><a href="http://pookey.co.uk/wordpress/archives/226-easier-stalking-with-bitlbee-and-irssi" title="Easier stalking with bitlbee and irssi">Easier stalking with bitlbee and irssi</a></li>
+				<li><a href="http://pookey.co.uk/wordpress/archives/216-getting-real-with-gns3-connecting-to-real-networks" title="Getting Real with GNS3 &#8211; connecting to physical networks">Getting Real with GNS3 &#8211; connecting to physical networks</a></li>
+				<li><a href="http://pookey.co.uk/wordpress/archives/204-configuring-a-cisco-2509-rj-terminal-server" title="Configuring a Cisco 2509-RJ terminal server">Configuring a Cisco 2509-RJ terminal server</a></li>
+				<li><a href="http://pookey.co.uk/wordpress/archives/188-ip-subnetting-made-easy" title="IP Subnetting made easy">IP Subnetting made easy</a></li>
+				</ul>
+		<h3>Meta</h3>			<ul>
+						<li><a href="http://pookey.co.uk/wordpress/wp-login.php">Log in</a></li>
+			<li><a href="http://pookey.co.uk/wordpress/feed" title="Syndicate this site using RSS 2.0">Entries <abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://pookey.co.uk/wordpress/comments/feed" title="The latest comments to all posts in RSS">Comments <abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://wordpress.org/" title="Powered by WordPress, state-of-the-art semantic personal publishing platform.">WordPress.org</a></li>
+						</ul>
+</div><div class="clear"></div>
+</div>
+<div id="footer">
+<span class="text">
+Copyright &copy; 2010 <a href="http://pookey.co.uk/wordpress">Ian P. Christian&#039;s Personal Blog</a> &middot; Powered by <a href="http://www.wordpress.org" title="WordPress" target="_blank">WordPress</a> <br/><a href="http://www.lightword-theme.com/" target="_blank" title="Lightword Theme">Lightword Theme</a> by Andrei Luca
+<a title="Go to top" class="top" href="#top">Go to top &uarr;</a>
+</span>
+</div>
+<script type="text/javascript" src="http://pookey.co.uk/wordpress/wp-content/themes/lightword/js/menu.js"></script>
+
+<script type="text/javascript" src="http://pookey.co.uk/wordpress/wp-content/themes/lightword/js/tabs.js"></script>
+<script type="text/javascript">jQuery(document).ready(function(){jQuery('tabs').tabs({linkClass : 'tabs',containerClass : 'tab-content',linkSelectedClass : 'selected',containerSelectedClass : 'selected',onComplete : function(){}});});</script>
+</div>
+</body>
+</html>
+
+<!-- Dynamic page generated in 0.106 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2010-12-03 11:00:49 -->
+<!-- super cache -->

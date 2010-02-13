@@ -1,0 +1,655 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<title>Grafico: Javascript charting library • Design • Kilian Valkhof</title>
+<!--[if !IE]><!-->
+  <link rel="stylesheet" href="http://kilianvalkhof.com/wp-content/themes/kilianvalkhof/style.css" type="text/css" media="screen,projection,print" />
+<!--<![endif]-->
+<!--[if gt IE 6]><!-->
+  <link rel="stylesheet" href="http://kilianvalkhof.com/wp-content/themes/kilianvalkhof/style.css" type="text/css" media="screen,projection,print" />
+<!--<![endif]-->
+<!--[if lte IE 6]>
+  <link rel="stylesheet" href="http://sencss.kilianvalkhof.com/minified/sen.full.min.css" type="text/css" media="screen,projection,print" />
+  <style tyle="text/css">
+  body {
+    width:800px;
+    margin:5em auto;
+  }
+  </style>
+<![endif]-->
+<link rel="alternate" type="application/rss+xml" title="Kilian Valkhof RSS Feed" href="http://kilianvalkhof.com/feed/" />
+<link rel="pingback" href="http://kilianvalkhof.com/xmlrpc.php" />
+<link rel="shortcut icon" href="/favicon.png" />
+<link rel="alternate" type="application/rss+xml" title="Kilian Valkhof &raquo; Grafico: Javascript charting library Comments Feed" href="http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/feed/" />
+<script type='text/javascript' src='http://api.flattr.com/js/0.6/load.js?mode=auto&#038;ver=3.0.3'></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://kilianvalkhof.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://kilianvalkhof.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='Kilian Valkhof' href='http://kilianvalkhof.com/' />
+<link rel='start' title='3&#8230;2&#8230;1 Takeoff!' href='http://kilianvalkhof.com/2006/design/takeoff/' />
+<link rel='prev' title='The problem with SVG and Canvas' href='http://kilianvalkhof.com/2010/design/the-problem-with-svg-and-canvas/' />
+<link rel='next' title='SenCSs 0.7 is out' href='http://kilianvalkhof.com/2010/sencss/sencss-0-7-is-out/' />
+<meta name="generator" content="WordPress 3.0.3" />
+<link rel='shortlink' href='http://wp.me/pfyxL-8J' />
+
+<!-- All in One SEO Pack 1.6.13 by Michael Torbert of Semper Fi Web Design[296,366] -->
+<meta name="description" content="There are a lot of bad charts out there, and Grafico will do it's best to prevent you from adding charts onto that pile. ;)" />
+<meta name="keywords" content="design,javascript" />
+<link rel="canonical" href="http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/" />
+<!-- /all in one seo pack -->
+<style type="text/css" media="screen">
+
+/* Begin Contact Form CSS */
+.contactform {
+	position: static;
+	overflow: hidden;
+	width: 95%;
+}
+
+.contactleft {
+	width: 25%;
+	white-space: pre;
+	text-align: right;
+	clear: both;
+	float: left;
+	display: inline;
+	padding: 4px;
+	margin: 5px 0;
+}
+
+.contactright {
+	width: 70%;
+	text-align: left;
+	float: right;
+	display: inline;
+	padding: 4px;
+	margin: 5px 0;
+}
+
+.contacterror {
+	border: 1px solid #ff0000;
+}
+
+.contactsubmit {
+}
+/* End Contact Form CSS */
+
+	</style>
+
+<script src="http://kilianvalkhof.com/wp-content/themes/kilianvalkhof/js/jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17053513-3']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+</head>
+<body >
+<div id="top">
+	<h1><a href="http://kilianvalkhof.com">Kilian Valkhof</a></h1>
+	<!-- That's one L to you! -->
+	<h2 class="tagline">Front-end developer, user experience designer <i class="amp">&amp;</i> Jedi.</h2>
+	<ul class="nav">
+		<li><a href="http://kilianvalkhof.com">Blog</a></li>
+		<li><a href="http://kilianvalkhof.com/about/">About</a></li>
+		<li><a href="http://kilianvalkhof.com/projects/">Projects</a></li>
+		<li><a href="http://kilianvalkhof.com/contact/">Contact</a></li>
+	</ul>
+	<form method="get" class="searchform" action="http://kilianvalkhof.com/">
+<fieldset>
+	<label class="hidden" for="s">search term</label>
+	<input type="text" value="" name="s" id="s" /><button type="submit" id="searchsubmit">Search</button>
+</fieldset>
+</form>
+			<div class="post">
+		<h2>Grafico: Javascript charting library</h2>
+		<span class="meta">
+			<a href="http://kilianvalkhof.com/category/design/" title="View all posts in Design" rel="category tag">Design</a>, <a href="http://kilianvalkhof.com/category/javascript/" title="View all posts in Javascript" rel="category tag">Javascript</a>, 
+			8 February 2010, 
+			28 comments					</span>
+		<p>Grafico is a javascript charting library built with Raphaël and Prototype.js. The library provides a wide array of graphs and stays with the guidelines laid out by Stephen Few and Edward Tufte. <strong>Grafico provides pretty charts that effectively communicate their information.</strong><span id="more-541"></span></p>
+<h2>Graphs</h2>
+<p>This means you get awesome graphs such as <em>stacked area charts</em> and <em>sparklines</em>, but no pie charts or bar charts with every bar a different color. There are a lot of bad charts out there, and Grafico will do it&#8217;s best to prevent you from adding charts onto that pile. ;)</p>
+<p><img src="http://grafico.kilianvalkhof.com/grafico-example.png" alt="" /><br />
+<strong><a href="http://grafico.kilianvalkhof.com">Website</a></strong>, <strong><a href="http://grafico.kilianvalkhof.com/documentation/">Documentation</a></strong> (might be slow on some browsers due to all the examples)</p>
+<div style="float:right;margin-left:2em;">
+Available graphs:</p>
+<ul>
+<li><a href="http://grafico.kilianvalkhof.com/documentation/index.html#line">Line graphs</a></li>
+<li><a href="http://grafico.kilianvalkhof.com/documentation/index.html#area">Area graphs</a></li>
+<li><a href="http://grafico.kilianvalkhof.com/documentation/index.html#stack">Stacked area graphs</a></li>
+<li><a href="http://grafico.kilianvalkhof.com/documentation/index.html#stream">Stream graphs</a></li>
+<li><a href="http://grafico.kilianvalkhof.com/documentation/index.html#bar">Bar graphs</a></li>
+<li><a href="http://grafico.kilianvalkhof.com/documentation/index.html#horizontalbar">Horizontal bar graphs</a></li>
+<li><a href="http://grafico.kilianvalkhof.com/documentation/index.html#sparkline">Sparklines</a></li>
+<li><a href="http://grafico.kilianvalkhof.com/documentation/index.html#sparkbar">Sparkbars</a></li>
+<li><a href="http://grafico.kilianvalkhof.com/documentation/index.html#sparkarea">Sparkareas</a></li>
+</ul>
+</div>
+<p>Grafico requires <a href="http://raphaeljs.com">Raphaël</a> 1.0+ and <a href="http://prototypejs.org">Prototype.js</a> 1.6+</p>
+<p>Each graph type has numerous API options to customize it&#8217;s look and behavior. Many examples of this can be found in the <a href="http://grafico.kilianvalkhof.com/documentation/">documentation</a>. Some highlights: pop-up hovers, meanlines and watermarks. Minified, Grafico is about 30kb and available under the MIT license.</p>
+<p>Grafico is also available on <a href="http://github.com/kilian/grafico">Github</a> and includes a minification script made by <a href="http://wakoopa.com/menno">Menno</a> using the Google Closure Compiler.</p>
+<h3 style="clear:both">History</h3>
+<p>In april 2009 I started working on new visualizations for <a href="http://wakoopa.com">Wakoopa</a>. I had set it my target to provide unique and interesting graphs. One thing that particularly inspired me was the <a href="http://www.neoformix.com/2008/StreamGraph.html">stream graph</a>, but the <a href="http://www.neoformix.com/2008/StreamGraph.html">math behind</a> it scared the crap out of me. I decided to focus on stacked area graphs instead.</p>
+<p>After doing extensive research on the available JavaScript charting libraries, and being slightly disappointed by most, <a href="http://alexyoung.org/2009/01/21/ico-svg-graphs-with-prototype-and-raphael/">Ico by Alex Young</a> was the most promising. In the (almost ) year I worked on it, the graphs, code and API changed considerably. To avoid confusion I decided to rename my version to Grafico. </p>
+<h3>Todo</h3>
+<p>As always, there are points of improvement. The major one is speed. Grafico is very speedy on modern browsers, but of course IE lags behind. When building graphs, drawing pop-up hovers for all data points takes too much time and I have yet to find a way to improve this. The project lives on <a href="http://github.com/kilian/grafico">Github</a>, so if you have improvements, fork away and I&#8217;ll gladly pull them!</p>
+<h2>Update! (16 Feb 2010)</h2>
+<p><a href="http://janpaulposma.nl">Jan Paul Posma</a> wrote the code to implement the aforementioned stream graphs into Grafico. Which is <em>awesome</em>. I have updated the links in this article accordingly.</p>
+				</div>	
+		<div class="influ">
+			<div style="float:left;margin-right:10px;"><a class="FlattrButton" style="display:none;" href="http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/" title="Grafico: Javascript charting library" rev="flattr;uid:28694;language:en_GB;category:text;">There are a lot of bad charts out there, and Grafico will do it's best to prevent you from adding charts onto that pile. ;)</a></div>
+			<script type="text/javascript" src="http://engine.influads.com/publisher/v/Css"></script>
+			<h3 style="margin-bottom:0">Thank you for reading this article.</h3>
+			<p style="margin-bottom:0">Please don't hesitate to leave a comment!</p>
+
+<iframe src="http://www.facebook.com/plugins/like.php?href=http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/&amp;layout=standard&amp;show-faces=false&amp;width=450&amp;action=like&amp;font=arial&amp;colorscheme=light" scrolling="no" frameborder="0" allowTransparency="true" style="border:none; overflow:hidden; width:300px; height:25px;margin-bottom:11px"></iframe>
+
+			<p>I am a <strong>front-end developer</strong> and <strong>user experience developer</strong> from the Netherlands, and you can <strong>hire me</strong>. <a href="/contact">Contact me</a> or ping me on twitter: <a href="http://twitter.com/kilianvalkhof">@kilianvalkhof</a>.</p>
+
+		</div>
+	
+<div class="comments">
+	<h2>28 comments</h2>
+	<ol class="comments">
+		
+		<li id="comment-45992" class="
+				">
+			<div class="comment-meta"> 
+				<img alt='' src='http://1.gravatar.com/avatar/55d71ad27f79006049e236f8254e2548?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=PG' class='avatar avatar-32 photo' height='32' width='32' />				<span class="name"><a href='http://www.youtellme.nl' rel='external nofollow' class='url'>Thierry</a></span>
+				<span class="date"><a href="#comment-45992">8 February 2010, 15:16</a></span>
+			</div>
+			<div class="comment-content">
+								<p>Looks nice :)<br />
+And indeed charting libraries somehow always manage to disappoint&#8230;<br />
+Time for a fix :)</p>
+			</div>
+		</li>
+		
+		<li id="comment-45997" class="
+				pingback ">
+			<div class="comment-meta"> 
+								<span class="name"><a href='http://007nova.com/articles/archives/3256' rel='external nofollow' class='url'>Grafico: Javascript charting library • Design • Kilian Valkhof | 007Nova Articles</a></span>
+				<span class="date"><a href="#comment-45997">8 February 2010, 15:56</a></span>
+			</div>
+			<div class="comment-content">
+								<p>[...] here to see the original: Grafico: Javascript charting library • Design • Kilian Valkhof   Share and [...]</p>
+			</div>
+		</li>
+		
+		<li id="comment-46002" class="
+				">
+			<div class="comment-meta"> 
+				<img alt='' src='http://0.gravatar.com/avatar/81e649868a7d1914a3c92b2af2d50993?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=PG' class='avatar avatar-32 photo' height='32' width='32' />				<span class="name">dude</span>
+				<span class="date"><a href="#comment-46002">8 February 2010, 16:57</a></span>
+			</div>
+			<div class="comment-content">
+								<p>Looks like it would be nice, but Prototype is just _way_ too slow and clunky. How about a jQuery port?</p>
+			</div>
+		</li>
+		
+		<li id="comment-46005" class="
+				">
+			<div class="comment-meta"> 
+				<img alt='' src='http://1.gravatar.com/avatar/33951764b11041075143548f171e3527?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=PG' class='avatar avatar-32 photo' height='32' width='32' />				<span class="name">Hayden</span>
+				<span class="date"><a href="#comment-46005">8 February 2010, 17:17</a></span>
+			</div>
+			<div class="comment-content">
+								<p>I also couldn’t work out how to get the kinks out of line graphs with Raphael (as in your &#8220;Line graph with multiple lines and a watermark&#8221; example, second to last dot)</p>
+			</div>
+		</li>
+		
+		<li id="comment-46007" class="
+				">
+			<div class="comment-meta"> 
+				<img alt='' src='http://0.gravatar.com/avatar/e3bc741a072e942503517e0bd576694c?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=PG' class='avatar avatar-32 photo' height='32' width='32' />				<span class="name"><a href='http://whatisnoise.com' rel='external nofollow' class='url'>David Fisher</a></span>
+				<span class="date"><a href="#comment-46007">8 February 2010, 17:31</a></span>
+			</div>
+			<div class="comment-content">
+								<p>Somewhat offtopic, but I absolutely love your blog&#8217;s theme. Is it one you made, or something you tweaked?</p>
+			</div>
+		</li>
+		
+		<li id="comment-46031" class="
+				">
+			<div class="comment-meta"> 
+				<img alt='' src='http://0.gravatar.com/avatar/00281094eda849293fe6c46c321611a8?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=PG' class='avatar avatar-32 photo' height='32' width='32' />				<span class="name"><a href='http://hockeybias.com' rel='external nofollow' class='url'>Guy At HockeyBias dot com</a></span>
+				<span class="date"><a href="#comment-46031">8 February 2010, 21:55</a></span>
+			</div>
+			<div class="comment-content">
+								<p>Nice! ..Also, I agree with David Fischer; nice clean theme!</p>
+			</div>
+		</li>
+		
+		<li id="comment-46140" class="
+				">
+			<div class="comment-meta"> 
+				<img alt='' src='http://0.gravatar.com/avatar/06bf01b2b0e42349654b73a1dd20fb5e?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=PG' class='avatar avatar-32 photo' height='32' width='32' />				<span class="name"><a href='http://janpaulposma.nl' rel='external nofollow' class='url'>Jan Paul Posma</a></span>
+				<span class="date"><a href="#comment-46140">9 February 2010, 20:07</a></span>
+			</div>
+			<div class="comment-content">
+								<p>The stream graphs are quite awesome, so I looked into it, and it turns out the math may look scary but really isn&#8217;t. I forked your project on github and implemented a rudimentary version of it, if you like it I can also look at other things described in the paper (coloring, layer ordering and layer labeling). </p>
+<p>I&#8217;d be nice though if you can shed ideas on how to fix the implementation so it doesn&#8217;t need a datarow (__empty_space__) which has to be forced to #fff now to make it work. Perhaps adding a function with the lower coordinates (which will be the new dataset) and adding these to the drawing function instead of the lower left and right corners?</p>
+<p><a href="http://github.com/janpaul123/grafico" rel="nofollow">http://github.com/janpaul123/grafico</a></p>
+			</div>
+		</li>
+		
+		<li id="comment-46228" class="
+				author ">
+			<div class="comment-meta"> 
+				<img alt='' src='http://1.gravatar.com/avatar/3c65089d59b418fc7582f8055fbeab0f?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=PG' class='avatar avatar-32 photo' height='32' width='32' />				<span class="name"><a href='http://kilianvalkhof.com' rel='external nofollow' class='url'>Kilian Valkhof</a></span>
+				<span class="date"><a href="#comment-46228">10 February 2010, 12:51</a></span>
+			</div>
+			<div class="comment-content">
+								<p>Hayden, you can do by setting <code>curve_amount</code> to 0. Jan Paul, that is really awesome, I&#8217;ll be pulling from your repo :)</p>
+			</div>
+		</li>
+		
+		<li id="comment-46259" class="
+				pingback ">
+			<div class="comment-meta"> 
+								<span class="name"><a href='http://devloom.com/grafico-javascript-charting-library/' rel='external nofollow' class='url'>Grafico: Javascript charting library | Dev Loom</a></span>
+				<span class="date"><a href="#comment-46259">11 February 2010, 12:51</a></span>
+			</div>
+			<div class="comment-content">
+								<p>[...] Grafico WebAppers [...]</p>
+			</div>
+		</li>
+		
+		<li id="comment-46260" class="
+				pingback ">
+			<div class="comment-meta"> 
+								<span class="name"><a href='http://inwebdeveloper.com/2010/02/11/grafico-javascript-charting-library/' rel='external nofollow' class='url'>Grafico; Javascript Charting Library &laquo; Free &amp; Open Source Web Resources</a></span>
+				<span class="date"><a href="#comment-46260">11 February 2010, 12:58</a></span>
+			</div>
+			<div class="comment-content">
+								<p>[...] <a href="http://grafico.kilianvalkhof.com/" rel="nofollow">http://grafico.kilianvalkhof.com/</a> Demo: <a href="http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/" rel="nofollow">http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/</a> Requirements: Raphael and Prototype.js Documentation: [...]</p>
+			</div>
+		</li>
+		
+		<li id="comment-46261" class="
+				pingback ">
+			<div class="comment-meta"> 
+								<span class="name"><a href='http://satbsat.co.tv/?p=1273' rel='external nofollow' class='url'>satbsat.co.tv &raquo; Blog Archiv &raquo; Grafico &#8211; Javascript Charting Library</a></span>
+				<span class="date"><a href="#comment-46261">11 February 2010, 13:27</a></span>
+			</div>
+			<div class="comment-content">
+								<p>[...] <a href="http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/" rel="nofollow">http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/</a> [...]</p>
+			</div>
+		</li>
+		
+		<li id="comment-46268" class="
+				pingback ">
+			<div class="comment-meta"> 
+								<span class="name"><a href='http://www.visualbeta.es/15735/general/grafico-crear-graficas-para-tu-sitio-web-con-esta-potente-libreria-javascript/' rel='external nofollow' class='url'>Grafico, crear gráficas para tu sitio web con esta potente librería JavaScript</a></span>
+				<span class="date"><a href="#comment-46268">11 February 2010, 20:13</a></span>
+			</div>
+			<div class="comment-content">
+								<p>[...] Web: Grafico   Tags: crear, diseñar, graficos, javascript, sitios [...]</p>
+			</div>
+		</li>
+		
+		<li id="comment-46338" class="
+				pingback ">
+			<div class="comment-meta"> 
+								<span class="name"><a href='http://www.sastgroup.com/links/4666' rel='external nofollow' class='url'>Grafico, libreria javascript per creare grafici!&nbsp;|&nbsp;sastgroup.com</a></span>
+				<span class="date"><a href="#comment-46338">12 February 2010, 11:02</a></span>
+			</div>
+			<div class="comment-content">
+								<p>[...] link: <a href="http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/" rel="nofollow">http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/</a> [...]</p>
+			</div>
+		</li>
+		
+		<li id="comment-46420" class="
+				pingback ">
+			<div class="comment-meta"> 
+								<span class="name"><a href='http://www.ish.2x.nu/?p=208' rel='external nofollow' class='url'>ish.2x.nu &raquo; Blog Archive &raquo; Grafico &#8211; Javascript Charting Library</a></span>
+				<span class="date"><a href="#comment-46420">13 February 2010, 17:50</a></span>
+			</div>
+			<div class="comment-content">
+								<p>[...] <a href="http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/" rel="nofollow">http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/</a> [...]</p>
+			</div>
+		</li>
+		
+		<li id="comment-46421" class="
+				pingback ">
+			<div class="comment-meta"> 
+								<span class="name"><a href='http://blogfreakz.com/javascript/grafico-charting-library-built-with-raphael-and-prototype/' rel='external nofollow' class='url'>Grafico &#8211; charting library built with Raphael and Prototype. | blogfreakz.com</a></span>
+				<span class="date"><a href="#comment-46421">13 February 2010, 18:05</a></span>
+			</div>
+			<div class="comment-content">
+								<p>[...] Raphael and Prototype.js Demo: <a href="http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/" rel="nofollow">http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/</a> License: MIT [...]</p>
+			</div>
+		</li>
+		
+		<li id="comment-46431" class="
+				pingback ">
+			<div class="comment-meta"> 
+								<span class="name"><a href='http://www.bloogz.it/internet/grafico-libreria-javascript-per-creare-grafici/' rel='external nofollow' class='url'>Grafico, libreria javascript per creare grafici!</a></span>
+				<span class="date"><a href="#comment-46431">14 February 2010, 3:11</a></span>
+			</div>
+			<div class="comment-content">
+								<p>[...] link: <a href="http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/" rel="nofollow">http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/</a> [...]</p>
+			</div>
+		</li>
+		
+		<li id="comment-46444" class="
+				pingback ">
+			<div class="comment-meta"> 
+								<span class="name"><a href='http://iranoff.net/?p=156' rel='external nofollow' class='url'>iranoff.net &raquo; Grafico &#8211; Javascript Charting Library</a></span>
+				<span class="date"><a href="#comment-46444">14 February 2010, 21:18</a></span>
+			</div>
+			<div class="comment-content">
+								<p>[...] <a href="http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/" rel="nofollow">http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/</a> [...]</p>
+			</div>
+		</li>
+		
+		<li id="comment-46451" class="
+				pingback ">
+			<div class="comment-meta"> 
+								<span class="name"><a href='http://ish.finitemedia.com/?p=50' rel='external nofollow' class='url'>ish.finitemedia.com &raquo; Grafico &#8211; Javascript Charting Library</a></span>
+				<span class="date"><a href="#comment-46451">15 February 2010, 11:21</a></span>
+			</div>
+			<div class="comment-content">
+								<p>[...] <a href="http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/" rel="nofollow">http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/</a> [...]</p>
+			</div>
+		</li>
+		
+		<li id="comment-46460" class="
+				pingback ">
+			<div class="comment-meta"> 
+								<span class="name"><a href='http://www.sito-web-dinamico.com/2010/02/15/grafico-charting-library-built-with-raphael-and-prototype/' rel='external nofollow' class='url'>Grafico &#8211; Charting Library Built with Raphaël and Prototype</a></span>
+				<span class="date"><a href="#comment-46460">15 February 2010, 20:06</a></span>
+			</div>
+			<div class="comment-content">
+								<p>[...] is about 30kb and available under the MIT license. Requirements: Raphaël and Prototype.js Demo: <a href="http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/" rel="nofollow">http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/</a> License: MIT License   Commenti [0]Digg [...]</p>
+			</div>
+		</li>
+		
+		<li id="comment-46525" class="
+				pingback ">
+			<div class="comment-meta"> 
+								<span class="name"><a href='http://www.ish.500mb.us/?p=3' rel='external nofollow' class='url'>ish.500mb.us &raquo; Grafico &#8211; Javascript Charting Library</a></span>
+				<span class="date"><a href="#comment-46525">17 February 2010, 18:37</a></span>
+			</div>
+			<div class="comment-content">
+								<p>[...] <a href="http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/" rel="nofollow">http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/</a> [...]</p>
+			</div>
+		</li>
+		
+		<li id="comment-47051" class="
+				pingback ">
+			<div class="comment-meta"> 
+								<span class="name"><a href='http://bestwebmagazine.com/2010/02/11/grafico-%e2%80%93-charting-library-built-with-raphael-and-prototype/' rel='external nofollow' class='url'>Grafico – Charting Library Built with Raphaël and Prototype | BestWebMagazine</a></span>
+				<span class="date"><a href="#comment-47051">22 February 2010, 14:19</a></span>
+			</div>
+			<div class="comment-content">
+								<p>[...] Grafico is a javascript charting library built with Raphaël and Prototype.js. The library provides a wide array of graphs and stays with the guidelines laid out by Stephen Few and Edward Tufte. Grafico provides pretty charts that effectively communicate their information. [...]</p>
+			</div>
+		</li>
+		
+		<li id="comment-48554" class="
+				pingback ">
+			<div class="comment-meta"> 
+								<span class="name"><a href='http://www.qybaby.com/50-free-resources-for-charts-and-graphs-solution.html' rel='external nofollow' class='url'>50+ Free Resources for Charts and Graphs Solution &laquo; qybaby&#39;s Blog Life &#8230;&#8230;</a></span>
+				<span class="date"><a href="#comment-48554">12 March 2010, 12:19</a></span>
+			</div>
+			<div class="comment-content">
+								<p>[...] Official Link [...]</p>
+			</div>
+		</li>
+		
+		<li id="comment-53571" class="
+				pingback ">
+			<div class="comment-meta"> 
+								<span class="name"><a href='http://nagpurcolors.com/?p=1310' rel='external nofollow' class='url'>BEST AJAX EXAMPLES - Nagpur</a></span>
+				<span class="date"><a href="#comment-53571">11 May 2010, 9:10</a></span>
+			</div>
+			<div class="comment-content">
+								<p>[...] Grafico: Javascript Charting Library [...]</p>
+			</div>
+		</li>
+		
+		<li id="comment-59358" class="
+				pingback ">
+			<div class="comment-meta"> 
+								<span class="name"><a href='http://flashworks.wordpress.com/2010/08/11/html5-how-replacable-is-flex/' rel='external nofollow' class='url'>HTML5: how replacable is Flex? &laquo; FlashWorks</a></span>
+				<span class="date"><a href="#comment-59358">11 August 2010, 17:33</a></span>
+			</div>
+			<div class="comment-content">
+								<p>[...] Canvas and JavaScript can be used to generate interactive charts, another benefit of the default Flex package. Already people are building interactive chart in JavaScript / HTML / Canvas (I saw the first examples by Kilian Kerkhof in early 2010). [...]</p>
+			</div>
+		</li>
+		
+		<li id="comment-65145" class="
+				pingback ">
+			<div class="comment-meta"> 
+								<span class="name"><a href='http://www.hotscripts.com/blog/emerging-scripts/' rel='external nofollow' class='url'>25 Emerging Free Web Scripts to Watch | Hot Scripts Blog</a></span>
+				<span class="date"><a href="#comment-65145">12 October 2010, 11:54</a></span>
+			</div>
+			<div class="comment-content">
+								<p>[...] Grafico [...]</p>
+			</div>
+		</li>
+		
+		<li id="comment-69653" class="
+				pingback ">
+			<div class="comment-meta"> 
+								<span class="name"><a href='http://marekwmsdn.wordpress.com/2010/11/04/optymalizacja-skryptw-w-js/' rel='external nofollow' class='url'>Optymalizacja skrypt&oacute;w w JS | Wiadomości o technologiach IT</a></span>
+				<span class="date"><a href="#comment-69653">4 November 2010, 17:33</a></span>
+			</div>
+			<div class="comment-content">
+								<p>[...] <a href="http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/" rel="nofollow">http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/</a> [...]</p>
+			</div>
+		</li>
+		
+		<li id="comment-69725" class="
+				">
+			<div class="comment-meta"> 
+				<img alt='' src='http://1.gravatar.com/avatar/d64bfa07217350140c13b8361fe192fe?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=PG' class='avatar avatar-32 photo' height='32' width='32' />				<span class="name"><a href='http://lourenzo.blog.br' rel='external nofollow' class='url'>Lourenzo Ferreira</a></span>
+				<span class="date"><a href="#comment-69725">5 November 2010, 16:13</a></span>
+			</div>
+			<div class="comment-content">
+								<p>Great!<br />
+I discovered it in wakoopa, and it&#8217;s the best non-flash chart library I know</p>
+			</div>
+		</li>
+		
+		<li id="comment-71917" class="
+				pingback ">
+			<div class="comment-meta"> 
+								<span class="name"><a href='http://cc.gamesoft.cc/index.php/885.html' rel='external nofollow' class='url'>多彩的山型统计图 | 设计之家</a></span>
+				<span class="date"><a href="#comment-71917">17 November 2010, 3:11</a></span>
+			</div>
+			<div class="comment-content">
+								<p>[...] 演示: <a href="http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/" rel="nofollow">http://kilianvalkhof.com/2010/design/grafico-javascript-charting-library/</a> [...]</p>
+			</div>
+		</li>
+	
+	</ol>
+
+ 
+
+		<div class="comment-form">
+			<h2>Your response?</h2>
+			<strong>If you post code examples, make sure to escape your HTML.</strong>		
+			<form action="http://kilianvalkhof.com/wp-comments-post.php" method="post"><fieldset>
+						<div class="left">
+				<label for="author">Name </label>
+				<input type="text" name="author" id="author" value="" aria-required='true' />
+
+				<label for="email">E-mail </label>
+				<input type="text" name="email" id="email" value="" aria-required='true' />
+
+				<label for="url">Website </label>
+				<input type="text" name="url" id="url" value="" aria-required='true' />
+			</div>
+						<div>
+				<textarea name="comment" id="comment" cols="100%" rows="10"></textarea>
+			</div>
+			<button name="submit" type="submit" id="submit">Add comment</button>
+			<input type="hidden" name="comment_post_ID" value="541" />
+			<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="1db2f9505d" /></p>			</fieldset></form>
+		</div>
+</div>
+	<h2 class="other-articles">Related Articles</h2><div class="other-articles"><div class="post">
+<h3><a href="http://kilianvalkhof.com/2010/web/open-source-updates/" rel="bookmark" title="27 September 2010">Open source updates</a>
+<span><a href="http://kilianvalkhof.com/category/javascript/" title="View all posts in Javascript" rel="category tag">Javascript</a>, <a href="http://kilianvalkhof.com/category/linux/" title="View all posts in Linux" rel="category tag">Linux</a>, <a href="http://kilianvalkhof.com/category/sencss/" title="View all posts in SenCSs" rel="category tag">SenCSs</a>, <a href="http://kilianvalkhof.com/category/web/" title="View all posts in Web" rel="category tag">Web</a>, <abbr title="27 September 2010">27/09</abbr>, <abbr title="0 comments">0</abbr></span>
+</h3>
+<p>It&#8217;s been a while since I&#8217;ve written about a bunch of my open source projects, but that doesn&#8217;t mean they&#8217;re not still being maintained. Trimage, Grafico, F.lux and SenCSs are all still actively worked on. Read on to find out what&#8217;s been happening with them.
+SenCSs
+When&hellip;</p>
+</div>
+
+<div class="post">
+<h3><a href="http://kilianvalkhof.com/2010/sencss/sencss-0-7-is-out/" rel="bookmark" title="22 February 2010">SenCSs 0.7 is out</a>
+<span><a href="http://kilianvalkhof.com/category/sencss/" title="View all posts in SenCSs" rel="category tag">SenCSs</a>, <abbr title="22 February 2010">22/02</abbr>, <abbr title="0 comments">0</abbr></span>
+</h3>
+<p>After nearly a year of no official new version (but active development and use regardless) I&#8217;ve now officially released the new version of SenCSs: version 0.7. This latest version splits senCSs into multiple files and has a host of smaller improvements.
+So, go get it at&hellip;</p>
+</div>
+
+<div class="post">
+<h3><a href="http://kilianvalkhof.com/2010/web/trimage-image-compressor/" rel="bookmark" title="24 March 2010">Trimage image compressor</a>
+<span><a href="http://kilianvalkhof.com/category/web/" title="View all posts in Web" rel="category tag">Web</a>, <abbr title="24 March 2010">24/03</abbr>, <abbr title="3 comments">3</abbr></span>
+</h3>
+<p>As a front-end developer, minimizing your images is important. Compressed images load faster and take less time to download. However, most current tools that can do that are command line applications that only support one type of image, and oftentimes do not have the same&hellip;</p>
+</div>
+</div><!-- Similar Posts took 36.786 ms -->		</div>
+	<div class="footer">
+	<div class="column"><h3>Categories</h3>		<ul>
+	<li class="cat-item cat-item-7"><a href="http://kilianvalkhof.com/category/accessibility/" title="View all posts filed under Accessibility">Accessibility</a> (1)
+</li>
+	<li class="cat-item cat-item-3"><a href="http://kilianvalkhof.com/category/css-xhtml/" title="View all posts filed under CSS &amp; (X)HTML">CSS &amp; (X)HTML</a> (34)
+</li>
+	<li class="cat-item cat-item-1"><a href="http://kilianvalkhof.com/category/design/" title="View all posts filed under Design">Design</a> (10)
+</li>
+	<li class="cat-item cat-item-8"><a href="http://kilianvalkhof.com/category/javascript/" title="View all posts filed under Javascript">Javascript</a> (12)
+</li>
+	<li class="cat-item cat-item-5"><a href="http://kilianvalkhof.com/category/life/" title="View all posts filed under Life">Life</a> (15)
+</li>
+	<li class="cat-item cat-item-11"><a href="http://kilianvalkhof.com/category/linux/" title="View all posts filed under Linux">Linux</a> (2)
+</li>
+	<li class="cat-item cat-item-9"><a href="http://kilianvalkhof.com/category/sencss/" title="View all posts filed under SenCSs">SenCSs</a> (6)
+</li>
+	<li class="cat-item cat-item-2"><a href="http://kilianvalkhof.com/category/web/" title="View all posts filed under Web">Web</a> (25)
+</li>
+	<li class="cat-item cat-item-10"><a href="http://kilianvalkhof.com/category/wordpress/" title="View all posts filed under Wordpress">Wordpress</a> (1)
+</li>
+		</ul>
+</div><div class="column"><h3>Archive</h3>		<ul>
+			<li><a href='http://kilianvalkhof.com/2010/11/' title='November 2010'>November 2010</a>&nbsp;(2)</li>
+	<li><a href='http://kilianvalkhof.com/2010/10/' title='October 2010'>October 2010</a>&nbsp;(1)</li>
+	<li><a href='http://kilianvalkhof.com/2010/09/' title='September 2010'>September 2010</a>&nbsp;(2)</li>
+	<li><a href='http://kilianvalkhof.com/2010/08/' title='August 2010'>August 2010</a>&nbsp;(1)</li>
+	<li><a href='http://kilianvalkhof.com/2010/07/' title='July 2010'>July 2010</a>&nbsp;(1)</li>
+	<li><a href='http://kilianvalkhof.com/2010/06/' title='June 2010'>June 2010</a>&nbsp;(2)</li>
+	<li><a href='http://kilianvalkhof.com/2010/05/' title='May 2010'>May 2010</a>&nbsp;(2)</li>
+	<li><a href='http://kilianvalkhof.com/2010/04/' title='April 2010'>April 2010</a>&nbsp;(1)</li>
+	<li><a href='http://kilianvalkhof.com/2010/03/' title='March 2010'>March 2010</a>&nbsp;(2)</li>
+	<li><a href='http://kilianvalkhof.com/2010/02/' title='February 2010'>February 2010</a>&nbsp;(2)</li>
+	<li><a href='http://kilianvalkhof.com/2010/01/' title='January 2010'>January 2010</a>&nbsp;(1)</li>
+	<li><a href='http://kilianvalkhof.com/2009/10/' title='October 2009'>October 2009</a>&nbsp;(1)</li>
+	<li><a href='http://kilianvalkhof.com/2009/09/' title='September 2009'>September 2009</a>&nbsp;(1)</li>
+	<li><a href='http://kilianvalkhof.com/2009/08/' title='August 2009'>August 2009</a>&nbsp;(2)</li>
+	<li><a href='http://kilianvalkhof.com/2009/05/' title='May 2009'>May 2009</a>&nbsp;(1)</li>
+	<li><a href='http://kilianvalkhof.com/2009/04/' title='April 2009'>April 2009</a>&nbsp;(1)</li>
+	<li><a href='http://kilianvalkhof.com/2009/03/' title='March 2009'>March 2009</a>&nbsp;(3)</li>
+	<li><a href='http://kilianvalkhof.com/2009/02/' title='February 2009'>February 2009</a>&nbsp;(2)</li>
+	<li><a href='http://kilianvalkhof.com/2009/01/' title='January 2009'>January 2009</a>&nbsp;(1)</li>
+	<li><a href='http://kilianvalkhof.com/2008/12/' title='December 2008'>December 2008</a>&nbsp;(2)</li>
+	<li><a href='http://kilianvalkhof.com/2008/11/' title='November 2008'>November 2008</a>&nbsp;(2)</li>
+	<li><a href='http://kilianvalkhof.com/2008/10/' title='October 2008'>October 2008</a>&nbsp;(2)</li>
+	<li><a href='http://kilianvalkhof.com/2008/09/' title='September 2008'>September 2008</a>&nbsp;(3)</li>
+	<li><a href='http://kilianvalkhof.com/2008/08/' title='August 2008'>August 2008</a>&nbsp;(4)</li>
+	<li><a href='http://kilianvalkhof.com/2008/07/' title='July 2008'>July 2008</a>&nbsp;(5)</li>
+	<li><a href='http://kilianvalkhof.com/2008/06/' title='June 2008'>June 2008</a>&nbsp;(4)</li>
+	<li><a href='http://kilianvalkhof.com/2008/05/' title='May 2008'>May 2008</a>&nbsp;(4)</li>
+	<li><a href='http://kilianvalkhof.com/2008/04/' title='April 2008'>April 2008</a>&nbsp;(1)</li>
+	<li><a href='http://kilianvalkhof.com/2008/03/' title='March 2008'>March 2008</a>&nbsp;(3)</li>
+	<li><a href='http://kilianvalkhof.com/2008/02/' title='February 2008'>February 2008</a>&nbsp;(2)</li>
+	<li><a href='http://kilianvalkhof.com/2008/01/' title='January 2008'>January 2008</a>&nbsp;(2)</li>
+	<li><a href='http://kilianvalkhof.com/2007/12/' title='December 2007'>December 2007</a>&nbsp;(1)</li>
+	<li><a href='http://kilianvalkhof.com/2007/11/' title='November 2007'>November 2007</a>&nbsp;(2)</li>
+	<li><a href='http://kilianvalkhof.com/2007/10/' title='October 2007'>October 2007</a>&nbsp;(2)</li>
+	<li><a href='http://kilianvalkhof.com/2007/09/' title='September 2007'>September 2007</a>&nbsp;(1)</li>
+	<li><a href='http://kilianvalkhof.com/2007/08/' title='August 2007'>August 2007</a>&nbsp;(3)</li>
+	<li><a href='http://kilianvalkhof.com/2007/07/' title='July 2007'>July 2007</a>&nbsp;(2)</li>
+	<li><a href='http://kilianvalkhof.com/2007/06/' title='June 2007'>June 2007</a>&nbsp;(1)</li>
+	<li><a href='http://kilianvalkhof.com/2007/05/' title='May 2007'>May 2007</a>&nbsp;(1)</li>
+	<li><a href='http://kilianvalkhof.com/2007/04/' title='April 2007'>April 2007</a>&nbsp;(2)</li>
+	<li><a href='http://kilianvalkhof.com/2007/03/' title='March 2007'>March 2007</a>&nbsp;(2)</li>
+	<li><a href='http://kilianvalkhof.com/2007/02/' title='February 2007'>February 2007</a>&nbsp;(2)</li>
+	<li><a href='http://kilianvalkhof.com/2007/01/' title='January 2007'>January 2007</a>&nbsp;(7)</li>
+	<li><a href='http://kilianvalkhof.com/2006/12/' title='December 2006'>December 2006</a>&nbsp;(6)</li>
+		</ul>
+</div><div class="column"><h3>Friends</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://arjaneising.nl/" rel="friend met colleague">Arjan Eising</a></li>
+<li><a href="http://www.i-nnovatie.nl" rel="friend met colleague">Bas Bakker</a></li>
+<li><a href="http://www.felicitas-betzl.com/" rel="friend met co-worker">Felicitas Betzl</a></li>
+<li><a href="http://www.fluxility.com" rel="me">Fluxility Design</a></li>
+<li><a href="http://janpaulposma.nl/" rel="acquaintance met">Jan Paul Posma</a></li>
+<li><a href="http://www.atourworst.org/" rel="acquaintance colleague">Jordan Miskowicz</a></li>
+<li><a href="http://jornvanschaik.wordpress.com/" rel="friend met">Jorn van Schaik</a></li>
+<li><a href="http://juice10.com/blog/" rel="friend met colleague">Justin Halsall</a></li>
+<li><a href="http://www.dwarshuis.com/" rel="acquaintance met colleague">Kor Dwarshuis</a></li>
+<li><a href="http://lucasadventures.wordpress.com/" rel="friend met colleague">Lucas Onofre</a></li>
+<li><a href="http://l0ke.com">Luke Lanchester</a></li>
+<li><a href="http://www.i-marco.nl/weblog/" rel="acquaintance colleague">Marco van Hylckama Vlieg</a></li>
+<li><a href="http://morag-maeve.blogspot.com/" rel="friend met">Megan Sloots</a></li>
+<li><a href="http://catchmikey.com/" rel="friend met co-worker">Michael Miello</a></li>
+<li><a href="http://akamike.net" rel="acquaintance colleague">Mike Robinson</a></li>
+<li><a href="http://www.paulchaplin.com/blog/" rel="friend met colleague">Paul Chaplin</a></li>
+<li><a href="http://www.biscuitrat.com/" rel="friend colleague">Ranjani</a></li>
+<li><a href="http://www.leftontheweb.com" rel="acquaintance met colleague">Stefan Koopmanschap</a></li>
+<li><a href="http://www.the-haystack.com/" rel="acquaintance met colleague">Stephen Hay</a></li>
+<li><a href="http://wnas.nl" rel="friend met colleague">Wilfred Nas</a></li>
+
+	</ul>
+</div>
+<div class="column"><h3>Social</h3>			<div class="textwidget"><ul>
+
+			<li><a href="http://twitter.com/kilianvalkhof" rel="me">Twitter</a></li>
+			<li><a href="http://www.linkedin.com/in/kilianvalkhof" rel="me">Linkedin</a></li>
+			<li><a href="http://www.last.fm/user/KilianValkhof/" rel="me">Last.fm</a></li>
+			<li><a href="http://www.new.facebook.com/people/Kilian_Valkhof/743067253" rel="me">Facebook</a></li>
+<li><a href="http://www.thesixtyone.com/#/kilian/" rel="me">TheSixtyOne</a></li>
+
+			<li><a href="http://kilianvalkhof.hyves.nl/" rel="me" lang="nl">Hyves</a></li>
+
+<li><a href="http://wakoopa.com/kilian" rel="me" lang="nl">Wakoopa</a></li>
+
+<li><a href="http://news.ycombinator.com/user?id=kilian" rel="me" lang="nl">Hacker news</a></li>
+<li><a href="http://lystener.com/#!lastfm/kilianvalkhof/" rel="me">Lystener</a></li>
+	</ul></div>
+		</div>	<a href="#top" class="totop">fin</a>
+	<p>&copy; 2006 - 2010 Kilian Valkhof, unless not. Feel free to use my articles, but please read the <a href="http://kilianvalkhof.com/licence/">licence</a>.<br />
+	I made this with <a href="http://wordpress.org/">Wordpress</a>, coffee and <strong>pure love</strong> .</p>	
+	</div>
+
+<script src="http://kilianvalkhof.com/wp-content/themes/kilianvalkhof/js/kv.js" type="text/javascript"></script>
+<!--stats_footer_test--><script src="http://stats.wordpress.com/e-201051.js" type="text/javascript"></script>
+<script type="text/javascript">
+st_go({blog:'3707709',v:'ext',post:'541'});
+var load_cmc = function(){linktracker_init(3707709,541,2);};
+if ( typeof addLoadEvent != 'undefined' ) addLoadEvent(load_cmc);
+else load_cmc();
+</script>
+
+</body>
+</html>
+
+
+<!-- Dynamic page generated in 0.478 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2010-12-20 16:09:21 -->

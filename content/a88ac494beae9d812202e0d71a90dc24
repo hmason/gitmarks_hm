@@ -1,0 +1,501 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<title>  Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example</title>
+<link rel="shortcut icon" href="http://atbrox.com/wp-content/themes/iblog2/favicon.ico" type="image/x-icon" />
+<meta name="generator" content="WordPress 3.0.1" /> <!-- leave this for stats -->
+
+<link rel="stylesheet" href="http://atbrox.com/wp-content/themes/iblog2/style.css" type="text/css" media="all" />
+<link rel="stylesheet" href="http://atbrox.com/wp-content/themes/iblog2/print.css" type="text/css" media="print" />
+
+<!-- Sidebar docking boxes (dbx) by Brothercake - http://www.brothercake.com/ -->
+<script type="text/javascript" src="http://atbrox.com/wp-content/themes/iblog2/dbx.js"></script>
+<script type="text/javascript" src="http://atbrox.com/wp-content/themes/iblog2/dbx-key.js"></script>
+
+<link rel="stylesheet" type="text/css" href="http://atbrox.com/wp-content/themes/iblog2/dbx.css" media="screen, projection" />
+
+<link rel="alternate" type="application/rss+xml" title="atbrox RSS Feed" href="http://atbrox.com/feed/" />
+<link rel="pingback" href="http://atbrox.com/xmlrpc.php" />
+
+
+<!--[if lt IE 8]>
+<script src="http://ie7-js.googlecode.com/svn/version/2.0(beta3)/IE8.js" type="text/javascript"></script>
+<![endif]-->
+
+<!--[if IE 6]>
+<script src="http://atbrox.com/wp-content/themes/iblog2/belatedpng.js"></script>
+<script>
+  DD_belatedPNG.fix('.png_bg, img, #sidebar ul li');
+ </script>
+<style>
+	#header .blogtitle .sheen{display: none;height: 1px;}
+</style>
+<![endif]-->
+
+<link rel="alternate" type="application/rss+xml" title="atbrox &raquo; Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example Comments Feed" href="http://atbrox.com/2010/02/08/parallel-machine-learning-for-hadoopmapreduce-a-python-example/feed/" />
+<script type='text/javascript' src='http://atbrox.com/wp-includes/js/jquery/jquery.js?ver=1.4.2'></script>
+<script type='text/javascript' src='http://atbrox.com/wp-content/plugins/daves-wordpress-live-search/jquery.dimensions.pack.js?ver=3.0.1'></script>
+<script type='text/javascript' src='http://atbrox.com/wp-content/plugins/daves-wordpress-live-search/daves-wordpress-live-search.js.php?ver=3.0.1'></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://atbrox.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://atbrox.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='atbrox' href='http://atbrox.com/' />
+<link rel='start' title='atbrox ready for business' href='http://atbrox.com/2009/09/07/abiody-ready-for-business/' />
+<link rel='prev' title='Atbrox Customer Case Study &#8211; Scalable Language Processing with Elastic Mapreduce (Hadoop)' href='http://atbrox.com/2009/11/14/atbrox-customer-case-study-scalable-language-processing-with-elastic-mapreduce-hadoop/' />
+<link rel='next' title='Mapreduce &amp; Hadoop Algorithms in Academic Papers (updated)' href='http://atbrox.com/2010/02/12/mapreduce-hadoop-algorithms-in-academic-papers-updated/' />
+<meta name="generator" content="WordPress 3.0.1" />
+<link rel='canonical' href='http://atbrox.com/2010/02/08/parallel-machine-learning-for-hadoopmapreduce-a-python-example/' />
+<link rel='shortlink' href='http://atbrox.com/?p=572' />
+<meta name="google-site-verification" content="G2WUm25aM-9YErPyfPYq9rlxg8rChg0LjOehVMEObvU" /> 
+<meta name="msvalidate.01" content="A9BC77A186BC9C6E6AED7943D0974BD1" />
+<meta name="alexaVerifyID" content="WydXUbNiLJv94aKna0WCu1yjt0A" />
+<link rel='stylesheet' id='daves-wordpress-live-search-css'  href='http://atbrox.com/wp-content/plugins/daves-wordpress-live-search/daves-wordpress-live-search_default_gray.css?ver=3.0.1' type='text/css' media='all' />
+<script src='http://mint.atbrox.com/?js' type='text/javascript'></script>
+<link rel="stylesheet" type="text/css" media="screen" href="http://atbrox.com/wp-content/plugins/ro-social-bookmarks/ro_social_bookmarks.css" />
+<meta name="tweetmeme-title" content="Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example" /></head>
+<body>
+
+<div id="page" class="fix">
+  <div id="wrapper" class="fix">
+    <div id="header" class="fix">
+			<img class="headerimage" src="http://atbrox.com/wp-includes/images/atbrox.png" alt="atbrox"/>
+	    </div><!-- /header -->
+
+	<div id="nav" class="fix">
+		<ul class="fix">
+			<li class="page_item "><a class="home" href="http://atbrox.com/" title="Home"><img src="http://atbrox.com/wp-content/themes/iblog2/images/home-icon-trans.png"/></a></li>
+			<li class="page_item page-item-63"><a href="http://atbrox.com/services/" title="Services">Services</a></li>
+<li class="page_item page-item-77"><a href="http://atbrox.com/about/" title="About">About</a></li>
+<li class="page_item page-item-564"><a href="http://atbrox.com/press/" title="Press">Press</a></li>
+<li class="page_item page-item-915"><a href="http://atbrox.com/technology/" title="Tech">Tech</a></li>
+<li class="page_item page-item-1364"><a href="http://atbrox.com/customers/" title="Customers">Customers</a></li>
+<li class="page_item page-item-9"><a href="http://atbrox.com/contact/" title="Contact">Contact</a></li>
+		</ul>
+		
+		<form method="get" id="searchform" action="http://atbrox.com/">
+	<input type="text" value="Search" name="s" id="s" onfocus="if (this.value == 'Search') {this.value = '';}" onblur="if (this.value == '') {this.value = 'Search';}" />
+	<input class="png_bg" type="submit" id="searchsubmit" value="Go" />
+</form>
+		
+	</div><!-- /nav -->
+
+<div id="container" class="fix">
+    <div id="left-col">
+  <div id="content">
+  
+  <div class="post-nav"> <span class="previous"><a href="http://atbrox.com/2009/11/14/atbrox-customer-case-study-scalable-language-processing-with-elastic-mapreduce-hadoop/" rel="prev">Atbrox Customer Case Study &#8211; Scalable Language Processing with Elastic Mapreduce (Hadoop)</a></span> <span class="next"><a href="http://atbrox.com/2010/02/12/mapreduce-hadoop-algorithms-in-academic-papers-updated/" rel="next">Mapreduce &#038; Hadoop Algorithms in Academic Papers (updated)</a></span></div>
+  
+  
+        <div class="post fix" id="post-572">
+		  <div class="date"><span>Feb</span> 08</div>
+		  <div class="title">
+          <h2  class="posttitle"><a href="http://atbrox.com/2010/02/08/parallel-machine-learning-for-hadoopmapreduce-a-python-example/" rel="bookmark" title="Permanent Link to Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example">Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example</a></h2>
+          <div class="postdata"><span class="category"><a href="http://atbrox.com/category/hadoop-and-mapreduce/" title="View all posts in Hadoop and Mapreduce" rel="category tag">Hadoop and Mapreduce</a>, <a href="http://atbrox.com/category/cloud-computing/" title="View all posts in cloud computing" rel="category tag">cloud computing</a>, <a href="http://atbrox.com/category/infrastructure/" title="View all posts in infrastructure" rel="category tag">infrastructure</a></span> <span class="right mini-add-comment"><a href="#respond">Add comments</a></span></div>
+		  </div>
+          <div class="entry fix">
+            <div class="tweetmeme_button" style="float: right; margin-left: 10px;"><iframe src="http://api.tweetmeme.com/button.js?url=http%3A%2F%2Fatbrox.com%2F2010%2F02%2F08%2Fparallel-machine-learning-for-hadoopmapreduce-a-python-example%2F&amp;style=normal" height="61" width="50" frameborder="0" scrolling="no"></iframe></div>
+<p><em>Atbrox is startup providing technology and services for Search and Mapreduce/Hadoop. <a href="http://atbrox.com/about/">Our background</a> is from from Google, IBM and Research.</em></p>
+<p><font color="#ff0000">Update 2010-June-17</font> Code for this posting is now on github -<a href="http://github.com/atbrox/Snabler">http://github.com/atbrox/Snabler</a> </p>
+<p>This posting gives an example of how to use Mapreduce, Python and Numpy to parallelize a linear machine learning classifier algorithm for Hadoop Streaming. It also discusses various hadoop/mapreduce-specific approaches how to potentially improve or extend the example.</p>
+<h2>1. Background</h2>
+<p>Classification is an everyday task, it is about selecting one out of several outcomes based on their features, e.g</p>
+<ul>
+<li>In recycling of garbage you select the bin based on the material, e.g. plastic, metal or organic.</li>
+<li>When purchasing you select the store from based e.g. on its reputation, prior experience, service, inventory and prices</li>
+</ul>
+<p>Computational Classification &#8211; Supervised Machine Learning &#8211; is quite similar, but requires (relatively) well-formed input data combined with classification algorithms.</p>
+<h3>1.1 Examples of classification problems</h3>
+<ul>
+<li>Finance/Insurance
+<ul>
+<li>Classify investment opportunities as good or not e.g. based on industry/company metrics, portfolio diversity and currency risk.</li>
+<li>Classify credit card transactions as valid or invalid based e.g. location of transaction and credit card holder, date, amount, purchased item or service, history of transactions and similar transactions</li>
+</ul>
+<li>Biology/Medicine
+<ul>
+<li>Classification of proteins into structural or functional classes</li>
+<li>Diagnostic classification, e.g. <a href="http://www.csie.ntu.edu.tw/~rfchang/prof/ar0302.pdf">cancer tumours based on images</a></li>
+</ul>
+<li>Internet
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/Document_classification">Document Classification</a> and <a href="http://www.cs.cornell.edu/people/tj/svm_light/svm_rank.html">Ranking</a></p>
+<li>Malware classification, email/tweet/web spam classification</ul>
+<li>Production Systems (e.g. in energy or petrochemical industries)
+<ul>
+<li>Classify and detect situations (e.g. sweet spots or risk situations) based on realtime and historic data from sensors</ul>
+</li>
+</ul>
+<h3>1.2 Classification Algorithms</h3>
+<p>Classification algorithms comes in various types (e.g. linear, nonlinear, discriminative etc), see my prior postings <a href="http://amundblog.blogspot.com/2008/04/pragmatic-classification-very-basics.html">Pragmatic Classification: The Very Basics</a>  and<a href="http://amundblog.blogspot.com/2008/06/pragmatic-classification-of-classifiers.html"> Pragmatic Classification of Classifiers</a>.<br />
+<strong><font color="#0000ff"><br />
+Key takeaways about classifiers:<br />
+</font></strong></p>
+<ol>
+<li>There is no silver bullet classifier algorithm or feature extraction method.
+<li>Classification algorithms tend to be computationally hard to train, this encourages using a parallel approach, in this case with Hadoop/Mapreduce.
+</ol>
+<h2>2. Parallel Classification for Hadoop Streaming</h2>
+<p>The classifier described belongs to a familiy of classifiers which have in common that they can mathematically be described as Tikhonov Regularization with a Square loss function, this family includes Proximal SVM, Ridge Regression, Shrinkage Regression and Regularized Least-Squares Classification. (<em>note: If you replace the Square Loss function with a Hinge-Loss function you get Support Vector Machine classification</em>). The implemented classifier &#8211; proximal SVM &#8211; is from the paper <a href="ftp://ftp.cs.wisc.edu/pub/dmi/tech-reports/01-08.ps">Incremental Support Vector Machine Classification</a>, referred to as the paper below.</p>
+<h3>2.1 training data</h3>
+<p>The classifier assumes numerical training data, where each class is either -1.0 og +1.0 (negative or positive class), and features are represented as vectors of positive floating point numbers. In the algorithm below are:</p>
+<pre class="brush: plain;">
+D - a matrix of training classes, e.g. [[-1.0, 1.0, 1.0, .. ]]
+A - a matrix with feature vectors, e.g. [[2.9, 3.3, 11.1, 2.4], .. ]
+e - a vector filled with ones, e.g [1.0, 1.0, .., 1.0]
+E = [A -e]
+mu = scalar constant # used to tune classifier
+D - a diagonal matrix with -1.0 or +1.0 values (depending on the class)
+</pre>
+<h3>2.2 the classifier algorithm</h3>
+<p>Training the classifier can be done with right side of the equation (13) from paper</p>
+<pre class="brush: plain;">(omega, gamma) = (I/mu + E.T*E).I*(E.T*D*e)
+</pre>
+<p>Classification of an incoming feature vector x can then be done by calculating:</p>
+<pre class="brush: plain;">x.T*omega - gamma</pre>
+<p>which returns a number, and the sign of the number corresponds to the class, i.e. positive or negative.</p>
+<p>2. Parallelization of the classifier with Hadoop Streaming and Python</p>
+<p>Expression (16) in the paper has a nice property, it supports increments (and decrements), in the example there are 2 increments (and 2 decrements), but by induction there can be as many as you want:</p>
+<pre class="brush: plain;">
+(omega, gamma) = (I/mu + E_.T*E_1 + .. + E_i.T*E_i).I*
+                 (E_1.T*D_1*e + .. + E_i.T*D_i*e)
+</pre>
+<p>where</p>
+<pre class="brush: plain;">
+E.T*E = E_1.T*E_1 + .. + E_i.T*E_i
+</pre>
+<p>and</p>
+<pre class="brush: plain;">
+E.T*De = E_1.T*D_1*e + .. + E_i.T*D_i*e
+</pre>
+<p>This means that we can parallelize the calculation of E.T*E and E.T*De, by having Hadoop mappers calculate each of the elements of the sums in as in the Python map() code below (sent to reducers as tuples)</p>
+<p><img width="500" src="http://atbrox.com/wp-content/uploads/2010/02/parclassifiersinglereducer.png" alt="map() and reduce() - dataflow - basic case" /></p>
+<h3>2.3 &#8211; the mapper</h3>
+<pre class="brush: plain;">
+def map(key, value):
+   # input key= class for one training example, e.g. &quot;-1.0&quot;
+   classes = [float(item) for item in key.split(&quot;,&quot;)]   # e.g. [-1.0]
+   D = numpy.diag(classes)
+
+   # input value = feature vector for one training example, e.g. &quot;3.0, 7.0, 2.0&quot;
+   featurematrix = [float(item) for item in value.split(&quot;,&quot;)]
+   A = numpy.matrix(featurematrix)
+
+   # create matrix E and vector e
+   e = numpy.matrix(numpy.ones(len(A)).reshape(len(A),1))
+   E = numpy.matrix(numpy.append(A,-e,axis=1)) 
+
+   # create a tuple with the values to be used by reducer
+   # and encode it with base64 to avoid potential trouble with '\t' and '\n' used
+   # as default separators in Hadoop Streaming
+   producedvalue = base64.b64encode(pickle.dumps( (E.T*E, E.T*D*e) )    
+
+   # note: a single constant key &quot;producedkey&quot; sends to only one reducer
+   # somewhat &quot;atypical&quot; due to low degree of parallism on reducer side
+   print &quot;producedkey\t%s&quot; % (producedvalue)
+</pre>
+<h3>2.4 &#8211; the Reducer</h3>
+<pre class="brush: plain;">
+def reduce(key, values, mu=0.1):
+  sumETE = None
+  sumETDe = None
+
+  # key isn't used, so ignoring it with _ (underscore).
+  for _, value in values:
+    # unpickle values
+    ETE, ETDe = pickle.loads(base64.b64decode(value))
+    if sumETE == None:
+      # create the I/mu with correct dimensions
+      sumETE = numpy.matrix(numpy.eye(ETE.shape[1])/mu)
+    sumETE += ETE
+
+    if sumETDe == None:
+      # create sumETDe with correct dimensions
+      sumETDe = ETDe
+    else:
+      sumETDe += ETDe
+
+    # note: omega = result[:-1] and gamma = result[-1]
+    # but printing entire vector as output
+    result = sumETE.I*sumETDe
+    print &quot;%s\t%s&quot; % (key, str(result.tolist()))
+</pre>
+<h3>2.5 &#8211; Mapper and Reducer Utility Code</h3>
+<p>Code used to run map() and reduce() methods, inspired by iterator/generator approach from<a href="http://www.michael-noll.com/wiki/Writing_An_Hadoop_MapReduce_Program_In_Python"> this mapreduce tutorial</a>.</p>
+<pre class="brush: plain;">
+def read_input(file, separator=&quot;\t&quot;):
+    for line in file:
+        yield line.rstrip().split(separator)
+</pre>
+<pre class="brush: plain;">
+def run_mapper(map, separator=&quot;\t&quot;):
+    data = read_input(sys.stdin,separator)
+    for (key,value) in data:
+        map(key,value)
+</pre>
+<pre class="brush: plain;">
+def run_reducer(reduce,separator=&quot;\t&quot;):
+    data = read_input(sys.stdin, separator)
+    for key, values in groupby(data, itemgetter(0)):
+        reduce(key, values)
+</pre>
+<h2>3. Finished?</h2>
+<p>Assume your running time goes through the roof even with the above parallel approach, what to do?</p>
+<h3>3.1 Mapper Increment Size really makes a difference!</h3>
+<p>Since there is only 1 reducer in the presented implementation, it is useful to let mappers do most of the job. The size of the (increment) matrices &#8211; E.T*E and E.T*D*e given as input to the reducer is independent of number of training data, but dependent on the number of classification features. The workload on the reducer is also dependent on the number of matrices received by the mappes (i.e. increment size), e.g. if you have a 1000 mappers having one billion examples with 100 features each, the reducer would need to do a sum of one trillion 101&#215;101 matrices and one trillion 101&#215;1 vectors if the mapper sent one matrix pair per training example, but if each mapper only sent one pair of E.T*E and E.T*D*e representing all the mappers billion training examples the reducer would only need to summarize 1000 matrix pairs.</p>
+<h3>3.2 Avoid stressing the reducer</h3>
+<p>Add more (intermediate) reducers (combiners) that calculates partial sums of matrices. In the case of many small increments (and correspondingly many matrices) it can be useful to add an intermediate step that (in parallel) calculates sums of E.T*E and E.T*D*e before sending the sums to the final reducer, this means that the final reducer gets fewer matrices to summarize before calculating the final answer, see figure below.<br />
+<img width="500" src="http://atbrox.com/wp-content/uploads/2010/02/machinelearning2.png" alt="flow with intermediate mapreduce step" /></p>
+<h3>3.3 Parallelize (or replace) the matrix inversion in the reduction step</h3>
+<p>If someone comes along with a training data set with a very high feature-dimension (e.g. recommender systems, bioinformatics or text classification), the matrix inversion in the reducer can become a real bottleneck since such algorithms typically are O(n^3) (and lower bound of <a href="http://amundtveit.info/publications/2003/ComplexityOfMatrixInversion.pdf">Omega(n^2 lg n)</a>), where n is the number of features. A solution to this can be to use or develop hadoop/mapreduce-based parallel matrix inversion, e.g. <a href="http://incubator.apache.org/hama/">Apache Hama</a>, or <a href="http://www.johndcook.com/blog/2010/01/19/dont-invert-that-matrix/">don&#8217;t invert the matrix..</a>.</p>
+<h3>3.4 Feature Dimensionality Reduction</h3>
+<p>Another approach when having training data with high feature-dimension could be to reduce feature-dimensionality, for more info check out <a href="http://en.wikipedia.org/wiki/Latent_semantic_indexing">Latent Semantic Indexing</a> (and Analysis), <a href="http://en.wikipedia.org/wiki/Singular_value_decomposition">Singular Value Decomposition</a> or <a href="http://ict.ewi.tudelft.nl/~lvandermaaten/t-SNE.html">t-Distributed Stochastic Neighbor Embedding</a></p>
+<h3>3.5 Reduce IO between  mappers and reducers with compression</h3>
+<p><a href="http://www.cloudera.com/blog/2009/11/hadoop-at-twitter-part-1-splittable-lzo-compression">Twitter presented using LZO compression (on the Cloudera blog) to speed up Hadoop</a>. Inspired by this one could in the case of high feature dimension, i.e. large E.T*E and E.T*D*e matrices, compress the output in the mapper and decompress in the reducer by replacing base64encoding/decoding and pickling above with:</p>
+<pre class="brush: plain;">
+producedvalue = base64.b64encode(lzo.compress(pickle.dumps( (E.T*E, E.T*D*e) ), level=1)
+</pre>
+<p>and</p>
+<pre class="brush: plain;">
+ETE, ETDe = pickle.loads(lzo.decompress(base64.b64decode(value)))
+</pre>
+<h3>3.6 Do more work with approximately the same computing resources</h3>
+<p>The D matrix above represents binary classification with a value of +1 or -1 representing each class. It is quite common to have classification problems with more than 2 classes. Supporting multiple classes is usually done by training by several classifiers, either 1-against-all (1 classifier trained per class) or 1-against-1 (1 classifier trained per unique pair of classes), and the run a tournament of them against each other and pick the most confident. In the case of 1-against-all classification the mapper could probably send multiple E.T*D_c*e &#8211; with one D_c per class and keep the same E.T*E, the reducer would then need to calculate (I/mu + E.TE).I once and independently multiply with several E.T*D_c*e sums to create a set of (omega,gamma) classifiers. For 1-against-1 classification it becomes somewhat more complicated, because it involves creating several E matrices since in the 1-against-1 case only the rows in E where the 2 classes competing occur are relevant.</p>
+<h2>4. Code</h2>
+<p>(Early) Python code of the algorithm presented above can be found at <a href="http://github.com/atbrox/Snabler">http://github.com/atbrox/Snabler</a> (open source with Apache Licence). Please let <a href="mailto:amund@atbrox.com">me</a> know if you want to contribute to the project, e.g. from  <a href="http://atbrox.com/2009/10/01/mapreduce-and-hadoop-academic-papers/">mapreduce and hadoop algorithms in academic papers</a>.</p>
+<h2>5. More resources about machine learning with Hadoop/Mapreduce?</h2>
+<ul>
+<li><a href="http://lucene.apache.org/mahout/">Apache Mahout</a> &#8211; active project that implements (in Java) several machine learning algorithms (also unsupervised machine learning, i.e. clustering)
+<li>Good paper about machine learning algorithms with mapreduce &#8211; <a href="http://www.cs.stanford.edu/people/ang//papers/nips06-mapreducemulticore.pdf">http://www.cs.stanford.edu/people/ang//papers/nips06-mapreducemulticore.pdf</a>
+</ul>
+<hr />
+<p><font color="#0000ff"><strong>Do you need help with Hadoop/Mapreduce?</strong></font><br />
+A good start could be to read <a href="http://www.amazon.com/gp/product/0596521979?ie=UTF8&#038;tag=amuw-20&#038;linkCode=as2&#038;camp=1789&#038;creative=9325&#038;creativeASIN=0596521979">this book</a>, or contact <a href="http://atbrox.com/about/">Atbrox</a> if you need help with development or parallelization of algorithms for Hadoop/Mapreduce &#8211; <a href="mailto:info@atbrox.com">info@atbrox.com</a>. </p>
+<!-- RO Social Bookmarks BEGIN --><div class="social_bookmark"><em>Bookmark to:</em><br /><a class="social_img" onclick="window.open(this.href, '_blank', 'scrollbars=yes,menubar=no,border=0,height=600,width=750,resizable=yes,toolbar=no,location=no,status=no'); return false;" href="http://blogro.info/submit.php?url=http://atbrox.com/2010/02/08/parallel-machine-learning-for-hadoopmapreduce-a-python-example/" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to BlogRO"><img src="http://atbrox.com/wp-content/plugins/ro-social-bookmarks/blogro.png" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to BlogRO" alt="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to BlogRO" /></a><a class="social_img" onclick="window.open(this.href, '_blank', 'scrollbars=yes,menubar=no,border=0,height=600,width=750,resizable=yes,toolbar=no,location=no,status=no'); return false;" href="http://www.ftw.ro/node/add/drigg/?url=http://atbrox.com/2010/02/08/parallel-machine-learning-for-hadoopmapreduce-a-python-example/" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to FTW"><img src="http://atbrox.com/wp-content/plugins/ro-social-bookmarks/ftw.png" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to FTW" alt="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to FTW" /></a><a class="social_img" onclick="window.open(this.href, '_blank', 'scrollbars=yes,menubar=no,border=0,height=600,width=750,resizable=yes,toolbar=no,location=no,status=no'); return false;" href="http://voxro.com/node/add/drigg/?url=http://atbrox.com/2010/02/08/parallel-machine-learning-for-hadoopmapreduce-a-python-example/" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to VoxRO"><img src="http://atbrox.com/wp-content/plugins/ro-social-bookmarks/voxro.png" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to VoxRO" alt="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to VoxRO" /></a><a class="social_img" onclick="window.open(this.href, '_blank', 'scrollbars=yes,menubar=no,border=0,height=600,width=750,resizable=yes,toolbar=no,location=no,status=no'); return false;" href="http://twitter.com/home?status=http://atbrox.com/2010/02/08/parallel-machine-learning-for-hadoopmapreduce-a-python-example/" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to Twitter"><img src="http://atbrox.com/wp-content/plugins/ro-social-bookmarks/twitter.png" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to Twitter" alt="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to Twitter" /></a><a class="social_img" onclick="window.open(this.href, '_blank', 'scrollbars=yes,menubar=no,border=0,height=600,width=750,resizable=yes,toolbar=no,location=no,status=no'); return false;" href="http://www.myspace.com/Modules/PostTo/Pages/?t=Parallel+Machine+Learning+for+Hadoop%2FMapreduce+%26%238211%3B+A+Python+Example&amp;c=http://atbrox.com/2010/02/08/parallel-machine-learning-for-hadoopmapreduce-a-python-example/" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to MySpace"><img src="http://atbrox.com/wp-content/plugins/ro-social-bookmarks/myspace.png" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to MySpace" alt="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to MySpace" /></a><a class="social_img" onclick="window.open(this.href, '_blank', 'scrollbars=yes,menubar=no,border=0,height=600,width=750,resizable=yes,toolbar=no,location=no,status=no'); return false;" href="http://del.icio.us/post?url=http://atbrox.com/2010/02/08/parallel-machine-learning-for-hadoopmapreduce-a-python-example/&amp;title=Parallel+Machine+Learning+for+Hadoop%2FMapreduce+%26%238211%3B+A+Python+Example" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to Del.icio.us"><img src="http://atbrox.com/wp-content/plugins/ro-social-bookmarks/delicious.png" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to Del.icio.us" alt="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to Del.icio.us" /></a><br /><a class="social_img" onclick="window.open(this.href, '_blank', 'scrollbars=yes,menubar=no,border=0,height=600,width=750,resizable=yes,toolbar=no,location=no,status=no'); return false;" href="http://digg.com/submit?phase=2&amp;url=http://atbrox.com/2010/02/08/parallel-machine-learning-for-hadoopmapreduce-a-python-example/&amp;title=Parallel+Machine+Learning+for+Hadoop%2FMapreduce+%26%238211%3B+A+Python+Example" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to digg"><img src="http://atbrox.com/wp-content/plugins/ro-social-bookmarks/digg.png" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to digg" alt="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to digg" /></a><a class="social_img" onclick="window.open(this.href, '_blank', 'scrollbars=yes,menubar=no,border=0,height=600,width=750,resizable=yes,toolbar=no,location=no,status=no'); return false;" href="http://www.facebook.com/share.php?u=http://atbrox.com/2010/02/08/parallel-machine-learning-for-hadoopmapreduce-a-python-example/&amp;t=Parallel+Machine+Learning+for+Hadoop%2FMapreduce+%26%238211%3B+A+Python+Example" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to FaceBook"><img src="http://atbrox.com/wp-content/plugins/ro-social-bookmarks/facebook.png" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to FaceBook" alt="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to FaceBook" /></a><a class="social_img" onclick="window.open(this.href, '_blank', 'scrollbars=yes,menubar=no,border=0,height=600,width=750,resizable=yes,toolbar=no,location=no,status=no'); return false;" href="http://www.technorati.com/faves?add=http://atbrox.com/2010/02/08/parallel-machine-learning-for-hadoopmapreduce-a-python-example/" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to Technorati"><img src="http://atbrox.com/wp-content/plugins/ro-social-bookmarks/technorati.png" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to Technorati" alt="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to Technorati" /></a><a class="social_img" onclick="window.open(this.href, '_blank', 'scrollbars=yes,menubar=no,border=0,height=600,width=750,resizable=yes,toolbar=no,location=no,status=no'); return false;" href="http://www.stumbleupon.com/submit?url=http://atbrox.com/2010/02/08/parallel-machine-learning-for-hadoopmapreduce-a-python-example/&amp;title=Parallel+Machine+Learning+for+Hadoop%2FMapreduce+%26%238211%3B+A+Python+Example" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to Stumble Upon"><img src="http://atbrox.com/wp-content/plugins/ro-social-bookmarks/stumbleupon.png" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to Stumble Upon" alt="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to Stumble Upon" /></a><a class="social_img" onclick="window.open(this.href, '_blank', 'scrollbars=yes,menubar=no,border=0,height=600,width=750,resizable=yes,toolbar=no,location=no,status=no'); return false;" href="http://www.google.com/bookmarks/mark?op=edit&amp;output=popup&amp;bkmk=http://atbrox.com/2010/02/08/parallel-machine-learning-for-hadoopmapreduce-a-python-example/&amp;title=Parallel+Machine+Learning+for+Hadoop%2FMapreduce+%26%238211%3B+A+Python+Example" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to Google Bookmarks"><img src="http://atbrox.com/wp-content/plugins/ro-social-bookmarks/google.png" title="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to Google Bookmarks" alt="Add 'Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example' to Google Bookmarks" /></a></div>
+<!-- RO Social Bookmarks END -->						          </div><!--/entry -->
+		
+		
+<!-- You can start editing here. -->
+
+	<h3 id="comments">2 Responses to &#8220;Parallel Machine Learning for Hadoop/Mapreduce &#8211; A Python Example&#8221;</h3> 
+
+	<ol class="commentlist">
+
+	
+		<li class="alt" id="comment-11751">
+						
+			<cite><a href='http://www.quora.com/What-is-the-best-way-to-implement-an-SVM-using-Hadoop#ans155710' rel='external nofollow' class='url'>Quora</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-11751" title="">November 17th, 2010 at 11:18</a> </small>
+
+			<p><strong>What is the best way to implement an SVM using Hadoop?&#8230;</strong></p>
+<p>Thought it might be worthwhile to put all the proposed solutions in context to see when one might use one over the other. The atbrox blog (<a href="http://atbrox.com/2010/02/08/parallel-machine-learning-for-hadoopmapreduce-a-python-example/) that" rel="nofollow">http://atbrox.com/2010/02/08/parallel-machine-learning-for-hadoopmapreduce-a-python-example/) that</a> Soren points t&#8230;</p>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-12269">
+						
+			<cite><a href='http://www.quora.com/What-is-Atbrox#ans138163' rel='external nofollow' class='url'>Quora</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-12269" title="">November 23rd, 2010 at 08:35</a> </small>
+
+			<p><strong>What is Atbrox?&#8230;</strong></p>
+<p>Atbrox is a bootstrapped and profitable startup company developing technology for cloud computing and search. Customers of Atbrox range from startups to fortune 500 companies Atbrox has received grant funding and R&amp;D tax deductions for research and dev&#8230;</p>
+
+		</li>
+
+	
+	
+	</ol>
+
+ 
+
+
+<h3 id="respond">Leave a Reply</h3>
+
+
+<form action="http://atbrox.com/wp-comments-post.php" method="post" id="commentform">
+
+
+<p><input type="text" name="author" id="author" value="" size="22" tabindex="1" />
+<label for="author"><strong>Name</strong> (required)</label></p>
+
+<p><input type="text" name="email" id="email" value="" size="22" tabindex="2" />
+<label for="email"><strong>Mail</strong> (will not be published) (required)</label></p>
+
+<p><input type="text" name="url" id="url" value="" size="22" tabindex="3" />
+<label for="url"><strong>Website</strong></label></p>
+
+
+<p><textarea name="comment" id="comment" cols="100%" rows="10" tabindex="4"></textarea></p>
+
+<p><input name="submit" type="submit" id="submit" tabindex="5" value="Submit Comment" />
+<input type="hidden" name="comment_post_ID" value="572" />
+</p>
+
+</form>
+
+
+		</div><!--/post -->
+		
+			</div></div><div class="dbx-group" id="sidebar">
+
+  <!--sidebox start --><div id="text-3" class="dbx-box widget_text"><h3 class="dbx-handle">Atbrox</h3><div class="dbx-content">			<div class="textwidget"><p><a href="http://aws.amazon.com/solutions/solution-providers/atbrox/"><img src="http://atbrox.com/wp-includes/images/AWS_SolutionProvider_logo_RGB_Trans.png" width="100%"><br />
+</a></p>
+<p><b>Atbrox Customer Case Study:</b><br />
+<a href="http://aws.amazon.com/solutions/case-studies/atbrox/">Hadoop for Language-Processing</a></p>
+<p><b>Contact us:</b><br />
+<a href="mailto:info@atbrox.com">info@atbrox.com</a></p>
+<p><script type="text/javascript">
+tweetmeme_screen_name = 'atbrox';
+</script><br />
+<script type="text/javascript" src="http://tweetmeme.com/i/scripts/follow.js"></script></p>
+<p><a href="http://www.linkedin.com/companies/atbrox" ><img src="http://static.linkedin.com/scds/common/u/img/webpromo/btn_cofollow_badge.png" alt="Atbrox on LinkedIn"></a></p>
+<p><a href="http://github.com/users/follow?target=atbrox">Follow Atbrox on Github</a></p>
+</div>
+		</div></div><!--sidebox end --><!--sidebox start --><div id="tag_cloud-3" class="dbx-box widget_tag_cloud"><h3 class="dbx-handle">Tags</h3><div class="dbx-content"><div><a href='http://atbrox.com/tag/algorithms/' class='tag-link-55' title='2 topics' style='font-size: 10.7096774194pt;'>algorithms</a>
+<a href='http://atbrox.com/tag/amazon/' class='tag-link-29' title='8 topics' style='font-size: 17.7849462366pt;'>amazon</a>
+<a href='http://atbrox.com/tag/automation/' class='tag-link-13' title='2 topics' style='font-size: 10.7096774194pt;'>automation</a>
+<a href='http://atbrox.com/tag/aws/' class='tag-link-32' title='6 topics' style='font-size: 16.2795698925pt;'>aws</a>
+<a href='http://atbrox.com/tag/c/' class='tag-link-34' title='1 topic' style='font-size: 8pt;'>c++</a>
+<a href='http://atbrox.com/tag/cloud/' class='tag-link-3' title='1 topic' style='font-size: 8pt;'>cloud</a>
+<a href='http://atbrox.com/tag/cloud-computing/' class='tag-link-17' title='2 topics' style='font-size: 10.7096774194pt;'>cloud computing</a>
+<a href='http://atbrox.com/tag/cloudera/' class='tag-link-25' title='1 topic' style='font-size: 8pt;'>cloudera</a>
+<a href='http://atbrox.com/tag/crawling/' class='tag-link-42' title='1 topic' style='font-size: 8pt;'>crawling</a>
+<a href='http://atbrox.com/tag/cygwin/' class='tag-link-19' title='1 topic' style='font-size: 8pt;'>cygwin</a>
+<a href='http://atbrox.com/tag/data-analysis/' class='tag-link-14' title='1 topic' style='font-size: 8pt;'>data analysis</a>
+<a href='http://atbrox.com/tag/data-processing/' class='tag-link-46' title='1 topic' style='font-size: 8pt;'>data processing</a>
+<a href='http://atbrox.com/tag/ebay/' class='tag-link-49' title='1 topic' style='font-size: 8pt;'>ebay</a>
+<a href='http://atbrox.com/tag/ec2/' class='tag-link-4' title='1 topic' style='font-size: 8pt;'>ec2</a>
+<a href='http://atbrox.com/tag/elastic-mapreduce/' class='tag-link-31' title='4 topics' style='font-size: 14.0215053763pt;'>elastic mapreduce</a>
+<a href='http://atbrox.com/tag/fabric/' class='tag-link-20' title='1 topic' style='font-size: 8pt;'>fabric</a>
+<a href='http://atbrox.com/tag/facebook/' class='tag-link-28' title='2 topics' style='font-size: 10.7096774194pt;'>facebook</a>
+<a href='http://atbrox.com/tag/finance/' class='tag-link-30' title='1 topic' style='font-size: 8pt;'>finance</a>
+<a href='http://atbrox.com/tag/google/' class='tag-link-48' title='4 topics' style='font-size: 14.0215053763pt;'>google</a>
+<a href='http://atbrox.com/tag/hadoop/' class='tag-link-5' title='16 topics' style='font-size: 22pt;'>hadoop</a>
+<a href='http://atbrox.com/tag/ibm/' class='tag-link-26' title='2 topics' style='font-size: 10.7096774194pt;'>ibm</a>
+<a href='http://atbrox.com/tag/language-processing/' class='tag-link-45' title='1 topic' style='font-size: 8pt;'>language processing</a>
+<a href='http://atbrox.com/tag/latency/' class='tag-link-38' title='1 topic' style='font-size: 8pt;'>latency</a>
+<a href='http://atbrox.com/tag/machine-learning/' class='tag-link-9' title='2 topics' style='font-size: 10.7096774194pt;'>machine learning</a>
+<a href='http://atbrox.com/tag/machinelearning/' class='tag-link-56' title='3 topics' style='font-size: 12.5161290323pt;'>machinelearning</a>
+<a href='http://atbrox.com/tag/mapreduce/' class='tag-link-6' title='14 topics' style='font-size: 21.247311828pt;'>mapreduce</a>
+<a href='http://atbrox.com/tag/nlp/' class='tag-link-47' title='1 topic' style='font-size: 8pt;'>nlp</a>
+<a href='http://atbrox.com/tag/pip/' class='tag-link-22' title='1 topic' style='font-size: 8pt;'>pip</a>
+<a href='http://atbrox.com/tag/python/' class='tag-link-23' title='5 topics' style='font-size: 15.2258064516pt;'>python</a>
+<a href='http://atbrox.com/tag/s3/' class='tag-link-37' title='1 topic' style='font-size: 8pt;'>s3</a>
+<a href='http://atbrox.com/tag/scalability/' class='tag-link-10' title='1 topic' style='font-size: 8pt;'>scalability</a>
+<a href='http://atbrox.com/tag/search/' class='tag-link-41' title='5 topics' style='font-size: 15.2258064516pt;'>search</a>
+<a href='http://atbrox.com/tag/shedskin/' class='tag-link-33' title='1 topic' style='font-size: 8pt;'>shedskin</a>
+<a href='http://atbrox.com/tag/simpledb/' class='tag-link-35' title='2 topics' style='font-size: 10.7096774194pt;'>simpledb</a>
+<a href='http://atbrox.com/tag/simplicity/' class='tag-link-12' title='1 topic' style='font-size: 8pt;'>simplicity</a>
+<a href='http://atbrox.com/tag/sqs/' class='tag-link-44' title='1 topic' style='font-size: 8pt;'>sqs</a>
+<a href='http://atbrox.com/tag/storage/' class='tag-link-36' title='1 topic' style='font-size: 8pt;'>storage</a>
+<a href='http://atbrox.com/tag/structured-search/' class='tag-link-39' title='1 topic' style='font-size: 8pt;'>structured search</a>
+<a href='http://atbrox.com/tag/unstructured-search/' class='tag-link-40' title='1 topic' style='font-size: 8pt;'>unstructured search</a>
+<a href='http://atbrox.com/tag/virtualenv/' class='tag-link-21' title='1 topic' style='font-size: 8pt;'>virtualenv</a>
+<a href='http://atbrox.com/tag/web-services/' class='tag-link-43' title='1 topic' style='font-size: 8pt;'>web services</a>
+<a href='http://atbrox.com/tag/wikipedia/' class='tag-link-50' title='1 topic' style='font-size: 8pt;'>wikipedia</a>
+<a href='http://atbrox.com/tag/windows/' class='tag-link-24' title='1 topic' style='font-size: 8pt;'>windows</a>
+<a href='http://atbrox.com/tag/yahoo/' class='tag-link-27' title='6 topics' style='font-size: 16.2795698925pt;'>yahoo</a>
+<a href='http://atbrox.com/tag/yandex/' class='tag-link-51' title='2 topics' style='font-size: 10.7096774194pt;'>yandex</a></div>
+</div></div><!--sidebox end -->		<!--sidebox start --><div id="recent-posts-3" class="dbx-box widget_recent_entries">		<h3 class="dbx-handle">Recent Posts</h3><div class="dbx-content">		<ul>
+				<li><a href="http://atbrox.com/2010/10/01/programmatic-deployment-to-elastic-mapreduce-with-boto-and-bootstrap-action/" title="Programmatic Deployment to Elastic Mapreduce with Boto and Bootstrap Action">Programmatic Deployment to Elastic Mapreduce with Boto and Bootstrap Action</a></li>
+				<li><a href="http://atbrox.com/2010/08/31/recommended-mapreduce-workshop/" title="Recommended Mapreduce Workshop">Recommended Mapreduce Workshop</a></li>
+				<li><a href="http://atbrox.com/2010/08/20/word-count-with-mapreduce-on-a-gpu-a-python-example/" title="Word Count with MapReduce on a GPU &#8211; A Python Example">Word Count with MapReduce on a GPU &#8211; A Python Example</a></li>
+				<li><a href="http://atbrox.com/2010/05/25/statistics-about-hadoop-and-mapreduce-algorithm-papers/" title="Statistics about Hadoop and Mapreduce Algorithm Papers">Statistics about Hadoop and Mapreduce Algorithm Papers</a></li>
+				<li><a href="http://atbrox.com/2010/05/24/towards-cloud-supercomputing/" title="Towards Cloud Supercomputing">Towards Cloud Supercomputing</a></li>
+				</ul>
+		</div></div><!--sidebox end --><!--sidebox start --><div id="archives-5" class="dbx-box widget_archive"><h3 class="dbx-handle">Archives</h3><div class="dbx-content">		<ul>
+			<li><a href='http://atbrox.com/2010/10/' title='October 2010'>October 2010</a></li>
+	<li><a href='http://atbrox.com/2010/08/' title='August 2010'>August 2010</a></li>
+	<li><a href='http://atbrox.com/2010/05/' title='May 2010'>May 2010</a></li>
+	<li><a href='http://atbrox.com/2010/02/' title='February 2010'>February 2010</a></li>
+	<li><a href='http://atbrox.com/2009/11/' title='November 2009'>November 2009</a></li>
+	<li><a href='http://atbrox.com/2009/10/' title='October 2009'>October 2009</a></li>
+	<li><a href='http://atbrox.com/2009/09/' title='September 2009'>September 2009</a></li>
+		</ul>
+</div></div><!--sidebox end -->
+</div><!--/sidebar --></div><div id="cred"><div class="designer fix"><a href="http://www.pagelines.com" alt="pagelines.com">Pagelines</a></div></div></div>    <hr class="hidden" />
+  </div><!--/wrapper -->
+
+</div><!--/page -->
+<div style="display:none;">
+	<img src="http://atbrox.com/wp-content/themes/iblog2/images/navgrad-active.gif" alt="preload" />
+	<img src="http://atbrox.com/wp-content/themes/iblog2/images/navgrad-down.gif" alt="preload" />
+	<img src="http://atbrox.com/wp-content/themes/iblog2/images/navgrad-hover.gif" alt="preload" />
+</div>
+
+<!-- Analytics Go Here -->
+
+<script type="text/javascript">
+    __compete_code = '0a3cbb152d2baf96d3685abad04e2665';
+    (function () {
+        var s = document.createElement('script'),
+            d = document.getElementsByTagName('head')[0] ||
+                document.getElementsByTagName('body')[0],
+            t = 'https:' == document.location.protocol ? 
+                'https://c.compete.com/bootstrap/' : 
+                'http://c.compete.com/bootstrap/';
+        s.src = t + __compete_code + '/bootstrap.js';
+        s.type = 'text/javascript';
+        s.async = 'async'; 
+        if (d) { d.appendChild(s); }
+    }());
+</script>
+
+<!-- End Analytics -->
+<script type="text/javascript">
+__compete_code = '0a3cbb152d2baf96d3685abad04e2665';
+(function () { var s = document.createElement('script'),d = document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0],t = 'https:' == document.location.protocol ? 'https://c.compete.com/bootstrap/' : 'http://c.compete.com/bootstrap/'; s.src = t + __compete_code + '/bootstrap.js'; s.type = 'text/javascript'; s.async = 'async'; if (d) { d.appendChild(s); }}());
+</script>
+<div style="text-align: center; font-size:10px;">
+	<small>Blog WebMastered by <a href="http://arpitshah.com/plugins/all-in-one-webmaster/" target="_blank">All in One Webmaster</a>.</small></div><script type='text/javascript' src='http://atbrox.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter/scripts/shCore.js?ver=2.1.364b'></script>
+<script type='text/javascript' src='http://atbrox.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter/scripts/shBrushPlain.js?ver=2.1.364b'></script>
+<script type='text/javascript'>
+	(function(){
+		var corecss = document.createElement('link');
+		var themecss = document.createElement('link');
+		var corecssurl = "http://atbrox.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter/styles/shCore.css?ver=2.1.364b";
+		if ( corecss.setAttribute ) {
+				corecss.setAttribute( "rel", "stylesheet" );
+				corecss.setAttribute( "type", "text/css" );
+				corecss.setAttribute( "href", corecssurl );
+		} else {
+				corecss.rel = "stylesheet";
+				corecss.href = corecssurl;
+		}
+		document.getElementsByTagName("head")[0].appendChild(corecss);
+		var themecssurl = "http://atbrox.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter/styles/shThemeDefault.css?ver=2.1.364b";
+		if ( themecss.setAttribute ) {
+				themecss.setAttribute( "rel", "stylesheet" );
+				themecss.setAttribute( "type", "text/css" );
+				themecss.setAttribute( "href", themecssurl );
+		} else {
+				themecss.rel = "stylesheet";
+				themecss.href = themecssurl;
+		}
+		document.getElementsByTagName("head")[0].appendChild(themecss);
+	})();
+	SyntaxHighlighter.config.clipboardSwf = 'http://atbrox.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter/scripts/clipboard.swf';
+	SyntaxHighlighter.config.strings.expandSource = 'show source';
+	SyntaxHighlighter.config.strings.viewSource = 'view source';
+	SyntaxHighlighter.config.strings.copyToClipboard = 'copy to clipboard';
+	SyntaxHighlighter.config.strings.copyToClipboardConfirmation = 'The code is in your clipboard now';
+	SyntaxHighlighter.config.strings.print = 'print';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+	SyntaxHighlighter.all();
+</script>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,1361 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>HOWTO unlock your Nexus One and turn it into a 3G modem - Boing Boing</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" href="http://www.boingboing.net/stylesheet.css" type="text/css">
+	<link rel="alternate" type="application/atom+xml" title="Atom" href="http://feeds.boingboing.net/boingboing/iBag">
+	<link rel="start" href="http://www.boingboing.net/" title="Home">
+	<script type="text/javascript" src="http://www.boingboing.net/mt.js"></script>
+	<script type="text/javascript" src="http://www.boingboing.net/bb.js"></script>
+	
+	<script type="text/javascript" src="http://m.boingboing.net/mobify/redirect.js"></script><script type="text/javascript">try{_mobify("http://m.boingboing.net/");} catch(err) {};</script>
+</head>
+<body id="mt-blog">
+
+
+<div id="top"></div>
+
+
+<div id="container">
+
+
+	<div id="content">
+
+
+		<div id="header">
+	
+	<div id="navigation">
+	<a href="http://www.boingboing.net/"><img src="http://www.boingboing.net/style/fancylogo.png" style=""></a>
+	<p><a href="http://www.boingboing.net/technology/">Tech</a>, <a href="http://www.boingboing.net/culture/">Culture</a> and
+	<script type='text/javascript'>document.write(randomCategory);</script>
+	<p><a href="http://boingboingvideo.com" class="orange">Videos</a> &bull; <a href="http://www.boingboing.net/features.html" class="green">Features</a> &bull; <a href="http://makersmarket.com/market_collections/2" class="red">Bazaar</a>
+	<p><a href="http://www.boingboing.net/archive.html" class="blue">Archives</a> &bull; <a href="http://www.boingboing.net/about.html" style="color:#69c">Contact</a> &bull; <a href="http://www.boingboing.net/suggest.html" style="color:#FF0">Suggest</a>
+	</div>
+
+</div>
+
+<div id="bloggering">
+
+
+<div class="post" id="entry-71054">
+
+
+<p class="headline"><a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html" rel="bookmark">HOWTO unlock your Nexus One and turn it into a 3G modem</a></p>
+<p class="byline" style="text-align:left">
+<a class="names" href="http://www.boingboing.net/author/cory-doctorow-1/">Cory Doctorow</a> at  8:29 AM Tuesday, Feb 23, 2010
+
+<p>	
+		
+<p><img src="http://craphound.com/images/2692799083-phone_shell.png.jpg" class="left" align="left">
+I've just successfully rooted and flashed two Nexus One phones, so I thought I'd write up the process and give you some guidance in case you're considering doing the same. Once you've rooted and flashed your Google Nexus One Android phone, you can use it as a "tether," sharing its network connection with your laptop and other devices. There are non-rooting ways of doing this, involving installing an app on your computer and a complementary app on your phone, but these seem clunky to me (on the other hand, these apps, such as Proxoid -- search the Android Market for it -- don't void your warranty, while unlocking your Nexus One does).
+<p>
+Mostly, I followed <a href="http://wiki.cyanogenmod.com/index.php/Full_Update_Guide_-_Nexus_One_Firmware_to_CyanogenMod">these instructions</a>, which are very good, but assume a certain level of foreknowledge, and could have been better organized. I've adapted them to create the HOWTO below.
+<br clear="all"><p>
+Some notes before we begin:
+<p>
+1. Once you install a jailbroken version of Android, there's a chance you will have you manually update your operating system in future, rather than receiving over-the-air updates from Google.
+<p>
+2. This process wipes your phone. You can back up most of your stuff to your SD card (more on that later), but not everything, and you'll have to spend some time getting everything back the way you like it
+<p>
+3. If you do this wrong, you will brick your phone, rendering it useless. And you will also void the warranty. Be warned.
+<p>
+4. I'm not an expert. This worked for me, it might not work for you. I followed several recipes around the net in order to derive these instructions, but I didn't write the underlying HOWTOs. For all I know, this is an incredibly stupid way of doing this (on the other hand, it worked twice).
+<p>
+OK, with that out of the way, let's start with some prep-work:
+<p>
+<b>1. Back up your apps and data.</b> I used MyBackupPro, which claims that it backs up all your apps and data to your SD. It costs $4.99 in the Market. It took about three minutes to do the backup, and about ten minutes to do the restore. There were some small flaws in the restore:<br>
+* Three of my apps (one paid, two free) were not reinstalled and had to be downloaded afresh from the Market<br>
+* The wallpaper was incorrectly set, and I had to re-set it by hand<br>
+* There was a scary warning that "too many contact deletions" had been requested. However, all my contacts are present on both the phone and in Gmail.
+<p>
+<b>2. Download the necessary files:</b>
+<br>
+* Fastboot is a program that is used to unlock your Android phone's bootloader. You can download it <a href="http://www.romraid.com/paul/fastboot.zip">here</a> (a ZIP archive, found <a href="http://android.modaco.com/content/google-nexus-one-nexusone-modaco-com/299078/how-to-unlock-the-bootloader-on-your-nexus-one/">here</a>, containing apps for Linux, Mac and Windows). Download and unzip the program. In Linux and MacOS, you need to open a terminal, navigate to the directory containing the uncompressed files (for me, it was "cd ~/Desktop/fastboot") and then run "chmod +x fastboot*".  I don't know much about Windows, but it looks like this step isn't necessary for Windows users.
+<p>
+* Download <a href="http://rapidshare.com/files/353883276/recovery-RA-nexus-v1.6.0.img">the recovery image</a>  (found <a href="http://forum.xda-developers.com/showthread.php?t=611829">here</a>, and I recommend looking for yourself to see if the file has been updated since this post). After the file has downloaded, rename it "Recovery.img" and put it in the fastboot directory you created above.
+<p>
+* Download <a href="http://n0rp.chemlab.org/android/nexus/update-cm-5.0.3.1-N1-signed.zip">CyanogenMod-5</a> (found <a href="http://forum.xda-developers.com/showthread.php?t=623496">here</a>, and I recommend looking for yourself to see if the file has been updated since this post). This is a new version of the Nexus One firmware. Download it, but do not unzip it. Instead, load it on a mini-SD card (you can use the card that's presently in your phone).
+<p>
+* Download <a href="http://www.mediafire.com/file/hy2yj42my3i/gapps-passion-ERE36B-2-signed.zip">Google AddOn</a> (found <a href="http://forum.xda-developers.com/showthread.php?t=623496">here</a>, and I recommend looking for yourself to see if the file has been updated since this post). This contains the Google Apps that ship with the phone (they are not included in CyanogenMod for legal reasons). Load this onto the same mini-SD that you put CyanogenMod on.
+<p>
+<b>3. Unlock your bootloader</b>
+<br>
+* Connect your phone to your computer with the USB cable<br>
+* On your Nexus One, go to Settings -> Applications -> Development and tick "USB debugging"<br>
+* Shut off  your phone<br>
+* Holding down the trackball, press the power key. Keep the trackball depressed until you see a text-based menu with three skating androids below it<br>
+* Return to the terminal window that you used in step 2 (to run "chmod +x fastboot*"). Type "sudo  ./fastboot-linux oem unlock" and enter your password (Mac users will type "sudo  ./fastboot-mac oem unlock" -- sorry, I don't know what Windows users should do here).
+* Your phone will display a screen that informs you that you are about to void your warranty. If you want to go through with this, press Volume Up to select Yes, and then press the Power button to confirm
+<p>
+<b>4. Install the new firmware and OS. </b>
+<br>
+* Your phone will reboot. Skip past all the setup screens. Once you have the home screen, again go to Settings -> Applications -> Development and tick "USB debugging"<br>
+* Shut off your phone.<br>
+* Holding down the trackball, press the power key. Keep the trackball depressed until you see a text-based menu with three skating androids below it<br>
+* Return to the terminal window from step 3. Type "sudo ./fastboot-linux flash recovery Recovery.img" (Mac users will type "sudo ./fastboot-mac flash recovery Recovery.img" -- sorry, I don't know what Windows users should do here)<br>
+* A moment later, the command prompt will return to the terminal, indicating that the firmware has been flashed<br>
+* Press the power button once. The highlighted blue text should now say HBOOT. If that doesn't work, try holding the trackball and Volume Down buttons while you press the Power button <br>
+* Using the trackball, scroll down to "wipe" and press the trackball to select it and again to confirm. Wait until the wipe is complete<br>
+* Using the trackball, scroll down to "Flash zip from sdcard", and press the trackball<br>
+* Using the trackball, select the CyanogenMod update from the list; it will be a zip file that begins "update-cm". Press the trackball again to confirm. Wait until the flash is complete<br>
+* Scroll down to "Flash zip from sdcard", and press the trackball again<br>
+* Now select the Google Addon file; it will be a zip file that begins "gapps-passion", and press the trackball again to confirm. Wait until the flash is complete
+* Now use the the trackball select the first option (Reboot system now) and reboot the phone
+<p>
+<b>5. Reinstall your data and apps</b>
+<br>
+* Your phone will reboot into a factory-default-like setting. Set it up as normal, with your Google username and password. Once it is set up, return to the Market and download a fresh copy of MyBackupPro<br>
+* Once MyBackupPro is installed, recover your apps and then your data and reboot the phone again<br>
+* At this stage, my phone was more or less as it had been when I started. All told, the exercise took about 30 minutes. I then spent another five minutes recovering the apps that the backup missed
+<p>
+<b>6. Tether your computer</b>
+<br>
+* Connect your computer to your phone using the USB cable<br>
+* Go to Settings -> Wireless & networks and check off "Internet tethering"<br>
+* My laptop's OS (Ubuntu Linux Karmic Koala) immediately recognized that the phone was connected and supplying Internet access. It configured itself. I disconnected the power on my DSL router to ensure that the only place the network service could be coming from was the phone and confirmed that my browser, mailer and ssh all worked over its 3G connection. I don't know what's involved in getting this to work on the Mac or Windows.
+
+<div class="previously2">
+<em>Previously:</em><ul><li><a href="http://www.boingboing.net/2010/02/12/nexus-one-writeup-in.html#previouspost">Nexus One writeup in Technology Review Boing Boing</a></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+</div>
+</div>
+
+<!--googleoff: snippet--><!-- COMMENTS -->
+
+	<div class="comments">
+
+
+
+
+
+
+
+    
+    
+    
+        
+  
+        <p class="headline">33 Comments
+         <span class="separator">&bull;</span> <a href="#comments-open">Add a comment</a>
+    </p>
+
+
+        
+        <div class="commentnew" id="comment-719762">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=719762" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=719762','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=48558">rebdav</a>
+        
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-719762">#1</a> <span class="separator">&bull;</span>  8:50 AM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(719762, 'rebdav')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>I don't know much about Windows.....</p>
+
+<p>You wouldn't believe how often I have to say this to MS users asking for help.  Once you break out nobody wants to return to that messy OS.</p>
+
+<p>nice tutorial<br />
+</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-719766">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=719766" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=719766','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=1397">dculberson</a>
+        
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-719766">#2</a> <span class="separator">&bull;</span>  8:52 AM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(719766, 'dculberson')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>I can't wait for consumer protection laws to be updated to cover cell phones.  I know you're in the UK, and I'm not familiar with the state of laws there.  But in the US, say you have a car and you modify it.  Well the warranty can not be voided due to that modification except as far as the modification affects the specific sub-assembly.  I.e. if you put different brakes on and the transmission fails, they can not deny your warranty claim based on the brakes.  If you have problems with your brakes, though, they can deny warranty coverage on that.</p>
+
+<p>How does this relate to the Nexus?  It shouldn't be possible to void your warranty by messing with the software.  If you root it and then, say, the battery charging circuit fails, your modification did not cause that failure.  So the warranty should still stand.  Under current law that is not the case (as far as I know) but it should be.</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-719776">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=719776" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=719776','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=41597">SamSam</a>
+        
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-719776">#3</a> <span class="separator">&bull;</span>  9:00 AM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(719776, 'SamSam')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>Wow. And yet you call installing an app "clunky?"</p>
+
+<p>I installed PDAnet on my phone. It took me about 30 seconds. I then installed it on my Mac. That took about a minute. So in one minute 30 seconds I was online through my phone. </p>
+
+<p>Then, when my home PC had no connection at all, I downloaded the Windows software onto my phone, and then put it onto the PC from the phone. I was on the web on my PC in three minutes.</p>
+
+<p>There was no risk of my phone being bricked, I didn't have to back up my data with another app (and you say you couldn't even back up all of it), I didn't void any warranties, and I will still get all my OS updates automatically.</p>
+
+<p>So what was the reason again for going this crazy route? Because applications on computers are "clunky?"</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-719791">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=719791" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=719791','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=1706">Patrick Austin</a>
+        
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-719791">#4</a> <span class="separator">&bull;</span>  9:17 AM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(719791, 'Patrick Austin')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>Freedom!  Android is awesome.  </p>
+
+<p>Granted, I don't actually _own_ an Android phone, but gosh...it must feel great to free yourself from the money grubbing assholes at Apple with their overly-restrictive iPhone OS.  I envy the way Google lets you use the hardware however you please.  <br />
+</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-719799">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=719799" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=719799','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=118618">ahmacrom</a>
+        
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-719799">#5</a> <span class="separator">&bull;</span>  9:25 AM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(719799, 'ahmacrom')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>I do not see a Boing Boing icon....</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-719801">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=719801" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=719801','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    Anon
+    
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-719801">#6</a> <span class="separator">&bull;</span>  9:27 AM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(719801, '')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>Wait. Isn't this terrorism?</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-719805">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=719805" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=719805','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=123516">giryan</a>
+        
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-719805">#7</a> <span class="separator">&bull;</span>  9:28 AM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(719805, 'giryan')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>Since you're rooted Titanium Backup is the best backup app I've found, it's brilliant, it will successfully backup everything, phone settings, installed apps, settings for them etc...<br />
+It's in very active development, and is fully functional in its free form, only needing a donation to get add a couple of additional improvements(mainly just the speed of backup/restore)<br />
+Thread talking about development here:<br />
+<a href="http://android.modaco.com/content/software/297171/software-that-can-backup-restore-all-settings-of-any-apps/" rel="nofollow">http://android.modaco.com/content/software/297171/software-that-can-backup-restore-all-settings-of-any-apps/</a></p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-719806">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=719806" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=719806','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=4102">Caroline</a>
+        
+                        
+
+                     replied to <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-719791">comment from Patrick Austin</a>
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-719806">#8</a> <span class="separator">&bull;</span>  9:28 AM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(719806, 'Caroline')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>…You know this is equivalent to jailbreaking an iPhone, right?  Even to the part where it voids your warranty, as Cory pointed out in this post?</p>
+
+<p>I'm happy to talk about open source phone software, and I think there's a reasonable debate to be had there. But this post isn't an example of Google "letting you use the hardware however you please."  It's an example of circumventing restrictions, at your own risk, to use the hardware in a different way -- which many people have done and continue to do with their iPhones as well.</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-719825">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=719825" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=719825','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=123516">giryan</a>
+        
+                        
+
+                     replied to <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-719806">comment from Caroline</a>
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-719825">#9</a> <span class="separator">&bull;</span>  9:46 AM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(719825, 'giryan')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>Google are kinda letting you use it however you please. Step 3, unlocking the boot loader, is not a hack at all.<br />
+fastboot is a tool that comes with the Android SDK, and the OEM unlock command is a regular part of that.<br />
+Admittedly the warranty voiding nature of it is stupid, as #2 points out.</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-719836">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=719836" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=719836','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    Anon
+    
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-719836">#10</a> <span class="separator">&bull;</span>  9:54 AM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(719836, '')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>as an user of a generic sony ericsson phone it still puzzles me that tethering isn't a standard feature on those hip new smartphones. is there really a valid reason?</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-719865">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=719865" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=719865','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    Anon
+    
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-719865">#11</a> <span class="separator">&bull;</span> 10:24 AM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(719865, 'Anonymous')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>Or you could just install the most excellent PDANet application and do it without jailbreaking the phone.  I've done it on my Droid, after using PDANet for years on my Treos.  I'm not affiliated with them-- just a happy customer.</p>
+
+<p>$30 (I think) seems way more worthwhile than the hassle of jailbreaking.</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-719878">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=719878" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=719878','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=6710">dequeued</a>
+        
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-719878">#12</a> <span class="separator">&bull;</span> 10:32 AM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(719878, 'dequeued')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>Good article.</p>
+
+<p>As an owner of an Adroid G1, I think it's outrageous I should have to use a software exploit, just to have root access on a device that I have paid for!<br />
+I almost feel guilty doing it, like it's something I'm not supposed to be doing, and I should hide my phone under my bed.</p>
+
+<p>How long until we don't have root access on our netbooks?</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-719893">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=719893" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=719893','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=133270">Ben Schiendelman</a>
+        
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-719893">#13</a> <span class="separator">&bull;</span> 10:43 AM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(719893, 'Ben Schiendelman')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>It looks like since this was posted, the fastboot link has broken - it points back to modaco.com. There are other people on the site commenting that they can no longer find fastboot.zip either - could someone who has it stick it up on a dropbox?</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-719915">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=719915" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=719915','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=133270">Ben Schiendelman</a>
+        
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-719915">#14</a> <span class="separator">&bull;</span> 11:03 AM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(719915, 'Ben Schiendelman')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>Yeah, talk about "clunky". The Rapidshare link for the recovery image is overloaded as well.</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-719924">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=719924" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=719924','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    Anon
+    
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-719924">#15</a> <span class="separator">&bull;</span> 11:08 AM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(719924, '')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>or you could just install PdaNet: <a href="http://www.arcane.org/?p=4202" rel="nofollow">http://www.arcane.org/?p=4202</a></p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-719941">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=719941" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=719941','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=34331">agger</a>
+        
+                        
+
+                     replied to <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-719878">comment from dequeued</a>
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-719941">#16</a> <span class="separator">&bull;</span> 11:29 AM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(719941, 'agger')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>"How long until we don't have root access on our netbooks?"</p>
+
+<p>Until you get an iPad ...</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-719963">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=719963" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=719963','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    Anon
+    
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-719963">#17</a> <span class="separator">&bull;</span> 11:44 AM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(719963, 'Anonymous')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>Great post. The instructions are accurate, even though one of the steps can be simplified a bit for noobs. A couple of clarifications:</p>
+
+<p>1. What you did is root the phone, not jailbreak it. Unlike the iPhone, Google and HTC give you a legal path to replace key components of the phone software without breaking the law/breaching a contract. The warranty is voided, but it seems it is a price that a lot of people are willing to pay for the additional benefits that rooting obtains. Also, there has been a report in one of the forums of an incident in which HTC replaced a rooted device due to a hardware malfunction for no charge.</p>
+
+<p>2. Google has previously C&D'd a hacker called JesusFreak (or some such) for distribution the Google apps. You're linking to to that, which is I think they could find a bit problematic...</p>
+
+<p>As an aside, you can follow pretty much the install an alpha of the HTC Desire ROM on the Nexus One (I did). Besides a few minor snags, it works flawlessly. More importnatly, the sight of Sense UI is clear to eschew tremors from nearby geeks. Some of the HTC apps are better than Google's, and going back to Cyanogen is pretty simple.</p>
+
+<p>You might want to avoid publishing this comment. Perfectly understandable... :)</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-719965">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=719965" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=719965','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=1189">Eris Siva</a>
+        
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-719965">#18</a> <span class="separator">&bull;</span> 11:44 AM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(719965, 'Eris Siva')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>dculberson (#2) - It seems that currently HTC is still offering repairs and such to people that have Jailbroken - as long as the error is OBVIOUSLY not related to your rooting of the phone. People have sent them back for repairs on the screen and body with no problem. One of the main suggestions, however, is to reflash the NExus with the stock firmware (rather than the CyanogenMod ROM) before sending it in. ;)</p>
+
+<p>SamSam (#3) - First off, this is a simple howto from start to finish. There are a few "one-step" rooting methods out there for the Nexus One...but if you mess us, there is no telling where you made the mistake. Manual is sometimes better.</p>
+
+<p>Also, there are MANY reasons that one would want to root their phone. Just search Google for "why root nexus". Custom firmware including features that you COULD NOT HAVE otherwise (such as the new Desire ROM with Sense UI...made for a phone that hasn't been released yet), theming capabilities, backup/task management/adblocking/file manager programs that won't work unless you root, install Debian (just in case you want to develop on the run), use terminal with busybox, back up your protected apps, run apps off your SD card, modify the volume levels with custom hacks, LED color hacks, etc, etc...the list goes on and on.</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-720115">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=720115" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=720115','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=22457">arikol</a>
+        
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-720115">#19</a> <span class="separator">&bull;</span>  1:49 PM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(720115, 'arikol')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>I understand the TECHNICAL differences between this procedure (rooting) and the iPhone procedure (which is in large part also rooting but with added complexity).</p>
+
+<p>The ideological difference is very small, however. <br />
+Cory, I thought you went to the Google side to get AWAY from restrictive crap like this. I thought you were going the freedom route. Instead it seems like you went an identical route but got a product with more flaws and incompatibilities, just for that extra fun frustration factor.</p>
+
+<p>I do not understand why anyone would buy a N1. It has all the flaws of the iPhone (secretive maker:check, closed HW:check, they make the calls:check) and add a few extra (terrible tech support for an expensive product, madly incompatible marketplace, low resolution of touch sensors, niggling interface problems, do-everything-itis).</p>
+
+<p>Either go free, or don't.</p>
+
+<p>This is no freer than an iPhone.<br />
+</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-720196">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=720196" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=720196','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=133292">chmouel</a>
+        
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-720196">#20</a> <span class="separator">&bull;</span>  3:28 PM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(720196, 'chmouel')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>It's using rndis (remote NDIS) to export a connection on the client OS. It's a protocol designed by 3Com and Microsoft.</p>
+
+<p>Thanks to the magic of rndis_wlan module and network-manager it's all transparent for us Linux users.</p>
+
+<p>More info about RNDIS here :</p>
+
+<p><a href="http://www.microsoft.com/whdc/device/network/ndis/rmndis.mspx" rel="nofollow">http://www.microsoft.com/whdc/device/network/ndis/rmndis.mspx</a><br />
+</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-720242">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=720242" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=720242','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=1189">Eris Siva</a>
+        
+                        
+
+                     replied to <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-720115">comment from arikol</a>
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-720242">#21</a> <span class="separator">&bull;</span>  4:22 PM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(720242, 'Eris Siva')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>There is one major flaw that I've seen that no one seems to mention - there is an issue in a small percentage of handsets with the screen adhesive that causes the screen to not be in place fully, and dust to collect under the corners. It is a 5-minute fix with a hairdryer or desk-lamp, but it is still an issue.</p>
+
+<p>However, it is not closed. The Android source can be downloaded from source.android.com. The N1 has a VERY active and open development environment. The hardware drivers are out there, the source is there - where is the "closed"? The "closed" part of Android are the proprietary Google apps - Market, Maps, Navigation, etc...which Google makes money on. But there are 3rd party apps that take the place of all of them. There are plenty of Android versions with no Google apps.</p>
+
+<p>What are these "display" issues spoken of? Perhaps the ones posted over at Gizmodo in a story that was later corrected?</p>
+
+<p>The "rooting" warning should be about installing experimental hacks that change the voltage of your processor, or overclock, etc. Google/HTC has to cover their side of things somehow.</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-720250">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=720250" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=720250','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=6260">tim</a>
+        
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-720250">#22</a> <span class="separator">&bull;</span>  4:37 PM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(720250, 'tim')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>Tethering? That's this thing I have on my iPhone that takes all the technical mastery required to go to the system preferences app and click on a button ?</p>
+
+<p>Wow, I must be so very leet today.</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-720317">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=720317" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=720317','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=46354">tcforest</a>
+        
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-720317">#23</a> <span class="separator">&bull;</span>  6:26 PM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(720317, 'tcforest')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>Even easier with a Nokia N900...</p>
+
+<p><a href="http://thenokiablog.com/2010/02/12/joikuspot-beta-nokia-n900/" rel="nofollow">http://thenokiablog.com/2010/02/12/joikuspot-beta-nokia-n900/</a></p>
+
+<p>Still in beta, though.</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-720377">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=720377" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=720377','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    Anon
+    
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-720377">#24</a> <span class="separator">&bull;</span>  7:34 PM Tuesday, Feb 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(720377, '')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>I haven't tried this with my Nexus just yet (used it on my G1), but I assume that Cyanogen is still using the same tethering functionality. For Windows, you might need this driver:<br />
+<a href="http://rapidshare.com/files/163465025/Remote_NDIS_based_Internet_Sharing_Device.zip" rel="nofollow">http://rapidshare.com/files/163465025/Remote_NDIS_based_Internet_Sharing_Device.zip</a></p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-720845">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=720845" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=720845','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=133355">Gibster</a>
+        
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-720845">#25</a> <span class="separator">&bull;</span>  8:32 AM Wednesday, Feb 24, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(720845, 'Gibster')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>Hi, thanks for this.</p>
+
+<p>I've run into two problems with your directions and links.</p>
+
+<p>First, the link for fastboot is a file that Mac won't unzip. I uploaded it to my Unix web host and also downloaded it running Parallels with XP and still couldn't unzip the file. Similar error for all three OS's.</p>
+
+<p>I downloaded fastboot-mac.zip (file #20) from here:<br />
+<a href="http://download.corruptedfilerepair.com/post/2010/01/16/fastbootexe-Download-File-fastbootexe.aspx" rel="nofollow">http://download.corruptedfilerepair.com/post/2010/01/16/fastbootexe-Download-File-fastbootexe.aspx</a></p>
+
+<p>And it ran the first sudo command in Terminal.</p>
+
+<p>The second one gave this message:<br />
+<blockquote><i><b>sending 'recovery' (33 KB)... OKAY<br />
+writing 'recovery'... FAILED (remote: image error! (BootMagic check fail))</b></i></blockquote></p>
+
+<p>I'm Googling the forums and it looks like there may be a problem with the file I downloaded from your link, or the method I downloaded it (it should be larger than 33k).</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-721472">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=721472" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=721472','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    Anon
+    
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-721472">#26</a> <span class="separator">&bull;</span>  4:02 PM Wednesday, Feb 24, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(721472, '')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>I don't have a nexus one, so I don't know if this would work for it, but it should... Just replace the device id in the setup with the values from the lsusb command listing for the nexus one. </p>
+
+<p>How to tether your Verizon Droid (Adroid-Linux based device) to Ubuntu GNU/Linux 9.10 via the USB cord:<br />
+<a href="http://www.humans-enabled.com/2009/12/how-to-tether-your-verizon-droid-as.html" rel="nofollow">http://www.humans-enabled.com/2009/12/how-to-tether-your-verizon-droid-as.html</a></p>
+
+<p><br />
+Cheers!<br />
+Shannon VanWagner</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-721517">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=721517" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=721517','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=133410">Shannon_VanWagner</a>
+        
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-721517">#27</a> <span class="separator">&bull;</span>  4:58 PM Wednesday, Feb 24, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(721517, 'Shannon_VanWagner')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p><br />
+I don't have a nexus one, so I don't know if this would work for it, but it should... Just replace the device id in the setup with the values from the lsusb command listing for the nexus one. </p>
+
+<p>How to tether your Verizon Droid (Adroid-Linux based device) to Ubuntu GNU/Linux 9.10 via the USB cord:<br />
+<a href="http://www.humans-enabled.com/2009/12/how-to-tether-your-verizon-droid-as.html" rel="nofollow">http://www.humans-enabled.com/2009/12/how-to-tether-your-verizon-droid-as.html</a></p>
+
+<p><br />
+Cheers!<br />
+Shannon VanWagner</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-721576">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=721576" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=721576','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    Anon
+    
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-721576">#28</a> <span class="separator">&bull;</span>  5:52 PM Wednesday, Feb 24, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(721576, '')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>This page just broke into the Google Top 40 under recent views in their Fast Flip. Kudos AGAIN, Corymeister.</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-723664">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=723664" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=723664','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    Anon
+    
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-723664">#29</a> <span class="separator">&bull;</span> 11:45 AM Saturday, Feb 27, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(723664, '')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>I find that term funny "jailbroken" the android phones are not behind jail like the iphones are, all you are doing is getting root access. So rooting is a more appropriate term.</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-740214">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=740214" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=740214','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    Anon
+    
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-740214">#30</a> <span class="separator">&bull;</span>  8:39 AM Sunday, Mar 21, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(740214, '')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>Thanks! </p>
+
+<p>On Fedora 12 I had to restart network manager and select auto usb0 for it to work.</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-759754">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=759754" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=759754','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=137128">XnoxpX</a>
+        
+                        
+
+                     replied to <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-720115">comment from arikol</a>
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-759754">#31</a> <span class="separator">&bull;</span> 12:40 PM Tuesday, Apr 13, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(759754, 'XnoxpX')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>arikol  • (#19)<br />
+Apple refuses to let you install applications outside the "app store", you HAVE to "jailbreak" your phone( and they keep trying to break the jailbreaks)</p>
+
+<p>Google allows you to install applications outside the market, and if you decide to "jailbreak" your phone they don't try and stop you(never mind breaking the jailbreak afterward) <br />
+How you can consider Google(android) more "secretive maker:check, closed HW:check, they make the calls:check"<br />
+than Apple (Mac/iphone/ipad) is beyond my understanding<br />
+Apple is the one who tried to maintain a NDA on their sdk, not Google.<br />
+as for the hardware, talk to HTC,motorola, ect. Google doesn't make hardware.</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew" id="comment-795052">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=795052" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=795052','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    Anon
+    
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-795052">#32</a> <span class="separator">&bull;</span> 12:58 AM Sunday, May 23, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(795052, '')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>or you could just install Froyo :)</p>
+		</div>
+	</div>
+
+
+
+        
+    
+        
+        <div class="commentnew last" id="comment-803482">
+   <div class="commentheader"><div class="report" style="float:right;"><a href="http://dynamic.boingboing.net/scripts/form.php?comment_id=803482" onclick="window.open('http://dynamic.boingboing.net/scripts/form.php?comment_id=803482','popup','width=400,height=400,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://boingboing.net/style/reportthis.png"></a></div>
+         
+    
+    	<a href="http://dynamic.boingboing.net/cgi-bin/mt/mt-cp.cgi?__mode=view&amp;blog_id=1&amp;id=140605">rben</a>
+        
+                        
+
+                    
+
+                    <span class="separator">&bull;</span>  <a href="http://www.boingboing.net/2010/02/23/howto-unlock-your-ne.html#comment-803482">#33</a> <span class="separator">&bull;</span>  3:27 AM Friday, Jun  4, 2010
+
+    
+                    <span class="separator">&bull;</span> <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(803482, 'rben')">Reply</a>
+    
+
+                </span>
+              </div>
+      
+        <div class="commentcontent">
+            <p>There are good reasons for manufacturers to have a policy that voids the warranty if you alter the software. That's because bugs in the software of a device like a phone can easily appear to be hardware problems. The hardware manufacturer naturally doesn't want to lose money replacing a phone that would have worked fine if you hadn't messed with it.</p>
+
+<p>I think it would be more appropriate for them to say that they won't accept returns until you restore the original software and demonstrate the problem still exits, or can show that its obviously a hardware problem. From what I've read in various places, it seems that HTC is unofficially taking this approach.</p>
+
+<p>I have a Nexus One, though it is not rooted. I'm not yet that confident of my abilities that I want to go that route. I'm very pleased with the phone. There are occasional frustrations, usually caused by apps I've downloaded, but that's to be expected. It's a small price to pay for the freedom.</p>
+		</div>
+	</div>
+
+
+
+        
+
+        
+    
+    
+    <div class="comments-open" id="comments-open" style="margin-top:40px;">
+    <h2>Send a comment</h2>
+    <div class="comments-open-content commentnew">
+        <div id="comment-greeting" class="commentheader"></div>
+        <form method="post" action="http://dynamic.boingboing.net/cgi-bin/mt/mt-comments.cgi" name="comments_form" id="comments-form" onsubmit="return mtCommentOnSubmit(this)">
+            <input type="hidden" name="static" value="1" >
+            <input type="hidden" name="entry_id" value="71054" >
+            <input type="hidden" name="__lang" value="en" >
+            <input type="hidden" name="parent_id" value="" id="comment-parent-id" >
+            <input type="hidden" name="armor" value="1" >
+            <input type="hidden" name="preview" value="" >
+            <div id="comments-open-data">
+				<div id="comment-form-name">
+                    <!-- <label for="comment-author">Name</label> -->
+					Unregistered
+					<!--
+                    <input id="comment-author" name="author" size="30" value="" onfocus="mtCommentFormOnFocus()" >
+					-->
+                </div>
+                <div id="comment-form-email">
+                    <label for="comment-email">Email Address</label>
+                    <input id="comment-email" name="email" size="30" value="" onfocus="mtCommentFormOnFocus()" >
+                </div>
+				<!--
+                <div id="comment-form-url">
+                    <label for="comment-url">URL</label>
+                    <input id="comment-url" name="url" size="30" value="" onfocus="mtCommentFormOnFocus()" >
+                </div>
+				-->
+
+                <div id="comment-form-remember-me">
+                    <input type="checkbox" id="comment-bake-cookie" name="bakecookie" onclick="mtRememberMeOnClick(this)" value="1" accesskey="r" >
+                    <label for="comment-bake-cookie">Remember personal info?</label>
+                </div>
+
+            </div>
+            <div id="comment-form-reply" style="display:none">
+                <input type="checkbox" id="comment-reply" name="comment_reply" value="" onclick="mtSetCommentParentID()" >
+                <label for="comment-reply" id="comment-reply-label"></label>
+            </div>
+            <div id="comments-open-text">
+                <p>Read the full <a href="http://www.boingboing.net/2009/10/01/boing-boing-moderati.html">moderation policy</a>. Thank you!
+
+                </label>
+                <p><textarea id="comment-text" name="text" rows="15" cols="50" onfocus="mtCommentFormOnFocus()"></textarea>
+                <p>
+            </div>
+            <div id="comments-open-captcha-permalink" style="display:none"><div id="recaptcha_script"><script type="text/javascript"   src="http://api.recaptcha.net/challenge?k=6LewUAAAAAAAABivjWcfXNoJMERKTQtUiUMbrDs-"></script><noscript>   <iframe src="http://api.recaptcha.net/noscript?k=6LewUAAAAAAAABivjWcfXNoJMERKTQtUiUMbrDs-"       height="300" width="500" frameborder="0"></iframe><br>   <textarea name="recaptcha_challenge_field" rows="3" cols="40">   </textarea>   <input type="hidden" name="recaptcha_response_field"        value="manual_challenge"></noscript></div><script type="text/javascript">var div = document.getElementById("recaptcha_script");if (commenter_name) {    div.style.display = "none";} else {    div.style.display = "block";}</script></div>
+            <div id="comments-open-footer">
+                <input type="submit" accesskey="v" name="preview_button" id="comment-preview" value="Preview" onclick="this.form.preview.value='1';" >
+                <input type="submit" accesskey="s" name="post" id="comment-submit" value="Submit" >
+    
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+<!--
+mtAttachEvent("load", mtEntryOnLoad);
+mtAttachEvent("unload", mtEntryOnUnload);
+//-->
+</script>
+
+
+    
+</div>
+
+
+
+
+
+
+
+
+<!--googleon: snippet-->
+
+
+<!--
+<div id="sidebar" style="position:absolute;top:130px;right:20px">
+<div style="width:300px;height:250px;margin-top:22px;background-color:silver;"></div>
+</div>
+-->
+
+</div>
+
+
+
+
+<div id="ads">
+<div style="width:728px;height:90px;position:absolute;right:20px;top:15px;">
+<script type='text/javascript' src='http://static.fmpub.net/zone/356'></script>
+<script type='text/javascript' src='http://static.fmpub.net/zone/2563'></script>
+</div>
+
+
+
+<div id="sidebarads" style="width:300px;min-height:290px;position:absolute;right:20px;top:145px;">
+<script type='text/javascript' src='http://static.fmpub.net/zone/198'></script>
+<p>&nbsp;
+<!--<script type='text/javascript' src='http://static.fmpub.net/zone/452'></script>
+<script type='text/javascript' src='http://static.fmpub.net/zone/98'></script>-->
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+<!-- output divh -->
+<script language="javascript">
+var divh = document.getElementById('sidebarads').offsetHeight;
+document.getElementById('sidebar').style.marginTop = divh+'px';
+</script>
+
+<!-- FM Tracking Pixel -->
+<script type='text/javascript' src='http://static.fmpub.net/site/boingboing'></script>
+<!-- FM Tracking Pixel -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-3839311-1");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+
+</body>
+
+</html>

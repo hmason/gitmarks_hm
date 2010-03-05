@@ -1,0 +1,581 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+	<!DOCTYPE html 
+		 PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+		"DTD/xhtml1-strict.dtd">
+
+	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+	<head>
+		<!-- title and metadata -->
+		<title>Efficient Editing With vim - Jonathan McPherson</title>
+		<meta name="generator"      content="vim" />
+		<meta name="author"         content="Jonathan McPherson" />
+		<meta name="updated"        content="December 29 2009 09:55 AM" />
+		<meta name="dml_genversion" content="1.92" />
+		<meta name="dml_buildname"  content="Argus" />
+
+		<!-- import stylesheets for screen and print -->
+		<link rel="stylesheet" 
+		      type="text/css" 
+			  title="default style"
+			  href="untitled.css" />
+
+		<link rel="stylesheet" 
+		      type="text/css" 
+			  media="print"
+			  href="untitled-print.css" />
+
+		<link rel="alternate stylesheet" 
+		      type="text/css" 
+			  title="print style"
+			  href="untitled-print.css" />
+
+		<!-- script to keep page at reasonable width -->
+		<script type="text/javascript"><!--//--><![CDATA[//><!--
+		/* stolen from: 
+		   http://www.saila.com/usage/tips/examples/max-width.html
+		   credit: Crag Saila
+		   modified by JAM to behave properly under Mozilla and derivatives
+		 */
+
+		var d = document;
+
+		function resizeBox(){
+			// only try this trick under IE capability set
+			if (document.all) {
+				sObj = d.getElementById("container").style
+				if (d.body.clientWidth) (d.body.clientWidth>800) ? sObj.width = "800px" :  sObj.width = "100%";
+			}
+		}
+
+		onload = resizeBox;
+		onresize = resizeBox;
+
+
+		/* stolen from:
+		   http://www.alistapart.com/stories/alternate/
+		   credit: Paul Sowden
+		 */
+		function setActiveStyleSheet(title) {
+		   var i, a, main;
+		   for(i=0; (a = document.getElementsByTagName("link")[i]); i++) {
+			 if(a.getAttribute("rel").indexOf("style") != -1
+				&& a.getAttribute("title")) {
+			   a.disabled = true;
+			   if(a.getAttribute("title") == title) a.disabled = false;
+			 }
+		   }
+		}
+
+
+		//--><!]]></script>
+
+		<!-- why must i go through such punctuational acrobatics simply
+		     to embed scripts in my code in a standards-compliant manner? -->
+	</head>
+
+
+	<body>
+	<div class="containercontainer">
+	<div id="container">
+
+	<!-- gray bar on top -->
+	<div class="pagetop">
+		<div class="padded" style="text-align: right;">
+		[ Jonathan McPherson's home page ]
+		</div>
+	</div>
+
+	<!-- top menu -->
+	<table width="100%" cellspacing="0" cellpadding="0"><tr><td style="width:75%">
+	<div class="menutop"><span class="lightorange">[</span>
+	how-to
+	<span class="lightorange">]</span></div>
+	<div class="submenu">
+		<div class="padded">
+			<span class="subdued"><em>other areas</em></span> :
+			<a class="linksubdued" href="index.html">home</a> |
+			<a class="linksubdued" href="howto.html">how-to</a> |
+			<a class="linksubdued" href="music.html">music</a> |
+			<a class="linksubdued" href="/photoblog/">photoblog</a> |
+			<a class="linksubdued" href="contact.html">contact</a> 
+			</div>
+	</div>
+	</td>
+	<td class="submenu_declaration" valign="bottom">
+	<div class="padded">
+	&nbsp;
+	</div>
+	</td>
+	</tr>
+	</table>
+
+	<!-- table for main content and area menu -->
+	<table width="100%" border="0" cellspacing="0" cellpadding="0"><tr>
+
+	<!-- left margin and line -->
+	<td class="body_leftmargin">
+	<div style="height: 1in; border-left: 1px solid #c0c0c0">&nbsp;</div></td>
+	<td class="body_maincontent">
+
+	<!-- main content -->
+	<div class="body_padded">
+	<h1>Efficient Editing With vim</h1>
+
+<blockquote><em>Translations of this article are available in German (<a href="http://www.descy.de/vim_tutorial/">Effiziente Textbearbeitung mit Vim</a>), French (<a href="http://mirmodynamics.com/post/2004/05/08/150-ledition-efficace-avec-vim">L'édition efficace avec vim</a>), Italian (<a href="http://www.thinkpragmatic.net/gvim/">Vim e Gvim: usarli in modo efficiente</a>, and Chinese (<a href="http://tingsaode.spaces.live.com/blog/cns!FE95D0EE01558610!780.entry">&#39640;&#25928;&#20351;&#29992;vim</a>).
+</em></blockquote>
+
+<p align="center"><em>
+<br />
+"To me, vi is Zen. <br />
+To use vi is to practice zen.<br />
+Every command is a koan.<br />
+Profound to the user,<br />
+unintelligible to the uninitiated.<br />
+You discover truth every time you use it."<br />
+</em>
+<tt>--reddy@lion.austin.com</tt>
+</p>
+
+<p>This tutorial assumes a basic knowledge of vim -- insert mode, command mode, loading and saving files, etc. It is intended to help vi novices develop their skills so that they can use vi efficiently. </p>
+
+<p>In this tutorial, <tt>&lt;C-X&gt;</tt> means <tt>Ctrl-X</tt> -- that is, hold down the <tt>Ctrl</tt> key and press <tt>X</tt>. You can get help on most of the commands used here by typing <tt>:help <em>command</em></tt> in vim, where <em>command</em> is what you need help on. </p>
+
+<h2>Moving efficiently</h2>
+
+<h3>Stay out of insert mode</h3>
+
+<p>In general, you want to spend as little of your time in vim's insert mode as possible, because in that mode it acts like a dumb editor. This is why most vim novices spend so much time in insert mode -- it makes vim easy to use. But vim's real power lies in command mode! You'll find that the better you know vim, the less time you will spend in insert mode.</p>
+
+<h3>Use h, j, k, and l</h3>
+
+<p>The first step to efficient editing in vim is to wean yourself from the arrow keys. One of the the advantages of vim's modal design is that you do not need to constantly move your hands back and forth between the arrow keys and the letter keys; when you are in command mode, the letters <tt>h, j, k</tt> and <tt>l</tt> correspond to the directions <em>left, down, up,</em> and <em>right</em>, respectively. It takes some practice to get used to, but you <em>will</em> notice the speed difference once you're used to it.</p>
+
+<p>When you are editing e-mail or other paragraph-formatted text, you might notice that the direction keys skip more lines than you expect. This is because your paragraphs appear as one long line to vim. Type <tt>g</tt> before <tt>h, j, k</tt> or <tt>l</tt> to move by screen lines instead of virtual lines.</p>
+
+<h3>Use motions to move the cursor in the current line</h3>
+
+<p>Most editors have only simple commands for moving the cursor (left, up, right, down, to beginning/end of line, etc). vim has very advanced commands for moving the cursor; these commands are referred to as <em>motions</em>. When the cursor moves from one point in the text to another, the text between the points (and including the points themselves) is considered to be "<em>moved over</em>." (This will be important later.)</p>
+
+<p>Here are a few of the more useful motions:</p>
+
+<p>
+<table class="vi_table">
+<tr>
+	<th class="vi_key">fx</th>
+	<td class="vi_explanation">Move the cursor <strong>f</strong>orward to the next occurance of the character <tt>x</tt> on the current line (obviously, <tt>x</tt> can be any character you like). This is an extremely useful command. You can type <tt>;</tt> to repeat the last <tt>f</tt> command you gave.</td>
+</tr>
+<tr>
+	<th class="vi_key">tx</th>
+	<td class="vi_explanation">Same as above, but moves the cursor to right before the character, not all the way to it. (It's very useful, really.)</td>
+</tr>
+<tr>
+	<th class="vi_key">Fx</th>
+	<td class="vi_explanation">Move the cursor <em>backward</em> to the next occurance of the character <tt>x</tt> on the current line.</td>
+</tr>
+<tr>
+	<th class="vi_key">w</th>
+	<td class="vi_explanation">Move the cursor forward by a word.</td>
+</tr>
+<tr>
+	<th class="vi_key">b</th>
+	<td class="vi_explanation">Move the cursor backward by a word.</td>
+</tr>
+<tr>
+	<th class="vi_key">0</th>
+	<td class="vi_explanation">Move the cursor to the beginning of the current line.</td>
+</tr>
+<tr>
+	<th class="vi_key">^</th>
+	<td class="vi_explanation">Move the cursor to the first character on the current line.</td>
+</tr>
+<tr>
+	<th class="vi_key">$</th>
+	<td class="vi_explanation">Move the cursor to the end of the line</td>
+</tr>
+<tr>
+	<th class="vi_key">)</th>
+	<td class="vi_explanation">Move the cursor forward to the next sentence. (Useful when editing e-mail or text documents.)</td>
+</tr>
+<tr>
+	<th class="vi_key">(</th>
+	<td class="vi_explanation">Move the cursor backward by a sentence.</td>
+</tr>
+</table>
+</p>
+
+<h3>Move efficiently through the file</h3>
+
+<p>vim has many commands that can send you to where you want to go in your file -- there's rarely a need to scroll manually through it. The below keystrokes are not technically <em>motions</em>, since they move around in the file instead of in a particular line.</p>
+
+<p>
+<table class="vi_table">
+<tr>
+	<th class="vi_key">&lt;C-F&gt;</th>
+	<td class="vi_explanation">Move the cursor <strong>f</strong>orward by a screenful of text</td>
+</tr>
+<tr>
+	<th class="vi_key">&lt;C-B&gt;</th>
+	<td class="vi_explanation">Move the cursor <strong>b</strong>ackward by a screenful of text</td>
+</tr>
+<tr>
+	<th class="vi_key">G</th>
+	<td class="vi_explanation">Move the cursor to the end of the file</td>
+</tr>
+<tr>
+	<th class="vi_key"><em>num</em>G</th>
+	<td class="vi_explanation">Move the cursor line <em>num</em>. (For instance, <tt>10G</tt> moves to line 10.)</td>
+<tr>
+	<th class="vi_key">gg</th>
+	<td class="vi_explanation">Move the cursor to the beginning of the file</td>
+</tr>
+<tr>
+	<th class="vi_key">H</th>
+	<td class="vi_explanation">Move the cursor to the top of the screen.</td>
+</tr>
+<tr>
+	<th class="vi_key">M</th>
+	<td class="vi_explanation">Move the cursor to the middle of the screen.</td>
+</tr>
+<tr>
+	<th class="vi_key">L</th>
+	<td class="vi_explanation">Move the cursor to the bottom of the screen.</td>
+</tr>
+<tr>
+	<th class="vi_key">*</th>
+	<td class="vi_explanation">Read the string under the cursor and go to the next place it appears. (For instance, if your cursor was somewhere on the word "bob," the cursor would move to the next occurance of "bob" in your file.)</td>
+</tr>
+<tr>
+	<th class="vi_key">#</th>
+	<td class="vi_explanation">Same as above, except it moves the cursor to the <em>previous</em> occurance.</td>
+</tr>
+<tr>
+	<th class="vi_key">/<em>text</em></th>
+	<td class="vi_explanation">Starting from the cursor, find the next occurance of the string <em>text</em> and go to it. You will need to press Enter to execute the search. To re-execute your last search, type <tt>n</tt> (for <strong>n</strong>ext occurance).</td>
+</tr>
+<tr>
+	<th class="vi_key">?<em>text</em></th>
+	<td class="vi_explanation">Same as <tt>/</tt>, but searches in the opposite direction.</td>
+</tr>
+<tr>
+	<th class="vi_key">ma</th>
+	<td class="vi_explanation">Make a bookmark named <tt>a</tt> at the current cursor position. A bookmark can be named any lowercase letter. You can't see the bookmark, but it's there!</td>
+</tr>
+<tr>
+	<th class="vi_key">`a</th>
+	<td class="vi_explanation">Go to bookmark <tt>a</tt>. Important: that's a <em>backtick</em>, not a single quote. The backtick is located to the left of the 1 on most keyboards.</td>
+</tr>
+<tr>
+	<th class="vi_key">`.</th>
+	<td class="vi_explanation">Go to the line that you last edited. This is very useful! If you need to scroll through the file to look something up, you can go back to where you were without bookmarking it by using the <tt>`.</tt> command.</td>
+</tr>
+</table>
+</p>
+
+<h2>Typing efficiently</h2>
+
+<h3>Use keyword completion</h3>
+
+<p>vim has a very nice keyword completion system. This means that you can type part of a long word, press a key, and have vim finish the word for you. For instance, if you have a variable called <tt>iAmALongAndAwkwardVarName</tt> somewhere in your code, you probably don't want to type the whole thing in every time you use it.</p>
+
+<p>To use keyword completion, just type the first few letters of the string (e.g. <tt>iAmAL</tt>) and press <tt>&lt;C-N&gt;</tt> (that means hold down <tt>Ctrl</tt> and type <tt>N</tt>) or <tt>&lt;C-P&gt;</tt>. If vim doesn't give you the word you want at first, keep trying -- vim will cycle through all completions it can find.</p>
+
+<h3>Enter insert mode intelligently</h3>
+
+<p>Most users new to vim get into insert mode by typing <tt>i</tt>. This works, but it's often pretty inefficient, since vi has a host of commands that leave the editor in insert mode. Here are some of the more popular ones:</p>
+
+<p>
+<table class="vi_table">
+<tr>
+	<th class="vi_key">i</th>
+	<td class="vi_explanation">Insert text to the left of the current character.</td>
+</tr>
+<tr>
+	<th class="vi_key">I</th>
+	<td class="vi_explanation">Insert text at the beginning of the current line.</td>
+</tr>
+<tr>
+	<th class="vi_key">a</th>
+	<td class="vi_explanation">Insert text to the right of the current character.</td>
+</tr>
+<tr>
+	<th class="vi_key">A</th>
+	<td class="vi_explanation">Insert text at the end of the current line.</td>
+</tr>
+<tr>
+	<th class="vi_key">o</th>
+	<td class="vi_explanation">Create a new line under the current one and insert text there.</td>
+</tr>
+<tr>
+	<th class="vi_key">O</th>
+	<td class="vi_explanation">Create a new line above the current one and insert text there.</td>
+</tr>
+<tr>
+	<th class="vi_key">c<em>{motion}</em></th>
+	<td class="vi_explanation">Delete (<strong>c</strong>hange) the text moved over by <em>{motion}</em> and insert text to replace it. For instance, <tt>c$</tt> would delete the text from the cursor to the end of the line and enter insert mode. <tt>ct!</tt> would delete the text from the cursor up to (but not including) the next exclamation mark and enter insert mode. The deleted text is copied to the clipboard and can be pasted.</td>
+</tr>
+<tr>
+	<th class="vi_key">d<em>{motion}</em></th>
+	<td class="vi_explanation">Delete the text moved over by <em>{motion}</em> -- same as <tt>c<em>{motion}</em></tt>, but doesn't enter insert mode.</td>
+</tr>
+</table>
+</p>
+
+<h2>Moving blocks of text efficiently</h2>
+
+<h3>Use visual selections and the appropriate selection mode</h3>
+
+<p>Unlike the original vi, vim allows you to highlight text and perform operations on it. There are three main visual selection modes (that is, text highlighting modes). These modes are as follows:</p>
+
+<p>
+<table class="vi_table">
+<tr>
+	<th class="vi_key">v</th>
+	<td class="vi_explanation">Characterwise selection mode. This is the selection mode that most people are used to, so practice with it before trying the others.</td>
+</tr>
+<tr>
+	<th class="vi_key">V</th>
+	<td class="vi_explanation">Linewise selection mode. Whole lines are always selected. This is better than characterwise mode when you want to copy or move a group of lines.</td>
+</tr>
+<tr>
+	<th class="vi_key">&lt;C-V&gt;</th>
+	<td class="vi_explanation">Blockwise selection mode. <em>Extremely</em> powerful and available in very few other editors. You can select a rectangular block and any text inside that block will be highlighted.</td>
+</tr>
+</table>
+</p>
+
+<p>All the usual cusor movement keys apply -- so, for instance, <tt>vwww</tt> would go into visual selection mode and highlight the next three words. <tt>Vjj</tt> would go into linewise visual selection mode and highlight the current line and the two lines below it.</p>
+
+<h3>Cutting and copying from visual selections</h3>
+
+<p>Once you have a highlighted selection, you probably want to do something with it. Some of the more useful commands you can give when an area of text is highlighted:</p>
+
+<p>
+<table class="vi_table">
+<tr>
+	<th class="vi_key">d</th>
+	<td class="vi_explanation">Cut (<strong>d</strong>elete) the highlighted text and put it into the clipboard.</td>
+</tr>
+<tr>
+	<th class="vi_key">y</th>
+	<td class="vi_explanation">Copy (or <strong>y</strong>ank, which is vim-ese for "copy") the highlighted text into the clipboard.</td>
+</tr>
+<tr>
+	<th class="vi_key">c</th>
+	<td class="vi_explanation">Cut the highlighted text into the clipboard. This is just like <tt>d</tt>, except it leaves the editor in insert mode.</td>
+</tr>
+</table>
+</p>
+
+<h3>Cutting and copying from non-visual selections</h3>
+
+<p>If you know exactly what you want to copy or cut, you can do it without entering visual mode. This saves time.</p>
+
+<p>
+<table class="vi_table">
+<tr>
+	<th class="vi_key">d<em>{motion}</em></th>
+	<td class="vi_explanation">Cut the text moved over by <em>{motion}</em> to the clipboard. For instance, <tt>dw</tt> would cut a word and <tt>dfS</tt> would cut from the cursor up to and including the next capital S on the current line of text.</td>
+</tr>
+<tr>
+	<th class="vi_key">y<em>{motion}</em></th>
+	<td class="vi_explanation">Copy the text moved over by <em>{motion}</em>.</td>
+</tr>
+<tr>
+	<th class="vi_key">c<em>{motion}</em></th>
+	<td class="vi_explanation">Cut the text moved over by <em>{motion}</em> and leave the editor in insert mode.</td>
+</tr>
+<tr>
+	<th class="vi_key">dd</th>
+	<td class="vi_explanation">Cut the current line.</td>
+</tr>
+<tr>
+	<th class="vi_key">yy</th>
+	<td class="vi_explanation">Copy the current line.</td>
+</tr>
+<tr>
+	<th class="vi_key">cc</th>
+	<td class="vi_explanation">Cut the current line and leave the editor in insert mode.</td>
+</tr>
+<tr>
+	<th class="vi_key">D</th>
+	<td class="vi_explanation">Cut from the cursor to the end of the current line.</td>
+</tr>
+<tr>
+	<th class="vi_key">Y</th>
+	<td class="vi_explanation">Yank the whole line, just like <tt>yy</tt>. (Yes, it's inconsistent! You can use <tt>y$</tt> to do what you would expect <tt>Y</tt> to do.)</td>
+</tr>
+<tr>
+	<th class="vi_key">C</th>
+	<td class="vi_explanation">Cut from the cursor to the end of the current line and leave the editor in insert mode.</td>
+</tr>
+<tr>
+	<th class="vi_key">x</th>
+	<td class="vi_explanation">Cut the current character. (This is sort of like a command-mode backspace.)</td>
+</tr>
+<tr>
+	<th class="vi_key">s</th>
+	<td class="vi_explanation">Cut the current character and leave the editor in insert mode.</td>
+</tr>
+</table>
+</p>
+
+<h3>Pasting</h3>
+
+<p>Pasting is easy. Put the cursor where you want the pasted text and type <tt>p</tt>.</p>
+
+<h3>Using multiple clipboards</h3>
+
+<p>Most editors have a single clipboard. vim has many more; clipboards in vim are called <em>registers</em>. You can list all the currently defined registers and their contents by typing <tt>:reg</tt>. Typically, you'll be using the lowercase letter registers; the others are used for various internal vim purposes and are only occasionally helpful.</p>
+
+<p>To use a specific register for a copy or paste operation, simply type <tt>"a</tt> before the command for the operation, where <tt>a</tt> is the register you want to use.</p>
+
+<p>For example, to copy the current line into register <tt>k</tt>, you could type <tt>"kyy</tt>. (You could also type <tt>V"ky</tt>. Why would that work?). That line would stay in register <tt>k</tt> until you specifically copied something else into register <tt>k</tt>. You would then use <tt>"kp</tt> to paste the text from register <tt>k</tt>.</p>
+
+<h2>Avoiding repetition</h2>
+
+<h3>The amazing <tt>.</tt> command</h3>
+
+<p>In vi, typing <tt>.</tt> (a period) will repeat the last command you gave. For instance, if your last command was <tt>dw</tt> (delete word), vi will delete another word. </p>
+
+<h3>Using counts</h3>
+
+<p>Counts are one of the most powerful and time-saving features of vim. <em>Any</em> command can be preceded by a number. The number will tell vim how many times to execute the command. Here are a few examples:</p>
+
+<p><tt>3j</tt> will move the cursor down three lines.</p>
+
+<p><tt>10dd</tt> will delete ten lines.</p>
+
+<p><tt>y3f&quot;</tt> will yank (copy) text from the cursor to the third quotation mark after the cursor on the current line. Counts are useful to extend the range of a motion in this manner.</p>
+
+<h3>Recording macros</h3>
+
+<p>Occasionally, you'll find yourself doing the same thing over and over to blocks of text in your document. vim will let you record an ad-hoc macro to perform the operation.</p>
+
+<p>
+<table class="vi_table">
+<tr>
+	<th class="vi_key">q<em>register</em></th>
+	<td class="vi_explanation">Start macro recording into the named register. For instance, <tt>qa</tt> starts recording and puts the macro into register <tt>a</tt>.</td>
+</tr>
+<tr>
+	<th class="vi_key">q</th>
+	<td class="vi_explanation">End recording.</td>
+</tr>
+<tr>
+	<th class="vi_key">@<em>register</em></th>
+	<td class="vi_explanation">Replay the macro stored in the named register. For instance, <tt>@a</tt> replays the macro in register <tt>a</tt>.</td>
+</tr>
+</table>
+</p>
+
+<p>Keep in mind that macros just record your keystrokes and play them back; they are not magic. Recording macros is almost an art form because there are so many commands that accomplish a given task in vim, and you must carefully select the commands you use while your macro is recording so that they will work in all the places you plan to execute the macro.</p>
+
+<h2>Writing code in vim</h2>
+
+<p>vim is an excellent editor for source code because it has many features that are specifically designed to help programmers. Here are a few of the more handy ones:</p>
+
+<p>
+<table class="vi_table">
+<tr>
+	<th class="vi_key">]p</th>
+	<td class="vi_explanation">Just like <tt>p</tt>, but it automatically adjusts the indent level of the pasted code to match that of the code you paste into. Try it!</td>
+</tr>
+<tr>
+	<th class="vi_key">%</th>
+	<td class="vi_explanation">Putting the cursor on a brace, bracket, or parenthesis and pressing <tt>%</tt> will send the cursor to the matching brace, bracket, or parenthese. Great for fixing parse problems related to heavily nested blocks of code or logic.</td>
+</tr>
+<tr>
+	<th class="vi_key">&gt;&gt;</th>
+	<td class="vi_explanation">Indent the highlighted code. (See the earlier section about efficient text selection. If no text is selected, the current line is indented.) </td>
+</tr>
+<tr>
+	<th class="vi_key">&lt;&lt;</th>
+	<td class="vi_explanation">Like &gt;&gt;, but un-indents.</td>
+</tr>
+<tr>
+	<th class="vi_key">gd</th>
+	<td class="vi_explanation"><strong>G</strong>o to the <strong>d</strong>efinition (or <strong>d</strong>eclaration) of the function or variable under the cursor.</td>
+</tr>
+<tr>
+	<th class="vi_key">K</th>
+	<td class="vi_explanation">Go to the man page for the word currently under the cursor. (For instance, if your cursor is currently over the word <tt>sleep</tt>, you will see the man page for <tt>sleep</tt> displayed.)</td>
+</tr>
+</table>
+</p>
+
+	
+	</div>
+	<!-- end main content -->
+
+	</td>
+	<td style="width: 25%; background-color: #f0f0f0;" class="menu">
+
+
+	
+	<div class="menuheader">
+	<div class="padded">	
+	vim
+	</div>
+	</div>
+
+	<ul>
+		
+			<li><a class="linksubdued" href="editing.html">efficient editing</a></li>
+			<li><a class="linksubdued" href="windows.html">multi-file editing</a></li>
+			<li><a class="linksubdued" href="vimrc.html">vimrc and customization</a></li>
+	
+	</ul>
+
+
+	
+	<div class="menuheader">
+	<div class="padded">	
+	other
+	</div>
+	</div>
+
+	<ul>
+		
+			<li><a class="linksubdued" href="mutt.html">mutt at ucd</a></li>
+			<li><a class="linksubdued" href="par.html">par, the paragraph formatter</a></li>
+			<li><a class="linksubdued" href="screen.html">gnu screen</a></li>
+	
+	</ul>
+
+
+	
+	<!-- close the content table -->
+	</td></tr></table>
+
+
+	<!-- big mean warning! this will scare them off! -->
+	<div class="footer">
+	<div class="padded">
+
+	<div class="print_icon">
+	<a href="javascript:setActiveStyleSheet('print style')">
+	<img src="images/COprin1.gif" 
+	     alt="Display this page in a printable format."
+	     style="border: 0px" />
+	</a>
+	&nbsp;
+	&nbsp;
+	</div>
+	
+	<div style="float: right;">
+      <a href="http://validator.w3.org/check/referer">This page is valid XHTML 1.0 Strict</a>.
+	</div>
+	DESIGN AND CONTENT &copy; 2009 J. McPherson UNLESS NOTED OTHERWISE. <br />
+	LAST DML REBUILD (UPDATE): December 29 2009 09:55 AM<br />
+	SEE <a class="linksubdued" href="contact.html">CONTACT INFO</a>.
+	</div>
+	</div>
+
+	<!-- the end -->
+	</div>
+	</div>
+	</body>
+	</html>
+

@@ -1,0 +1,348 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>
+Matt Mazur &raquo; Six Months of HackerNews Front Page Data</title>
+<meta name="distribution" content="global" />
+<meta name="robots" content="follow, all" />
+<meta name="generator" content="WordPress 3.0.3" />
+<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://www.mattmazur.com/feed/" />
+<link rel="alternate" type="text/xml" title="RSS .92" href="http://www.mattmazur.com/feed/rss/" />
+<link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="http://www.mattmazur.com/feed/atom/" />
+<link rel="pingback" href="http://www.mattmazur.com/wp/xmlrpc.php" />
+<script type="text/javascript" src="http://www.mattmazur.com/wp/wp-content/themes/spotlight-13/js/prototype.js.php"></script>
+<script type="text/javascript" src="http://www.mattmazur.com/wp/wp-content/themes/spotlight-13/js/effects.js.php"></script>
+<script type="text/javascript" src="http://www.mattmazur.com/wp/wp-content/themes/spotlight-13/js/ajax_comments.js"></script>
+<style type="text/css" media="screen">
+		<!-- @import url( http://www.mattmazur.com/wp/wp-content/themes/spotlight-13/style.css ); -->
+</style>
+<link rel="alternate" type="application/rss+xml" title="Matt Mazur &raquo; Six Months of HackerNews Front Page Data Comments Feed" href="http://www.mattmazur.com/2010/03/six-months-of-hackernews-front-page-data/feed/" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.mattmazur.com/wp/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.mattmazur.com/wp/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='Matt Mazur' href='http://www.mattmazur.com/' />
+<link rel='start' title='First!' href='http://www.mattmazur.com/2008/07/learning-zend/' />
+<link rel='prev' title='Poker Bot Command Line Tool &#8211; AllHandsDesc' href='http://www.mattmazur.com/2010/03/poker-bot-command-line-tool-allhandsdesc/' />
+<link rel='next' title='HNTrends Data Analyzed (link)' href='http://www.mattmazur.com/2010/03/hntrends-data-analyzed-link/' />
+<meta name="generator" content="WordPress 3.0.3" />
+<link rel='canonical' href='http://www.mattmazur.com/2010/03/six-months-of-hackernews-front-page-data/' />
+<link rel='shortlink' href='http://www.mattmazur.com/?p=1305' />
+<script type="text/javascript" src="http://www.mattmazur.com/wp/wp-content/plugins/flv-embed/swfobject.js"></script>
+</head>
+<body id="home" class="log">
+<div id="wrapper">
+<div id="header">
+<div id="logo">
+  <h1 id="blogname"><a href="http://www.mattmazur.com">
+    Matt Mazur    </a></h1>
+  <div class="description">
+    Let&#8217;s see what happens  </div>
+</div>
+
+</div>
+<div id="wrap">
+<div id="content">
+    <div class="entry">
+    <h3 class="entrytitle" id="post-1305"> <a href="http://www.mattmazur.com/2010/03/six-months-of-hackernews-front-page-data/" rel="bookmark">
+      Six Months of HackerNews Front Page Data      </a> </h3>
+    <p class="entrymeta">Posted on <span class="date">March 7, 2010</span>		
+		under <span class="category"><a href="http://www.mattmazur.com/category/hntrends/" title="View all posts in HNTrends" rel="category tag">HNTrends</a></span>		
+		     </p>
+    <div class="entrybody">
+      <p>Back in September 2009 I <a href="http://news.ycombinator.com/item?id=810112">launched</a> a small web app called <a href="http://hntrends.com/">HNTrends.com</a>, a tool for visualizing the movement of stories on HackerNews&#8217;s front page over time.</p>
+<p>I haven&#8217;t worked on the site much since then, but the script that logs the data has been diligently recording the front page submissions every 15 minutes since it started.</p>
+<p>It occurred to me that a detailed analysis of the data might yield some interesting results such as how the site has grown since then, when is the best time to post a new submission, user participation rates, or some insight that changes the way we see the site. I offer it to you today so that you may analyze it to your heart&#8217;s content.</p>
+<p>You can download it <a href="http://www.mattmazur.com/hntrends-20090831-20100307.zip">here</a> (CSV, 13.4 MB zipped, 169 MB unzipped).</p>
+<p>In total, the database contains 514,478 records spanning from August 31, 2009 to March 7, 2010.</p>
+<p>A single line looks like this:</p>
+<p><code>&amp;quot;1&amp;quot;,&amp;quot;http://paulgraham.com/kate.html&amp;quot;,&amp;quot;What Kate saw in Silicon Valley&amp;quot;,&amp;quot;129&amp;quot;,&amp;quot;albertcardona&amp;quot;,&amp;quot;2009-08-31 20:15:15&amp;quot;,&amp;quot;63&amp;quot;,&amp;quot;1&amp;quot;,&amp;quot;2009-08-31 23:15:15&amp;quot;,&amp;quot;796573&amp;quot;,&amp;quot;HackerNews&amp;quot;,&amp;quot;c18577&amp;quot;</code></p>
+<p>Removing the quotes and splitting by comma, here is what each item represents:</p>
+<ul>
+<li><code>1</code> &#8211; Primary key</li>
+<li><code>http://paulgraham.com/kate.html</code> &#8211; Destination URL</li>
+<li><code>What Kate saw in Silicon Valley</code> &#8211; Title</li>
+<li><code>129</code> &#8211; Points</li>
+<li><code>albertcardona</code> &#8211; Submitter</li>
+<li><code>2009-08-31 20:15:15</code> &#8211; Approximate UTC submission time, calculated based on the time minus the age of the submission</li>
+<li><code>63</code> &#8211; Comments</li>
+<li><code>1</code> &#8211; Rank</li>
+<li><code>2009-08-31 23:15:15</code> &#8211; UTC time record was created</li>
+<li><code>796573</code> &#8211; HackerNews ID</li>
+<li><code>HackerNews</code> &#8211; Always &#8220;HackerNews&#8221;</li>
+<li><code>c18577</code> &#8211; Color for display purposes</li>
+</ul>
+<p>One final note: this database covers roughly 99% of the time period since it started. For a while the script broke whenever an article didn&#8217;t contain comment link, and every so often it goes down for miscellaneous reasons.</p>
+      		<div class="sociable"></div>
+    </div>
+	<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+			xmlns:dc="http://purl.org/dc/elements/1.1/"
+			xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">
+		<rdf:Description rdf:about="http://www.mattmazur.com/2010/03/six-months-of-hackernews-front-page-data/"
+    dc:identifier="http://www.mattmazur.com/2010/03/six-months-of-hackernews-front-page-data/"
+    dc:title="Six Months of HackerNews Front Page Data"
+    trackback:ping="http://www.mattmazur.com/2010/03/six-months-of-hackernews-front-page-data/trackback/" />
+</rdf:RDF>  </div>
+
+  <div id="commentblock">
+  <!--comments area-->
+  <h2 id="comments">
+    8 Comments so far  </h2>
+  <ol class="commentlist" id="commentlist">
+            <li class="alt" id="comment-1423">
+      <div class="commentname">
+        <a href='http://www.mynext.co.uk' rel='external nofollow' class='url'>steve</a>        on
+        March 7th, 2010              </div>
+            <div class='commenttext'>
+        <div class="commentp">
+                    <p>thank you, was offline for a couple of months, allows me to catch back up.</p>
+        </div>
+</div>
+          </li>
+            <li class="standard" id="comment-1430">
+      <div class="commentname">
+        <a href='http://virtualworkernetwork.com/?p=455' rel='external nofollow' class='url'>Virtual Worker Network &#124; Blog &#124; 3 Things All Affiliate Marketers Need To Survive Online</a>        on
+        March 8th, 2010              </div>
+            <div class='commenttext'>
+        <div class="commentp">
+                    <p>[...] Matt Mazur » Six Months of HackerNews Front Page Data [...]</p>
+        </div>
+</div>
+          </li>
+            <li class="alt" id="comment-1432">
+      <div class="commentname">
+        <a href='http://webmarketinglocal.com/blog/?p=38' rel='external nofollow' class='url'>Is Google now ranking based on page speed? | Web Marketing with LinkLocal</a>        on
+        March 8th, 2010              </div>
+            <div class='commenttext'>
+        <div class="commentp">
+                    <p>[...] Matt Mazur » Six Months of HackerNews Front Page Data [...]</p>
+        </div>
+</div>
+          </li>
+            <li class="standard" id="comment-1434">
+      <div class="commentname">
+        <a href='http://www.handymanwork.org/?p=14' rel='external nofollow' class='url'>About Us</a>        on
+        March 9th, 2010              </div>
+            <div class='commenttext'>
+        <div class="commentp">
+                    <p>[...] Matt Mazur &raquo; Six Months of HackerNews Front Page Data [...]</p>
+        </div>
+</div>
+          </li>
+            <li class="alt" id="comment-1435">
+      <div class="commentname">
+        <a href='http://www.rightuppersideandbackpainonline.com/backpainnews/back-pain-relief/good-pilates-dvd-for-the-relief-of-chronic-lower-and-upper-back-pain-2' rel='external nofollow' class='url'>Good Pilates dvd for the relief of chronic lower and upper back pain? | Your Back Pain Cause And Cure Guide</a>        on
+        March 9th, 2010              </div>
+            <div class='commenttext'>
+        <div class="commentp">
+                    <p>[...] Matt Mazur &raquo; Six Months of HackerNews Front Page Data [...]</p>
+        </div>
+</div>
+          </li>
+            <li class="standard" id="comment-1436">
+      <div class="commentname">
+        <a href='http://vintageleathersuitcase.com/?p=58' rel='external nofollow' class='url'>About</a>        on
+        March 10th, 2010              </div>
+            <div class='commenttext'>
+        <div class="commentp">
+                    <p>[...] Matt Mazur &raquo; Six Months of HackerNews Front Page Data [...]</p>
+        </div>
+</div>
+          </li>
+            <li class="alt" id="comment-1478">
+      <div class="commentname">
+        <a href='http://google.com' rel='external nofollow' class='url'>goog</a>        on
+        April 6th, 2010              </div>
+            <div class='commenttext'>
+        <div class="commentp">
+                    <p>Hi, the link doesn&#8217;t seem to work right now. Can you fix it please?</p>
+        </div>
+</div>
+          </li>
+            <li class="standard" id="comment-1646">
+      <div class="commentname">
+        Matt        on
+        July 24th, 2010              </div>
+            <div class='commenttext'>
+        <div class="commentp">
+                    <p>Link is fixed now (sorry for the delay)</p>
+        </div>
+</div>
+          </li>
+          </ol>
+    <div id="loading" style="display: none;">Posting your comment.</div>
+  <div id="errors"></div>
+  <div class="post-content">
+<p>
+	<a href="http://www.mattmazur.com/2010/03/six-months-of-hackernews-front-page-data/trackback/">Trackback URI</a> | 
+	<a href='http://www.mattmazur.com/2010/03/six-months-of-hackernews-front-page-data/feed/'>Subscribe to the comments through RSS Feed</a></p>
+</div>
+    <h2>Leave a reply</h2>
+    <div id="commentsform">
+    <form id="commentform" action="http://www.mattmazur.com/wp/wp-comments-post.php" method="post" onsubmit="new Ajax.Updater({success: 'commentlist'}, 'http://www.mattmazur.com/wp/wp-content/themes/spotlight-13/comments-ajax.php', {asynchronous: true, evalScripts: true, insertion: Insertion.Bottom, onComplete: function(request){complete(request)}, onFailure: function(request){failure(request)}, onLoading: function(request){loading()}, parameters: Form.serialize(this)}); return false;">
+            <p>
+        <input class="textbox" type="text" name="author" id="author" value="" size="22" tabindex="1" />
+        <label for="author"><small>
+        name                </small></label>
+      </p>
+      <p>
+        <input class="textbox" type="text" name="email" id="email" value="" size="22" tabindex="2" />
+        <label for="email"><small>
+        email        (
+        will not be shown        )
+                </small></label>
+      </p>
+      <p>
+        <input class="textbox" type="text" name="url" id="url" value="" size="22" tabindex="3" />
+        <label for="url"><small>
+        website        </small></label>
+      </p>
+            <!--<p><small><strong>XHTML:</strong> You can use these tags: &lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;strike&gt; &lt;strong&gt; </small></p>-->
+      <p>
+        <textarea name="comment" id="comment" cols="50" rows="10" tabindex="4"></textarea>
+      </p>
+      <p>
+        <input name="submit" type="submit" id="submit" tabindex="5" value="Submit Comment" />
+        <input type="hidden" name="comment_post_ID" value="1305" />
+      </p>
+          </form>
+  </div>
+    </div>
+
+
+    <p>
+      </p>
+</div>
+<div id="sidebar">
+
+<div style="padding: 10px">
+<p>Hello and welcome!</p>
+<p>I am a <s>Philadelphia</s> Boston-based nights &amp; weekends <a href="http://www.paulgraham.com/gba.html">hacker</a> with a passion for building things.</p>
+<p>I'm currently working on two web apps: <a href="http://www.preceden.com">Preceden</a>, a tool for making timelines, and <a href="http://www.jmockups.com">jMockups</a>, a tool for designing websites.</p>
+
+<p><a href="http://feeds.feedburner.com/MattMazur" rel="alternate" type="application/rss+xml">
+<img src="http://www.mattmazur.com/images/feed-icon32x32.png" style="vertical-align:middle; border:0"/>
+</a></p>
+</div>
+
+
+<!-- Contacts-->
+<h2 class="proj">Contact</h2>
+<p>Say hi: matthew.h.mazur@gmail.com</p>
+<p>I'm also matt1 on <a href="http://news.ycombinator.com">HackerNews</a></p>
+
+<div id="rest">
+<h2 class="proj">Projects</h2>
+<p style="color: #444444">“Find a happy person, and you will find a project.”<br>
+Sonja Lyubomirsky</p>
+<table width="100%">
+<tr>
+<td valign="top">
+
+
+<!-- Way Back -->
+
+<ul>
+     <li><b>AOL</b></li>
+     <li><a href="http://www.mattmazur.com/2009/05/revolution/">Revolution (1998)</a></li>
+     <li><a href="http://www.mattmazur.com/2009/07/alpha32-bas-aol-programming-made-easy/">Alpha32 (1998)</a></li> 
+     <li><a href="http://www.mattmazur.com/2009/05/meridian/">Meridian (1999)</a></li>
+     <li><a href="http://www.mattmazur.com/2008/12/exploits-online-ieetfoolscomtau/">Exploits Online (2000)</a></li>
+     <li style="margin-left: 10px"><a href="http://www.mattmazur.com/archive/ieetfools/index.html">* Exploits Online archive</a></li>
+     <li><a href="http://www.mattmazur.com/2010/01/hacking-iwin-and-why-it-wasnt-worth-it/">Hacking iWin (2000)</a></li>
+     <li><a href="http://www.mattmazur.com/2009/04/aol-modal-tool/">Modal Tool (2000)</a></li>
+     <li><a href="http://www.mattmazur.com/category/aol-files/">AOL-Files (2000)</a></li>
+     <li style="margin-left: 10px"><a href="http://www.mattmazur.com/archive/aol-files.html">* AOL-Files.com archive</a></li>
+     <li style="margin-left: 10px"><a href="http://www.mattmazur.com/archive/aol-files/downloads/people/index.html">* AOL Hackers index</a></li>
+</ul>
+</td>
+<td valign="top">
+<ul>
+     <li><b>TetriNET</b></li>
+     <li><a href="http://www.mattmazur.com/2009/05/creating-a-tetrinet-bot/">TetriNET Bot (2002)</a></li>
+</ul>
+<ul>
+     <li><b>Poker</b></li>
+     <li><a href="http://www.mattmazur.com/2009/06/pokershark-gaining-an-edge-at-online-poker/">PokerShark (2006)</a></li>
+     <li><a href="http://www.mattmazur.com/2009/05/poker-blog-archive/">Poker Blog (2006)</a></li>
+     <li><a href="http://www.mattmazur.com/2009/10/building-a-shortstacking-poker-bot-a-visual-history/">Shortstacking Bot (2007)</a></li>
+     <li><a href="http://www.mattmazur.com/2009/06/how-do-you-measure-a-poker-bots-success/">HUSNG Bot (2008)</a></li>
+     <li style="margin-left: 10px"><a href="http://www.mattmazur.com/category/poker-bot/">* Poker Bot Posts</a></li>
+     <li><a href="http://www.mattmazur.com/category/all-in-expert/">ALL IN Expert (2008)</a></li>
+     <li style="margin-left: 10px"><a href="http://www.mattmazur.com/allinexpert">* ALL IN Expert archive</a></li>
+</ul>
+</td>
+</tr>
+<tr>
+<td valign="top">
+<ul>
+     <li><b>Training</b></li>
+     <li><a href="http://www.mattmazur.com/category/domain-pigeon/">Domain Pigeon (2009)</a></li>
+     <li><a href="http://www.mattmazur.com/category/hntrends/">HNTrends (2009)</a></li>
+</ul>
+</td>
+<td valign="top">
+<ul>
+    <li><b>Current</b></li>
+    <li><a href="http://www.mattmazur.com/category/preceden/">Preceden (2010)</a></li>
+     <li style="margin-left: 10px"><a href="http://www.preceden.com">* Preceden.com</a></li>
+    <li><a href="http://www.mattmazur.com/category/jmockups/">jMockups (2010)</a></li>
+     <li style="margin-left: 10px"><a href="http://www.jmockups.com">* jMockups.com</a></li>
+</ul>
+</td>
+</tr>
+</table>
+
+<h2 class="proj">Archive</h2>
+<ul>	<li><a href='http://www.mattmazur.com/2010/12/' title='December 2010'>December 2010</a>&nbsp;(4)</li>
+	<li><a href='http://www.mattmazur.com/2010/11/' title='November 2010'>November 2010</a>&nbsp;(3)</li>
+	<li><a href='http://www.mattmazur.com/2010/10/' title='October 2010'>October 2010</a>&nbsp;(6)</li>
+	<li><a href='http://www.mattmazur.com/2010/09/' title='September 2010'>September 2010</a>&nbsp;(3)</li>
+	<li><a href='http://www.mattmazur.com/2010/08/' title='August 2010'>August 2010</a>&nbsp;(4)</li>
+	<li><a href='http://www.mattmazur.com/2010/07/' title='July 2010'>July 2010</a>&nbsp;(1)</li>
+	<li><a href='http://www.mattmazur.com/2010/06/' title='June 2010'>June 2010</a>&nbsp;(6)</li>
+	<li><a href='http://www.mattmazur.com/2010/05/' title='May 2010'>May 2010</a>&nbsp;(7)</li>
+	<li><a href='http://www.mattmazur.com/2010/04/' title='April 2010'>April 2010</a>&nbsp;(3)</li>
+	<li><a href='http://www.mattmazur.com/2010/03/' title='March 2010'>March 2010</a>&nbsp;(7)</li>
+	<li><a href='http://www.mattmazur.com/2010/02/' title='February 2010'>February 2010</a>&nbsp;(7)</li>
+	<li><a href='http://www.mattmazur.com/2010/01/' title='January 2010'>January 2010</a>&nbsp;(2)</li>
+	<li><a href='http://www.mattmazur.com/2009/12/' title='December 2009'>December 2009</a>&nbsp;(1)</li>
+	<li><a href='http://www.mattmazur.com/2009/11/' title='November 2009'>November 2009</a>&nbsp;(2)</li>
+	<li><a href='http://www.mattmazur.com/2009/10/' title='October 2009'>October 2009</a>&nbsp;(7)</li>
+	<li><a href='http://www.mattmazur.com/2009/09/' title='September 2009'>September 2009</a>&nbsp;(10)</li>
+	<li><a href='http://www.mattmazur.com/2009/08/' title='August 2009'>August 2009</a>&nbsp;(3)</li>
+	<li><a href='http://www.mattmazur.com/2009/07/' title='July 2009'>July 2009</a>&nbsp;(9)</li>
+	<li><a href='http://www.mattmazur.com/2009/06/' title='June 2009'>June 2009</a>&nbsp;(20)</li>
+	<li><a href='http://www.mattmazur.com/2009/05/' title='May 2009'>May 2009</a>&nbsp;(11)</li>
+	<li><a href='http://www.mattmazur.com/2009/04/' title='April 2009'>April 2009</a>&nbsp;(12)</li>
+	<li><a href='http://www.mattmazur.com/2009/03/' title='March 2009'>March 2009</a>&nbsp;(16)</li>
+	<li><a href='http://www.mattmazur.com/2009/02/' title='February 2009'>February 2009</a>&nbsp;(24)</li>
+	<li><a href='http://www.mattmazur.com/2009/01/' title='January 2009'>January 2009</a>&nbsp;(15)</li>
+	<li><a href='http://www.mattmazur.com/2008/12/' title='December 2008'>December 2008</a>&nbsp;(14)</li>
+	<li><a href='http://www.mattmazur.com/2008/11/' title='November 2008'>November 2008</a>&nbsp;(11)</li>
+	<li><a href='http://www.mattmazur.com/2008/10/' title='October 2008'>October 2008</a>&nbsp;(3)</li>
+	<li><a href='http://www.mattmazur.com/2008/09/' title='September 2008'>September 2008</a>&nbsp;(7)</li>
+	<li><a href='http://www.mattmazur.com/2008/08/' title='August 2008'>August 2008</a>&nbsp;(26)</li>
+	<li><a href='http://www.mattmazur.com/2008/07/' title='July 2008'>July 2008</a>&nbsp;(15)</li>
+</ul>
+
+  
+</div>
+</div><!-- end id:sidebar -->
+</div>
+<div id="footer">
+  <p> Copyright &copy;&nbsp;2010 Matt Mazur</p>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-4712727-2");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+
+
+</div>
+</div>
+</body></html>

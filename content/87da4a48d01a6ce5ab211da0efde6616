@@ -1,0 +1,1066 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Linux Screen Tutorial and How To - rackAID</title>
+<meta name='description' content='Learn how to use Linux&#39;s screen for remote session management.' />
+	<meta http-equiv="content-style-type" content="text/css" />
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+	<link rel="Shortcut Icon" href="/favicon.ico" type="image/x-icon" />
+<link rel="alternate" type="application/rss+xml" title="RSS Feed for rackaid.com" href="http://feeds.feedburner.com/rackaid" />
+
+	<link rel="stylesheet" type="text/css" href="/styles/screen.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="/styles/print.css" media="print" />
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+	<script type="text/javascript" src="/javascript/scripts.js"></script>
+	<script type="text/javascript">document.documentElement.className += " js";</script>
+</head>
+
+<body>
+
+<div id="root">
+	
+	<div id="top">
+		<h1 id="logo"><a href="http://www.rackaid.com/">rackAID Linux Support Services</a></h1>
+		
+		
+		
+		<div id="bar">
+			<p class="first"><strong>Call Sales: 877-435-2445</strong></p>
+			<ul>
+				<li><a href="https://www.rackaid.com/helpdesk/">Log In</a></li>
+			</ul>
+
+			
+			
+			<form action="/search/gresults/" method="post">
+			<p><label for="f-search">Search</label> <input type="text" name="q" id="f-search" /> <button type="submit">Search</button></p>
+			</form>
+
+		</div> <!-- close #bar -->
+		
+		<h2 class="offset">Linux Services</h2>
+		<ul id="nav">
+			<li><a href="http://www.rackaid.com/" accesskey="h">Home</a><em> [h]</em></li>
+			<li><a href="http://www.rackaid.com/what-we-do/" accesskey="1">Wh<span class="letter-fix">&nbsp;</span> at We Do</a><em> [1]</em></li>
+			<li><a href="http://www.rackaid.com/services/" accesskey="3">Services</a><em> [3]</em></li>
+			<li><a href="http://www.rackaid.com/business-challenges/" accesskey="2">IT Challenges</a><em> [2]</em></li>
+			<li><a href="http://www.rackaid.com/resources/" accesskey="4" class="active">Blog</a><em> [4]</em></li>
+			<li><a href="http://www.rackaid.com/about/" accesskey="5">About</a><em> [5]</em></li>
+			<li><a href="https://www.rackaid.com/contact/" accesskey="6">Contact</a><em> [6]</em></li>
+		</ul>     
+	</div> <!-- #top -->
+		
+	<div id="content">
+			<h1 class="a type-a">Resources</h1>
+			<div class="cols-a cols-a-push">
+				<div class="main">
+
+			
+
+		
+	<div class="header-a header-a-resources">
+						<h2>Linux Screen Tutorial and How To</h2>
+						<p class="info">Posted by Jeff H. 01/01/2008</p>
+					</div> <!-- close .header-a-resources -->
+					
+
+
+					<div class="sep-a">
+
+
+
+							<h3>Using Linux Screen for Session Management</h3>
+
+	<h3>Lost your shell connection? Need multiple shell sessions?</h3>
+
+	<p>You are logged into your remote server via <span class="caps">SSH</span> and happily plucking along at your keyboard and then it happens. Suddenly, the characters stop moving and then you get the dreaded &#8220;Connection Closed&#8221; message. You have just lost your session. You were halfway through some task and now you have to start over. Ugh. Well you can prevent this from happening by using screen. The Linux screen tool can not only save you from disconnection disasters, but it also can increase your productivity by using multiple windows within one <span class="caps">SSH</span> session.  I use this tool all of the time in our <a href="/services/management/">server management</a> work.</p>
+
+	<h3>Linux Screen for Session Management!</h3>
+
+	<p><img src="http://www.rackaid.com/files/resources/screen.png" width="550" height="341" alt="Screenshot of Linux Screen Terminal" /></p>
+
+	<p>Linux Screen showing the <span class="caps">GNU</span> page for Linux Screen Itself</p>
+
+	<p>Linux Screen Can Save you from that Lost Connection</p>
+
+	<h3>What is Screen for Linux?</h3>
+
+	<p>As the man page states, &#8220;Screen is a full-screen window manager that multiplexes a physical terminal between several processes (typically interactive shells).&#8221; This can be a life saver when working on your dedicated server. Screen has a several great features for helping you administer your server more productively and safely. I am going to discuss the three features (multiple windows, logging, sessions) that I use the most but be sure to see the man page for full details.</p>
+
+	<h3>Installing Screen on Linux</h3>
+
+	<p>Chances are that you already have screen on your system. On most Red Hat distributions you can find it in /usr/bin/screen. To see if screen is in your path, you can use the which command:</p>
+
+<pre class="console">[admin@ensim admin]$ which screen
+</pre>
+
+	<p>If you do not have screen, then you can install it easily from an <span class="caps">RPM</span> or the package file for your system. On Cobalt Raq servers, you can safely use the RedHat <span class="caps">RPMS</span> appropriate for your system.<br />
+Screen <span class="caps">RPM</span>s:    <a href="http://www.rpmfind.net/linux/rpm2html/search.php?query=screen" target="_new">rpmfind</a><br />
+Screen Web site: <a href="http://www.gnu.org/software/screen/" target="_new"><span class="caps">GNU</span> Screen</a></p>
+
+	<p>As you probably already have screen or can use an <span class="caps">RPM</span>, I am not going to cover the building of screen from source. Lets get on to how to use screen.</p>
+
+	<h3>Using Screen</h3>
+
+	<p>Screen is started from the command line just like any other command:</p>
+
+<pre>[admin@gigan admin]$ screen
+</pre>
+
+	<p>You may or may not get a text message about screen. If you do not, then you probably think nothing has happened, but it has. You are now inside of a window within screen. This functions just like a normal shell except for a few special characters. Screen uses the command &#8220;Ctrl-A&#8221; as a signal to send commands to screen instead of the shell. To get help, just use &#8220;Ctrl-A&#8221; then &#8220;?&#8221;. You should now have the screen help page.</p>
+
+                Screen key bindings, page 1 of 2.
+
+<pre class="console">               Command key:  ^A   Literal ^A:  a
+</pre>
+
+<pre class="console">break      ^B b       lockscreen ^X x       reset      Z         
+clear      C          log        H          screen     ^C c      
+colon      :          login      L          select     &quot; &#39;       
+copy       ^[ [       meta       a          silence    _         
+detach     ^D d       monitor    M          split      S         
+digraph    ^V         next       ^@ ^N sp n suspend    ^Z z      
+displays   *          number     N          time       ^T t      
+fit        F          only       Q          title      A         
+flow       ^F f       other      ^A         vbell      ^G        
+focus      ^I         pow_break  B          version    v         
+help       ?          pow_detach D          width      W         
+history            prev       ^P p ^?    windows    ^W w      
+info       i          readbuf    &lt;          wrap       ^R r      
+kill       K          redisplay  ^L l       writebuf   &gt;         
+lastmsg    ^M m       remove     X          xoff       ^S s      
+license    ,          removebuf  =          xon        ^Q q      
+                 [Press Space for next page; Return to end.]
+</pre>
+
+	<p>Key bindings are the commands the screen accepts after you hit &#8220;Ctrl-A&#8221;. You can reconfigure these keys to your liking using a .screenrc file, but I just use the defaults.</p>
+
+	<h3>Multiple Windows</h3>
+
+	<p>Screen, like many windows managers, can support multiple windows. This is very useful for doing many tasks at the same time without opening new sessions. As a systems manager, I often have four or five <span class="caps">SSH</span> sessions going at the same time. In each of the shell, I may be running two or three tasks. Without screen, that would require 15 <span class="caps">SSH</span> sessions, logins, windows, etc. With screen, each system gets its own single session and I use screen to manage different tasks on that system.</p>
+
+	<p>To open a new window, you just use &#8220;Ctrl-A&#8221; &#8220;c&#8221;. This will create a new window for you with your default prompt. For example, I can be running top and then open a new window to do other things. Top stays running! It is still there. To try this for yourself, start up screen and then run top. (Note: I have truncated some screens to save space.)</p>
+
+	<p>Start top</p>
+
+<pre class="console">  Mem:   506028K av,  500596K used,    5432K free,       
+    0K shrd,   11752K buff
+    Swap: 1020116K av,   53320K used,  966796K free        
+              393660K cached
+</pre>
+
+<pre class="console">     PID USER     PRI  NI  SIZE  RSS SHARE STAT %CPU %ME
+     6538 root      25   0  1892 1892   596 R    49.1  0.3
+     6614 root      16   0  1544 1544   668 S    28.3  0.3
+     7198 admin     15   0  1108 1104   828 R     5.6  0.2
+</pre>
+
+	<p>Now open a new window with &#8220;Ctrl-A&#8221; &#8220;c&#8221;</p>
+
+<pre class="console">[admin@ensim admin]$ 
+</pre>
+
+	<p>To get back to top, use &#8220;Ctrl-A &#8220;n&#8221;</p>
+
+<pre class="console">   Mem:   506028K av,  500588K used,    5440K free,       
+    0K shrd,   11960K buff
+    Swap: 1020116K av,   53320K used,  966796K free        
+              392220K cached
+</pre>
+
+<pre class="console">     PID USER     PRI  NI  SIZE  RSS SHARE STAT %CPU %ME
+     6538 root      25   0  1892 1892   596 R    48.3  0.3
+     6614 root      15   0  1544 1544   668 S    30.7  0.3
+</pre>
+
+	<p>You can create several windows and toggle through them with &#8220;Ctrl-A&#8221; &#8220;n&#8221; for the next window or &#8220;Ctrl-A&#8221; &#8220;p&#8221; for the previous window. Each process will keep running while your work elsewhere.</p>
+
+	<h3>Leaving Screen</h3>
+
+	<p>There are two ways to get out of screen. The first is just like logging out of a shell. You kill the window with &#8220;Ctrl-A&#8221; &#8220;K&#8221; or &#8220;exit&#8221; will work on some systems. This will kill the current windows. If you have other windows, you will drop into one of those. If this is the last window, then you will exit screen.</p>
+
+	<p>The second way to leave screen is to detach from a windows. This method leaves the process running and simple closes the window. If you have really long processes, you need to close your <span class="caps">SSH</span> program, you can detach from the window using &#8220;Ctrl-A&#8221; &#8220;d&#8221;. This will drop you into your shell. All screen windows are still there and you can re-attach to them later.</p>
+
+	<h3>Attaching to Sessions</h3>
+
+	<p>So you are using screen now and compiling that program. It is taking forever and suddenly your connection drops. Don&#8217;t worry screen will keep the compilation going. Login to your system and use the screen listing tool to see what sessions are running:</p>
+
+<pre class="console">[root@gigan root]# screen -ls
+There are screens on:
+        31619.ttyp2.gigan       (Detached)
+        4731.ttyp2.gigan        (Detached)
+2 Sockets in /tmp/screens/S-root.
+</pre>
+
+	<p>Here you see I have two different screen sessions. To re-attach to a session, use the re-attach command:</p>
+
+<pre class="console">[root@gigan root]#screen -r 31619.ttyp2.gigan
+</pre>
+
+	<p>Just use screen with the -r flag and the session name. You are now re-attached to the screen. A nice thing about this, is you can re-attach from anywhere. If you are at work or a clients office, you can use screen to start a job and then logout. When you get back to your office or home, you can login and get back to work.</p>
+
+	<h3>Screen Logging</h3>
+
+	<p>As a consultant, I find it important to keep track of what I do to someone&#8217;s server. Fortunately, screen makes this easy. Using &#8220;Ctrl-A&#8221; &#8220;H&#8221;, creates a running log of the session. Screen will keep appending data to the file through multiple sessions. Using the log function is very useful for capturing what you have done, especially if you are making a lot of changes. If something goes awry, you can look back through your logs.</p>
+
+	<h3>Linux Screen Tips</h3>
+
+	<p>Just wanted to mention to other cool tricks you can do with screen. Screen can monitor a window for activity or lack thereof. This is great if you are downloading large files, compiling, or watching for output. If you are downloading something or compiling, you can watch for silence. To start the monitor, go to the screen you want to monitor and use &#8220;Ctrl-A&#8221; &#8220;M&#8221; to look for activity or &#8220;Ctrl-A&#8221; &#8220;_&#8221; to monitor for silence. Then open or switch to a new window. When the monitor detects activity or silence, you will get an alert at the bottom with the window number. To quickly go to that window, use &#8220;Ctrl-A&#8221; &#8220; (thats a quote mark, ctrl-a then a &#8220;). After you do this, just type in the number of the window and enter. To stop monitoring, go to that window and undo the monitor with the same command. For example, to stop monitoring for activity you would use &#8220;Ctrl-A&#8221; &#8220;M&#8221; again.</p>
+
+	<h3>Reference</h3>
+
+	<p>Screen was covered recently in Linux Magazine by Adam Lazur (Jan 2003, Issue 105). Much of his information was adapted for this rackTIP. Other information was collected from the man pages.</p>
+<!-- AddThis Button BEGIN -->
+<a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;pub=rackaid"><img src="http://s7.addthis.com/static/btn/v2/lg-share-en.gif" width="125" height="16" alt="Bookmark and Share" style="border:0"/></a><script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pub=rackaid">
+
+var addthis_config = {
+          services_compact: 'email, favorites, digg, delicious, myspace, google, facebook, reddit, live, more';
+          services_exclude: 'print;'
+ 
+
+}
+
+
+
+</script>
+<!-- AddThis Button END -->
+
+					</div> <!-- close .sep-a -->
+					
+										<div class="related-a sep-a">
+						<h3 class="type-a">Related Resources</h3>
+						<ul class="regular-b">
+							
+							<li><a href="/resources/secure-your-email-and-file-transfers/">Ending Clear Text Protocols</a></li>
+							
+							<li><a href="/resources/10-immutable-laws-of-security-administration-revisited/">10 Immutable Laws of Security Administration Revisited</a></li>
+							
+						</ul>
+					</div> <!-- close .related-a -->
+										
+					
+			
+							
+					
+																	<h2 class="b type-a">Comments</h2>
+						<div class="sep-a">
+													
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=4721771d40dce62bfb7291de8040d58b&amp;size=30" width="30" height="30" alt="maks commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong><a href="http://benjick.se" target="_blank" rel="nofollow">maks</a></strong> &middot; 11/19/2009 05:10 am</p>
+								<blockquote>
+									<p>Fyi, you can attach with just the pid i.e. &#8220;screen -r 12345&#8221;</p>
+
+<p>Great tut!
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=971e3b91f7b054a66f99b52217ba43da&amp;size=30" width="30" height="30" alt="How 2 dev commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong><a href="http://www.how2dev.com" target="_blank" rel="nofollow">How 2 dev</a></strong> &middot; 11/24/2009 10:49 am</p>
+								<blockquote>
+									<p>I used to work with nohup until some problems with it made me use screen which is far better from nohup.By the way nice post especially for newbies.
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=fc40c7589c8ea544ef3f03ec730de6c6&amp;size=30" width="30" height="30" alt="Julian commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong><a href="http://www.satnav-onlinemarketing.com" target="_blank" rel="nofollow">Julian</a></strong> &middot; 12/07/2009 06:32 pm</p>
+								<blockquote>
+									<p>Thanks for tutorial! Close (x) will close screen on not ?
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=62943bb2c515cbcf00a99e4d187b41fe&amp;size=30" width="30" height="30" alt="rackAID commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>rackAID</strong> &middot; 12/08/2009 09:51 am</p>
+								<blockquote>
+									<p>I typically just exit from the screen by typing &#8220;exit&#8221;.
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=908be8f18230b28e38a4c418b8ce47f1&amp;size=30" width="30" height="30" alt="lockedout commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>lockedout</strong> &middot; 12/22/2009 11:27 pm</p>
+								<blockquote>
+									<p>Installed screen on an ubuntu server and couldn&#8217;t log back in.</p>
+
+<p>Guessing it messed up some pam config.</p>
+
+<p>Searching for anything with &#8220;screen&#8221; in it is an exercise in aggravation.
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=e35a6b6cee2f98aa11a5bf1ed6f52c5f&amp;size=30" width="30" height="30" alt="chusty commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>chusty</strong> &middot; 01/24/2010 07:24 am</p>
+								<blockquote>
+									<p>I have screen installed on 3 or 4 dedicated servers ... it&#8217;s silly but on one of them I have a bar in the bottom of it - which is very handy&#8230; and don&#8217;t know how to turn it on on the rest of my servers :)
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=afebf3c9d798ee40b32540dc5f154a8d&amp;size=30" width="30" height="30" alt="coskan commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong><a href="http://coskan.wordpress.com" target="_blank" rel="nofollow">coskan</a></strong> &middot; 02/08/2010 06:51 pm</p>
+								<blockquote>
+									<p>extremely helpful and definitive. thank you for sharing
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=6c3c3a2a3a8d1e567f52abd7ee6235ef&amp;size=30" width="30" height="30" alt="Laetitia commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>Laetitia</strong> &middot; 02/18/2010 04:27 pm</p>
+								<blockquote>
+									<p>I am using ssh and screen to work remotely on a linux server with my macbook. It works quite well to some extend. The only problem I have is that there is nothing like &#8220;Ctr-A&#8221; on a mac keyboard. So I cannot use &#8220;K&#8221;, &#8220;p&#8221; and &#8220;n&#8221; directly. Does anybody know what shortcut I need?<br />
+Thanks.
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=008f84a86b6ee625f14a45bcd2cdeea5&amp;size=30" width="30" height="30" alt="Johan commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>Johan</strong> &middot; 03/09/2010 09:55 am</p>
+								<blockquote>
+									<p>@Laetitia - I use a macbook (intel osx 10.4) and have no trouble&#8230; im pretty sure you will find a &#8220;Ctrl&#8221; key on your mac keyboard, somewhere to the left of space bar and below your shift key.<br />
+http://images.apple.com/keyboard/images/gallery/wired_1_20070813.jpg
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=a2c618155338e317b59d7aaf790cf3fb&amp;size=30" width="30" height="30" alt="garvald commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>garvald</strong> &middot; 03/09/2010 06:46 pm</p>
+								<blockquote>
+									<p>laetitia - mac keyboards have a &#8220;ctrl&#8221; key and of course the &#8220;a&#8221;&nbsp; key - surely you dont mean that?
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=ed6951f2461952118bfb2f18dc012bff&amp;size=30" width="30" height="30" alt="Juli Z commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>Juli Z</strong> &middot; 03/15/2010 10:20 am</p>
+								<blockquote>
+									<p>We just got our first Mac in our office last week.&nbsp; Will have to ask our new staff member how to do it.
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=aa13442f6eadd13dc465652444c5e928&amp;size=30" width="30" height="30" alt="Radu D commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>Radu D</strong> &middot; 03/18/2010 06:52 am</p>
+								<blockquote>
+									<p>There is any way to run this tool on a linksys router wrt54GL with dd-wrt firmware on it?
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=68154a0aa2b96390f20a656f3a97d02d&amp;size=30" width="30" height="30" alt="Richard commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>Richard</strong> &middot; 03/19/2010 09:49 am</p>
+								<blockquote>
+									<p>Instead of using Ctl-A for commands, I use the backtick key (key to the left of the &#8216;1&#8217; key).<br />
+To do this I entered the following commands into my .screenrc file:<br />
+defescape  ``<br />
+escape &nbsp;  &nbsp;  ``<br />
+(those are 2 backticks for each entry)<br />
+Now to create a new screen window, all I have to enter is `c.<br />
+Great write-up.&nbsp; Just enough for me to go and find additional information &amp; uses for the screen command.
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=4d0abee1b6807d2d2a4a4950cf7d8ead&amp;size=30" width="30" height="30" alt="John Doyle commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong><a href="http://www.backupvault.ie" target="_blank" rel="nofollow">John Doyle</a></strong> &middot; 04/01/2010 12:10 pm</p>
+								<blockquote>
+									<p>Nice I used this to run fsck and remote back in later on from home as it requires user input and you cannot use nohup with fsck easily if you want user input to fix errors etc.<br />
+Thanks
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=c3ece2af01ca20d89e61bc5ef2bfd0de&amp;size=30" width="30" height="30" alt="supi007 commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>supi007</strong> &middot; 04/09/2010 04:05 am</p>
+								<blockquote>
+									<p>This is a good tutorial. Thx.
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=85f351bcc289b30a6906539b306e91d0&amp;size=30" width="30" height="30" alt="jacco commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>jacco</strong> &middot; 04/15/2010 04:54 am</p>
+								<blockquote>
+									<p>chusty: Add &#8220;hardstatus alwayslastline&#8221; to your .screenrc
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=b977a08c60dbdc0db8141e21484e6ba9&amp;size=30" width="30" height="30" alt="dsb45 commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>dsb45</strong> &middot; 05/01/2010 05:32 pm</p>
+								<blockquote>
+									<p>Hi,<br />
+What about env variables with screen command ?&nbsp; Do you export all you need in new window, or what procedure should one follow ?<br />
+Thanks !
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=e278a97542e00fd353b3f919126c7940&amp;size=30" width="30" height="30" alt="quenenni commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>quenenni</strong> &middot; 05/03/2010 02:22 pm</p>
+								<blockquote>
+									<p>Thanks for your article. I discovered control keys I didn&#8217;t know. The logging thing sounds great.</p>
+
+<p>2 points I wanted to add:<br />
+Another  nice thing with screen is that several access can be done at the same time.<br />
+That means several people can connect to the same screen and see live what others are doing.<br />
+Great stuff when ie you want to explain how something is working.. a bit like a live tuto.</p>
+
+<p>And you can also use the .screenrc file to change the way it shows the sessions. Ie, all the active sessions are shown at the bottom and colored, you can give them a name, you can choose the number of sessions to launch when starting screen and execute a command in these sessions, like a ssh tunnel or a monitoring software.<br />
+you can greatly improve the layout of screen by changing them.</p>
+
+<p>As it was someone who gave me that config file, I don&#8217;t know what options exactly do these tricks.<br />
+If you are interested to have mine to analyse the options, contact me.
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=de104df7d5ef8e6900d3103745f06afa&amp;size=30" width="30" height="30" alt="Matthew Kress commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>Matthew Kress</strong> &middot; 05/21/2010 06:43 am</p>
+								<blockquote>
+									<p>quenenni, I would love to see you config file.&nbsp; Could you please post it?
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=dd9b2b1db1134d9c427943b49ba9b027&amp;size=30" width="30" height="30" alt="Alex commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>Alex</strong> &middot; 05/21/2010 08:15 am</p>
+								<blockquote>
+									<p>Thank you, a great article, very helpful!
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=ee2aecdeff72c936044fe4a1039eb6f3&amp;size=30" width="30" height="30" alt="mehrdad commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>mehrdad</strong> &middot; 05/24/2010 04:50 pm</p>
+								<blockquote>
+									<p>Thanks, It was very helpful.
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=40f6db3b04dd9f84340f0a1a01acdcdf&amp;size=30" width="30" height="30" alt="Mech commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>Mech</strong> &middot; 06/07/2010 01:09 pm</p>
+								<blockquote>
+									<p>Thanks, extremely well writen
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=b977a08c60dbdc0db8141e21484e6ba9&amp;size=30" width="30" height="30" alt="dsb45 commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>dsb45</strong> &middot; 06/07/2010 07:17 pm</p>
+								<blockquote>
+									<p>quenenni,<br />
+I would also be interested in seeing<br />
+your config file.&nbsp; As Matthew requested, can you post it, or a url to where we can view it ?&nbsp; Thanks for your input.
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=e278a97542e00fd353b3f919126c7940&amp;size=30" width="30" height="30" alt="quenenni commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>quenenni</strong> &middot; 06/09/2010 06:59 pm</p>
+								<blockquote>
+									<p>Yop yop..</p>
+
+<p>I sent the file to the website owner already few weeks ago, but it seems something went wrong.</p>
+
+<p>Anyway, here it is:<br />
+http://quenenni.domainepublic.net/screenrc.txt<br />
+Put it in the home directory under the name &#8216;.screenrc&#8217; .
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=e92d969de8a9fc3682b278425b1a8a58&amp;size=30" width="30" height="30" alt="Jeff H. commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>Jeff H.</strong> &middot; 06/10/2010 10:34 am</p>
+								<blockquote>
+									<p>I know you submitted a ticket in our sales area but I never saw the other email with the screen file. I wonder if the security system flagged it or someone else here deleted by mistake. Thanks for posting it again.
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=7e17e464e692af3f0285ef1341ab415e&amp;size=30" width="30" height="30" alt="steevo commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>steevo</strong> &middot; 06/18/2010 05:13 am</p>
+								<blockquote>
+									<p>Thanks a lot, a friend showed me once how to use screen, and this is a great refresher/reference. It should be installed as default when you apt-get ssh-server
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=542d7be63e41e5422c38f36cfd447683&amp;size=30" width="30" height="30" alt="Matthew Wilcoxson commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong><a href="http://www.akademy.co.uk" target="_blank" rel="nofollow">Matthew Wilcoxson</a></strong> &middot; 06/29/2010 11:20 am</p>
+								<blockquote>
+									<p>Yep, screen is a really useful tool.</p>
+
+<p>At the moment I use the enhanced version called &#8220;byobu&#8221;, which adds a cool bar at the bottom of the window with useful information. (That&#8217;s probably what @chusty has found)
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=5012b2e9db5468ca91d34196155f756a&amp;size=30" width="30" height="30" alt="Aaron commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong><a href="http://aaroncruz.com:6969" target="_blank" rel="nofollow">Aaron</a></strong> &middot; 07/07/2010 04:47 am</p>
+								<blockquote>
+									<p>This tutorial is very clear and really helpful.&nbsp; Sometimes there are just a few small things that you need to get over a learning curve and this did it for me.<br />
+I am using screen on my Dreamhost hosted site to run Nodejs to experiment.&nbsp; I can log out of my ssh session and node is still chugging along.&nbsp; Thank you!
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=e92d969de8a9fc3682b278425b1a8a58&amp;size=30" width="30" height="30" alt="Jeff H commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>Jeff H</strong> &middot; 07/07/2010 09:28 am</p>
+								<blockquote>
+									<p>Glad you liked our tutorial.&nbsp; I think there are some newer tools out there, but I always fall back on screen for its simplicity and easy of use.
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=25782d5be79d9c21c70cb0bca43d1041&amp;size=30" width="30" height="30" alt="gkokmdam commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>gkokmdam</strong> &middot; 08/12/2010 02:49 am</p>
+								<blockquote>
+									<p>Just great! Specially thanks to @quenenni for your .screenrc !
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=52e326a5454b372b63f4212d705eb475&amp;size=30" width="30" height="30" alt="Lakshmi Naarayanan commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>Lakshmi Naarayanan</strong> &middot; 08/30/2010 10:02 am</p>
+								<blockquote>
+									<p>Hi Jeff,</p>
+
+<p>Useful tutorial - I&#8217;ve had the screen die on my occasionally (once in 2-3 months or so) - I am left helpless when it dies, basically all record of which machines I logged into etc are lost. Is there any way to resurrect a dead screen? Or port an existing screen to a different machine? I am looking for some way to recover a session either from its dead state or from another machine with a history file or something like that..
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=e92d969de8a9fc3682b278425b1a8a58&amp;size=30" width="30" height="30" alt="Jeff H commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong><a href="http://www.rackaid.com/" target="_blank" rel="nofollow">Jeff H</a></strong> &middot; 08/30/2010 10:44 am</p>
+								<blockquote>
+									<p>What is being shown with screen&#8212;list?<br />
+If it is listed as attached, you can use:</p>
+
+<p>screen -x -R</p>
+
+<p>and it will force detach the screen.&nbsp; If it is listed as dead, the socket is no longer active and it cannot be recovered.
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=bd08bbcfaa6a526aca932397cfa62feb&amp;size=30" width="30" height="30" alt="Adam Kleiner commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong><a href="http://adamk.tk" target="_blank" rel="nofollow">Adam Kleiner</a></strong> &middot; 09/12/2010 02:01 pm</p>
+								<blockquote>
+									<p>Cool. Will have to try it out!
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=598eb7bad209d0f48af80246cac13aca&amp;size=30" width="30" height="30" alt="Gambakoker commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>Gambakoker</strong> &middot; 09/16/2010 09:49 am</p>
+								<blockquote>
+									<p>Fantastic tutorial / HowTo! Clear and simple. I searched a while for a good one like yours. Thank you very much.
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=0af7cb5db7b3a038046f82210a36811f&amp;size=30" width="30" height="30" alt="Chepech commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>Chepech</strong> &middot; 09/28/2010 04:44 pm</p>
+								<blockquote>
+									<p>The Num Pad on my keyboard  doesnt work with screen, also my keyboard layout is lost, but as soon as I close it, it gets back to normal, any ideas?
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=3842c4f81e1ace58d25f89d763f241c4&amp;size=30" width="30" height="30" alt="Gaurav commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>Gaurav</strong> &middot; 10/28/2010 04:43 am</p>
+								<blockquote>
+									<p>Thanks for writing this up! It was very helpful.
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=e79f19cddaa8cd8760afc44ceb947f0e&amp;size=30" width="30" height="30" alt="Lorraine commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong><a href="http://www.defaultroute.com/articles/intro-to-the-screen-unix-command/" target="_blank" rel="nofollow">Lorraine</a></strong> &middot; 11/30/2010 10:34 pm</p>
+								<blockquote>
+									<p>Haha, your intro paragraph summed up exactly how I used to feel before I discovered screen.
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=0ca3590530e3d395ba666643183f5f32&amp;size=30" width="30" height="30" alt="TuffRank commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>TuffRank</strong> &middot; 12/04/2010 07:33 pm</p>
+								<blockquote>
+									<p>Kool info, very useful indeed&#8230;.
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=e92d969de8a9fc3682b278425b1a8a58&amp;size=30" width="30" height="30" alt="Jeff H commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>Jeff H</strong> &middot; 12/06/2010 10:45 am</p>
+								<blockquote>
+									<p>Thanks for the feedback. I should probably do a screen tutorial part 2.&nbsp; I never imagined when I first wrote this years ago it would be so popular.
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=70c9ca4b6bdf46eaacf873895df346b2&amp;size=30" width="30" height="30" alt="ye commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong>ye</strong> &middot; 12/17/2010 04:19 pm</p>
+								<blockquote>
+									<p>great tutorial
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+																
+																		
+							<div class="comment-a">
+								<p class="photo"><img src="http://www.gravatar.com/avatar.php?gravatar_id=e378e64a30a502a8fba5eb21c40f5db5&amp;size=30" width="30" height="30" alt="Fort Collins commented on Linux Screen Tutorial and How To" /></p>
+
+                                                                                          
+
+                                                                                          
+								<p class="author"><strong><a href="http://www.249designs.com/" target="_blank" rel="nofollow">Fort Collins</a></strong> &middot; 12/19/2010 03:50 pm</p>
+								<blockquote>
+									<p>Perfect. Most screen tuts didn&#8217;t point out that you need to press CTRL+A THEEEN another key.. Thanks for the post.
+</p>
+								</blockquote>
+							</div> <!-- close .comment-a -->
+													
+												</div> <!-- close .sep-a -->
+																
+					
+										
+						<h2 class="b type-a">Add Comment</h2>
+						<!--<form action="./" method="post" class="a reply-a">-->
+						<form id='comment_form' method="post" action="http://www.rackaid.com/resources/linux-screen-tutorial-and-how-to/"  >
+<div class='hiddenFields'>
+<input type="hidden" name="ACT" value="1" />
+<input type="hidden" name="RET" value="http://www.rackaid.com/resources/linux-screen-tutorial-and-how-to/" />
+<input type="hidden" name="URI" value="/resources/linux-screen-tutorial-and-how-to/" />
+<input type="hidden" name="PRV" value="" />
+<input type="hidden" name="XID" value="5f760a980be964c1cdc52e6430fba0cb63a11b31" />
+<input type="hidden" name="entry_id" value="141" />
+<input type="hidden" name="site_id" value="1" />
+</div>
+
+
+							<div class="one">
+								<p><label for="f-name">Name</label> <input type="text" name="name" id="f-name" class="text" value="" /></p>
+								<p><label for="f-email">Email</label> <input type="text" name="email" id="f-email" class="text" value="" /></p>
+								<p><label for="f-website">Website</label> <input type="text" name="url" id="f-website" class="text" value="http://" /></p>
+
+                                                                 <p><input type="checkbox" name="notify_me" value="yes"  /> Notify me of comments?</p>
+																<p>
+									<label for="f-captcha">What color is a banana?</label><input type="text" name="captcha" id="f-captcha" class="text" value="" />
+								</p>
+															</div>
+							<div class="two">
+								<p><label for="f-comment">Comment</label> <textarea rows="5" cols="30" name="comment" id="f-comment"></textarea></p>
+							</div>
+							<p class="submit"><button type="submit" class="type-a">Post</button></p>
+						</form>
+						<!--</form>--> <!-- close add comment form -->
+									</div> <!-- close .main -->
+				
+				<div class="side">
+				
+					
+
+
+<div class="box-a">
+<h2 class="b type-a" style="color: #cc6600"><cufon style="width: 36px; height: 20px;color: #cc6600" alt="Subscribe" class="cufon cufon-canvas"><canvas style="width: 55px; height: 22px; top: -1px; left: -1px;color: #cc6600" height="22" width="55"></canvas><cufontext>SUBSCRIBE</cufontext></cufon></h2>
+<p style="font-size: 10pt;">
+The rackAID Small Business IT blog provides information for a wide range of internet focused IT needs  - Web Hosting, Data Backups, Server Security, System Management, and Troubleshooting.
+</p>
+
+
+
+
+
+
+
+<p style="font-size: 10pt;">
+<a href="http://feeds.feedburner.com/rackaid" rel="alternate" type="application/rss+xml" style="padding-right: 25px;"><img src="/images/social/rss_32.png" alt="rackAID Server Management Blog RSS Feed" style="vertical-align:middle;border:0;right-padding: 15px;" width="32" height="32"></img></a>
+<a href="http://www.twitter.com/rackaid/" rel="alternate" style="padding-right: 25px;"><img src="/images/social/twitter_32.png" alt="Follow rackAID Server Management on Twitter" style="vertical-align:middle;border:0;right-padding: 15px;" width="32" height="32"></img></a>
+<a href="http://www.facebook.com/rackaid/" rel="alternate" style="padding-right: 25px;"><img src="/images/social/facebook_32.png" alt="I Like rackAID's Server Help" style="vertical-align:middle;border:0;right-padding: 15px;" width="32" height="32"></img></a>
+<a href="http://feedburner.google.com/fb/a/mailverify?uri=rackaid&amp;loc=en_US" rel="alternate"><img src="/images/social/email_32.png" alt="Contact rackAID about IT Support" style="vertical-align:middle;border:0;right-padding: 15px" width="32" height="32"></img></a>
+
+
+
+</p></div>
+
+
+
+										<div class="teaser-a push-a sep-a">
+							<p><a href="http://www.facebook.com/rackaid/"><img src="http://www.rackaid.com/images/uploads/5u84f48n.gif" style="border: 0;" alt="image" width="144" height="44" /></a></p>
+
+	<p>If you need help with your Linux system, consider using our support services.</p>
+						<p><a href="/services/" class="more-a type-a">Need  Help?</a></p>
+					</div> <!-- close .teaser-a -->
+										
+
+
+					<h2 class="b type-a">Sort By</h2>
+					<div class="sep-a">
+						<ul class="regular-a">
+							<li><strong class="type-a"><a href="/resources/blog/">Blogs</a></strong></li>
+							<li><strong class="type-a"><a href="/resources/news/">News</a></strong></li>
+							<li><strong class="type-a"><a href="/resources/white-papers/">White Papers</a></strong></li>
+							<li><strong class="type-a"><a href="/resources/partner-content/">Partner Content</a></strong></li>
+						</ul>
+					</div> <!-- close .sep-a -->
+					
+
+
+
+
+
+					
+
+					
+					
+					
+					<div class="box-a">
+						<h3 class="c type-a">Recent Blog Posts</h3>
+						
+						
+												<ul class="news-a">
+							<li>
+								<a href="/resources/hotmail-blacklist-removal/">How to Remove Your IP from Hotmail or MSN&#8217;s Blacklist</a> <br />
+								<p class="info">Posted by Jeff H. 12/08/2010</p>
+							</li>
+						</ul>
+												
+												<h3 class="d type-a">Other Posts</h3>
+						<ul class="regular-b">
+							<li><a href="/resources/email-going-to-spam-folder/">Email Going to Spam Folder?</a></li>
+												
+													<li><a href="/resources/offices-closed-nov-25-26-for-thanksgiving-day/">Offices Closed Nov. 25-26 for Thanksgiving Day</a></li>
+												
+													<li><a href="/resources/wordpress-tips/">7 Wordpress Tips for a Fast Secure Blog</a></li>
+												
+													<li><a href="/resources/email-security-phishing/">11 Tips to Protect Yourself from Email Phishing</a></li>
+												
+													<li><a href="/resources/hosting-costs/">Is that Low Price Hosting Service Costing Too Much?</a></li>
+												
+						
+						</ul>
+	
+						<p><a href="/resources/" class="more-a type-a">Our Blog</a></p>
+					</div> <!-- close .box-a -->
+
+				</div> <!-- close .side -->
+				
+			</div> <!-- close .cols-a -->
+		
+	</div> <!-- close #content -->
+
+	<div id="footer">
+			
+							<p class="about">rackAID provides linux server management, support and security solutions for small businesses.</p>
+					
+		<p class="contact"><span class="copys">&copy;2010 rackAID LLC</span> Call Sales: 877-435-2445 <span>|</span> <a href="mailto:contact/at/rackaid.com">contact/at/rackaid.com</a> </p>
+		
+		
+	</div><!-- #footer -->
+
+
+
+</div> <!-- close #root -->
+
+<script type="text/javascript">Cufon.now();</script>
+<!-- Analytics -->
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-272736-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

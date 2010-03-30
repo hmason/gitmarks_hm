@@ -1,0 +1,1257 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://gmpg.org/xfn/11">
+
+<link rel="shortcut icon" href="http://www.dbms2.com/wp-content/themes/monash/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<meta name="distribution" content="global" />
+
+<meta name="robots" content="follow, all" />
+
+<meta name="robots" content="noodp" />
+
+<meta name="language" content="en, sv" />
+
+
+
+<title>eBay&#8217;s two enormous data warehouses | DBMS 2 : DataBase Management System Services</title>
+
+<meta name="generator" content="WordPress 2.8.4" />
+
+<!-- leave this for stats please -->
+
+
+
+
+
+<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://www.dbms2.com/feed/" />
+
+<link rel="alternate" type="text/xml" title="RSS .92" href="http://www.dbms2.com/feed/rss/" />
+
+<link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="http://www.dbms2.com/feed/atom/" />
+
+<link rel="pingback" href="http://www.dbms2.com/xmlrpc.php" />
+
+ 
+
+<link rel="alternate" type="application/rss+xml" title="DBMS 2 : DataBase Management System Services &raquo; eBay&#8217;s two enormous data warehouses Comments Feed" href="http://www.dbms2.com/2009/04/30/ebays-two-enormous-data-warehouses/feed/" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.dbms2.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.dbms2.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='DBMS 2 : DataBase Management System Services' href='http://www.dbms2.com' />
+<link rel='start' title='Down with database consolidation!' href='http://www.dbms2.com/2005/08/08/down-with-consolidation/' />
+<link rel='prev' title='37 Ways To Get More From Analytics' href='http://www.dbms2.com/2009/04/29/37-ways-to-get-more-from-analytics/' />
+<link rel='next' title='37 Ways To Get More From Analytics, Version 2.0' href='http://www.dbms2.com/2009/05/04/37-ways-to-get-more-from-analytics-version-20/' />
+<meta name="generator" content="WordPress 2.8.4" />
+
+<!-- All in One SEO Pack 1.6.5 by Michael Torbert of Semper Fi Web Design[553,651] -->
+<meta name="description" content="eBay has 6 1/2 petabytes of user data in a data warehouse managed by Greenplum and 2 1/2 petabytes in a Teradata data warehouse." />
+<meta name="keywords" content="analytic technologies,data warehouse appliances,data warehousing,greenplum,petabyte-scale data management,teradata,web analytics,ebay" />
+<!-- /all in one seo pack -->
+	<!-- Google Analytics for WordPress | http://www.joostdevalk.nl/wordpress/google-analytics/ -->
+	<script type="text/javascript">
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	</script>
+	<script type="text/javascript">
+		var pageTracker = _gat._getTracker("UA-4644340-1");
+	</script>
+	<script src="http://www.dbms2.com/wp-content/plugins/google-analytics-for-wordpress/custom_se.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		pageTracker._initData();
+		
+		pageTracker._trackPageview();
+	</script>
+	<!-- End of Google Analytics code -->
+	
+<style type="text/css" media="screen">
+
+<!-- @import url( http://www.dbms2.com/wp-content/themes/monash/style.css ); -->
+
+</style>
+
+
+</head>
+
+
+
+<body>
+
+
+<div id="header">
+
+	<div class="headerleft">
+
+		<a href="http://www.dbms2.com/"><img src="http://www.dbms2.com/wp-content/themes/monash/images/trans.gif" border=0 alt="Blog: DBMS (database management system) and analytics technology"></a>
+	
+		<!-- <a href="/"></a><br />
+
+		<h2></h2> -->
+
+	</div>
+
+	<div class="headerright">
+	
+	<table align="right">
+	<tr align="right">
+	<td class="sponsor"><a href="http://www.monash.com"><img src="http://www.dbms2.com/wp-content/themes/monash/images/trans.gif" border=0 height="50" width="300" alt="Publisher of blog about DBMS (database management system) and analytics technology"></a></td>
+	</tr>
+	<tr align="right">
+	<td>
+		<ul>
+			
+			<li><a href="http://www.dbms2.com">Home</a></li>
+
+			<li><a href="http://www.dbms2.com/database-blog/">About</a></li>
+			
+			<li><a href="http://www.monash.com/contact.html">Contact</a></li>
+
+			
+			<li><a href="http://www.monash.com/signup.html">Feeds</a></li>
+
+		</ul>
+	</td>
+	</tr>
+	</table>
+	
+	</div>
+
+</div>
+<div id="content">
+
+	<div id="contentleft">
+				
+		<div class="time">
+        April 30, 2009        </div>
+		<h1>
+        <a href="http://www.dbms2.com/2009/04/30/ebays-two-enormous-data-warehouses/" rel="bookmark">eBay&#8217;s two enormous data warehouses</a>
+        </h1>		
+		
+		<p style="margin-bottom: 0in;">A few weeks ago, I had the chance to visit eBay, meet briefly with Oliver Ratzesberger and his team, and then catch up later with Oliver for dinner. I&#8217;ve already alluded to those discussions in a couple of posts, specifically on <a href="../2009/04/14/ebay-thinks-mpp-dbms-clobber-mapreduce/">MapReduce</a> (which eBay doesn&#8217;t like) and the astonishingly <a href="../2009/04/28/data-warehouse-storage-options-cheap-expensive-or-solid-state-disk-drives/">great difference between high- and low-end disk drives </a>(to which eBay clued me in).  Now I&#8217;m finally getting around to writing about the core of what we discussed, which is two of the very largest data warehouses in the world.</p>
+<p style="margin-bottom: 0in;">Metrics on eBay&#8217;s main Teradata data warehouse include:</p>
+<ul>
+<li><strong>&gt;2 petabytes of user data</strong></li>
+<li><strong>10s of 1000s of users</strong></li>
+<li><strong>Millions of queries per day</strong></li>
+<li>72 nodes</li>
+<li>&gt;140 GB/sec of I/O, or <strong>2 	GB/node/sec,</strong> or maybe that&#8217;s a peak when the workload is 	scan-heavy</li>
+<li>100s of production databases being 	fed in</li>
+</ul>
+<p style="margin-bottom: 0in;">Metrics on eBay&#8217;s Greenplum data warehouse (or, if you like, data mart) include:</p>
+<ul>
+<li><strong>6  1/2 petabytes of user data</strong></li>
+<li><strong>17 trillion records</strong></li>
+<li><strong>150 billion new records/day, </strong><span>which seems to suggest an 	ingest rate well over </span><strong>50 terabytes/day</strong></li>
+<li>96 nodes</li>
+<li><strong>200 MB/node/sec</strong> of I/O 	(that&#8217;s the order of magnitude difference that triggered my post on 	disk drives)</li>
+<li>4.5 petabytes of storage</li>
+<li>70% compression</li>
+<li>A small number of concurrent users</li>
+</ul>
+<p style="margin-bottom: 0in;"><a href="../2008/10/15/teradatas-petabyte-power-players/"><span id="more-770"></span>eBay&#8217;s Teradata installation</a> is a full enterprise data warehouse.   Besides size and scope, it is most notable for its implementation of Oliver&#8217;s misleadingly named <a href="http://www.xlmpp.com/articles/16-articles/39-analytics-as-a-service" onclick="javascript:pageTracker._trackPageview('/www.xlmpp.com');">analytics-as-a-service</a> vision. In essence, eBay spins out dozens of <strong><em>virtual data marts,</em></strong><span style="font-style: normal;"> which:</span></p>
+<ul>
+<li><span style="font-style: normal;">Combine 	views and aggregations on the central data warehouse with 	(optionally) additional &#8220;private&#8221; data the data mart user 	loads in. </span></li>
+<li><span style="font-style: normal;">Are 	usually &lt;5 terabytes in size, and indeed often &lt;500 gigabytes. </span></li>
+<li><span style="font-style: normal;">Can 	be created &#8220;instantaneously&#8221; by setting permissions, 	resource quotas, and the like.</span></li>
+</ul>
+<p style="margin-bottom: 0in;"><span style="font-style: normal;">The whole scheme relies heavily on Teradata&#8217;s workload management software to deliver with assurance on many SLAs (Service-Level Agreements) at once. </span><em>Resource partitions</em><span style="font-style: normal;"> are a key concept in all this.</span></p>
+<p style="margin-bottom: 0in;"><span style="font-style: normal;">So far as I can tell, eBay uses Greenplum to manage one kind of data &#8212; web and network event logs.  These seem to be managed primarily at two levels of detail &#8212; Oliver said that the 17 trillion event detail records reduce to 1 trillion real event records. When I asked where the 17:1 ratio comes from, Oliver explained that a single web page click &#8212; which is what is memorialized in an event record &#8212; resulted in 50-150 details. That leaves a missing factor of 3-8X, but perhaps other less complex kinds of events are also mixed in.</span></p>
+<p style="margin-bottom: 0in;"><span style="font-style: normal;">The Greenplum metrics I quoted above represent over 100 days of data. Ultimately, eBay expects to keep 90-180 days of ultimate detail, and &gt;1 years of event data. The 6 1/2 petabyte figure comes from dividing 2 terabytes of compressed data by (100%-70%). Since that all fits on a 4 1/2 petabyte system, I presume there&#8217;s only one level of mirroring (duh), not much temp space, and even less in the way of indexes.</span></p>
+<p style="margin-bottom: 0in;">Two uses of eBay&#8217;s Greenplum database are disclosed &#8212; whittling down from detailed to click-level event data, and sessionization. The latter seems to be done in batch runs and take 30 minutes per day.  A couple of other uses are undisclosed.  I assume eBay is doing something that requires UDFs (User-Defined Functions), because Oliver remarked that he likes the language choices offered by Greenplum&#8217;s Postgres-based UDF capability. But basically eBay&#8217;s Greenplum database is used for and evidently does very nicely at:</p>
+<ul>
+<li>Data ingest &#8212; it&#8217;s the first 	place log data goes</li>
+<li>Feeding the Teradata database</li>
+<li>A small number of big queries</li>
+</ul>
+<p style="margin-bottom: 0in;">eBay&#8217;s Teradata database handles the rest.</p>
+<p style="margin-bottom: 0in;"><em><strong>Related links:</strong></em></p>
+<ul>
+<li>Wal-Mart, Bank of America, another financial services company, and Dell also have <a href="http://www.dbms2.com/2008/10/15/teradatas-petabyte-power-players/" >very large Teradata databases</a>.</li>
+<li>Yahoo&#8217;s web/network events database, running on proprietary software, sounded about <a href="http://www.dbms2.com/2008/05/29/yahoo-scales-web-analytics-database-petabyte/" >1/6th the size of eBay&#8217;s Greenplum system</a> when it was described about a year ago.</li>
+<li><a href="http://www.dbms2.com/2009/04/15/cloudera-presents-the-mapreduce-bull-case/" >Facebook has 2 1/2 terabytes managed by Hadoop</a> &#8212; without a DBMS!<a href="http://www.dbms2.com/2009/04/15/cloudera-presents-the-mapreduce-bull-case/"><br />
+</a></li>
+<li>Fox Interactive Media/MySpace has multi-hundred terabyte databases running on each of <a href="http://www.dbms2.com/2009/03/05/fox-interactive-medias-multi-hundred-terabyte-database-running-on-greenplum/" >Greenplum</a> and Aster Data <a href="http://www.dbms2.com/2009/03/05/myspaces-multi-hundred-terabyte-database-running-on-aster-data/" >nCluster</a>.</li>
+<li><a href="http://www.dbms2.com/2008/05/23/data-warehouse-appliance-power-user-teoco/" >TEOCO has 100s of terabytes running on DATAllegro</a>.</li>
+<li>To a probably lesser extent, the same is now also true of <a href="http://www.dbms2.com/2009/03/02/closing-the-book-on-the-datallegro-customer-base/" >Dell</a>.</li>
+<li><a href="http://www.dbms2.com/2009/04/25/vertica-pricing-and-customer-metrics/" >Vertica has a couple of unnamed customers with databases in the 200 terabyte range</a>.</li>
+<li>In response to this post, Greenplum CTO Luke Lonergan quickly <a href="http://www.greenplum.com/news/197/231/CTO-View-Singularity-or-astounding-scale-at-eBay/d,blog/" onclick="javascript:pageTracker._trackPageview('/www.greenplum.com');">blogged about the eBay project</a>. Other related posts on the same blog may follow.</li>
+</ul>
+<div style="clear:both;"></div>
+	 	
+		<div class="postinfo">
+		
+		Categories: <a href="http://www.dbms2.com/category/analytics-technologies/" title="View all posts in Analytic technologies" rel="category tag">Analytic technologies</a>,  <a href="http://www.dbms2.com/category/database-management-system/data-warehouse-appliances/" title="View all posts in Data warehouse appliances" rel="category tag">Data warehouse appliances</a>,  <a href="http://www.dbms2.com/category/analytics-technologies/data-warehouse/" title="View all posts in Data warehousing" rel="category tag">Data warehousing</a>,  <a href="http://www.dbms2.com/category/products-and-vendors/greenplum/" title="View all posts in Greenplum" rel="category tag">Greenplum</a>,  <a href="http://www.dbms2.com/category/database-theory-practice/petabyte-database-theory-practice/" title="View all posts in Petabyte-scale data management" rel="category tag">Petabyte-scale data management</a>,  <a href="http://www.dbms2.com/category/products-and-vendors/teradata/" title="View all posts in Teradata" rel="category tag">Teradata</a>,  <a href="http://www.dbms2.com/category/applications/web-analytics/" title="View all posts in Web analytics" rel="category tag">Web analytics</a>,  <a href="http://www.dbms2.com/category/users/ebay/" title="View all posts in eBay" rel="category tag">eBay</a>&nbsp;		
+		<div class="call">
+		<i>Subscribe to our complete <a href="http://www.monash.com/signup.html">feed</a>!</i>		</div>
+		
+		</div>
+		
+		
+			
+		<!--
+		<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+				xmlns:dc="http://purl.org/dc/elements/1.1/"
+				xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">
+			<rdf:Description rdf:about="http://www.dbms2.com/2009/04/30/ebays-two-enormous-data-warehouses/"
+    dc:identifier="http://www.dbms2.com/2009/04/30/ebays-two-enormous-data-warehouses/"
+    dc:title="eBay&#8217;s two enormous data warehouses"
+    trackback:ping="http://www.dbms2.com/2009/04/30/ebays-two-enormous-data-warehouses/trackback/" />
+</rdf:RDF>		-->
+		
+		<h3>Comments</h3>
+		
+<!-- You can start editing here. -->
+
+<div id="commentblock">
+	<p id="comments"><b>31 Responses to &#8220;eBay&#8217;s two enormous data warehouses&#8221;</b></p>
+
+	<ol class="commentlist">
+
+	
+		<li class="alt" id="comment-119266">
+			<a href="http://hyperbio.net/2009/04/30/ebays-enormous-data-warehouses/" onclick="javascript:pageTracker._trackPageview('/hyperbio.net');"  rel='external nofollow' class='url'>Hyperbio &raquo; Blog Archive &raquo; eBay&#8217;s enormous data warehouses</a> on
+						April 30th, 2009 10:39 am 
+			<div class="commenttext">
+			<p>[...] Monash meets with Ebay&#8217;s Oliver Ratzesberger and gets us numbers on two of the world&#8217;s largest data warehouses in the world. Look at these Ebay [...]</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-119280">
+			<a href="http://structureddata.org" onclick="javascript:pageTracker._trackPageview('/structureddata.org');"  rel='external nofollow' class='url'>Greg Rahn</a> on
+						April 30th, 2009 12:46 pm 
+			<div class="commenttext">
+			<p>@Curt</p>
+<blockquote><p>&gt;140 GB/sec of I/O [for 72 nodes], or 2 GB/node/sec</p></blockquote>
+<p>I&#8217;m finding this I/O number very difficult to believe.  If eBay has Teradata&#8217;s latest nodes, the <a href="http://www.teradata.com/t/appliance-and-platform-family/5550/" onclick="javascript:pageTracker._trackPageview('/www.teradata.com');" rel="nofollow">5550 series nodes</a>, then each node could have two Quad Core Intel® Xeon® processor 5400 (2.33GHz) and the option of 4GB Quad Fibre Channel.  Four 4GBFC would be 4 x 400MB/s = 1600MB/s max.  By the math, it would be impossible to have a physical I/O rate of 2GB/s/node when running at max wire speed; it would allow only 1600MB/s/node.  I would also comment that 2 Quad Core Xeon 5400 series processors would not be able to do anything but a SELECT COUNT(*) and ingest data at 2GB/s (or even 1600MB/s).</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-119290">
+			<a href="http://ecpmblog.wordpress.com/2009/04/30/tech-infrastructure-at-ebay-and-craigslist/" onclick="javascript:pageTracker._trackPageview('/ecpmblog.wordpress.com');"  rel='external nofollow' class='url'>Tech infrastructure at eBay and Craigslist &laquo; ecpm blog</a> on
+						April 30th, 2009 3:34 pm 
+			<div class="commenttext">
+			<p>[...] eBay’s two enormous data warehouses | DBMS2 &#8212; DataBase Management System Services [...]</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-119363">
+			<a href="http://www.analyticsteam.com/2009/04/30/web-analytics-databases-keep-getting-bigger/" onclick="javascript:pageTracker._trackPageview('/www.analyticsteam.com');"  rel='external nofollow' class='url'>Analytics Team &raquo; Blog Archive &raquo; Web analytics databases keep getting bigger</a> on
+						April 30th, 2009 10:22 pm 
+			<div class="commenttext">
+			<p>[...] Ebay has a 6.5 petabyte Greenplum warehouse and a 2.5 petabyte Teradata warehouse. This system ingests hundreds of billions of new rows of data every day. Facebook has a 2.5 petabyte Hadoop system Yahoo has more than 1 petabyte running on their homemade system [...]</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-119398">
+			<a href="http://www.greenplum.com/" onclick="javascript:pageTracker._trackPageview('/www.greenplum.com');"  rel='external nofollow' class='url'>Luke Lonergan</a> on
+						May 1st, 2009 5:54 am 
+			<div class="commenttext">
+			<p>Great to see this project out in the open Curt!</p>
+<p>See my <a href="http://www.greenplum.com/news/197/231/CTO-View-Singularity-or-astounding-scale-at-eBay/d,blog/" onclick="javascript:pageTracker._trackPageview('/www.greenplum.com');" rel="nofollow">blog post</a> about this.</p>
+<p>Key important aspects of this from my perspective are:<br />
+- Full SQL analytics on 5+ PB of data, scaling to 10s of Petabytes<br />
+- Small footprint in datacenter 1/10 the power consumption and floorspace</p>
+<p>WRT IO performance, the 200 MB/s is the rate at which compressed data is read from disk.  The speed the SQL user sees is the net effective rate after decompression, which is the compression ratio times the physical rate.  Measuring the disk IO rate is only telling us how fast the decompression is running in this case.  With uncompressed data, these same systems perform disk IO at 2,000 MB/s while executing queries.</p>
+<p>We now have an improved compression scheme that delivers much higher effective rates, which will also make the disk rate higher, though that&#8217;s mostly irrelevant.</p>
+<p>- Luke</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-119428">
+			<a href="http://www.awadallah.com" onclick="javascript:pageTracker._trackPageview('/www.awadallah.com');"  rel='external nofollow' class='url'>Amr Awadallah</a> on
+						May 1st, 2009 9:26 am 
+			<div class="commenttext">
+			<p>@Curt,</p>
+<p>  Nice writeup.</p>
+<p>  That said, I think bragging rights for size should not be how much is stored, we know that partitioning/sharding can allow you to inflate that number. </p>
+<p>  The bragging rights should be how much data can be processed in a *single query* (especially something like a global distinct, order-by or group-by over a long period of time).</p>
+<p>Cheers,</p>
+<p>&#8211; amr</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-119430">
+			<a href="http://www.monash.com" onclick="javascript:pageTracker._trackPageview('/www.monash.com');"  rel='external nofollow' class='url'>Curt Monash</a> on
+						May 1st, 2009 9:35 am 
+			<div class="commenttext">
+			<p>Amr,</p>
+<p>The only thing that limits querying the whole database in one go is the complexity of the schema.  But in most cases &#8212; eBay&#8217;s Teradata EDW may be an exception &#8212; I&#8217;d guess that the largest fact table is well over half of the whole database size listed.</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-119460">
+			<a href="http://www.ebay.com" onclick="javascript:pageTracker._trackPageview('/www.ebay.com');"  rel='external nofollow' class='url'>Michael McIntire</a> on
+						May 1st, 2009 2:30 pm 
+			<div class="commenttext">
+			<p>I&#8217;d like to see some appropriate measure between vendors, unfortunately the TPC benchmarks didn&#8217;t work for as long as we&#8217;d have all hoped. </p>
+<p>As to Single Query speed &#8211; I think this only counts if that&#8217;s what your SLA needs are. </p>
+<p>I&#8217;d much rather see a measure of throughput over the dev/ops people investment.</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-119475">
+			<a href="http://www.greenplum.com" onclick="javascript:pageTracker._trackPageview('/www.greenplum.com');"  rel='external nofollow' class='url'>Luke Lonergan</a> on
+						May 1st, 2009 5:55 pm 
+			<div class="commenttext">
+			<p>I agree with Amr, and, we win hands down.</p>
+<p> <img src='http://www.dbms2.com/wp-includes/images/smilies/icon_smile.gif' alt=':-)' class='wp-smiley' /> </p>
+<p>- Luke</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-119855">
+			<a href="http://meneame.net/story/monstruosos-datacenters-ebay-eng" onclick="javascript:pageTracker._trackPageview('/meneame.net');"  rel='external nofollow' class='url'>meneame.net</a> on
+						May 4th, 2009 12:14 am 
+			<div class="commenttext">
+			<p><strong>Los monstruosos datacenters de eBay (ENG)&#8230;</strong></p>
+<p>Alguna vez nos habremos preguntado cuál es el ancho de banda consumido por alguno de los gigantes de internet, como youtube, google y demás. Bien, pues aquí nos ofrecen datos muy concretos sobre los datacenter de eBay, donde se especifica, además, &#8230;</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-120197">
+			<a href="http://www.devonbiere.com/2009/05/06/random-crap-i-learned-recently-vol-1/" onclick="javascript:pageTracker._trackPageview('/www.devonbiere.com');"  rel='external nofollow' class='url'>Random Crap I Learned Recently, Vol. 1 | Devon Biere's Blog</a> on
+						May 6th, 2009 2:18 am 
+			<div class="commenttext">
+			<p>[...] went on to play Match again in Back to the Future Part II. [5]  Per Curt Monash&#8217;s research blog entry as referenced by his Slashdot posting. [6]  Wikipedia&#8217;s Petabyte entry. [7]   Kevin [...]</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-120236">
+			anonymous on
+						May 6th, 2009 11:04 am 
+			<div class="commenttext">
+			<p>Greg Rahn notes &#8220;Four 4GBFC would be 4 x 400MB/s = 1600MB/s max&#8221;. </p>
+<p>I went to the link and looked up the specs on the Teradata 5550 node. The data sheet says there are 3 PCI-X slots. It also says I/O can be 4 GB dual or quad fibre channel. My interpretation is dual or quad PCI-X adapter cards. With 3 PCI-X slots that means Teradata can have up to 12 Fibre Channel links per node for a theoretical bandwidth of 4.8 GB/s. The limiting factor is probably three 133 MHz PCI-X buses, which are 1066 MB/s apiece giving 3 GB/s per node.</p>
+<p>Mr Rahn also says &#8220;I would also comment that 2 Quad Core Xeon 5400 series processors would not be able to do anything but a SELECT COUNT(*) and ingest data at 2GB/s (or even 1600MB/s).&#8221; But yet eBay says they are doing it &#8211; and a lot more.</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-120267">
+			Yan on
+						May 6th, 2009 5:34 pm 
+			<div class="commenttext">
+			<p>Great to open the discussion of VLDB.</p>
+<p>Without performance regards of end user queries, the size of DB is meaningless, at most is data storage. There are some limits of VLDB being set up by system considering both size and performance of DB. It would be nice to have some numbers for this.</p>
+<p>Yan</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-120489">
+			<a href="http://structureddata.org" onclick="javascript:pageTracker._trackPageview('/structureddata.org');"  rel='external nofollow' class='url'>Greg Rahn</a> on
+						May 8th, 2009 2:27 am 
+			<div class="commenttext">
+			<p><a href="#comment-120236" rel="nofollow">@anonymous</a> </p>
+<p>I would agree with your interpretation of the dual/quad fibre channel [card]. To be honest, I would have never guessed anyone made a 4 port HBA but I guess LSI does: <a href="http://www.lsi.com/storage_home/products_home/host_bus_adapters/fibre_channel_hbas/lsi7404xplc/" onclick="javascript:pageTracker._trackPageview('/www.lsi.com');" rel="nofollow">LSI7404XP-LC</a> and given Teradata resells <a href="http://www.lsi.com/storage_home/products_home/external_raid/index.html" onclick="javascript:pageTracker._trackPageview('/www.lsi.com');" rel="nofollow">LSI Engenio storage</a> it is likely they use their HBAs also.  Given a 2 port 4GFC PCI-X HBA can deliver 80% of the slot bandwidth, it seems like a bit of a waste to go to 4 ports, at least for performance.  For connectivity, perhaps, which is why I believe Teradata may use it &#8211; for their cliques.</p>
+<p>The other reason for my comment of a max of 1600MB/s per node is that the LSI Engenio 6998 array only does a max of 1600MB/s (<a href="http://www.lsi.com/DistributionSystem/AssetDocument/Engenio7900%20overview.ppt" onclick="javascript:pageTracker._trackPageview('/www.lsi.com');" rel="nofollow">per LSI&#8217;s presentation</a>) and the 7900 array is quite new so it would seem doubtful that eBay uses that one.  They may have opted for the EMC DMX storage, but I would think that would be an extremely costly solution at 72 nodes.</p>
+<p>I may soften up a bit on the I/O rate also.  Curt&#8217;s comment &#8220;<em>maybe that’s a peak when the workload is scan-heavy</em>&#8221; is probably correct.  Peak rate vs. sustained, I <em>could</em> see that.  Maybe they do some light scans of some large de-normalized table making it peak out at 2GB/s per node.  But that number still seems quite high at 250MB/s per CPU core.  Doing group bys and aggregation I&#8217;m sure that number drops fast.   </p>
+<p>I think the interesting, and unmentioned data point, is how many hard drives are in this 72 node config to deliver this I/O number.  eBays&#8217;s own <a href="http://www.dbms2.com/2009/04/28/data-warehouse-storage-options-cheap-expensive-or-solid-state-disk-drives/#comment-119284"  rel="nofollow">Michael McIntire reports</a> that Teradata I/O is all random so the MBPS rate per drive is probably somewhere around 30MB/s (give or take).  My guess is that there is somewhere between 4500 and 5000 HDDs (around 64 HDDs per node).</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-120954">
+			<a href="http://www.dbms2.com/2009/05/11/facebook-hadoop-and-hive/"   rel='external nofollow' class='url'>Facebook, Hadoop, and Hive | DBMS2 -- DataBase Management System Services</a> on
+						May 11th, 2009 4:34 am 
+			<div class="commenttext">
+			<p>[...] eBay has a 6 1/2 petabyte database running on Greenplum and a 2 1/2 petabyte enterprise data warehouse running on Teradata. [...]</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-121478">
+			<a href="http://databeta.wordpress.com/2009/05/14/bigdata-node-density/" onclick="javascript:pageTracker._trackPageview('/databeta.wordpress.com');"  rel='external nofollow' class='url'>Diverging views on density, and some gimmes &laquo; Data Beta</a> on
+						May 14th, 2009 4:33 am 
+			<div class="commenttext">
+			<p>[...] Monash posted that eBay hosts a 6.5 petabyte Greenplum database on 96 [...]</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-121856">
+			<a href="http://rbach.net/blog/index.php/server-sprawl-continues/" onclick="javascript:pageTracker._trackPageview('/rbach.net');"  rel='external nofollow' class='url'>blog.rbach.net - Server Sprawl Continues</a> on
+						May 16th, 2009 6:40 pm 
+			<div class="commenttext">
+			<p>[...] million users on Skype, eBay has a massive data center infrastructure. The company houses more than 8.5 petabytes of data in huge data warehouses. We&#8217;re not certain what kind of server count this requires, but it&#8217;s certainly in the [...]</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-122616">
+			Andrew on
+						May 23rd, 2009 9:34 pm 
+			<div class="commenttext">
+			<p>Yahoo&#8217;s main data warehouse was up to 3 petabytes compressed at the end of 2007.</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-124556">
+			<a href="http://www.dbms2.com/2009/06/08/more-on-fox-interactive-medias-use-of-greenplum/"   rel='external nofollow' class='url'>More on Fox Interactive Media&#8217;s use of Greenplum | DBMS2 -- DataBase Management System Services</a> on
+						June 8th, 2009 12:48 am 
+			<div class="commenttext">
+			<p>[...] most important reference is probably its energetic advocate Fox Interactive Media, even ahead of much larger user Greenplum user eBay, and notwithstanding Aster Data&#8217;s large presence in Fox subsidiary MySpace. I just ran across [...]</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-125870">
+			<a href="http://www.business-intelligence-quotient.com/?p=205" onclick="javascript:pageTracker._trackPageview('/www.business-intelligence-quotient.com');"  rel='external nofollow' class='url'>BI-Quotient &raquo; Blog Archive &raquo; Greenplum, MapReduce, and Hadoop</a> on
+						June 18th, 2009 4:10 pm 
+			<div class="commenttext">
+			<p>[...] 6.5 Petabytes of data eBay runs the world&#8217;s largest data warehouse on Greenplum. Facebook runs a 2 PB warehouse on [...]</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-150618">
+			<a href="http://dataspora.com/blog/sql-is-dead-long-live-sql/" onclick="javascript:pageTracker._trackPageview('/dataspora.com');"  rel='external nofollow' class='url'>SQL is Dead. Long Live SQL. : Dataspora Blog</a> on
+						November 25th, 2009 6:58 am 
+			<div class="commenttext">
+			<p>[...] not that relational databases can&#8217;t scale – in fact, they can and do scale to petabytes, as  those who know Fortune 500 enterprise computing can attest . The problem is that relational databases don&#8217;t scale  easily  – and require a lot of ETL [...]</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-162427">
+			<a href="http://vc-list.com/?p=1368" onclick="javascript:pageTracker._trackPageview('/vc-list.com');"  rel='external nofollow' class='url'>Big Data Is Less About Size, And More About Freedom | Venture Capital &amp; Angel Investors Lists News and Jobs</a> on
+						March 16th, 2010 10:23 pm 
+			<div class="commenttext">
+			<p>[...] mean for the enterprise, but they have had big data for a long time. eBay manages petabytes in its Teradata and Greenplum data warehouses. Sophisticated startups extracting value from big data is also nothing new—it has [...]</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-162479">
+			<a href="http://www.ebusyet.com/2010/03/17/big-data-is-less-about-size-and-more-about-freedom/" onclick="javascript:pageTracker._trackPageview('/www.ebusyet.com');"  rel='external nofollow' class='url'>Big Data Is Less About Size, And More About Freedom | ebusyet.com</a> on
+						March 17th, 2010 6:51 am 
+			<div class="commenttext">
+			<p>[...] mean for the enterprise, but they have had big data for a long time. eBay manages petabytes in its Teradata and Greenplum data warehouses. Sophisticated startups extracting value from big data is also nothing new—it has [...]</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-162601">
+			<a href="http://www.expertsdevelopers.com/big-data-is-less-about-size-and-more-about-freedom/" onclick="javascript:pageTracker._trackPageview('/www.expertsdevelopers.com');"  rel='external nofollow' class='url'>Big Data Is Less About Size, And More About Freedom | Experts Developers</a> on
+						March 18th, 2010 12:40 am 
+			<div class="commenttext">
+			<p>[...] mean for the enterprise, but they have had big data for a long time. eBay manages petabytes in its Teradata and Greenplum data warehouses. Sophisticated startups extracting value from big data is also nothing new—it has [...]</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-166784">
+			T. Shoone on
+						April 27th, 2010 3:43 pm 
+			<div class="commenttext">
+			<p>Does ebay really use Greenplum?  I was told they no longer use Greenplum.  Can someone comment?</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-166800">
+			<a href="http://www.monash.com" onclick="javascript:pageTracker._trackPageview('/www.monash.com');"  rel='external nofollow' class='url'>Curt Monash</a> on
+						April 27th, 2010 7:29 pm 
+			<div class="commenttext">
+			<p>Every time I check, eBay is still using Greenplum.</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-172377">
+			<a href="http://www.greyblogs.com/big-data-is-less-about-size-and-more-about-freedom/" onclick="javascript:pageTracker._trackPageview('/www.greyblogs.com');"  rel='external nofollow' class='url'>Big Data Is Less About Size, And More About Freedom</a> on
+						June 20th, 2010 3:19 am 
+			<div class="commenttext">
+			<p>[...] mean for the enterprise, but they have had big data for a long time. eBay manages petabytes in its Teradata and Greenplum data warehouses. Sophisticated startups extracting value from big data is also nothing new—it has [...]</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-173430">
+			<a href="http://gadgetfee.com/?p=756" onclick="javascript:pageTracker._trackPageview('/gadgetfee.com');"  rel='external nofollow' class='url'>Big Data Is Less About Size, And More About Freedom &laquo; Gadget Fee</a> on
+						June 29th, 2010 12:54 pm 
+			<div class="commenttext">
+			<p>[...] mean for the enterprise, but they have had big data for a long time. eBay manages petabytes in its Teradata and Greenplum data warehouses. Sophisticated startups extracting value from big data is also nothing new—it has [...]</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-181220">
+			<a href="http://www.dbms2.com/2009/07/18/netezza-on-concurrency-and-workload-management/"   rel='external nofollow' class='url'>Netezza on concurrency and workload management | DBMS2 -- DataBase Management System Services</a> on
+						August 18th, 2010 2:18 am 
+			<div class="commenttext">
+			<p>[...] Netezza customer has been rapidly spinning out virtual data marts, in a manner somewhat akin to eBay&#8217;s virtual data mart/&#8221;analytics-as-a-service&#8221; strategy* since 2004. However, the whole thing isn&#8217;t necessarily as slick as what eBay has going. This [...]</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="" id="comment-182909">
+			<a href="http://www.bigdatacloud.com/2010/09/03/big-data-is-less-about-size-and-more-about-freedom/" onclick="javascript:pageTracker._trackPageview('/www.bigdatacloud.com');"  rel='external nofollow' class='url'>Big Data Is Less About Size, And More About Freedom | Big Data Cloud</a> on
+						September 2nd, 2010 11:38 pm 
+			<div class="commenttext">
+			<p>[...] mean for the enterprise, but they have had big data for a long time. eBay manages petabytes in its Teradata and Greenplum data warehouses. Sophisticated startups extracting value from big data is also nothing new—it has been happening [...]</p>
+			</div>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-186403">
+			<a href="http://www.dbms2.com/2010/10/06/ebay-followup-greenplum-out-teradata-10-petabytes-hadoop-has-some-value-and-more/"   rel='external nofollow' class='url'>eBay followup &#8212; Greenplum out, Teradata &gt; 10 petabytes, Hadoop has some value, and more | DBMS 2 : DataBase Management System Services</a> on
+						October 6th, 2010 9:21 am 
+			<div class="commenttext">
+			<p>[...] has thrown out Greenplum. eBay’s 6 ½ petabyte Greenplum database has turned into a &gt;10 petabyte Teradata database, which will grow 2 1/2x further in size [...]</p>
+			</div>
+
+		</li>
+
+	
+	
+	</ol>
+
+ 
+
+
+<p id="respond"><b>Leave a Reply</b></p>
+
+
+<form action="http://www.dbms2.com/wp-comments-post.php" method="post" id="commentform">
+
+
+<p><label for="author">Name (required)</label><br />
+<input type="text" name="author" id="author" value="" size="40" tabindex="1" /></p>
+
+<p><label for="email">Email Address(required)</label><br />
+<input type="text" name="email" id="email" value="" size="40" tabindex="2" /></p>
+
+<p><label for="url">Website</label><br />
+<input type="text" name="url" id="url" value="" size="40" tabindex="3" /></p>
+
+
+<!--<p><small><strong>XHTML:</strong> You can use these tags: &lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;li&gt; &lt;ol&gt; &lt;q cite=&quot;&quot;&gt; &lt;strike&gt; &lt;strong&gt; &lt;ul&gt; </small></p>-->
+
+<p><textarea name="comment" id="comment" cols="50" rows="10" tabindex="4"></textarea></p>
+
+<p><input name="submit" type="submit" id="submit" tabindex="5" value="Submit Comment" />
+<input type="hidden" name="comment_post_ID" value="770" /></p>
+
+
+</form>
+
+
+
+</div>		
+					
+	</div>
+	
+<!-- begin rss_sidebar -->
+
+<div id="rss_sidebar">
+
+	
+    <form style='display:inline;' method="POST" action="http://www.feedblitz.com/f/f.fbz?AddNewUserDirect">
+<p><a href="http://feeds.feedburner.com/MonashInformationServices?format=xml"><img src="http://www.dbms2.com/wp-content/themes/monash/images/feed-icon-blue.gif" border="0" align="top" alt="Feed: DBMS (database management system), DW (data warehousing), BI (business intelligence), and analytics technology"></a>
+Subscribe to the Monash Research feed via <span style="display: inline;"><a href="http://feeds.feedburner.com/MonashInformationServices?format=xml">RSS</a></span> or email:              
+                <div style="padding-left: 0px; padding-bottom: 5px">
+				<input name="EMAIL" maxlength="255" type="text" size="30" style="background:#FFFFFF" value="Enter address here">
+                  <input name="FEEDID" type="hidden" value="150854">
+                  <input name="submit" type="submit" value="Subscribe!">
+				   <!-- Following is a hidden login button -->
+				   <a href="http://www.dbms2.com/wp-admin/" style='color:#000000'>Login</a>
+				   </div>
+                  
+</form>
+  		
+</div>
+
+
+<!-- end rss_sidebar --> <!-- box where they sign up for the feed; spans two columns -->
+
+<!-- begin static_sidebar --> 
+<div id="static_sidebar"> 
+
+<h2>Search our blogs and white papers</h2>
+
+	<div id="searchform">
+	
+	<!-- single blog search -->
+	<!-- <form style='display:inline;' method="get" id="search_form" action="/">
+	<input type="text" class="search_input" value="To search, type and hit enter" name="s" id="s" onfocus="if (this.value == 'To search, type and hit enter') {this.value = '';}" onblur="if (this.value == '') {this.value = 'To search, type and hit enter';}" />
+	<input type="hidden" id="searchsubmit" value="Search" /></form><br /> -->
+	
+	<!-- Google CSE Search Box Begins -->
+
+    <form style='display:inline' action="http://www.monash.com/searchresults.html" id="cse-search-box">
+  <div>
+    <input type="hidden" name="cx" value="000500165964380188956:xnk0ucisxxw" />
+    <input type="hidden" name="cof" value="FORID:9" />
+    <input type="hidden" name="ie" value="UTF-8" />
+    <input type="text" name="q" size="18" />
+    <input type="submit" name="sa" value="Search" />
+  </div>
+</form>
+<script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=cse-search-box&lang=en"></script>
+	<!-- Google CSE Search Box Ends -->
+	
+	</div>
+	<!-- promo text for all blogs goes here -->
+	<h2>Monash Research blogs</h2>
+
+<ul>
+  <li> <a href="http://www.dbms2.com">DBMS 2</a> covers database management, analytics, 
+    and related technologies. </li>
+  <li>
+    <a href="http://www.texttechnologies.com">Text Technologies</a> covers text mining, search, and social software.
+  </li>
+  <li>
+    <a href="http://www.strategicmessaging.com">Strategic Messaging</a> analyzes marketing and messaging strategy. 
+  </li>
+  <li>
+    <a href="http://www.monashreport.com">The Monash Report</a> examines technology and public policy issues. 
+  </li>
+  <li>
+    <a href="http://www.softwarememories.com">Software Memories</a> recounts the history of the software industry. 
+  </li>
+</ul>
+
+  <h2>User consulting </h2>
+  <p>Building a short list? Refining your strategic plan? <a href="http://www.monash.com/adviseusers.html">We can help.</a>
+  </p>
+   
+  <h2>Vendor advisory </h2>
+  <p>We tell vendors what's happening -- and, more important, <a href="http://www.monash.com/advisevendors.html">what they should do about it</a>. 
+  </p>
+
+<!--
+
+ <h2>Recent white paper</h2>
+  <table width="100%" id="webcasttable">
+    <tr>
+      <td><p class="webcastname"><a href="http://www.monash.com/whitepapers.html">The Explosion in DBMS Choice</a></p>
+        <p class="webcastlast">August, 2008</p>
+
+  </td>
+    </tr>
+  </table>
+  <h2>Recent webcast</h2>
+  <table width="100%" id="webcasttable">
+    <tr>
+      <td>
+ 	 <p class="webcastname"><a href="http://www.devx.com/Webcasts/Article/37435">What leading database vendors don't want you to know</a></p> 
+    <p class="webcastdetails">
+	    Originally broadcast April 9, 2008 
+		</p>
+    	</td>
+		</tr>
+		</table>
+        
+-->        
+        
+<h2>Monash Research highlights</h2>
+<table width="100%" id="webcasttable">
+  <tr> 
+    <td> <p class="webcastdetails">Learn about white papers, webcasts, and blog 
+        highlights, by <a href="http://www.monash.com/signup.html">RSS or email</a>.</p>
+      </td>
+  </tr>
+</table>
+
+  </div>
+
+<!-- end static_sidebar --> <!-- on the right, where custom promo text and code goes -->
+	
+<!-- begin l_sidebar -->
+
+<div id="l_sidebar">
+
+	<ul id="l_sidebarwidgeted">
+		
+	<li id="Recent">
+	<h2>Recent posts</h2>
+		<ul>
+				<li><a href='http://www.dbms2.com/2010/11/29/im-partway-back/' title='I&#8217;m partway back'>I&#8217;m partway back</a></li>
+	<li><a href='http://www.dbms2.com/2010/11/29/data-that-is-derived-augmented-enhanced-adjusted-or-cooked/' title='Data that is derived, augmented, enhanced, adjusted, or cooked'>Data that is derived, augmented, enhanced, adjusted, or cooked</a></li>
+	<li><a href='http://www.dbms2.com/2010/11/29/document-database-without-joins/' title='Document-oriented DBMS without joins'>Document-oriented DBMS without joins</a></li>
+	<li><a href='http://www.dbms2.com/2010/11/29/marklogic-and-its-document-dbms/' title='MarkLogic and its document DBMS'>MarkLogic and its document DBMS</a></li>
+	<li><a href='http://www.dbms2.com/2010/11/10/where-im-at-now/' title='Where I&#8217;m at now'>Where I&#8217;m at now</a></li>
+		</ul>
+	</li>
+	
+	<li id="Categories">
+	<h2>Categories</h2>
+		<ul>
+				<li class="cat-item cat-item-2"><a href="http://www.dbms2.com/category/housekeeping/" title="View all posts filed under About this blog">About this blog</a>
+</li>
+	<li class="cat-item cat-item-65"><a href="http://www.dbms2.com/category/analytics-technologies/" title="View all posts filed under Analytic technologies">Analytic technologies</a>
+<ul class='children'>
+	<li class="cat-item cat-item-66"><a href="http://www.dbms2.com/category/analytics-technologies/business-intelligence/" title="View all posts filed under Business intelligence">Business intelligence</a>
+</li>
+	<li class="cat-item cat-item-102"><a href="http://www.dbms2.com/category/analytics-technologies/data-mart-warehouse-outsourcing/" title="View all posts filed under Data mart outsourcing">Data mart outsourcing</a>
+</li>
+	<li class="cat-item cat-item-13"><a href="http://www.dbms2.com/category/analytics-technologies/data-warehouse/" title="View all posts filed under Data warehousing">Data warehousing</a>
+</li>
+	<li class="cat-item cat-item-14"><a href="http://www.dbms2.com/category/analytics-technologies/molap/" title="View all posts filed under MOLAP">MOLAP</a>
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-54"><a href="http://www.dbms2.com/category/applications/" title="View all posts filed under Application areas">Application areas</a>
+<ul class='children'>
+	<li class="cat-item cat-item-55"><a href="http://www.dbms2.com/category/applications/games-virtual-worlds/" title="View all posts filed under Games and virtual worlds">Games and virtual worlds</a>
+</li>
+	<li class="cat-item cat-item-355"><a href="http://www.dbms2.com/category/applications/health-care-medical/" title="View all posts filed under Health care">Health care</a>
+</li>
+	<li class="cat-item cat-item-139"><a href="http://www.dbms2.com/category/applications/algorithmic-trading-investment-research/" title="View all posts filed under Investment research and trading">Investment research and trading</a>
+</li>
+	<li class="cat-item cat-item-326"><a href="http://www.dbms2.com/category/applications/log-file-logfile-analysis/" title="View all posts filed under Log analysis">Log analysis</a>
+</li>
+	<li class="cat-item cat-item-81"><a href="http://www.dbms2.com/category/applications/scientific-research/" title="View all posts filed under Scientific research">Scientific research</a>
+</li>
+	<li class="cat-item cat-item-110"><a href="http://www.dbms2.com/category/applications/telecommunications/" title="View all posts filed under Telecommunications">Telecommunications</a>
+</li>
+	<li class="cat-item cat-item-254"><a href="http://www.dbms2.com/category/applications/web-analytics/" title="View all posts filed under Web analytics">Web analytics</a>
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-290"><a href="http://www.dbms2.com/category/buying-processes/" title="View all posts filed under Buying processes">Buying processes</a>
+<ul class='children'>
+	<li class="cat-item cat-item-291"><a href="http://www.dbms2.com/category/buying-processes/benchmarks-and-pocs/" title="View all posts filed under Benchmarks and POCs">Benchmarks and POCs</a>
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-23"><a href="http://www.dbms2.com/category/products-and-vendors/" title="View all posts filed under Companies and products">Companies and products</a>
+<ul class='children'>
+	<li class="cat-item cat-item-99"><a href="http://www.dbms2.com/category/products-and-vendors/1010data/" title="View all posts filed under 1010data">1010data</a>
+</li>
+	<li class="cat-item cat-item-70"><a href="http://www.dbms2.com/category/products-and-vendors/ab-initio-software-corporation/" title="View all posts filed under Ab Initio Software">Ab Initio Software</a>
+</li>
+	<li class="cat-item cat-item-332"><a href="http://www.dbms2.com/category/products-and-vendors/akiban/" title="View all posts filed under Akiban">Akiban</a>
+</li>
+	<li class="cat-item cat-item-61"><a href="http://www.dbms2.com/category/products-and-vendors/coral8/" title="View all posts filed under Aleri and Coral8">Aleri and Coral8</a>
+</li>
+	<li class="cat-item cat-item-338"><a href="http://www.dbms2.com/category/products-and-vendors/algebraix/" title="View all posts filed under Algebraix">Algebraix</a>
+</li>
+	<li class="cat-item cat-item-67"><a href="http://www.dbms2.com/category/products-and-vendors/alpha-five/" title="View all posts filed under Alpha Five">Alpha Five</a>
+</li>
+	<li class="cat-item cat-item-76"><a href="http://www.dbms2.com/category/products-and-vendors/amazon-simpledb-s3-ec2/" title="View all posts filed under Amazon and its cloud">Amazon and its cloud</a>
+</li>
+	<li class="cat-item cat-item-29"><a href="http://www.dbms2.com/category/products-and-vendors/ants/" title="View all posts filed under ANTs Software">ANTs Software</a>
+</li>
+	<li class="cat-item cat-item-224"><a href="http://www.dbms2.com/category/products-and-vendors/aster-data-warehouse/" title="View all posts filed under Aster Data">Aster Data</a>
+</li>
+	<li class="cat-item cat-item-349"><a href="http://www.dbms2.com/category/products-and-vendors/basho-riak/" title="View all posts filed under Basho and Riak">Basho and Riak</a>
+</li>
+	<li class="cat-item cat-item-33"><a href="http://www.dbms2.com/category/products-and-vendors/business-objects/" title="View all posts filed under Business Objects">Business Objects</a>
+</li>
+	<li class="cat-item cat-item-62"><a href="http://www.dbms2.com/category/products-and-vendors/calpont/" title="View all posts filed under Calpont">Calpont</a>
+</li>
+	<li class="cat-item cat-item-331"><a href="http://www.dbms2.com/category/products-and-vendors/cassandra-products-and-vendors/" title="View all posts filed under Cassandra">Cassandra</a>
+</li>
+	<li class="cat-item cat-item-43"><a href="http://www.dbms2.com/category/products-and-vendors/cast-iron-systems/" title="View all posts filed under Cast Iron Systems">Cast Iron Systems</a>
+</li>
+	<li class="cat-item cat-item-307"><a href="http://www.dbms2.com/category/products-and-vendors/cloudera/" title="View all posts filed under Cloudera">Cloudera</a>
+</li>
+	<li class="cat-item cat-item-337"><a href="http://www.dbms2.com/category/products-and-vendors/clustrix/" title="View all posts filed under Clustrix">Clustrix</a>
+</li>
+	<li class="cat-item cat-item-20"><a href="http://www.dbms2.com/category/products-and-vendors/7-degrees-cogito/" title="View all posts filed under Cogito and 7 Degrees">Cogito and 7 Degrees</a>
+</li>
+	<li class="cat-item cat-item-28"><a href="http://www.dbms2.com/category/products-and-vendors/cognos-applix-tm1/" title="View all posts filed under Cognos">Cognos</a>
+</li>
+	<li class="cat-item cat-item-321"><a href="http://www.dbms2.com/category/products-and-vendors/continuent-tungsten/" title="View all posts filed under Continuent">Continuent</a>
+</li>
+	<li class="cat-item cat-item-83"><a href="http://www.dbms2.com/category/products-and-vendors/couchdb/" title="View all posts filed under CouchDB">CouchDB</a>
+</li>
+	<li class="cat-item cat-item-24"><a href="http://www.dbms2.com/category/products-and-vendors/datallegro/" title="View all posts filed under DATAllegro">DATAllegro</a>
+</li>
+	<li class="cat-item cat-item-336"><a href="http://www.dbms2.com/category/products-and-vendors/datameer/" title="View all posts filed under Datameer">Datameer</a>
+</li>
+	<li class="cat-item cat-item-59"><a href="http://www.dbms2.com/category/products-and-vendors/dataupia/" title="View all posts filed under Dataupia">Dataupia</a>
+</li>
+	<li class="cat-item cat-item-341"><a href="http://www.dbms2.com/category/products-and-vendors/dbshards-code-futures/" title="View all posts filed under dbShards and CodeFutures">dbShards and CodeFutures</a>
+</li>
+	<li class="cat-item cat-item-85"><a href="http://www.dbms2.com/category/products-and-vendors/elastra/" title="View all posts filed under Elastra">Elastra</a>
+</li>
+	<li class="cat-item cat-item-108"><a href="http://www.dbms2.com/category/products-and-vendors/emc/" title="View all posts filed under EMC">EMC</a>
+</li>
+	<li class="cat-item cat-item-38"><a href="http://www.dbms2.com/category/products-and-vendors/enterprisedb-postgres-plus/" title="View all posts filed under EnterpriseDB and Postgres Plus">EnterpriseDB and Postgres Plus</a>
+</li>
+	<li class="cat-item cat-item-89"><a href="http://www.dbms2.com/category/products-and-vendors/exasol/" title="View all posts filed under Exasol">Exasol</a>
+</li>
+	<li class="cat-item cat-item-299"><a href="http://www.dbms2.com/category/products-and-vendors/expressor-software/" title="View all posts filed under Expressor">Expressor</a>
+</li>
+	<li class="cat-item cat-item-50"><a href="http://www.dbms2.com/category/products-and-vendors/filemaker/" title="View all posts filed under FileMaker">FileMaker</a>
+</li>
+	<li class="cat-item cat-item-330"><a href="http://www.dbms2.com/category/products-and-vendors/gooddata/" title="View all posts filed under Gooddata">Gooddata</a>
+</li>
+	<li class="cat-item cat-item-78"><a href="http://www.dbms2.com/category/products-and-vendors/google-mapreduce-bigtable/" title="View all posts filed under Google">Google</a>
+</li>
+	<li class="cat-item cat-item-30"><a href="http://www.dbms2.com/category/products-and-vendors/greenplum/" title="View all posts filed under Greenplum">Greenplum</a>
+</li>
+	<li class="cat-item cat-item-318"><a href="http://www.dbms2.com/category/products-and-vendors/groovy-sql-switch/" title="View all posts filed under Groovy Corporation">Groovy Corporation</a>
+</li>
+	<li class="cat-item cat-item-306"><a href="http://www.dbms2.com/category/products-and-vendors/hadoop-products-and-vendors/" title="View all posts filed under Hadoop">Hadoop</a>
+</li>
+	<li class="cat-item cat-item-346"><a href="http://www.dbms2.com/category/products-and-vendors/hbase/" title="View all posts filed under HBase">HBase</a>
+</li>
+	<li class="cat-item cat-item-47"><a href="http://www.dbms2.com/category/products-and-vendors/hp-and-neoview/" title="View all posts filed under HP and Neoview">HP and Neoview</a>
+</li>
+	<li class="cat-item cat-item-7"><a href="http://www.dbms2.com/category/products-and-vendors/ibm-and-db2/" title="View all posts filed under IBM and DB2">IBM and DB2</a>
+	<ul class='children'>
+	<li class="cat-item cat-item-270"><a href="http://www.dbms2.com/category/products-and-vendors/ibm-and-db2/purexml/" title="View all posts filed under pureXML">pureXML</a>
+</li>
+	</ul>
+</li>
+	<li class="cat-item cat-item-92"><a href="http://www.dbms2.com/category/products-and-vendors/iluminate/" title="View all posts filed under illuminate Solutions">illuminate Solutions</a>
+</li>
+	<li class="cat-item cat-item-68"><a href="http://www.dbms2.com/category/products-and-vendors/infobright-brighthouse/" title="View all posts filed under Infobright">Infobright</a>
+</li>
+	<li class="cat-item cat-item-26"><a href="http://www.dbms2.com/category/products-and-vendors/informatica/" title="View all posts filed under Informatica">Informatica</a>
+</li>
+	<li class="cat-item cat-item-303"><a href="http://www.dbms2.com/category/products-and-vendors/information-builders-ibi/" title="View all posts filed under Information Builders">Information Builders</a>
+</li>
+	<li class="cat-item cat-item-304"><a href="http://www.dbms2.com/category/products-and-vendors/inforsense/" title="View all posts filed under Inforsense">Inforsense</a>
+</li>
+	<li class="cat-item cat-item-11"><a href="http://www.dbms2.com/category/products-and-vendors/ingres/" title="View all posts filed under Ingres">Ingres</a>
+</li>
+	<li class="cat-item cat-item-27"><a href="http://www.dbms2.com/category/products-and-vendors/intel/" title="View all posts filed under Intel">Intel</a>
+</li>
+	<li class="cat-item cat-item-41"><a href="http://www.dbms2.com/category/products-and-vendors/intersystems-cache-ensemble/" title="View all posts filed under Intersystems and Cache&#039;">Intersystems and Cache&#039;</a>
+</li>
+	<li class="cat-item cat-item-245"><a href="http://www.dbms2.com/category/products-and-vendors/jaspersoft/" title="View all posts filed under Jaspersoft">Jaspersoft</a>
+</li>
+	<li class="cat-item cat-item-87"><a href="http://www.dbms2.com/category/products-and-vendors/kalido/" title="View all posts filed under Kalido">Kalido</a>
+</li>
+	<li class="cat-item cat-item-357"><a href="http://www.dbms2.com/category/products-and-vendors/kaminario-k2/" title="View all posts filed under Kaminario">Kaminario</a>
+</li>
+	<li class="cat-item cat-item-93"><a href="http://www.dbms2.com/category/products-and-vendors/kickfire/" title="View all posts filed under Kickfire">Kickfire</a>
+</li>
+	<li class="cat-item cat-item-35"><a href="http://www.dbms2.com/category/products-and-vendors/kognitio/" title="View all posts filed under Kognitio">Kognitio</a>
+</li>
+	<li class="cat-item cat-item-21"><a href="http://www.dbms2.com/category/products-and-vendors/marklogic/" title="View all posts filed under MarkLogic">MarkLogic</a>
+</li>
+	<li class="cat-item cat-item-104"><a href="http://www.dbms2.com/category/products-and-vendors/mcobject-extremedb/" title="View all posts filed under McObject">McObject</a>
+</li>
+	<li class="cat-item cat-item-335"><a href="http://www.dbms2.com/category/products-and-vendors/northscale-membase/" title="View all posts filed under Membase">Membase</a>
+</li>
+	<li class="cat-item cat-item-334"><a href="http://www.dbms2.com/category/products-and-vendors/memcached/" title="View all posts filed under memcached">memcached</a>
+</li>
+	<li class="cat-item cat-item-8"><a href="http://www.dbms2.com/category/products-and-vendors/microsoft-sqlserver/" title="View all posts filed under Microsoft and SQL*Server">Microsoft and SQL*Server</a>
+</li>
+	<li class="cat-item cat-item-342"><a href="http://www.dbms2.com/category/products-and-vendors/microstrategy/" title="View all posts filed under Microstrategy">Microstrategy</a>
+</li>
+	<li class="cat-item cat-item-320"><a href="http://www.dbms2.com/category/products-and-vendors/monetdb/" title="View all posts filed under MonetDB">MonetDB</a>
+</li>
+	<li class="cat-item cat-item-10"><a href="http://www.dbms2.com/category/products-and-vendors/mysql/" title="View all posts filed under MySQL">MySQL</a>
+</li>
+	<li class="cat-item cat-item-32"><a href="http://www.dbms2.com/category/products-and-vendors/netezza/" title="View all posts filed under Netezza">Netezza</a>
+</li>
+	<li class="cat-item cat-item-339"><a href="http://www.dbms2.com/category/products-and-vendors/objectivity-infinite-graph/" title="View all posts filed under Objectivity and Infinite Graph">Objectivity and Infinite Graph</a>
+</li>
+	<li class="cat-item cat-item-6"><a href="http://www.dbms2.com/category/products-and-vendors/oracle/" title="View all posts filed under Oracle">Oracle</a>
+	<ul class='children'>
+	<li class="cat-item cat-item-267"><a href="http://www.dbms2.com/category/products-and-vendors/oracle/exadata-database-machine/" title="View all posts filed under Exadata">Exadata</a>
+</li>
+	</ul>
+</li>
+	<li class="cat-item cat-item-58"><a href="http://www.dbms2.com/category/products-and-vendors/oracle-timesten/" title="View all posts filed under Oracle TimesTen">Oracle TimesTen</a>
+</li>
+	<li class="cat-item cat-item-69"><a href="http://www.dbms2.com/category/products-and-vendors/paraccel/" title="View all posts filed under ParAccel">ParAccel</a>
+</li>
+	<li class="cat-item cat-item-289"><a href="http://www.dbms2.com/category/products-and-vendors/pentaho/" title="View all posts filed under Pentaho">Pentaho</a>
+</li>
+	<li class="cat-item cat-item-44"><a href="http://www.dbms2.com/category/products-and-vendors/pervasive-software/" title="View all posts filed under Pervasive Software">Pervasive Software</a>
+</li>
+	<li class="cat-item cat-item-31"><a href="http://www.dbms2.com/category/products-and-vendors/postgresql/" title="View all posts filed under PostgreSQL">PostgreSQL</a>
+</li>
+	<li class="cat-item cat-item-17"><a href="http://www.dbms2.com/category/products-and-vendors/progress-apama-datadirect/" title="View all posts filed under Progress, Apama, and DataDirect">Progress, Apama, and DataDirect</a>
+</li>
+	<li class="cat-item cat-item-39"><a href="http://www.dbms2.com/category/products-and-vendors/qliktech-and-qlikview/" title="View all posts filed under QlikTech and QlikView">QlikTech and QlikView</a>
+</li>
+	<li class="cat-item cat-item-282"><a href="http://www.dbms2.com/category/products-and-vendors/clearpace/" title="View all posts filed under Rainstor">Rainstor</a>
+</li>
+	<li class="cat-item cat-item-340"><a href="http://www.dbms2.com/category/products-and-vendors/riptano/" title="View all posts filed under Riptano">Riptano</a>
+</li>
+	<li class="cat-item cat-item-281"><a href="http://www.dbms2.com/category/products-and-vendors/sand-technology/" title="View all posts filed under SAND Technology">SAND Technology</a>
+</li>
+	<li class="cat-item cat-item-18"><a href="http://www.dbms2.com/category/products-and-vendors/sap-bia-maxdb/" title="View all posts filed under SAP AG">SAP AG</a>
+</li>
+	<li class="cat-item cat-item-40"><a href="http://www.dbms2.com/category/products-and-vendors/sas-institute/" title="View all posts filed under SAS Institute">SAS Institute</a>
+</li>
+	<li class="cat-item cat-item-94"><a href="http://www.dbms2.com/category/products-and-vendors/scaledb/" title="View all posts filed under ScaleDB">ScaleDB</a>
+</li>
+	<li class="cat-item cat-item-348"><a href="http://www.dbms2.com/category/products-and-vendors/schooner-information-technology-appliance/" title="View all posts filed under Schooner Information Technology">Schooner Information Technology</a>
+</li>
+	<li class="cat-item cat-item-324"><a href="http://www.dbms2.com/category/products-and-vendors/scidb/" title="View all posts filed under SciDB">SciDB</a>
+</li>
+	<li class="cat-item cat-item-327"><a href="http://www.dbms2.com/category/products-and-vendors/sensage/" title="View all posts filed under SenSage">SenSage</a>
+</li>
+	<li class="cat-item cat-item-74"><a href="http://www.dbms2.com/category/products-and-vendors/adabas-software-ag/" title="View all posts filed under Software AG">Software AG</a>
+</li>
+	<li class="cat-item cat-item-25"><a href="http://www.dbms2.com/category/products-and-vendors/soliddb/" title="View all posts filed under solidDB">solidDB</a>
+</li>
+	<li class="cat-item cat-item-328"><a href="http://www.dbms2.com/category/products-and-vendors/splunk/" title="View all posts filed under Splunk">Splunk</a>
+</li>
+	<li class="cat-item cat-item-36"><a href="http://www.dbms2.com/category/products-and-vendors/streambase/" title="View all posts filed under StreamBase">StreamBase</a>
+</li>
+	<li class="cat-item cat-item-42"><a href="http://www.dbms2.com/category/products-and-vendors/sybase/" title="View all posts filed under Sybase">Sybase</a>
+</li>
+	<li class="cat-item cat-item-305"><a href="http://www.dbms2.com/category/products-and-vendors/tableau-software/" title="View all posts filed under Tableau Software">Tableau Software</a>
+</li>
+	<li class="cat-item cat-item-276"><a href="http://www.dbms2.com/category/products-and-vendors/talend/" title="View all posts filed under Talend">Talend</a>
+</li>
+	<li class="cat-item cat-item-34"><a href="http://www.dbms2.com/category/products-and-vendors/teradata/" title="View all posts filed under Teradata">Teradata</a>
+</li>
+	<li class="cat-item cat-item-310"><a href="http://www.dbms2.com/category/products-and-vendors/tokutek/" title="View all posts filed under Tokutek">Tokutek</a>
+</li>
+	<li class="cat-item cat-item-52"><a href="http://www.dbms2.com/category/products-and-vendors/truviso/" title="View all posts filed under Truviso">Truviso</a>
+</li>
+	<li class="cat-item cat-item-319"><a href="http://www.dbms2.com/category/products-and-vendors/vectorwise/" title="View all posts filed under VectorWise">VectorWise</a>
+</li>
+	<li class="cat-item cat-item-37"><a href="http://www.dbms2.com/category/products-and-vendors/vertica-systems/" title="View all posts filed under Vertica Systems">Vertica Systems</a>
+</li>
+	<li class="cat-item cat-item-86"><a href="http://www.dbms2.com/category/products-and-vendors/h-store/" title="View all posts filed under VoltDB and H-Store">VoltDB and H-Store</a>
+</li>
+	<li class="cat-item cat-item-345"><a href="http://www.dbms2.com/category/products-and-vendors/workday-inc/" title="View all posts filed under Workday">Workday</a>
+</li>
+	<li class="cat-item cat-item-323"><a href="http://www.dbms2.com/category/products-and-vendors/xkoto-gridscale/" title="View all posts filed under Xkoto">Xkoto</a>
+</li>
+	<li class="cat-item cat-item-317"><a href="http://www.dbms2.com/category/products-and-vendors/xtremedata-dbx/" title="View all posts filed under XtremeData">XtremeData</a>
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-151"><a href="http://www.dbms2.com/category/data-integration-middleware/" title="View all posts filed under Data integration and middleware">Data integration and middleware</a>
+<ul class='children'>
+	<li class="cat-item cat-item-152"><a href="http://www.dbms2.com/category/data-integration-middleware/application-servers/" title="View all posts filed under Application servers">Application servers</a>
+</li>
+	<li class="cat-item cat-item-15"><a href="http://www.dbms2.com/category/data-integration-middleware/data-etl-etl-etlt-eai-eii/" title="View all posts filed under EAI, EII, ETL, ELT, ETLT">EAI, EII, ETL, ELT, ETLT</a>
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-71"><a href="http://www.dbms2.com/category/datatype/" title="View all posts filed under Data types">Data types</a>
+<ul class='children'>
+	<li class="cat-item cat-item-72"><a href="http://www.dbms2.com/category/datatype/gis-geographic-geospatial/" title="View all posts filed under GIS and geospatial">GIS and geospatial</a>
+</li>
+	<li class="cat-item cat-item-75"><a href="http://www.dbms2.com/category/datatype/object-oriented-database-management/" title="View all posts filed under Object">Object</a>
+</li>
+	<li class="cat-item cat-item-56"><a href="http://www.dbms2.com/category/datatype/rdf-graph-database/" title="View all posts filed under RDF and graphs">RDF and graphs</a>
+</li>
+	<li class="cat-item cat-item-48"><a href="http://www.dbms2.com/category/datatype/native-xml-database/" title="View all posts filed under Structured documents">Structured documents</a>
+</li>
+	<li class="cat-item cat-item-73"><a href="http://www.dbms2.com/category/datatype/text-search/" title="View all posts filed under Text">Text</a>
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-124"><a href="http://www.dbms2.com/category/database-management-system/" title="View all posts filed under DBMS product categories">DBMS product categories</a>
+<ul class='children'>
+	<li class="cat-item cat-item-283"><a href="http://www.dbms2.com/category/database-management-system/archiving-and-information-preservation/" title="View all posts filed under Archiving and information preservation">Archiving and information preservation</a>
+</li>
+	<li class="cat-item cat-item-5"><a href="http://www.dbms2.com/category/database-management-system/data-warehouse-appliances/" title="View all posts filed under Data warehouse appliances">Data warehouse appliances</a>
+</li>
+	<li class="cat-item cat-item-77"><a href="http://www.dbms2.com/category/database-management-system/mid-range/" title="View all posts filed under Mid-range">Mid-range</a>
+</li>
+	<li class="cat-item cat-item-51"><a href="http://www.dbms2.com/category/database-management-system/online-transaction-processing-oltp/" title="View all posts filed under OLTP">OLTP</a>
+</li>
+	<li class="cat-item cat-item-9"><a href="http://www.dbms2.com/category/database-management-system/open-source/" title="View all posts filed under Open source">Open source</a>
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-60"><a href="http://www.dbms2.com/category/database-emulation-transparency-portability-compatibility/" title="View all posts filed under Emulation, transparency, portability">Emulation, transparency, portability</a>
+</li>
+	<li class="cat-item cat-item-250"><a href="http://www.dbms2.com/category/fun-stuff/" title="View all posts filed under Fun stuff">Fun stuff</a>
+<ul class='children'>
+	<li class="cat-item cat-item-19"><a href="http://www.dbms2.com/category/fun-stuff/humor/" title="View all posts filed under Humor">Humor</a>
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-333"><a href="http://www.dbms2.com/category/liberty-privacy/" title="View all posts filed under Liberty and privacy">Liberty and privacy</a>
+</li>
+	<li class="cat-item cat-item-227"><a href="http://www.dbms2.com/category/market-share/" title="View all posts filed under Market share">Market share</a>
+</li>
+	<li class="cat-item cat-item-12"><a href="http://www.dbms2.com/category/memory-centric-data-management/" title="View all posts filed under Memory-centric data management">Memory-centric data management</a>
+<ul class='children'>
+	<li class="cat-item cat-item-90"><a href="http://www.dbms2.com/category/memory-centric-data-management/cache/" title="View all posts filed under Cache">Cache</a>
+</li>
+	<li class="cat-item cat-item-57"><a href="http://www.dbms2.com/category/memory-centric-data-management/event-stream-processing/" title="View all posts filed under Complex event processing (CEP)">Complex event processing (CEP)</a>
+</li>
+	<li class="cat-item cat-item-156"><a href="http://www.dbms2.com/category/memory-centric-data-management/in-memory-dbms/" title="View all posts filed under In-memory DBMS">In-memory DBMS</a>
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-88"><a href="http://www.dbms2.com/category/michael-stonebraker/" title="View all posts filed under Michael Stonebraker">Michael Stonebraker</a>
+</li>
+	<li class="cat-item cat-item-225"><a href="http://www.dbms2.com/category/parallelization/" title="View all posts filed under Parallelization">Parallelization</a>
+<ul class='children'>
+	<li class="cat-item cat-item-322"><a href="http://www.dbms2.com/category/parallelization/database-clustering/" title="View all posts filed under Clustering">Clustering</a>
+</li>
+	<li class="cat-item cat-item-226"><a href="http://www.dbms2.com/category/parallelization/mapreduce/" title="View all posts filed under MapReduce">MapReduce</a>
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-292"><a href="http://www.dbms2.com/category/presentations/" title="View all posts filed under Presentations">Presentations</a>
+</li>
+	<li class="cat-item cat-item-111"><a href="http://www.dbms2.com/category/pricing/" title="View all posts filed under Pricing">Pricing</a>
+</li>
+	<li class="cat-item cat-item-82"><a href="http://www.dbms2.com/category/software-as-a-service-database-saas/" title="View all posts filed under Software as a Service (SaaS)">Software as a Service (SaaS)</a>
+<ul class='children'>
+	<li class="cat-item cat-item-84"><a href="http://www.dbms2.com/category/software-as-a-service-database-saas/cloud-computing/" title="View all posts filed under Cloud computing">Cloud computing</a>
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-80"><a href="http://www.dbms2.com/category/users/" title="View all posts filed under Specific users">Specific users</a>
+<ul class='children'>
+	<li class="cat-item cat-item-91"><a href="http://www.dbms2.com/category/users/ebay/" title="View all posts filed under eBay">eBay</a>
+</li>
+	<li class="cat-item cat-item-190"><a href="http://www.dbms2.com/category/users/facebook-cassandra/" title="View all posts filed under Facebook">Facebook</a>
+</li>
+	<li class="cat-item cat-item-302"><a href="http://www.dbms2.com/category/users/fox-interactive-media-myspace/" title="View all posts filed under Fox and MySpace">Fox and MySpace</a>
+</li>
+	<li class="cat-item cat-item-354"><a href="http://www.dbms2.com/category/users/jpmorgan-chase/" title="View all posts filed under JPMorgan Chase">JPMorgan Chase</a>
+</li>
+	<li class="cat-item cat-item-100"><a href="http://www.dbms2.com/category/users/teoco/" title="View all posts filed under TEOCO">TEOCO</a>
+</li>
+	<li class="cat-item cat-item-138"><a href="http://www.dbms2.com/category/users/yahoo/" title="View all posts filed under Yahoo">Yahoo</a>
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-172"><a href="http://www.dbms2.com/category/storage/" title="View all posts filed under Storage">Storage</a>
+<ul class='children'>
+	<li class="cat-item cat-item-125"><a href="http://www.dbms2.com/category/storage/solid-state-memory-disk-flash/" title="View all posts filed under Solid-state memory">Solid-state memory</a>
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-22"><a href="http://www.dbms2.com/category/database-theory-practice/" title="View all posts filed under Theory and architecture">Theory and architecture</a>
+<ul class='children'>
+	<li class="cat-item cat-item-64"><a href="http://www.dbms2.com/category/database-theory-practice/columnar-database-management/" title="View all posts filed under Columnar database management">Columnar database management</a>
+</li>
+	<li class="cat-item cat-item-128"><a href="http://www.dbms2.com/category/database-theory-practice/data-models/" title="View all posts filed under Data models and architecture">Data models and architecture</a>
+</li>
+	<li class="cat-item cat-item-45"><a href="http://www.dbms2.com/category/database-theory-practice/database-compression/" title="View all posts filed under Database compression">Database compression</a>
+</li>
+	<li class="cat-item cat-item-79"><a href="http://www.dbms2.com/category/database-theory-practice/database-diversity/" title="View all posts filed under Database diversity">Database diversity</a>
+</li>
+	<li class="cat-item cat-item-329"><a href="http://www.dbms2.com/category/database-theory-practice/nosql/" title="View all posts filed under NoSQL">NoSQL</a>
+</li>
+	<li class="cat-item cat-item-315"><a href="http://www.dbms2.com/category/database-theory-practice/petabyte-database-theory-practice/" title="View all posts filed under Petabyte-scale data management">Petabyte-scale data management</a>
+</li>
+	<li class="cat-item cat-item-344"><a href="http://www.dbms2.com/category/database-theory-practice/workload-management/" title="View all posts filed under Workload management">Workload management</a>
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-16"><a href="http://www.dbms2.com/category/transrelational/" title="View all posts filed under TransRelational">TransRelational</a>
+</li>
+		</ul>
+	</li>
+		
+	<li id="Archives">
+	<h2>Date archives</h2> <!-- archives are displayed in a dropdown to save room -->
+		<ul>
+			<select name="archive-dropdown" onChange='document.location.href=this.options[this.selectedIndex].value;'>
+			<option value="">Select Month</option>
+				<option value='http://www.dbms2.com/2010/11/'> November 2010 </option>
+	<option value='http://www.dbms2.com/2010/10/'> October 2010 </option>
+	<option value='http://www.dbms2.com/2010/09/'> September 2010 </option>
+	<option value='http://www.dbms2.com/2010/08/'> August 2010 </option>
+	<option value='http://www.dbms2.com/2010/07/'> July 2010 </option>
+	<option value='http://www.dbms2.com/2010/06/'> June 2010 </option>
+	<option value='http://www.dbms2.com/2010/05/'> May 2010 </option>
+	<option value='http://www.dbms2.com/2010/04/'> April 2010 </option>
+	<option value='http://www.dbms2.com/2010/03/'> March 2010 </option>
+	<option value='http://www.dbms2.com/2010/02/'> February 2010 </option>
+	<option value='http://www.dbms2.com/2010/01/'> January 2010 </option>
+	<option value='http://www.dbms2.com/2009/12/'> December 2009 </option>
+	<option value='http://www.dbms2.com/2009/11/'> November 2009 </option>
+	<option value='http://www.dbms2.com/2009/10/'> October 2009 </option>
+	<option value='http://www.dbms2.com/2009/09/'> September 2009 </option>
+	<option value='http://www.dbms2.com/2009/08/'> August 2009 </option>
+	<option value='http://www.dbms2.com/2009/07/'> July 2009 </option>
+	<option value='http://www.dbms2.com/2009/06/'> June 2009 </option>
+	<option value='http://www.dbms2.com/2009/05/'> May 2009 </option>
+	<option value='http://www.dbms2.com/2009/04/'> April 2009 </option>
+	<option value='http://www.dbms2.com/2009/03/'> March 2009 </option>
+	<option value='http://www.dbms2.com/2009/02/'> February 2009 </option>
+	<option value='http://www.dbms2.com/2009/01/'> January 2009 </option>
+	<option value='http://www.dbms2.com/2008/12/'> December 2008 </option>
+	<option value='http://www.dbms2.com/2008/11/'> November 2008 </option>
+	<option value='http://www.dbms2.com/2008/10/'> October 2008 </option>
+	<option value='http://www.dbms2.com/2008/09/'> September 2008 </option>
+	<option value='http://www.dbms2.com/2008/08/'> August 2008 </option>
+	<option value='http://www.dbms2.com/2008/07/'> July 2008 </option>
+	<option value='http://www.dbms2.com/2008/06/'> June 2008 </option>
+	<option value='http://www.dbms2.com/2008/05/'> May 2008 </option>
+	<option value='http://www.dbms2.com/2008/04/'> April 2008 </option>
+	<option value='http://www.dbms2.com/2008/03/'> March 2008 </option>
+	<option value='http://www.dbms2.com/2008/02/'> February 2008 </option>
+	<option value='http://www.dbms2.com/2008/01/'> January 2008 </option>
+	<option value='http://www.dbms2.com/2007/12/'> December 2007 </option>
+	<option value='http://www.dbms2.com/2007/11/'> November 2007 </option>
+	<option value='http://www.dbms2.com/2007/10/'> October 2007 </option>
+	<option value='http://www.dbms2.com/2007/09/'> September 2007 </option>
+	<option value='http://www.dbms2.com/2007/08/'> August 2007 </option>
+	<option value='http://www.dbms2.com/2007/07/'> July 2007 </option>
+	<option value='http://www.dbms2.com/2007/06/'> June 2007 </option>
+	<option value='http://www.dbms2.com/2007/05/'> May 2007 </option>
+	<option value='http://www.dbms2.com/2007/04/'> April 2007 </option>
+	<option value='http://www.dbms2.com/2007/03/'> March 2007 </option>
+	<option value='http://www.dbms2.com/2007/02/'> February 2007 </option>
+	<option value='http://www.dbms2.com/2007/01/'> January 2007 </option>
+	<option value='http://www.dbms2.com/2006/12/'> December 2006 </option>
+	<option value='http://www.dbms2.com/2006/11/'> November 2006 </option>
+	<option value='http://www.dbms2.com/2006/10/'> October 2006 </option>
+	<option value='http://www.dbms2.com/2006/09/'> September 2006 </option>
+	<option value='http://www.dbms2.com/2006/08/'> August 2006 </option>
+	<option value='http://www.dbms2.com/2006/07/'> July 2006 </option>
+	<option value='http://www.dbms2.com/2006/06/'> June 2006 </option>
+	<option value='http://www.dbms2.com/2006/05/'> May 2006 </option>
+	<option value='http://www.dbms2.com/2006/04/'> April 2006 </option>
+	<option value='http://www.dbms2.com/2006/03/'> March 2006 </option>
+	<option value='http://www.dbms2.com/2006/02/'> February 2006 </option>
+	<option value='http://www.dbms2.com/2006/01/'> January 2006 </option>
+	<option value='http://www.dbms2.com/2005/12/'> December 2005 </option>
+	<option value='http://www.dbms2.com/2005/11/'> November 2005 </option>
+	<option value='http://www.dbms2.com/2005/10/'> October 2005 </option>
+	<option value='http://www.dbms2.com/2005/09/'> September 2005 </option>
+	<option value='http://www.dbms2.com/2005/08/'> August 2005 </option>
+ </select>
+		</ul>
+	</li>
+
+		</ul>
+
+
+</div>
+
+
+
+<!-- end l_sidebar --> <!-- on the left, where categories, etc. are listed -->
+
+<!-- begin r_sidebar -->
+
+<div id="r_sidebar">
+
+	<ul id="r_sidebarwidgeted">
+		
+  
+	<li id="Links">
+	<p class="h2-nospace">Links</p>
+		<ul>
+			<li><a href="http://www.monash.com" rel="" onclick="javascript:pageTracker._trackPageview('/www.monash.com');">Monash Research</a></li>
+<li><a href="http://www.monash.com/whitepapers.html" rel="" onclick="javascript:pageTracker._trackPageview('/www.monash.com');">White Papers</a></li>
+		</ul>
+	</li>
+	
+	<li>
+<h2>Admin</h2>
+<ul>
+		<li><a href="http://www.dbms2.com/wp-login.php">Log in</a></li>
+	</ul>
+</li>
+		
+		</ul>
+
+		
+</div>
+
+<!-- end r_sidebar --> <!-- on the lower right, below static sidebar; where links and admin are listed -->
+
+</div>
+
+<!-- The main column ends  -->
+
+<!-- begin footer -->
+
+<div style="clear:both;"></div>
+
+<div id="footer">
+<div id="inline-list" align="center">	
+   		<ul>
+
+			<li><a href="http://www.dbms2.com">Home</a></li>
+
+			<li><a href="http://www.dbms2.com/database-blog/">About</a></li>
+			
+			<li><a href="http://www.monash.com/contact.html">Contact</a></li>
+
+			<li><a href="http://www.monash.com/signup.html">Feeds</a></li>
+
+		</ul>
+</div>
+  <p>Copyright &copy; <a href="http://www.monash.com">Monash Research</a>, 2005-2008.&nbsp;&nbsp; 
+    Theme designed by <a href="http://www.melissabradshaw.com">Melissa Bradshaw</a>. 
+    &nbsp;&nbsp;&nbsp; 
+        </div>
+</body>
+</html>
+<!-- Dynamic page generated in 0.445 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2010-12-20 10:08:58 -->

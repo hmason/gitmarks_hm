@@ -1,0 +1,465 @@
+<html>
+<head>
+	<title>
+		Information Retrieval: Implementing and Evaluating Search Engines
+	</title>
+	<style type="text/css">
+		img.btn { cursor:pointer }
+		tr.sec { display:none }
+		h3 { font-family:sans-serif;font-weight:bold;font-size:1em }
+	</style>
+	<script language="javascript"><!--
+		var titles = {
+			1: "<a href=\"01-introduction.pdf\">Introduction</a>",
+			2: "<a href=\"02-basic-techniques.pdf\">Basic Techniques</a>",
+			3: "Tokens and Terms",
+			4: "<a href=\"04-static-inverted-indices.pdf\">Static Inverted Indices</a>",
+			5: "Query Processing",
+			6: "<a href=\"06-index-compression.pdf\">Index Compression</a>",
+			7: "Dynamic Inverted Indices",
+			8: "Probabilistic Retrieval",
+			9: "Language Modeling and Related Methods",
+			10: "Categorization and Filtering",
+			11: "Fusion and Metalearning",
+			12: "Measuring Effectiveness",
+			13: "Measuring Efficiency",
+			14: "<a href=\"14-parallel-information-retrieval.pdf\">Parallel Information Retrieval</a>",
+			15: "Web Search",
+			16: "XML Retrieval",
+			"A": "Computer Performance"
+		};
+		var sections = {
+			1: [ "1.1 What Is Information Retrieval?",
+				   "1.1.1 Web Search",
+					 "1.1.2 Other Search Applications",
+					 "1.1.3 Other IR Applications",
+					 "1.2 Information Retrieval Systems",
+					 "1.2.1 Basic IR System Architecture",
+					 "1.2.2 Documents and Update",
+					 "1.2.3 Performance Evaluation",
+					 "1.3 Working with Electronic Text",
+					 "1.3.1 Text Formats",
+					 "1.3.2 A Simple Tokenization of English Text",
+					 "1.3.3 Term Distributions",
+					 "1.3.4 Language Modeling",
+					 "1.4 Test Collections",
+					 "1.4.1 TREC Tasks",
+					 "1.5 Open-Source IR Systems",
+					 "1.5.1 Lucene",
+					 "1.5.2 Indri",
+					 "1.5.3 Wumpus",
+					 "1.6 Further Reading",
+					 "1.7 Exercises",
+					 "1.8 Bibliography" ],
+			2: [ "2.1 Inverted Indices",
+			     "2.1.1 Extended Example: Phrase Search",
+					 "2.1.2 Implementing Inverted Indices",
+					 "2.1.3 Documents and Other Elements",
+					 "2.2 Retrieval and Ranking",
+					 "2.2.1 The Vector Space Model",
+					 "2.2.2 Proximity Ranking",
+					 "2.2.3 Boolean Retrieval",
+					 "2.3 Evaluation",
+					 "2.3.1 Recall and Precision",
+					 "2.3.2 Effectiveness Measures for Ranked Retrieval",
+					 "2.3.3 Building a Test Collection",
+					 "2.3.4 Efficiency Measures",
+					 "2.4 Summary",
+					 "2.5 Further Reading",
+					 "2.6 Exercises",
+					 "2.7 Bibliography" ],
+			3: [ "3.1 English",
+			     "3.1.1 Punctuation and Capitalization",
+					 "3.1.2 Stemming",
+					 "3.1.3 Stopping",
+			     "3.2 Characters",
+					 "3.3 Character N-Grams",
+					 "3.4 European Languages",
+					 "3.5 CJK Languages",
+					 "3.6 Further Reading",
+					 "3.7 Exercises",
+					 "3.8 Bibliography" ],
+			4: [ "4.1 Index Components and Index Life Cycle",
+			     "4.2 The Dictionary",
+					 "4.3 Postings Lists",
+					 "4.4 Interleaving Dictionary and Postings Lists",
+					 "4.5 Index Construction",
+					 "4.5.1 In-Memory Index Construction",
+					 "4.5.2 Sort-Based Index Construction",
+					 "4.5.3 Merge-Based Index Construction",
+					 "4.6 Other Types of Indices",
+					 "4.7 Summary",
+					 "4.8 Further Reading",
+					 "4.9 Exercises",
+					 "4.10 Bibliography" ],
+			5: [ "5.1 Query Processing for Ranked Retrieval",
+			     "5.1.1 Document-at-a-Time Query Processing",
+					 "5.1.2 Term-at-a-Time Query Processing",
+					 "5.1.3 Precomputing Score Contributions",
+           "5.1.4 Impact Ordering",
+					 "5.1.5 Static Index Pruning",
+			     "5.2 Lightweight Structure",
+					 "5.2.1 Generalized Concordance Lists",
+					 "5.2.2 Operators",
+					 "5.2.3 Examples",
+					 "5.2.4 Implementation",
+					 "5.3 Further Reading",
+					 "5.4 Exercises",
+					 "5.5 Bibliography" ],
+			6: [ "6.1 General-Purpose Data Compression",
+			     "6.2 Symbolwise Data Compression",
+					 "6.2.1 Modeling and Coding",
+					 "6.2.2 Huffman Coding",
+					 "6.2.3 Arithmetic Coding",
+					 "6.2.4 Symbolwise Text Compression",
+					 "6.3 Compressing Postings Lists",
+					 "6.3.1 Nonparametric Gap Compression",
+					 "6.3.2 Parametric Gap Compression",
+					 "6.3.3 Context-Aware Compression Methods",
+					 "6.3.4 Index Compression for High Query Performance",
+					 "6.3.5 Compression Effectiveness",
+					 "6.3.6 Decoding Performance",
+					 "6.3.7 Document Reordering",
+					 "6.4 Compressing the Dictionary",
+					 "6.5 Summary",
+					 "6.6 Further Reading",
+					 "6.7 Exercises",
+					 "6.8 Bibliography" ],
+			7: [ "7.1 Batch Updates",
+			     "7.2 Incremental Index Updates",
+					 "7.2.1 Contiguous Inverted Lists",
+					 "7.2.2 Noncontiguous Inverted Lists",
+					 "7.3 Document Deletions",
+					 "7.3.1 Invalidation List",
+					 "7.3.2 Garbage Collection",
+					 "7.4 Document Modifications",
+					 "7.5 Discussion and Further Reading",
+					 "7.6 Exercises",
+					 "7.7 Bibliography" ],
+			8: [ "8.1 Modeling Relevance",
+			     "8.2 The Binary Independence Model",
+					 "8.3 The Robertson/Sp&auml;rck Jones Weighting Formula",
+					 "8.4 Term Frequency",
+					 "8.4.1 Bookstein's Two-Poisson Model",
+					 "8.4.2 Approximating the Two-Poisson Model",
+					 "8.4.3 Query Term Frequency",
+					 "8.5 Document Length: BM25",
+					 "8.6 Relevance Feedback",
+					 "8.6.1 Term Selection",
+					 "8.6.2 Pseudo-Relevance Feedback",
+					 "8.7 Field Weights: BM25F",
+					 "8.8 Experimental Comparison",
+					 "8.9 Further Reading",
+					 "8.10 Exercises",
+					 "8.11 Bibliography" ],
+			9: [ "9.1 Generating Queries From Documents",
+			     "9.2 Language Models and Smoothing",
+					 "9.3 Ranking with Language Models",
+					 "9.4 Kullback-Leibler Divergence",
+					 "9.5 Divergence from Randomness",
+					 "9.5.1 A Model of Randomness",
+					 "9.5.2 Eliteness",
+					 "9.5.3 Document Length Normalization",
+					 "9.6 Passage Retrieval and Ranking",
+					 "9.6.1 Passage Scoring",
+					 "9.6.2 Implementation",
+					 "9.7 Experimental Comparison",
+					 "9.8 Further Reading",
+					 "9.9 Exercises",
+					 "9.10 Bibliography" ],
+			10: [ "10.1 Detailed Examples",
+			      "10.1.1 Topic-Oriented Batch Filtering",
+						"10.1.2 On-Line Filtering",
+						"10.1.3 Learning from Historical Examples",
+						"10.1.4 Language Categorization",
+						"10.1.5 On-Line Adaptive Spam Filtering",
+						"10.1.6 Threshold Choice for Binary Categorization",
+						"10.2 Classification",
+						"10.2.1 Odds and Odds Ratios",
+						"10.2.2 Building Classifiers",
+						"10.2.3 Learning Modes",
+						"10.2.4 Feature Engineering",
+						"10.3 Probabilistic Classifiers",
+						"10.3.1 Probability Estimates",
+						"10.3.2 Combining Probability Estimates",
+            "10.3.3 Practical Considerations",
+						"10.4 Linear Classifiers",
+						"10.4.1 Perceptron Algorithm",
+						"10.4.2 Support Vector Machines",
+						"10.5 Similarity-Based Classifiers",
+						"10.5.1 Rocchio's Method",
+						"10.5.2 Memory-Based Methods",
+						"10.6 Generalized Linear Models",
+						"10.6.1 Kernel Methods",
+						"10.7 Information-Theoretic Models",
+						"10.7.1 Comparing Models",
+						"10.7.2 Sequential Compressions Models",
+            "10.7.3 Decision Trees and Stumps",
+						"10.8 Experimental Comparison",
+						"10.8.1 Topic-Oriented On-Line Filtering",
+						"10.8.2 On-Line Adaptive Spam Filtering",
+						"10.9 Further Reading",
+						"10.10 Exercises",
+						"10.11 Bibliography" ],
+			11: [ "11.1 Search-Result Fusion",
+			      "11.1.1 Fixed-Cutoff Aggregation",
+						"11.1.2 Rank and Score Aggregation",
+						"11.2 Stacking Adaptive Filters",
+						"11.3 Stacking Batch Classifiers",
+						"11.3.1 Holdout Validation",
+						"11.3.2 Cross-Validation",
+						"11.4 Bagging",
+						"11.5 Boosting",
+						"11.6 Multicategory Ranking and Classification",
+						"11.6.1 Document Versus Category Scores",
+						"11.6.2 Document Versus Category Rank Fusion",
+						"11.6.3 Multicategory Methods",
+						"11.7 Learning to Rank",
+						"11.7.1 What Is Learning to Rank?",
+						"11.7.2 Learning-to-Rank Methods",
+						"11.7.3 What to Optimize?",
+						"11.7.4 Learning to Rank for Categorization",
+						"11.7.5 Learning for Ranked IR",
+						"11.7.6 The LETOR Data Set",
+						"11.8 Further Reading",
+						"11.9 Exercises",
+						"11.10 Bibliograhy" ],
+			12: [ "12.1 Traditional Effectiveness Measures",
+			      "12.1.1 Recall and Precision",
+						"12.1.2 Precision at k Documents (P@k)",
+						"12.1.3 Average Precision (AP)",
+						"12.1.4 Reciprocal Rank (RR)",
+						"12.1.5 Arithmetic Versus Geometric Mean",
+						"12.1.6 User Satisfaction",
+			      "12.2 The Text REtrieval Conference",
+						"12.3 Using Statistics in Evaluation",
+						"12.3.1 Foundations and Terminology",
+						"12.3.2 Confidence Intervals",
+						"12.3.3 Comparative Evaluation",
+						"12.3.4 Hypothesis Tests Considered Harmful",
+						"12.3.5 Paired and Unpaired Differences",
+						"12.3.6 Significance Tests",
+						"12.3.7 Validity and Power of Statistical Tests",
+						"12.3.8 Reporting the Precision of Measurement",
+						"12.3.9 Meta-Analysis",
+						"12.4 Minimizing Adjudication Effort",
+						"12.4.1 Selecting Documents for Adjudication",
+						"12.4.2 Sampling the Pool",
+						"12.5 Nontraditional Effectiveness Measures",
+						"12.5.1 Graded Relevance",
+						"12.5.2 Incomplete and Biased Judgments",
+						"12.5.3 Novelty and Diversity",
+						"12.6 Further Reading",
+						"12.7 Exercises",
+						"12.8 Bibliography" ],
+			13: [ "13.1 Efficiency Criteria",
+			      "13.1.1 Throughput and Latency",
+						"13.1.2 Aggregate Statistics and User Satisfaction",
+						"13.2 Queueing Theory",
+						"13.2.1 Kendall's Notation",
+						"13.2.2 The M/M/1 Queueing Model",
+						"13.2.3 Latency Quantiles and Average Utilization",
+						"13.3 Query Scheduling",
+						"13.4 Caching",
+						"13.4.1 Three-Level Caching",
+						"13.4.2 Cache Policies",
+						"13.4.3 Prefetching Search Results",
+						"13.5 Further Reading",
+						"13.6 Exercises",
+						"13.7 Bibliography" ],
+			14: [ "14.1 Parallel Query Processing",
+			      "14.1.1 Document Partitioning",
+						"14.1.2 Term Partitioning",
+						"14.1.3 Hybrid Schemes",
+						"14.1.4 Redundancy and Fault Tolerance",
+						"14.2 MapReduce",
+						"14.2.1 The Basic Framework",
+						"14.2.2 Combiners",
+						"14.2.3 Secondary Keys",
+						"14.2.4 Machine Failures",
+						"14.3 Further Reading",
+						"14.4 Exercises",
+						"14.5 Bibliography" ],
+			15: [ "15.1 The Structure of the Web",
+			      "15.1.1 The Web Graph",
+						"15.1.2 Static and Dynamic Pages",
+						"15.1.3 The Hidden Web",
+						"15.1.4 The Size of the Web",
+						"15.2 Queries and Users",
+						"15.2.1 User Intent",
+						"15.2.2 Clickthrough Curves",
+						"15.3 Static Ranking",
+						"15.3.1 Basic PageRank",
+						"15.3.2 Extended PageRank",
+						"15.3.3 Properties of PageRank",
+						"15.3.4 Other Links Analysis Methods: HITS and SALSA",
+						"15.3.5 Other Static Ranking Methods",
+						"15.4 Dynamic Ranking",
+						"15.4.1 Anchor Text",
+						"15.4.2 Novelty",
+						"15.5 Evaluating Web Search",
+						"15.5.1 Named Page Finding",
+						"15.5.2 Implicit User Feedback",
+						"15.6 Web Crawlers",
+						"15.6.1 Components of a Crawler",
+						"15.6.2 Crawl Order",
+						"15.6.3 Duplicates and Near-Duplicates",
+						"15.7 Summary",
+						"15.8 Further Reading",
+						"15.8.1 Link Analysis",
+						"15.8.2 Anchor Text",
+						"15.8.3 Implicit Feedback",
+						"15.8.4 Web Crawlers",
+						"15.9 Exercises",
+						"15.10 Bibliography" ],
+			16: [ "16.1 The Essence of XML",
+			      "16.1.1 Document Type Definitions",
+						"16.1.2 XML Schema",
+						"16.2 Paths, Trees, and FLWORs",
+						"16.2.1 XPath",
+						"16.2.2 NEXI",
+						"16.2.3 XQuery",
+						"16.3 Indexing and Query Processing",
+						"16.4 Ranked Retrieval",
+						"16.4.1 Ranking Elements",
+						"16.4.2 Overlapping Elements",
+						"16.4.3 Retrievable Elements",
+						"16.5 Evaluation",
+						"16.5.1 Test Collections",
+						"16.5.2 Effectiveness Measures",
+						"16.6 Further Reading",
+						"16.7 Exercises",
+						"16.8 Bibliography" ],
+			"A": [ "A.1 Sequential Versus Random Access on Disk",
+			       "A.2 Sequential Versus Random Access in RAM",
+						 "A.3 Pipelined Execution and Branch Prediction" ]
+		};
+		function printChapter(chapter_id) {
+			document.write("<tr><td width=15></td><td width=0></td><td align=right>" + chapter_id + "</td><td width=12></td><td>" + titles[chapter_id] + " &nbsp;<img src=\"plus.gif\" class=\"btn\" id=\"btn" + chapter_id + "\" onclick=\"magic('" + chapter_id + "')\"></td></tr>\n");
+			var s = sections[chapter_id];
+			for (i = 0; i < s.length; i++) {
+				var section_title = s[i].replace(" ", "&nbsp; ");
+				document.write("<tr class='sec' id='s_" + chapter_id + "_" + (i + 1) + "'><td></td><td></td><td></td><td></td><td>" + section_title + "</td></tr>\n");
+			}
+		}
+		function magic(chapter_id) {
+			var c = "s_" + chapter_id + "_";
+			var styles = ["none", "table-row"];
+			if (navigator.userAgent.indexOf("MSIE") >= 0)
+				styles[1] = "block";
+			current_display = document.getElementById(c + "1").style.display;
+			if (current_display == styles[1]) {
+				document.getElementById("btn" + chapter_id).src = "plus.gif";
+				current_display = styles[0];
+			} else {
+				document.getElementById("btn" + chapter_id).src = "minus.gif";
+				current_display = styles[1];
+			}
+			for (i = 1; document.getElementById(c + i) != null; i++)
+				document.getElementById(c + i).style.display = current_display;
+		}
+	--></script>
+</head>
+<body>
+	<table><tr>
+	  <td valign="top"><img src="title3.jpg" alt="Information Retrieval: Implementing and Evaluating Search Engines"></td>
+		<td>&nbsp; &nbsp; &nbsp; &nbsp;</td>
+		<td valign="bottom">
+			<h3>Authors & Publisher</h3>
+			<table cellspacing="0" cellpadding="0" border="0">
+				<tr><td width="15"></td><td><a href="http://stefan.buettcher.org/">Stefan B&uuml;ttcher</a>, Google Inc.</td></tr>
+				<tr><td width="15"></td><td><a href="http://plg.uwaterloo.ca/~claclark/">Charles L. A. Clarke</a>, Univ. of Waterloo</td></tr>
+				<tr><td width="15"></td><td><a href="http://plg.uwaterloo.ca/~gvcormac/">Gordon V. Cormack</a>, Univ. of Waterloo</td></tr>
+				<tr><td width="15"></td><td>&nbsp;</td></tr>
+				<tr><td width="15"></td><td>MIT Press, 2010<br>(<a href="http://mitpress.mit.edu/catalog/item/default.asp?ttype=2&tid=12307">publisher's website</a>)</td></tr>
+			</table>
+			<br>
+			<h3>Getting the Book</h3>
+			<ul>
+				<li><a href="http://www.amazon.com/Information-Retrieval-Implementing-Evaluating-Engines/dp/0262026511">Amazon</a> &nbsp;<img src="icon_us_small.png">
+				<li><a href="http://search.barnesandnoble.com/booksearch/isbninquiry.asp?EAN=9780262026512">Barnes &amp; Noble</a> &nbsp;<img src="icon_us_small.png">
+				<li><a href="http://www.chapters.indigo.ca/books/Information-Retrieval-Implementing-Evaluating-Search-Büttcher-Clarke-Cormack/9780262026512-item.html">Chapters</a> &nbsp;<img src="icon_ca_small.png">
+			<ul>
+		</td>
+	</tr></table>
+	<br>
+	<h3>About the Book</h3>
+	<table cellspacing="0" cellpadding="0" border="0" width="700">
+		<tr><td width="15"></td><td align="justify">
+			Information retrieval is the foundation for modern search engines.
+			This textbook offers an introduction to the core topics underlying
+			modern search technologies, including algorithms, data structures,
+			indexing, retrieval, and evaluation. The emphasis is on implementation
+			and experimentation; each chapter includes exercises and suggestions
+			for student projects.
+			Wumpus, a multi-user open-source information retrieval system
+			developed by one of the authors and available online, provides model
+			implementations and a basis for student work.<br>
+			The modular structure
+			of the book allows instructors to use it in a variety of graduate-level
+			courses, including courses taught from a database systems implementation
+			perspective, traditional information retrieval courses with a focus on
+			IR theory, and courses covering the basics of Web retrieval.
+			Additionally, professionals in computer science, computer engineering,
+			and software engineering will find <i>Information Retrieval</i> a valuable
+			reference.<br>
+	    After an introduction to the basics of information retrieval, the text
+			covers three major topic areas&nbsp;&mdash;&nbsp;indexing, retrieval,
+			and evaluation&nbsp;&mdash;&nbsp;in self-contained parts. The final part of
+			the book draws on and extends the general material in the earlier parts,
+			treating specific application areas, including parallel search engines,
+			link analysis, crawling, and information retrieval over collections of
+			XML documents. End-of-chapter references point to further reading;
+			end-of-chapter exercises range from pencil and paper problems to
+			substantial programming projects.
+		</td></tr>
+	</table>
+	<br>
+	<h3>Table of Contents (Incl. Sample Chapters)</h3>
+	<table cellspacing="0" cellpadding="0" border="0">
+		<tr><td width="15"></td><th colspan="4" align="left"><b>&mdash; &nbsp; I&nbsp; Foundations &nbsp; &mdash;</b></th></tr>
+		<script language="javascript"><!--
+			printChapter(1);
+			printChapter(2);
+			printChapter(3);
+		--></script>
+		<tr><td width="15"></td><th colspan="4" align="left"><b>&mdash; &nbsp; II&nbsp; Indexing &nbsp; &mdash;</b></th></tr>
+		<script language="javascript"><!--
+			printChapter(4);
+			printChapter(5);
+			printChapter(6);
+			printChapter(7);
+		--></script>
+		<tr><td width="15"></td><th colspan="4" align="left"><b>&mdash; &nbsp; III&nbsp; Retrieval and Ranking &nbsp; &mdash;</b></th></tr>
+		<script language="javascript"><!--
+			printChapter(8);
+			printChapter(9);
+			printChapter(10);
+			printChapter(11);
+		--></script>
+		<tr><td width="15"></td><th colspan="4" align="left"><b>&mdash; &nbsp; IV&nbsp; Evaluation &nbsp; &mdash;</b></th></tr>
+		<script language="javascript"><!--
+			printChapter(12);
+			printChapter(13);
+		--></script>
+		<tr><td width="15"></td><th colspan="4" align="left"><b>&mdash; &nbsp; V&nbsp; Applications and Extensions &nbsp; &mdash;</b></th></tr>
+		<script language="javascript"><!--
+			printChapter(14);
+			printChapter(15);
+			printChapter(16);
+		--></script>
+		<tr><td width="15"></td><th colspan="4" align="left"><b>&mdash; &nbsp; VI&nbsp; Appendix &nbsp; &mdash;</b></th></tr>
+		<script language="javascript"><!--
+			printChapter("A");
+		--></script>
+	</table>
+	<br>
+	<h3>Additional Resources</h3>
+	<ul>
+		<li><a href="bib.html">Bibliography</a>
+		<li><a href="addenda.html">Addenda</a>
+		<li><a href="errata.html">Errata</a>
+		<li><a href="http://www.wumpus-search.org/">Wumpus Search Engine</a>
+	</ul>
+</body>
+</html>

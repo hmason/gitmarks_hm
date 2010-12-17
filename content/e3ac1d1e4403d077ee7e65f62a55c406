@@ -1,0 +1,773 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Linux Commands - A practical reference</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="keywords" content="unix linux commands CLI tip sheet reference howto examples"/>
+<meta name="description" content="A linux command line cheat sheet"/>
+<link rel="shortcut icon" href="http://www.pixelbeat.org/favicon.ico" type="image/x-icon"/>
+<link rel="alternate" type="application/rss+xml" title="www.pixelbeat.org" href="/feed/rss2.xml"/>
+<style type="text/css">
+acronym {
+    font-variant: normal; /* stop opera auto capitalising */
+    border-bottom: 1px dotted; /* chrome doesn't otherwise highlight */
+}
+acronym:hover {
+    cursor: help;
+}
+
+q {
+    font-style: italic;
+}
+
+/* logical styles:
+kbd  for user keyboard entry
+code for snippets of computer code
+samp for computer status messages
+
+I use kbd below to actually represent a key on a keyboard
+*/
+kbd {
+    padding: 0px 1px 0px 1px;
+    margin: 0px 1px 0px 0px;
+    background-color: rgb(255,255,192);
+    border-top: 1px solid rgb(255,255,64);
+    border-left: 1px solid rgb(255,255,64);
+    border-right: 2px solid rgb(180,200,86);
+    border-bottom: 2px solid rgb(180,200,86);
+    font-size: 85%;
+}
+
+/* Move headings closer to the following info */
+h1,h2 {
+    padding: 16px 0px 6px 0px;
+    margin: 0px 0px 0px 0px;
+}
+h3 {
+    padding: 6px 0px 2px 0px;
+    margin: 0px 0px 0px 0px;
+}
+
+font.snippet {
+    font-size: smaller;
+    background-color: rgb(255,255,192);
+    border: 1px dashed rgb(180,200,86);
+    padding: 0px 2px 0px 2px; /* top left bottom right */
+}
+
+pre.snippet {
+    font-size: 100%;
+    background-color: rgb(255,255,192);
+    border: 1px dashed rgb(180,200,86);
+    text-align: left;
+    padding: 3px;
+    width: 50em;
+    /*
+    position: relative;
+    left: 10%;
+    */
+}
+
+pre.snippet font.comment {
+    color: rgb(180,200,86);
+}
+
+pre.snippet .hl {
+    background-color: #000000;
+    color: rgb(255,255,192);
+}
+
+pre.shell {
+    color: #bbbbbb;
+    background-color: #000000;
+    border: 1px solid;
+    margin: 15px 0px 15px 0px;
+    text-indent: 0;
+    text-align: left;
+    padding: 3px;
+    width: 50em;
+}
+
+pre.shell font.comment {
+    color: rgb(128,128,128);
+}
+
+/* shrink container to fit around contained text etc.
+ * Use with pre.shell if you've long lines.
+ * Note min-width ignored for display:table-cell on ff2 at least,
+ * hence why this additional class is needed.
+ * Note also that stuff doesn't break around a <pre> with this. */
+.shrink {
+    width: auto !important;
+    display: table-cell;
+}
+
+pre.shell .hl {
+    background-color: #bbbbbb;
+    color: #000000;
+}
+
+.monospace {
+    font-family: monospace;
+    white-space: pre;
+}
+.nw {
+    white-space: nowrap;
+}
+
+a { /*add :link for external links*/
+    text-decoration: none; /* don't underline links by default */
+    outline-style: none;   /* don't put dotted box around clicked links */
+}
+a:hover {
+    text-decoration: underline;
+}
+img { border-style: none; }
+a.blog {
+    background-color: rgb(180,200,86);
+    border: 1px solid;
+    font-size: 75%;
+}
+pre.shell a {
+    color: rgb(128,128,255); /* keep links visible on black background */
+}
+pre.shell b {
+    color: rgb(255,255,255); /* bold = white */
+    font-weight: normal;
+}
+
+/* These 2 are trying to emulate:
+   &lt;table border="1" cellspacing="0" cellpadding="1"&gt; */
+table.pixelbeat {
+    padding: 0px;
+    border: 2px ridge rgb(255,255,192); /* entry */
+    border-collapse: collapse;
+    background-color: rgb(255,255,192);
+}
+table.pixelbeat td {
+    padding: 0px;
+    padding-left: 2px;
+    border: 2px ridge rgb(255,255,192);
+    border-collapse: collapse;
+}
+tr.pbtitle, td.pbtitle {
+    background-color: rgb(180,220,100);
+}
+.dark {
+    color: rgb(180,200,86) !important;
+}
+.darkbg {
+    background-color: rgb(180,200,86) !important;
+}
+.medium {
+    color: rgb(180,220,100) !important;
+}
+.mediumbg {
+    background-color: rgb(180,220,100) !important;
+}
+
+.icon {
+    padding: 2px 3px 1px 3px; /* t r b l */
+    margin: 0;
+    text-align: center;
+    font-family: Tahoma, Verdana, Arial, sans-serif;
+    font-weight: bold;
+    color: #fff;
+    border: 1px solid;
+    cursor: pointer;
+}
+.blue {
+    background-color: #1845CC;
+    border-color: #c3cde8 #000033 #000033 #c3cde8;
+}
+
+.orange {
+    background-color: #ff8000;
+    border-color: #ffc8a4 #3f1a01 #3f1a01 #ffc8a4;
+}
+
+.preload {
+    display: none;
+}
+
+/* This is required when the reddit widget does not
+   have the expanded=1 parameter. Also hide header. */
+.score.dislikes, .score.likes, .reddit-header {
+    display:none !important;
+}
+/* The rest of the reddit stuff for when style=off */
+.reddit-voting-arrows {
+    display:none !important;
+}
+.rembeddit-content {
+    margin-top: 5px;
+}
+.reddit-entry {
+    padding: 0px 9px 10px; 9px; /* t r b l */
+}
+.rembeddit {
+    border: 1px solid rgb(180,220,100);
+    background-color: rgb(255,255,192);
+    max-width: 30em;
+}
+.rembeddit small {
+    color: gray;
+}
+.rembeddit a { text-decoration: none; } /* Don't underline links */
+
+/* Styling for google custom search widget
+   See: http://code.google.com/apis/ajaxsearch/documentation/reference.html */
+#cse {
+    padding: 0px 3px 0px 3px; /* t r b l */
+    border: 1px solid rgb(180,220,100);
+    border-top: none;
+    background-color: rgb(255,255,192);
+}
+#cse .gs-title { text-decoration: none; } /* Don't underline links */
+/* Remove the following if you want to show comments.pixelbeat.org and www.pixelbeat.org on each result.
+   Note, separate tabs don't seem to be shown if you add both {www,comments}.pixelbeat.org? */
+#cse .gs-webResult .gs-visibleUrl-short { display:none; }
+/* There is already branding shown in watermark */
+#cse .gsc-branding { display:none; }
+
+</style>
+<style type="text/css" media="screen, projection">
+/* Based on http://jessey.net/simon/articles/007.html */
+
+body {
+    margin: 0em;
+    padding: 0em;
+    color: #222;
+    /* Hmm: these mess up some pics and ls.py.html
+       background: rgb(252,252,230) none;
+       background: rgb(252,255,224) none; */
+}
+
+.invisible {
+    display: none;
+}
+
+#sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 9em;
+    height: 100%;
+    background: rgb(255,255,192);
+    color: black;
+    z-index: 3;
+}
+
+#menu,.dynamenu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 9em;
+    background: rgb(255,255,192);
+    color: black;
+    z-index: 2;
+}
+
+#adds {
+    height: 100%;
+    width: 9em;
+    z-index: 0;
+    overflow: hidden;
+}
+
+#footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 9em;
+    background: rgb(255,255,192);
+    color: black;
+    z-index: 1;
+}
+
+/* IE 6 doesn't support '>',
+   hence the following will just apply to gecko.
+   Note "x > y" means select any y that is a direct child of x.
+   Note it must be a child not a descendant.
+   Remove the > to specify descendant.
+   Note also any children of the sidebar will be fixed.
+
+   Update 14 June 2010, Android doesn't auto change this
+   to absolute like iPhone does, so when one zooms in,
+   the sidebar obstructs the display. Therefore leave it
+   absolute for everyone.
+
+   Update 30 June 2010, Later android (since Froyo)
+   work like iOS, in that they auto change to absolute.
+   Froyo = 1.5% of android market currently, so leave
+   the following commented out for a while.
+
+   Update 16 Dec 2010, time has passed and I'm
+   assuming people visiting this site will have
+   a recent enough Android, so reenabling.
+*/
+body > #sidebar {
+    position: fixed;
+}
+
+#content {
+    height: 100%;
+    margin-left: 11em; /* 9em + 2 */
+    padding: 1em;
+    font-family: Verdana, Arial, sans-serif;
+    font-size: small;
+    max-width: 62em; /* a little smaller than 1024 on normal text on linux at least */
+    width: auto;
+    text-align: justify;
+}
+
+#menu a,#footer a {
+    display: block;
+    text-decoration: none;
+    text-align: left;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    padding-left: 0.3em;
+    padding-right: 0.2em;
+    /* width: 12.2em; */ /* IE6 needs this for footer highlight? */
+    background: rgb(180,200,86) none;
+    color: rgb(255,255,192);
+    font-weight: bold;
+    font-size: x-small;
+    font-family: Verdana, Arial, sans-serif;
+    margin-bottom: 1px;
+}
+
+#menu a:hover,#footer a:hover {
+    /* background: rgb(180,220,100) none; */
+    background: rgb(180,220,100) none;
+    color: black;
+}
+
+</style>
+<style type="text/css" media="print">
+
+.title	{ width : 100%;
+	  margin : 1cm;
+	  padding: 0cm;
+	  z-index : 0;}
+
+/* This hides all the menus etc so they aren't printed out*/
+#sidebar{	display:none;}
+
+.contentText {	padding : 0.5cm;
+		margin-top : 0.5cm;
+		margin-right : 0cm;
+		margin-left : 0cm;}
+
+</style>
+<!--[if IE 6]>
+<link rel="stylesheet" href="/IE6hack.css" type="text/css" media="screen, projection"/>
+<![endif]-->
+
+<script type="text/javascript">
+<!--
+function add_to_any_url(type)
+{
+    url  = "http://www.addtoany.com/?"
+    url += "sitename="+document.domain+"&"
+    url += "siteurl=http://"+document.domain+"/&"
+    if (type == "feed") {
+        url += "linkname="+encodeURIComponent("The latest")+"&"
+        url += "linkurl="+encodeURIComponent("http://"+document.domain+"/feed/rss2.xml")+"&"
+    } else {
+        url += "linkname="+encodeURIComponent(document.title)+"&"
+        url += "linkurl="+encodeURIComponent(document.URL)+"&"
+    }
+    url += "type="+type
+    return url
+}
+function subscribe()
+{
+    url  = add_to_any_url("feed")
+    window.location = url
+}
+function bookmark()
+{
+    url  = add_to_any_url("page")
+    window.location = url
+}
+function comments()
+{
+    first_dot=document.domain.indexOf(".")
+    if (first_dot == -1) {
+        comments_domain="comments.pixelbeat.org"
+    } else {
+        comments_domain="comments" + document.domain.substring(first_dot)
+    }
+    url = document.URL.replace("://"+document.domain, "://"+comments_domain)
+    window.location = url
+}
+//-->
+</script>
+
+</head>
+
+<body>
+        <div id="content" style="max-width:100%;">
+                <div class="contentText">
+<!--We've a lot of info on this page so make it smaller-->
+<div style="font-size: 85%;">
+<table class="pixelbeat">
+<tr>
+<td><a href="cmdline_ru_RU.html">Русский</a></td>
+<td><a href="cmdline_pl_PL.html">Polski</a></td>
+<td><a href="cmdline_zh_CN.html">中文</a></td>
+<td><a href="cmdline_es_AR.html">Castellano</a></td>
+<td><a href="cmdline_ja_JP.html">日本語</a></td>
+<td><a href="cmdline_pt_BR.html">Português do Brasil</a></td>
+<td><a href="cmdline_hu_HU.html">Magyar</a></td>
+<td><a href="cmdline_sr_YU.html">Srpski</a></td>
+</tr>
+</table>
+<br/>
+<table>
+<tr>
+<td>
+This is a linux command line reference for common operations.<br/>
+Examples marked with • are valid/safe to paste without modification into a terminal, so<br/>
+you may want to keep a terminal window open while reading this so you can <a href="docs/xclipboard.html">cut &amp; paste</a>.<br/>
+All these commands have been tested both on Fedora and Ubuntu.<br/>
+See also <a href="../docs/linux_commands.html">more linux commands</a>.<br/>
+</td>
+</tr>
+</table>
+
+<br/>
+<table class="pixelbeat">
+<tbody>
+
+<tr id="misc" class="pbtitle"><td colspan="2"><b>Command</b></td><td><b>Description</b></td></tr>
+  <tr><td>•</td><td class="nw">apropos whatis</td><td>Show commands pertinent to string. See also <a href="scripts/threadsafe">threadsafe</a></td></tr>
+  <tr><td>•</td><td class="nw"><a href="lkdb/less.html">man</a> -t man | ps2pdf - &gt; man.pdf</td><td>make a pdf of a manual page</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">which command</td><td>Show full path name of command</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">time command</td><td>See how long a command takes</td></tr>
+  <tr><td>•</td><td class="nw">time cat</td><td>Start stopwatch. Ctrl-d to stop. See also <a href="scripts/stopwatch/">sw</a></td></tr>
+
+<tr id="dirs" class="pbtitle"><td colspan="3"><b>dir navigation</b></td></tr>
+  <tr><td>•</td><td class="nw">cd -</td><td>Go to previous directory</td></tr>
+  <tr><td>•</td><td class="nw">cd</td><td>Go to $HOME directory</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">(cd dir &amp;&amp; command)</td><td>Go to dir, execute command and return to current dir</td></tr>
+  <tr><td>•</td><td class="nw">pushd <b>.</b></td><td>Put current dir on stack so you can <b>popd</b> back to it</td></tr>
+
+<tr id="file_search" class="pbtitle"><td colspan="3"><b>file searching</b></td></tr>
+  <tr><td>•</td><td class="nw"><a href="settings/.bashrc">alias</a> l='ls -l --color=auto'</td><td>quick dir listing</td></tr>
+  <tr><td>•</td><td class="nw">ls -lrt</td><td>List files by date. See also <a href="scripts/newest">newest</a> and <a href="scripts/find_mm_yyyy">find_mm_yyyy</a></td></tr>
+  <tr><td>•</td><td class="nw">ls /usr/bin | pr -T9 -W$COLUMNS</td><td>Print in 9 columns to width of terminal</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">find -name '*.[ch]' | xargs grep -E 'expr'</td><td>Search 'expr' in this dir and below. See also <a href="scripts/findrepo">findrepo</a></td></tr>
+  <tr><td>&nbsp;</td><td class="nw">find -type f -print0 | xargs -r0 grep -F 'example'</td><td>Search all regular files for 'example' in this dir and below</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">find -maxdepth 1 -type f | xargs grep -F 'example'</td><td>Search all regular files for 'example' in this dir</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">find -maxdepth 1 -type d | while <a href="programming/readline/">read</a> dir; do echo $dir; echo cmd2; done</td><td>Process each item with multiple commands (in while loop)</td></tr>
+  <tr><td>•</td><td class="nw">find -type f ! -perm -444</td><td>Find files not readable by all (useful for web site)</td></tr>
+  <tr><td>•</td><td class="nw">find -type d ! -perm -111</td><td>Find dirs not accessible by all (useful for web site)</td></tr>
+  <tr><td>•</td><td class="nw">locate -r 'file[^/]*\.txt'</td><td>Search cached index for names. This re is like glob *file*.txt</td></tr>
+  <tr><td>•</td><td class="nw">look reference</td><td>Quickly search (sorted) dictionary for prefix</td></tr>
+  <tr><td>•</td><td class="nw">grep <a href="settings/.bashrc">--color</a> reference /usr/share/dict/words</td><td>Highlight occurances of regular expression in dictionary</td></tr>
+
+<tr id="archives" class="pbtitle"><td colspan="3"><b>archives and compression</b></td></tr>
+  <tr><td>&nbsp;</td><td class="nw">gpg -c file</td><td>Encrypt file</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">gpg file.gpg</td><td>Decrypt file</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">tar -c dir/ | bzip2 &gt; dir.tar.bz2</td><td>Make compressed archive of dir/</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">bzip2 -dc dir.tar.bz2 | tar -x</td><td>Extract archive (use gzip instead of bzip2 for tar.gz files)</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">tar -c dir/ | gzip | gpg -c | ssh user@remote 'dd of=dir.tar.gz.gpg'</td><td>Make encrypted archive of dir/ on remote machine</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">find dir/ -name '*.txt' | tar -c --files-from=- | bzip2 &gt; dir_txt.tar.bz2</td><td>Make archive of subset of dir/ and below</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">find dir/ -name '*.txt' | xargs cp -a --target-directory=dir_txt/ --parents</td><td>Make copy of subset of dir/ and below</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">( tar -c /dir/to/copy ) | ( cd /where/to/ &amp;&amp; tar -x -p )</td><td>Copy (with permissions) copy/ dir to /where/to/ dir</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">( cd /dir/to/copy &amp;&amp; tar -c <b>.</b> ) | ( cd /where/to/ &amp;&amp; tar -x -p )</td><td>Copy (with permissions) contents of copy/ dir to /where/to/</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">( tar -c /dir/to/copy ) | ssh -C user@remote 'cd /where/to/ &amp;&amp; tar -x -p' </td><td>Copy (with permissions) copy/ dir to remote:/where/to/ dir</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">dd bs=1M if=/dev/sda | gzip | ssh user@remote 'dd of=sda.gz'</td><td>Backup harddisk to remote machine</td></tr>
+
+<tr id="rsync" class="pbtitle"><td colspan="3"><b>rsync</b> (Network efficient file copier: Use the --dry-run option for testing)</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">rsync -P rsync://rsync.server.com/path/to/file file</td><td>Only get diffs. Do multiple times for troublesome downloads</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">rsync --bwlimit=1000 fromfile tofile</td><td>Locally copy with rate limit. It's like nice for I/O</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">rsync -az -e ssh --delete ~/public_html/ remote.com:'~/public_html'</td><td>Mirror web site (using compression and encryption)</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">rsync -auz -e ssh remote:/dir/ <b>.</b> &amp;&amp; rsync -auz -e ssh <b>.</b> remote:/dir/</td><td>Synchronize current directory with remote one</td></tr>
+
+<tr id="ssh" class="pbtitle"><td colspan="3"><b>ssh</b> (Secure SHell)</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">ssh $USER@$HOST command</td><td>Run command on $HOST as $USER (default command=shell)</td></tr>
+  <tr><td>•</td><td class="nw">ssh -f -Y $USER@$HOSTNAME xeyes</td><td>Run GUI command on $HOSTNAME as $USER</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">scp -p -r $USER@$HOST: file dir/</td><td>Copy with permissions to $USER's home directory on $HOST</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">ssh -g -L 8080:localhost:80 root@$HOST</td><td>Forward connections to $HOSTNAME:8080 out to $HOST:80</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">ssh -R 1434:imap:143 root@$HOST</td><td>Forward connections from $HOST:1434 in to imap:143</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">ssh-copy-id $USER@$HOST </td><td>Install $USER's public key on $HOST for password-less log in</td></tr>
+
+<tr id="wget" class="pbtitle"><td colspan="3"><b>wget</b> (multi purpose download tool)</td></tr>
+  <tr><td>•</td><td class="nw">(cd dir/ &amp;&amp; wget -nd -pHEKk http://www.pixelbeat.org/cmdline.html)</td><td>Store local browsable version of a page to the current dir</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">wget -c http://www.example.com/large.file</td><td>Continue downloading a partially downloaded file</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">wget -r -nd -np -l1 -A '*.jpg' http://www.example.com/dir/</td><td>Download a set of files to the current directory</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">wget ftp://remote/file[1-9].iso/</td><td>FTP supports globbing directly</td></tr>
+  <tr><td>•</td><td class="nw">wget -q -O- http://www.pixelbeat.org/timeline.html | grep 'a href' | head</td><td>Process output directly</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">echo 'wget url' | at 01:00</td><td>Download url at 1AM to current dir</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">wget --limit-rate=20k url</td><td>Do a low priority download (limit to 20<a href="speeds.html">KB/s</a> in this case)</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">wget -nv --spider --force-html -i bookmarks.html</td><td>Check links in a file</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">wget --mirror http://www.example.com/</td><td>Efficiently update a local copy of a site (handy from cron)</td></tr>
+
+<tr id="net" class="pbtitle"><td colspan="3"><b>networking</b> (Note ifconfig, route, mii-tool, nslookup commands are obsolete)</td></tr>
+  <tr><td>&nbsp;</td><td class="nw"><acronym title="usually in /sbin/">ethtool</acronym> eth0</td><td>Show status of ethernet interface eth0</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">ethtool --change eth0 autoneg off speed 100 duplex full</td><td>Manually set ethernet interface speed</td></tr>
+  <tr><td>&nbsp;</td><td class="nw"><acronym title="usually in /sbin/">iwconfig</acronym> eth1</td><td>Show status of wireless interface eth1</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">iwconfig eth1 rate 1Mb/s fixed</td><td>Manually set wireless interface speed</td></tr>
+  <tr><td>•</td><td class="nw"><acronym title="usually in /sbin/">iwlist</acronym> scan</td><td>List wireless networks in range</td></tr>
+  <tr><td>•</td><td class="nw"><acronym title="usually in /sbin/">ip</acronym> link show</td><td>List network interfaces</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">ip link set dev eth0 name wan</td><td>Rename interface eth0 to wan</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">ip link set dev eth0 up</td><td>Bring interface eth0 up (or down)</td></tr>
+  <tr><td>•</td><td class="nw">ip addr show</td><td>List addresses for interfaces</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">ip addr add 1.2.3.4/24 brd + dev eth0</td><td>Add (or del) ip and mask (255.255.255.0)</td></tr>
+  <tr><td>•</td><td class="nw">ip route show</td><td>List routing table</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">ip route add default via 1.2.3.254</td><td>Set default gateway to 1.2.3.254</td></tr>
+  <tr><td>•</td><td class="nw">host pixelbeat.org</td><td>Lookup DNS ip address for name or vice versa</td></tr>
+  <tr><td>•</td><td class="nw">hostname -i</td><td>Lookup local ip address (equivalent to host `hostname`)</td></tr>
+  <tr><td>•</td><td class="nw">whois pixelbeat.org</td><td>Lookup whois info for hostname or ip address</td></tr>
+  <tr><td>•</td><td class="nw">netstat -tupl</td><td>List internet services on a system</td></tr>
+  <tr><td>•</td><td class="nw">netstat -tup</td><td>List active connections to/from system</td></tr>
+
+<tr id="windows" class="pbtitle"><td colspan="3"><b>windows networking</b> (Note samba is the package that provides all this windows specific networking support)</td></tr>
+  <tr><td>•</td><td class="nw">smbtree</td><td>Find windows machines. See also findsmb</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">nmblookup -A 1.2.3.4</td><td>Find the windows (netbios) name associated with ip address</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">smbclient -L windows_box</td><td>List shares on windows machine or samba server</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">mount -t smbfs -o fmask=666,guest //windows_box/share /mnt/share</td><td>Mount a windows share</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">echo 'message' | smbclient -M windows_box</td><td>Send popup to windows machine (off by default in XP sp2)</td></tr>
+
+<tr id="text" class="pbtitle"><td colspan="3"><b>text manipulation</b> (Note sed uses stdin and stdout. Newer versions support inplace editing with the -i option)</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">sed 's/string1/string2/g'</td><td>Replace string1 with string2</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">sed 's/\(.*\)1/\12/g'</td><td>Modify anystring1 to anystring2</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">sed '/ *#/d; /^ *$/d'</td><td>Remove comments and blank lines</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">sed ':a; /\\$/N; s/\\\n//; ta'</td><td>Concatenate lines with trailing \</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">sed 's/[ \t]*$//'</td><td>Remove trailing spaces from lines</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">sed 's/\([`&quot;$\]\)/\\\1/g'</td><td>Escape shell metacharacters active within double quotes</td></tr>
+  <tr><td>•</td><td class="nw">seq 10 | sed "s/^/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/; s/ *\(.\{7,\}\)/\1/"</td><td>Right align numbers</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">sed -n '1000{p;<acronym title="quit ASAP">q</acronym>}'</td><td>Print 1000th line</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">sed -n '10,20p;<acronym title="quit ASAP">20q</acronym>'</td><td>Print lines 10 to 20</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">sed -n 's/.*&lt;title&gt;\(.*\)&lt;\/title&gt;.*/\1/ip;<acronym title="quit after match">T;q</acronym>'</td><td>Extract title from HTML web page</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">sed -i 42d ~/.ssh/known_hosts</td><td>Delete a particular line</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">sort -t. -k1,1n -k2,2n -k3,3n -k4,4n</td><td>Sort IPV4 ip addresses</td></tr>
+  <tr><td>•</td><td class="nw">echo 'Test' | tr '[:lower:]' '[:upper:]'</td><td>Case conversion</td></tr>
+  <tr><td>•</td><td class="nw">tr -dc '[:print:]' &lt; /dev/urandom</td><td>Filter non printable characters</td></tr>
+  <tr><td>•</td><td class="nw">tr -s '[:blank:]' '\t' &lt;/proc/diskstats | cut -f4</td><td>cut fields separated by blanks</td></tr>
+  <tr><td>•</td><td class="nw">history | wc -l</td><td>Count lines</td></tr>
+
+<tr id="sets" class="pbtitle"><td colspan="3"><b>set operations</b> (Note you can <a href="docs/env.html">export LANG=C</a> for speed. Also these assume no duplicate lines within a file)</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">sort file1 file2 | uniq</td><td><acronym title="Items in either file1 or file2">Union</acronym> of unsorted files</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">sort file1 file2 | uniq -d</td><td><acronym title="Items both in file1 and file2">Intersection</acronym> of unsorted files</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">sort file1 file1 file2 | uniq -u</td><td><acronym title="Items in file2 not in file1">Difference</acronym> of unsorted files</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">sort file1 file2 | uniq -u</td><td><acronym title="Items in only one file">Symmetric Difference</acronym> of unsorted files</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">join <acronym title="process whole line (assuming no NUL characters present)">-t'\0'</acronym> -a1 -a2 file1 file2</td><td>Union of sorted files</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">join -t'\0' file1 file2</td><td>Intersection of sorted files</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">join -t'\0' -v2 file1 file2</td><td>Difference of sorted files</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">join -t'\0' -v1 -v2 file1 file2</td><td>Symmetric Difference of sorted files</td></tr>
+
+<tr id="math" class="pbtitle"><td colspan="3"><b>math</b></td></tr>
+  <tr><td>•</td><td class="nw">echo '(1 + sqrt(5))/2' | bc -l</td><td>Quick math (Calculate φ). See also <a href="scripts/bc">bc</a></td></tr>
+  <tr><td>•</td><td class="nw">echo 'pad=20; min=64; (100*10^6)/((pad+min)*8)' | bc</td><td>More complex (int) e.g. This shows max FastE packet rate</td></tr>
+  <tr><td>•</td><td class="nw">echo 'pad=20; min=64; print (100E6)/((pad+min)*8)' | python</td><td>Python handles scientific notation</td></tr>
+  <tr><td>•</td><td class="nw">echo 'pad=20; plot [64:1518] (100*10**6)/((pad+x)*8)' | gnuplot -persist</td><td>Plot FastE packet rate vs packet size</td></tr>
+  <tr><td>•</td><td class="nw">echo 'obase=16; ibase=10; 64206' | bc</td><td>Base conversion (decimal to hexadecimal)</td></tr>
+  <tr><td>•</td><td class="nw">echo $((0x2dec))</td><td>Base conversion (hex to dec) ((shell arithmetic expansion))</td></tr>
+  <tr><td>•</td><td class="nw">units -t '100m/<a href="misc/usain_bolt/">9.58s</a>' 'miles/hour'</td><td>Unit conversion (metric to imperial)</td></tr>
+  <tr><td>•</td><td class="nw">units -t '500GB' 'GiB'</td><td>Unit conversion (<acronym title="powers of 10">SI</acronym> to <acronym title="powers of 2">IEC</acronym> prefixes)</td></tr>
+  <tr><td>•</td><td class="nw">units -t '1 googol'</td><td>Definition lookup</td></tr>
+  <tr><td>•</td><td class="nw">seq 100 | (tr '\n' +; echo 0) | bc</td><td>Add a column of numbers. See also <a href="scripts/add">add</a> and <a href="scripts/funcpy">funcpy</a></td></tr>
+
+<tr id="dates" class="pbtitle"><td colspan="3"><b>calendar</b></td></tr>
+  <tr><td>•</td><td class="nw">cal -3</td><td>Display a calendar</td></tr>
+  <tr><td>•</td><td class="nw">cal 9 1752</td><td>Display a calendar for a particular month year</td></tr>
+  <tr><td>•</td><td class="nw">date -d fri</td><td>What date is it this friday. See also <a href="scripts/day">day</a></td></tr>
+  <tr><td>•</td><td class="nw">[ $(date -d "tomorrow" +%d) = "01" ] || exit</td><td>exit a script unless it's the last day of the month</td></tr>
+  <tr><td>•</td><td class="nw">date --date='25 Dec' +%A</td><td>What day does xmas fall on, this year</td></tr>
+  <tr><td>•</td><td class="nw">date --date='@2147483647'</td><td>Convert seconds since the epoch (1970-01-01 UTC) to date</td></tr>
+  <tr><td>•</td><td class="nw">TZ='America/Los_Angeles' date</td><td>What time is it on west coast of US (use tzselect to find TZ)</td></tr>
+  <tr><td>•</td><td class="nw">date --date='TZ="America/Los_Angeles" 09:00 next Fri'</td><td>What's the local time for 9AM next Friday on west coast US</td></tr>
+
+<tr id="locale" class="pbtitle"><td colspan="3"><b>locales</b></td></tr>
+  <tr><td>•</td><td class="nw">printf &quot;%'d\n&quot; 1234</td><td>Print number with thousands grouping appropriate to locale</td></tr>
+  <tr><td>•</td><td class="nw">BLOCK_SIZE=\'1 ls -l</td><td>Use locale thousands grouping in ls. See also <a href="../scripts/l">l</a></td></tr>
+  <tr><td>•</td><td class="nw">echo &quot;I live in `locale territory`&quot;</td><td>Extract info from locale database</td></tr>
+  <tr><td>•</td><td class="nw">LANG=en_IE.utf8 locale int_prefix</td><td>Lookup locale info for specific country. See also <a href="scripts/ccodes">ccodes</a></td></tr>
+  <tr><td>•</td><td class="nw">locale | cut -d= -f1 | xargs locale -kc | less</td><td>List fields available in locale database</td></tr>
+
+<tr id="recode" class="pbtitle"><td colspan="3"><b>recode</b> (Obsoletes iconv, dos2unix, unix2dos)</td></tr>
+  <tr><td>•</td><td class="nw">recode -l | less</td><td>Show available conversions (aliases on each line)</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">recode windows-1252.. file_to_change.txt</td><td>Windows "ansi" to local charset (auto does CRLF conversion)</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">recode utf-8/CRLF.. file_to_change.txt</td><td>Windows utf8 to local charset</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">recode iso-8859-15..utf8 file_to_change.txt</td><td>Latin9 (western europe) to utf8</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">recode ../b64 &lt; file.txt &gt; file.b64</td><td>Base64 encode</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">recode /qp.. &lt; file.qp &gt; file.txt</td><td>Quoted printable decode</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">recode ..HTML &lt; file.txt &gt; file.html</td><td>Text to HTML</td></tr>
+  <tr><td>•</td><td class="nw">recode -lf windows-1252 | grep euro</td><td>Lookup <a href="docs/utf8.html">table of characters</a></td></tr>
+  <tr><td>•</td><td class="nw">echo -n 0x80 | recode latin-9/x1..dump</td><td>Show what a code represents in latin-9 charmap</td></tr>
+  <tr><td>•</td><td class="nw">echo -n 0x20AC | recode ucs-2/x2..latin-9/x</td><td>Show latin-9 encoding</td></tr>
+  <tr><td>•</td><td class="nw">echo -n 0x20AC | recode ucs-2/x2..utf-8/x</td><td>Show utf-8 encoding</td></tr>
+
+<tr id="CDs" class="pbtitle"><td colspan="3"><b><acronym title="Compact Disks">CDs</acronym></b></td></tr>
+  <tr><td>&nbsp;</td><td class="nw">gzip &lt; /dev/cdrom &gt; cdrom.iso.gz</td><td>Save copy of data cdrom</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">mkisofs -V LABEL -r dir | gzip &gt; cdrom.iso.gz</td><td>Create cdrom image from contents of dir</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">mount -o loop cdrom.iso /mnt/dir</td><td>Mount the cdrom image at /mnt/dir (read only)</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">cdrecord -v dev=/dev/cdrom blank=fast</td><td>Clear a CDRW</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">gzip -dc cdrom.iso.gz | cdrecord -v dev=/dev/cdrom -</td><td>Burn cdrom image (use dev=ATAPI -scanbus to confirm dev)</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">cdparanoia -B</td><td>Rip audio tracks from CD to wav files in current dir</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">cdrecord -v dev=/dev/cdrom -audio -pad *.wav</td><td>Make audio CD from all wavs in current dir (see also cdrdao)</td></tr>
+  <tr><td>&nbsp;</td><td class="nw">oggenc --tracknum='track' track.cdda.wav -o 'track.ogg'</td><td>Make ogg file from wav file</td></tr>
+
+<tr id="disk_space" class="pbtitle"><td colspan="3"><b>disk space</b> (See also <a href="fslint/">FSlint</a>)</td></tr>
+  <tr><td>•</td><td class="nw">ls -lSr</td><td>Show files by size, biggest last</td></tr>
+  <tr><td>•</td><td class="nw">du -s * | sort -k1,1rn | head</td><td>Show top disk users in current dir. See also <a href="scripts/dutop">dutop</a></td></tr>
+  <tr><td>•</td><td class="nw">du -hs /home/* | sort -k1,1<acronym title="available since coreutils 7.5">h</acronym></td><td>Sort paths by easy to interpret disk usage</td></tr>
+  <tr><td>•</td><td class="nw">df -h</td><td>Show free space on mounted filesystems</td></tr>
+  <tr><td>•</td><td class="nw">df -i</td><td>Show free inodes on mounted filesystems</td></tr>
+  <tr><td>•</td><td class="nw"><acronym title="usually in /sbin/">fdisk</acronym> -l</td><td>Show disks partitions sizes and types (run as root)</td></tr>
+  <tr><td>•</td><td class="nw"><a href="docs/packaging.html">rpm</a> -q -a --qf '%10{SIZE}\t%{NAME}\n' | sort -k1,1n</td><td>List all <a href="docs/packaging.html">packages</a> by installed size (Bytes) on rpm distros</td></tr>
+  <tr><td>•</td><td class="nw"><a href="docs/packaging.html">dpkg</a>-query -W -f='${Installed-Size;10}\t${Package}\n' | sort -k1,1n</td><td>List all <a href="docs/packaging.html">packages</a> by installed size (KBytes) on deb distros</td></tr>
+  <tr><td>•</td><td class="nw">dd bs=1 seek=2TB if=/dev/null of=ext3.test</td><td>Create a large test file (taking no space). See also <a href="scripts/truncate">truncate</a></td></tr>
+  <tr><td>•</td><td class="nw">&gt; file</td><td>truncate data of file or create an empty file</td></tr>
+
+<tr id="monitor" class="pbtitle"><td colspan="3"><b>monitoring/debugging</b></td></tr>
+  <tr><td>•</td><td class="nw">tail -f /var/log/messages</td><td><a href="docs/web/access_log/monitoring.html">Monitor messages</a> in a log file</td></tr>
+  <tr><td>•</td><td class="nw">strace -c ls &gt;/dev/null</td><td>Summarise/profile system calls made by command</td></tr>
+  <tr><td>•</td><td class="nw">strace -f -e open ls &gt;/dev/null</td><td>List system calls made by command</td></tr>
+  <tr><td>•</td><td class="nw">strace -f -e trace=write -e write=1,2 ls &gt;/dev/null</td><td>Monitor what's written to stdout and stderr</td></tr>
+  <tr><td>•</td><td class="nw">ltrace -f -e getenv ls &gt;/dev/null</td><td>List library calls made by command</td></tr>
+  <tr><td>•</td><td class="nw"><acronym title="usually in /usr/sbin/">lsof</acronym> -p <acronym title="process id of current shell">$$</acronym></td><td>List paths that process id has open</td></tr>
+  <tr><td>•</td><td class="nw">lsof ~</td><td>List processes that have specified path open</td></tr>
+  <tr><td>•</td><td class="nw">tcpdump not port 22</td><td>Show network traffic except ssh. See also <a href="scripts/tcpdump_not_me">tcpdump_not_me</a></td></tr>
+  <tr><td>•</td><td class="nw">ps -e -o pid,args --forest</td><td>List processes in a hierarchy</td></tr>
+  <tr><td>•</td><td class="nw">ps -e -o pcpu,cpu,nice,state,cputime,args --sort pcpu | sed '/^ 0.0 /d'</td><td>List processes by % cpu usage</td></tr>
+  <tr><td>•</td><td class="nw">ps -e -orss=,args= | sort -b -k1,1n | pr -TW$COLUMNS</td><td>List processes by mem (KB) usage. See also <a href="scripts/ps_mem.py">ps_mem.py</a></td></tr>
+  <tr><td>•</td><td class="nw">ps -C firefox-bin -L -o pid,tid,pcpu,state</td><td>List all threads for a particular process</td></tr>
+  <tr><td>•</td><td class="nw">ps -p 1,$$ -o etime=</td><td>List elapsed wall time for particular process IDs</td></tr>
+  <tr><td>•</td><td class="nw">last reboot</td><td>Show system reboot history</td></tr>
+  <tr><td>•</td><td class="nw">free -m</td><td>Show amount of (remaining) RAM (-m displays in MB)</td></tr>
+  <tr><td>•</td><td class="nw">watch -n.1 'cat /proc/interrupts'</td><td>Watch changeable data continuously</td></tr>
+  <tr><td>•</td><td class="nw">udevadm monitor</td><td>Monitor udev events to help configure rules</td></tr>
+
+<tr id="sysinfo" class="pbtitle"><td colspan="3"><b>system information</b> (see also <a href="scripts/sysinfo">sysinfo</a>) ('#' means root access is required)</td></tr>
+  <tr><td>•</td><td class="nw">uname -a</td><td>Show kernel version and system architecture</td></tr>
+  <tr><td>•</td><td class="nw">head -n1 /etc/issue</td><td>Show name and version of distribution</td></tr>
+  <tr><td>•</td><td class="nw">cat /proc/partitions</td><td>Show all partitions registered on the system</td></tr>
+  <tr><td>•</td><td class="nw">grep MemTotal /proc/meminfo</td><td>Show RAM total seen by the system</td></tr>
+  <tr><td>•</td><td class="nw">grep "model name" /proc/cpuinfo</td><td>Show CPU(s) info</td></tr>
+  <tr><td>•</td><td class="nw"><acronym title="usually in /sbin/">lspci</acronym> -tv</td><td>Show PCI info</td></tr>
+  <tr><td>•</td><td class="nw"><acronym title="usually in /sbin/">lsusb</acronym> -tv</td><td>Show USB info</td></tr>
+  <tr><td>•</td><td class="nw">mount | column -t</td><td>List mounted filesystems on the system (and align output)</td></tr>
+  <tr><td>•</td><td class="nw">grep -F capacity: /proc/acpi/battery/BAT0/info</td><td>Show state of cells in laptop battery</td></tr>
+  <tr><td>#</td><td class="nw">dmidecode -q | less</td><td>Display SMBIOS/DMI information</td></tr>
+  <tr><td>#</td><td class="nw">smartctl -A /dev/sda | grep Power_On_Hours</td><td>How long has this disk (system) been powered on in total</td></tr>
+  <tr><td>#</td><td class="nw">hdparm -i /dev/sda</td><td>Show info about disk sda</td></tr>
+  <tr><td>#</td><td class="nw">hdparm -tT /dev/sda</td><td>Do a read speed test on disk sda</td></tr>
+  <tr><td>#</td><td class="nw">badblocks -s /dev/sda</td><td>Test for unreadable blocks on disk sda</td></tr>
+
+<tr id="interactive" class="pbtitle"><td colspan="3"><b>interactive</b> (see also <a href="lkdb/">linux keyboard shortcuts)</a></td></tr>
+  <tr><td>•</td><td class="nw"><a href="lkdb/readline.html">readline</a></td><td>Line editor used by bash, python, bc, gnuplot, ...</td></tr>
+  <tr><td>•</td><td class="nw"><a href="lkdb/screen.html">screen</a></td><td>Virtual terminals with detach capability, ...</td></tr>
+  <tr><td>•</td><td class="nw"><a href="lkdb/mc.html">mc</a></td><td>Powerful file manager that can browse rpm, tar, ftp, ssh, ...</td></tr>
+  <tr><td>•</td><td class="nw"><a href="docs/web/access_log/analyzing.html">gnuplot</a></td><td>Interactive/scriptable graphing</td></tr>
+  <tr><td>•</td><td class="nw">links</td><td>Web browser</td></tr>
+  <tr><td>•</td><td class="nw">xdg-open <b>.</b></td><td>open a file or url with the registered desktop application</td></tr>
+
+<!--
+<tr><td align="center" colspan="3">
+<div style="padding-top:5px;">
+<script type="text/javascript"><!-
+google_ad_client = "pub-3527575214508372";
+google_alternate_color = "FFFFC0";
+google_ad_width = 728;
+google_ad_height = 90;
+google_ad_format = "728x90_as";
+google_ad_type = "image";
+//2006-10-04: cmdline_banner
+google_ad_channel ="2479280376";
+google_color_border = "FFFFC0";
+google_color_bg = "FFFFC0";
+google_color_link = "000000";
+google_color_text = "000000";
+google_color_url = "000000";
+//-></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+</td></tr>
+-->
+
+</tbody>
+</table>
+</div> <!--font-size-->
+
+        <!-- google_ad_section_start(weight=ignore) -->
+        <div style="color: gray; padding-top: 1em; width:728px;">
+        
+        <span style="text-align:left;"><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license">©</a> Jan  7 2008</span>
+        <script type="text/javascript">
+        <!--
+        document.write('&nbsp;&nbsp;[<a href="javascript:comments()">Comments</a>]')
+        document.write('&nbsp;|&nbsp;[<a href="javascript:bookmark()">Add&nbsp;link&nbsp;to&nbsp;...</a>]')
+        //-->
+        </script>
+        </div>
+
+        <div style="padding-top: 1em;">
+        <script type="text/javascript"><!--
+        google_ad_client = "pub-3527575214508372";
+        google_ad_width = 728;
+        google_ad_height = 15;
+        google_ad_format = "728x15_0ads_al";
+        //2007-01-15: link_units
+        google_ad_channel = "0445407648";
+        google_color_border = "FFFFC0";
+        google_color_bg = "FFFFC0";
+        google_color_link = "0000FF";
+        google_color_text = "000000";
+        google_color_url = "0000FF";
+        //--></script>
+        <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
+        </div>
+<!-- google_ad_section_end -->
+
+                </div>
+</div>
+<div id="sidebar">
+<div id="menu">
+
+<a href="/" rel="me">Home</a>
+
+</div>
+
+
+
+<!-- vertical -->
+<table width="100%" height="100%" cellpadding="0" cellspacing="0">
+<tr><td align="center">
+<script type="text/javascript"><!--
+google_ad_client = "pub-3527575214508372";
+google_ad_slot = "3344111843";
+google_ad_width = 120;
+google_ad_height = 240;
+//-->
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"> </script>
+
+<!--[if IE]>
+<!-- IE specific content -->
+<![endif]-->
+
+</td></tr>
+</table>
+
+
+<!-- google_ad_section_start(weight=ignore) -->
+<div id="footer">
+<a href="/timeline.html">Timemap</a><span class="invisible">&nbsp;|&nbsp;</span>
+<a href="http://twitter.com/pixelbeat_">Twitter</a><span class="invisible">&nbsp;|&nbsp;</span>
+<!--<a href="/pixelbeat.asc">Key</a><span class="invisible">&nbsp;|&nbsp;</span>-->
+<a style="margin-bottom:0;" href="mailto:P@draigBrady.com">Email</a><span class="invisible">&nbsp;|&nbsp;</span>
+</div>
+<!-- google_ad_section_end -->
+
+</div>
+
+</body></html>

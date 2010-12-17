@@ -1,0 +1,2367 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html dir='ltr' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+<title>The other side of the moon: Scaling writes in MySQL</title>
+<link href='http://tech.bluesmoon.info/' rel='canonical'/>
+<link href='http://tech.bluesmoon.info/feeds/posts/default' rel='alternate' title='The other side of the moon - Atom' type='application/atom+xml'/>
+<link href='http://tech.bluesmoon.info/feeds/posts/default?alt=rss' rel='alternate' title='The other side of the moon - RSS' type='application/rss+xml'/>
+<link href='http://www.blogger.com/feeds/7715485/posts/default' rel='service.post' title='The other side of the moon - Atom' type='application/atom+xml'/>
+<link href='http://www.blogger.com/rsd.g?blogID=7715485' rel='EditURI' title='RSD' type='application/rsd+xml'/>
+<link href='http://www.blogger.com/profile/18075968083522627991' rel='me'/>
+<link href='http://www.blogger.com/openid-server.g' rel='openid.server'/>
+<link href='http://i1.bluesmoon.info/favicon.ico' rel='icon' type='image/x-icon'/>
+<link type='text/css' rel='stylesheet' href='http://www.blogger.com/static/v1/widgets/1743847221-widget_css_bundle.css' />
+ <link rel="stylesheet" type="text/css" href="http://www.blogger.com/dyn-css/authorization.css?targetBlogID=7715485&zx=dddbfaed-cbf4-4f04-a467-5e156e9d98d6"/>
+<style type="text/css">#navbar-iframe { display:block }
+</style>
+
+<style id='page-skin-1' type='text/css'><!--
+
+--></style>
+<link href='http://a1.bluesmoon.info/blue.css' rel='stylesheet' type='text/css'/>
+<script type='text/javascript'>
+     if (typeof window.Delicious == "undefined")
+        window.Delicious = {
+           BLOGBADGE_GRAPH_SHOW:true,
+           BLOGBADGE_MANUAL_MODE:true
+        };
+
+	function show_twitter(o) {
+		var div = document.getElementById("twitter");
+		var ul = div.getElementsByTagName("ul")[0];
+		ul.innerHTML = "";
+		for(var i=0; i<o.length; i++) {
+			var li = document.createElement("li");
+			li.innerHTML = o[i].text.replace(/@(\w+)/g, "<a href='http://twitter.com/$1'>@$1</a>").replace(/(https?:\/\/[^"\s'\<\>]+)([.,]?(?:\s|$))/g, "<a href='$1'>$1</a>$2");
+			ul.appendChild(li);
+		}
+	}
+  (function()
+  {
+	var blogTitle='The other side of the moon';
+	var pageTitle=document.title;
+
+	if(pageTitle == blogTitle)
+		return;
+
+	var re = new RegExp(blogTitle);
+	document.title = pageTitle.replace(re, '').replace(/^: /, '');
+  }());
+  </script>
+<script src='http://static.delicious.com/js/d2-blogbadge.js'></script>
+<style type='text/css'>
+   .delicious-blogbadge { border: none; }
+   .delicious-blogbadge .graph a img { height: auto; width: auto; }
+  </style>
+<script type="text/javascript">
+if (window.jstiming) window.jstiming.load.tick('headEnd');
+</script></head>
+<body class='bluestech blog'>
+<div class='navbar section' id='navbar'><div class='widget Navbar' id='Navbar1'><script type="text/javascript">
+    function setAttributeOnload(object, attribute, val) {
+      if(window.addEventListener) {
+        window.addEventListener("load",
+          function(){ object[attribute] = val; }, false);
+      } else {
+        window.attachEvent('onload', function(){ object[attribute] = val; });
+      }
+    }
+  </script>
+<iframe src="http://www.blogger.com/navbar.g?targetBlogID=7715485&amp;blogName=The+other+side+of+the+moon&amp;publishMode=PUBLISH_MODE_HOSTED&amp;navbarType=DARK&amp;layoutType=LAYOUTS&amp;searchRoot=http%3A%2F%2Ftech.bluesmoon.info%2Fsearch&amp;blogLocale=en_IN&amp;homepageUrl=http%3A%2F%2Ftech.bluesmoon.info%2F&amp;targetPostID=8483714778364140190" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" height="30px" width="100%" id="navbar-iframe" allowtransparency="true" title="Blogger Navigation and Search"></iframe>
+<div></div></div></div>
+<div id='content'>
+<div class='section' id='header'><div class='widget HTML' id='HTML20'>
+<ul>
+<li><a href="http://bluesmoon.info/" rel="me">home</a></li>
+<li><a href="http://tech.bluesmoon.info/" rel="me">tech</a></li>
+<li><a href="http://food.bluesmoon.info/" rel="me">food</a></li>
+<li><a href="http://blueswalk.bluesmoon.info/" rel="me">travel</a></li>
+<!-- li><a rel="me" href="http://bluesviews.bluesmoon.info/">reviews</a></li -->
+<li><a href="http://hacks.bluesmoon.info/">code</a></li>
+<li><a href="http://talks.bluesmoon.info/">talks</a></li>
+<li><a href="http://bluesmoon.info/planet/">planet</a></li>
+<li><a href="http://bluesmoon.info/me/" rel="me">me</a></li>
+</ul>
+</div></div>
+<!-- skip links for text browsers -->
+<span id='skiplinks' style='display:none;'>
+<a href='#main'>skip to main </a> |
+      <a href='#sidebar'>skip to sidebar</a>
+</span>
+<div class='vcard section' id='header-vcard'><div class='widget Header' id='Header1'>
+<div id='header-inner'>
+<div class='titlewrapper'>
+<h1 class='title'>
+<a href='http://tech.bluesmoon.info/'>The other side of the moon</a>
+</h1>
+</div>
+<div class='descriptionwrapper'>
+<p class='description'>
+<img alt='[philiptellis]' class='photo' height='64' id='avatar' src='http://img.avatars.yahoo.com/users/1xr7bvyKNAAIC_EF0AJbtg4wA.64.png' width='64'/>
+<span>/bb|[^b]{2}/<br>
+Never stop Grokking</span>
+</p>
+<br/>
+</div>
+</div>
+</div></div>
+<!-- end vcard -->
+<div id='body'>
+<div class='main section' id='bodycontent'><div class='widget Blog' id='Blog1'>
+<div class='blog-posts hfeed'>
+<h2 class='date-header'>Monday, September 28, 2009</h2>
+<div class='post hentry'>
+<a name='8483714778364140190'></a>
+<h3 class='post-title entry-title'>
+<a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html'>Scaling writes in MySQL</a>
+</h3>
+<div class='post-header-line-1'></div>
+<div class='post-body entry-content'>
+We use MySQL on most of our projects.  One of these projects has a an access pattern unlike any other I've worked on.  Several million records a day need to be written to a table.  These records are then read out once at the end of the day, summarised and then very rarely touched again.  Each record is about 104 bytes long (thre's one VARCHAR column, everything else is fixed), and that's after squeezing out every byte possible.  The average number of records that we write in a day is 40 million, but this could go up.<br />
+<br />
+A little bit about the set up.  We have fairly powerful boxes with large disks using RAID1/0 and 16GB RAM, however at the time they only had 4GB.  For <abbr title="Business Continuity Planning">BCP</abbr>, we have a multi-master set up in two colos with statement level replication.  We used MySQL 5.1.<br />
+<br />
+My initial tests with various parameters that affect writes showed that while MyISAM performed slightly better than InnoDB while the tables were small, it quickly deteriorated as the table size crossed a certain point.  InnoDB performance deteriorated as well, but at a higher table size.  The table size turned out to be related to the <code>innodb_buffer_pool_size</code>, and that in turn was capped by the amount of RAM we had on the system.<br />
+<br />
+I decided to go with InnoDB since we also needed transactions for the summary tables and I preferred not to divide my RAM between two different engines.  I stripped out all indexes, and retained only the primary key.  Since InnoDB stores the table in the primary key, I decided that rather than use an auto_increment column, I'd cover several columns with the primary key to guarantee uniqueness.  This had the added advantage that if the same record was inserted more than once, it would not result in duplicates.  This small point was crucial for BCP, because it meant that we did not have to keep track of which records had already been inserted.  If something crashed, we could just reinsert the last 30 minutes worth of data, possibly into the secondary master, and not have any duplicates at the end of it.  I used <code>INSERT IGNORE</code> to get this done automatically.<br />
+<br />
+Now to get back to the table size limit that we were facing.  Initial tests showed that we could insert at most 2100 records per second until the table size got to a little over the <code>innodb_buffer_pool_size</code> and at that point it degraded fairly rapidly to around 150 records per second.  This was unacceptable because records were coming in to the system at an average rate of 1000 per second.  Since we only needed to read these records at the end of the day, it was safe to accumulate them into a text file and periodically insert them in bulk.  I decided to insert 40,000 records at one time.  The number I chose was arbitrary, but later tests that I ran on batches of 10K, 20K and 80K showed no difference in insert rates.  With batch inserts, we managed to get an insert rate of 10,000 records per second, but this also degraded as soon as we hit the limit going down to 150 records per second.<br />
+<br />
+System stats on the database box showed that the disk was almost idle for most of the run and then suddenly shot up to 90-100% activity once we hit this limit, so it was obvious that at this point, the DB was exchanging data between buffers and disk all the time.<br />
+<br />
+At this point, someone suggested that we try partitioning, which was available in MySQL 5.1.  My first instinct was to partition based on the primary key so that we could read data out easily.  However, reads weren't really our problem since we had no restriction on how fast they needed to be (at least not as much as writes).  Instead, I decided to partition my table based on the pattern of incoming data.<br />
+<br />
+The first part was obvious, use a separate table for each day's data.  On a table of this size, <code>DROP TABLE</code> is much faster than <code>DELETE From &lt;table&gt; Where ...</code>, and it also reclaims lost space.  I should mention at this point that we used <code>file_per_table</code> as well to make sure that each table had its own file rather than use a single innodb file.<br />
+<br />
+Secondly, each table was partitioned on time.  12 partitions per day, 2 hours of data per partition.  The <a href="http://dev.mysql.com/doc/refman/5.1/en/partitioning.html">MySQL docs for Partitioning</a> were quite useful in understanding what to do.  The command ended up looking like this:<pre>CREATE TABLE (
+...
+) PARTITION BY RANGE( ( time DIV 3600 ) MOD 24 ) (
+Partition p0 values less than (2),
+Partition p1 values less than (4),
+Partition p2 values less than (6),
+Partition p3 values less than (8),
+Partition p4 values less than (10),
+Partition p5 values less than (12),
+Partition p6 values less than (14),
+Partition p7 values less than (16),
+Partition p8 values less than (18),
+Partition p9 values less than (20),
+Partition p10 values less than (22),
+Partition p11 values less than (24)
+); </pre>The <code>time</code> field is the timestamp of incoming records, and since time always moves forward (at least in my universe), this meant that I would never write to more than 2 partitions at any point in time.  Now, a little back of the envelope calculations:<pre>44M x 102 bytes = approx 4.2GB
+2x for InnoDB overhead = approx 8.4GB 
++10% for partitioning overhead = 9.2GB
+/12 partitions = approx 760MB per partition </pre>This turned out to be more or less correct.  In most cases total table size ranges between 8-10GB, sometimes it goes up to 13GB.  Partition sizes range from less than 700MB to over 1GB depending on the time of day.  With 4GB of RAM, we had an innodb_buffer_pool set at 2.7GB, which was good enough to store two partitions, but not good enough to work on any other tables or do anything else on the box.  Boosting the RAM to 16GB meant that we could have a 12GB buffer pool, and leave 4GB for the system.  This was enough for 2 partitions, even if the total number of records went up, and we could work on other tables as well.<br />
+<br />
+After partitioning, tests showed that we could sustain an insert rate of 10K rows per second for some time.  As the table size grew past 10 million records, the insert rate dropped to about 8500 rows per second, but it stayed at that rate for well over 44 million records.  I tested inserts up to 350 million records and we were able to sustain an insert rate of around 8500 rows per second.  Coincidentally, during Michael Jackson's memorial service, we actually did hit an incoming rate of a little over 8000 records per second for a few hours.<br />
+<br />
+One more BotE calculation:<pre>8500 rows per second  x  86400 seconds per day = 734.4 Million records per day</pre>Considering that before this system was redesigned it was handling about 7 Million records per day, I'd say that we did pretty well.<br />
+<br />
+<strong>Update:</strong> If you want to see charts, they're in my <a href="http://www.slideshare.net/bluesmoon/scaling-mysql-writes-through-partitioning-3397422">ConFoo presentation on slideshare</a>.
+<div style='clear: both;'></div>
+</div>
+<div class='post-footer'>
+<div class='post-footer-line post-footer-line-1'><span class='post-author vcard'>
+Posted by
+<span class='fn'>Blues</span>
+</span>
+<span class='post-timestamp'>
+at
+<a class='timestamp-link' href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html' rel='bookmark' title='permanent link'><abbr class='published' title='2009-09-28T02:27:00-07:00'>02:27</abbr></a>
+</span>
+<span class='post-comment-link'>
+</span>
+<span class='post-icons'>
+<span class='item-action'>
+<a href='http://www.blogger.com/email-post.g?blogID=7715485&postID=8483714778364140190' title='Email Post'>
+<img alt='' class='icon-action' height='13' src='http://www.blogger.com/img/icon18_email.gif' width='18'/>
+</a>
+</span>
+<span class='item-control blog-admin pid-1912216624'>
+<a href='http://www.blogger.com/post-edit.g?blogID=7715485&postID=8483714778364140190' title='Edit Post'>
+<img alt='' class='icon-action' height='18' src='http://img2.blogblog.com/img/icon18_edit_allbkg.gif' width='18'/>
+</a>
+</span>
+</span>
+</div>
+<div class='post-footer-line post-footer-line-2'><span class='post-labels'>
+Labels:
+<a href='http://tech.bluesmoon.info/search/label/database' rel='tag'>database</a>,
+<a href='http://tech.bluesmoon.info/search/label/mysql' rel='tag'>mysql</a>,
+<a href='http://tech.bluesmoon.info/search/label/performance' rel='tag'>performance</a>,
+<a href='http://tech.bluesmoon.info/search/label/scalability' rel='tag'>scalability</a>,
+<a href='http://tech.bluesmoon.info/search/label/write%20performance' rel='tag'>write performance</a>
+</span>
+</div>
+<div class='post-footer-line post-footer-line-3'><span class='reaction-buttons'>
+</span>
+<script type='text/javascript'>
+	      Delicious.BlogBadge.writeBadge("delicious-blogbadge-"+Math.random(), "http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html", "Scaling writes in MySQL", {});
+      </script>
+</div>
+</div>
+</div>
+<div class='comments' id='comments'>
+<a name='comments'></a>
+<h4>
+20
+comments:
+        
+</h4>
+<div class='pid-1912216624' id='Blog1_comments-block-wrapper'>
+<dl class='avatar-comment-indent' id='comments-block'>
+<dt class='comment-author ' id='c7008420197331777481'>
+<a name='c7008420197331777481'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><a href="http://www.blogger.com/profile/07820955267400574921" rel="nofollow" onclick="" class="avatar-hovercard" id="av-0-07820955267400574921"><img src="http://img2.blogblog.com/img/b16-rounded.gif" width="16" height="16" alt="" title="Morgan">
+
+</a></span></div>
+<a href='http://www.blogger.com/profile/07820955267400574921' rel='nofollow'>Morgan</a>
+</dt>
+<dd class='comment-date'>
+<span class='comment-timestamp'>
+<a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html?showComment=1254280059294#c7008420197331777481' title='comment permalink'>
+September 29, 2009 8:07 PM
+</a>
+<span class='item-control blog-admin pid-712964166'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=7715485&postID=7008420197331777481' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dd class='comment-body ' id='Blog1_cmt-7008420197331777481'>
+<p>
+Thank you for sharing!  I wonder if you could share a sanitized version of the schema you were inserting into?<br /><br />There&#39;s a benchmark that exists to test a storage engine&#39;s sustained insert performance called iibench.  Results for InnoDB are available here (spoiler: it ain&#39;t all pretty):<br /><br />http://mysqlha.blogspot.com/2008/12/innodb-insert-performance.html<br /><br />The random IO of updating B-tree indexes has got to be one of the big factors for the slow down once you exceed buffer pool size, but I wonder if there&#39;s anything else to it that could potentially be improved.  I know I&#39;ve seen cases where table scans can just wipe the contents of the buffer pool because InnoDB doesn&#39;t have any mid-point insertion strategies to avoid this.
+<span class='interaction-iframe-guide'></span>
+</p>
+</dd>
+<dd class='comment-footer'></dd>
+<dt class='comment-author ' id='c7380480053167392608'>
+<a name='c7380480053167392608'></a>
+<div class="avatar-image-container vcard"><span dir="ltr"><a href="http://www.blogger.com/profile/03765707422247976790" rel="nofollow" onclick="" class="avatar-hovercard" id="av-1-03765707422247976790"><img src="http://img1.blogblog.com/img/blank.gif" width="35" height="35" alt="" class="delayLoad" style="display: none;" longdesc="http://3.bp.blogspot.com/_NuR-t6VGMhw/SmC8bjr2ncI/AAAAAAAAABs/6yyqoF1I3x0/S45/Hotchkiss-Profile-Photo-lo-res.jpg" title="Tom Hotchkiss">
+
+<noscript><img src="http://3.bp.blogspot.com/_NuR-t6VGMhw/SmC8bjr2ncI/AAAAAAAAABs/6yyqoF1I3x0/S45/Hotchkiss-Profile-Photo-lo-res.jpg" width="35" height="35" class="photo" alt=""></noscript></a></span></div>
+<a href='http://www.blogger.com/profile/03765707422247976790' rel='nofollow'>Tom Hotchkiss</a>
+</dt>
+<dd class='comment-date'>
+<span class='comment-timestamp'>
+<a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html?showComment=1254415469798#c7380480053167392608' title='comment permalink'>
+October 01, 2009 9:44 AM
+</a>
+<span class='item-control blog-admin pid-1011422525'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=7715485&postID=7380480053167392608' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dd class='comment-body ' id='Blog1_cmt-7380480053167392608'>
+<p>
+You might want to give the TokuDB storage engine a try since it is a perfect fit for your application.  Take a look at the first graph in:<br /><br />http://tokutek.com/mysql-performance-brief.pdf<br /><br />Using the iiBench benchmark mentioned by Morgan, TokuDB sustained an insert rate of more than 16,000 rows per second with three fully random indexes on a 1B row table without any partitioning.<br /><br />Contact me if you are interested at hotchkiss at tokutek dot com
+<span class='interaction-iframe-guide'></span>
+</p>
+</dd>
+<dd class='comment-footer'></dd>
+<dt class='comment-author ' id='c6941935112529493343'>
+<a name='c6941935112529493343'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><img src="http://img1.blogblog.com/img/blank.gif" width="16" height="16" alt="" title="zDenis">
+
+</span></div>
+zDenis
+</dt>
+<dd class='comment-date'>
+<span class='comment-timestamp'>
+<a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html?showComment=1255533961787#c6941935112529493343' title='comment permalink'>
+October 14, 2009 8:26 AM
+</a>
+<span class='item-control blog-admin pid-536332523'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=7715485&postID=6941935112529493343' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dd class='comment-body ' id='Blog1_cmt-6941935112529493343'>
+<p>
+You write: &quot;I should mention at this point that we used file_per_table as well to make sure that each table had its own file rather than use a single innodb file&quot;<br /><br />Since you don&#39;t insert records in different tables at the same time, what was the main reasons which lead you to this decision?<br /><br />Thanks
+<span class='interaction-iframe-guide'></span>
+</p>
+</dd>
+<dd class='comment-footer'></dd>
+<dt class='comment-author blog-author' id='c3287526571738432512'>
+<a name='c3287526571738432512'></a>
+<div class="avatar-image-container vcard"><span dir="ltr"><a href="http://www.blogger.com/profile/18075968083522627991" rel="nofollow" onclick="" class="avatar-hovercard" id="av-3-18075968083522627991"><img src="http://img1.blogblog.com/img/blank.gif" width="35" height="35" alt="" class="delayLoad" style="display: none;" longdesc="http://1.bp.blogspot.com/_g7oISy6bcdQ/SatlVFyTb6I/AAAAAAAAAGk/wWeCix6YHjM/S45/philiptellis.jpg" title="Blues">
+
+<noscript><img src="http://1.bp.blogspot.com/_g7oISy6bcdQ/SatlVFyTb6I/AAAAAAAAAGk/wWeCix6YHjM/S45/philiptellis.jpg" width="35" height="35" class="photo" alt=""></noscript></a></span></div>
+<a href='http://www.blogger.com/profile/18075968083522627991' rel='nofollow'>Blues</a>
+</dt>
+<dd class='comment-date'>
+<span class='comment-timestamp'>
+<a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html?showComment=1255534242899#c3287526571738432512' title='comment permalink'>
+October 14, 2009 8:30 AM
+</a>
+<span class='item-control blog-admin pid-1912216624'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=7715485&postID=3287526571738432512' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dd class='comment-body ' id='Blog1_cmt-3287526571738432512'>
+<p>
+file_per_table is always a good idea.  It allows you to move some tables off to a different file system.  Also, if you drop a table (we drop tables older than 2 months), the space is reclaimed immediately instead of fragmenting the main innodb tablespace.<br /><br />Lastly, if I need to clone database, I can cheat a little and only copy over tables that are critical to day to day system operation, and then copy over older tables when the system is idle.
+<span class='interaction-iframe-guide'></span>
+</p>
+</dd>
+<dd class='comment-footer'></dd>
+<dt class='comment-author ' id='c6871711907556648165'>
+<a name='c6871711907556648165'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><a href="http://www.blogger.com/profile/10638112406986018512" rel="nofollow" onclick="" class="avatar-hovercard" id="av-4-10638112406986018512"><img src="http://img2.blogblog.com/img/b16-rounded.gif" width="16" height="16" alt="" title="Kiran">
+
+</a></span></div>
+<a href='http://www.blogger.com/profile/10638112406986018512' rel='nofollow'>Kiran</a>
+</dt>
+<dd class='comment-date'>
+<span class='comment-timestamp'>
+<a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html?showComment=1269146208607#c6871711907556648165' title='comment permalink'>
+March 20, 2010 9:36 PM
+</a>
+<span class='item-control blog-admin pid-1505216124'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=7715485&postID=6871711907556648165' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dd class='comment-body ' id='Blog1_cmt-6871711907556648165'>
+<p>
+This seems to be a good fit for sqlite ,  the inserts are fast and its easy to aggregate at the end.
+<span class='interaction-iframe-guide'></span>
+</p>
+</dd>
+<dd class='comment-footer'></dd>
+<dt class='comment-author ' id='c1926490273066905844'>
+<a name='c1926490273066905844'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><a href="http://www.blogger.com/profile/07471650991008523174" rel="nofollow" onclick="" class="avatar-hovercard" id="av-5-07471650991008523174"><img src="http://img2.blogblog.com/img/b16-rounded.gif" width="16" height="16" alt="" title="Tom">
+
+</a></span></div>
+<a href='http://www.blogger.com/profile/07471650991008523174' rel='nofollow'>Tom</a>
+</dt>
+<dd class='comment-date'>
+<span class='comment-timestamp'>
+<a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html?showComment=1269174263459#c1926490273066905844' title='comment permalink'>
+March 21, 2010 5:24 AM
+</a>
+<span class='item-control blog-admin pid-1077937915'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=7715485&postID=1926490273066905844' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dd class='comment-body ' id='Blog1_cmt-1926490273066905844'>
+<p>
+Dude, that&#39;s a really impressive bit of engineering.  However, you failed the interview.<br /><br />It was a trick question. The right answer is, &quot;MySQL isn&#39;t the right tool for this job.&quot;  You just created a monster.  A monster that would require a senior level or higher DBA to maintain, and someone even more advanced to debug.<br /><br />7 million writes, read once at the end of the day, then deleted.  You put it in a database?  Really?<br /><br />Here&#39;s how to solve this.<br /><br />It&#39;s called a text file.<br /><br />For each record, you append it to a text file.<br />At the end of the day, you read the text file. Then you delete the text file.  You handle day changes by rotating the text file.<br /><br />Do you need to occasionally access records in the middle of the file?  Build a simple index.  Before writing each record, append the ftell() and the key to another file.  Or, if you are indexing my timestamp, just record the ftell() of the first record in each 1-minute block. That gives you a good starting point to start searching for the record you want.  Heck, if your index data is fixed-size records you can fseek() to BLOCKSIZE * minutes-after-midnight to go directly to the right per-minute record.  Yes, you could also store this index data in a MySQl database; the index mark for every 10-minute block might be &quot;good enough&quot; and MySQL should certainly be able to handle that.<br /><br />I&#39;m sorry to bash your excellent design.  However, debugging, by definition, is more difficult than creating. Therefore, when you create a system that is the height of your skill, you have, by definition, created a system that you yourself can not debug.<br /><br />Think of the sysadmin that has to maintain this.  The horror.  The horror.
+<span class='interaction-iframe-guide'></span>
+</p>
+</dd>
+<dd class='comment-footer'></dd>
+<dt class='comment-author blog-author' id='c2570153861171969977'>
+<a name='c2570153861171969977'></a>
+<div class="avatar-image-container vcard"><span dir="ltr"><a href="http://www.blogger.com/profile/18075968083522627991" rel="nofollow" onclick="" class="avatar-hovercard" id="av-6-18075968083522627991"><img src="http://img1.blogblog.com/img/blank.gif" width="35" height="35" alt="" class="delayLoad" style="display: none;" longdesc="http://1.bp.blogspot.com/_g7oISy6bcdQ/SatlVFyTb6I/AAAAAAAAAGk/wWeCix6YHjM/S45/philiptellis.jpg" title="Blues">
+
+<noscript><img src="http://1.bp.blogspot.com/_g7oISy6bcdQ/SatlVFyTb6I/AAAAAAAAAGk/wWeCix6YHjM/S45/philiptellis.jpg" width="35" height="35" class="photo" alt=""></noscript></a></span></div>
+<a href='http://www.blogger.com/profile/18075968083522627991' rel='nofollow'>Blues</a>
+</dt>
+<dd class='comment-date'>
+<span class='comment-timestamp'>
+<a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html?showComment=1269178185015#c2570153861171969977' title='comment permalink'>
+March 21, 2010 6:29 AM
+</a>
+<span class='item-control blog-admin pid-1912216624'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=7715485&postID=2570153861171969977' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dd class='comment-body ' id='Blog1_cmt-2570153861171969977'>
+<p>
+Hi Tom,<br /><br />thanks for your comments, but what you suggest won&#39;t work (already tried it).  I&#39;ve had to simplify the explanation for this blog post (both for brevity and because there&#39;s a lot that I can&#39;t reveal).  It&#39;s a little more complex than &quot;occasionally access records in the middle of the file&quot;.  It&#39;s more like I have multiple fields and I need to run SQL queries with a WHERE clause that includes one or more of these fields and order by a few others.  If I were to put all of this in a flat file and write my own indexing system, pretty soon I&#39;d be implementing MyISAM, and I&#39;d still have a problem fitting everything that I need in RAM at the same time.<br /><br />What will work is multiple text files thrown onto a hadoop cluster... but then I&#39;m getting a cluster to do the work of one box.<br /><br />PS: This isn&#39;t the height of my skill ;)
+<span class='interaction-iframe-guide'></span>
+</p>
+</dd>
+<dd class='comment-footer'></dd>
+<dt class='comment-author ' id='c3889667194990871538'>
+<a name='c3889667194990871538'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><img src="http://img1.blogblog.com/img/blank.gif" width="16" height="16" alt="" title="Anonymous">
+
+</span></div>
+Anonymous
+</dt>
+<dd class='comment-date'>
+<span class='comment-timestamp'>
+<a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html?showComment=1269178884754#c3889667194990871538' title='comment permalink'>
+March 21, 2010 6:41 AM
+</a>
+<span class='item-control blog-admin pid-2014455046'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=7715485&postID=3889667194990871538' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dd class='comment-body ' id='Blog1_cmt-3889667194990871538'>
+<p>
+There are a couple other things you could have tried that typically speed up MySQL performance in scenarios like yours.<br /><br />By default InnoDB flushes every transaction to disk -- this is usually the limiting factor when you&#39;re doing lots of inserts. It&#39;s necessary for a true ACID system, but in many cases, it&#39;s not worth the large overhead cost.<br /><br />The first thing you can do is bundle lots of inserts (e.g., one second&#39;s worth of data) into a single transaction. It&#39;s usually a fairly simple code change, just inserting begin and end transaction statements at the right place.<br /><br />A simpler (but less safe) alternative is to set the flag innodb_flush_log_at_trx_commit=0 in the config file. If you have a complete OS crash, you can potentially lose up to one second&#39;s worth of data. However, in many cases, the benefit of much faster performance is worth losing a little bit of data in infrequent, extreme situations. <br /><br />These are pretty standard techniques that many sysadmins are familiar with.
+<span class='interaction-iframe-guide'></span>
+</p>
+</dd>
+<dd class='comment-footer'></dd>
+<dt class='comment-author blog-author' id='c1178902488495878703'>
+<a name='c1178902488495878703'></a>
+<div class="avatar-image-container vcard"><span dir="ltr"><a href="http://www.blogger.com/profile/18075968083522627991" rel="nofollow" onclick="" class="avatar-hovercard" id="av-8-18075968083522627991"><img src="http://img1.blogblog.com/img/blank.gif" width="35" height="35" alt="" class="delayLoad" style="display: none;" longdesc="http://1.bp.blogspot.com/_g7oISy6bcdQ/SatlVFyTb6I/AAAAAAAAAGk/wWeCix6YHjM/S45/philiptellis.jpg" title="Blues">
+
+<noscript><img src="http://1.bp.blogspot.com/_g7oISy6bcdQ/SatlVFyTb6I/AAAAAAAAAGk/wWeCix6YHjM/S45/philiptellis.jpg" width="35" height="35" class="photo" alt=""></noscript></a></span></div>
+<a href='http://www.blogger.com/profile/18075968083522627991' rel='nofollow'>Blues</a>
+</dt>
+<dd class='comment-date'>
+<span class='comment-timestamp'>
+<a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html?showComment=1269179684461#c1178902488495878703' title='comment permalink'>
+March 21, 2010 6:54 AM
+</a>
+<span class='item-control blog-admin pid-1912216624'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=7715485&postID=1178902488495878703' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dd class='comment-body ' id='Blog1_cmt-1178902488495878703'>
+<p>
+We use flush_log_at_trx_commit=2.  There&#39;s no need of a transaction, because we do bulk inserts - 40K records per insert which takes 4-6 seconds.<br /><br />I have a bunch of charts in my ConFoo presentation on this topic here: http://www.slideshare.net/bluesmoon/scaling-mysql-writes-through-partitioning-3397422
+<span class='interaction-iframe-guide'></span>
+</p>
+</dd>
+<dd class='comment-footer'></dd>
+<dt class='comment-author ' id='c5205389010058618436'>
+<a name='c5205389010058618436'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><img src="http://img1.blogblog.com/img/blank.gif" width="16" height="16" alt="" title="Anonymous">
+
+</span></div>
+Anonymous
+</dt>
+<dd class='comment-date'>
+<span class='comment-timestamp'>
+<a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html?showComment=1269183511164#c5205389010058618436' title='comment permalink'>
+March 21, 2010 7:58 AM
+</a>
+<span class='item-control blog-admin pid-1523361079'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=7715485&postID=5205389010058618436' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dd class='comment-body ' id='Blog1_cmt-5205389010058618436'>
+<p>
+Sorry, but that answer about using a text file is full of fail.  <br /><br />To the author, thanks for sharing this info.  It&#39;s quite valuable.
+<span class='interaction-iframe-guide'></span>
+</p>
+</dd>
+<dd class='comment-footer'></dd>
+<dt class='comment-author ' id='c6717742772127263098'>
+<a name='c6717742772127263098'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><img src="http://img1.blogblog.com/img/blank.gif" width="16" height="16" alt="" title="Anonymous">
+
+</span></div>
+Anonymous
+</dt>
+<dd class='comment-date'>
+<span class='comment-timestamp'>
+<a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html?showComment=1269185561527#c6717742772127263098' title='comment permalink'>
+March 21, 2010 8:32 AM
+</a>
+<span class='item-control blog-admin pid-2014455046'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=7715485&postID=6717742772127263098' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dd class='comment-body ' id='Blog1_cmt-6717742772127263098'>
+<p>
+In your presentation, you mention that you are using replication. The binary logging for replication can be a huge bottleneck for writes -- it&#39;s similar to the issue of flushing transactions. If you&#39;re setting flush_log_at_trx_commit, then you should also set sync_binlog=0<br /><br />Here&#39;s some sample data that explores various combos:<br />http://www.mysqlperformanceblog.com/2010/02/28/maximal-write-througput-in-mysql/<br /><br />Usually it makes sense to tweak these settings first, then move on to partitioning and bulk inserts only if you have to.
+<span class='interaction-iframe-guide'></span>
+</p>
+</dd>
+<dd class='comment-footer'></dd>
+<dt class='comment-author blog-author' id='c3087185246020462282'>
+<a name='c3087185246020462282'></a>
+<div class="avatar-image-container vcard"><span dir="ltr"><a href="http://www.blogger.com/profile/18075968083522627991" rel="nofollow" onclick="" class="avatar-hovercard" id="av-11-18075968083522627991"><img src="http://img1.blogblog.com/img/blank.gif" width="35" height="35" alt="" class="delayLoad" style="display: none;" longdesc="http://1.bp.blogspot.com/_g7oISy6bcdQ/SatlVFyTb6I/AAAAAAAAAGk/wWeCix6YHjM/S45/philiptellis.jpg" title="Blues">
+
+<noscript><img src="http://1.bp.blogspot.com/_g7oISy6bcdQ/SatlVFyTb6I/AAAAAAAAAGk/wWeCix6YHjM/S45/philiptellis.jpg" width="35" height="35" class="photo" alt=""></noscript></a></span></div>
+<a href='http://www.blogger.com/profile/18075968083522627991' rel='nofollow'>Blues</a>
+</dt>
+<dd class='comment-date'>
+<span class='comment-timestamp'>
+<a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html?showComment=1269212325792#c3087185246020462282' title='comment permalink'>
+March 21, 2010 3:58 PM
+</a>
+<span class='item-control blog-admin pid-1912216624'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=7715485&postID=3087185246020462282' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dd class='comment-body ' id='Blog1_cmt-3087185246020462282'>
+<p>
+I did try sync_binlog=0.  It did improve individual insert rate, but not significantly higher than the 2000 inserts per second that we required.  Once I switched to bulk inserts, the difference made by sync_binlog was negligible.<br /><br />Partitioning was required because no matter what we tried we&#39;d always break down at the same point.  Adding more RAM was the first solution, and that worked.  Right now we still have enough RAM to manage even with data growth, but I estimate that we&#39;ll run out of RAM in 6-9 months and that&#39;s when partitioning will be the only solution.<br /><br />Thanks for your comments and the link to the my-p-b.
+<span class='interaction-iframe-guide'></span>
+</p>
+</dd>
+<dd class='comment-footer'></dd>
+<dt class='comment-author ' id='c1178958144809379433'>
+<a name='c1178958144809379433'></a>
+<div class="avatar-image-container vcard"><span dir="ltr"><a href="http://www.blogger.com/profile/06555717535755730117" rel="nofollow" onclick="" class="avatar-hovercard" id="av-12-06555717535755730117"><img src="http://img1.blogblog.com/img/blank.gif" width="35" height="35" alt="" class="delayLoad" style="display: none;" longdesc="http://3.bp.blogspot.com/_AX9wEnyE7YE/Sk14mCwTgLI/AAAAAAAAAAk/ZD1Tb1_wMmY/S45/secretary-of-pancakes.jpg" title="Bradford">
+
+<noscript><img src="http://3.bp.blogspot.com/_AX9wEnyE7YE/Sk14mCwTgLI/AAAAAAAAAAk/ZD1Tb1_wMmY/S45/secretary-of-pancakes.jpg" width="35" height="35" class="photo" alt=""></noscript></a></span></div>
+<a href='http://www.blogger.com/profile/06555717535755730117' rel='nofollow'>Bradford</a>
+</dt>
+<dd class='comment-date'>
+<span class='comment-timestamp'>
+<a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html?showComment=1269231677701#c1178958144809379433' title='comment permalink'>
+March 21, 2010 9:21 PM
+</a>
+<span class='item-control blog-admin pid-1133227472'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=7715485&postID=1178958144809379433' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dd class='comment-body ' id='Blog1_cmt-1178958144809379433'>
+<p>
+I actually think HBase may make your life easier :)
+<span class='interaction-iframe-guide'></span>
+</p>
+</dd>
+<dd class='comment-footer'></dd>
+<dt class='comment-author ' id='c8563127157416227855'>
+<a name='c8563127157416227855'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><img src="http://img1.blogblog.com/img/blank.gif" width="16" height="16" alt="" title="Anonymous">
+
+</span></div>
+Anonymous
+</dt>
+<dd class='comment-date'>
+<span class='comment-timestamp'>
+<a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html?showComment=1269233994133#c8563127157416227855' title='comment permalink'>
+March 21, 2010 9:59 PM
+</a>
+<span class='item-control blog-admin pid-110924496'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=7715485&postID=8563127157416227855' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dd class='comment-body ' id='Blog1_cmt-8563127157416227855'>
+<p>
+Interesting. Although myself, I would have dumped the data to a text file, installed hadoop and then written some simple Python scripts to pipe into hadoop. You can install it on one machine without requiring a cluster (its actually easier to setup) and lets you scale out when you need to.
+<span class='interaction-iframe-guide'></span>
+</p>
+</dd>
+<dd class='comment-footer'></dd>
+<dt class='comment-author ' id='c7993210493676590020'>
+<a name='c7993210493676590020'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><a href="http://www.blogger.com/profile/04023071238810302939" rel="nofollow" onclick="" class="avatar-hovercard" id="av-14-04023071238810302939"><img src="http://img2.blogblog.com/img/b16-rounded.gif" width="16" height="16" alt="" title="Les">
+
+</a></span></div>
+<a href='http://www.blogger.com/profile/04023071238810302939' rel='nofollow'>Les</a>
+</dt>
+<dd class='comment-date'>
+<span class='comment-timestamp'>
+<a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html?showComment=1269353356605#c7993210493676590020' title='comment permalink'>
+March 23, 2010 7:09 AM
+</a>
+<span class='item-control blog-admin pid-2052018261'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=7715485&postID=7993210493676590020' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dd class='comment-body ' id='Blog1_cmt-7993210493676590020'>
+<p>
+The problem that it sounds like you are trying to solve (from the comments above), is actually tailor made for business intelligence cube technology. It takes care of the aggregation and slicing and dicing. <br /><br />I have fairly often seen this kind of problem solved with teradata and big hardware.  Your solution, though, is MUCH cheaper.  Given the lack of changes after insert, I wonder if there is a cube implementation that would allow you to pull in the data periodically(every 15 or 20 min) without requiring it to be retained in a relational db.   This would give you more flexibility to analyze the data on in the long term.
+<span class='interaction-iframe-guide'></span>
+</p>
+</dd>
+<dd class='comment-footer'></dd>
+<dt class='comment-author ' id='c5896140482873202831'>
+<a name='c5896140482873202831'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><a href="http://www.blogger.com/profile/04470756767791684622" rel="nofollow" onclick="" class="avatar-hovercard" id="av-15-04470756767791684622"><img src="http://img2.blogblog.com/img/b16-rounded.gif" width="16" height="16" alt="" title="Jelmer">
+
+</a></span></div>
+<a href='http://www.blogger.com/profile/04470756767791684622' rel='nofollow'>Jelmer</a>
+</dt>
+<dd class='comment-date'>
+<span class='comment-timestamp'>
+<a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html?showComment=1269360512065#c5896140482873202831' title='comment permalink'>
+March 23, 2010 9:08 AM
+</a>
+<span class='item-control blog-admin pid-1819584903'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=7715485&postID=5896140482873202831' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dd class='comment-body ' id='Blog1_cmt-5896140482873202831'>
+<p>
+seems to me a nosql solution like couchdb, mongo, hbase or cassandra would have been more appropriate here
+<span class='interaction-iframe-guide'></span>
+</p>
+</dd>
+<dd class='comment-footer'></dd>
+<dt class='comment-author ' id='c1220576914334867301'>
+<a name='c1220576914334867301'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><img src="http://img1.blogblog.com/img/blank.gif" width="16" height="16" alt="" title="Anonymous">
+
+</span></div>
+Anonymous
+</dt>
+<dd class='comment-date'>
+<span class='comment-timestamp'>
+<a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html?showComment=1274371521585#c1220576914334867301' title='comment permalink'>
+May 20, 2010 9:05 AM
+</a>
+<span class='item-control blog-admin pid-731504179'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=7715485&postID=1220576914334867301' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dd class='comment-body ' id='Blog1_cmt-1220576914334867301'>
+<p>
+@Jelmer - how is it that NoSQL would be a better solution when you have NFI what all the requirements are? You moronity astounds me.
+<span class='interaction-iframe-guide'></span>
+</p>
+</dd>
+<dd class='comment-footer'></dd>
+<dt class='comment-author ' id='c2585438178499508317'>
+<a name='c2585438178499508317'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><img src="http://img1.blogblog.com/img/blank.gif" width="16" height="16" alt="" title="dat">
+
+</span></div>
+dat
+</dt>
+<dd class='comment-date'>
+<span class='comment-timestamp'>
+<a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html?showComment=1274442703882#c2585438178499508317' title='comment permalink'>
+May 21, 2010 4:51 AM
+</a>
+<span class='item-control blog-admin pid-543298754'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=7715485&postID=2585438178499508317' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dd class='comment-body ' id='Blog1_cmt-2585438178499508317'>
+<p>
+I don&#39;t know if the queries that you need to perform are suitable for a database like redis (http://code.google.com/p/redis/wiki/Benchmarks) but I&#39;m curious to know if you tried this solution and if so, why you choose mysql at the end.<br />thanks,<br />dat
+<span class='interaction-iframe-guide'></span>
+</p>
+</dd>
+<dd class='comment-footer'></dd>
+<dt class='comment-author ' id='c456981643458435755'>
+<a name='c456981643458435755'></a>
+<div class="avatar-image-container avatar-stock"><span dir="ltr"><a href="http://www.dbwebdevelopment.com" rel="nofollow" onclick=""><img src="http://img1.blogblog.com/img/blank.gif" width="16" height="16" alt="" title="DB Web Dev">
+
+</a></span></div>
+<a href='http://www.dbwebdevelopment.com' rel='nofollow'>DB Web Dev</a>
+</dt>
+<dd class='comment-date'>
+<span class='comment-timestamp'>
+<a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html?showComment=1283582528165#c456981643458435755' title='comment permalink'>
+September 03, 2010 11:42 PM
+</a>
+<span class='item-control blog-admin pid-1806552994'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=7715485&postID=456981643458435755' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dd class='comment-body ' id='Blog1_cmt-456981643458435755'>
+<p>
+I saw your ConFoo presentation then read thru the comments here. Was there a reason you could not use Archive table engine for this? <br /><br />You said &quot;lots of writes throughout the day, and one huge read at the end of the day&quot;.<br /><br />So I would think Archive would let you insert fast and using much less HDD space than InnoDB. And with your select at the end of the day wouldn&#39;t be that bad if it was a full table scan.
+<span class='interaction-iframe-guide'></span>
+</p>
+</dd>
+<dd class='comment-footer'></dd>
+<dt class='comment-author blog-author' id='c6875373328783560957'>
+<a name='c6875373328783560957'></a>
+<div class="avatar-image-container vcard"><span dir="ltr"><a href="http://www.blogger.com/profile/18075968083522627991" rel="nofollow" onclick="" class="avatar-hovercard" id="av-19-18075968083522627991"><img src="http://img1.blogblog.com/img/blank.gif" width="35" height="35" alt="" class="delayLoad" style="display: none;" longdesc="http://1.bp.blogspot.com/_g7oISy6bcdQ/SatlVFyTb6I/AAAAAAAAAGk/wWeCix6YHjM/S45/philiptellis.jpg" title="Blues">
+
+<noscript><img src="http://1.bp.blogspot.com/_g7oISy6bcdQ/SatlVFyTb6I/AAAAAAAAAGk/wWeCix6YHjM/S45/philiptellis.jpg" width="35" height="35" class="photo" alt=""></noscript></a></span></div>
+<a href='http://www.blogger.com/profile/18075968083522627991' rel='nofollow'>Blues</a>
+</dt>
+<dd class='comment-date'>
+<span class='comment-timestamp'>
+<a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html?showComment=1283585722785#c6875373328783560957' title='comment permalink'>
+September 04, 2010 12:35 AM
+</a>
+<span class='item-control blog-admin pid-1912216624'>
+<a class='comment-delete' href='http://www.blogger.com/delete-comment.g?blogID=7715485&postID=6875373328783560957' title='Delete Comment'>
+<img src='//www.blogger.com/img/icon_delete13.gif'/>
+</a>
+</span>
+</span>
+</dd>
+<dd class='comment-body ' id='Blog1_cmt-6875373328783560957'>
+<p>
+That&#39;s a good question.  I don&#39;t remember the exact reason, but it may have to do with the fact that we can&#39;t do one giant select -- there&#39;s just too much data to hold in RAM.  We need to do multiple selects on various keys.<br /><br />When I say read once at the end of the day, I really mean in one batch do several selects on different keys and summarise the data at that point, and not one single select.
+<span class='interaction-iframe-guide'></span>
+</p>
+</dd>
+<dd class='comment-footer'></dd>
+</dl>
+</div>
+<p class='comment-footer'>
+<a href='https://www.blogger.com/comment.g?blogID=7715485&postID=8483714778364140190' onclick=''>Post a Comment</a>
+</p>
+<div id='backlinks-container'>
+<div id='Blog1_backlinks-container'>
+<a name='links'></a><h4>
+</h4>
+<p class='comment-footer'>
+<a class='comment-link' href='' id='Blog1_backlinks-create-link' target='_blank'>
+</a>
+</p>
+</div>
+</div>
+</div>
+<div id="latency-8483714778364140190"></div><script type="text/javascript">if (window['tickAboveFold']) {window['tickAboveFold'](document.getElementById("latency-8483714778364140190")); } </script>
+</div>
+<div class='blog-pager' id='blog-pager'>
+<span id='blog-pager-newer-link'>
+<a class='blog-pager-newer-link' href='http://tech.bluesmoon.info/2009/09/reading-it-back.html' id='Blog1_blog-pager-newer-link' title='Newer Post'>Newer Post</a>
+</span>
+<span id='blog-pager-older-link'>
+<a class='blog-pager-older-link' href='http://tech.bluesmoon.info/2009/07/avoid-running-end-blocks-in-perl.html' id='Blog1_blog-pager-older-link' title='Older Post'>Older Post</a>
+</span>
+<a class='home-link' href='http://tech.bluesmoon.info/'>Home</a>
+</div>
+<div class='clear'></div>
+</div></div>
+<!-- end bodycontent -->
+</div>
+<!-- end body -->
+<div class='sidebar section' id='sidebar2'><div class='widget Label' id='Label1'>
+<h2>Labels</h2>
+<div class='widget-content cloud-label-widget-content'>
+<span class='label-size label-size-3'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/4.01-strict'>4.01-strict</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/404'>404</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/accessibility'>accessibility</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/acer'>acer</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/airport%20wifi'>airport wifi</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/algorithm'>algorithm</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/apache'>apache</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/australia'>australia</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/ayttm'>ayttm</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/badges'>badges</a>
+</span>
+<span class='label-size label-size-3'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/bandwidth'>bandwidth</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/bbc'>bbc</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/bcp'>bcp</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/berlin'>berlin</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/blog'>blog</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/blogger'>blogger</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/blogger%20template'>blogger template</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/bof'>bof</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/book'>book</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/boomerang'>boomerang</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/broken'>broken</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/bug'>bug</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/byte%20order'>byte order</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/c'>c</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/closure'>closure</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/cmc'>cmc</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/cms'>cms</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/codepo8'>codepo8</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/colours'>colours</a>
+</span>
+<span class='label-size label-size-3'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/comic%20strip'>comic strip</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/comments'>comments</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/communication'>communication</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/compile'>compile</a>
+</span>
+<span class='label-size label-size-4'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/conference'>conference</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/confoo'>confoo</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/cracker'>cracker</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/crash'>crash</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/creative'>creative</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/crockford'>crockford</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/cron'>cron</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/csrf'>csrf</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/css'>css</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/data%20tags'>data tags</a>
+</span>
+<span class='label-size label-size-3'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/database'>database</a>
+</span>
+<span class='label-size label-size-3'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/date'>date</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/db'>db</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/delicious'>delicious</a>
+</span>
+<span class='label-size label-size-3'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/dhtml'>dhtml</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/dom'>dom</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/dopplr'>dopplr</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/dragdrop'>dragdrop</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/dynamic%20script%20node'>dynamic script node</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/education'>education</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/email'>email</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/endianness'>endianness</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/epicondylitis'>epicondylitis</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/error%20checking'>error checking</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/esmtp'>esmtp</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/everybuddy'>everybuddy</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/extensions'>extensions</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/facebook'>facebook</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/favicon'>favicon</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/fc9'>fc9</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/fedora'>fedora</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/fidelity'>fidelity</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/filesystem'>filesystem</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/firefox'>firefox</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/flickr'>flickr</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/flot'>flot</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/forms'>forms</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/fosdem'>fosdem</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/foss'>foss</a>
+</span>
+<span class='label-size label-size-3'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/foss.in'>foss.in</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/freebsd'>freebsd</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/freedom'>freedom</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/function%20currying'>function currying</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/gdb'>gdb</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/geek'>geek</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/geo'>geo</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/gmail'>gmail</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/gnome'>gnome</a>
+</span>
+<span class='label-size label-size-5'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/hack'>hack</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/hacker'>hacker</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/hardy'>hardy</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/hash'>hash</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/howtos'>howtos</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/html'>html</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/html5'>html5</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/http'>http</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/i18n'>i18n</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/iit'>iit</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/im'>im</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/instant%20messaging'>instant messaging</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/internet'>internet</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/ip'>ip</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/ip%20address'>ip address</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/ipc'>ipc</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/iso8601'>iso8601</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/jabber'>jabber</a>
+</span>
+<span class='label-size label-size-5'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/javascript'>javascript</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/json'>json</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/keynote'>keynote</a>
+</span>
+<span class='label-size label-size-3'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/latency'>latency</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/latex'>latex</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/LC_TIME'>LC_TIME</a>
+</span>
+<span class='label-size label-size-4'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/linux'>linux</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/localisation'>localisation</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/login'>login</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/lsm'>lsm</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/macosx'>macosx</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/mail'>mail</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/mathematics'>mathematics</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/mathjax'>mathjax</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/measurement'>measurement</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/meetup'>meetup</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/memory'>memory</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/messaging'>messaging</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/microformats'>microformats</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/missing%20kids'>missing kids</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/montreal'>montreal</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/movable%20type'>movable type</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/mvc'>mvc</a>
+</span>
+<span class='label-size label-size-4'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/mysql'>mysql</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/name%20generator'>name generator</a>
+</span>
+<span class='label-size label-size-3'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/network'>network</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/notes'>notes</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/opensource'>opensource</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/opera'>opera</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/partition'>partition</a>
+</span>
+<span class='label-size label-size-5'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/performance'>performance</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/perl'>perl</a>
+</span>
+<span class='label-size label-size-3'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/php'>php</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/planet'>planet</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/ports'>ports</a>
+</span>
+<span class='label-size label-size-4'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/programming'>programming</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/programming%20style'>programming style</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/progressive%20enhancement'>progressive enhancement</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/puzzle'>puzzle</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/recovery'>recovery</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/redhat'>redhat</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/regex'>regex</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/regular%20expressions'>regular expressions</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/rfc2822'>rfc2822</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/rfc3339'>rfc3339</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/rhel'>rhel</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/roundtrip'>roundtrip</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/rss'>rss</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/safari'>safari</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/sampling'>sampling</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/scalability'>scalability</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/scripting'>scripting</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/secnet'>secnet</a>
+</span>
+<span class='label-size label-size-3'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/security'>security</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/sed'>sed</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/segfault'>segfault</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/self%20extracting%20tarball'>self extracting tarball</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/sendmail'>sendmail</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/server'>server</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/shell'>shell</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/shell%20script'>shell script</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/sigdashes'>sigdashes</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/site'>site</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/slideshare'>slideshare</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/smtp'>smtp</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/soap'>soap</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/sockets'>sockets</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/ssl'>ssl</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/starttls'>starttls</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/statistics'>statistics</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/stoyan'>stoyan</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/strftime'>strftime</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/stubbornella'>stubbornella</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/sydney'>sydney</a>
+</span>
+<span class='label-size label-size-4'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/sysadmin'>sysadmin</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/tablespace'>tablespace</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/talks'>talks</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/theme'>theme</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/thisisbroken'>thisisbroken</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/thisisfixed'>thisisfixed</a>
+</span>
+<span class='label-size label-size-4'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/thoughts'>thoughts</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/tim%20berners-lee'>tim berners-lee</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/timezone'>timezone</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/tips'>tips</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/toc'>toc</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/toy'>toy</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/transactions'>transactions</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/twitter'>twitter</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/typing'>typing</a>
+</span>
+<span class='label-size label-size-3'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/ubuntu'>ubuntu</a>
+</span>
+<span class='label-size label-size-3'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/unix'>unix</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/url'>url</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/usability'>usability</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/velocity'>velocity</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/vint%20cerf'>vint cerf</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/w3c'>w3c</a>
+</span>
+<span class='label-size label-size-4'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/web'>web</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/web%20services'>web services</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/webcam'>webcam</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/webdev'>webdev</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/webdu'>webdu</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/webtiming'>webtiming</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/whois'>whois</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/wifi'>wifi</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/workaround'>workaround</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/write%20performance'>write performance</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/X'>X</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/yahoo'>yahoo</a>
+</span>
+<span class='label-size label-size-1'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/ydn'>ydn</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/YQL'>YQL</a>
+</span>
+<span class='label-size label-size-2'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/yslow'>yslow</a>
+</span>
+<span class='label-size label-size-3'>
+<a dir='ltr' href='http://tech.bluesmoon.info/search/label/yui'>yui</a>
+</span>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='http://www.blogger.com/rearrange?blogID=7715485&widgetType=Label&widgetId=Label1&action=editWidget' onclick='return _WidgetManager._PopupConfig(document.getElementById("Label1"));' target='configLabel1' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div>
+</div><div class='widget HTML' id='HTML5'>
+<h2 class='title'>Translate this page</h2>
+<div id="google_translate_element"></div><script>
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'en'
+  }, 'google_translate_element');
+}
+</script><script src="http://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</div><div class='widget BlogArchive' id='BlogArchive1'>
+<h2>Blog Archive</h2>
+<div class='widget-content'>
+<div id='ArchiveList'>
+<div id='BlogArchive1_ArchiveList'>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/search?updated-min=2010-01-01T00%3A00%3A00-08%3A00&updated-max=2011-01-01T00%3A00%3A00-08%3A00&max-results=38'>2010</a>
+<span class='post-count' dir='ltr'>(38)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2010_12_01_archive.html'>December</a>
+<span class='post-count' dir='ltr'>(1)</span>
+<ul class='posts'>
+<li><a href='http://tech.bluesmoon.info/2010/12/bad-use-of-html5-form-validation-is.html'>Bad use of HTML5 form validation is worse than not...</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2010_11_01_archive.html'>November</a>
+<span class='post-count' dir='ltr'>(3)</span>
+<ul class='posts'>
+<li><a href='http://tech.bluesmoon.info/2010/11/stream-of-collaboration-and-unified.html'>Stream of Collaboration and the Unified InBox</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/11/counterfeit-coins-solution.html'>Counterfeit coins solution</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/11/submitting-cross-domain-soap-requests.html'>Submitting cross-domain SOAP requests from the bro...</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2010_10_01_archive.html'>October</a>
+<span class='post-count' dir='ltr'>(2)</span>
+<ul class='posts'>
+<li><a href='http://tech.bluesmoon.info/2010/10/common-security-mistakes-in-web.html'>Common Security Mistakes in Web Applications</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/10/what-is-browser-developer-edition.html'>What&#39;s a browser? &#8212; the developer edition</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2010_08_01_archive.html'>August</a>
+<span class='post-count' dir='ltr'>(4)</span>
+<ul class='posts'>
+<li><a href='http://tech.bluesmoon.info/2010/08/equation-to-predict-pages-roundtrip.html'>An equation to predict a page&#39;s roundtrip time</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/08/where-does-firefox-install-its.html'>Where does firefox install its extensions?</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/08/site-theme.html'>Site theme</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/08/401-strict-tennis-elbow.html'>4.01 Strict &#8212; Tennis Elbow</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2010_07_01_archive.html'>July</a>
+<span class='post-count' dir='ltr'>(6)</span>
+<ul class='posts'>
+<li><a href='http://tech.bluesmoon.info/2010/07/boomerang-and-webtiming-api.html'>Boomerang and the WebTiming API</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/07/401-strict-invention-of-web.html'>4.01 Strict &#8212; Invention of the Web</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/07/types-of-times.html'>Handling Date/Times and timezones</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/07/401-strict-dont-mess-with-stubbornella.html'>4.01 Strict &#8212; Don&#39;t mess with Stubbornella</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/07/401-strict-speedfreak.html'>4.01 Strict &#8212; SpeedFreak</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/07/401-strict-discovery-of-json.html'>4.01 Strict &#8212; The discovery of JSON</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2010_06_01_archive.html'>June</a>
+<span class='post-count' dir='ltr'>(4)</span>
+<ul class='posts'>
+<li><a href='http://tech.bluesmoon.info/2010/06/my-velocity-talk.html'>My velocity talk</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/06/401-strict-i-am-codepo8.html'>4.01 Strict &#8212; I am codepo8</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/06/boomerang.html'>boomerang</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/06/locationhref.html'>location.href</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2010_04_01_archive.html'>April</a>
+<span class='post-count' dir='ltr'>(4)</span>
+<ul class='posts'>
+<li><a href='http://tech.bluesmoon.info/2010/04/internet-access-from-mumbai-airports.html'>Internet access from Mumbai Airport&#39;s Clipper Loun...</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/04/can-website-crash-your-rhel5-desktop.html'>Can a website crash your RHEL5 desktop?</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/04/analysis-of-bandwidth-and-latency-of.html'>Analysis of the bandwidth and latency of YUIblog r...</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/04/speaking-at-ipc-spring-in-berlin.html'>Speaking at IPC Spring in Berlin</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2010_03_01_archive.html'>March</a>
+<span class='post-count' dir='ltr'>(2)</span>
+<ul class='posts'>
+<li><a href='http://tech.bluesmoon.info/2010/03/innodbs-tablespace-ids-and-partitions.html'>InnoDB&#39;s tablespace ids and Partitions</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/03/webdu.html'>WebDU</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2010_02_01_archive.html'>February</a>
+<span class='post-count' dir='ltr'>(3)</span>
+<ul class='posts'>
+<li><a href='http://tech.bluesmoon.info/2010/02/convert-ip-to-geo-info-using-yql.html'>Convert IP to Geo info using YQL</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/02/closures-and-function-currying.html'>Closures and Function Currying</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/02/missing-kids-on-your-404-page.html'>Missing kids on your 404 page</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2010_01_01_archive.html'>January</a>
+<span class='post-count' dir='ltr'>(9)</span>
+<ul class='posts'>
+<li><a href='http://tech.bluesmoon.info/2010/01/pretty-print-cron-emails.html'>Pretty print cron emails</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/01/speaking-at-fosdem-2010.html'>Speaking at FOSDEM 2010</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/01/speaking-at-confoo.html'>Speaking at ConFoo</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/01/bandwidth-test-v12.html'>Bandwidth test v1.2</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/01/statistics-of-performance-measurement.html'>The statistics of performance measurement - Random...</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/01/notes-on-performance-bof-at-fossin.html'>Notes on the Performance BoF at FOSS.IN</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/01/bandwidth-test-v11.html'>Bandwidth test v1.1</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/01/handling-documentwrite-in-dynamic.html'>Handling document.write in dynamic script nodes</a></li>
+<li><a href='http://tech.bluesmoon.info/2010/01/run-your-own-bandwidth-test.html'>Run your own bandwidth test</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate expanded'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy toggle-open'>&#9660;&#160;</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/search?updated-min=2009-01-01T00%3A00%3A00-08%3A00&updated-max=2010-01-01T00%3A00%3A00-08%3A00&max-results=17'>2009</a>
+<span class='post-count' dir='ltr'>(17)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2009_12_01_archive.html'>December</a>
+<span class='post-count' dir='ltr'>(3)</span>
+<ul class='posts'>
+<li><a href='http://tech.bluesmoon.info/2009/12/where-do-your-sites-visitors-come-from.html'>Where do your site&#39;s visitors come from</a></li>
+<li><a href='http://tech.bluesmoon.info/2009/12/bbc-headlines-as-flickr-photos-with-yql.html'>BBC headlines as Flickr Photos (with YQL)</a></li>
+<li><a href='http://tech.bluesmoon.info/2009/12/keynote-incident.html'>The keynote incident</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2009_11_01_archive.html'>November</a>
+<span class='post-count' dir='ltr'>(8)</span>
+<ul class='posts'>
+<li><a href='http://tech.bluesmoon.info/2009/11/measuring-users-bandwidth.html'>Measuring a user&#39;s bandwidth</a></li>
+<li><a href='http://tech.bluesmoon.info/2009/11/blog-post.html'>Storing IP addresses in a MySQL data table</a></li>
+<li><a href='http://tech.bluesmoon.info/2009/11/being-geek.html'>Being a geek</a></li>
+<li><a href='http://tech.bluesmoon.info/2009/11/template-update.html'>Template update</a></li>
+<li><a href='http://tech.bluesmoon.info/2009/11/favicons-on-my-planets-blogroll.html'>Favicons on my planet&#39;s blogroll</a></li>
+<li><a href='http://tech.bluesmoon.info/2009/11/performance-bof-at-fossin.html'>Performance BoF at FOSS.IN</a></li>
+<li><a href='http://tech.bluesmoon.info/2009/11/performance-measurement.html'>Performance measurement</a></li>
+<li><a href='http://tech.bluesmoon.info/2009/11/about-web-performance.html'>About web performance</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2009_10_01_archive.html'>October</a>
+<span class='post-count' dir='ltr'>(2)</span>
+<ul class='posts'>
+<li><a href='http://tech.bluesmoon.info/2009/10/getting-my-twitter-updates-on-this-blog.html'>Getting my twitter updates on this blog</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate expanded'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy toggle-open'>&#9660;&#160;</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2009_09_01_archive.html'>September</a>
+<span class='post-count' dir='ltr'>(2)</span>
+<ul class='posts'>
+<li><a href='http://tech.bluesmoon.info/2009/09/reading-it-back.html'>Reading it back</a></li>
+<li><a href='http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html'>Scaling writes in MySQL</a></li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2009_07_01_archive.html'>July</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/search?updated-min=2008-01-01T00%3A00%3A00-08%3A00&updated-max=2009-01-01T00%3A00%3A00-08%3A00&max-results=13'>2008</a>
+<span class='post-count' dir='ltr'>(13)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2008_12_01_archive.html'>December</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2008_10_01_archive.html'>October</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2008_09_01_archive.html'>September</a>
+<span class='post-count' dir='ltr'>(3)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2008_06_01_archive.html'>June</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2008_05_01_archive.html'>May</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2008_04_01_archive.html'>April</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2008_03_01_archive.html'>March</a>
+<span class='post-count' dir='ltr'>(3)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/search?updated-min=2007-01-01T00%3A00%3A00-08%3A00&updated-max=2008-01-01T00%3A00%3A00-08%3A00&max-results=2'>2007</a>
+<span class='post-count' dir='ltr'>(2)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2007_04_01_archive.html'>April</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2007_02_01_archive.html'>February</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/search?updated-min=2006-01-01T00%3A00%3A00-08%3A00&updated-max=2007-01-01T00%3A00%3A00-08%3A00&max-results=11'>2006</a>
+<span class='post-count' dir='ltr'>(11)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2006_10_01_archive.html'>October</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2006_06_01_archive.html'>June</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2006_04_01_archive.html'>April</a>
+<span class='post-count' dir='ltr'>(3)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2006_02_01_archive.html'>February</a>
+<span class='post-count' dir='ltr'>(3)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2006_01_01_archive.html'>January</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/search?updated-min=2005-01-01T00%3A00%3A00-08%3A00&updated-max=2006-01-01T00%3A00%3A00-08%3A00&max-results=8'>2005</a>
+<span class='post-count' dir='ltr'>(8)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2005_12_01_archive.html'>December</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2005_11_01_archive.html'>November</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2005_10_01_archive.html'>October</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2005_05_01_archive.html'>May</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2005_02_01_archive.html'>February</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2005_01_01_archive.html'>January</a>
+<span class='post-count' dir='ltr'>(3)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/search?updated-min=2004-01-01T00%3A00%3A00-08%3A00&updated-max=2005-01-01T00%3A00%3A00-08%3A00&max-results=7'>2004</a>
+<span class='post-count' dir='ltr'>(7)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2004_12_01_archive.html'>December</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2004_11_01_archive.html'>November</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2004_09_01_archive.html'>September</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2004_08_01_archive.html'>August</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2004_07_01_archive.html'>July</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2004_01_01_archive.html'>January</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/search?updated-min=2003-01-01T00%3A00%3A00-08%3A00&updated-max=2004-01-01T00%3A00%3A00-08%3A00&max-results=4'>2003</a>
+<span class='post-count' dir='ltr'>(4)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2003_11_01_archive.html'>November</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2003_10_01_archive.html'>October</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2003_01_01_archive.html'>January</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/search?updated-min=2001-01-01T00%3A00%3A00-08%3A00&updated-max=2002-01-01T00%3A00%3A00-08%3A00&max-results=1'>2001</a>
+<span class='post-count' dir='ltr'>(1)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2001_12_01_archive.html'>December</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/search?updated-min=2000-01-01T00%3A00%3A00-08%3A00&updated-max=2001-01-01T00%3A00%3A00-08%3A00&max-results=1'>2000</a>
+<span class='post-count' dir='ltr'>(1)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='http://tech.bluesmoon.info/2000_06_01_archive.html'>June</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='http://www.blogger.com/rearrange?blogID=7715485&widgetType=BlogArchive&widgetId=BlogArchive1&action=editWidget' onclick='return _WidgetManager._PopupConfig(document.getElementById("BlogArchive1"));' target='configBlogArchive1' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div>
+</div><div class='widget HTML' id='HTML3'>
+<div class='widget-content'>
+<script src="http://feeds.delicious.com/v2/js/bluesmoon/bluestech?title=Tech%20links&icon=s&count=5&sort=date&showadd" type="text/javascript"></script>
+</div>
+</div><div class='widget HTML' id='HTML4'>
+<h2 class='title'>Twitter updates</h2>
+<div class='widget-content'>
+<div id='twitter'>
+<ul class='twitter-timeline'>
+</ul>
+<div class='follow-me'><a href='http://twitter.com/bluesmoon'>Follow me on twitter</a></div>
+</div>
+<script src='http://twitter.com/statuses/user_timeline.json?id=bluesmoon&count=5&callback=show_twitter' type='text/javascript'></script>
+</div>
+</div><div class='widget HTML' id='HTML1'>
+<div class='widget-content'>
+<!-- script src="http://pub.mybloglog.com/comm2.php?mblID=2007010910283311&c_width=270&c_sn_opt=n&c_rows=4&c_img_size=f&c_heading_text=&c_color_heading_bg=f7f7f7&c_color_heading=aa7766&c_color_link_bg=f7f7f7&c_color_link=00f&c_color_bottom_bg=f7f7f7"></script -->
+</div>
+</div><div class='widget AdSense' id='AdSense1'>
+<div class='widget-content'>
+<script type="text/javascript"><!--
+google_ad_client="pub-6900685453107151";
+google_ad_host="pub-1556223355139109";
+google_alternate_ad_url="http://www.blogger.com/img/blogger_ad160x600.html";
+google_ad_width=160;
+google_ad_height=600;
+google_ad_format="160x600_as";
+google_ad_type="text_image";
+google_ad_host_channel="00000+00031+00032";
+google_color_border="FFFFFF";
+google_color_bg="FFFFFF";
+google_color_link="0000FF";
+google_color_url="008000";
+google_color_text="000000";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<div class='clear'></div>
+<span class='widget-item-control'>
+<span class='item-control blog-admin'>
+<a class='quickedit' href='http://www.blogger.com/rearrange?blogID=7715485&widgetType=AdSense&widgetId=AdSense1&action=editWidget' onclick='return _WidgetManager._PopupConfig(document.getElementById("AdSense1"));' target='configAdSense1' title='Edit'>
+<img alt='' height='18' src='http://img1.blogblog.com/img/icon18_wrench_allbkg.png' width='18'/>
+</a>
+</span>
+</span>
+<div class='clear'></div>
+</div>
+</div></div>
+<!-- end sidebar2 -->
+<div class='footer section' id='footer'><div class='widget HTML' id='HTML2'>
+<div class='widget-content'>
+<ul>
+
+  <li class="feed"><a href="http://api.flickr.com/services/feeds/photos_public.gne?id=57155801@N00&amp;lang=en-us&amp;format=rss_200" title="Flickr photostream">PHOTO FEED</a></li>
+
+  <li class="feed"><a href="http://feeds.feedburner.com/bluestech">Blog feed</a></li>
+
+  <li>&#169; PHILIP TELLIS 2010</li>
+
+  <li class="license"><!--Creative Commons License-->
+<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png" /></a><!--/Creative Commons License--></li>
+
+ </ul>
+
+<div class="license-text"><span xmlns:dc="http://purl.org/dc/elements/1.1/" property="dc:title" href="http://purl.org/dc/dcmitype/Text" rel="dc:type">The other side of the moon</span> by <a property="cc:attributionName" href="http://tech.bluesmoon.info/" rel="cc:attributionURL" xmlns:cc="http://creativecommons.org/ns#">Philip Tellis</a> is licensed under a <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license">Creative Commons Attribution-Noncommercial-Share Alike 3.0 United States License</a>.</div>
+</div>
+</div></div>
+</div>
+<!-- end content -->
+<script type='text/javascript'>
+  var verses = document.getElementsByTagName("span");
+  for(var v=0; v < verses.length; v++)
+  {
+    if(!verses[v].className.match(/\bverse-float\b/))
+      continue;
+
+    var q=document.createElement("q");
+    q.className="verse-float";
+    var h = verses[v].title.replace(/\\n/g, "<br/>");
+    q.innerHTML = h;
+    q.style.left = "" + (verses[v].offsetLeft + verses[v].offsetParent.offsetLeft) + "px";
+    verses[v].title="";
+    verses[v].appendChild(q);
+  }
+  Delicious.BlogBadge.onload();
+  </script>
+<!-- ukey="236F3CDB" -->
+<script src='http://a1.bluesmoon.info/piwik.js' type='text/javascript'></script><script type='text/javascript'>try { var piwikTracker = Piwik.getTracker("http://bluesmoon.org/analytics/piwik/piwik.php", 3); piwikTracker.trackPageView(); piwikTracker.enableLinkTracking(); } catch( err ) {}</script><noscript><p><img alt='' src='http://bluesmoon.org/analytics/piwik/piwik.php?idsite=3' style='border:0;position:absolute;left:-9999em;'/></p></noscript>
+<script src='http://p.bluesmoon.info/boomerang/boomerang.js' type='text/javascript'></script>
+<script type='text/javascript'>
+BOOMR.init({
+		beacon_url: "http://bluesmoon.org/analytics/boomerang/b.php",
+		site_domain: "bluesmoon.info",
+		log: null,
+		BW: {
+			base_url: "http://p.bluesmoon.info/boomerang/images/"
+		}
+}).addVar({ pg: 3});
+
+
+var _gaq = [['_setAccount', 'UA-19676372-1'],['_setDomainName', '.bluesmoon.info'],['_trackPageview']];
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = 'http://www.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+<script type="text/javascript">
+if (window.jstiming) window.jstiming.load.tick('widgetJsBefore');
+</script><script type="text/javascript" src="http://www.blogger.com/static/v1/widgets/512629240-widgets.js"></script>
+<script type='text/javascript'>
+if (typeof(BLOG_attachCsiOnload) != 'undefined' && BLOG_attachCsiOnload != null) { window['blogger_templates_experiment_id'] = "templatesV1";window['blogger_blog_id'] = '7715485';BLOG_attachCsiOnload('item_'); }_WidgetManager._Init('http://www.blogger.com/rearrange?blogID=7715485','http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html','7715485');
+_WidgetManager._SetPageActionUrl('http://www.blogger.com/display?blogID=7715485','DeYL_DTpVxmFRls-Xw3ZLVS8CYo:1291965673473','AOuZoY4rJEtCWNCkxHYYn3Ab6WvDOoIzEA:1291965673473');
+_WidgetManager._SetDataContext([{'name': 'blog', 'data': {'title': 'The other side of the moon', 'pageType': 'item', 'url': 'http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html', 'canonicalUrl': 'http://tech.bluesmoon.info/2009/09/scaling-writes-in-mysql.html', 'homepageUrl': 'http://tech.bluesmoon.info/', 'enabledCommentProfileImages': true, 'searchLabel': '', 'searchQuery': '', 'pageName': 'Scaling writes in MySQL', 'pageTitle': 'The other side of the moon: Scaling writes in MySQL', 'encoding': 'UTF-8', 'locale': 'en-IN', 'isPrivate': false, 'isMobile': false, 'mobileClass': '', 'languageDirection': 'ltr', 'feedLinks': '\74link rel\75\42alternate\42 type\75\42application/atom+xml\42 title\75\42The other side of the moon - Atom\42 href\75\42http://tech.bluesmoon.info/feeds/posts/default\42 /\76\n\74link rel\75\42alternate\42 type\75\42application/rss+xml\42 title\75\42The other side of the moon - RSS\42 href\75\42http://tech.bluesmoon.info/feeds/posts/default?alt\75rss\42 /\76\n\74link rel\75\42service.post\42 type\75\42application/atom+xml\42 title\75\42The other side of the moon - Atom\42 href\75\42http://www.blogger.com/feeds/7715485/posts/default\42 /\76\n\74link rel\75\42EditURI\42 type\75\42application/rsd+xml\42 title\75\42RSD\42 href\75\42http://www.blogger.com/rsd.g?blogID\0757715485\42 /\76\n\74link rel\75\42alternate\42 type\75\42application/atom+xml\42 title\75\42The other side of the moon - Atom\42 href\75\42http://tech.bluesmoon.info/feeds/8483714778364140190/comments/default\42 /\76\n', 'meTag': '', 'openIdOpTag': '', 'imageSrcTag': '', 'latencyHeadScript': '\74script type\75\42text/javascript\42\76(function() { var a\75window;function c(b){this.t\75{};this.tick\75function(d,i,e){e\75e?e:(new Date).getTime();this.t[d]\75[e,i]};this.tick(\42start\42,null,b)}var f\75new c;a.jstiming\75{Timer:c,load:f};try{var g\75null;if(a.chrome\46\46a.chrome.csi)g\75Math.floor(a.chrome.csi().pageT);if(g\75\75null)if(a.gtbExternal)g\75a.gtbExternal.pageT();if(g\75\75null)if(a.external)g\75a.external.pageT;if(g)a.jstiming.pt\75g}catch(h){};a.tickAboveFold\75function(b){b\75b;var d\0750;if(b.offsetParent){do d+\75b.offsetTop;while(b\75b.offsetParent)}b\75d;b\74\075750\46\46a.jstiming.load.tick(\42aft\42)};var j\75false;function k(){if(!j){j\75true;a.jstiming.load.tick(\42firstScrollTime\42)}}a.addEventListener?a.addEventListener(\42scroll\42,k,false):a.attachEvent(\42onscroll\42,k);\n })();\74/script\076', 'mobileHeadScript': ''}}]);
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML2', 'footer', null, document.getElementById('HTML2'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HeaderView', new _WidgetInfo('Header1', 'header-vcard'));
+_WidgetManager._RegisterWidget('_LabelView', new _WidgetInfo('Label1', 'sidebar2', null, document.getElementById('Label1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML5', 'sidebar2', null, document.getElementById('HTML5'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_BlogArchiveView', new _WidgetInfo('BlogArchive1', 'sidebar2', null, document.getElementById('BlogArchive1'), {'languageDirection': 'ltr'}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML3', 'sidebar2', null, document.getElementById('HTML3'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML4', 'sidebar2', null, document.getElementById('HTML4'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML1', 'sidebar2', null, document.getElementById('HTML1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_AdSenseView', new _WidgetInfo('AdSense1', 'sidebar2', null, document.getElementById('AdSense1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML20', 'header', null, document.getElementById('HTML20'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_NavbarView', new _WidgetInfo('Navbar1', 'navbar'));
+_WidgetManager._RegisterWidget('_BlogView', new _WidgetInfo('Blog1', 'bodycontent', null, document.getElementById('Blog1'), {'cmtInteractionsEnabled': false, 'commentInteractionIframeUrl': 'http://www.blogger.com/comment-interaction-iframe.g?blogId\0757715485', 'showBacklinks': true, 'postId': '8483714778364140190', 'mobile': false}, 'displayModeFull'));
+</script>
+</body>
+</html>

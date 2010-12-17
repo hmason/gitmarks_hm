@@ -1,0 +1,183 @@
+<html>
+    <head>
+        <title>Octobot | High Throughput Distributed Task Queue Worker</title>
+        <link rel="stylesheet" type="text/css" href="css/blueprint/screen.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="css/blueprint/ie.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="css/blueprint/print.css" media="print" />
+        <link rel="stylesheet" type="text/css" href="css/octobot.css" />
+        <link href='http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz' rel='stylesheet' type='text/css'>
+        <script type="text/javascript">
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-18635393-1']);
+          _gaq.push(['_trackPageview']);
+
+          (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+          })();
+        </script>
+    </head>
+    <body>
+        <div class="blueprint">
+            <div id="header">
+                <h1>Octobot</h1>
+                <h2>It's got lots of arms.</h2>
+                <h3>Octobot is a highly parallel, reliable, and flexible task queue worker
+                    designed for high throughput, heavy workloads, and ultra-low latency.</h3>
+            </div>
+            <div id="main" class="prepend-2 append-2 last">
+            <hr />
+                <div class="span-9 colborder">
+                    <h4>What's it Do?</h4>
+                    <p>Octobot is a task queue worker for applications that must process message queues
+                    with extremely high throughput, minimal latency, and high availability - especially
+                    those sensitive to the overhead implicit in receiving and processing many lightweight
+                    tasks, such as message delivery systems.</p>
+                    <p>It's designed to be a first-class citizen in your infrastructure - providing a reliable
+                    queue worker system that can process tasks from any number of queues at varying priorities
+                    distributed across multiple datacenters, ensuring that as long as a queue is up and an
+                    Octobot instance is alive somewhere in the world or deep under the sea, the work will get done.</p>
+                </div>
+                <div id="features" class="span-9 last">
+                    <h4>Features</h4>
+                    <p>&mdash; Octobot can listen on any number of queues, with any number of workers, operating at a 
+                    configurable priority.</p>
+                    <p>&mdash; Supports AMQP/RabbitMQ, Beanstalk, and Redis PubSub. Others easily addable.</p>
+                    <p>&mdash; Incoming tasks are just dead-simple JSON.</p>
+                    <p>&mdash; Configurable retries, e-mail error notifications.</p>
+                    <p>&mdash; Tasks can be written in any JVM language (Scala, Clojure, Java, JRuby, Jython).</p>
+                    <p>&mdash; Easy to manage and deploy. Configure with a bit of YML, deploy with a shell / init script.</p>
+                </div>
+
+                <hr class="pushdown" />
+                <div class="span-6 colborder">
+                    <h4>Grab the Binary</h4>
+                    <p class="center">
+                        <a href="/downloads/octobot.alpha3.tar.gz" target="_blank">
+                            <img src="images/download.png" width="128" height="128" class="center" style="margin: 0 auto !important;"/><br />
+                            Download octobot.alpha3.tar.gz
+                        </a>
+                    </p>
+                </div>
+                <div class="span-6 colborder">
+                    <h4>Get the Source</h4>
+                    <p class="center">
+                        <a href="http://www.github.com/cscotta/octobot" target="_blank">
+                            <img src="images/download.png" width="128" height="128" class="center" style="margin: 0 auto !important;"/><br />
+                            It's on Github
+                        </a>
+                    </p>
+                </div>
+                <div class="span-6 last">
+                    <h4>Get the Docs</h4>
+                    <p class="center">
+                        <a href="docs/octodocs-v03.pdf">
+                            <img src="images/docs.png" width="128" height="128" class="center" style="margin: 0 auto !important;"/><br />
+                            Download
+                        </a>
+                    </p>
+                </div>
+
+                <hr class="pushdown" />
+                <div class="span-9 colborder">
+                    <h4>Architecture</h4>
+                    <p>Octobot is highly parallelizable. The design is stateless, threadsafe,
+                    and designed for concurrency and participation in a distributed cluster from the start.</p>
+                    <p>It's also highly pluggable. Octobot provides configurable Startup and Shutdown hooks,
+                    providing you with access to any number of internal queues, out-of-task processing threads,
+                    outbound message queues, and more.</p>
+                    <p>It also provides a simple "instrumentation" port that returns a bit of JSON containing
+                    a series of metrics such as tasks processed per second, total successes and failures,
+                    successes and failures per task / per queue. This can easily be integrated into
+                    your monitoring infrastructure using a simple plugin for Munin or Nagios.</p>
+                </div>
+                <div class="span-9 last">
+                   <h4>Task Execution Flow</h4>
+                   <p>When Octobot is launched, it reads its YML configuration file, iterates over each of the
+                   queues it will listen on, and spawns a thread / queue listener for each worker requested,
+                   and sets it to that queue's priority to ensure greater resources for more important queues.</p>
+                   <p>As a worker receives messages, it decodes the JSON and calls
+                   TaskExecutor.execute(task, message). The task's run method is called, and it executes.</p>
+                   <p>If there are errors, it's retried according to the JSON "retries" parameter, and a
+                   notification e-mail is sent. If not, the worker pulls in the next message and carries on.</p>
+                </div>
+                <hr class="pushdown" />
+                <div>
+                    <h4 class="center">Throughput</h4>
+                    <p><img src="images/benchmark.png" alt="Benchmark comparison of Octobot to other task invokers" /></p>
+                </div>
+                <hr class="pushdown" />
+                <div>
+                    <h4 class="center">Memory</h4>
+                    <p><img src="images/memory.png" alt="Memory profile of Octobot processing one million tasks" /></p>
+                </div>
+                <hr class="pushdown" />
+                <div id="sample-task">
+                    <h4 class="sample-task">SAMPLE TASK:</h4>
+                    <p>{"task": "tasks.MakeBurrito",  "args": ["pico", "guac", "cilantro"],  "retries": 0 }</p>
+                </div>
+                <hr class="pushdown" />
+                <div class="span-10 code-sample">
+                    <h4>Scala Example</h4>
+                    <p><img src="images/sample-task-scala.png" width="370" height="241" alt="Sample Task - Scala" /></p>
+                </div>
+                <div class="span-9 last code-sample">
+                    <h4>Java Example</h4>
+                    <p><img src="images/sample-task-java.png" width="370" height="241" alt="Sample Task - Java" /></p>
+                </div>
+                <hr class="pushdown" />
+                <div class="span-9 colborder">
+                    <h4>Configuration</h4>
+                    <p class="center">
+                        <img src="images/config.png" width="269" height="489" class="center"/>
+                    </p>
+                </div>
+
+                <div class="span-9 last">
+                    <h4>Some Handy Stuff</h4>
+                    <p>&mdash; Tasks can use Octobot's settings loader to configure themselves,
+                    providing a simple method of accessing system or cluster settings within a task.</p>
+                    <p>&mdash; Sending lots of e-mail? Just drop it on Octobot's outbound e-mail queue,
+                    which is also used for sending error notifications. This queue supports SMTP authentication
+                    and SSL.<p>
+                    <p>&mdash; Octobot invokes tasks using Reflection by default, then caches method lookups
+                    after the first time a task is executed. However, if the overhead of reflexive invocation
+                    is too great for your application, Octobot's Task Executor class can be easily overridden
+                    to provide static call sites for specific tasks.</p>
+                    <p>&mdash; Octobot's got a baseline test suite that is growing. It's written using ScalaTest,
+                    which provides a familiar syntax for those coming from an RSpec background. Contribute!</p>
+                </div>
+
+                <div class="clear">&nbsp;</div>
+                <hr class="pushdown" />
+                <div class="span-9 colborder">
+                    <h4>Get in Touch</h4>
+                    <p class="center">
+                        <a href="http://groups.google.com/group/octobot-dev" target="_blank">
+                            <img src="/images/group.png" width="128" height="128" class="center" style="margin: 0 auto !important;"/><br />
+                            Join the Google Group
+                        </a>
+                    </p>
+                </div>
+                <div class="span-9 last">
+                    <h4>Twitter</h4>
+                    <p class="center">
+                        <a href="http://www.twitter.com/cscotta" target="_blank">
+                            <img src="/images/twitter.png" width="128" height="128" class="center" style="margin: 0 auto !important;"/><br />
+                            @cscotta on Twitter
+                        </a>
+                    </p>
+                    <p>&nbsp;</p>
+                </div>
+
+
+                <div id="footer">
+                    <p id="footer-text">Designed and engineered in
+                    <a href="http://prtlnd.com/" target="_blank">Portland F*cking Oregon</a>
+                    by <a href="http://twitter.com/cscotta" target="_blank">cscotta</a>.</p>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

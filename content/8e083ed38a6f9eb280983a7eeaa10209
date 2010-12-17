@@ -1,0 +1,74 @@
+<html>
+  <head>
+    <title>Smoothie Charts</title>
+    <script type="text/javascript" src="smoothie.js"></script>
+    <style type="text/css">
+      body { font-family: sans-serif; }
+    </style>
+  </head>
+  <body>
+    <a href="http://github.com/joewalnes/smoothie"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+
+    <h1>Smoothie Charts</h1>
+
+    <canvas id="chart" width="500" height="100"></canvas>
+
+    <p><b>Smoothie Charts</b> is a really small charting library designed for <i>live streaming data</i>. I built it to reduce
+    the headaches I was getting from watching charts jerkily updating every second. What you're looking up now is pretty much all
+    it does. If you like that, then read on.</p>
+
+    <p>It currently only works in Chrome and Safari 5.</p>
+
+    <h2>Getting started</h2>
+    <ul>
+      <li><a href="examples/example1.html">Hello world example</a></li>
+      <li><a href="examples/server-load.html">Another example (server CPU usage)</a></li>
+      <li><a href="tutorial.html"><b>Tutorial</b></a></li>
+      <li>Just the JavaScript: <a href="http://github.com/joewalnes/smoothie/raw/master/smoothie.js"><code>smoothie.js</code></a></li>
+      <li>Full distribution (docs and examples): <a href="http://github.com/joewalnes/smoothie/zipball/master">zip</a> or <a href="http://github.com/joewalnes/smoothie/tarball/master">tgz</a></li>
+      <li>Repository: <code>git clone git@github.com:joewalnes/smoothie.git</code></li>
+      <li><a href="http://joewalnes.com/2010/08/10/introducing-smoothie-charts/">Introducing Smoothie Charts</a> (blog entry)
+    </ul>
+
+    <p>For help, use the <a href="http://groups.google.com/group/smoothie-charts">Smoothie Charts Google Group</a>.</p>
+
+    <p><a href="LICENSE.txt">License</a> (MIT)</p>
+
+    <p><em>-<a href="http://joewalnes.com/">Joe Walnes</a></em></p>
+
+    <script type="text/javascript">
+      var dataSet1 = new TimeSeries(), dataSet2 = new TimeSeries(), dataSet3 = new TimeSeries();
+
+      setInterval(function() {
+        var now = new Date().getTime();
+        dataSet1.append(now, Math.random());
+        dataSet2.append(now, Math.random());
+        dataSet3.append(now, Math.random());
+      }, 1000);
+
+      // Build the timeline
+      var smoothie = new SmoothieChart({ millisPerPixel: 20, grid: { strokeStyle: '#555555', lineWidth: 1, millisPerLine: 1000, verticalSections: 4 }});
+      smoothie.addTimeSeries(dataSet1, { strokeStyle: 'rgba(255, 0, 0, 1)', fillStyle: 'rgba(255, 0, 0, 0.2)', lineWidth: 3 });
+      smoothie.addTimeSeries(dataSet2, { strokeStyle: 'rgba(0, 255, 0, 1)', fillStyle: 'rgba(0, 255, 0, 0.2)', lineWidth: 3 });
+      smoothie.addTimeSeries(dataSet3, { strokeStyle: 'rgba(0, 0, 255, 1)', fillStyle: 'rgba(0, 0, 255, 0.2)', lineWidth: 3 });
+      smoothie.streamTo(document.getElementById('chart'), 1000);
+
+    </script>
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17907646-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+  </body>
+</html>

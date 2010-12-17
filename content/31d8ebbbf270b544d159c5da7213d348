@@ -1,0 +1,615 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<link rel='shortcut icon' href='/images/favicon.ico'>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-2541099-1";
+urchinTracker();
+</script>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<meta name="robots" content="index,nofollow">
+
+<title>PerformancePython - </title>
+<script type="text/javascript" src="/wiki//common/js/common.js"></script>
+
+<script type="text/javascript">
+<!--// common functions
+
+// We keep here the state of the search box
+searchIsDisabled = false;
+
+function searchChange(e) {
+    // Update search buttons status according to search box content.
+    // Ignore empty or whitespace search term.
+    var value = e.value.replace(/\s+/, '');
+    if (value == '' || searchIsDisabled) { 
+        searchSetDisabled(true);
+    } else {
+        searchSetDisabled(false);
+    }
+}
+
+function searchSetDisabled(flag) {
+    // Enable or disable search
+    document.getElementById('fullsearch').disabled = flag;
+    document.getElementById('titlesearch').disabled = flag;
+}
+
+function searchFocus(e) {
+    // Update search input content on focus
+    if (e.value == 'Search') {
+        e.value = '';
+        e.className = '';
+        searchIsDisabled = false;
+    }
+}
+
+function searchBlur(e) {
+    // Update search input content on blur
+    if (e.value == '') {
+        e.value = 'Search';
+        e.className = 'disabled';
+        searchIsDisabled = true;
+    }
+}
+
+function actionsMenuInit(title) {
+    // Initialize action menu
+    for (i = 0; i < document.forms.length; i++) {
+        var form = document.forms[i];
+        if (form.className == 'actionsmenu') {
+            // Check if this form needs update
+            var div = form.getElementsByTagName('div')[0];
+            var label = div.getElementsByTagName('label')[0];
+            if (label) {
+                // This is the first time: remove label and do buton.
+                div.removeChild(label);
+                var dobutton = div.getElementsByTagName('input')[0];
+                div.removeChild(dobutton);
+                // and add menu title
+                var select = div.getElementsByTagName('select')[0];
+                var item = document.createElement('option');
+                item.appendChild(document.createTextNode(title));
+                item.value = 'show';
+                select.insertBefore(item, select.options[0]);
+                select.selectedIndex = 0;
+            }
+        }
+    }
+}
+//-->
+</script>
+
+
+<link rel="stylesheet" type="text/css" charset="utf-8" media="all" href="/wiki//sinorca4moin/css/common.css">
+<link rel="stylesheet" type="text/css" charset="utf-8" media="screen" href="/wiki//sinorca4moin/css/screen.css">
+<link rel="stylesheet" type="text/css" charset="utf-8" media="print" href="/wiki//sinorca4moin/css/print.css">
+<link rel="stylesheet" type="text/css" charset="utf-8" media="projection" href="/wiki//sinorca4moin/css/projection.css">
+<link rel="alternate" title=" Recent Changes" href="/RecentChanges?action=rss_rc&amp;ddiffs=1&amp;unique=1" type="application/rss+xml">
+
+<link rel="Start" href="/SciPy">
+<link rel="Alternate" title="Wiki Markup" href="/PerformancePython?action=raw">
+<link rel="Alternate" media="print" title="Print View" href="/PerformancePython?action=print">
+<link rel="Appendix" title="laplace.m" href="/PerformancePython?action=AttachFile&amp;do=view&amp;target=laplace.m">
+<link rel="Appendix" title="laplace.py" href="/PerformancePython?action=AttachFile&amp;do=view&amp;target=laplace.py">
+<link rel="Appendix" title="perfpy.tgz" href="/PerformancePython?action=AttachFile&amp;do=view&amp;target=perfpy.tgz">
+<link rel="Appendix" title="perfpy_2.tgz" href="/PerformancePython?action=AttachFile&amp;do=view&amp;target=perfpy_2.tgz">
+<link rel="Appendix" title="perfy_2.tgz" href="/PerformancePython?action=AttachFile&amp;do=view&amp;target=perfy_2.tgz">
+<link rel="Search" href="/FindPage">
+<link rel="Index" href="/TitleIndex">
+<link rel="Glossary" href="/WordIndex">
+<link rel="Help" href="/HelpOnFormatting">
+</head>
+
+<body  lang="en" dir="ltr">
+<div id="header">
+<div class="superHeader">
+  <div class="right">
+<ul id="username"><li><a href="/PerformancePython?action=login" id="login">Login</a></li></ul>
+  </div>
+</div>
+
+<form id="searchform" method="get" action="">
+<div>
+<input type="hidden" name="action" value="fullsearch">
+<input type="hidden" name="context" value="180">
+<label for="searchinput">Search:</label>
+<input id="searchinput" type="text" name="value" value="" size="20"
+    onfocus="searchFocus(this)" onblur="searchBlur(this)"
+    onkeyup="searchChange(this)" onchange="searchChange(this)" alt="Search">
+<input id="titlesearch" name="titlesearch" type="submit"
+    value="Titles" alt="Search Titles">
+<input id="fullsearch" name="fullsearch" type="submit"
+    value="Text" alt="Search Full Text">
+</div>
+</form>
+<script type="text/javascript">
+<!--// Initialize search form
+var f = document.getElementById('searchform');
+f.getElementsByTagName('label')[0].style.display = 'none';
+var e = document.getElementById('searchinput');
+searchChange(e);
+searchBlur(e);
+//-->
+</script>
+
+<div class="midHeader">
+<div id="locationline">
+<div id="logo"><a href="/SciPy"><img src="/images/scipy_logo.gif" border="0" alt="SciPy Website"/><a href="http://enthought.com"><img src="/images/enthought_logo.gif" border="0" alt="Enthought Website"/></a></a></div>
+<a href="/SciPy"></a>
+</div>
+</div>
+<div class="subHeader">
+
+</div>
+
+</div>
+<div id="sidebar">
+<div class="sidepanel">
+<h1>Wiki</h1>
+
+<ul id="navibar">
+<li class="wikilink"><a href="http://docs.scipy.org">Documentation</a></li><li class="wikilink"><a href="/Mailing_Lists">Mailing Lists</a></li><li class="wikilink"><a href="/Download">Download</a></li><li class="wikilink"><a href="/Installing_SciPy">Installing SciPy</a></li><li class="wikilink"><a href="/Topical_Software">Topical Software</a></li><li class="wikilink"><a href="/Cookbook">Cookbook</a></li><li class="wikilink"><a href="/Developer_Zone">Developer Zone</a></li><li class="wikilink"><a href="http://planet.scipy.org">Blogs</a></li><li class="wikilink"><a href="http://conference.scipy.org">Conference</a></li><li class="current"><a href="/PerformancePython">PerformancePython</a></li>
+</ul>
+
+</div>
+<div class="sidepanel">
+<h1>Page</h1>
+<ul class="editbar"><li><span class="disabled">Immutable Page</span></li><li><a href="/PerformancePython?action=info">Info</a></li><li><a href="/PerformancePython?action=AttachFile">Attachments</a></li><li>
+<form class="actionsmenu" method="get" action="">
+<div>
+    <label>More Actions:</label>
+    <select name="action"
+        onchange="if ((this.selectedIndex != 0) &&
+                      (this.options[this.selectedIndex].disabled == false)) {
+                this.form.submit();
+            }
+            this.selectedIndex = 0;">
+        <option value="raw">Raw Text</option>
+<option value="print">Print View</option>
+<option value="RenderAsDocbook">Render as Docbook</option>
+<option value="refresh">Delete Cache</option>
+<option value="show" disabled class="disabled">------------</option>
+<option value="SpellCheck">Check Spelling</option>
+<option value="LikePages">Like Pages</option>
+<option value="LocalSiteMap">Local Site Map</option>
+<option value="show" disabled class="disabled">------------</option>
+<option value="RenamePage" disabled class="disabled">Rename Page</option>
+<option value="DeletePage" disabled class="disabled">Delete Page</option>
+<option value="show" disabled class="disabled">------------</option>
+<option value="MyPages">My Pages</option>
+<option value="SubscribeUser">Subscribe User</option>
+<option value="show" disabled class="disabled">------------</option>
+<option value="Despam">Remove Spam</option>
+<option value="PackagePages">Package Pages</option>
+    </select>
+    <input type="submit" value="Do">
+</div>
+<script type="text/javascript">
+<!--// Init menu
+actionsMenuInit('More Actions:');
+//-->
+</script>
+</form>
+</li></ul>
+
+</div>
+
+</div>
+
+<div id="page" lang="en" dir="ltr">
+
+<ul id="iconbar">
+<li><a href="/PerformancePython?action=edit"><img alt="Edit" height="12" src="/wiki//sinorca4moin/img/moin-edit.png" title="Edit" width="12" /></a></li>
+<li><a href="/PerformancePython"><img alt="View" height="13" src="/wiki//sinorca4moin/img/moin-show.png" title="View" width="12" /></a></li>
+<li><a href="/PerformancePython?action=diff"><img alt="Diffs" height="11" src="/wiki//sinorca4moin/img/moin-diff.png" title="Diffs" width="15" /></a></li>
+<li><a href="/PerformancePython?action=info"><img alt="Info" height="11" src="/wiki//sinorca4moin/img/moin-info.png" title="Info" width="12" /></a></li>
+<li><a href="/PerformancePython?action=subscribe"><img alt="Subscribe" height="10" src="/wiki//sinorca4moin/img/moin-subscribe.png" title="Subscribe" width="14" /></a></li>
+<li><a href="/PerformancePython?action=raw"><img alt="Raw" height="13" src="/wiki//sinorca4moin/img/moin-raw.png" title="Raw" width="12" /></a></li>
+<li><a href="/PerformancePython?action=print"><img alt="Print" height="14" src="/wiki//sinorca4moin/img/moin-print.png" title="Print" width="16" /></a></li>
+</ul>
+
+
+<ul id="pagelocation">
+<a class="backlink" title="Click to do a full-text search for this title" href="/PerformancePython?action=fullsearch&amp;value=linkto%3A%22PerformancePython%22&amp;context=180">PerformancePython</a>
+</ul>
+<div dir="ltr" id="content" lang="en"><span class="anchor" id="top"></span>
+<span class="anchor" id="line-1"></span><p class="line867"><div class="table-of-contents"><p class="table-of-contents-heading">Contents<ol><li><a href="#head-c69b6eedcba46d64c0ac25b9eebb096f7f9bd909">A beginners guide to using Python for performance computing</a><ol><li><a href="#head-db9491235e26ae3c496bb59c0fb9333d5913c4f5">Introduction</a></li><li><a href="#head-df091dbff41ac96ce5790c44d7aa8e04d1fd7aef">Problem description</a></li><li><a href="#head-82953b533f376e832ce575e0dc28eb19219f2580">Numerical Solution</a></li><li><a href="#head-cb9b302c30a95c46828073e6cc2d1d85255a997a">Using NumPy</a></li><li><a href="#head-cafc55bbf8fd74071b2c2ebcfb6f24ed1989d540">Using weave.blitz</a></li><li><a href="#head-a3f4dd816378d3ba4cbdd3d23dc98529e8ad7087">Using weave.inline</a></li><li><a href="#head-6a1aacc7a6b8defdea38dc1f3e664ef0d1683d83">Using f2py</a></li><li><a href="#head-3214778a46feca74744d3ee22fbb66dfb680b81d">Using Pyrex</a></li><li><a href="#head-fcbd791fae3a9208d7ffb5a59fd4891ab036d017">Using Matlab and Octave</a></li><li><a href="#head-3e5e0b392866d319bb08e78a4f184fca7d32e9bd">An implementation in C++</a></li><li><a href="#head-a73fa06d3c4f3bda71b3526d30d51c492d8f80df">A final comparison</a></li></ol></li></ol></div> <span class="anchor" id="line-2"></span><span class="anchor" id="line-3"></span><p class="line867">
+<h1 id="head-c69b6eedcba46d64c0ac25b9eebb096f7f9bd909">A beginners guide to using Python for performance computing</h1>
+<span class="anchor" id="line-4"></span><p class="line862">A comparison of weave with NumPy, Pyrex, Psyco, Fortran (77 and 90) and C++ for solving Laplace's equation. This article was originally written by Prabhu Ramachandran. <span class="anchor" id="line-5"></span><span class="anchor" id="line-6"></span><p class="line867"><a class="attachment" href="/PerformancePython?action=AttachFile&amp;do=get&amp;target=laplace.py" title="attachment:laplace.py">laplace.py</a> is the complete Python code discussed below. The source tarball ( <a class="attachment" href="/PerformancePython?action=AttachFile&amp;do=get&amp;target=perfpy_2.tgz" title="attachment:perfpy_2.tgz">perfpy_2.tgz</a> ) contains in addition the Fortran code, the pure C++ code, the Pyrex sources and a setup.py script to build the f2py and Pyrex module. <span class="anchor" id="line-7"></span><span class="anchor" id="line-8"></span><p class="line867">
+<h2 id="head-db9491235e26ae3c496bb59c0fb9333d5913c4f5">Introduction</h2>
+<span class="anchor" id="line-9"></span><p class="line862">This is a simple introductory document to using Python for performance computing. We'll use NumPy, SciPy's weave (using both weave.blitz and weave.inline) and Pyrex. We will also show how to use f2py to wrap a Fortran subroutine and call it from within Python. <span class="anchor" id="line-10"></span><span class="anchor" id="line-11"></span><p class="line874">We will also use this opportunity to benchmark the various ways to solve a particular numerical problem in Python and compare them to an implementation of the algorithm in C++. <span class="anchor" id="line-12"></span><span class="anchor" id="line-13"></span><p class="line867">
+<h2 id="head-df091dbff41ac96ce5790c44d7aa8e04d1fd7aef">Problem description</h2>
+<span class="anchor" id="line-14"></span><p class="line862">The example we will consider is a very simple (read, trivial) case of solving the 2D Laplace equation using an iterative finite difference scheme (four point averaging, Gauss-Seidel or Gauss-Jordan). The formal specification of the problem is as follows. We are required to solve for some unknown function u(x,y) such that &#8711;<sup>2</sup>u = 0 with a boundary condition specified. For convenience the domain of interest is considered to be a rectangle and the boundary values at the sides of this rectangle are given. <span class="anchor" id="line-15"></span><span class="anchor" id="line-16"></span><p class="line874">It can be shown that this problem can be solved using a simple four point averaging scheme as follows. Discretise the domain into an (nx x ny) grid of points. Then the function u can be represented as a 2 dimensional array - u(nx, ny). The values of u along the sides of the rectangle are given. The solution can be obtained by iterating in the following manner. <span class="anchor" id="line-17"></span><span class="anchor" id="line-18"></span><p class="line867"><span class="anchor" id="line-19"></span><span class="anchor" id="line-20"></span><span class="anchor" id="line-21"></span><span class="anchor" id="line-22"></span><span class="anchor" id="line-23"></span><span class="anchor" id="line-24"></span><div class="codearea" dir="ltr" lang="en">
+<script type="text/javascript">
+function isnumbered(obj) {
+  return obj.childNodes.length && obj.firstChild.childNodes.length && obj.firstChild.firstChild.className == 'LineNumber';
+}
+function nformat(num,chrs,add) {
+  var nlen = Math.max(0,chrs-(''+num).length), res = '';
+  while (nlen>0) { res += ' '; nlen-- }
+  return res+num+add;
+}
+function addnumber(did, nstart, nstep) {
+  var c = document.getElementById(did), l = c.firstChild, n = 1;
+  if (!isnumbered(c))
+    if (typeof nstart == 'undefined') nstart = 1;
+    if (typeof nstep  == 'undefined') nstep = 1;
+    n = nstart;
+    while (l != null) {
+      if (l.tagName == 'SPAN') {
+        var s = document.createElement('SPAN');
+        s.className = 'LineNumber'
+        s.appendChild(document.createTextNode(nformat(n,4,' ')));
+        n += nstep;
+        if (l.childNodes.length)
+          l.insertBefore(s, l.firstChild)
+        else
+          l.appendChild(s)
+      }
+      l = l.nextSibling;
+    }
+  return false;
+}
+function remnumber(did) {
+  var c = document.getElementById(did), l = c.firstChild;
+  if (isnumbered(c))
+    while (l != null) {
+      if (l.tagName == 'SPAN' && l.firstChild.className == 'LineNumber') l.removeChild(l.firstChild);
+      l = l.nextSibling;
+    }
+  return false;
+}
+function togglenumber(did, nstart, nstep) {
+  var c = document.getElementById(did);
+  if (isnumbered(c)) {
+    remnumber(did);
+  } else {
+    addnumber(did,nstart,nstep);
+  }
+  return false;
+}
+</script>
+
+<script type="text/javascript">
+document.write('<a href="#" onclick="return togglenumber(\'CA-3687c373c72b7a92196c636e577d2ebd073cdac9_000\', 1, 1);" \
+                class="codenumbers">Toggle line numbers<\/a>');
+</script>
+<pre dir="ltr" id="CA-3687c373c72b7a92196c636e577d2ebd073cdac9_000" lang="en"><span class="line"><span class="LineNumber">   1 </span><span class="ResWord">for</span> <span class="ID">i</span> <span class="ResWord">in</span> <span class="ID">range</span><span class="Operator">(</span><span class="Number">1</span><span class="Operator">,</span> <span class="ID">nx</span><span class="Operator">-</span><span class="Number">1</span><span class="Operator">)</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">   2 </span>    <span class="ResWord">for</span> <span class="ID">j</span> <span class="ResWord">in</span> <span class="ID">range</span><span class="Operator">(</span><span class="Number">1</span><span class="Operator">,</span> <span class="ID">ny</span><span class="Operator">-</span><span class="Number">1</span><span class="Operator">)</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">   3 </span>        <span class="ID">u</span><span class="Operator">[</span><span class="ID">i</span><span class="Operator">,</span><span class="ID">j</span><span class="Operator">]</span> <span class="Operator">=</span> <span class="Operator">(</span><span class="Operator">(</span><span class="ID">u</span><span class="Operator">[</span><span class="ID">i</span><span class="Operator">-</span><span class="Number">1</span><span class="Operator">,</span> <span class="ID">j</span><span class="Operator">]</span> <span class="Operator">+</span> <span class="ID">u</span><span class="Operator">[</span><span class="ID">i</span><span class="Operator">+</span><span class="Number">1</span><span class="Operator">,</span> <span class="ID">j</span><span class="Operator">]</span><span class="Operator">)</span><span class="Operator">*</span><span class="ID">dy</span><span class="Operator">**</span><span class="Number">2</span> <span class="Operator">+</span></span>
+<span class="line"><span class="LineNumber">   4 </span>                  <span class="Operator">(</span><span class="ID">u</span><span class="Operator">[</span><span class="ID">i</span><span class="Operator">,</span> <span class="ID">j</span><span class="Operator">-</span><span class="Number">1</span><span class="Operator">]</span> <span class="Operator">+</span> <span class="ID">u</span><span class="Operator">[</span><span class="ID">i</span><span class="Operator">,</span> <span class="ID">j</span><span class="Operator">+</span><span class="Number">1</span><span class="Operator">]</span><span class="Operator">)</span><span class="Operator">*</span><span class="ID">dx</span><span class="Operator">**</span><span class="Number">2</span><span class="Operator">)</span><span class="Operator">/</span><span class="Operator">(</span><span class="Number">2.0</span><span class="Operator">*</span><span class="Operator">(</span><span class="ID">dx</span><span class="Operator">**</span><span class="Number">2</span> <span class="Operator">+</span> <span class="ID">dy</span><span class="Operator">**</span><span class="Number">2</span><span class="Operator">)</span><span class="Operator">)</span><span class="Text"></span></span>
+</pre></div><span class="anchor" id="line-25"></span><p class="line874">Where dx and dy are the lengths along the x and y axis of the discretised domain. <span class="anchor" id="line-26"></span><span class="anchor" id="line-27"></span><p class="line867">
+<h2 id="head-82953b533f376e832ce575e0dc28eb19219f2580">Numerical Solution</h2>
+<span class="anchor" id="line-28"></span><p class="line862">Implementing a solver for this is straight forward in Pure Python. Use a simple NumPy array to store the solution matrix u. The following code demonstrates a simple solver. <span class="anchor" id="line-29"></span><span class="anchor" id="line-30"></span><p class="line867"><span class="anchor" id="line-31"></span><span class="anchor" id="line-32"></span><span class="anchor" id="line-33"></span><span class="anchor" id="line-34"></span><span class="anchor" id="line-35"></span><span class="anchor" id="line-36"></span><span class="anchor" id="line-37"></span><span class="anchor" id="line-38"></span><span class="anchor" id="line-39"></span><span class="anchor" id="line-40"></span><span class="anchor" id="line-41"></span><span class="anchor" id="line-42"></span><span class="anchor" id="line-43"></span><span class="anchor" id="line-44"></span><span class="anchor" id="line-45"></span><span class="anchor" id="line-46"></span><span class="anchor" id="line-47"></span><span class="anchor" id="line-48"></span><span class="anchor" id="line-49"></span><span class="anchor" id="line-50"></span><span class="anchor" id="line-51"></span><span class="anchor" id="line-52"></span><span class="anchor" id="line-53"></span><span class="anchor" id="line-54"></span><span class="anchor" id="line-55"></span><span class="anchor" id="line-56"></span><span class="anchor" id="line-57"></span><span class="anchor" id="line-58"></span><span class="anchor" id="line-59"></span><span class="anchor" id="line-60"></span><span class="anchor" id="line-61"></span><span class="anchor" id="line-62"></span><span class="anchor" id="line-63"></span><span class="anchor" id="line-64"></span><span class="anchor" id="line-65"></span><span class="anchor" id="line-66"></span><span class="anchor" id="line-67"></span><span class="anchor" id="line-68"></span><span class="anchor" id="line-69"></span><span class="anchor" id="line-70"></span><span class="anchor" id="line-71"></span><span class="anchor" id="line-72"></span><span class="anchor" id="line-73"></span><span class="anchor" id="line-74"></span><span class="anchor" id="line-75"></span><span class="anchor" id="line-76"></span><span class="anchor" id="line-77"></span><span class="anchor" id="line-78"></span><span class="anchor" id="line-79"></span><span class="anchor" id="line-80"></span><span class="anchor" id="line-81"></span><span class="anchor" id="line-82"></span><span class="anchor" id="line-83"></span><span class="anchor" id="line-84"></span><span class="anchor" id="line-85"></span><span class="anchor" id="line-86"></span><span class="anchor" id="line-87"></span><span class="anchor" id="line-88"></span><span class="anchor" id="line-89"></span><span class="anchor" id="line-90"></span><span class="anchor" id="line-91"></span><span class="anchor" id="line-92"></span><span class="anchor" id="line-93"></span><span class="anchor" id="line-94"></span><span class="anchor" id="line-95"></span><span class="anchor" id="line-96"></span><span class="anchor" id="line-97"></span><span class="anchor" id="line-98"></span><span class="anchor" id="line-99"></span><span class="anchor" id="line-100"></span><span class="anchor" id="line-101"></span><span class="anchor" id="line-102"></span><span class="anchor" id="line-103"></span><span class="anchor" id="line-104"></span><span class="anchor" id="line-105"></span><span class="anchor" id="line-106"></span><span class="anchor" id="line-107"></span><span class="anchor" id="line-108"></span><span class="anchor" id="line-109"></span><span class="anchor" id="line-110"></span><span class="anchor" id="line-111"></span><span class="anchor" id="line-112"></span><div class="codearea" dir="ltr" lang="en">
+<script type="text/javascript">
+document.write('<a href="#" onclick="return togglenumber(\'CA-218df8715749ecede27b0f4db223aa36956dd64a_001\', 1, 1);" \
+                class="codenumbers">Toggle line numbers<\/a>');
+</script>
+<pre dir="ltr" id="CA-218df8715749ecede27b0f4db223aa36956dd64a_001" lang="en"><span class="line"><span class="LineNumber">   1 </span><span class="ResWord">import</span> <span class="ID">numpy</span></span>
+<span class="line"><span class="LineNumber">   2 </span></span>
+<span class="line"><span class="LineNumber">   3 </span><span class="ResWord">class</span> <span class="ID">Grid</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">   4 </span>    <span class="String">"""A simple grid class that stores the details and solution of the</span></span>
+<span class="line"><span class="LineNumber">   5 </span><span class="String">    computational grid."""</span></span>
+<span class="line"><span class="LineNumber">   6 </span>    <span class="ResWord">def</span> <span class="ID">__init__</span><span class="Operator">(</span><span class="ID">self</span><span class="Operator">,</span> <span class="ID">nx</span><span class="Operator">=</span><span class="Number">10</span><span class="Operator">,</span> <span class="ID">ny</span><span class="Operator">=</span><span class="Number">10</span><span class="Operator">,</span> <span class="ID">xmin</span><span class="Operator">=</span><span class="Number">0.0</span><span class="Operator">,</span> <span class="ID">xmax</span><span class="Operator">=</span><span class="Number">1.0</span><span class="Operator">,</span></span>
+<span class="line"><span class="LineNumber">   7 </span>                 <span class="ID">ymin</span><span class="Operator">=</span><span class="Number">0.0</span><span class="Operator">,</span> <span class="ID">ymax</span><span class="Operator">=</span><span class="Number">1.0</span><span class="Operator">)</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">   8 </span>        <span class="ID">self</span><span class="Operator">.</span><span class="ID">xmin</span><span class="Operator">,</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">xmax</span><span class="Operator">,</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">ymin</span><span class="Operator">,</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">ymax</span> <span class="Operator">=</span> <span class="ID">xmin</span><span class="Operator">,</span> <span class="ID">xmax</span><span class="Operator">,</span> <span class="ID">ymin</span><span class="Operator">,</span> <span class="ID">ymax</span></span>
+<span class="line"><span class="LineNumber">   9 </span>        <span class="ID">self</span><span class="Operator">.</span><span class="ID">dx</span> <span class="Operator">=</span> <span class="ID">float</span><span class="Operator">(</span><span class="ID">xmax</span><span class="Operator">-</span><span class="ID">xmin</span><span class="Operator">)</span><span class="Operator">/</span><span class="Operator">(</span><span class="ID">nx</span><span class="Operator">-</span><span class="Number">1</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  10 </span>        <span class="ID">self</span><span class="Operator">.</span><span class="ID">dy</span> <span class="Operator">=</span> <span class="ID">float</span><span class="Operator">(</span><span class="ID">ymax</span><span class="Operator">-</span><span class="ID">ymin</span><span class="Operator">)</span><span class="Operator">/</span><span class="Operator">(</span><span class="ID">ny</span><span class="Operator">-</span><span class="Number">1</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  11 </span>        <span class="ID">self</span><span class="Operator">.</span><span class="ID">u</span> <span class="Operator">=</span> <span class="ID">numpy</span><span class="Operator">.</span><span class="ID">zeros</span><span class="Operator">(</span><span class="Operator">(</span><span class="ID">nx</span><span class="Operator">,</span> <span class="ID">ny</span><span class="Operator">)</span><span class="Operator">,</span> <span class="String">'d'</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  12 </span>        <span class="Comment"># used to compute the change in solution in some of the methods.</span></span>
+<span class="line"><span class="LineNumber">  13 </span><span class="Comment"></span>        <span class="ID">self</span><span class="Operator">.</span><span class="ID">old_u</span> <span class="Operator">=</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">u</span><span class="Operator">.</span><span class="ID">copy</span><span class="Operator">(</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  14 </span></span>
+<span class="line"><span class="LineNumber">  15 </span>    <span class="ResWord">def</span> <span class="ID">setBCFunc</span><span class="Operator">(</span><span class="ID">self</span><span class="Operator">,</span> <span class="ID">func</span><span class="Operator">)</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">  16 </span>        <span class="String">"""Sets the BC given a function of two variables."""</span></span>
+<span class="line"><span class="LineNumber">  17 </span>        <span class="ID">xmin</span><span class="Operator">,</span> <span class="ID">ymin</span> <span class="Operator">=</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">xmin</span><span class="Operator">,</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">ymin</span></span>
+<span class="line"><span class="LineNumber">  18 </span>        <span class="ID">xmax</span><span class="Operator">,</span> <span class="ID">ymax</span> <span class="Operator">=</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">xmax</span><span class="Operator">,</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">ymax</span></span>
+<span class="line"><span class="LineNumber">  19 </span>        <span class="ID">x</span> <span class="Operator">=</span> <span class="ID">numpy</span><span class="Operator">.</span><span class="ID">arange</span><span class="Operator">(</span><span class="ID">xmin</span><span class="Operator">,</span> <span class="ID">xmax</span> <span class="Operator">+</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">dx</span><span class="Operator">*</span><span class="Number">0.5</span><span class="Operator">,</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">dx</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  20 </span>        <span class="ID">y</span> <span class="Operator">=</span> <span class="ID">numpy</span><span class="Operator">.</span><span class="ID">arange</span><span class="Operator">(</span><span class="ID">ymin</span><span class="Operator">,</span> <span class="ID">ymax</span> <span class="Operator">+</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">dy</span><span class="Operator">*</span><span class="Number">0.5</span><span class="Operator">,</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">dy</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  21 </span>        <span class="ID">self</span><span class="Operator">.</span><span class="ID">u</span><span class="Operator">[</span><span class="Number">0</span> <span class="Operator">,</span><span class="Operator">:</span><span class="Operator">]</span> <span class="Operator">=</span> <span class="ID">func</span><span class="Operator">(</span><span class="ID">xmin</span><span class="Operator">,</span><span class="ID">y</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  22 </span>        <span class="ID">self</span><span class="Operator">.</span><span class="ID">u</span><span class="Operator">[</span><span class="Operator">-</span><span class="Number">1</span><span class="Operator">,</span><span class="Operator">:</span><span class="Operator">]</span> <span class="Operator">=</span> <span class="ID">func</span><span class="Operator">(</span><span class="ID">xmax</span><span class="Operator">,</span><span class="ID">y</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  23 </span>        <span class="ID">self</span><span class="Operator">.</span><span class="ID">u</span><span class="Operator">[</span><span class="Operator">:</span><span class="Operator">,</span> <span class="Number">0</span><span class="Operator">]</span> <span class="Operator">=</span> <span class="ID">func</span><span class="Operator">(</span><span class="ID">x</span><span class="Operator">,</span><span class="ID">ymin</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  24 </span>        <span class="ID">self</span><span class="Operator">.</span><span class="ID">u</span><span class="Operator">[</span><span class="Operator">:</span><span class="Operator">,</span><span class="Operator">-</span><span class="Number">1</span><span class="Operator">]</span> <span class="Operator">=</span> <span class="ID">func</span><span class="Operator">(</span><span class="ID">x</span><span class="Operator">,</span><span class="ID">ymax</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  25 </span></span>
+<span class="line"><span class="LineNumber">  26 </span>    <span class="ResWord">def</span> <span class="ID">computeError</span><span class="Operator">(</span><span class="ID">self</span><span class="Operator">)</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">  27 </span>        <span class="String">"""Computes absolute error using an L2 norm for the solution.</span></span>
+<span class="line"><span class="LineNumber">  28 </span><span class="String">        This requires that self.u and self.old_u must be appropriately</span></span>
+<span class="line"><span class="LineNumber">  29 </span><span class="String">        setup."""</span></span>
+<span class="line"><span class="LineNumber">  30 </span>        <span class="ID">v</span> <span class="Operator">=</span> <span class="Operator">(</span><span class="ID">self</span><span class="Operator">.</span><span class="ID">u</span> <span class="Operator">-</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">old_u</span><span class="Operator">)</span><span class="Operator">.</span><span class="ID">flat</span></span>
+<span class="line"><span class="LineNumber">  31 </span>        <span class="ResWord">return</span> <span class="ID">numpy</span><span class="Operator">.</span><span class="ID">sqrt</span><span class="Operator">(</span><span class="ID">numpy</span><span class="Operator">.</span><span class="ID">dot</span><span class="Operator">(</span><span class="ID">v</span><span class="Operator">,</span><span class="ID">v</span><span class="Operator">)</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  32 </span></span>
+<span class="line"><span class="LineNumber">  33 </span></span>
+<span class="line"><span class="LineNumber">  34 </span><span class="ResWord">class</span> <span class="ID">LaplaceSolver</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">  35 </span>    <span class="String">"""A simple Laplacian solver that can use different schemes to</span></span>
+<span class="line"><span class="LineNumber">  36 </span><span class="String">    solve the problem."""</span></span>
+<span class="line"><span class="LineNumber">  37 </span>    <span class="ResWord">def</span> <span class="ID">__init__</span><span class="Operator">(</span><span class="ID">self</span><span class="Operator">,</span> <span class="ID">grid</span><span class="Operator">,</span> <span class="ID">stepper</span><span class="Operator">=</span><span class="String">'numeric'</span><span class="Operator">)</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">  38 </span>        <span class="ID">self</span><span class="Operator">.</span><span class="ID">grid</span> <span class="Operator">=</span> <span class="ID">grid</span></span>
+<span class="line"><span class="LineNumber">  39 </span>        <span class="ID">self</span><span class="Operator">.</span><span class="ID">setTimeStepper</span><span class="Operator">(</span><span class="ID">stepper</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  40 </span></span>
+<span class="line"><span class="LineNumber">  41 </span>    <span class="ResWord">def</span> <span class="ID">slowTimeStep</span><span class="Operator">(</span><span class="ID">self</span><span class="Operator">,</span> <span class="ID">dt</span><span class="Operator">=</span><span class="Number">0.0</span><span class="Operator">)</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">  42 </span>        <span class="String">"""Takes a time step using straight forward Python loops."""</span></span>
+<span class="line"><span class="LineNumber">  43 </span>        <span class="ID">g</span> <span class="Operator">=</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">grid</span></span>
+<span class="line"><span class="LineNumber">  44 </span>        <span class="ID">nx</span><span class="Operator">,</span> <span class="ID">ny</span> <span class="Operator">=</span> <span class="ID">g</span><span class="Operator">.</span><span class="ID">u</span><span class="Operator">.</span><span class="ID">shape</span></span>
+<span class="line"><span class="LineNumber">  45 </span>        <span class="ID">dx2</span><span class="Operator">,</span> <span class="ID">dy2</span> <span class="Operator">=</span> <span class="ID">g</span><span class="Operator">.</span><span class="ID">dx</span><span class="Operator">**</span><span class="Number">2</span><span class="Operator">,</span> <span class="ID">g</span><span class="Operator">.</span><span class="ID">dy</span><span class="Operator">**</span><span class="Number">2</span></span>
+<span class="line"><span class="LineNumber">  46 </span>        <span class="ID">dnr_inv</span> <span class="Operator">=</span> <span class="Number">0.5</span><span class="Operator">/</span><span class="Operator">(</span><span class="ID">dx2</span> <span class="Operator">+</span> <span class="ID">dy2</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  47 </span>        <span class="ID">u</span> <span class="Operator">=</span> <span class="ID">g</span><span class="Operator">.</span><span class="ID">u</span></span>
+<span class="line"><span class="LineNumber">  48 </span></span>
+<span class="line"><span class="LineNumber">  49 </span>        <span class="ID">err</span> <span class="Operator">=</span> <span class="Number">0.0</span></span>
+<span class="line"><span class="LineNumber">  50 </span>        <span class="ResWord">for</span> <span class="ID">i</span> <span class="ResWord">in</span> <span class="ID">range</span><span class="Operator">(</span><span class="Number">1</span><span class="Operator">,</span> <span class="ID">nx</span><span class="Operator">-</span><span class="Number">1</span><span class="Operator">)</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">  51 </span>            <span class="ResWord">for</span> <span class="ID">j</span> <span class="ResWord">in</span> <span class="ID">range</span><span class="Operator">(</span><span class="Number">1</span><span class="Operator">,</span> <span class="ID">ny</span><span class="Operator">-</span><span class="Number">1</span><span class="Operator">)</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">  52 </span>                <span class="ID">tmp</span> <span class="Operator">=</span> <span class="ID">u</span><span class="Operator">[</span><span class="ID">i</span><span class="Operator">,</span><span class="ID">j</span><span class="Operator">]</span></span>
+<span class="line"><span class="LineNumber">  53 </span>                <span class="ID">u</span><span class="Operator">[</span><span class="ID">i</span><span class="Operator">,</span><span class="ID">j</span><span class="Operator">]</span> <span class="Operator">=</span> <span class="Operator">(</span><span class="Operator">(</span><span class="ID">u</span><span class="Operator">[</span><span class="ID">i</span><span class="Operator">-</span><span class="Number">1</span><span class="Operator">,</span> <span class="ID">j</span><span class="Operator">]</span> <span class="Operator">+</span> <span class="ID">u</span><span class="Operator">[</span><span class="ID">i</span><span class="Operator">+</span><span class="Number">1</span><span class="Operator">,</span> <span class="ID">j</span><span class="Operator">]</span><span class="Operator">)</span><span class="Operator">*</span><span class="ID">dy2</span> <span class="Operator">+</span></span>
+<span class="line"><span class="LineNumber">  54 </span>                          <span class="Operator">(</span><span class="ID">u</span><span class="Operator">[</span><span class="ID">i</span><span class="Operator">,</span> <span class="ID">j</span><span class="Operator">-</span><span class="Number">1</span><span class="Operator">]</span> <span class="Operator">+</span> <span class="ID">u</span><span class="Operator">[</span><span class="ID">i</span><span class="Operator">,</span> <span class="ID">j</span><span class="Operator">+</span><span class="Number">1</span><span class="Operator">]</span><span class="Operator">)</span><span class="Operator">*</span><span class="ID">dx2</span><span class="Operator">)</span><span class="Operator">*</span><span class="ID">dnr_inv</span></span>
+<span class="line"><span class="LineNumber">  55 </span>                <span class="ID">diff</span> <span class="Operator">=</span> <span class="ID">u</span><span class="Operator">[</span><span class="ID">i</span><span class="Operator">,</span><span class="ID">j</span><span class="Operator">]</span> <span class="Operator">-</span> <span class="ID">tmp</span></span>
+<span class="line"><span class="LineNumber">  56 </span>                <span class="ID">err</span> <span class="Operator">+=</span> <span class="ID">diff</span><span class="Operator">*</span><span class="ID">diff</span></span>
+<span class="line"><span class="LineNumber">  57 </span></span>
+<span class="line"><span class="LineNumber">  58 </span>        <span class="ResWord">return</span> <span class="ID">numpy</span><span class="Operator">.</span><span class="ID">sqrt</span><span class="Operator">(</span><span class="ID">err</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  59 </span></span>
+<span class="line"><span class="LineNumber">  60 </span>    <span class="ResWord">def</span> <span class="ID">setTimeStepper</span><span class="Operator">(</span><span class="ID">self</span><span class="Operator">,</span> <span class="ID">stepper</span><span class="Operator">=</span><span class="String">'numeric'</span><span class="Operator">)</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">  61 </span>        <span class="String">"""Sets the time step scheme to be used while solving given a</span></span>
+<span class="line"><span class="LineNumber">  62 </span><span class="String">        string which should be one of ['slow', 'numeric', 'blitz',</span></span>
+<span class="line"><span class="LineNumber">  63 </span><span class="String">        'inline', 'fastinline', 'fortran']."""</span></span>
+<span class="line"><span class="LineNumber">  64 </span>        <span class="ResWord">if</span> <span class="ID">stepper</span> <span class="Operator">==</span> <span class="String">'slow'</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">  65 </span>            <span class="ID">self</span><span class="Operator">.</span><span class="ID">timeStep</span> <span class="Operator">=</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">slowTimeStep</span></span>
+<span class="line"><span class="LineNumber">  66 </span>        <span class="Comment"># ...</span></span>
+<span class="line"><span class="LineNumber">  67 </span><span class="Comment"></span>        <span class="ResWord">else</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">  68 </span>            <span class="ID">self</span><span class="Operator">.</span><span class="ID">timeStep</span> <span class="Operator">=</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">numericTimeStep</span></span>
+<span class="line"><span class="LineNumber">  69 </span></span>
+<span class="line"><span class="LineNumber">  70 </span>    <span class="ResWord">def</span> <span class="ID">solve</span><span class="Operator">(</span><span class="ID">self</span><span class="Operator">,</span> <span class="ID">n_iter</span><span class="Operator">=</span><span class="Number">0</span><span class="Operator">,</span> <span class="ID">eps</span><span class="Operator">=</span><span class="Number">1.0e-16</span><span class="Operator">)</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">  71 </span>        <span class="ID">err</span> <span class="Operator">=</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">timeStep</span><span class="Operator">(</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  72 </span>        <span class="ID">count</span> <span class="Operator">=</span> <span class="Number">1</span></span>
+<span class="line"><span class="LineNumber">  73 </span></span>
+<span class="line"><span class="LineNumber">  74 </span>        <span class="ResWord">while</span> <span class="ID">err</span> <span class="Operator">&gt;</span> <span class="ID">eps</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">  75 </span>            <span class="ResWord">if</span> <span class="ID">n_iter</span> <span class="ResWord">and</span> <span class="ID">count</span> <span class="Operator">&gt;=</span> <span class="ID">n_iter</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">  76 </span>                <span class="ResWord">return</span> <span class="ID">err</span></span>
+<span class="line"><span class="LineNumber">  77 </span>            <span class="ID">err</span> <span class="Operator">=</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">timeStep</span><span class="Operator">(</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  78 </span>            <span class="ID">count</span> <span class="Operator">=</span> <span class="ID">count</span> <span class="Operator">+</span> <span class="Number">1</span></span>
+<span class="line"><span class="LineNumber">  79 </span></span>
+<span class="line"><span class="LineNumber">  80 </span>        <span class="ResWord">return</span> <span class="ID">count</span><span class="Text"></span></span>
+</pre></div><span class="anchor" id="line-113"></span><p class="line862">The code is pretty simple and very easy to write but if we run it for any sizeable problem (say a 500 x 500 grid of points), we'll see that it takes *forever* to run. The CPU hog in this case is the <tt class="backtick">slowTimeStep</tt> method. In the next section we will speed it up using NumPy. <span class="anchor" id="line-114"></span><span class="anchor" id="line-115"></span><p class="line867">
+<h2 id="head-cb9b302c30a95c46828073e6cc2d1d85255a997a">Using NumPy</h2>
+<span class="anchor" id="line-116"></span><p class="line862">It turns out that the innermost loop of the <tt class="backtick">LaplaceSolver.slowTimeStep</tt> method can be readily expressed by a much simpler NumPy expression. Here is a re-written timeStep method. <span class="anchor" id="line-117"></span><span class="anchor" id="line-118"></span><p class="line867"><span class="anchor" id="line-119"></span><span class="anchor" id="line-120"></span><span class="anchor" id="line-121"></span><span class="anchor" id="line-122"></span><span class="anchor" id="line-123"></span><span class="anchor" id="line-124"></span><span class="anchor" id="line-125"></span><span class="anchor" id="line-126"></span><span class="anchor" id="line-127"></span><span class="anchor" id="line-128"></span><span class="anchor" id="line-129"></span><span class="anchor" id="line-130"></span><span class="anchor" id="line-131"></span><span class="anchor" id="line-132"></span><span class="anchor" id="line-133"></span><div class="codearea" dir="ltr" lang="en">
+<script type="text/javascript">
+document.write('<a href="#" onclick="return togglenumber(\'CA-49f2ec90d5fed2f534b0a3c9a55fb06c20a45251_002\', 1, 1);" \
+                class="codenumbers">Toggle line numbers<\/a>');
+</script>
+<pre dir="ltr" id="CA-49f2ec90d5fed2f534b0a3c9a55fb06c20a45251_002" lang="en"><span class="line"><span class="LineNumber">   1 </span>    <span class="ResWord">def</span> <span class="ID">numericTimeStep</span><span class="Operator">(</span><span class="ID">self</span><span class="Operator">,</span> <span class="ID">dt</span><span class="Operator">=</span><span class="Number">0.0</span><span class="Operator">)</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">   2 </span>        <span class="String">"""Takes a time step using a NumPy expression."""</span></span>
+<span class="line"><span class="LineNumber">   3 </span>        <span class="ID">g</span> <span class="Operator">=</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">grid</span></span>
+<span class="line"><span class="LineNumber">   4 </span>        <span class="ID">dx2</span><span class="Operator">,</span> <span class="ID">dy2</span> <span class="Operator">=</span> <span class="ID">g</span><span class="Operator">.</span><span class="ID">dx</span><span class="Operator">**</span><span class="Number">2</span><span class="Operator">,</span> <span class="ID">g</span><span class="Operator">.</span><span class="ID">dy</span><span class="Operator">**</span><span class="Number">2</span></span>
+<span class="line"><span class="LineNumber">   5 </span>        <span class="ID">dnr_inv</span> <span class="Operator">=</span> <span class="Number">0.5</span><span class="Operator">/</span><span class="Operator">(</span><span class="ID">dx2</span> <span class="Operator">+</span> <span class="ID">dy2</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">   6 </span>        <span class="ID">u</span> <span class="Operator">=</span> <span class="ID">g</span><span class="Operator">.</span><span class="ID">u</span></span>
+<span class="line"><span class="LineNumber">   7 </span>        <span class="ID">g</span><span class="Operator">.</span><span class="ID">old_u</span> <span class="Operator">=</span> <span class="ID">u</span><span class="Operator">.</span><span class="ID">copy</span><span class="Operator">(</span><span class="Operator">)</span> <span class="Comment"># needed to compute the error.</span></span>
+<span class="line"><span class="LineNumber">   8 </span></span>
+<span class="line"><span class="LineNumber">   9 </span>        <span class="Comment"># The actual iteration</span></span>
+<span class="line"><span class="LineNumber">  10 </span><span class="Comment"></span>        <span class="ID">u</span><span class="Operator">[</span><span class="Number">1</span><span class="Operator">:</span><span class="Operator">-</span><span class="Number">1</span><span class="Operator">,</span> <span class="Number">1</span><span class="Operator">:</span><span class="Operator">-</span><span class="Number">1</span><span class="Operator">]</span> <span class="Operator">=</span> <span class="Operator">(</span><span class="Operator">(</span><span class="ID">u</span><span class="Operator">[</span><span class="Number">0</span><span class="Operator">:</span><span class="Operator">-</span><span class="Number">2</span><span class="Operator">,</span> <span class="Number">1</span><span class="Operator">:</span><span class="Operator">-</span><span class="Number">1</span><span class="Operator">]</span> <span class="Operator">+</span> <span class="ID">u</span><span class="Operator">[</span><span class="Number">2</span><span class="Operator">:</span><span class="Operator">,</span> <span class="Number">1</span><span class="Operator">:</span><span class="Operator">-</span><span class="Number">1</span><span class="Operator">]</span><span class="Operator">)</span><span class="Operator">*</span><span class="ID">dy2</span> <span class="Operator">+</span></span>
+<span class="line"><span class="LineNumber">  11 </span>                         <span class="Operator">(</span><span class="ID">u</span><span class="Operator">[</span><span class="Number">1</span><span class="Operator">:</span><span class="Operator">-</span><span class="Number">1</span><span class="Operator">,</span><span class="Number">0</span><span class="Operator">:</span><span class="Operator">-</span><span class="Number">2</span><span class="Operator">]</span> <span class="Operator">+</span> <span class="ID">u</span><span class="Operator">[</span><span class="Number">1</span><span class="Operator">:</span><span class="Operator">-</span><span class="Number">1</span><span class="Operator">,</span> <span class="Number">2</span><span class="Operator">:</span><span class="Operator">]</span><span class="Operator">)</span><span class="Operator">*</span><span class="ID">dx2</span><span class="Operator">)</span><span class="Operator">*</span><span class="ID">dnr_inv</span></span>
+<span class="line"><span class="LineNumber">  12 </span></span>
+<span class="line"><span class="LineNumber">  13 </span>        <span class="ResWord">return</span> <span class="ID">g</span><span class="Operator">.</span><span class="ID">computeError</span><span class="Operator">(</span><span class="Operator">)</span><span class="Text"></span></span>
+</pre></div><span class="anchor" id="line-134"></span><p class="line862">The entire for i and j loops have been replaced by a single NumPy expression. NumPy expressions operate elementwise and hence the above expression works. It basically computes the four point average. If you have gone through the NumPy tutorial and played with <a class="nonexistent" href="/NumPy">NumPy</a> a bit you should be able to understand how this works. The beauty of the expression is that its completely done in C. This makes the computation *much* faster. For a quick comparison here are some numbers for a single iteration on a 500x500 grid. On a PIII 450Mhz with 192 MB RAM, the above takes about 0.3 seconds whereas the previous one takes around 15 seconds. This is close to a 50 fold speed increase. You will also note a few things. <span class="anchor" id="line-135"></span><span class="anchor" id="line-136"></span><ol type="1"><li>We cannot compute the error the way we did earlier inside the for loop. We need to make a copy of the data and then use the computeError function to do this. This costs us memory and is not very pretty. This is certainly a limitation but is worth a 50 fold speed increase. <span class="anchor" id="line-137"></span><span class="anchor" id="line-138"></span></li><li class="gap"><p class="line862">The expression will use temporaries. Hence, during one iteration, the computed values at an already computed location will not be used during the iteration. For instance, in the original for loop, once the value of u[1,1] is computed, the next value for u[1,2] will use the newly computed u[1,1] and not the old one. However, since the NumPy expression uses temporaries internally, only the old value of u[1,1] will be used. This is not a serious issue in this case because it is known that even when this happens the algorithm will converge (but in twice as much time, which reduces the benefit by a factor of 2, which still leaves us with a 25 fold increase). <span class="anchor" id="line-139"></span></li></ol><p class="line862">Apart from these two issues its clear that using NumPy boosts speed tremendously. We will now use the amazing weave package to speed this up further. <span class="anchor" id="line-140"></span><span class="anchor" id="line-141"></span><p class="line867">
+<h2 id="head-cafc55bbf8fd74071b2c2ebcfb6f24ed1989d540">Using weave.blitz</h2>
+<span class="anchor" id="line-142"></span><p class="line862">The NumPy expression can be speeded up quite a bit if we use weave.blitz. Here is the new function. <span class="anchor" id="line-143"></span><span class="anchor" id="line-144"></span><p class="line867"><span class="anchor" id="line-145"></span><span class="anchor" id="line-146"></span><span class="anchor" id="line-147"></span><span class="anchor" id="line-148"></span><span class="anchor" id="line-149"></span><span class="anchor" id="line-150"></span><span class="anchor" id="line-151"></span><span class="anchor" id="line-152"></span><span class="anchor" id="line-153"></span><span class="anchor" id="line-154"></span><span class="anchor" id="line-155"></span><span class="anchor" id="line-156"></span><span class="anchor" id="line-157"></span><span class="anchor" id="line-158"></span><span class="anchor" id="line-159"></span><span class="anchor" id="line-160"></span><span class="anchor" id="line-161"></span><span class="anchor" id="line-162"></span><span class="anchor" id="line-163"></span><span class="anchor" id="line-164"></span><div class="codearea" dir="ltr" lang="en">
+<script type="text/javascript">
+document.write('<a href="#" onclick="return togglenumber(\'CA-82bcd5e42b992bf3f76f6407d95ef5ec5993c41d_003\', 1, 1);" \
+                class="codenumbers">Toggle line numbers<\/a>');
+</script>
+<pre dir="ltr" id="CA-82bcd5e42b992bf3f76f6407d95ef5ec5993c41d_003" lang="en"><span class="line"><span class="LineNumber">   1 </span><span class="Comment"># import necessary modules and functions</span></span>
+<span class="line"><span class="LineNumber">   2 </span><span class="Comment"></span><span class="ResWord">from</span> <span class="ID">scipy</span> <span class="ResWord">import</span> <span class="ID">weave</span></span>
+<span class="line"><span class="LineNumber">   3 </span><span class="Comment"># ...</span></span>
+<span class="line"><span class="LineNumber">   4 </span><span class="Comment"></span>    <span class="ResWord">def</span> <span class="ID">blitzTimeStep</span><span class="Operator">(</span><span class="ID">self</span><span class="Operator">,</span> <span class="ID">dt</span><span class="Operator">=</span><span class="Number">0.0</span><span class="Operator">)</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">   5 </span>        <span class="String">"""Takes a time step using a NumPy expression that has been</span></span>
+<span class="line"><span class="LineNumber">   6 </span><span class="String">        blitzed using weave."""</span></span>
+<span class="line"><span class="LineNumber">   7 </span>        <span class="ID">g</span> <span class="Operator">=</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">grid</span></span>
+<span class="line"><span class="LineNumber">   8 </span>        <span class="ID">dx2</span><span class="Operator">,</span> <span class="ID">dy2</span> <span class="Operator">=</span> <span class="ID">g</span><span class="Operator">.</span><span class="ID">dx</span><span class="Operator">**</span><span class="Number">2</span><span class="Operator">,</span> <span class="ID">g</span><span class="Operator">.</span><span class="ID">dy</span><span class="Operator">**</span><span class="Number">2</span></span>
+<span class="line"><span class="LineNumber">   9 </span>        <span class="ID">dnr_inv</span> <span class="Operator">=</span> <span class="Number">0.5</span><span class="Operator">/</span><span class="Operator">(</span><span class="ID">dx2</span> <span class="Operator">+</span> <span class="ID">dy2</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  10 </span>        <span class="ID">u</span> <span class="Operator">=</span> <span class="ID">g</span><span class="Operator">.</span><span class="ID">u</span></span>
+<span class="line"><span class="LineNumber">  11 </span>        <span class="ID">g</span><span class="Operator">.</span><span class="ID">old_u</span> <span class="Operator">=</span> <span class="ID">u</span><span class="Operator">.</span><span class="ID">copy</span><span class="Operator">(</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  12 </span></span>
+<span class="line"><span class="LineNumber">  13 </span>        <span class="Comment"># The actual iteration</span></span>
+<span class="line"><span class="LineNumber">  14 </span><span class="Comment"></span>        <span class="ID">expr</span> <span class="Operator">=</span> <span class="String">"u[1:-1, 1:-1] = ((u[0:-2, 1:-1] + u[2:, 1:-1])*dy2 + "</span>\
+               <span class="String">"(u[1:-1,0:-2] + u[1:-1, 2:])*dx2)*dnr_inv"</span></span>
+<span class="line"><span class="LineNumber">  15 </span>        <span class="ID">weave</span><span class="Operator">.</span><span class="ID">blitz</span><span class="Operator">(</span><span class="ID">expr</span><span class="Operator">,</span> <span class="ID">check_size</span><span class="Operator">=</span><span class="Number">0</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  16 </span></span>
+<span class="line"><span class="LineNumber">  17 </span>        <span class="ResWord">return</span> <span class="ID">g</span><span class="Operator">.</span><span class="ID">computeError</span><span class="Operator">(</span><span class="Operator">)</span><span class="Text"></span></span>
+</pre></div><span class="anchor" id="line-165"></span><p class="line874">If you notice, the only thing that has changed is that we put quotes around the original numeric expression and call this string 'expr' and then invoke weave.blitz. The 'check_size' keyword when set to 1 does a few sanity checks and is to be used when you are debugging your code. However, for pure speed it is wise to set it to 0. This time when we time the code for a 500x500 array for a single iteration it takes only about 0.1 seconds which is about a three fold increase! There are again a few things to note. <span class="anchor" id="line-166"></span><span class="anchor" id="line-167"></span><ol type="1"><li><p class="line862">The first time this method is called, it will take a long while to do some magic behind your back. The next time it is called, it will run immediately. More details on this are in the weave documentation. Basically, weave.blitz converts the NumPy expression into C++ code and uses blitz++ for the array expression, builds a Python module, stores it in a special place and invokes that the next time the function call is made. <span class="anchor" id="line-168"></span><span class="anchor" id="line-169"></span></li><li class="gap">Again we need to use a temporary array to compute the error. <span class="anchor" id="line-170"></span><span class="anchor" id="line-171"></span></li><li class="gap">blitz does *not* use temporaries for the computation and therefore behaves more like the original (slow) for loop in that the computed values are re-used immediately. <span class="anchor" id="line-172"></span></li></ol><p class="line874">Apart from these points, the results are identical as compared to the original for loop. It's only about 170 times faster than the original code! We will now look at yet another way to speed up our original for loop. Enter weave.inline! <span class="anchor" id="line-173"></span><span class="anchor" id="line-174"></span><p class="line867">
+<h2 id="head-a3f4dd816378d3ba4cbdd3d23dc98529e8ad7087">Using weave.inline</h2>
+<span class="anchor" id="line-175"></span><p class="line874">Inline allows one to embed C or C++ code directly into your Python code. Here is a simple version of an inlined version of the code. <span class="anchor" id="line-176"></span><span class="anchor" id="line-177"></span><p class="line867"><span class="anchor" id="line-178"></span><span class="anchor" id="line-179"></span><span class="anchor" id="line-180"></span><span class="anchor" id="line-181"></span><span class="anchor" id="line-182"></span><span class="anchor" id="line-183"></span><span class="anchor" id="line-184"></span><span class="anchor" id="line-185"></span><span class="anchor" id="line-186"></span><span class="anchor" id="line-187"></span><span class="anchor" id="line-188"></span><span class="anchor" id="line-189"></span><span class="anchor" id="line-190"></span><span class="anchor" id="line-191"></span><span class="anchor" id="line-192"></span><span class="anchor" id="line-193"></span><span class="anchor" id="line-194"></span><span class="anchor" id="line-195"></span><span class="anchor" id="line-196"></span><span class="anchor" id="line-197"></span><span class="anchor" id="line-198"></span><span class="anchor" id="line-199"></span><span class="anchor" id="line-200"></span><span class="anchor" id="line-201"></span><span class="anchor" id="line-202"></span><span class="anchor" id="line-203"></span><span class="anchor" id="line-204"></span><span class="anchor" id="line-205"></span><span class="anchor" id="line-206"></span><span class="anchor" id="line-207"></span><span class="anchor" id="line-208"></span><span class="anchor" id="line-209"></span><span class="anchor" id="line-210"></span><span class="anchor" id="line-211"></span><div class="codearea" dir="ltr" lang="en">
+<script type="text/javascript">
+document.write('<a href="#" onclick="return togglenumber(\'CA-661ffc64a13f5a42d7685e5fcb0340c93a0b8a97_004\', 1, 1);" \
+                class="codenumbers">Toggle line numbers<\/a>');
+</script>
+<pre dir="ltr" id="CA-661ffc64a13f5a42d7685e5fcb0340c93a0b8a97_004" lang="en"><span class="line"><span class="LineNumber">   1 </span><span class="ResWord">from</span> <span class="ID">scipy</span><span class="Operator">.</span><span class="ID">weave</span> <span class="ResWord">import</span> <span class="ID">converters</span></span>
+<span class="line"><span class="LineNumber">   2 </span><span class="Comment"># ...</span></span>
+<span class="line"><span class="LineNumber">   3 </span><span class="Comment"></span>    <span class="ResWord">def</span> <span class="ID">inlineTimeStep</span><span class="Operator">(</span><span class="ID">self</span><span class="Operator">,</span> <span class="ID">dt</span><span class="Operator">=</span><span class="Number">0.0</span><span class="Operator">)</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">   4 </span>        <span class="String">"""Takes a time step using inlined C code -- this version uses</span></span>
+<span class="line"><span class="LineNumber">   5 </span><span class="String">        blitz arrays."""</span></span>
+<span class="line"><span class="LineNumber">   6 </span>        <span class="ID">g</span> <span class="Operator">=</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">grid</span></span>
+<span class="line"><span class="LineNumber">   7 </span>        <span class="ID">nx</span><span class="Operator">,</span> <span class="ID">ny</span> <span class="Operator">=</span> <span class="ID">g</span><span class="Operator">.</span><span class="ID">u</span><span class="Operator">.</span><span class="ID">shape</span></span>
+<span class="line"><span class="LineNumber">   8 </span>        <span class="ID">dx2</span><span class="Operator">,</span> <span class="ID">dy2</span> <span class="Operator">=</span> <span class="ID">g</span><span class="Operator">.</span><span class="ID">dx</span><span class="Operator">**</span><span class="Number">2</span><span class="Operator">,</span> <span class="ID">g</span><span class="Operator">.</span><span class="ID">dy</span><span class="Operator">**</span><span class="Number">2</span></span>
+<span class="line"><span class="LineNumber">   9 </span>        <span class="ID">dnr_inv</span> <span class="Operator">=</span> <span class="Number">0.5</span><span class="Operator">/</span><span class="Operator">(</span><span class="ID">dx2</span> <span class="Operator">+</span> <span class="ID">dy2</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  10 </span>        <span class="ID">u</span> <span class="Operator">=</span> <span class="ID">g</span><span class="Operator">.</span><span class="ID">u</span></span>
+<span class="line"><span class="LineNumber">  11 </span></span>
+<span class="line"><span class="LineNumber">  12 </span>        <span class="ID">code</span> <span class="Operator">=</span> <span class="String">"""</span></span>
+<span class="line"><span class="LineNumber">  13 </span><span class="String">               #line 120 "laplace.py" (This is only useful for debugging)</span></span>
+<span class="line"><span class="LineNumber">  14 </span><span class="String">               double tmp, err, diff;</span></span>
+<span class="line"><span class="LineNumber">  15 </span><span class="String">               err = 0.0;</span></span>
+<span class="line"><span class="LineNumber">  16 </span><span class="String">               for (int i=1; i&lt;nx-1; ++i) {</span></span>
+<span class="line"><span class="LineNumber">  17 </span><span class="String">                   for (int j=1; j&lt;ny-1; ++j) {</span></span>
+<span class="line"><span class="LineNumber">  18 </span><span class="String">                       tmp = u(i,j);</span></span>
+<span class="line"><span class="LineNumber">  19 </span><span class="String">                       u(i,j) = ((u(i-1,j) + u(i+1,j))*dy2 +</span></span>
+<span class="line"><span class="LineNumber">  20 </span><span class="String">                                 (u(i,j-1) + u(i,j+1))*dx2)*dnr_inv;</span></span>
+<span class="line"><span class="LineNumber">  21 </span><span class="String">                       diff = u(i,j) - tmp;</span></span>
+<span class="line"><span class="LineNumber">  22 </span><span class="String">                       err += diff*diff;</span></span>
+<span class="line"><span class="LineNumber">  23 </span><span class="String">                   }</span></span>
+<span class="line"><span class="LineNumber">  24 </span><span class="String">               }</span></span>
+<span class="line"><span class="LineNumber">  25 </span><span class="String">               return_val = sqrt(err);</span></span>
+<span class="line"><span class="LineNumber">  26 </span><span class="String">               """</span></span>
+<span class="line"><span class="LineNumber">  27 </span>        <span class="Comment"># compiler keyword only needed on windows with MSVC installed</span></span>
+<span class="line"><span class="LineNumber">  28 </span><span class="Comment"></span>        <span class="ID">err</span> <span class="Operator">=</span> <span class="ID">weave</span><span class="Operator">.</span><span class="ID">inline</span><span class="Operator">(</span><span class="ID">code</span><span class="Operator">,</span></span>
+<span class="line"><span class="LineNumber">  29 </span>                           <span class="Operator">[</span><span class="String">'u'</span><span class="Operator">,</span> <span class="String">'dx2'</span><span class="Operator">,</span> <span class="String">'dy2'</span><span class="Operator">,</span> <span class="String">'dnr_inv'</span><span class="Operator">,</span> <span class="String">'nx'</span><span class="Operator">,</span> <span class="String">'ny'</span><span class="Operator">]</span><span class="Operator">,</span></span>
+<span class="line"><span class="LineNumber">  30 </span>                           <span class="ID">type_converters</span><span class="Operator">=</span><span class="ID">converters</span><span class="Operator">.</span><span class="ID">blitz</span><span class="Operator">,</span></span>
+<span class="line"><span class="LineNumber">  31 </span>                           <span class="ID">compiler</span> <span class="Operator">=</span> <span class="String">'gcc'</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  32 </span>        <span class="ResWord">return</span> <span class="ID">err</span><span class="Text"></span></span>
+</pre></div><span class="anchor" id="line-212"></span><p class="line862">The code itself looks very straightforward (which is what makes inline so cool). The inline function call arguments are all self explanatory. The line with '#line 120 ...' is only used, for debugging and doesn't affect the speed in anyway. Again the first time you run this function it takes a long while to do something behind the scenes and the next time it blazes away. This time notice that we have far more flexibility inside our loop and can easily compute an error term without a need for temporary arrays. Timing this version results in a time for a 500x500 array of a mere 0.04 seconds per iteration! This corresponds to a whopping 375 fold speed increase over the plain old for loop. And remember we haven't sacrificed any of Python's incredible flexibility! This loop contains code that looks very nice but if we want to we can speed things up further by writing a little dirty code. We won't get into that here but it suffices to say that its possible to get a further factor of two speed up by using a different approach. The code for this basically does pointer arithmetic on the NumPy array data instead of using blitz++ arrays. This code was contributed by Eric Jones. The source code accompanying this article contains this code. <span class="anchor" id="line-213"></span><span class="anchor" id="line-214"></span><p class="line874">Next, we look at how it is possible to easily implement the loop inside Fortran and call it from Python by using f2py. <span class="anchor" id="line-215"></span><span class="anchor" id="line-216"></span><p class="line867">
+<h2 id="head-6a1aacc7a6b8defdea38dc1f3e664ef0d1683d83">Using f2py</h2>
+<span class="anchor" id="line-217"></span><p class="line874">f2py is an amazing utility that lets you easily call Fortran functions from Python. First we will write a small Fortran77 subroutine to do our calculation. Here is the code. <span class="anchor" id="line-218"></span><span class="anchor" id="line-219"></span><p class="line867"><span class="anchor" id="line-220"></span><pre>c File flaplace.f
+<span class="anchor" id="line-221"></span>      subroutine timestep(u,n,m,dx,dy,error)
+<span class="anchor" id="line-222"></span>      double precision u(n,m)
+<span class="anchor" id="line-223"></span>      double precision dx,dy,dx2,dy2,dnr_inv,tmp,diff
+<span class="anchor" id="line-224"></span>      integer n,m,i,j
+<span class="anchor" id="line-225"></span>cf2py intent(in) :: dx,dy
+<span class="anchor" id="line-226"></span>cf2py intent(in,out) :: u
+<span class="anchor" id="line-227"></span>cf2py intent(out) :: error
+<span class="anchor" id="line-228"></span>cf2py intent(hide) :: n,m
+<span class="anchor" id="line-229"></span>      dx2 = dx*dx
+<span class="anchor" id="line-230"></span>      dy2 = dy*dy
+<span class="anchor" id="line-231"></span>      dnr_inv = 0.5d0 / (dx2+dy2)
+<span class="anchor" id="line-232"></span>      error = 0
+<span class="anchor" id="line-233"></span>      do 200,j=2,m-1
+<span class="anchor" id="line-234"></span>         do 100,i=2,n-1
+<span class="anchor" id="line-235"></span>            tmp = u(i,j)
+<span class="anchor" id="line-236"></span>            u(i,j) = ((u(i-1,j) + u(i+1,j))*dy2+
+<span class="anchor" id="line-237"></span>     &amp;           (u(i,j-1) + u(i,j+1))*dx2)*dnr_inv
+<span class="anchor" id="line-238"></span>            diff = u(i,j) - tmp
+<span class="anchor" id="line-239"></span>            error = error + diff*diff
+<span class="anchor" id="line-240"></span> 100     continue
+<span class="anchor" id="line-241"></span> 200  continue
+<span class="anchor" id="line-242"></span>      error = sqrt(error)
+<span class="anchor" id="line-243"></span>      end
+<span class="anchor" id="line-244"></span></pre><span class="anchor" id="line-245"></span><p class="line874">The lines starting with cf2py are special f2py directives and are documented in f2py. The rest of the code is straightforward for those who know some Fortran. We trivially create a Python module for this using the following command. <span class="anchor" id="line-246"></span><span class="anchor" id="line-247"></span><p class="line867"><span class="anchor" id="line-248"></span><pre>      % f2py -c flaplace.f -m flaplace
+<span class="anchor" id="line-249"></span></pre><span class="anchor" id="line-250"></span><p class="line874">Here is how the Python side of things looks. <span class="anchor" id="line-251"></span><span class="anchor" id="line-252"></span><p class="line867"><span class="anchor" id="line-253"></span><span class="anchor" id="line-254"></span><span class="anchor" id="line-255"></span><span class="anchor" id="line-256"></span><span class="anchor" id="line-257"></span><span class="anchor" id="line-258"></span><span class="anchor" id="line-259"></span><span class="anchor" id="line-260"></span><span class="anchor" id="line-261"></span><span class="anchor" id="line-262"></span><div class="codearea" dir="ltr" lang="en">
+<script type="text/javascript">
+document.write('<a href="#" onclick="return togglenumber(\'CA-06dd5e5468ca71509643c14de84584996adf4648_005\', 1, 1);" \
+                class="codenumbers">Toggle line numbers<\/a>');
+</script>
+<pre dir="ltr" id="CA-06dd5e5468ca71509643c14de84584996adf4648_005" lang="en"><span class="line"><span class="LineNumber">   1 </span><span class="ResWord">import</span> <span class="ID">flaplace</span></span>
+<span class="line"><span class="LineNumber">   2 </span></span>
+<span class="line"><span class="LineNumber">   3 </span>    <span class="ResWord">def</span> <span class="ID">fortranTimeStep</span><span class="Operator">(</span><span class="ID">self</span><span class="Operator">,</span> <span class="ID">dt</span><span class="Operator">=</span><span class="Number">0.0</span><span class="Operator">)</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">   4 </span>        <span class="String">"""Takes a time step using a simple fortran module that</span></span>
+<span class="line"><span class="LineNumber">   5 </span><span class="String">        implements the loop in Fortran.  """</span></span>
+<span class="line"><span class="LineNumber">   6 </span>        <span class="ID">g</span> <span class="Operator">=</span> <span class="ID">self</span><span class="Operator">.</span><span class="ID">grid</span></span>
+<span class="line"><span class="LineNumber">   7 </span>        <span class="ID">g</span><span class="Operator">.</span><span class="ID">u</span><span class="Operator">,</span> <span class="ID">err</span> <span class="Operator">=</span> <span class="ID">flaplace</span><span class="Operator">.</span><span class="ID">timestep</span><span class="Operator">(</span><span class="ID">g</span><span class="Operator">.</span><span class="ID">u</span><span class="Operator">,</span> <span class="ID">g</span><span class="Operator">.</span><span class="ID">dx</span><span class="Operator">,</span> <span class="ID">g</span><span class="Operator">.</span><span class="ID">dy</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">   8 </span>        <span class="ResWord">return</span> <span class="ID">err</span><span class="Text"></span></span>
+</pre></div><span class="anchor" id="line-263"></span><p class="line874">Thats it! Hopefully someday scipy.weave will let us do this inline and not require us to write a separate Fortran file. The Fortran code and f2py example were contributed by Pearu Peterson, the author of f2py. Anyway, using this module it takes about 0.029 seconds for a 500x500 grid per iteration! This is about a 500 fold speed increase over the original code. <span class="anchor" id="line-264"></span><span class="anchor" id="line-265"></span><p class="line874">f2py can also work with more modern Fortran versions. This is useful because Fortran90 has special array features that allow a more compact, nicer and faster code. Here is the same subroutine in Fortran90: <span class="anchor" id="line-266"></span><span class="anchor" id="line-267"></span><p class="line867"><span class="anchor" id="line-268"></span><pre>! File flaplace90_arrays.f90
+<span class="anchor" id="line-269"></span>subroutine timestep(u,n,m,dx,dy,error)
+<span class="anchor" id="line-270"></span>implicit none
+<span class="anchor" id="line-271"></span>!Pythonic array indices, from 0 to n-1.
+<span class="anchor" id="line-272"></span>real (kind=8), dimension(0:n-1,0:m-1), intent(inout):: u
+<span class="anchor" id="line-273"></span>real (kind=8), intent(in) :: dx,dy
+<span class="anchor" id="line-274"></span>real (kind=8), intent(out) :: error
+<span class="anchor" id="line-275"></span>integer, intent(in) :: n,m
+<span class="anchor" id="line-276"></span>real (kind=8), dimension(0:n-1,0:m-1) :: diff
+<span class="anchor" id="line-277"></span>real (kind=8) :: dx2,dy2,dnr_inv
+<span class="anchor" id="line-278"></span>!f2py intent(in) :: dx,dy
+<span class="anchor" id="line-279"></span>!f2py intent(in,out) :: u
+<span class="anchor" id="line-280"></span>!f2py intent(out) :: error
+<span class="anchor" id="line-281"></span>!f2py intent(hide) :: n,m
+<span class="anchor" id="line-282"></span>dx2 = dx*dx
+<span class="anchor" id="line-283"></span>dy2 = dy*dy
+<span class="anchor" id="line-284"></span>dnr_inv = 0.5d0 / (dx2+dy2)
+<span class="anchor" id="line-285"></span>diff=u
+<span class="anchor" id="line-286"></span>u(1:n-2, 1:m-2) = ((u(0:n-3, 1:m-2) + u(2:n-1, 1:m-2))*dy2 + &amp;
+<span class="anchor" id="line-287"></span>                         (u(1:n-2,0:m-3) + u(1:n-2, 2:m-1))*dx2)*dnr_inv
+<span class="anchor" id="line-288"></span>error=sqrt(sum((u-diff)**2))
+<span class="anchor" id="line-289"></span>end subroutine
+<span class="anchor" id="line-290"></span></pre><span class="anchor" id="line-291"></span><span class="anchor" id="line-292"></span><p class="line874">Remark that the operations are performed in a single line, very similar to Numpy. The compilation step is exactly the same. In a 1000x1000 grid, this code is 2.2 times faster than the fortran77 loops. <span class="anchor" id="line-293"></span><span class="anchor" id="line-294"></span><p class="line862">The source tarball ( <a class="attachment" href="/PerformancePython?action=AttachFile&amp;do=get&amp;target=perfpy_2.tgz" title="attachment:perfpy_2.tgz">perfpy_2.tgz</a> ) also contains a Fortran95 subroutine using the forall construct, which has a very similar performance. <span class="anchor" id="line-295"></span><span class="anchor" id="line-296"></span><p class="line867">
+<h2 id="head-3214778a46feca74744d3ee22fbb66dfb680b81d">Using Pyrex</h2>
+<span class="anchor" id="line-297"></span><p class="line862">We also implemented the timeStep function in Pyrex using the code from the fast inline version. The Pyrex sources are a little longer than the weave, blitz or Fortran code since we have to expose the NumPy array structure. The basic function looks like this. <span class="anchor" id="line-298"></span><span class="anchor" id="line-299"></span><p class="line867"><span class="anchor" id="line-300"></span><span class="anchor" id="line-301"></span><span class="anchor" id="line-302"></span><span class="anchor" id="line-303"></span><span class="anchor" id="line-304"></span><span class="anchor" id="line-305"></span><span class="anchor" id="line-306"></span><span class="anchor" id="line-307"></span><span class="anchor" id="line-308"></span><span class="anchor" id="line-309"></span><span class="anchor" id="line-310"></span><span class="anchor" id="line-311"></span><span class="anchor" id="line-312"></span><span class="anchor" id="line-313"></span><span class="anchor" id="line-314"></span><span class="anchor" id="line-315"></span><span class="anchor" id="line-316"></span><span class="anchor" id="line-317"></span><span class="anchor" id="line-318"></span><span class="anchor" id="line-319"></span><span class="anchor" id="line-320"></span><span class="anchor" id="line-321"></span><span class="anchor" id="line-322"></span><span class="anchor" id="line-323"></span><span class="anchor" id="line-324"></span><span class="anchor" id="line-325"></span><span class="anchor" id="line-326"></span><span class="anchor" id="line-327"></span><span class="anchor" id="line-328"></span><span class="anchor" id="line-329"></span><span class="anchor" id="line-330"></span><span class="anchor" id="line-331"></span><span class="anchor" id="line-332"></span><span class="anchor" id="line-333"></span><span class="anchor" id="line-334"></span><span class="anchor" id="line-335"></span><span class="anchor" id="line-336"></span><span class="anchor" id="line-337"></span><div class="codearea" dir="ltr" lang="en">
+<script type="text/javascript">
+document.write('<a href="#" onclick="return togglenumber(\'CA-f82b0d8857b49cbc944f99f051810c5962d118a4_006\', 1, 1);" \
+                class="codenumbers">Toggle line numbers<\/a>');
+</script>
+<pre dir="ltr" id="CA-f82b0d8857b49cbc944f99f051810c5962d118a4_006" lang="en"><span class="line"><span class="LineNumber">   1 </span><span class="ResWord">def</span> <span class="ID">pyrexTimeStep</span><span class="Operator">(</span><span class="ID">ndarray</span> <span class="ID">u</span><span class="Operator">,</span> <span class="ID">double</span> <span class="ID">dx</span><span class="Operator">,</span> <span class="ID">double</span> <span class="ID">dy</span><span class="Operator">)</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">   2 </span>    <span class="ResWord">if</span> <span class="ID">chr</span><span class="Operator">(</span><span class="ID">u</span><span class="Operator">.</span><span class="ID">descr</span><span class="Operator">.</span><span class="ID">type</span><span class="Operator">)</span> <span class="Operator">&lt;&gt;</span> <span class="String">"d"</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">   3 </span>        <span class="ResWord">raise</span> <span class="ID">TypeError</span><span class="Operator">(</span><span class="String">"Double array required"</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">   4 </span>    <span class="ResWord">if</span> <span class="ID">u</span><span class="Operator">.</span><span class="ID">nd</span> <span class="Operator">&lt;&gt;</span> <span class="Number">2</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">   5 </span>        <span class="ResWord">raise</span> <span class="ID">ValueError</span><span class="Operator">(</span><span class="String">"2 dimensional array required"</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">   6 </span>    <span class="ID">cdef</span> <span class="ID">int</span> <span class="ID">nx</span><span class="Operator">,</span> <span class="ID">ny</span></span>
+<span class="line"><span class="LineNumber">   7 </span>    <span class="ID">cdef</span> <span class="ID">double</span> <span class="ID">dx2</span><span class="Operator">,</span> <span class="ID">dy2</span><span class="Operator">,</span> <span class="ID">dnr_inv</span><span class="Operator">,</span> <span class="ID">err</span></span>
+<span class="line"><span class="LineNumber">   8 </span>    <span class="ID">cdef</span> <span class="ID">double</span> <span class="Operator">*</span><span class="ID">elem</span></span>
+<span class="line"><span class="LineNumber">   9 </span></span>
+<span class="line"><span class="LineNumber">  10 </span>    <span class="ID">nx</span> <span class="Operator">=</span> <span class="ID">u</span><span class="Operator">.</span><span class="ID">dimensions</span><span class="Operator">[</span><span class="Number">0</span><span class="Operator">]</span></span>
+<span class="line"><span class="LineNumber">  11 </span>    <span class="ID">ny</span> <span class="Operator">=</span> <span class="ID">u</span><span class="Operator">.</span><span class="ID">dimensions</span><span class="Operator">[</span><span class="Number">1</span><span class="Operator">]</span></span>
+<span class="line"><span class="LineNumber">  12 </span>    <span class="ID">dx2</span><span class="Operator">,</span> <span class="ID">dy2</span> <span class="Operator">=</span> <span class="ID">dx</span><span class="Operator">**</span><span class="Number">2</span><span class="Operator">,</span> <span class="ID">dy</span><span class="Operator">**</span><span class="Number">2</span></span>
+<span class="line"><span class="LineNumber">  13 </span>    <span class="ID">dnr_inv</span> <span class="Operator">=</span> <span class="Number">0.5</span><span class="Operator">/</span><span class="Operator">(</span><span class="ID">dx2</span> <span class="Operator">+</span> <span class="ID">dy2</span><span class="Operator">)</span></span>
+<span class="line"><span class="LineNumber">  14 </span>    <span class="ID">elem</span> <span class="Operator">=</span> <span class="ID">u</span><span class="Operator">.</span><span class="ID">data</span></span>
+<span class="line"><span class="LineNumber">  15 </span></span>
+<span class="line"><span class="LineNumber">  16 </span>    <span class="ID">err</span> <span class="Operator">=</span> <span class="Number">0.0</span></span>
+<span class="line"><span class="LineNumber">  17 </span>    <span class="ID">cdef</span> <span class="ID">int</span> <span class="ID">i</span><span class="Operator">,</span> <span class="ID">j</span></span>
+<span class="line"><span class="LineNumber">  18 </span>    <span class="ID">cdef</span> <span class="ID">double</span> <span class="Operator">*</span><span class="ID">uc</span><span class="Operator">,</span> <span class="Operator">*</span><span class="ID">uu</span><span class="Operator">,</span> <span class="Operator">*</span><span class="ID">ud</span><span class="Operator">,</span> <span class="Operator">*</span><span class="ID">ul</span><span class="Operator">,</span> <span class="Operator">*</span><span class="ID">ur</span></span>
+<span class="line"><span class="LineNumber">  19 </span>    <span class="ID">cdef</span> <span class="ID">double</span> <span class="ID">diff</span><span class="Operator">,</span> <span class="ID">tmp</span></span>
+<span class="line"><span class="LineNumber">  20 </span>    <span class="ResWord">for</span> <span class="ID">i</span> <span class="ResWord">from</span> <span class="Number">1</span> <span class="Operator">&lt;=</span> <span class="ID">i</span> <span class="Operator">&lt;</span> <span class="ID">nx</span><span class="Operator">-</span><span class="Number">1</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">  21 </span>        <span class="ID">uc</span> <span class="Operator">=</span> <span class="ID">elem</span> <span class="Operator">+</span> <span class="ID">i</span><span class="Operator">*</span><span class="ID">ny</span> <span class="Operator">+</span> <span class="Number">1</span></span>
+<span class="line"><span class="LineNumber">  22 </span>        <span class="ID">ur</span> <span class="Operator">=</span> <span class="ID">elem</span> <span class="Operator">+</span> <span class="ID">i</span><span class="Operator">*</span><span class="ID">ny</span> <span class="Operator">+</span> <span class="Number">2</span></span>
+<span class="line"><span class="LineNumber">  23 </span>        <span class="ID">ul</span> <span class="Operator">=</span> <span class="ID">elem</span> <span class="Operator">+</span> <span class="ID">i</span><span class="Operator">*</span><span class="ID">ny</span></span>
+<span class="line"><span class="LineNumber">  24 </span>        <span class="ID">uu</span> <span class="Operator">=</span> <span class="ID">elem</span> <span class="Operator">+</span> <span class="Operator">(</span><span class="ID">i</span><span class="Operator">+</span><span class="Number">1</span><span class="Operator">)</span><span class="Operator">*</span><span class="ID">ny</span> <span class="Operator">+</span> <span class="Number">1</span></span>
+<span class="line"><span class="LineNumber">  25 </span>        <span class="ID">ud</span> <span class="Operator">=</span> <span class="ID">elem</span> <span class="Operator">+</span> <span class="Operator">(</span><span class="ID">i</span><span class="Operator">-</span><span class="Number">1</span><span class="Operator">)</span><span class="Operator">*</span><span class="ID">ny</span> <span class="Operator">+</span> <span class="Number">1</span></span>
+<span class="line"><span class="LineNumber">  26 </span></span>
+<span class="line"><span class="LineNumber">  27 </span>        <span class="ResWord">for</span> <span class="ID">j</span> <span class="ResWord">from</span> <span class="Number">1</span> <span class="Operator">&lt;=</span> <span class="ID">j</span> <span class="Operator">&lt;</span> <span class="ID">ny</span><span class="Operator">-</span><span class="Number">1</span><span class="Operator">:</span></span>
+<span class="line"><span class="LineNumber">  28 </span>            <span class="ID">tmp</span> <span class="Operator">=</span> <span class="ID">uc</span><span class="Operator">[</span><span class="Number">0</span><span class="Operator">]</span></span>
+<span class="line"><span class="LineNumber">  29 </span>            <span class="ID">uc</span><span class="Operator">[</span><span class="Number">0</span><span class="Operator">]</span> <span class="Operator">=</span> <span class="Operator">(</span><span class="Operator">(</span><span class="ID">ul</span><span class="Operator">[</span><span class="Number">0</span><span class="Operator">]</span> <span class="Operator">+</span> <span class="ID">ur</span><span class="Operator">[</span><span class="Number">0</span><span class="Operator">]</span><span class="Operator">)</span><span class="Operator">*</span><span class="ID">dy2</span> <span class="Operator">+</span></span>
+<span class="line"><span class="LineNumber">  30 </span>                     <span class="Operator">(</span><span class="ID">uu</span><span class="Operator">[</span><span class="Number">0</span><span class="Operator">]</span> <span class="Operator">+</span> <span class="ID">ud</span><span class="Operator">[</span><span class="Number">0</span><span class="Operator">]</span><span class="Operator">)</span><span class="Operator">*</span><span class="ID">dx2</span><span class="Operator">)</span><span class="Operator">*</span><span class="ID">dnr_inv</span></span>
+<span class="line"><span class="LineNumber">  31 </span>            <span class="ID">diff</span> <span class="Operator">=</span> <span class="ID">uc</span><span class="Operator">[</span><span class="Number">0</span><span class="Operator">]</span> <span class="Operator">-</span> <span class="ID">tmp</span></span>
+<span class="line"><span class="LineNumber">  32 </span>            <span class="ID">err</span> <span class="Operator">=</span> <span class="ID">err</span> <span class="Operator">+</span> <span class="ID">diff</span><span class="Operator">*</span><span class="ID">diff</span></span>
+<span class="line"><span class="LineNumber">  33 </span>            <span class="ID">uc</span> <span class="Operator">=</span> <span class="ID">uc</span> <span class="Operator">+</span> <span class="Number">1</span><span class="Operator">;</span> <span class="ID">ur</span> <span class="Operator">=</span> <span class="ID">ur</span> <span class="Operator">+</span> <span class="Number">1</span><span class="Operator">;</span>  <span class="ID">ul</span> <span class="Operator">=</span> <span class="ID">ul</span> <span class="Operator">+</span> <span class="Number">1</span></span>
+<span class="line"><span class="LineNumber">  34 </span>            <span class="ID">uu</span> <span class="Operator">=</span> <span class="ID">uu</span> <span class="Operator">+</span> <span class="Number">1</span><span class="Operator">;</span> <span class="ID">ud</span> <span class="Operator">=</span> <span class="ID">ud</span> <span class="Operator">+</span> <span class="Number">1</span></span>
+<span class="line"><span class="LineNumber">  35 </span></span>
+<span class="line"><span class="LineNumber">  36 </span>    <span class="ResWord">return</span> <span class="ID">sqrt</span><span class="Operator">(</span><span class="ID">err</span><span class="Operator">)</span><span class="Text"></span></span>
+</pre></div><span class="anchor" id="line-338"></span><p class="line874">The function looks long but is not too hard to write. It is also possible to write without doing the pointer arithmetic by providing convenient functions to access the array. However, the code shown above is fast. The sources provided with this article contains the complete Pyrex file and also a setup.py script to build it. Timing this version, we find that this version is as fast as the fast inlined version and takes only 0.025 seconds. <span class="anchor" id="line-339"></span><span class="anchor" id="line-340"></span><p class="line867">
+<h2 id="head-fcbd791fae3a9208d7ffb5a59fd4891ab036d017">Using Matlab and Octave</h2>
+<span class="anchor" id="line-341"></span><p class="line862">We have implemented the Numeric version in Matlab and Octave ( <a class="attachment" href="/PerformancePython?action=AttachFile&amp;do=get&amp;target=laplace.m" title="attachment:laplace.m">laplace.m</a> ) and run the tests on a different computer (hence the "estimate" values in the table below). We have found that no significant speed-up is obtained in Matlab, while Octave runs twice slower than <a class="nonexistent" href="/NumPy">NumPy</a>. Detailed graphs can be found <a class="http" href="http://lbolla.wordpress.com/2007/04/11/numerical-computing-matlab-vs-pythonnumpyweave/">here</a>. <span class="anchor" id="line-342"></span><span class="anchor" id="line-343"></span><p class="line867">
+<h2 id="head-3e5e0b392866d319bb08e78a4f184fca7d32e9bd">An implementation in C++</h2>
+<span class="anchor" id="line-344"></span><p class="line874">Finally, for comparison we implemented this in simple C++ (nothing fancy) without any Python. One would expect that the C++ code would be faster but surprisingly, not by much! Given the fact that it's so easy to develop with Python, this speed reduction is not very significant. <span class="anchor" id="line-345"></span><span class="anchor" id="line-346"></span><p class="line867">
+<h2 id="head-a73fa06d3c4f3bda71b3526d30d51c492d8f80df">A final comparison</h2>
+<span class="anchor" id="line-347"></span><p class="line874">Here are some timing results for a 500x500 grid for 100 iterations. Note that we also have a comparison of results of using the slow Python version along with Psyco. <span class="anchor" id="line-348"></span><div><table><tbody><tr>  <td><p class="line862">Type of solution </td>
+  <td><p class="line862">Time taken (sec) </td>
+</tr>
+<tr>  <td><span class="anchor" id="line-349"></span><p class="line862">Python (estimate) </td>
+  <td><p class="line862">1500.0 </td>
+</tr>
+<tr>  <td><span class="anchor" id="line-350"></span><p class="line862">Python + Psyco (estimate) </td>
+  <td><p class="line862">1138.0 </td>
+</tr>
+<tr>  <td><span class="anchor" id="line-351"></span><p class="line862">Python + <a class="nonexistent" href="/NumPy">NumPy</a> Expression </td>
+  <td><p class="line862">29.3 </td>
+</tr>
+<tr>  <td><span class="anchor" id="line-352"></span><p class="line862">Blitz </td>
+  <td><p class="line862">9.5 </td>
+</tr>
+<tr>  <td><span class="anchor" id="line-353"></span><p class="line862">Inline </td>
+  <td><p class="line862">4.3 </td>
+</tr>
+<tr>  <td><span class="anchor" id="line-354"></span><p class="line862">Fast Inline </td>
+  <td><p class="line862">2.3 </td>
+</tr>
+<tr>  <td><span class="anchor" id="line-355"></span><p class="line862">Python/Fortran </td>
+  <td><p class="line862">2.9 </td>
+</tr>
+<tr>  <td><span class="anchor" id="line-356"></span><p class="line862">Pyrex </td>
+  <td><p class="line862">2.5 </td>
+</tr>
+<tr>  <td><span class="anchor" id="line-357"></span><p class="line862">Matlab (estimate) </td>
+  <td><p class="line862">29.0 </td>
+</tr>
+<tr>  <td><span class="anchor" id="line-358"></span><p class="line862">Octave (estimate) </td>
+  <td><p class="line862">60.0 </td>
+</tr>
+<tr>  <td><span class="anchor" id="line-359"></span><p class="line862">Pure C++ </td>
+  <td><p class="line862">2.16 </td>
+</tr>
+</tbody></table></div><span class="anchor" id="line-360"></span><span class="anchor" id="line-361"></span><span class="anchor" id="line-362"></span><p class="line874">This is pretty amazing considering the flexibility and power of Python. <span class="anchor" id="line-363"></span><span class="anchor" id="line-364"></span><p class="line862">Download the source code for this guide here: <a class="attachment" href="/PerformancePython?action=AttachFile&amp;do=get&amp;target=perfpy_2.tgz" title="attachment:perfpy_2.tgz">perfpy_2.tgz</a> <span class="anchor" id="line-365"></span><span class="anchor" id="line-366"></span><p class="line862">View the complete Python code for the example: <a class="attachment" href="/PerformancePython?action=AttachFile&amp;do=get&amp;target=laplace.py" title="attachment:laplace.py">laplace.py</a> <span class="anchor" id="line-367"></span><span class="anchor" id="line-368"></span><p class="line862">View the complete Matlab/Octave code for the example: <a class="attachment" href="/PerformancePython?action=AttachFile&amp;do=get&amp;target=laplace.m" title="attachment:laplace.m">laplace.m</a> <span class="anchor" id="line-369"></span><span class="anchor" id="bottom"></span></div><p id="pageinfo" class="info" lang="en" dir="ltr">PerformancePython  (last edited 2009-11-20 11:09:54 by <span title="RamonCrehuet @ blauet.iiqab.csic.es[161.111.222.142]"><a class="nonexistent" generated="True" href="/RamonCrehuet" title="RamonCrehuet @ blauet.iiqab.csic.es[161.111.222.142]">RamonCrehuet</a></span>)</p>
+
+<div id="pagebottom"></div>
+</div>
+
+<div id="footer">
+<ul id="credits">
+<li><a href="http://moinmoin.wikiwikiweb.de/">MoinMoin Powered</a></li><li><a href="http://www.python.org/">Python Powered</a></li><li><a href="http://validator.w3.org/check?uri=referer">Valid HTML 4.01</a></li>
+</ul>
+
+
+</div></body>
+</html>
+

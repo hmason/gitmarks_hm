@@ -1,0 +1,815 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Compfight | A Flickr&trade; Search Tool</title>
+        <meta name="title" content="Compfight | A Flickr&trade; Search Tool" />
+    <meta name="author" content="Ryan Teuscher" />
+    <meta name="language" content="en" />
+    	<meta name="description" content="Search engine for visual inspiration and free stock photos for the advertising community including images of creative commons and public domain.">
+    <meta name="keywords" content="flickr search, image search, comp images, comping, stock photos, image research, inspiration, free stock photos" />
+        <script src="/javascripts/jquery-1.4.2.min.js?1285875850" type="text/javascript"></script>
+    <script type="text/javascript">
+//<![CDATA[
+var $j = jQuery.noConflict()
+//]]>
+</script>
+    <script src="/javascripts/all.js?1285875850" type="text/javascript"></script>
+
+    <link href="/stylesheets/styles.css?1285875850" media="screen" rel="stylesheet" type="text/css" />
+    <!--[if lt IE 7.]><link href="/stylesheets/ie.css?1285875850" media="screen" rel="stylesheet" type="text/css" /><![endif]-->
+    <!--[if IE]><link href="/stylesheets/ie_all.css?1285875850" media="screen" rel="stylesheet" type="text/css" /><![endif]-->
+    
+    <!-- google webmaster tools and alexa -->
+  	<meta name="verify-v1" content="7YvvQM2rwWA3sAl1NyHoclxTp5J9bIj2UfCcbY/qCU0=" />
+  	<meta name="alexaVerifyID" content="DwD_-MrK0J0x7Z91VVwV5vzZ6k8" />
+
+    <!-- google analytics -->
+    <script type="text/javascript">
+//<![CDATA[
+
+		  var _gaq = _gaq || [];
+		  _gaq.push(['_setAccount', 'UA-18298160-1']);
+		  _gaq.push(['_trackPageview']);
+		
+		  (function() {
+		    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		  })();
+	  
+//]]>
+</script>
+
+    <script type="text/javascript">
+//<![CDATA[
+
+    $j(document).ready(function(){
+      setup_search();
+      addSidebarDivider();
+
+      var page_param = '&page=1';
+
+      var hash_params = self.document.location.hash.substring(1);
+      if (hash_params.length > 0) {
+        // check old style first
+        $('query').value = hash_params.toQueryParams().query;
+        new Ajax.Request('/flickr/search.js', {asynchronous:true, evalScripts:true, method:'get', onFailure:function(request){$("spinner").hide();
+Element.update("photos", "\u003Cdiv id=\"landing\"\u003E\n\t\u003Cdiv id=\"teasers\"\u003E\n\t\t\u003Cdiv class=\"teaser\"\u003E\n\t\t\t\u003Ch2\u003EError\u003C/h2\u003E\n\t\t\t\u003C!--\u003Cp\u003EOur cute little server is currently being flooded with \u003Ca href=\"http://www.boingboing.net/2008/03/19/compfight-powerful-s.html\"\u003EBoingBoing.net\u003C/a\u003E traffic. Death by love. Please bookmark this handy flickr search tool for future use. We our working rapidly to alleviate the problem. Thanks! and thank you BoingBoing!!!\u003C/p\u003E--\u003E\n\t\t\t\u003Cp\u003ECompfight is down, overloaded, corrupt, or is experiencing legal problems.\nWe should be back up and rolling shortly. If this error makes you mad might\nwe suggest a donation  to help cover the cost of overloading, corruptness, and\nor our legal bills.\u003C/p\u003E\n\t\t\t\u003Cp\u003E\u0026nbsp;\u003C/p\u003E \n\t\t\t\u003Cp\u003EIf you keep seeing this message please email us: \u003Ca href=\"mailto:hello@compfight.com\"\u003Ehello@compfight.com\u003C/a\u003E.\u003C/p\u003E\n\t\t\t\u003Cp\u003EWe have lives. Thanks.\u003C/p\u003E\n\t\t\u003C/div\u003E\n\t\u003C/div\u003E\n\u003C/div\u003E");}, onSuccess:function(request){Element.hide('spinner')}, parameters:unescape(hash_params)+page_param}); $('spin_text').update($('query').value);save_cookies();$$('.photo_container img').each(function(img){img.src=''});$('photos').update();hide_overlays();$('search_counts').hide();Element.show('spinner')
+      }
+      else if (isSearch()) {
+        // new style
+        new Ajax.Request('/flickr/search.js', {asynchronous:true, evalScripts:true, method:'get', onFailure:function(request){$("spinner").hide();
+Element.update("photos", "\u003Cdiv id=\"landing\"\u003E\n\t\u003Cdiv id=\"teasers\"\u003E\n\t\t\u003Cdiv class=\"teaser\"\u003E\n\t\t\t\u003Ch2\u003EError\u003C/h2\u003E\n\t\t\t\u003C!--\u003Cp\u003EOur cute little server is currently being flooded with \u003Ca href=\"http://www.boingboing.net/2008/03/19/compfight-powerful-s.html\"\u003EBoingBoing.net\u003C/a\u003E traffic. Death by love. Please bookmark this handy flickr search tool for future use. We our working rapidly to alleviate the problem. Thanks! and thank you BoingBoing!!!\u003C/p\u003E--\u003E\n\t\t\t\u003Cp\u003ECompfight is down, overloaded, corrupt, or is experiencing legal problems.\nWe should be back up and rolling shortly. If this error makes you mad might\nwe suggest a donation  to help cover the cost of overloading, corruptness, and\nor our legal bills.\u003C/p\u003E\n\t\t\t\u003Cp\u003E\u0026nbsp;\u003C/p\u003E \n\t\t\t\u003Cp\u003EIf you keep seeing this message please email us: \u003Ca href=\"mailto:hello@compfight.com\"\u003Ehello@compfight.com\u003C/a\u003E.\u003C/p\u003E\n\t\t\t\u003Cp\u003EWe have lives. Thanks.\u003C/p\u003E\n\t\t\u003C/div\u003E\n\t\u003C/div\u003E\n\u003C/div\u003E");}, onSuccess:function(request){Element.hide('spinner')}, parameters:$('search').serialize()+page_param}); $('spin_text').update($('query').value);save_cookies();$$('.photo_container img').each(function(img){img.src=''});$('photos').update();hide_overlays();$('search_counts').hide();Element.show('spinner')
+      }
+      else {
+        loader.check();
+      } 
+    });
+    
+//]]>
+</script>
+  </head>
+<body>
+	<!--browser detection-->
+	<script type="text/javascript">
+//<![CDATA[
+loadBSA();
+//]]>
+</script>
+	
+ 	<!-- tooltips -->
+ 	<script src="/javascripts/tooltip_lib.js?1285875850" type="text/javascript"></script>
+
+	<!--browser detection-->
+	<script type="text/javascript">
+//<![CDATA[
+browserReject();
+//]]>
+</script>
+	
+	<!--photo options-->
+	<script type="text/javascript">
+//<![CDATA[
+var loader = new ImageLoader({ordered:false,fade:true,fade_speed:500,use_callback:true,ad_position:30})
+//]]>
+</script>
+	
+	<!--main content-->
+	<div class="fixed">
+	<div id="rule" class="tall"></div>
+
+<form action="/flickr/search" id="search" method="post" onsubmit="return updateFormUrl(this)">
+<table id="header" cellspacing="0" cellpadding="0" border="0" nowrap="nowrap">
+	<tr nowrap="nowrap">
+		<td class="col1 top-shadow" nowrap="nowrap">
+			<div id="fields" nowrap="nowrap">
+				<span id="text_toggle"><span class="tag_search toggle" onclick="toggle_text_value('search_type')" onmouseout="UnTip()" onmouseover="ShowTooltip('search_type_tooltip', this, 0)"><input id="search_type" name="search_type" type="hidden" value="tags" /></span><script type="text/javascript">
+//<![CDATA[
+toggle_text_value('search_type', getCurrentFormValue('search_type'))
+//]]>
+</script></span>
+				<label for="tags">&nbsp;</label><input class="short_input" id="query" name="query" type="text" />&nbsp;
+				<input name="commit" type="submit" value="Search" />
+			</div>
+		</td>
+		<td class="top-divider" nowrap="nowrap"></td>
+		<td class="col2 header-toggles top-shadow" nowrap="nowrap">
+			<div id="selectors">
+				<span class="label">Creative Commons:</span> <span class="toggle"><span class="value off" onclick="toggle_content_value('license', [[&quot;Off&quot;,&quot;0&quot;],[&quot;Commercial&quot;,&quot;comm&quot;],[&quot;Only&quot;,&quot;cc&quot;]])" onmouseout="UnTip()" onmouseover="ShowTooltip('license_tooltip', $(this).up('.toggle').previous(0))">Off</span><input id="license" name="license" type="hidden" value="0" /></span><script type="text/javascript">
+//<![CDATA[
+toggle_content_value('license', [["Off","0"],["Commercial","comm"],["Only","cc"]], getCurrentFormValue('license'))
+//]]>
+</script>
+        		&nbsp;+&nbsp;
+				<span class="label">Seek Original:</span> <span class="toggle"><span class="value on" onclick="toggle_content_value('original', [[&quot;On&quot;,&quot;1&quot;],[&quot;Only&quot;,&quot;only&quot;],[&quot;Off&quot;,&quot;0&quot;]])" onmouseout="UnTip()" onmouseover="ShowTooltip('original_tooltip', $(this).up('.toggle').previous(0))">On</span><input id="original" name="original" type="hidden" value="1" /></span><script type="text/javascript">
+//<![CDATA[
+toggle_content_value('original', [["On","1"],["Only","only"],["Off","0"]], getCurrentFormValue('original'))
+//]]>
+</script>
+        		&nbsp;+&nbsp;
+				<span class="label">Safe Search:</span> <span class="toggle"><span class="value on" onclick="toggle_content_value('safe_search', [[&quot;On&quot;,&quot;1&quot;],[&quot;Off&quot;,&quot;0&quot;]])" onmouseout="UnTip()" onmouseover="ShowTooltip('safe_search_tooltip', $(this).up('.toggle').previous(0))">On</span><input id="safe_search" name="safe_search" type="hidden" value="1" /></span><script type="text/javascript">
+//<![CDATA[
+toggle_content_value('safe_search', [["On","1"],["Off","0"]], getCurrentFormValue('safe_search'))
+//]]>
+</script>
+			</div>
+		</td>
+		<td class="top-divider" nowrap="nowrap"></td>
+		<td class="col3 top-shadow" nowrap="nowrap">
+			<div id="sharing">
+				<a href="http://www.google.com/bookmarks/mark?op=edit&output=popup&bkmk=http://www.compfight.com&title=compfight + a flickr&trade; search tool" target="_blank" class="google">&nbsp;</a>
+				<a href="http://www.stumbleupon.com/submit?url=http://www.compfight.com%26title%3Da%2Bflickr%2Bsearch%2Btool" target="_blank" class="stumbleupon">&nbsp;</a>
+				<a href="http://delicious.com/save" onclick="window.open('http://delicious.com/save?v=5&amp;noui&amp;jump=close&amp;url='+encodeURIComponent(location.href)+'&amp;title='+encodeURIComponent(document.title), 'delicious','toolbar=no,width=550,height=550'); return false;" class="delicious">&nbsp;</a>
+			</div>
+		</td>
+		<td class="top-divider" nowrap="nowrap"></td>
+		<td class="col4" nowrap="nowrap" valign="top">
+			<a class="super-logo" href="/"></a>
+		</td>
+	</tr>
+</table>
+</form>
+
+<div id="search_type_tooltip" style="display:none;width:170px;" class="tooltip">
+	<p>To switch between <span style="color:#00a2ff">Tags only</span> and <span style="color:#00a2ff">All Text</span> simply click the image.</p>
+</div>
+<div id="license_tooltip" style="display:none;width:150px;">
+	<p style="padding-bottom:4px;">To find content for commercial
+	use select <span style="color:#00a2ff">Commercial</span>.</p>
+	<p style="padding-bottom:4px;">To find find only Creative
+	Commons images select <span style="color:#00a2ff">Only</span>.</p>
+	<p>To find every available image, including
+	Creative Commons select <strong>Off</strong>.</p>
+</div>
+<div id="original_tooltip" style="display:none;width:125px;">
+	<p style="padding-bottom:4px;">To show all original image dimensions select <span style="color:#00a2ff">On</span>.</p>
+	<p style="padding-bottom:4px;">To locate only images with originals select <span style="color:#00a2ff">Only</span>.</p>
+	<p>To remove the blue bars select <strong>Off</strong>.</p>
+</div>
+<div id="safe_search_tooltip" style="display:none;width:125px;">
+	<p style="padding-bottom:4px;">To locate images safe for work select <span style="color:#00a2ff">On</span>.</p>
+	<p>To show every image select <strong>Off</strong>.</p>
+</div>
+
+</div>
+	<div id="page_content">
+  <p id="spinner" style="display:none">
+    Searching flickr&trade; for <span id="spin_text"></span>&hellip; 
+    <img alt="Cf_spinner_v2_0" src="/images/cf_spinner_v2_0.gif?1285875850" />
+  </p>
+
+  <!-- overlays -->
+  <div id="landing" class="content-overlay">
+    <div class="content" nowrap="nowrap">
+	<div id="welcome">
+		<img alt="Find Image for Comps, Research or Inspiration" height="273" src="/images/cf_welcome_v0_1.png?1285875850" width="485" />
+		<p>Please always respect the rights of content creators. <br />View a sample search for <span class="blue">rubber band ball</span> or <a href="#" onclick="show_overlay('help'); return false;">learn more</a>.</p>	
+	</div>
+</div>
+
+  </div>
+  <div id="help" class="content-overlay" style="display:none">
+    <div class="content" nowrap="nowrap">
+	<div class="teaser">
+	  <div class="teaser_thmb_short">
+	    <a href="http://www.flickr.com/help/filters/" target="_blank"><img alt="ryan.text" src="/images/cf_landing_text.jpg?1285875850" /></a>
+	  </div>
+		<h2>Tags vs. Text</h2>
+		<h3>Click the switch at the top left</h3>
+		<p>If your "Tags" results are weak use less words or use "Text" to rummage through titles and descriptions.</p>
+	</div>
+	<div class="teaser">
+		<div class="teaser_thmb_short">
+			<a href="http://www.flickr.com/creativecommons/" target="_blank"><img alt="bryan.cc" src="/images/cf_landing_cc.jpg?1285875850" /></a>
+		</div>
+		<h2>Creative Commons</h2>
+		<h3>Almost always the best images</h3>
+		<p>Restrict your search to the Creative Commons with "Only", and use the "Commercial" setting for commercially usable assets. "Off" will return every image available, including those in the Creative Commons.</p>
+	</div>
+	<div class="teaser">
+		<div class="teaser_thmb_tall">
+			<a href="http://www.flickr.com/help/photos/" target="_blank"><img alt="teuscher.original" src="/images/cf_landing_originals.jpg?1285875850" /></a>
+		</div>
+		<h2>Seek Original</h2>
+		<h3>High-resolution images</h3>
+		<p>Blue bars indicate flickr&trade; is holding an original. Linger your cursor over the image to display dimensions. For nothing but originals switch Seek Original to "only."</p>
+	</div>
+	<div class="teaser">
+	    <div class="teaser_thmb_short">
+	    	<a href="http://www.flickr.com/help/filters/" target="_blank"><img alt="flickr search" src="/images/cf_landing_safe.jpg?1285875850" /></a>
+	    </div>
+		<h2>Safe Search</h2>
+		<h3>Play safe</h3>
+		<p>Do not disable the Safe Search unless you're of legal age, in a legal country, promise not to tell your mom, etc.</p>
+	</div>
+</div>
+
+  </div>
+  <div id="about" class="content-overlay" style="display:none">
+    <div class="content" nowrap="nowrap">
+	<p>Fashioned by <a href="http://www.ryanteuscher.com" target="_blank">Ryan Teuscher</a> with glue sticks and rubber bands.<br/> Direct only good things to <script type="text/javascript">
+	/* <![CDATA[ */
+	function hivelogic_enkoder(){var kode=
+	"kode=\"nrgh@%qujkC(txmnF+w{pqI.{p\\001oqy\\000z_333:u~q\\000h.4mHt,q~Irh.h"+
+	"hmyxu{\\000tFxq{xoLy{r|su\\000to:y{\\177Kn\\001qv\\000ooIy{r|su\\000t7,hh,"+
+	",h.u\\000x\\000Iqh.hhq__pza,,\\177zmQ,myxuh.hhtJxq{xg,iLo,y{r|su\\000t;HJm"+
+	"5h.G.G_334I33Gr{~4uI<GuH4w{pq:xqzs\\000t9=5Gu7I>5b667_3347Iw{pq:otm~M\\000"+
+	"4u7=57w{pq:otm~M\\0004u5e999w{pqI_33474uHw{pq:xqzs\\000tKw{pq:otm~M\\0004w"+
+	"{pq:xqzs\\000t9=5F335G+D\\001F00Dox{1rF9DrEtxmn7unwp}qDr442_334lFtxmn7lqj{"+
+	"LxmnJ}1r26<Dro1lE92l4F:;AD\\0014F\\\\}{rwp7o{xvLqj{Lxmn1l2b666txmnF\\001(A"+
+	"~C--Alux.oC6AoBqujk4rktmznAo11/\\001iCqujk4ingxIujkGz.o/39Aol.iB6/i1C78>A~"+
+	"1CYzxotm4lxusIngxIujk.i/_333qujkC~%>{@**>iru+l@3>l?nrgh1ohqjwk>l..,~f@nrgh"+
+	"1fkduFrghDw+l,06>li+f?3,f.@45;>{.@Vwulqj1iurpFkduFrgh+f,\\000nrgh@{\";x=''"+
+	";for(i=0;i<kode.length;i++){c=kode.charCodeAt(i)-3;if(c<0)c+=128;x+=String"+
+	".fromCharCode(c)}kode=x"
+	;var i,c,x;while(eval(kode));}hivelogic_enkoder();
+	/* ]]> */
+	</script>.</p>
+</div>
+
+  </div>
+  <div id="sidebar">
+    <div id="logo">
+	<a href="/"><img alt="Compfight" src="/images/cf_logo_v0_1.png?1285875850" /></a>
+</div>
+
+<!--<h1>Updates on <a href="http://twitter.com/compfight/" target="_blank">Twitter</a></h1>-->
+<!--<a href="http://twitter.com/compfight/" class="bird" target="_blank"> </a>-->
+<div id="twitter">
+  
+  <div id="tweet">
+    <ul>
+    
+      <li>
+        <h3>7 months ago</h3>
+        <p>@lrosen @tripst3r @ryanbrazell @BSawhill By setting CC to "only" you'll get all CC images: <a href="http://bit.ly/9XhsOc">http://bit.ly/9XhsOc</a> Cheers</p>
+      </li>
+    
+      <li>
+        <h3>8 months ago</h3>
+        <p>Pat yourself on the back! We couldn't have done it without you. Communication Arts Interactive Annual 2010: <a href="http://bit.ly/9oU5sr">http://bit.ly/9oU5sr</a></p>
+      </li>
+    
+    </ul>
+	</div>
+  
+  
+</div>
+
+<h2>Support by <a href="http://buysellads.com/buy/detail/34440/zone/1250797 utm_source=site_34440_zone_1250797&utm_medium=website&utm_campaign=imagetext" target="_blank">BSA</a></h2>
+<div id="support">
+	<div>
+		<div id="bsap_1250797" class="bsarocks bsap_996664a2c489cb1c6a504cfb5c90d0c4"></div>
+	</div>	
+</div>
+
+
+  </div>
+
+  <!-- photos -->
+  <div id="photos">
+    <div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/40845011@N03/5137737381/" target="_blank"><img alt="5137737381_4bed792d37_t" src="http://static.flickr.com/1137/5137737381_4bed792d37_t.jpg" /><span class="dimensions">5616 x 3744</span></a>
+  </div>
+  <div class="image_preview" id="preview_5137737381" rel="http://static.flickr.com/1137/5137737381_4bed792d37_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/25165188@N06/4444934694/" target="_blank"><img alt="4444934694_6dc0942baa_t" src="http://static.flickr.com/2642/4444934694_6dc0942baa_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_4444934694" rel="http://static.flickr.com/2642/4444934694_6dc0942baa_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/24167154@N03/4158902559/" target="_blank"><img alt="4158902559_1561f76fd9_t" src="http://static.flickr.com/2567/4158902559_1561f76fd9_t.jpg" /><span class="dimensions">3428 x 2048</span></a>
+  </div>
+  <div class="image_preview" id="preview_4158902559" rel="http://static.flickr.com/2567/4158902559_1561f76fd9_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/35895456@N05/3321848411/" target="_blank"><img alt="3321848411_2b3806149d_t" src="http://static.flickr.com/3538/3321848411_2b3806149d_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_3321848411" rel="http://static.flickr.com/3538/3321848411_2b3806149d_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/11216564@N02/2215386036/" target="_blank"><img alt="2215386036_364fba4acd_t" src="http://static.flickr.com/2267/2215386036_364fba4acd_t.jpg" /><span class="dimensions">1794 x 1911</span></a>
+  </div>
+  <div class="image_preview" id="preview_2215386036" rel="http://static.flickr.com/2267/2215386036_364fba4acd_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/21735045@N02/3946302955/" target="_blank"><img alt="3946302955_79af30841d_t" src="http://static.flickr.com/3457/3946302955_79af30841d_t.jpg" /><span class="dimensions">2592 x 1944</span></a>
+  </div>
+  <div class="image_preview" id="preview_3946302955" rel="http://static.flickr.com/3457/3946302955_79af30841d_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/31428805@N08/3551223636/" target="_blank"><img alt="3551223636_7039bf2363_t" src="http://static.flickr.com/2466/3551223636_7039bf2363_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_3551223636" rel="http://static.flickr.com/2466/3551223636_7039bf2363_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/73337715@N00/30799985/" target="_blank"><img alt="30799985_e1c25546ba_t" src="http://static.flickr.com/21/30799985_e1c25546ba_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_30799985" rel="http://static.flickr.com/21/30799985_e1c25546ba_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/92568426@N00/581813625/" target="_blank"><img alt="581813625_b7a59688a2_t" src="http://static.flickr.com/1385/581813625_b7a59688a2_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_581813625" rel="http://static.flickr.com/1385/581813625_b7a59688a2_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/43985285@N07/4642374000/" target="_blank"><img alt="4642374000_cb72db61ee_t" src="http://static.flickr.com/4040/4642374000_cb72db61ee_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_4642374000" rel="http://static.flickr.com/4040/4642374000_cb72db61ee_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/73337715@N00/30799847/" target="_blank"><img alt="30799847_16d20bd3bb_t" src="http://static.flickr.com/21/30799847_16d20bd3bb_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_30799847" rel="http://static.flickr.com/21/30799847_16d20bd3bb_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/98728178@N00/192764599/" target="_blank"><img alt="192764599_611b7b902e_t" src="http://static.flickr.com/52/192764599_611b7b902e_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_192764599" rel="http://static.flickr.com/52/192764599_611b7b902e_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/8506698@N04/2195721205/" target="_blank"><img alt="2195721205_3c18f8a169_t" src="http://static.flickr.com/2382/2195721205_3c18f8a169_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_2195721205" rel="http://static.flickr.com/2382/2195721205_3c18f8a169_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/57376983@N00/2363956423/" target="_blank"><img alt="2363956423_47e77b5b9b_t" src="http://static.flickr.com/2339/2363956423_47e77b5b9b_t.jpg" /><span class="dimensions">3488 x 2616</span></a>
+  </div>
+  <div class="image_preview" id="preview_2363956423" rel="http://static.flickr.com/2339/2363956423_47e77b5b9b_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/8123802@N04/484941030/" target="_blank"><img alt="484941030_3333cfc175_t" src="http://static.flickr.com/224/484941030_3333cfc175_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_484941030" rel="http://static.flickr.com/224/484941030_3333cfc175_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/11281661@N02/4412361888/" target="_blank"><img alt="4412361888_e1b520eb67_t" src="http://static.flickr.com/4042/4412361888_e1b520eb67_t.jpg" /><span class="dimensions">1790 x 1747</span></a>
+  </div>
+  <div class="image_preview" id="preview_4412361888" rel="http://static.flickr.com/4042/4412361888_e1b520eb67_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/41132525@N02/4149957857/" target="_blank"><img alt="4149957857_32e596579a_t" src="http://static.flickr.com/2603/4149957857_32e596579a_t.jpg" /><span class="dimensions">3072 x 2304</span></a>
+  </div>
+  <div class="image_preview" id="preview_4149957857" rel="http://static.flickr.com/2603/4149957857_32e596579a_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/32991505@N00/91207946/" target="_blank"><img alt="91207946_630297233c_t" src="http://static.flickr.com/36/91207946_630297233c_t.jpg" /><span class="dimensions">2048 x 1715</span></a>
+  </div>
+  <div class="image_preview" id="preview_91207946" rel="http://static.flickr.com/36/91207946_630297233c_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/11216564@N02/2215386764/" target="_blank"><img alt="2215386764_433c53990b_t" src="http://static.flickr.com/2140/2215386764_433c53990b_t.jpg" /><span class="dimensions">2592 x 1944</span></a>
+  </div>
+  <div class="image_preview" id="preview_2215386764" rel="http://static.flickr.com/2140/2215386764_433c53990b_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/69172357@N00/285591457/" target="_blank"><img alt="285591457_9badb51a5e_t" src="http://static.flickr.com/103/285591457_9badb51a5e_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_285591457" rel="http://static.flickr.com/103/285591457_9badb51a5e_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/73337715@N00/30798707/" target="_blank"><img alt="30798707_ca71b52c96_t" src="http://static.flickr.com/23/30798707_ca71b52c96_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_30798707" rel="http://static.flickr.com/23/30798707_ca71b52c96_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/32133630@N06/3849001275/" target="_blank"><img alt="3849001275_5fc2d92dea_t" src="http://static.flickr.com/2658/3849001275_5fc2d92dea_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_3849001275" rel="http://static.flickr.com/2658/3849001275_5fc2d92dea_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/11814935@N08/4382869694/" target="_blank"><img alt="4382869694_b6a53be694_t" src="http://static.flickr.com/4028/4382869694_b6a53be694_t.jpg" /><span class="dimensions">1024 x 768</span></a>
+  </div>
+  <div class="image_preview" id="preview_4382869694" rel="http://static.flickr.com/4028/4382869694_b6a53be694_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/73337715@N00/30800858/" target="_blank"><img alt="30800858_41a2149199_t" src="http://static.flickr.com/23/30800858_41a2149199_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_30800858" rel="http://static.flickr.com/23/30800858_41a2149199_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/88547247@N00/2875206757/" target="_blank"><img alt="2875206757_1c700ace77_t" src="http://static.flickr.com/3180/2875206757_1c700ace77_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_2875206757" rel="http://static.flickr.com/3180/2875206757_1c700ace77_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/67666806@N00/261151350/" target="_blank"><img alt="261151350_bb7fd249a7_t" src="http://static.flickr.com/108/261151350_bb7fd249a7_t.jpg" /><span class="dimensions">1000 x 1000</span></a>
+  </div>
+  <div class="image_preview" id="preview_261151350" rel="http://static.flickr.com/108/261151350_bb7fd249a7_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/73337715@N00/30800697/" target="_blank"><img alt="30800697_76d75a57d3_t" src="http://static.flickr.com/22/30800697_76d75a57d3_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_30800697" rel="http://static.flickr.com/22/30800697_76d75a57d3_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/65429268@N00/238499506/" target="_blank"><img alt="238499506_5d18ef1705_t" src="http://static.flickr.com/88/238499506_5d18ef1705_t.jpg" /><span class="dimensions">1536 x 2048</span></a>
+  </div>
+  <div class="image_preview" id="preview_238499506" rel="http://static.flickr.com/88/238499506_5d18ef1705_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/30052145@N07/2860853861/" target="_blank"><img alt="2860853861_2a5aef1f32_t" src="http://static.flickr.com/3094/2860853861_2a5aef1f32_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_2860853861" rel="http://static.flickr.com/3094/2860853861_2a5aef1f32_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/81475308@N00/568025332/" target="_blank"><img alt="568025332_7ae20eef29_t" src="http://static.flickr.com/1229/568025332_7ae20eef29_t.jpg" /><span class="dimensions">2272 x 1704</span></a>
+  </div>
+  <div class="image_preview" id="preview_568025332" rel="http://static.flickr.com/1229/568025332_7ae20eef29_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/50318388@N00/2606167957/" target="_blank"><img alt="2606167957_29540f9399_t" src="http://static.flickr.com/3277/2606167957_29540f9399_t.jpg" /><span class="dimensions">1236 x 1236</span></a>
+  </div>
+  <div class="image_preview" id="preview_2606167957" rel="http://static.flickr.com/3277/2606167957_29540f9399_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/21439390@N00/3032284141/" target="_blank"><img alt="3032284141_eab313ae32_t" src="http://static.flickr.com/3068/3032284141_eab313ae32_t.jpg" /><span class="dimensions">1766 x 1192</span></a>
+  </div>
+  <div class="image_preview" id="preview_3032284141" rel="http://static.flickr.com/3068/3032284141_eab313ae32_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/74514448@N00/303076006/" target="_blank"><img alt="303076006_c9c7f34019_t" src="http://static.flickr.com/108/303076006_c9c7f34019_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_303076006" rel="http://static.flickr.com/108/303076006_c9c7f34019_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/73337715@N00/30798604/" target="_blank"><img alt="30798604_f5259894d8_t" src="http://static.flickr.com/22/30798604_f5259894d8_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_30798604" rel="http://static.flickr.com/22/30798604_f5259894d8_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/52499764@N00/2821437114/" target="_blank"><img alt="2821437114_61ae323f03_t" src="http://static.flickr.com/3163/2821437114_61ae323f03_t.jpg" /><span class="dimensions">2575 x 3862</span></a>
+  </div>
+  <div class="image_preview" id="preview_2821437114" rel="http://static.flickr.com/3163/2821437114_61ae323f03_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/99707404@N00/4189138929/" target="_blank"><img alt="4189138929_0067ffc73a_t" src="http://static.flickr.com/2695/4189138929_0067ffc73a_t.jpg" /><span class="dimensions">800 x 800</span></a>
+  </div>
+  <div class="image_preview" id="preview_4189138929" rel="http://static.flickr.com/2695/4189138929_0067ffc73a_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/73337715@N00/30799073/" target="_blank"><img alt="30799073_ca7b864fce_t" src="http://static.flickr.com/23/30799073_ca7b864fce_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_30799073" rel="http://static.flickr.com/23/30799073_ca7b864fce_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/19387816@N00/4264852657/" target="_blank"><img alt="4264852657_0c3761c1c8_t" src="http://static.flickr.com/4015/4264852657_0c3761c1c8_t.jpg" /><span class="dimensions">1000 x 1250</span></a>
+  </div>
+  <div class="image_preview" id="preview_4264852657" rel="http://static.flickr.com/4015/4264852657_0c3761c1c8_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/27296578@N00/1462376007/" target="_blank"><img alt="1462376007_36b1695771_t" src="http://static.flickr.com/1196/1462376007_36b1695771_t.jpg" /><span class="dimensions">1280 x 960</span></a>
+  </div>
+  <div class="image_preview" id="preview_1462376007" rel="http://static.flickr.com/1196/1462376007_36b1695771_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/24677782@N00/3990342909/" target="_blank"><img alt="3990342909_d1f229a580_t" src="http://static.flickr.com/2631/3990342909_d1f229a580_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_3990342909" rel="http://static.flickr.com/2631/3990342909_d1f229a580_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/42735500@N04/5027504055/" target="_blank"><img alt="5027504055_a211856b99_t" src="http://static.flickr.com/4083/5027504055_a211856b99_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_5027504055" rel="http://static.flickr.com/4083/5027504055_a211856b99_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/65429268@N00/2760146202/" target="_blank"><img alt="2760146202_ddd6bea21f_t" src="http://static.flickr.com/3135/2760146202_ddd6bea21f_t.jpg" /><span class="dimensions">809 x 804</span></a>
+  </div>
+  <div class="image_preview" id="preview_2760146202" rel="http://static.flickr.com/3135/2760146202_ddd6bea21f_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/66748805@N00/4090365333/" target="_blank"><img alt="4090365333_d417e5bba7_t" src="http://static.flickr.com/2720/4090365333_d417e5bba7_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_4090365333" rel="http://static.flickr.com/2720/4090365333_d417e5bba7_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/41489086@N06/4426565940/" target="_blank"><img alt="4426565940_f7289f2c90_t" src="http://static.flickr.com/4060/4426565940_f7289f2c90_t.jpg" /><span class="dimensions">1944 x 2592</span></a>
+  </div>
+  <div class="image_preview" id="preview_4426565940" rel="http://static.flickr.com/4060/4426565940_f7289f2c90_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/52499764@N00/2820593199/" target="_blank"><img alt="2820593199_3528e317c1_t" src="http://static.flickr.com/3186/2820593199_3528e317c1_t.jpg" /><span class="dimensions">2446 x 3670</span></a>
+  </div>
+  <div class="image_preview" id="preview_2820593199" rel="http://static.flickr.com/3186/2820593199_3528e317c1_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/32448689@N05/3706071270/" target="_blank"><img alt="3706071270_93f4b27bfc_t" src="http://static.flickr.com/2438/3706071270_93f4b27bfc_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_3706071270" rel="http://static.flickr.com/2438/3706071270_93f4b27bfc_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/46150772@N06/4620899318/" target="_blank"><img alt="4620899318_b78c87439d_t" src="http://static.flickr.com/3380/4620899318_b78c87439d_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_4620899318" rel="http://static.flickr.com/3380/4620899318_b78c87439d_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/66171333@N00/2357258572/" target="_blank"><img alt="2357258572_42e24a67ab_t" src="http://static.flickr.com/3282/2357258572_42e24a67ab_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_2357258572" rel="http://static.flickr.com/3282/2357258572_42e24a67ab_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo largest original">
+    <a href="http://www.flickr.com/photos/74761461@N00/2471337030/" target="_blank"><img alt="2471337030_03430f8712_t" src="http://static.flickr.com/2237/2471337030_03430f8712_t.jpg" /><span class="dimensions">2048 x 1536</span></a>
+  </div>
+  <div class="image_preview" id="preview_2471337030" rel="http://static.flickr.com/2237/2471337030_03430f8712_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+<div class="photo_container loading request_1" style="display:none">
+  
+  <div class="photo">
+    <a href="http://www.flickr.com/photos/40453762@N07/4268105073/" target="_blank"><img alt="4268105073_c9e91fbdf5_t" src="http://static.flickr.com/4067/4268105073_c9e91fbdf5_t.jpg" /></a>
+  </div>
+  <div class="image_preview" id="preview_4268105073" rel="http://static.flickr.com/4067/4268105073_c9e91fbdf5_m.jpg" style="display:none">
+    
+    
+  </div>
+</div>
+
+  </div>
+  
+  <div style="clear:both"></div>
+</div>
+
+	<table id="footer" class="fixed" cellspacing="0" cellpadding="0">
+	<tr>
+	    <td class="col2 btm-shadow footer-paging middle">
+	              <div class="legal">&copy; 2010 Compfight&nbsp;&nbsp;|&nbsp;&nbsp;We make good use of the <a href="http://www.flickr.com" target="_blank">flickr&trade;</a> API,  but aren't affiliated with <a href="http://www.flickr.com" target="_blank">flickr</a>.</div>
+        	    </td>
+		<td class="btm-divider"></td>
+		<td class="col3 btm-shadow">
+			<p class="nav">
+				<a href="#" onclick="show_overlay('help'); return false;">Help</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#" onclick="show_overlay('about'); return false;">About</a>
+			</p>
+		</td>
+		<td class="btm-divider"></td>
+		<td class="col4">&nbsp;</td>
+	</tr>
+</table>
+
+</body>
+</html>

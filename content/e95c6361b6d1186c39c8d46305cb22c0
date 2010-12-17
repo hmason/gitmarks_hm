@@ -1,0 +1,1682 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+
+
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <title>Famous Awk One-Liners Explained, Part I: File Spacing, Numbering and Calculations - good coders code, great reuse</title>
+
+    <meta name="description" content="I noticed that Eric Wendelin wrote an article &quot;awk is a beautiful tool.&quot; In this article he said that it was best to introduce Awk with practical examples. I totally agree with Eric. When I was learning Awk, I first went through Awk - A Tutorial and Introduction by Bruce ...">
+
+    <link rel="stylesheet" type="text/css" href="/static/css/reset.css?v=1" media="screen, projection">
+    <link rel="stylesheet" type="text/css" href="/static/css/catonmat.css?v=10" media="screen, projection">
+    <!--[if lte IE 7]>
+    <style type="text/css">
+      #wrapper { margin-top: -1px; }
+    </style>
+    <![endif]-->
+
+    <script type="text/javascript" src="/static/js/jquery-1.3.2.js"></script>
+    <script type="text/javascript" src="/static/js/catonmat.js?v=2"></script>
+
+    <link rel="alternate" type="application/atom+xml" title="catonmat feed" href="http://www.catonmat.net/feed/">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" /> 
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" /> 
+
+    <meta name="google-site-verification" content="aXAUFOiWFF_OiqrmlUrhZN1sqJf5tnuYdMDpuXc1w8w" />
+  </head>
+  <body>
+    <div id="container">
+      <div id="header">
+        
+  <div id="tabs">
+  <ul>
+    <li><a href="/" title="Return to homepage/blog">Home</a></li>
+    <li><a href="/news/" title="Catonmat news">News</a></li>
+    <li><a href="/projects/" title="Projects that I have done">Projects</a></li>
+    <li><a href="/sitemap/" title="Catonmat sitemap">Sitemap</a></li>
+    <li><a href="/feedback/" title="Contact Peteris Krumins/Leave feedback">Feedback</a></li>
+    <li><a href="/about/" title="About Peteris Krumins">About Me</a></li>
+  </ul>
+  <div id="tab-ad">
+    <a href="http://www.pcworld.co.uk/index.html"><img src="/static/img/pc-world-logo.png" alt="Buy ipad online at PCWorld.co.uk"></a>
+    <span><a href="http://www.pcworld.co.uk/index.html">ipad deals</a></span>
+    <span style="padding:0 10px">|</span>
+    <!-- recurring, every month, 360 Ent -->
+    <span><a href="http://www.paretologic.com/products/paretologicpc/index.aspx">Privacy Controls Software</a> from ParetoLogic</span>
+  </div>
+</div>
+<div class="clear"></div>
+<div id="hspace">
+  <div id="first">
+    <a href="/" class="wide" title="Return to good coders code, great reuse">
+    <img src="/static/img/good-coders-code-great-reuse.gif" alt="good coders code, great reuse">
+    </a>
+    <div id="first-real">
+      <table width="100%" height="145" valign="middle">
+        <tr>
+          <td>
+            <p class="quote">A non-virtual function says, you have to do this and you must do it this way. A virtual function says you have to do this, but you don't have to do it this way. That's their fundamental difference.</p>
+            <!-- <span class="quotes"><a href="/quotes/" title="more programming related quotes">more quotes</a></span>-->
+            <p class="author">Scott Meyers</p>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div id="second">
+    <div id="second-real">
+      <div id="stackvm-text">
+        <p class="top"><a href="http://www.catonmat.net/blog/i-am-doing-a-startup" title="I am doing a startup!">I am doing a startup!</a></p>
+        <p class="stackvm-logo"><a href="http://stackvm.com" title="StackVM"><img src="/static/img/stackvm-logo-180px.png" alt="StackVM Logo"></a></p>
+        <p class="demo"><a href="http://www.youtube.com/watch?v=TWdkNO6XlFI" class="stackvm-video-0">Demo Video #1</a></p>
+        <p class="demo"><a href="http://www.youtube.com/watch?v=ppXUbj0MA3E" class="stackvm-video-1">Demo Video #2</a></p>
+      </div>
+      <div id="stackvm-video">
+        <object width="230" height="180"><param name="movie" value="http://www.youtube.com/v/TWdkNO6XlFI&amp;hl=en_US&amp;fs=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/TWdkNO6XlFI&amp;hl=en_US&amp;fs=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="230" height="180"></embed></object>
+      </div>
+      <div class="clear"></div>
+      <script>
+        stackvm.init_demo_links();
+      </script>
+    </div>
+  </div>
+  <div class="clear"></div>
+</div>
+
+
+
+      </div>
+      <div id="wrapper">
+        <div id="content">
+          
+
+
+
+
+
+
+
+
+  <div class="welcome">
+    <div class="twitter">
+      <p><a href="http://twitter.com/pkrumins" title="Peteris Krumins on Twitter"><img src="/static/img/twitter-16x16.gif">Follow me on Twitter</a> for my latest adventures!</p>
+    </div>
+  </div>
+
+
+
+
+<div class="page">
+  <div class="header">
+    <span class="category next"><a href="/category/awk-programming" title="See all posts in category &quot;Awk Programming&quot;">Awk Programming</a></span>
+
+    <span class="commentsc">
+        <a href="/blog/awk-one-liners-explained-part-one#comments" title="22 people have commented on &quot;Famous Awk One-Liners Explained, Part I: File Spacing, Numbering and Calculations&quot;"><strong>22</strong> Comments</a>
+    </span>
+
+    <span class="date right">September 27, 2008</span>
+
+    <div class="clear"></div>
+    <div class="hrb"></div>
+    <h1><a href="/blog/awk-one-liners-explained-part-one" title="Famous Awk One-Liners Explained, Part I: File Spacing, Numbering and Calculations">Famous Awk One-Liners Explained, Part I: File Spacing, Numbering and Calculations</a></h1>
+    <!--
+    <div class="hr lighter"></div>
+    -->
+  </div>
+
+    
+
+<div class="series">
+<form action="/series" method="POST">
+  <div class="snote">
+    This article is part of the article series "<a href="/series/awk-one-liners-explained" title="Article series &quot;Awk One-Liners Explained&quot;">Awk One-Liners Explained</a>."
+  </div>
+  <div class="snav">
+      <span class="sprev" title="This is the first part in the series (there is no previous article)">&lt;- previous article</span>
+    <span class="toc">
+      <select name="navigate">
+           <option value="/blog/awk-one-liners-explained-part-one" selected>1. Famous Awk One-Liners Explained, Part I: File Spacing, Numbering and Calculations</option>
+           <option value="/blog/awk-one-liners-explained-part-two">2. Famous Awk One-Liners Explained, Part II: Text Conversion and Substitution</option>
+           <option value="/blog/awk-one-liners-explained-part-three">3. Famous Awk One-Liners Explained, Part III: Selective Printing and Deleting of Certain Lines</option>
+           <option value="/blog/update-on-famous-awk-one-liners-explained">4. Update on Famous Awk One-Liners Explained: String and Array Creation</option>
+      </select>
+      <input type="submit" value="Go" name="go">
+    </span>
+      
+      <span class="snext"><a href="/blog/awk-one-liners-explained-part-two" title="Famous Awk One-Liners Explained, Part II: Text Conversion and Substitution">next article -></a></span>
+  </div>
+</form>
+</div>
+
+
+  <div class="content">
+    
+
+    
+
+    
+      <div style="margin-bottom: 10px"><img src='http://www.catonmat.net/blog/wp-content/uploads/2008/09/awk-programming-one-liners-explained.jpg' alt='awk programming one-liners explained' class='post-icon' align='left' /><div style="float: right; margin-right:20px">
+<script type="text/javascript"><!--
+  google_ad_client = "pub-0433925538517663";
+  /* catonmat before article (blue) 336x280, created 1/23/10 */
+  google_ad_slot = "8733420369";
+  google_ad_width = 336;
+  google_ad_height = 280;
+  //-->
+</script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+    </div>
+<div class="clear"></div>
+</div>
+<p>I noticed that Eric Wendelin wrote an article "<a href="http://eriwen.com/tools/awk-is-a-beautiful-tool/">awk is a beautiful tool</a>." In this article he said that it was best to introduce Awk with practical examples. I totally agree with Eric.</p>
+<p>When I was learning Awk, I first went through <a href="http://www.grymoire.com/Unix/Awk.html">Awk - A Tutorial and Introduction</a> by Bruce Barnett, which was full of examples to try out; then I created an <a href="http://www.catonmat.net/blog/awk-nawk-and-gawk-cheat-sheet/">Awk cheat sheet</a> to have the language reference in front of me; and finally I went through the <strong>famous</strong> <a href='http://www.catonmat.net/blog/wp-content/uploads/2008/09/awk1line.txt' title='Awk One Liners'>Awk one-liners</a> (link to .txt file), which were compiled by <a href="http://www.student.northpark.edu/pemente/">Eric Pement</a>.</p>
+<p>This is going to be a three-part article in which I will explain every single one-liner in Mr. Pement's compilation. Each part will explain around 20 one-liners. If you follow closely then the explained examples will turn you into a great Awk programmer.</p>
+<p>Eric Pement's Awk one-liner collection consists of five sections:</p>
+<ul>	<li>1. File spacing (explained in this part),</li>
+	<li>2. Numbering and calculations (explained in this part)</li>
+	<li>3. <a href="http://www.catonmat.net/blog/awk-one-liners-explained-part-two/">Text conversion and substitution</a> (explained in part two),</li>
+	<li>4. <a href="http://www.catonmat.net/blog/awk-one-liners-explained-part-three/">Selective printing of certain lines</a> (explained in part three),</li>
+	<li>5. <a href="http://www.catonmat.net/blog/awk-one-liners-explained-part-three/">Selective deleting of certain lines</a> (explained in part three).</li>
+	<li>6. <a href="http://www.catonmat.net/blog/update-on-famous-awk-one-liners-explained/">String creation, array creation and update on selective printing of certain lines</a> (explained in bonus article).</li>
+</ul>
+<p>The first part of the article will explain the first two sections: "File spacing" and "Numbering and calculations." The second part will explain "Text conversion and substitution", and the last part "Selective printing/deleting of certain lines."</p>
+<p>I recommend that you print out my <a href="http://www.catonmat.net/blog/awk-nawk-and-gawk-cheat-sheet/">Awk cheat sheet</a> before you proceed. This way you will have the language reference in front of you, and you will memorize things better.</p>
+<p>These one-liners work with all versions of awk, such as nawk (AT&T's new awk), gawk (GNU's awk), mawk (Michael Brennan's awk) and oawk (old awk).</p>
+<p>Let's start!</p>
+<h2>1. Line Spacing</h2>
+<p><strong>1. Double-space a file.</strong></p>
+<pre >awk &#39;1; { print &#34;&#34; }&#39;</pre>
+<p>So how does it work? A one-liner is an Awk program and every Awk program consists of a sequence of pattern-action statements "<strong>pattern { action statements }</strong>". In this case there are two statements &#34;1&#34; and &#34;{ print &#34;&#34; }&#34;. In a pattern-action statement either the pattern or the action may be missing. If the pattern is missing, the action is applied to every single line of input. A missing action is equivalent to &#39;{ print }&#39;. Thus, this one-liner translates to:</p>
+<pre >awk &#39;1 { print } { print &#34;&#34; }&#39;</pre>
+<p>An action is applied only if the pattern matches, i.e., pattern is true. Since &#39;1&#39; is always true, this one-liner translates further into two print statements:</p>
+<pre >awk &#39;{ print } { print &#34;&#34; }&#39;</pre>
+<p>Every print statement in Awk is silently followed by an <strong>ORS - Output Record Separator</strong> variable, which is a newline by default. The first print statement with no arguments is equivalent to &#34;print $0&#34;, where $0 is a variable holding the entire line. The second print statement prints nothing, but knowing that each print statement is followed by ORS, it actually prints a newline. So there we have it, each line gets double-spaced.</p>
+<p><strong>2. Another way to double-space a file.</strong></p>
+<pre >awk &#39;BEGIN { ORS=&#34;\n\n&#34; }; 1&#39;</pre>
+<p><strong>BEGIN</strong> is a special kind of pattern which is not tested against the input. It is executed <strong>before</strong> any input is read. This one-liner double-spaces the file by setting the ORS variable to two newlines. As I mentioned previously, statement &#34;1&#34; gets translated to &#34;{ print }&#34;, and every print statement gets terminated with the value of ORS variable.</p>
+<p><strong>3. Double-space a file so that no more than one blank line appears between lines of text.</strong></p>
+<pre >awk &#39;NF { print $0 &#34;\n&#34; }&#39;</pre>
+<p>The one-liner uses another special variable called <strong>NF - Number of Fields</strong>. It contains the number of fields the current line was split into. For example, a line "this is a test" splits in four pieces and NF gets set to 4. The empty line "" does not split into any pieces and NF gets set to 0. Using NF as a pattern can effectively filter out empty lines. This one liner says: "If there are any number of fields, print the whole line followed by newline."</p>
+<p><strong>4. Triple-space a file.</strong></p>
+<pre >awk &#39;1; { print &#34;\n&#34; }&#39;</pre>
+<p>This one-liner is very similar to previous ones. &#39;1&#39; gets translated into &#39;{ print }&#39; and the resulting Awk program is:</p>
+<pre >awk &#39;{ print; print &#34;\n&#34; }&#39;</pre>
+<p>It prints the line, then prints a newline followed by terminating ORS, which is newline by default.</p>
+<h2>2. Numbering and Calculations</h2>
+<p><strong>5. Number lines in each file separately.</strong></p>
+<pre >awk &#39;{ print FNR &#34;\t&#34; $0 }&#39;</pre>
+<p>This Awk program appends the <strong>FNR - File Line Number</strong> predefined variable and a tab (\t) before each line. FNR variable contains the current line for each file separately. For example, if this one-liner was called on two files, one containing 10 lines, and the other 12, it would number lines in the first file from 1 to 10, and then resume numbering from one for the second file and number lines in this file from 1 to 12. FNR gets reset from file to file.</p>
+<p><strong>6. Number lines for all files together.</strong></p>
+<pre >awk &#39;{ print NR &#34;\t&#34; $0 }&#39;</pre>
+<p>This one works the same as #5 except that it uses <strong>NR - Line Number</strong> variable, which does not get reset from file to file. It counts the input lines seen so far. For example, if it was called on the same two files with 10 and 12 lines, it would number the lines from 1 to 22 (10 + 12).</p>
+<p><strong>7. Number lines in a fancy manner.</strong></p>
+<pre >awk &#39;{ printf(&#34;%5d : %s\n&#34;, NR, $0) }&#39;</pre>
+<p>This one-liner uses <strong>printf</strong>() function to number lines in a custom format. It takes format parameter just like a regular printf() function. Note that ORS does not get appended at the end of printf(), so we have to print the newline (\n) character explicitly. This one right-aligns line numbers, followed by a space and a colon, and the line.</p>
+<p><strong>8. Number only non-blank lines in files.</strong></p>
+<pre >awk &#39;NF { $0=++a &#34; :&#34; $0 }; { print }&#39;</pre>
+<p>Awk <strong>variables are dynamic</strong>; they come into existence when they are first used. This one-liner pre-increments variable 'a' each time the line is non-empty, then it appends the value of this variable to the beginning of line and prints it out.</p>
+<p><strong>9. Count lines in files (emulates wc -l).</strong></p>
+<pre >awk &#39;END { print NR }&#39;</pre>
+<p><strong>END</strong> is another special kind of pattern which is not tested against the input. It is executed when all the input has been exhausted. This one-liner outputs the value of NR special variable after all the input has been consumed. NR contains total number of lines seen (= number of lines in the file).</p>
+<p><strong>10. Print the sum of fields in every line.</strong></p>
+<pre >awk &#39;{ s = 0; for (i = 1; i &lt;= NF; i++) s = s+$i; print s }&#39;</pre>
+<p>Awk has some features of C language, like the <strong>for (;;) { ... }</strong> loop. This one-liner loops over all fields in a line (there are NF fields in a line), and adds the result in variable 's'. Then it prints the result out and proceeds to the next line.</p>
+<p><strong>11. Print the sum of fields in all lines.</strong></p>
+<pre >awk &#39;{ for (i = 1; i &lt;= NF; i++) s = s+$i }; END { print s+0 }&#39;</pre>
+<p>This one-liner is basically the same as #10, except that it prints the sum of all fields. Notice how it did not initialize variable 's' to 0. It was not necessary as variables come into existence dynamically. Also notice how it calls "print s+0" and not just "print s". It is necessary if there are no fields. If there are no fields, "s" never comes into existence and is undefined. Printing an undefined value does not print anything (i.e. prints just the ORS). Adding a 0 does a mathematical operation and undef+0 = 0, so it prints "0".</p>
+<p><strong>12. Replace every field by its absolute value.</strong></p>
+<pre >awk &#39;{ for (i = 1; i &lt;= NF; i++) if ($i &lt; 0) $i = -$i; print }&#39;</pre>
+<p>This one-liner uses two other features of C language, namely the <strong>if (...) { ... }</strong> statement and omission of curly braces. It loops over all fields in a line and checks if any of the fields is less than 0. If any of the fields is less than 0, then it just negates the field to make it positive. Fields can be addresses indirectly by a variable. For example, i = 5; $i = &#39;hello&#39;, sets field number 5 to string &#39;hello&#39;.</p>
+<p>Here is the same one-liner rewritten with curly braces for clarity. The &#39;print&#39; statement gets executed after all the fields in the line have been replaced by their absolute values.</p>
+<pre >
+awk &#39;{
+  for (i = 1; i &lt;= NF; i++) {
+    if ($i &lt; 0) {
+      $i = -$i;
+    }
+  }
+  print
+}&#39;
+</pre>
+<p><strong>13. Count the total number of fields (words) in a file.</strong></p>
+<pre >awk &#39;{ total = total + NF }; END { print total+0 }&#39;</pre>
+<p>This one-liner matches all the lines and keeps adding the number of fields in each line. The number of fields seen so far is kept in a variable named 'total'. Once the input has been processed, special pattern &#39;END { ... }&#39; is executed, which prints the total number of fields. See 11th one-liner for explanation of why we "print total+0" in the END block.</p>
+<p><strong>14. Print the total number of lines containing word "Beth".</strong></p>
+<pre >awk &#39;/Beth/ { n++ }; END { print n+0 }&#39;</pre>
+<p>This one-liner has two pattern-action statements. The first one is &#39;/Beth/ { n++ }&#39;. A pattern between two slashes is a regular expression. It matches all lines containing pattern "Beth" (not necessarily the word "Beth", it could as well be "Bethe" or "theBeth333"). When a line matches, variable 'n' gets incremented by one. The second pattern-action statement is &#39;END { print n+0 }&#39;. It is executed when the file has been processed. Note the &#39;+0&#39; in &#39;print n+0&#39; statement. It forces &#39;0&#39; to be printed in case there were no matches ('n' was undefined). Had we not put &#39;+0&#39; there, an empty line would have been printed.</p>
+<p><strong>15. Find the line containing the largest (numeric) first field.</strong></p>
+<pre >awk &#39;$1 &gt; max { max=$1; maxline=$0 }; END { print max, maxline }&#39;</pre>
+<p>This one-liner keeps track of the largest number in the first field (in variable 'max') and the corresponding line (in variable 'maxline'). Once it has looped over all lines, it prints them out. Warning: this one-liner does not work if all the values are negative.</p>
+<p>Here is the fix:</p>
+<pre >awk &#39;NR == 1 { max = $1; maxline = $0; next; } $1 &gt; max { max=$1; maxline=$0 }; END { print max, maxline }&#39;</pre>
+<p><strong>16. Print the number of fields in each line, followed by the line.</strong></p>
+<pre >awk &#39;{ print NF &#34;:&#34; $0 } &#39;</pre>
+<p>This one-liner just prints out the predefined variable NF - Number of Fields, which contains the number of fields in the line, followed by a colon and the line itself.</p>
+<p><strong>17. Print the last field of each line.</strong></p>
+<pre >awk &#39;{ print $NF }&#39;</pre>
+<p>Fields in Awk need not be referenced by constants. For example, code like &#39;f = 3; print $f&#39; would print out the 3rd field. This one-liner prints the field with the value of NF. $NF is last field in the line.</p>
+<p><strong>18. Print the last field of the last line.</strong></p>
+<pre >awk &#39;{ field = $NF }; END { print field }&#39;</pre>
+<p>This one-liner keeps track of the last field in variable 'field'. Once it has looped all the lines, variable 'field' contains the last field of the last line, and it just prints it out.</p>
+<p>Here is a better version of the same one-liner. It's more common, idiomatic and efficient:</p>
+<pre >awk &#39;END { print $NF }&#39;</pre>
+<p><strong>19. Print every line with more than 4 fields.</strong></p>
+<pre >awk &#39;NF &gt; 4&#39;</pre>
+<p>This one-liner omits the action statement. As I noted in one-liner #1, a missing action statement is equivalent to &#39;{ print }&#39;.</p>
+<p><strong>20. Print every line where the value of the last field is greater than 4.</strong></p>
+<pre >awk &#39;$NF &gt; 4&#39;</pre>
+<p>This one-liner is similar to #17. It references the last field by NF variable. If it's greater than 4, it prints it out.</p>
+<h2>Have fun!</h2>
+<p>That's it for Part I one the article. The second part will be on "Text conversion and substitution."</p>
+<p>Have fun learning Awk! It's a fun language to know. :)</p>
+
+  </div>
+
+  <div class="social">
+    <div class="twitter">
+      <script type="text/javascript">
+        tweetmeme_style = 'compact';
+        tweetmeme_source = 'pkrumins';
+        tweetmeme_service = 'bit.ly';
+      </script>
+      <script type="text/javascript" src="http://tweetmeme.com/i/scripts/button.js"></script>
+    </div>
+    <div class="facebook">
+      
+      <iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.catonmat.net%2Fblog%2Fawk-one-liners-explained-part-one&amp;layout=button_count&amp;show_faces=true&amp;width=110&amp;action=like&amp;colorscheme=light&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:100px; height:21px;" allowTransparency="true"></iframe>
+    </div>
+    <div class="buzz">
+      <a title="Post to Google Buzz" class="google-buzz-button" href="http://www.google.com/buzz/post" data-button-style="small-count"></a>
+      <script type="text/javascript" src="http://www.google.com/buzz/api/button.js"></script>
+    </div>
+    <div class="clear"></div>
+  </div>
+
+  <div id="adside_after_article">
+<script type="text/javascript">
+	doclix_pid = 16577;
+	doclix_cid = 1956;
+	doclix_w = 468;
+	doclix_h = 60;
+</script>
+<script type="text/javascript" src="http://ads.doclix.com/adserver/serve/js/doclix_synd_ifrm.js" charset="utf-8"></script>
+  </div>
+
+  <div class="footer">
+      <div class="tags"><a href="/tags" title="All catonmat tags" class="tags_link">Tags</a>:
+        
+        <a href="/tag/awk" title="See all pages tagged &quot;awk&quot;">awk</a>, 
+        <a href="/tag/begin" title="See all pages tagged &quot;begin&quot;">begin</a>, 
+        <a href="/tag/bruce-barnett" title="See all pages tagged &quot;bruce barnett&quot;">bruce barnett</a>, 
+        <a href="/tag/end" title="See all pages tagged &quot;end&quot;">end</a>, 
+        <a href="/tag/eric-pement" title="See all pages tagged &quot;eric pement&quot;">eric pement</a>, 
+        <a href="/tag/eric-wendelin" title="See all pages tagged &quot;eric wendelin&quot;">eric wendelin</a>, 
+        <a href="/tag/fnr" title="See all pages tagged &quot;fnr&quot;">fnr</a>, 
+        <a href="/tag/for" title="See all pages tagged &quot;for&quot;">for</a>, 
+        <a href="/tag/nf" title="See all pages tagged &quot;nf&quot;">nf</a>, 
+        <a href="/tag/nr" title="See all pages tagged &quot;nr&quot;">nr</a>, 
+        <a href="/tag/one-liner" title="See all pages tagged &quot;one liner&quot;">one liner</a>, 
+        <a href="/tag/one-liners" title="See all pages tagged &quot;one liners&quot;">one liners</a>, 
+        <a href="/tag/ors" title="See all pages tagged &quot;ors&quot;">ors</a>, 
+        <a href="/tag/print" title="See all pages tagged &quot;print&quot;">print</a>, 
+        <a href="/tag/wc" title="See all pages tagged &quot;wc&quot;">wc</a>
+      </div>
+
+    <span class="comment_url">
+        <a href="/blog/awk-one-liners-explained-part-one#comments" title="Comment on &quot;Famous Awk One-Liners Explained, Part I: File Spacing, Numbering and Calculations&quot;"><strong>22</strong> Comments</a>
+    </span>
+
+    <span class="views">
+       <strong>437,528</strong> Views
+    </span>
+
+    <span class="short_url">
+      Short URL <input type="text" size="25" value="http://catonmat.net/p/92" onclick="this.select()" readonly>
+    </span>
+  </div>
+
+    
+
+<div class="series">
+<form action="/series" method="POST">
+  <div class="snote">
+    This article is part of the article series "<a href="/series/awk-one-liners-explained" title="Article series &quot;Awk One-Liners Explained&quot;">Awk One-Liners Explained</a>."
+  </div>
+  <div class="snav">
+      <span class="sprev" title="This is the first part in the series (there is no previous article)">&lt;- previous article</span>
+    <span class="toc">
+      <select name="navigate">
+           <option value="/blog/awk-one-liners-explained-part-one" selected>1. Famous Awk One-Liners Explained, Part I: File Spacing, Numbering and Calculations</option>
+           <option value="/blog/awk-one-liners-explained-part-two">2. Famous Awk One-Liners Explained, Part II: Text Conversion and Substitution</option>
+           <option value="/blog/awk-one-liners-explained-part-three">3. Famous Awk One-Liners Explained, Part III: Selective Printing and Deleting of Certain Lines</option>
+           <option value="/blog/update-on-famous-awk-one-liners-explained">4. Update on Famous Awk One-Liners Explained: String and Array Creation</option>
+      </select>
+      <input type="submit" value="Go" name="go">
+    </span>
+      
+      <span class="snext"><a href="/blog/awk-one-liners-explained-part-two" title="Famous Awk One-Liners Explained, Part II: Text Conversion and Substitution">next article -></a></span>
+  </div>
+</form>
+</div>
+
+
+  <div class="related-posts">
+    <h3>Related Posts</h3>
+    <ul>
+      <li><a href="/blog/awk-one-liners-explained-part-two" title="Famous Awk One-Liners Explained, Part II: Text Conversion and Substitution">Famous Awk One-Liners Explained, Part II: Text Conversion and Substitution</a></li>
+      <li><a href="/blog/perl-one-liners-explained-part-one" title="Famous Perl One-Liners Explained, Part I: File Spacing">Famous Perl One-Liners Explained, Part I: File Spacing</a></li>
+      <li><a href="/blog/perl-one-liners-explained-part-two" title="Famous Perl One-Liners Explained, Part II: Line Numbering">Famous Perl One-Liners Explained, Part II: Line Numbering</a></li>
+      <li><a href="/blog/sed-one-liners-explained-part-one" title="Famous Sed One-Liners Explained, Part I: File Spacing, Numbering and Text Conversion and Substitution">Famous Sed One-Liners Explained, Part I: File Spacing, Numbering and Text Conversion and Substitution</a></li>
+      <li><a href="/blog/update-on-famous-awk-one-liners-explained" title="Update on Famous Awk One-Liners Explained: String and Array Creation">Update on Famous Awk One-Liners Explained: String and Array Creation</a></li>
+      <li><a href="/blog/awk-one-liners-explained-part-three" title="Famous Awk One-Liners Explained, Part III: Selective Printing and Deleting of Certain Lines">Famous Awk One-Liners Explained, Part III: Selective Printing and Deleting of Certain Lines</a></li>
+      <li><a href="/blog/sed-one-liners-explained-part-two" title="Famous Sed One-Liners Explained, Part II: Selective Printing of Certain Lines">Famous Sed One-Liners Explained, Part II: Selective Printing of Certain Lines</a></li>
+      <li><a href="/blog/sed-one-liners-explained-part-three" title="Famous Sed One-Liners Explained, Part III: Selective Deletion of Certain Lines and Special Applications">Famous Sed One-Liners Explained, Part III: Selective Deletion of Certain Lines and Special Applications</a></li>
+      <li><a href="/blog/solving-google-treasure-hunt-prime-number-problem-four" title="Solving Google Treasure Hunt Puzzle 4: Prime Numbers">Solving Google Treasure Hunt Puzzle 4: Prime Numbers</a></li>
+      <li><a href="/blog/perl-one-liners-explained-part-three" title="Famous Perl One-Liners Explained, Part III: Calculations">Famous Perl One-Liners Explained, Part III: Calculations</a></li>
+      <li>
+    </ul>
+  </div>
+
+  <a name="comments"></a>
+  <div class="comments">
+    <div id="comment_list"><!-- TODO: change id to class -->
+      <h3>Comments</h3>
+        
+
+  
+
+
+<div class="icomment" style="margin-left: 0px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/01b7bdd26720b8dc84b2113f4add7bd0.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name">miguel</span>
+
+
+        <span class="permalink"><a href="/c/1259" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">September 28, 2008, 11:11</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>Nice post. In the comment for item 17, shouldn't it say  'f = 3; print $f' instead of 'f = 3; print $3' ?</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/1259?reply" class="reply" id="reply_a_1259" title="Reply to comment by miguel">Reply to this comment</a>
+    </div>
+</div>
+
+
+  
+
+
+<div class="icomment" style="margin-left: 0px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/2cfb99f6193a7a56070d400f51556bd4.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name">Johnny White</span>
+
+
+        <span class="permalink"><a href="/c/1260" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">September 28, 2008, 13:42</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>Amazing! Scientists jsut never cease to amaze me!</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/1260?reply" class="reply" id="reply_a_1260" title="Reply to comment by Johnny White">Reply to this comment</a>
+    </div>
+</div>
+
+
+  
+
+
+<div class="icomment" style="margin-left: 0px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/221ffd658fdee4ea31e2a9ba5a6d3399.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name"><a href="http://www.eduardoburgos.com" title="http://www.eduardoburgos.com">Eduardo Burgos</a></span>
+
+
+        <span class="permalink"><a href="/c/1261" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">September 28, 2008, 18:08</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>Hehe, </p>
+<p>Awesome, if the list was a bit longer it would be a must have for me. Can you extend it a bit? :)</p>
+<p>Cheers,</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/1261?reply" class="reply" id="reply_a_1261" title="Reply to comment by Eduardo Burgos">Reply to this comment</a>
+    </div>
+</div>
+
+
+  
+
+
+<div class="icomment" style="margin-left: 0px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/05e4e83c87a5700958fcb3efa8951a06.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name"><a href="http://www.dancingbison.com" title="http://www.dancingbison.com">Vasudev Ram</a></span>
+
+
+        <span class="permalink"><a href="/c/1262" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">September 28, 2008, 18:27</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>Interesting list.</p>
+<p>Here's a useful awk one-liner to kill a hanging Firefox process, including all its parents that are part of Firefox (but not the shell or any "higher" ancestors). This is a real-life example which I wrote and used recently:</p>
+<p><a href="http://jugad2.blogspot.com/2008/09/unix-one-liner-to-kill-hanging-firefox.html">UNIX one-liner to kill a hanging Firefox process</a></p>
+<p>- Vasudev</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/1262?reply" class="reply" id="reply_a_1262" title="Reply to comment by Vasudev Ram">Reply to this comment</a>
+    </div>
+</div>
+
+
+  
+
+
+<div class="icomment" style="margin-left: 0px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/495aba4e0a50b5fe3993a299b4dcb69c.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name">Go_Obama</span>
+
+
+        <span class="permalink"><a href="/c/1263" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">September 28, 2008, 21:16</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>Thanks ! many are exactly what I been lokking for:</p>
+<p>Question re #6<br>
+So say if I want a new file from the concatenate of <br>
+foo.log0, <br>
+foo.log1, <br>
+foo.log2 (increaing date) </p>
+<p><strong>and number all lines of all log files together,</strong></p>
+<p>This is the right command ?</p>
+<p>awk '{ print NR "\t" $0 }' foo.log* &gt; foo.txt</p>
+<p>or should I do:</p>
+<p>awk '{ print NR "\t" $0 }' foo.log0 foo.log1 foo.log2 &gt; foo.txt</p>
+<p>thanks</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/1263?reply" class="reply" id="reply_a_1263" title="Reply to comment by Go_Obama">Reply to this comment</a>
+    </div>
+</div>
+
+
+  
+
+
+<div class="icomment" style="margin-left: 0px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/62c9a73849b19c39899eceb63f71b4ec.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name">goofy_barney</span>
+
+
+        <span class="permalink"><a href="/c/1264" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">September 29, 2008, 02:21</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>#10 correction.</p>
+<p>replace</p>
+<pre>s=s+$i</pre>
+<p>with</p>
+<pre>s=s+i</pre>
+<p>ditto #11</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/1264?reply" class="reply" id="reply_a_1264" title="Reply to comment by goofy_barney">Reply to this comment</a>
+    </div>
+</div>
+
+
+  
+
+
+<div class="icomment" style="margin-left: 0px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/b668360f53c9975bca11992742e2effe.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name"><a href="http://eriwen.com" title="http://eriwen.com">Eric Wendelin</a></span>
+
+
+        <span class="permalink"><a href="/c/1265" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">September 29, 2008, 02:46</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>Awesome list Peteris! These examples are great!</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/1265?reply" class="reply" id="reply_a_1265" title="Reply to comment by Eric Wendelin">Reply to this comment</a>
+    </div>
+</div>
+
+
+  
+
+
+<div class="icomment" style="margin-left: 0px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/1fd67ac4162561def609a4862677cdbc.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name"><a href="http://www.catonmat.net" title="http://www.catonmat.net">Peteris Krumins</a></span>
+
+      <span class="twitter"><a href="http://twitter.com/pkrumins" title="pkrumins or Twitter">pkrumins</a></span>
+
+        <span class="permalink"><a href="/c/1266" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">September 29, 2008, 02:57</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>Miguel, thanks, i fixed that mistake.</p>
+<p>Eduard, this is a 3 part article. This is just part one. Parts two and three coming soon.</p>
+<p>Goofy_barny, no, it's "s=s+$i". It sums the values in each field.</p>
+<p>Go_Obama, I also support Obama :) but for your question, do the awk '{ print NR "\t" $0 }' foo.log0 foo.log1 foo.log2 &gt; foo.txt. The other example will put foo.log11 before foo.log2.</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/1266?reply" class="reply" id="reply_a_1266" title="Reply to comment by Peteris Krumins">Reply to this comment</a>
+    </div>
+</div>
+
+
+  
+
+
+<div class="icomment" style="margin-left: 0px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/6436f15f1b95330eb91e3289fc9da74a.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name"><a href="http://unstableme.blogspot.com" title="http://unstableme.blogspot.com">Jadu Saikia</a></span>
+
+
+        <span class="permalink"><a href="/c/1267" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">October 02, 2008, 17:40</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>Nice explanation of all the awk one liners, thanks peter.</p>
+<p>//Jadu, unstableme.blogspot.com</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/1267?reply" class="reply" id="reply_a_1267" title="Reply to comment by Jadu Saikia">Reply to this comment</a>
+    </div>
+</div>
+
+
+  
+
+
+<div class="icomment" style="margin-left: 0px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/b338e93f63e249b0b429c0551860e669.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name">Sydney</span>
+
+
+        <span class="permalink"><a href="/c/1268" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">October 07, 2008, 05:55</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>Hello, I have been playing with AWK a little and have this line.</p>
+<pre>df -h | grep / | grep % | awk '$(NF-1) &gt;= "20%" {print $NF,": ", $(NF-1)}'</pre>
+<p>Everything works great except I have a volume with 3% usage. AWK in my usage of it only appears to evalute the first number of the “20%”.</p>
+<p>I have looked around the net some for a resolution to this and read some documentation. I know that it is something simple I am overlooking, but you folks look like you know what you are doing and are active so I ask; What usage of AWK should I implement to make 1 !&gt; 10.</p>
+<p>Thanks in advance.<br>
+–Sydney</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/1268?reply" class="reply" id="reply_a_1268" title="Reply to comment by Sydney">Reply to this comment</a>
+    </div>
+</div>
+
+
+  
+
+
+<div class="icomment" style="margin-left: 0px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/1fd67ac4162561def609a4862677cdbc.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name"><a href="http://www.catonmat.net" title="http://www.catonmat.net">Peteris Krumins</a></span>
+
+      <span class="twitter"><a href="http://twitter.com/pkrumins" title="pkrumins or Twitter">pkrumins</a></span>
+
+        <span class="permalink"><a href="/c/1269" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">October 07, 2008, 06:20</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>Sydney, thanks for your question.</p>
+<p>I see a couple of mistakes here. First of all you are using grep twice! Awk can do what grep does itself with the /.../ regex pattern matching.</p>
+<p>Here is what I came up with (works in GNU Awk only!):</p>
+<pre>
+df -h | awk '/dev/ { if (strtonum($5) &gt;= 20) { print $NF ": " $(NF-1) } }'
+</pre>
+<p>And this one works in all Awk's:</p>
+<pre>
+df -h | awk '/dev/ {
+ if (match($5, /^[0-9]+/)) {
+  usage = substr($5, RSTART, RLENGTH)
+  if (usage &gt;= 20) {
+   print $NF ": " $(NF-1)
+  }
+ }
+}'
+</pre>
+<p>Hope it helps.</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/1269?reply" class="reply" id="reply_a_1269" title="Reply to comment by Peteris Krumins">Reply to this comment</a>
+    </div>
+</div>
+
+
+  
+
+
+<div class="icomment" style="margin-left: 0px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/b338e93f63e249b0b429c0551860e669.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name">Sydney</span>
+
+
+        <span class="permalink"><a href="/c/1270" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">October 07, 2008, 07:23</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>Thanks so much Peteris,</p>
+<p>I am only ever using GNU AWK on Redhat or Ubuntu maybe Debian rarely. So I mutated the first into:</p>
+<pre>df -h | awk '/\// { if (strtonum($(NF-1)) &gt;= 20) { print $NF ": " $(NF-1) } }'</pre>
+<p>I am guessing that <i>strtonum</i> function that you suggested takes it out of the string world. I was trying to compare a string to a number. </p>
+<p>The RegEx /\// found all mounts.</p>
+<p>df output is not constant in Red Hat with long mount names </p>
+<pre>/shrug</pre>
+<p> Who knew? So I changed the code to work backwards from the last field.</p>
+<p>Thanks a bunch this was an interesting experiment for me that I may turn around and tweak for production.</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/1270?reply" class="reply" id="reply_a_1270" title="Reply to comment by Sydney">Reply to this comment</a>
+    </div>
+</div>
+
+
+    
+
+  
+
+
+<div class="icomment" style="margin-left: 20px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/c2d6ebe1f9a0934ef13d5f574cda471f.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name">seven</span>
+
+
+        <span class="permalink"><a href="/c/3803" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">August 04, 2010, 06:14</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>Hi,</p>
+<p>  Please let me know the command to list files having specific number of rows. I want to list all the files having only 3 rows only.</p>
+<p>Regards,</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/3803?reply" class="reply" id="reply_a_3803" title="Reply to comment by seven">Reply to this comment</a>
+    </div>
+</div>
+
+
+
+
+  
+
+
+<div class="icomment" style="margin-left: 0px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/1fd67ac4162561def609a4862677cdbc.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name"><a href="http://www.catonmat.net" title="http://www.catonmat.net">Peteris Krumins</a></span>
+
+      <span class="twitter"><a href="http://twitter.com/pkrumins" title="pkrumins or Twitter">pkrumins</a></span>
+
+        <span class="permalink"><a href="/c/1271" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">October 07, 2008, 07:31</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>You're welcome, Sydney.</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/1271?reply" class="reply" id="reply_a_1271" title="Reply to comment by Peteris Krumins">Reply to this comment</a>
+    </div>
+</div>
+
+
+  
+
+
+<div class="icomment" style="margin-left: 0px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/66624b9d9a2cef7e31c9a2124994f72b.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name"><a href="http://intro-to-awk.blogspot.com/" title="http://intro-to-awk.blogspot.com/">pondlife</a></span>
+
+
+        <span class="permalink"><a href="/c/1272" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">October 09, 2008, 16:35</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>Nice clearly written examples. I've bookmarked it for future reference :)</p>
+<p>Thanks!</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/1272?reply" class="reply" id="reply_a_1272" title="Reply to comment by pondlife">Reply to this comment</a>
+    </div>
+</div>
+
+
+  
+
+
+<div class="icomment" style="margin-left: 0px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/0ccd5b6ed4367cb88e8fab13d5534218.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name"><a href="http://fighter-geek.net" title="http://fighter-geek.net">badreligion</a></span>
+
+
+        <span class="permalink"><a href="/c/1273" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">November 08, 2008, 17:45</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>Great info, I am familiar with Awk but have only used it for very simple field delimiting. I can't wait to read the rest of this series and also your series on Sed.</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/1273?reply" class="reply" id="reply_a_1273" title="Reply to comment by badreligion">Reply to this comment</a>
+    </div>
+</div>
+
+
+  
+
+
+<div class="icomment" style="margin-left: 0px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/d952974ad4e5daa59b2b90e5cbbfad5f.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name">WangPeng</span>
+
+
+        <span class="permalink"><a href="/c/1274" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">November 10, 2008, 15:02</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>Thank you!<br>
+but where is the second part? I can't find it.</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/1274?reply" class="reply" id="reply_a_1274" title="Reply to comment by WangPeng">Reply to this comment</a>
+    </div>
+</div>
+
+
+  
+
+
+<div class="icomment" style="margin-left: 0px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/ddc0c16b50d49599482b24a64ea43410.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name">Augusto</span>
+
+
+        <span class="permalink"><a href="/c/1275" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">February 21, 2009, 01:11</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>Hi. I've been trying to understand example 8</p>
+<p>  awk 'NF { $0=++a " :" $0 }; { print }'</p>
+<p>but I can't, can anybody explain a little bit more?</p>
+<p>Peter, amzing site, great articles. Congrats</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/1275?reply" class="reply" id="reply_a_1275" title="Reply to comment by Augusto">Reply to this comment</a>
+    </div>
+</div>
+
+
+  
+
+
+<div class="icomment" style="margin-left: 0px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/1fd67ac4162561def609a4862677cdbc.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name"><a href="http://www.catonmat.net" title="http://www.catonmat.net">Peteris Krumins</a></span>
+
+      <span class="twitter"><a href="http://twitter.com/pkrumins" title="pkrumins or Twitter">pkrumins</a></span>
+
+        <span class="permalink"><a href="/c/1276" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">February 21, 2009, 01:28</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>Hey Augusto. Now that I look at one-liner #8, it looks pretty ridiculous. But I didn't write it.</p>
+<p>If I wrote it, here is how it would look:</p>
+<pre>
+awk '{ print ++a, $0 }'
+</pre>
+<p>At every line increment variable a, and output it together with the line itself.</p>
+<p>The explanation of the original one liner is this:</p>
+<p>Every line gets read in variable $0. The one-liner modifies this $0. It appends the contents of variable 'a' to the beginning of $0. But before appending 'a' it gets incremented by one by ++ unary operator.</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/1276?reply" class="reply" id="reply_a_1276" title="Reply to comment by Peteris Krumins">Reply to this comment</a>
+    </div>
+</div>
+
+
+  
+
+
+<div class="icomment" style="margin-left: 0px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/84d90dff84379cf47ab35e2edd943413.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name">Paul</span>
+
+
+        <span class="permalink"><a href="/c/1277" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">July 29, 2009, 15:31</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>For Sydney 10/8/2008, who writes:<br>
+AWK in my usage of it only appears to evaluate the first number of the “20%”. so I ask; What usage of AWK should I implement to make 1 compare lower than 10.</p>
+<p>Unix awk does not have strtonum but you don't need it, nor substr. The problem is that variables are treated both as string and numeric by the comparison operators. Trick is to typecast to numeric using (0 + expression), or to string using ("" expression), to force the right comparison. For a variable $3 like 17%, use x = 0 + $3 to assign the 17 part to x.</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/1277?reply" class="reply" id="reply_a_1277" title="Reply to comment by Paul">Reply to this comment</a>
+    </div>
+</div>
+
+
+  
+
+
+<div class="icomment" style="margin-left: 0px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/a74c68ce91887486016938035a73245f.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name">knud</span>
+
+
+        <span class="permalink"><a href="/c/1278" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">March 25, 2010, 02:22</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>Your explanation to #17 is needed in #10-#12. I couldn't figure out how the $i value was assigned.</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/1278?reply" class="reply" id="reply_a_1278" title="Reply to comment by knud">Reply to this comment</a>
+    </div>
+</div>
+
+
+  
+
+
+<div class="icomment" style="margin-left: 0px">
+  <div class="gravatar">
+    <img src="http://www.gravatar.com/avatar/ccaadcda5f04d69df822263dbfd538a8.jpg?s=40" width="40" height="40">
+  </div>
+  <div class="userinfo">
+    <div>
+      <span class="name">Jimmy</span>
+
+
+        <span class="permalink"><a href="/c/3905" title="Permanent link to the comment">Permalink</a></span>
+    </div>
+    <div>
+      <span class="time">August 18, 2010, 01:34</span>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <div class="comment_text">
+    <p>Hi Wondering If I could have some help - sorry for double post</p>
+<p>I have a column of numbers sorted in ascending order.  I am trying to remove the last 5% of the records then count avg sum etc</p>
+<p>The total records are         :  99183<br>
+I only want to sum the first  :  94222  (discarding the outliers 5%)</p>
+<p>Where the value of 94222 is in the command line is where I want to use the variable NFIVE -</p>
+<p> but if I put variable in awk counts all the records and sums no records.</p>
+<p>Desired output:</p>
+<pre> 
+cat &lt;file> |tr -s '=' ' '|sort -k5n | awk '{NFIVE=NR*.95}; {if (NR&lt;94222) TOTAL+=$5} END{printf("COUNT:%d, TOTAL:%d,MEAN:%d\n",NFIVE,TOTAL,TOTAL/NFIVE)}'
+</pre>
+<p>OUTPUT:  (and correct values)<br>
+COUNT:94222, TOTAL:19079403, MEAN:202</p>
+<p>Incorrect values I get if using NFIVE<br>
+EG: </p>
+<pre>
+cat &lt;FILE> |tr -s '=' ' '|sort -k5n | awk '{NFIVE=NR*.95}; {if (NR&lt;NFIVE) TOTAL+=$5} END{printf("COUNT:%d, TOTAL:%d, MEAN:%d\n",NFIVE,TOTAL,TOTAL/NFIVE)}'
+</pre>
+<p>COUNT:94222, TOTAL:0, MEAN:0</p>
+<p>Thanks for any assitance</p>
+
+  </div>
+
+    <div class="comment_reply">
+      <a href="/c/3905?reply" class="reply" id="reply_a_3905" title="Reply to comment by Jimmy">Reply to this comment</a>
+    </div>
+</div>
+
+
+
+
+        <script>
+          catonmat.init_comments('page', '');
+        </script>
+    </div>
+
+    <div class="add">
+      <h3>Leave a new comment</h3>
+      
+
+<div id="comment_form">
+    <div id="comment_error" class="hidden"></div>
+
+    <div id="comment_preview" class="hidden"></div>
+
+  <form action="/blog/awk-one-liners-explained-part-one" method="POST">
+    <input type="hidden" name="page_id" id="page_id" value="92">
+    <input type="hidden" name="parent_id" id="parent_id" value="">
+
+    <p>
+      <label for="name" class="name">Name:</label>
+      <input tabindex="1" type="text" name="name" id="name" maxlength="64" size="30">
+    </p>
+    <div class="clear"></div>
+
+    <p>
+      <label for="email" class="email">E-mail:</label>
+      <input tabindex="2" type="text" name="email" id="email" maxlength="128" size="30">
+      <span class="small">(<a href="#" id="why_email_a" title="Why do I need your email?">why do I need your e-mail?</a>)</span>
+    </p>
+    <div class="clear"></div>
+
+    <div id="why_email_explain" class="hidden">
+      <p>
+        It would be nice if you left your e-mail address. Sometimes I want to send a private message, or just thank for the great comment. Having your e-mail really helps.
+      </p>
+      <p><b>I will never ever spam you.</b></p>
+    </div>
+
+    <p>
+      <label for="twitter" class="twitter">Twitter:</label>
+      <input tabindex="3" type="text" name="twitter" id="twitter" maxlength="128" size="30">
+      <span class="small">(Your twitter name, if you have one. (I'm <a href="http://twitter.com/pkrumins">@pkrumins</a>, btw.))</span>
+    </p>
+    <div class="clear"></div>
+
+    <p class="website">
+      <label for="website" class="website">Website:</label>
+      <input tabindex="4" type="text" name="website" id="website" maxlength="256" size="50">
+    </p>
+    <div class="clear"></div>
+
+    <div class="c">
+      <label for="comment" class="comment">Comment:</label>
+      <div class="a">
+        </p>
+        <textarea tabindex="5" name="comment" rows="8" cols="50" id="comment"></textarea>
+        <script>
+          if ($.browser.safari) {
+            /* i can't solve the 2px offset bug in chrome via css manipulations */
+            $('#comment_form .a').css('margin-left', '94px');
+
+            /* i also can't solve a problem of labels being offset by 3px in vertical direction */
+            $('#comment_form label').css('margin-top','3px')
+          }
+        </script>
+        <div class="comment-help-link"><a href="#" id="ch">Comment Help</a></div>
+        <div class="clear"></div>
+        <div id="comment_help" class="hidden">
+          <p>* use <code>&lt;pre>...&lt;/pre></code> to insert a plain code snippet.</p>
+          <p>
+            * use <code>&lt;pre lang="<strong>lang</strong>">...&lt;/pre></code> to insert a syntax highlighted code snippet.<br>
+            For example, <code>&lt;pre lang="<strong>python</strong>">...&lt;/pre></code> will insert Python highlighted code.
+          </p>
+          <p>* use <code>&lt;code>...&lt;/code></code> to highlight a variable or a single shell command.</p>
+          <p>* use <code>&lt;a href="url">title&lt/a></code> to insert links.</p>
+          <p>* use other HTML tags, such as, <code>&lt;b></code>, <code>&lt;i></code>, <code>&lt;blockquote></code>, <code>&lt;sup></code>, <code>&lt;sub></code> for text formatting.</p>
+        </div>
+      </div>
+    </div>
+    <div class="clear"></div>
+
+    <div class="e">
+      <p>
+        Type <img src="/static/img/feedbackca.png"> here:
+        <input tabindex="6" type="text" name="commentc" size="10">
+      </p>
+
+      <p>
+        <input tabindex="6" id="preview" type="submit" name="preview" value="Preview comment">
+        <input tabindex="7" id="submit" type="submit" name="submit" value="Submit comment">
+      </p>
+
+      <p>
+        <span id="comment_please">Please <b>preview</b> the comment before submitting to make sure it's OK.<br></span>
+      </p>
+    </div>
+
+  </form>
+</div>
+
+
+      <script>
+        catonmat.init_why_email();
+        catonmat.init_comment_help();
+        catonmat.init_preview_comment();
+        catonmat.init_submit_comment('');
+      </script>
+    </div>
+  </div>
+</div>
+
+
+
+
+        </div>
+        <div id="sidebar">
+          
+  <!-- begin sidebar.tmpl.html -->
+
+<div class="item search">
+  <form name="search" action="/search" method="GET">
+    <input name="q" type="text">
+    <input name="submit" type="submit" value="Search">
+  </form>
+</div>
+
+<!-- About the site -->
+<div class="item aboutsite">
+  <div class="title">About the site:</div>
+  <div class="content">
+    <p>
+      <a href="/about/" title="About Peteris Krumins">
+        <img src="/static/img/peteris-krumins-small.jpg" alt="Peteris Krumins" class="peter">
+      </a>
+      Peteris Krumins' blog about programming, hacking, software reuse, software ideas, computer security, google and technology.
+    </p>
+    <div class="hr"></div>
+    <p class="contact smallmargin">Reach me at:</p>
+    <img src="/static/img/peter-catonmat-net.gif" class="eml">
+    <p class="contact">Or meet me on:</p>
+    <div class="social">
+      <ul>
+        <li class="twitter"><a href="http://www.twitter.com/pkrumins" title="Peteris Krumins on Twitter"><img src="/static/img/twitter-16x16.gif">Twitter</a></li>
+        <li class="facebook"><a href="http://www.facebook.com/pkrumins" title="Peteris Krumins on Facebook"><img src="/static/img/facebook-16x16.gif">Facebook</a></li>
+        <!-- TODO: exchange plurk with github -->
+        <li class="plurk almost-last"><a href="http://www.plurk.com/pkrumins" title="Peteris Krumins on Plurk"><img src="/static/img/plurk-16x16.gif">Plurk</a></li>
+        <li class="more"><a href="#" id="a-more-contacts" class="more" title="More ways to contact Peteris Krumins"><img src="/static/img/more-10x10.gif" class="more">more</a></li>
+      </ul>
+      <div class="clear"></div>
+      <script>
+        catonmat.init_toggle_contacts();
+      </script>
+    </div>
+    <div class="social hidden" id="div-more-contacts">
+      <ul>
+        <li class="github"><a href="http://www.github.com/pkrumins" title="Peteris Krumins programming projects on GitHub"><img src="/static/img/github-16x16.gif">GitHub</a></li>
+        <li class="linkedin"><a href="http://www.linkedin.com/in/pkrumins" title="Peteris Krumins CV on LinkedIn"><img src="/static/img/linkedin-16x16.gif">LinkedIn</a></li>
+        <li class="friendfeed"><a href="http://www.friendfeed.com/pkrumins" title="Peteris Krumins on FriendFeed"><img src="/static/img/friendfeed-16x16.gif">FriendFeed</a></li>
+      </ul>
+      <div class="clear"></div>
+      <div style="padding-bottom: 5px"></div>
+      <ul>
+        <li><a href="http://google.com/profiles/peteris.krumins" title="Peteris Krumins on Google Buzz"><img src="/static/img/buzz-16x16.gif">Google Buzz</a></li>
+      </ul>
+      <div class="clear"></div>
+      <div style="padding-bottom: 5px"></div>
+      <ul>
+        <li><a href="irc://irc.freenode.net/catonmat" title="Catonmat IRC Channel"><img src="/static/img/mirc-16x16.gif">irc.freenode.net, channel #catonmat</a></li>
+      </ul>
+      <div class="clear"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Subscribe to my posts -->
+<div class="item subscribe">
+  <div class="title">Subscribe to my posts:</div>
+  <div class="content">
+    <p>Subscribe through an RSS feed:</p>
+    <p class="feed">
+      <a href="http://feeds2.feedburner.com/catonmat" rel="alternate" type="application/rss+xml" class="rss" title="Catonmat RSS Feed">
+        <img src="/static/img/rss-feed-16x16.png" class="rss">
+        <img src="http://feeds2.feedburner.com/~fc/catonmat?bg=99CCFF&amp;fg=444444&amp;anim=0" height="26" width="88" class="counter">
+      </a>
+      <span class="rss">(<a href="/what-is-rss/" title="What is an RSS feed?">what is rss?</a>)</span>
+    </p>
+    <div class="hr"></div>
+    <p>Subscribe through email:</p>
+    <!-- begin generated by feedburner.com -->
+    <p>
+      <form style="border:1px solid #ccc;padding:3px;text-align:center;" action="http://feedburner.google.com/fb/a/mailverify" method="post" target="popupwindow" onsubmit="window.open('http://feedburner.google.com/fb/a/mailverify?uri=catonmat', 'popupwindow', 'scrollbars=yes,width=550,height=520');return true">
+        <p>Enter your email address:</p>
+        <p>
+          <input type="text" style="width:140px" name="email"/>
+        </p>
+        <input type="hidden" value="catonmat" name="uri"/>
+        <input type="hidden" name="loc" value="en_US"/>
+        <p>
+          <input type="submit" value="Subscribe" />
+        </p>
+        <p>
+          Delivered by <a href="http://feedburner.google.com" target="_blank">FeedBurner</a>
+        </p>
+      </form>
+    </p>
+    <!-- end generated by feedburner.com -->
+  </div>
+</div>
+
+<div class="item">
+  <div class="title">Server Sponsors</div>
+  <div class="content">
+    <p>I am being sponsored by <a href="http://www.zigzap.com">ZigZap</a>! They bought me an amazing dedicated server to run catonmat on. If you're looking for hosting, I highly recommend the <a href="http://www.zigzap.com">ZigZap guys</a>!</p>
+  </div>
+</div>
+
+<div class="item list">
+  <div class="title">My Other Websites</div>
+  <div class="content">
+    <ul>
+      <li><a href="http://freescienceonline.blogspot.com">Free Science Online</a></li>
+      <li><a href="http://www.freesciencelectures.com">Free Science Videos</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="item list">
+  <div class="title">Top Ten Articles:</div>
+  <div class="content">
+    <ul>
+     <li><a href="/blog/top-ten-one-liners-from-commandlinefu-explained" title="Read &quot;Top Ten One-Liners from CommandLineFu Explained&quot; (has been read 788,419 times)">Top Ten One-Liners from CommandLineFu Explained</a></li>
+     <li><a href="/blog/mit-introduction-to-algorithms-part-one" title="Read &quot;MIT's Introduction to Algorithms, Lectures 1 and 2: Analysis of Algorithms&quot; (has been read 596,764 times)">MIT's Introduction to Algorithms, Lectures 1 and 2: Analysis of Algorithms</a></li>
+     <li><a href="/blog/my-job-interview-at-google" title="Read &quot;My Job Interview at Google&quot; (has been read 574,723 times)">My Job Interview at Google</a></li>
+     <li><a href="/blog/the-definitive-guide-to-bash-command-line-history" title="Read &quot;The Definitive Guide to Bash Command Line History&quot; (has been read 438,966 times)">The Definitive Guide to Bash Command Line History</a></li>
+     <li><a href="/blog/awk-one-liners-explained-part-one" title="Read &quot;Famous Awk One-Liners Explained, Part I: File Spacing, Numbering and Calculations&quot; (has been read 437,528 times)">Famous Awk One-Liners Explained, Part I: File Spacing, Numbering and Calculations</a></li>
+     <li><a href="/blog/bash-vi-editing-mode-cheat-sheet" title="Read &quot;Working Productively in Bash's Vi Command Line Editing Mode (with Cheat Sheet)&quot; (has been read 335,929 times)">Working Productively in Bash's Vi Command Line Editing Mode (with Cheat Sheet)</a></li>
+     <li><a href="/blog/vim-plugins-nerdtree-vim" title="Read &quot;Vim Plugins You Should Know About, Part VI: nerd_tree.vim&quot; (has been read 322,857 times)">Vim Plugins You Should Know About, Part VI: nerd_tree.vim</a></li>
+     <li><a href="/blog/vim-plugins-surround-vim" title="Read &quot;Vim Plugins You Should Know About, Part I: surround.vim&quot; (has been read 305,114 times)">Vim Plugins You Should Know About, Part I: surround.vim</a></li>
+     <li><a href="/blog/i-pushed-20-more-of-my-projects-to-github" title="Read &quot;I pushed 20 more of my projects to GitHub&quot; (has been read 295,135 times)">I pushed 20 more of my projects to GitHub</a></li>
+     <li><a href="/blog/sed-one-liners-explained-part-one" title="Read &quot;Famous Sed One-Liners Explained, Part I: File Spacing, Numbering and Text Conversion and Substitution&quot; (has been read 280,792 times)">Famous Sed One-Liners Explained, Part I: File Spacing, Numbering and Text Conversion and Substitution</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="item list">
+  <div class="title">Top Ten Downloads:</div>
+  <div class="content">
+    <ul>
+    <li><a href="/download/awk.cheat.sheet.pdf" title="Download &quot;awk cheat sheet (.pdf)&quot;">awk cheat sheet (.pdf)</a> (<span title="Total 67,413 downloads">67,413</span>)</li>
+    <li><a href="/download/perl.pack.unpack.printf.cheat.sheet.pdf" title="Download &quot;perl's pack/unpack and printf cheat sheet (.pdf)&quot;">perl's pack/unpack and printf cheat sheet (.pdf)</a> (<span title="Total 64,152 downloads">64,152</span>)</li>
+    <li><a href="/download/sed.stream.editor.cheat.sheet.pdf" title="Download &quot;sed stream editor cheat sheet (.pdf)&quot;">sed stream editor cheat sheet (.pdf)</a> (<span title="Total 48,870 downloads">48,870</span>)</li>
+    <li><a href="/download/bash-history-cheat-sheet.pdf" title="Download &quot;bash history cheat sheet (.pdf)&quot;">bash history cheat sheet (.pdf)</a> (<span title="Total 48,412 downloads">48,412</span>)</li>
+    <li><a href="/download/screen.cheat.sheet.pdf" title="Download &quot;screen cheat sheet (.pdf)&quot;">screen cheat sheet (.pdf)</a> (<span title="Total 39,663 downloads">39,663</span>)</li>
+    <li><a href="/download/perl.predefined.variables.pdf" title="Download &quot;perl's special variable cheat sheet (.pdf)&quot;">perl's special variable cheat sheet (.pdf)</a> (<span title="Total 34,810 downloads">34,810</span>)</li>
+    <li><a href="/download/crypt-o.mp3" title="Download &quot;crypt-o.mp3 (musical geek friday #1)&quot;">crypt-o.mp3 (musical geek friday #1)</a> (<span title="Total 30,544 downloads">30,544</span>)</li>
+    <li><a href="/download/bash-vi-editing-mode-cheat-sheet.pdf" title="Download &quot;bash vi editing mode cheat sheet (.pdf)&quot;">bash vi editing mode cheat sheet (.pdf)</a> (<span title="Total 29,850 downloads">29,850</span>)</li>
+    <li><a href="/download/model_view_controller_song.mp3" title="Download &quot;model-view-controller song.mp3 (musical geek friday #4)&quot;">model-view-controller song.mp3 (musical geek friday #4)</a> (<span title="Total 27,744 downloads">27,744</span>)</li>
+    <li><a href="/download/awk.cheat.sheet.txt" title="Download &quot;awk cheat sheet (.txt)&quot;">awk cheat sheet (.txt)</a> (<span title="Total 27,730 downloads">27,730</span>)</li>
+    </ul>
+  </div>
+</div>
+
+<div class="item list">
+  <div class="title">Recent Articles:</div>
+  <div class="content">
+    <ul>
+     <li><a href="/blog/disallow-windows-programs-via-gpo" title="Read &quot;Restricting what programs a user can run on Windows via Group Policy Objects&quot; (was published on December 12, 2010)">Restricting what programs a user can run on Windows via Group Policy Objects</a></li>
+     <li><a href="/blog/clear-privacy-ie-firefox-opera-chrome-safari" title="Read &quot;How to delete cookies, cache and history in all major browsers&quot; (was published on December 01, 2010)">How to delete cookies, cache and history in all major browsers</a></li>
+     <li><a href="/blog/launching-browserling" title="Read &quot;Announcing Browserling!&quot; (was published on November 24, 2010)">Announcing Browserling!</a></li>
+     <li><a href="/blog/lazy-lists-javascript-nodejs" title="Read &quot;Introducing node-lazy - lazy lists for node.js&quot; (was published on October 14, 2010)">Introducing node-lazy - lazy lists for node.js</a></li>
+     <li><a href="/blog/i-pushed-20-more-of-my-projects-to-github" title="Read &quot;I pushed 20 more of my projects to GitHub&quot; (was published on September 20, 2010)">I pushed 20 more of my projects to GitHub</a></li>
+     <li><a href="/blog/node-js-knockout-competition" title="Read &quot;Reflections on Node.js Knockout Competition&quot; (was published on August 30, 2010)">Reflections on Node.js Knockout Competition</a></li>
+     <li><a href="/blog/stackvm-demo-video-two" title="Read &quot;StackVM Demo Video #2&quot; (was published on August 10, 2010)">StackVM Demo Video #2</a></li>
+     <li><a href="/blog/i-am-doing-a-startup" title="Read &quot;Announcement: I am doing a startup - StackVM!&quot; (was published on July 21, 2010)">Announcement: I am doing a startup - StackVM!</a></li>
+     <li><a href="/blog/three-years-of-blogging" title="Read &quot;Three Years of Blogging&quot; (was published on July 06, 2010)">Three Years of Blogging</a></li>
+     <li><a href="/blog/cpp-polymorphism" title="Read &quot;The Four Polymorphisms in C++&quot; (was published on June 18, 2010)">The Four Polymorphisms in C++</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="item list">
+  <div class="title">Article Categories:</div>
+  <div class="content">
+    <ul>
+      
+      <li><a href="/category/awk-programming" title="Awk Programming: AWK is a very important UNIX programming language for manipulating text very quickly. I have mastered it and now I am teaching others.">Awk Programming</a> (<span title="There are 7 articles in &quot;Awk Programming&quot; category">7</span>)</li>
+      
+      <li><a href="/category/cheat-sheets" title="Cheat Sheets: All kinds of programming and computer science cheat sheets - vt100/ansi cheat sheet, shell emacs editing mode cheat sheet, iptables cheat sheets and many many others.">Cheat Sheets</a> (<span title="There are 9 articles in &quot;Cheat Sheets&quot; category">9</span>)</li>
+      
+      <li><a href="/category/computer-science" title="Computer Science: I love computer science.">Computer Science</a> (<span title="There are 8 articles in &quot;Computer Science&quot; category">8</span>)</li>
+      
+      <li><a href="/category/hackers-approach" title="Hacker's Approach: Using the hacker's approach one can develop cool software in a matter of hours without really going into details how it all works but using the right pieces and putting them together. Also a real hacker would be able to do the right things with the wrong tools.">Hacker's Approach</a> (<span title="There are 5 articles in &quot;Hacker's Approach&quot; category">5</span>)</li>
+      
+      <li><a href="/category/howto" title="Howto: Howto guides - howto download youtube videos, how to upload them, how to be a real hacker, how to become immortal, etc ;)">Howto</a> (<span title="There are 9 articles in &quot;Howto&quot; category">9</span>)</li>
+      
+      <li><a href="/category/introduction-to-algorithms" title="Introduction to Algorithms: Analysis of MIT's &quot;Introduction to Algorithms&quot; video lectures. Contains embedded videos with timestamped list of topics and scanned lecture notes.">Introduction to Algorithms</a> (<span title="There are 15 articles in &quot;Introduction to Algorithms&quot; category">15</span>)</li>
+      
+      <li><a href="/category/linear-algebra" title="Linear Algebra: Analysis of MIT's &quot;Linear Algebra&quot; course. Contains embedded videos with timestamped list of topics and scanned lecture notes.">Linear Algebra</a> (<span title="There are 6 articles in &quot;Linear Algebra&quot; category">6</span>)</li>
+      
+      <li><a href="/category/mathematics" title="Mathematics: A good computer scientist has to know mathematics.">Mathematics</a> (<span title="There are 1 articles in &quot;Mathematics&quot; category">1</span>)</li>
+      
+      <li><a href="/category/misc" title="Misc: Articles that don't fit in other categories. They include interviews and blogging related stuff.">Misc</a> (<span title="There are 7 articles in &quot;Misc&quot; category">7</span>)</li>
+      
+      <li><a href="/category/musical-geek-friday" title="Musical Geek Friday: Really funny and geeky songs I found in my mp3 collection.">Musical Geek Friday</a> (<span title="There are 17 articles in &quot;Musical Geek Friday&quot; category">17</span>)</li>
+      
+      <li><a href="/category/perl-programming" title="Perl Programming: Perl is one of the best languages ever invented. I have mastered it and now I am teaching others.">Perl Programming</a> (<span title="There are 7 articles in &quot;Perl Programming&quot; category">7</span>)</li>
+      
+      <li><a href="/category/programming" title="Programming: I love programming. Language I know are python, perl, haskell, scheme, awk, c++  and others.">Programming</a> (<span title="There are 27 articles in &quot;Programming&quot; category">27</span>)</li>
+      
+      <li><a href="/category/projects" title="Projects: All the various projects that I have done, they include digpicz, reddit media, reddit river, and others.">Projects</a> (<span title="There are 13 articles in &quot;Projects&quot; category">13</span>)</li>
+      
+      <li><a href="/category/security" title="Security: Computer security is a field close to my heart.">Security</a> (<span title="There are 1 articles in &quot;Security&quot; category">1</span>)</li>
+      
+      <li><a href="/category/stackvm-startup" title="StackVM Startup: Articles about my and James Halliday startup - StackVM - which brings virtual machines to the web!">StackVM Startup</a> (<span title="There are 3 articles in &quot;StackVM Startup&quot; category">3</span>)</li>
+      
+      <li><a href="/category/the-new-catonmat" title="The New Catonmat: Everything about the new catonmat website.">The New Catonmat</a> (<span title="There are 1 articles in &quot;The New Catonmat&quot; category">1</span>)</li>
+      
+      <li><a href="/category/tools" title="Tools: Tools - small programs that do great things. Actually this category is not very useful, I am going to merge it with some other category soon.">Tools</a> (<span title="There are 1 articles in &quot;Tools&quot; category">1</span>)</li>
+      
+      <li><a href="/category/unix-shell" title="Unix Shell: This category contains various articles on how to work in Unix shell.">Unix Shell</a> (<span title="There are 13 articles in &quot;Unix Shell&quot; category">13</span>)</li>
+      
+      <li><a href="/category/video-lectures" title="Video Lectures: I love watching video lectures, they make me smarter and I love it. I also like to write about what I just saw, so here are some of the lectures I have seen.">Video Lectures</a> (<span title="There are 16 articles in &quot;Video Lectures&quot; category">16</span>)</li>
+      
+      <li><a href="/category/visual-math-friday" title="Visual Math Friday: I have collected hundreds of visual math proofs. In these articles I explain them and prove their correctness.">Visual Math Friday</a> (<span title="There are 1 articles in &quot;Visual Math Friday&quot; category">1</span>)</li>
+    </ul>
+    <p class="moreinfo">
+      <a href="/categories" title="Detailed catonmat category information">See more detailed category information</a>
+    </p>
+  </div>
+</div>
+
+<div class="item list">
+  <div class="title">Article Archive:</div>
+  <div class="content">
+    <ul>
+     <li><a href="/archive/2010/12" title="All articles written in December, 2010">December, 2010</a> (<span title="2 articles were published in December, 2010">2</span>)</li>
+     <li><a href="/archive/2010/11" title="All articles written in November, 2010">November, 2010</a> (<span title="1 articles were published in November, 2010">1</span>)</li>
+     <li><a href="/archive/2010/10" title="All articles written in October, 2010">October, 2010</a> (<span title="1 articles were published in October, 2010">1</span>)</li>
+     <li><a href="/archive/2010/09" title="All articles written in September, 2010">September, 2010</a> (<span title="1 articles were published in September, 2010">1</span>)</li>
+     <li><a href="/archive/2010/08" title="All articles written in August, 2010">August, 2010</a> (<span title="2 articles were published in August, 2010">2</span>)</li>
+     <li><a href="/archive/2010/07" title="All articles written in July, 2010">July, 2010</a> (<span title="2 articles were published in July, 2010">2</span>)</li>
+     <li><a href="/archive/2010/06" title="All articles written in June, 2010">June, 2010</a> (<span title="2 articles were published in June, 2010">2</span>)</li>
+     <li><a href="/archive/2010/05" title="All articles written in May, 2010">May, 2010</a> (<span title="2 articles were published in May, 2010">2</span>)</li>
+     <li><a href="/archive/2010/04" title="All articles written in April, 2010">April, 2010</a> (<span title="2 articles were published in April, 2010">2</span>)</li>
+     <li><a href="/archive/2010/03" title="All articles written in March, 2010">March, 2010</a> (<span title="5 articles were published in March, 2010">5</span>)</li>
+     <li><a href="/archive/2010/02" title="All articles written in February, 2010">February, 2010</a> (<span title="5 articles were published in February, 2010">5</span>)</li>
+     <li><a href="/archive/2010/01" title="All articles written in January, 2010">January, 2010</a> (<span title="7 articles were published in January, 2010">7</span>)</li>
+     <li><a href="/archive/2009/12" title="All articles written in December, 2009">December, 2009</a> (<span title="6 articles were published in December, 2009">6</span>)</li>
+     <li><a href="/archive/2009/11" title="All articles written in November, 2009">November, 2009</a> (<span title="6 articles were published in November, 2009">6</span>)</li>
+     <li><a href="/archive/2009/10" title="All articles written in October, 2009">October, 2009</a> (<span title="2 articles were published in October, 2009">2</span>)</li>
+     <li><a href="/archive/2009/09" title="All articles written in September, 2009">September, 2009</a> (<span title="3 articles were published in September, 2009">3</span>)</li>
+     <li><a href="/archive/2009/08" title="All articles written in August, 2009">August, 2009</a> (<span title="2 articles were published in August, 2009">2</span>)</li>
+     <li><a href="/archive/2009/07" title="All articles written in July, 2009">July, 2009</a> (<span title="4 articles were published in July, 2009">4</span>)</li>
+     <li><a href="/archive/2009/06" title="All articles written in June, 2009">June, 2009</a> (<span title="1 articles were published in June, 2009">1</span>)</li>
+     <li><a href="/archive/2009/04" title="All articles written in April, 2009">April, 2009</a> (<span title="1 articles were published in April, 2009">1</span>)</li>
+     <li><a href="/archive/2009/03" title="All articles written in March, 2009">March, 2009</a> (<span title="2 articles were published in March, 2009">2</span>)</li>
+     <li><a href="/archive/2009/02" title="All articles written in February, 2009">February, 2009</a> (<span title="7 articles were published in February, 2009">7</span>)</li>
+     <li><a href="/archive/2009/01" title="All articles written in January, 2009">January, 2009</a> (<span title="4 articles were published in January, 2009">4</span>)</li>
+     <li><a href="/archive/2008/12" title="All articles written in December, 2008">December, 2008</a> (<span title="8 articles were published in December, 2008">8</span>)</li>
+     <li><a href="/archive/2008/11" title="All articles written in November, 2008">November, 2008</a> (<span title="7 articles were published in November, 2008">7</span>)</li>
+     <li><a href="/archive/2008/10" title="All articles written in October, 2008">October, 2008</a> (<span title="4 articles were published in October, 2008">4</span>)</li>
+     <li><a href="/archive/2008/09" title="All articles written in September, 2008">September, 2008</a> (<span title="5 articles were published in September, 2008">5</span>)</li>
+     <li><a href="/archive/2008/08" title="All articles written in August, 2008">August, 2008</a> (<span title="9 articles were published in August, 2008">9</span>)</li>
+     <li><a href="/archive/2008/07" title="All articles written in July, 2008">July, 2008</a> (<span title="14 articles were published in July, 2008">14</span>)</li>
+     <li><a href="/archive/2008/06" title="All articles written in June, 2008">June, 2008</a> (<span title="4 articles were published in June, 2008">4</span>)</li>
+     <li><a href="/archive/2008/05" title="All articles written in May, 2008">May, 2008</a> (<span title="5 articles were published in May, 2008">5</span>)</li>
+     <li><a href="/archive/2008/04" title="All articles written in April, 2008">April, 2008</a> (<span title="8 articles were published in April, 2008">8</span>)</li>
+     <li><a href="/archive/2008/03" title="All articles written in March, 2008">March, 2008</a> (<span title="3 articles were published in March, 2008">3</span>)</li>
+     <li><a href="/archive/2008/02" title="All articles written in February, 2008">February, 2008</a> (<span title="1 articles were published in February, 2008">1</span>)</li>
+     <li><a href="/archive/2008/01" title="All articles written in January, 2008">January, 2008</a> (<span title="1 articles were published in January, 2008">1</span>)</li>
+     <li><a href="/archive/2007/11" title="All articles written in November, 2007">November, 2007</a> (<span title="1 articles were published in November, 2007">1</span>)</li>
+     <li><a href="/archive/2007/10" title="All articles written in October, 2007">October, 2007</a> (<span title="3 articles were published in October, 2007">3</span>)</li>
+     <li><a href="/archive/2007/09" title="All articles written in September, 2007">September, 2007</a> (<span title="5 articles were published in September, 2007">5</span>)</li>
+     <li><a href="/archive/2007/08" title="All articles written in August, 2007">August, 2007</a> (<span title="10 articles were published in August, 2007">10</span>)</li>
+     <li><a href="/archive/2007/07" title="All articles written in July, 2007">July, 2007</a> (<span title="9 articles were published in July, 2007">9</span>)</li>
+    </ul>
+    <p class="moreinfo">
+      <a href="/archive" title="All catonmat articles">See more detailed list of all articles</a>
+    </p>
+  </div>
+</div>
+
+<div class="item">
+  <div class="title">Advertisements</div>
+  <div class="content">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-0433925538517663";
+    /* 160x600, catonmat sidebar, created 2/15/09 */
+    google_ad_slot = "2288848838";
+    google_ad_width = 160;
+    google_ad_height = 600;
+    //-->
+    </script>
+    <script type="text/javascript"
+    src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+  </div>
+</div>
+
+<div class="item list">
+  <div class="title">Verizon</div>
+  <div class="content">
+    <!-- Mar 9, 2011 (recurring every 6 months) -->
+    <ul>
+      <li>Shop <a href="http://deals.servicebundles.com/">Verizon Deals</a> on Phone, Internet, & TV</li>
+    </ul>
+  </div>
+</div>
+
+<div class="item list">
+  <div class="title">Video Chat</div>
+  <div class="content">
+    <!-- recurring -->
+    <ul>
+      <li><a href="http://www.chatforfree.org/">Video Chat</a></li>
+    </ul>
+  </div>
+</div>
+
+
+
+<div class="item">
+  <div class="title">More Advertisements</div>
+  <div class="content">
+    <SCRIPT TYPE="text/javascript" SRC="http://adserving.cpxadroit.com/tags2/5-1005894.js"></SCRIPT>
+  </div>
+</div>
+
+<!-- end sidebar.tmpl.html -->
+
+
+
+        </div>
+        <div class="clear"></div>
+      </div>
+      <div id="footer">
+        
+  <div class="friends">
+  <h4>Friends</h4>
+  <ul>
+    <li><a href="http://www.podcats.in">Alastair McGowan-Douglas</a></li>
+    <li><a href="http://www.substack.net">James Halliday</a></li>
+    <li><a href="http://simcop2387.info/">simcop2387</a></li>
+    <li><a href="http://backreference.org/">Mr. Waldner</a></li>
+    <li><a href="http://symkat.com/">SymKat</a></li>
+    <li><a href="http://f00li5h.pin21.com/">f00li5h</a></li>
+    <li><a href="http://amix.dk">amix</a></li>
+  </ul> 
+</div>
+<div class="info">
+  <h4>Info</h4>
+  <p><a href="http://github.com/pkrumins/catonmat.net" title="catonmat at github">catonmat's source code.</a></p> 
+</div>
+<div class="advertise">
+  <h4>Advertise on catonmat</h4>
+  <p>If you are interested in advertising on catonmat.net, <a href="/feedback">contact me</a>.</p>
+</div>
+<div class="clear"></div>
+
+<div style="margin-top: 10px">
+<SCRIPT TYPE="text/javascript" SRC="http://adserving.cpxadroit.com/tags2/4-1005894.js"></SCRIPT>
+</div>
+<div style="margin-top: 10px">
+<SCRIPT TYPE="text/javascript" SRC="http://adserving.cpxadroit.com/tags2/3-1005894.js"></SCRIPT>
+</div>
+<div style="margin-top: 10px">
+<SCRIPT TYPE="text/javascript" SRC="http://adserving.cpxadroit.com/tags2/6-1005894.js"></SCRIPT>
+</div>
+
+
+
+      </div>
+    </div>
+
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+var sc_project=3189873; 
+var sc_invisible=0; 
+var sc_partition=34; 
+var sc_click_stat=1; 
+var sc_security="dc7255a7"; 
+</script>
+
+<script type="text/javascript" src="http://www.statcounter.com/counter/counter_xhtml.js"></script><noscript><div class="statcounter"><a class="statcounter" href="http://www.statcounter.com/"><img class="statcounter" src="http://c.statcounter.com/3189873/0/dc7255a7/0/" alt="web site analytic" /></a></div></noscript>
+<!-- End of StatCounter Code -->
+
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+var sc_project=1938274; 
+var sc_invisible=1; 
+var sc_partition=17; 
+var sc_security="25ba7878"; 
+</script>
+
+<script type="text/javascript" src="http://www.statcounter.com/counter/counter_xhtml.js"></script>
+<noscript>
+ <div class="statcounter">
+  <a class="statcounter" href="http://www.statcounter.com/">
+  <img class="statcounter"
+       src="http://c18.statcounter.com/counter.php?sc_project=1938274&java=0&security=25ba7878&invisible=1"
+       alt="web statistic" />
+  </a>
+ </div>
+</noscript>
+<!-- End of StatCounter Code -->
+
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-273333-1";
+urchinTracker();
+</script>
+
+<script type="text/javascript">
+    doclix_pid = 16577;
+    doclix_cid_anchor = 1384;
+</script>
+<script type="text/javascript" src="http://ads.doclix.com/adserver/serve/js/doclix_synd_overlay.js" async defer charset="utf-8"></script>
+
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,799 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Content-Language" content="en-us" />
+
+	<title>shogun | A Large Scale Machine Learning Toolbox</title>
+
+<meta name="ROBOTS" content="ALL" />
+<meta http-equiv="imagetoolbar" content="no" />
+
+<meta name="MSSmartTagsPreventParsing" content="true" />
+<meta name="Copyright" content="This site's design and contents
+Copyright (c) 2007-2009  Soeren Sonnenburg" />
+
+<meta name="keywords" content="large scale, machine learning, open source" />
+<meta name="description" content="SHOGUN Large Scale Machine Learning Toolbox" />
+	<link href="media/css/base.css" rel="stylesheet" type="text/css" media="screen" />
+
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+    (function() {
+        var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+        
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'http://api.flattr.com/js/0.5.0/load.js?mode=auto';
+        
+        t.parentNode.insertBefore(s, t);
+    })();//--><!]]>
+</script>
+
+<script language="javascript">
+/* Jesse Ruderman
+ * July 18, 2004
+ *
+ * Remaining problems:
+ *   IE sometimes crashes on exit after using the this script.
+ *   In IE, it is a little ugly because IE doesn't support border-radius.
+ *   In IE, it does not work at standalone Flash URLs.
+ */
+
+function setupSeekBar() {
+
+setTimeout(initFlashControls, 100);
+
+function initFlashControls()
+{
+  var count = 0;
+
+  function tt(elem)
+  {
+    if (typeof elem.TotalFrames != "undefined") /* do not coerce elem.StopPlay to bool, because that breaks IE */
+    {
+      addFlashControls(elem);
+      ++count;
+    }
+  }
+
+  var i, x;
+
+  for (i = 0; x = document.getElementsByTagName("embed")[i]; ++i)
+    tt(x);
+
+}
+
+
+function addFlashControls(flash)
+{
+  var controlsDiv = document.createElement("div");
+
+  /* Put the controls under the Flash. 
+   *
+   * If the Flash is an <embed> in an <object>, we do not want to touch the <object>, because that would make
+   * Mozilla re-test whether the <object> is broken and reset the <embed>.  So in that case, we put the controls
+   * under the <object>.
+   */
+  var where = flash;
+  while (where.parentNode.tagName.toLowerCase() == "object")
+    where = where.parentNode;
+  where.parentNode.insertBefore(controlsDiv, where.nextSibling);
+
+  /* Construct controls using DOM2 instead of innerHTML.
+   * In Mozilla, innerHTML= is like innerText= at standalone flash URLs.
+   */
+  var table = document.createElement("table");
+  controlsDiv.appendChild(table);
+  
+  var row = table.insertRow(-1);
+  
+  var pauseButton = document.createElement("button");
+  pauseButton.appendChild(document.createTextNode("Pause"));
+  var buttonCell = row.insertCell(-1);
+  buttonCell.appendChild(pauseButton);
+  
+  var slider = row.insertCell(-1);
+  slider.width = "100%";
+  
+  var visibleSlider = document.createElement("div");
+  visibleSlider.style.position = "relative";
+  visibleSlider.style.height = "10px";
+  visibleSlider.style.width = "100%";
+  visibleSlider.style.MozBorderRadius = "4px";
+  visibleSlider.style.background = "#aaa";
+  slider.appendChild(visibleSlider);
+  
+  var thumb = document.createElement("div");
+  thumb.style.position = "absolute";
+  thumb.style.height = "20px";
+  thumb.style.width = "10px";
+  thumb.style.top = "-5px";
+  thumb.style.MozBorderRadius = "4px";
+  thumb.style.background = "#666";
+  visibleSlider.appendChild(thumb);
+  
+
+  var sliderWidth;
+  var paused = false;
+  var dragging = false;
+
+  table.width = Math.max(parseInt(flash.width) || 0, 400);
+  
+  addEvent(pauseButton, "click", pauseUnpause);
+  addEvent(slider, "mousedown", drag);
+  addEvent(slider, "drag", function() { return false; }); /* For IE */
+  window.setInterval(update, 30);
+
+  function pauseUnpause()
+  {
+    paused = !paused;
+
+    pauseButton.style.borderStyle = paused ? "inset" : "";
+
+    if (paused)
+      flash.StopPlay();
+    else
+      flash.Play();
+  }
+
+  function update()
+  {
+    sliderWidth = parseInt(getWidth(slider) - getWidth(thumb));
+
+    if (!paused && !dragging)
+      thumb.style.left = parseInt(flash.CurrentFrame() / totalFrames() * sliderWidth) + "px";
+  }
+
+  function dragMousemove(e)
+  {
+    var pageX = e.clientX + document.body.scrollLeft; /* cross-browser, unlike e.pageX, which IE does not support */
+    var pos = bounds(0, pageX - getX(slider) - 5, sliderWidth);
+    var frame = bounds(1, Math.ceil(totalFrames() * pos / sliderWidth), totalFrames() - 2);
+
+    thumb.style.left = pos + "px";
+
+    flash.GotoFrame(frame);
+  }
+
+  function release(e)
+  {
+    removeEvent(document, "mousemove", dragMousemove);
+    removeEvent(document, "mouseup", release);
+    if (!paused)
+      flash.Play();
+    dragging = false;
+  }
+
+  function drag(e)
+  {
+    addEvent(document, "mousemove", dragMousemove);
+    addEvent(document, "mouseup", release);
+    dragging = true;
+    dragMousemove(e);
+  }
+
+
+
+  /* Boring functions, some of which only exist to hide differences between IE and Mozilla. */
+
+  function bounds(min, val, max)
+  {
+    return Math.min(Math.max(min, val), max);
+  }
+
+  function totalFrames()
+  {
+    /* This is weird.  TotalFrames differs between IE and Mozilla.  CurrentFrame does not. */
+
+    if (typeof flash.TotalFrames == "number")
+      return flash.TotalFrames; /* IE */
+    else if (typeof flash.TotalFrames == "function")
+      return flash.TotalFrames(); /* Mozilla */
+    else
+      return 1; /* Partially loaded Flash in IE? */
+  }
+
+  function getWidth(elem)
+  {
+    if (document.defaultView && document.defaultView.getComputedStyle)
+      return parseFloat(document.defaultView.getComputedStyle(elem,null).getPropertyValue("width")); /* Mozilla */
+    else
+      return parseFloat(elem.offsetWidth); /* IE (currentStyle.width can be "auto" or "100%") */
+  }
+
+  function getX(elem)
+  {
+    if (!elem) return 0;
+    return (elem.offsetLeft) + getX(elem.offsetParent);
+  }
+
+  function addEvent(elem, eventName, fun)
+  {
+    if (elem.addEventListener) /* Mozilla */
+      elem.addEventListener(eventName, fun, false);
+    else /* IE */
+      elem.attachEvent("on" + eventName, fun);
+  }
+
+  function removeEvent(elem, eventName, fun)
+  {
+    if (elem.addEventListener)
+      elem.removeEventListener(eventName, fun, false);
+    else
+      elem.detachEvent("on" + eventName, fun);
+  }
+
+}
+
+}
+</script>
+</head>
+<body onload="setupSeekBar();">
+<table width="840" align="center">
+<tr>
+<td>
+<div id="parent-fieldname-text">
+<table>
+<tr><td><h1>Shogun - A Large Scale Machine Learning Toolbox</h1>
+
+			<p><em>This is the official homepage of the SHOGUN machine learning toolbox.</em></p></td><td></td><td>
+<a class="FlattrButton" style="display:none;"
+href="http://www.shogun-toolbox.org"></a>
+</td></tr></table>
+			<table>
+				<tr>
+<td>
+			<img alt="SHOGUN Logo" src="media/images/shogun_logo.png" width="150"></img>
+</td>
+					<td>
+<p>The machine learning toolbox's focus is on large scale kernel methods and
+especially on Support Vector Machines (SVM) <a class="footnote-reference" href="#id23" id="id1" name="id1">[1]</a>. It provides a generic SVM
+object interfacing to several different SVM implementations, among them the
+state of the art <a class="reference" href="http://cmp.felk.cvut.cz/~xfrancv/ocas/html/index.html">OCAS</a> <a class="footnote-reference" href="#id42" id="id43" name="id43">[21]</a>, <a class="reference" href="http://www.csie.ntu.edu.tw/~cjlin/liblinear/">Liblinear</a> <a class="footnote-reference" href="#id40" id="id41" name="id41">[20]</a>,
+<a class="reference" href="http://www.csie.ntu.edu.tw/%7Ecjlin/libsvm/">LibSVM</a> <a class="footnote-reference" href="#id24" id="id2" name="id2">[2]</a>, <a class="reference" href="http://svmlight.joachims.org/">SVMLight</a>, <a class="footnote-reference" href="#id25" id="id3" name="id3">[3]</a>
+<a class="reference" href="http://vikas.sindhwani.org/svmlin.html">SVMLin</a> <a class="footnote-reference" href="#id25" id="id3a" name="id3a">[4]</a> and <a class="reference" href="http://dm.unife.it/gpdt/">GPDT</a> <a class="footnote-reference" href="#id25" id="id3b" name="id3b">[5]</a>.  Each of the SVMs can be
+combined with a variety of kernels. The toolbox not only provides efficient
+implementations of the most common kernels, like the Linear, Polynomial,
+Gaussian and Sigmoid Kernel but also comes with a number of recent string
+kernels as e.g. the Locality Improved <a class="footnote-reference" href="#id26" id="id4" name="id4">[6]</a>, Fischer <a class="footnote-reference" href="#id27" id="id5" name="id5">[7]</a>, TOP <a class="footnote-reference" href="#id28" id="id6" name="id6">[8]</a>, Spectrum <a class="footnote-reference" href="#id29" id="id7" name="id7">[9]</a>,
+Weighted Degree Kernel (with shifts) <a class="footnote-reference" href="#id30" id="id8" name="id8">[10]</a> <a class="footnote-reference" href="#id31" id="id9" name="id9">[11]</a> <a class="footnote-reference" href="#id32" id="id10" name="id10">[12]</a>. For the latter the efficient
+LINADD <a class="footnote-reference" href="#id32" id="id11" name="id11">[12]</a> optimizations are implemented. For linear SVMs the COFFIN framework <a class="footnote-reference" href="#id44" id="id45" name="id45">[22]</a><a class="footnote-reference" href="#id46" id="id47" name="id47">[23]</a> allows for on-demand computing feature spaces on-the-fly,
+even allowing to mix sparse, dense and other data types.
+Furthermore, SHOGUN offers the freedom of
+working with custom pre-computed kernels.  One of its key features is the
+<em>combined kernel</em> which can be constructed by a weighted linear combination
+of a number of sub-kernels, each of which not necessarily working on the same
+domain. An optimal sub-kernel weighting can be learned using
+<a class="reference" href="http://www.fml.tuebingen.mpg.de/raetsch/projects/lsmkl">Multiple Kernel Learning</a> <a class="footnote-reference" href="#id33" id="id12" name="id12">[13]</a> <a class="footnote-reference" href="#id34" id="id13" name="id13">[14]</a> <a class="footnote-reference" href="#id38" id="id14" name="id14">[18]</a> <a class="footnote-reference" href="#id39" id="id14" name="id14">[19]</a>.
+Currently SVM one-class, 2-class and multiclass classification and regression problems can be dealt
+with. However SHOGUN also implements a number of linear methods like Linear
+Discriminant Analysis (LDA), Linear Programming Machine (LPM), (Kernel)
+Perceptrons and features algorithms to train hidden markov models.
+The input feature-objects can be dense, sparse or strings and
+of type int/short/double/char and can be converted into different feature types.
+Chains of <em>preprocessors</em> (e.g. substracting the mean) can be attached to
+each feature object allowing for on-the-fly pre-processing.</p>
+<p>SHOGUN is implemented in C++ and interfaces to Matlab(tm), R, Octave and Python and is proudly released as <a href="http://mloss.org">Machine Learning Open Source Software</a>.</p>
+</td>
+</tr>
+</table>
+</div>
+
+<div class="section">
+	<h3><a id="screenshots" name="screenshots">Screenshots</a></h3>
+	<div class="section">
+		<p>As everyone likes screenshots, we have produced one for each interface:
+		SHOGUN with Octave, Matlab, Python and R. Click on the link for higher resolution
+		images.</p>
+			<a class="reference" href="media/images/OctaveDemo.png"><img alt="Octave Demo" src="media/images/OctaveDemoThumbnail.png" width="200"></img></a>
+			<a class="reference" href="media/images/MatlabDemo.png"><img alt="Matlab Demo" src="media/images/MatlabDemoThumbnail.png" width="200"></img></a>
+			<a class="reference" href="media/images/PythonDemo.png"><img alt="Python Demo" src="media/images/PythonDemoThumbnail.png" width="200"></img></a>
+			<a class="reference" href="media/images/RDemo.png"><img alt="R Demo" src="media/images/RDemoThumbnail.png" width="200"></img></a>
+	</div>
+</div>
+
+<div class="section">
+	<h3><a id="getting_started" name="getting_started">Getting Started</a></h3>
+	<p></p>
+</div>
+
+<div class="section">
+	<h3><a id="applications" name="applications">Applications</a></h3>
+	<p>We have successfully used this toolbox to tackle the following sequence
+	analysis problems: Protein Super Family classification,
+	Splice Site Prediction <a class="footnote-reference" href="#id30" id="id15" name="id15">[10]</a> <a class="footnote-reference" href="#id35" id="id16" name="id16">[15]</a> <a class="footnote-reference" href="#id36" id="id17" name="id17">[16]</a>, Interpreting the SVM Classifier <a class="footnote-reference" href="#id33" id="id18" name="id18">[13]</a> <a class="footnote-reference" href="#id34" id="id19" name="id19">[14]</a>,
+	Splice Form Prediction <a class="footnote-reference" href="#id30" id="id20" name="id20">[10]</a>, Alternative Splicing <a class="footnote-reference" href="#id31" id="id21" name="id21">[11]</a> and Promotor
+	Prediction <a class="footnote-reference" href="#id37" id="id22" name="id22">[17]</a>. Some of them come with no less than 10
+	million training examples, others with 7 billion test examples. A graphical example is written digit recognition as shown below:</p>
+<center>
+<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="800" height="260"
+ codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0">
+ <param name="movie" value="media/ocr.swf">
+ <param name="play" value="true">
+ <param name="loop" value="True">
+ <param name="quality" value="high">
+<embed src="media/ocr.swf" width="800" height="260" play="true"
+ loop="True" quality="high" type="application/x-shockwave-flash"
+ pluginspage="http://www.macromedia.com/go/getflashplayer">
+</embed></object></center>
+</div>
+
+<div class="section">
+	<h3><a id="licensing-information" name="licensing-information">Licensing Information</a></h3>
+	<table><tr><td>Except for <a class="reference" href="http://svmlight.joachims.org/">SVMLight</a>
+	which is (C) Torsten Joachims and follows a different licensing scheme
+	(cf. LICENSE.SVMLight in the tar achive) SHOGUN is licensed under the
+	GPL version 3 or any later version (cf. LICENSE).</td>
+	<td><img alt="GPLv3 Logo" src="media/images/gplv3.png"></img></td></tr></table>
+</div>
+
+<div class="section">
+<h3><a id="cite-us" name="cite-us">Cite us</a></h3>
+	<table align="center">
+		<tr>
+			<td>
+<p>If you use SHOGUN in your research you are kindly asked to cite the following paper:</p>
+<pre class="literal-block">
+Soeren Sonnenburg, Gunnar Raetsch, Sebastian Henschel, Christian Widmer, Jonas Behr, Alexander Zien,
+Fabio de Bona, Alexander Binder, Christian Gehl, and Vojtech Franc.
+The SHOGUN Machine Learning Toolbox. Journal of Machine Learning Research, 11:1799-1802, June 2010.
+</pre>
+			</td>
+		</tr>
+	</table>
+</div>
+
+<div class="section">
+	<h3><a id="releases" name="releases">Download Releases</a></h3>
+	<table align="center">
+		<tr>
+			<td class="releaseleft">
+SHOGUN Version 0.10.0 (libshogun 9.0, libshogunui 6.0, data 0.1)<br></br><b>(updated 07.12.2010)</b>
+				<ul>
+<li>Source Code (<a href="ftp://shogun-toolbox.org/shogun/releases/0.10/sources/shogun-0.10.0.tar.bz2">ftp</a> | <a href="http://shogun-toolbox.org/archives/shogun/releases/0.10/sources/shogun-0.10.0.tar.bz2">http</a>)</li>
+<li>Source Code md5sum (<a href="ftp://shogun-toolbox.org/shogun/releases/0.10/sources/shogun-0.10.0.md5sum">ftp</a> | <a href="http://shogun-toolbox.org/archives/shogun/releases/0.10/sources/shogun-0.10.0.md5sum">http</a>) </li>
+<li>Source Code PGP Signature (<a href="ftp://shogun-toolbox.org/shogun/releases/0.10/sources/shogun-0.10.0.tar.bz2.gpg">ftp</a> | <a href="http://shogun-toolbox.org/archives/shogun/releases/0.10/sources/shogun-0.10.0.tar.bz2.gpg">http</a>) </li>
+<li>Data (<a href="ftp://shogun-toolbox.org/shogun/data/shogun-data-0.1.tar.bz2">ftp</a> | <a href="http://shogun-toolbox.org/archives/data/shogun-data-0.1.tar.bz2">http</a>)</li>
+<li>Data md5sum (<a href="ftp://shogun-toolbox.org/shogun/releases/0.10/data/shogun-0.10.0.md5sum">ftp</a> | <a href="http://shogun-toolbox.org/archives/shogun/releases/0.10/data/shogun-0.10.0.md5sum">http</a>) </li>
+				</ul>
+				<a href="ftp://shogun-toolbox.org/shogun/releases/">Older Versions</a>
+			</td>
+			<td class="releaseright">
+<!--CHANGELOG-->
+<h4>This release contains several enhancements, cleanups and bugfixes:</h4>
+<ul>
+<li><h5>Features:</h5>
+<ul><li>Serialization of objects deriving from CSGObject, i.e. all shogun objects (SVM, Kernel, Features, Preprocessors, ...) as ASCII, JSON, XML and HDF5</li>
+<li>Create SVMLightOneClass</li>
+<li>Add CustomDistance in analogy to custom kernel</li>
+<li>Add HistogramIntersectionKernel (thanks Koen van de Sande for the patch)</li>
+<li>Matlab 2010a support</li>
+<li>SpectrumMismatchRBFKernel modular support (thanks Rob Patro for the patch)</li>
+<li>Add ZeroMeanCenterKernelNormalizer (thanks Gorden Jemwa for the patch)</li>
+<li>Swig 2.0 support</li>
+</ul></li>
+<li><h5>Bugfixes:</h5>
+<ul><li>Custom Kernels can now be > 4G  (thanks Koen van de Sande for the patch)</li>
+<li>Set C locale on startup in init_shogun to prevent incompatiblies with ascii floats and fprintf</li>
+<li>Compile fix when reference counting is disabled</li>
+<li>Fix set_position_weights for wd kernel (reported by Dave duVerle)</li>
+<li>Fix set_wd_weights for wd kernel.</li>
+<li>Fix crasher in SVMOcas (reported by Yaroslav)</li>
+</ul></li>
+<li><h5>Cleanup and API Changes:</h5>
+<ul><li>Renamed SVM_light/SVR_light to SVMLight etc.</li>
+<li>Remove C prefix in front of non-serializable class names</li>
+<li>Drop CSimpleKernel and introduce CDotKernel as its base class. This way all dot-product based kernels can be applied on top of DotFeatures and only a single implementation for such kernels is needed.</li>
+</ul></li>
+</ul>
+<!--CHANGELOG-->
+			</td>
+		</tr>
+	</table>
+</div>
+
+
+<div class="section">
+<h3><a id="documentation" name="documentation">Documentation and Examples</a></h3>
+	<table align="center">
+	<tr><td colspan="5">
+<p>We use <a href="http://www.doxygen.org">Doxygen</a> for both <a href="http://www.shogun-toolbox.org/doc">user and developer documentation</a> which may be read online <a href="/doc">here.</a>
+More than 600 <em>documented</em> examples for the interfaces <a href="http://www.shogun-toolbox.org/doc/python__modular__examples.html">python_modular</a>, <a href="http://www.shogun-toolbox.org/doc/octave__modular__examples.html">octave_modular</a>, <a href="http://www.shogun-toolbox.org/doc/r__modular__examples.html">r_modular</a>, <a href="http://www.shogun-toolbox.org/doc/python__examples.html">static python</a>, <a href="http://www.shogun-toolbox.org/doc/octave__examples.html">static matlab and octave</a>, <a href="http://www.shogun-toolbox.org/doc/r__examples.html">static r</a>, <a href="http://www.shogun-toolbox.org/doc/cmdline__examples.html">static command line</a> and <a href="http://www.shogun-toolbox.org/doc/libshogun__examples.html">C++ libshogun developer interface</a>
+can be found in the 
+<a href="http://www.shogun-toolbox.org/doc/examples.html">online documentation</a>.
+In addition, examples are shipped in the <b>examples/(un)documented/[interface]</b>
+directory in the source code (where interface is one of r, octave, matlab,
+python, python_modular, r_modular, octave_modular, cmdline, libshogun).
+</td></tr>
+		<tr>
+			<td width="20%"></td>
+			<td class="doculeft" width="25%">
+				<h4>English</h4>
+				<ul>
+					<li><a href="doc/installation.html">Installation</a> </li>
+					<li><a href="doc/screenshots.html">Screenshots</a> </li>
+					<li><a href="doc/tutorial.html">Tutorial</a> </li>
+					<li><a href="doc/examples.html">Examples</a> </li>
+					<li><a href="doc/methods.html">Implemented Methods</a> </li>
+					<li><a href="doc/interfaces.html">Interfaces</a> </li>
+					<li><a href="doc/faq.html">Frequently Asked Questions</a> </li>
+					<li><a href="doc/authors.html">Authors</a> </li>
+					<li><a href="doc/license.html">License</a></li>
+				</ul>
+			</td>
+			<td width="10%"></td>
+			<td class="docuright" width="25%">
+				<h4>Chinese</h4>
+				<ul>
+					<li><a href="doc_cn/installation.html">安装</a> </li>
+					<li><a href="doc_cn/screenshots.html">使用快照</a> </li>
+					<li><a href="doc_cn/tutorial.html">使用指南</a> </li>
+					<li><a href="doc_cn/examples.html">例子</a> </li>
+					<li><a href="doc_cn/methods.html">机器学习方法</a> </li>
+					<li><a href="doc_cn/interfaces.html">接口</a> </li>
+					<li><a href="doc_cn/faq.html">常见问题</a> </li>
+					<li><a href="doc_cn/authors.html">作者</a> </li>
+					<li><a href="doc_cn/license.html">许可证</a></li>
+				</ul>
+			</td>
+			<td width="20%"></td>
+		</tr>
+	</table>
+	<table align="center">
+		<tr>
+			<td>
+
+Note that documentation for python-modular is most complete and also that python's help function will show the documentation when working interactively:</p>
+<pre class="literal-block">
+$ python
+Python 2.4.4 (#2, Jan  3 2008, 13:36:28) 
+[GCC 4.2.3 20071123 (prerelease) (Debian 4.2.2-4)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from shogun.Classifier import SVM
+>>> help(SVM)
+
+class SVM(CSVM)
+ |  Method resolution order:
+ |      SVM
+ |      CSVM
+ |      CKernelMachine
+ |      Classifier
+ |      SGObject
+ |      __builtin__.object
+ |  
+ |  Methods defined here:
+ |  
+ |  __init__(self, kernel, alphas, support_vectors, b)
+[...]
+</pre>
+			</td>
+		</tr>
+	</table>
+
+Below we provide some of the (in the meantime outdated)
+examples that were used to carry out experiments
+for a number of publications. Note that more than 600 examples and updated
+versions of all of these can also be found in the source code and in the
+<a href="http://www.shogun-toolbox.org/doc/examples.html">online documentation</a>.
+
+	<table align="center" width="100%">
+		<tr>
+			<td class="examples">
+				<table>
+					<tr>
+						<th align="left" width="240">
+							<p>Click on the corresponding link to see classification and regression examples for Matlab(tm), R, Octave or Python:</p>
+						</th>
+						<th align="left" width="240">
+							<p>Below one finds some Bioinformatics examples (for octave and matlab) as presented at BOSC 2006:</p>
+						</th>
+						<th align="left" width="240">
+							<p>Multiple Kernel Learning examples (JMLR 2006 paper "Large Scale Multiple Kernel Learning"):</p>
+						</th>
+					</tr>
+					<tr>
+						<td>
+							<ul class="arabic simple">
+								<li><a class="reference" href="https://www.fml.tuebingen.mpg.de/raetsch/projects/shogun/RExamples">R Interface Examples</a></li>
+								<li><a class="reference" href="https://www.fml.tuebingen.mpg.de/raetsch/projects/shogun/OctaveExamples">Octave Interface Examples</a></li>
+								<li><a class="reference" href="https://www.fml.tuebingen.mpg.de/raetsch/projects/shogun/PythonExamples">Python Interface Examples</a></li>
+								<li><a class="reference" href="https://www.fml.tuebingen.mpg.de/raetsch/projects/shogun/MatlabExamples">Matlab Interface Examples</a></li>
+							</ul>
+						</td>
+						<td>
+							<ul class="arabic simple">
+								<li><a class="reference" href="https://www.fml.tuebingen.mpg.de/raetsch/projects/shogun/SpectrumKernel">Spectrum Kernel</a></li>
+								<li><a class="reference" href="https://www.fml.tuebingen.mpg.de/raetsch/projects/shogun/WeightedDegreeKernel">Weighted Degree Kernel</a></li>
+								<li><a class="reference" href="https://www.fml.tuebingen.mpg.de/raetsch/projects/shogun/WeightedDegreeShiftKernel">Weighted Degree Kernel with Shifts</a></li>
+							</ul>
+						</td>
+						<td>
+							<ul class="arabic simple">
+								<li><a class="reference" href="http://www.fml.tuebingen.mpg.de/raetsch/projects/lsmkl">MKL for classifying x-mas stars</a></li>
+								<li><a class="reference" href="http://www.fml.tuebingen.mpg.de/raetsch/projects/lsmkl">MKL for regression</a></li>
+								<li><a class="reference" href="http://www.fml.tuebingen.mpg.de/raetsch/projects/lsmkl">MKL for mixture of sine waves</a></li>
+							</ul>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</div>
+
+
+<div class="section">
+	<h3><a id="contact" name="contact">Bug-Reports, Mailinglist and Contact</a></h3>
+	<table align="center" width="100%">
+		<tr>
+			<td class="contactus">
+				<p>In case you find bugs or have feature requests, file them using the <a href="http://trac.tuebingen.mpg.de/shogun">SHOGUN-TRAC</a> bug tracking system.
+				We are coordinating development (milestones, roadmap) using trac. Also if you would like to browse syntax hilighted source from svn, just have a look.</p>
+				<p>In case of comments, problems, questions, bug-reports etc. please use the mailing list (subscription required)</p>
+				<ul class="simple">
+					<li><b>read the archive</b> the mailinglist is archived using gmane <a href="http://news.gmane.org/gmane.comp.ai.machine-learning.shogun">shogun-list-archive</a>.</li>
+					<li><b>subscribe</b> to the mailinglist by sending an empty message to <a href="mailto:shogun-list-subscribe@shogun-toolbox.org">shogun-list-subscribe@shogun-toolbox.org</a></li>
+					<li><b>unsubscribe</b> from the mailinglist by sending an empty message to <a href="mailto:shogun-list-subscribe@shogun-toolbox.org">shogun-list-unsubscribe@shogun-toolbox.org</a></li>
+					<li><b>post</b> to the mailinglist by sending a message to <a href="mailto:shogun-list@shogun-toolbox.org">shogun-list@shogun-toolbox.org</a></li>
+
+				</ul>
+				<p>In case you need to directly get in touch with us, feel free to contact</p>
+				<ul class="simple">
+					<li>Soeren Sonnenburg: <a class="reference" href="http://sonnenburgs.de/soeren">http://sonnenburgs.de/soeren</a></li>
+					<li>Gunnar Raetsch: <a class="reference" href="http://www.fml.tuebingen.mpg.de/%7Eraetsch">http://www.fml.tuebingen.mpg.de/~raetsch</a></li>
+				</ul>
+			</td>
+		</tr>
+	</table>
+</div>
+
+
+
+<div class="section">
+	<h3><a id="developer-information" name="developer-information">Developer Information</a></h3>
+	<p>Want to contribute ?	We maintain SHOGUNs source code via SVN</p>
+	<table align="center" width="100%">
+					<tr>
+							<td>
+	<font size="3"><script type="text/javascript" src="http://www.ohloh.net/p/481076/widgets/project_basic_stats.js"></script></font>
+							</td>
+							<td>
+	<script type="text/javascript" src="http://www.ohloh.net/p/481076/widgets/project_languages.js"></script>
+							</td>
+				</tr>
+	</table>
+
+	<table align="center" width="100%">
+		<tr>
+			<td class="examples">
+				<ul>
+					<li> If you are interested in developing C++ applications with libshogun or want to extend shogun read the developer tutorial
+					<pre class="sourcecode"><a href="http://www.shogun-toolbox.org/doc/developer__tutorial.html">http://www.shogun-toolbox.org/doc/developer__tutorial.html</a></pre>
+					</li>
+					<li> Check out some basic examples on how to develop with libshogun
+					<pre class="sourcecode"><a href="http://www.shogun-toolbox.org/doc/libshogun__examples.html">http://www.shogun-toolbox.org/doc/libshogun__examples.html</a></pre>
+					</li>
+					<li> To browse the source code of the current and previous releases use
+					<pre class="sourcecode"><a href="http://svn.tuebingen.mpg.de/shogun/releases/">http://svn.tuebingen.mpg.de/shogun/releases/</a></pre>
+					</li>
+					<li> To access the source code of the current and previous releases via svn use 
+					<pre class="sourcecode">svn checkout http://svn.tuebingen.mpg.de:/shogun/releases shogun-releases</pre>
+					</li>
+
+					<li> To browse the most up-to-date source code use
+					<pre class="sourcecode"><a href="http://svn.tuebingen.mpg.de/shogun/trunk/">http://svn.tuebingen.mpg.de/shogun/trunk/</a></pre>
+					</li>
+					<li> To access to the most up-to-date source code checkout svn-trunk 
+					<pre class="sourcecode">svn checkout https://svn.tuebingen.mpg.de:/shogun/trunk shogun</pre>
+					</li>
+				</ul>
+			</td>
+		</tr>
+	</table>
+</div>
+
+
+<div class="section">
+	<h3><a id="acknowlegements" name="acknowlegements">Acknowlegements</a></h3>
+	<p>The authors gratefully acknowledge the support of DFG grant MU 987/2-1, MU 987/6-1, RA-1894/1-1 and the <a href="http://www.pascal-network.org">PASCAL Network</a> of Excellence.</p>
+</div>
+
+<div class="references">
+	<h3><a id="references" name="references">References</a></h3>
+	<table class="docutils footnote" id="id23" frame="void" rules="none">
+
+		<tbody valign="top">
+			<tr><td class="label"><a class="fn-backref" href="#id1" name="id23">[1]</a></td><td>C.Cortes and V.N. Vapnik.  Support-vector networks.
+					Machine Learning, 20(3):273--297, 1995.</td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id24" frame="void" rules="none">
+
+		<tbody valign="top">
+			<tr><td class="label"><a class="fn-backref" href="#id2" name="id24">[2]</a></td><td>C.-C. Chang and C.-J. Lin, LIBSVM : a library for support vector machines,
+					2001. Software available at <a class="reference" href="http://www.csie.ntu.edu.tw/%7Ecjlin/libsvm">http://www.csie.ntu.edu.tw/~cjlin/libsvm</a></td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id25" frame="void" rules="none">
+
+		<tbody valign="top">
+			<tr><td class="label"><a class="fn-backref" href="#id3" name="id25">[3]</a></td><td>T.Joachims. Making large-scale SVM learning practical. In B.Schoelkopf,
+					C.J.C. Burges, and A.J. Smola, editors, Advances in Kernel Methods -
+					Support Vector Learning, pages 169--184, Cambridge, MA, 1999. MIT Press.</td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id24a" frame="void" rules="none">
+
+		<tbody valign="top">
+			<tr><td class="label"><a class="fn-backref" href="#id3a" name="id25">[4]</a></td><td>
+					V. Sindhwani, S. S. Keerthi. Large Scale Semi-supervised Linear SVMs. SIGIR, 2006.
+				</td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id25a" frame="void" rules="none">
+
+		<tbody valign="top">
+			<tr><td class="label"><a class="fn-backref" href="#id3b" name="id25">[5]</a></td><td>
+					 L. Zanni, T. Serafini, G. Zanghirati. Parallel Software
+					 for Training Large Scale Support Vector Machines on
+					 Multiprocessor Systems. JMLR 7(Jul), 1467-1492, 2006.
+				</td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id26" frame="void" rules="none">
+
+		<tbody valign="top">
+			<tr><td class="label"><a class="fn-backref" href="#id4" name="id26">[6]</a></td><td>A.Zien, G.Raetsch, S.Mika, B.Schoelkopf, T.Lengauer, and K.-R.
+					Mueller. Engineering Support Vector Machine Kernels That Recognize
+					Translation Initiation Sites. Bioinformatics, 16(9):799-807, September 2000.</td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id27" frame="void" rules="none">
+
+		<tbody valign="top">
+			<tr><td class="label"><a class="fn-backref" href="#id5" name="id27">[7]</a></td><td>T.S. Jaakkola and D.Haussler.Exploiting generative models in
+					discriminative classifiers. In M.S. Kearns, S.A. Solla, and D.A. Cohn,
+					editors, Advances in Neural Information Processing Systems, volume 11,
+					pages 487-493, 1999.</td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id28" frame="void" rules="none">
+
+		<tbody valign="top">
+			<tr><td class="label"><a class="fn-backref" href="#id6" name="id28">[8]</a></td><td>K.Tsuda, M.Kawanabe, G.Raetsch, S.Sonnenburg, and K.R. Mueller.
+					A new discriminative kernel from probabilistic models.
+					Neural Computation, 14:2397--2414, 2002.</td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id29" frame="void" rules="none">
+
+		<tbody valign="top">
+			<tr><td class="label"><a class="fn-backref" href="#id7" name="id29">[9]</a></td><td>C.Leslie, E.Eskin, and W.S. Noble. The spectrum kernel: A string kernel
+					for SVM protein classification. In R.B. Altman, A.K. Dunker, L.Hunter,
+					K.Lauderdale, and T.E. Klein, editors, Proceedings of the Pacific
+					Symposium on Biocomputing, pages 564-575, Kaua'i, Hawaii, 2002.</td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id30" frame="void" rules="none">
+
+		<tbody valign="top">
+			<tr><td class="label"><a name="id30">[10]</a></td><td><em>(<a class="fn-backref" href="#id8">1</a>, <a class="fn-backref" href="#id15">2</a>, <a class="fn-backref" href="#id20">3</a>)</em> G.Raetsch and S.Sonnenburg. Accurate Splice Site Prediction for
+					Caenorhabditis Elegans, pages 277-298. MIT Press series on Computational
+					Molecular Biology. MIT Press, 2004.</td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id31" frame="void" rules="none">
+
+		<tbody valign="top">
+			<tr><td class="label"><a name="id31">[11]</a></td><td><em>(<a class="fn-backref" href="#id9">1</a>, <a class="fn-backref" href="#id21">2</a>)</em> G.Raetsch, S.Sonnenburg, and B.Schoelkopf. RASE: recognition of
+					alternatively spliced exons in c. elegans. Bioinformatics,
+					21:i369--i377, June 2005.</td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id32" frame="void" rules="none">
+
+		<tbody valign="top">
+			<tr><td class="label"><a name="id32">[12]</a></td><td><em>(<a class="fn-backref" href="#id10">1</a>, <a class="fn-backref" href="#id11">2</a>)</em> S.Sonnenburg, G.Raetsch, and B.Schoelkopf. Large scale genomic sequence
+					SVM classifiers. In Proceedings of the 22nd International Machine Learning
+					Conference. ACM Press, 2005.</td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id33" frame="void" rules="none">
+
+		<tbody valign="top">
+			<tr><td class="label"><a name="id33">[13]</a></td><td><em>(<a class="fn-backref" href="#id12">1</a>, <a class="fn-backref" href="#id18">2</a>)</em> S.Sonnenburg, G.Raetsch, and C.Schaefer. Learning interpretable SVMs
+					for biological sequence classification. In RECOMB 2005, LNBI 3500,
+					pages 389-407. Springer-Verlag Berlin Heidelberg, 2005.</td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id34" frame="void" rules="none">
+
+		<tbody valign="top">
+			<tr><td class="label"><a name="id34">[14]</a></td><td><em>(<a class="fn-backref" href="#id13">1</a>, <a class="fn-backref" href="#id19">2</a>)</em> G.Raetsch, S.Sonnenburg, and C.Schaefer. Learning Interpretable SVMs
+					for Biological Sequence Classification. BMC Bioinformatics, Special Issue
+					from NIPS workshop on New Problems and Methods in Computational Biology
+					Whistler, Canada, 18 December 2004, 7:(Suppl. 1):S9, March 2006.</td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id35" frame="void" rules="none">
+
+		<tbody valign="top">
+			<tr><td class="label"><a class="fn-backref" href="#id16" name="id35">[15]</a></td><td>S.Sonnenburg.New methods for splice site recognition. Master's thesis,
+					Humboldt University, 2002. supervised by K.-R. Mueller H.-D. Burkhard and
+					G.Raetsch.</td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id36" frame="void" rules="none">
+
+		<tbody valign="top">
+			<tr><td class="label"><a class="fn-backref" href="#id17" name="id36">[16]</a></td><td>S.Sonnenburg, G.Raetsch, A.Jagota, and K.-R. Mueller. New methods for
+					splice-site recognition. In Proceedings of the International Conference on
+					Artifical Neural Networks, 2002.  Copyright by Springer.</td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id37" frame="void" rules="none">
+
+		<tbody valign="top">
+			<tr><td class="label"><a class="fn-backref" href="#id22" name="id37">[17]</a></td><td>S.Sonnenburg, A.Zien, and G.Raetsch. ARTS: Accurate Recognition of
+					Transcription Starts in Human. 2006.  (accepted).</td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id38" frame="void" rules="none">
+
+		<tbody valign="top">
+			<tr><td class="label"><a class="fn-backref" href="#id14" name="id38">[18]</a></td><td>S.Sonnenburg, G.Raetsch, C.Schaefer, and B.Schoelkopf,Large Scale
+					Multiple Kernel Learning, Journal of Machine Learning Research, 2006,
+					K.Bennett and E.P.-Hernandez Editors</td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id39" frame="void" rules="none">
+		<tbody valign="top">
+			<tr><td class="label"><a class="fn-backref" href="#id14" name="id39">[19]</a></td><td>
+					    M.Kloft, U.Brefeldt, S.Sonnenburg, A.Zien, P.Laskov, K.-R. Mueller, Efficient and Accurate Lp-Norm Multiple Kernel Learning,
+						Advances in Neural Information Processing Systems 21, MIT Press, Cambridge, MA,2009</td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id40" frame="void" rules="none">
+		<tbody valign="top">
+			<tr><td class="label"><a class="fn-backref" href="#id41" name="id40">[20]</a></td><td>
+					R.-E. Fan, K.-W. Chang, C.-J. Hsieh, X.-R. Wang, and C.-J. Lin. LIBLINEAR: A Library for Large Linear Classification, Journal of Machine Learning Research 9(2008), 1871-1874. Software available at <a href="http://www.csie.ntu.edu.tw/~cjlin/liblinear">http://www.csie.ntu.edu.tw/~cjlin/liblinear</a></td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id42" frame="void" rules="none">
+		<tbody valign="top">
+			<tr><td class="label"><a class="fn-backref" href="#id43" name="id42">[21]</a></td><td>
+					V. Franc, S. Sonnenburg.  Optimized Cutting Plane Algorithm for Large-Scale Risk Minimization, Journal of Machine Learning Research 10(2009), 2157--2192, Software available at <a href="http://cmp.felk.cvut.cz/~xfrancv/ocas/html/">http://jmlr.csail.mit.edu/papers/v10/franc09a.html</a></td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id44" frame="void" rules="none">
+		<tbody valign="top">
+			<tr><td class="label"><a class="fn-backref" href="#id45" name="id44">[22]</a></td><td>
+					 S. Sonnenburg, V. Franc. COFFIN: A Computational Framework for Linear SVMs, 
+					   Research Report, Center for Machine Perception, K13133 FEE Czech Technical University, 2009
+			   </td></tr>
+		</tbody>
+	</table>
+	<table class="docutils footnote" id="id44" frame="void" rules="none">
+		<tbody valign="top">
+			<tr><td class="label"><a class="fn-backref" href="#id47" name="id46">[23]</a></td><td>
+			S. Sonnenburg, V. Franc. COFFIN: A Computational Framework for Linear SVMs. Proceedings of the 27nd International Machine Learning Conference, 2010.
+			 </td></tr>
+		</tbody>
+	</table>
+</div>
+</td>
+</tr>
+</table>
+<script type="text/javascript">
+	var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+	document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+	var pageTracker = _gat._getTracker("UA-4138452-1");
+	pageTracker._initData();
+	pageTracker._trackPageview();
+</script>
+</body>
+</html>

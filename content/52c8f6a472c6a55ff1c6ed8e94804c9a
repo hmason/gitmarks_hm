@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Gitbox — version control app for Mac</title>
+    <meta name="keywords" content="git gui,git client,git app,git,mac" />
+  	<meta name="description" content="git client, gui for mac os x" />
+  	<script type="text/javascript">
+    	if (location.href.match("gitbox.pierlis.com")) {
+  	    location.href = "http://gitboxapp.com";
+    	}
+  	</script>  	
+    <style type="text/css">
+      body, html {
+        margin:0;
+        padding:0;
+        background-color:#fff;
+        font-family:Lucida Grande, Lucida Sans Unicode, sans-serif;
+        font-size:14px;
+        color:black;
+      }
+      a {
+        color:#2e73da;
+      }
+      a:visited {
+        color:#5d6cd5;
+      }
+      a:hover {
+        color:#3381ff;
+      }
+      
+      #top-block {
+        border-bottom:1px solid #b4b4b4;
+        background: url(gradient-bg.png) white repeat-x right bottom;
+      }
+      
+      #top-left-block {
+        width:40%;
+        padding:60px 10px 40px 40px;
+      }
+      
+      #top-right-block {
+        width:57%;
+        position:absolute;
+        top:44px;
+        right:0;
+        text-align:left;
+        overflow:hidden;
+        -webkit-transition: width 0.5s ease-in-out;
+        -moz-transition: width 0.5s ease-in-out;
+        -o-transition: width 0.5s ease-in-out;
+        transition: width 0.5s ease-in-out;        
+      }
+      
+/*      #top-right-block:active,*/
+      #top-right-block:hover {
+        width:75%;
+      }
+      
+      .home h1 {
+        font-size:50px;
+        font-family:Myriad Pro, Helvetica Neue, Helvetica, sans-serif;
+        font-weight:normal;
+        margin: 0;
+        color: black;
+      }
+      
+      .home h2 {
+        font-size:20px;
+        font-weight:normal;
+        margin: 0 0 30px 0;
+        color: #666;
+        line-height:140%;
+      }
+      
+      #top-left-block p {
+        line-height:150%;
+        color:#333;
+        margin-top:15px;
+        margin-bottom:5px;
+      }
+      
+      .payment-buttons {
+        position:relative;
+        overflow:hidden;
+        padding:1px 0 5px 0;
+        margin:20px 0 0px 0;
+      }
+      
+      #top-left-block .payment-buttons {
+        margin-top:40px;
+      }
+      
+      .payment-buttons a {
+        display: block;
+        float: left;
+        
+        margin-right:20px;
+        margin-bottom:5px;
+        padding:10px 20px 12px 20px;
+        text-align:center;
+        min-width:110px;
+        
+        color: white;
+        text-shadow: #666 0px -1px 1px;
+        text-decoration:none;
+        
+        border-radius:8px;
+        -moz-border-radius:8px;
+
+        box-shadow: 0px 1px 3px #c0c0c0;
+        -moz-box-shadow: 0px 1px 3px #c0c0c0;
+        -webkit-box-shadow: 0px 1px 3px #c0c0c0;
+      }
+      
+      .payment-buttons a.download {
+        border:1px solid #83cc2e;
+        background:#6db625;
+        background:-webkit-gradient(
+            linear,
+            left bottom,
+            left top,
+            color-stop(0, rgb(30,138,11)),
+            color-stop(1, rgb(147,220,75))
+        );
+        background:-moz-linear-gradient(
+            center bottom,
+            rgb(30,138,11) 0%,
+            rgb(147,220,75) 100%
+        );
+      }
+      
+      .payment-buttons a.buy {
+        border:1px solid #66a0ed;
+        background:#5d8dcf;
+        background:-webkit-gradient(
+            linear,
+            left bottom,
+            left top,
+            color-stop(0, rgb(60,108,174)),
+            color-stop(1, rgb(129,177,243))
+        );
+        background:-moz-linear-gradient(
+            center bottom,
+            rgb(60,108,174) 0%,
+            rgb(129,177,243) 100%
+        );
+      }
+      
+      #top-left-block p.note {
+        font-size:12px;
+        margin-top:5px;
+        color:#666;
+      }
+      
+      
+      #bottom-block {
+        background-color:#fcfcfc;
+        border-top:1px solid #c5c5c5;
+        padding:10px 10px 30px 40px;
+      }
+      
+      .features {
+        margin-top:40px;
+        margin-bottom:15px;
+        margin-left:40px;
+        overflow:hidden;
+      }
+      .feature-block {
+        width:24%;
+        float:left;
+        position:relative;
+        margin-bottom:40px;
+      }
+      .feature-block img {
+        width:70%;
+        max-width:200px;
+        border-radius:8px;
+        -moz-border-radius:8px;
+        box-shadow: 0px 1px 3px #aaa;
+        -moz-box-shadow: 0px 1px 3px #aaa;
+        -webkit-box-shadow: 0px 1px 3px #aaa;
+        
+        margin-left:1px;
+        margin-right:20px;
+        display:block;
+        margin-bottom:16px;
+      }
+      
+      .feature-block h3,
+      .feature-block p {
+        xmargin-left:36%;
+        padding-right:8%;
+        margin-right:10px;
+        color:black;
+      }
+      .feature-block h3 {
+        font-size:14px;
+        font-weight:bold;
+        margin-top:4px;
+        margin-bottom:0;
+      }
+      .feature-block p {
+        font-size:13px;
+        margin-top:5px;
+        line-height:150%;
+        color:#555;
+      }
+      
+      #gitbox-icon-block {
+        overflow:hidden;
+        margin-top:20px;
+        margin-bottom:30px;
+        margin-left:-2px;
+        padding-left:2px;
+      }
+      
+      #gitbox-icon-block img {
+        float:left;
+        margin-right:16px;
+      }
+
+      #gitbox-icon-block p {
+        font-size:11px;
+        margin-top:5px;
+        margin-bottom:5px;
+        color: #666;
+      }
+      
+      #gitbox-icon-block a {
+        color: #666;
+      }
+      
+      #gitbox-icon-block p.title {
+        font-family: Myriad Pro, Helvetica Neue, Helvetica, sans-serif;
+        font-size:20px;
+        margin-top:12px;
+        margin-bottom:5px;
+        color: black;
+      }
+      
+      .thin-line {
+        height:2px;
+        border-top:1px solid #ccc;
+        margin-left:40px;
+        margin-right:40px;
+        margin-bottom:40px;
+      }
+      
+      .disclaimer {
+        font-size:9px;
+        color:#bbb;
+        max-width:600px;
+        margin-top:20px;
+        margin-bottom:0px;
+      }
+      .disclaimer a {
+        color: #bbb;
+      }
+      
+      .author {
+        position:absolute;
+        width:40%;
+        right: 40px;
+      }
+      
+      .userpic {
+        -webkit-border-radius: 8px;
+        -moz-border-radius: 8px;
+        border-radius: 8px;
+        float:left;
+        margin-right:15px;
+        margin-bottom:250px; /* offsets rest of the text */
+      }
+      
+      .author p {
+        font-size: 12px;
+        margin:1px 0 5px 0;
+        line-height:140%;
+      }
+      
+      .more {
+        margin-left:40px;
+        margin-bottom:40px;
+        width:45%;
+      }
+      
+      .more h3, p {
+
+      }
+      .more h3 {
+        margin-top:15px;
+        margin-bottom:5px;
+        font-size:14px;
+      }
+      .more p {
+        font-size:13px;
+        margin-top:0;
+        margin-bottom:5px;
+        line-height:140%;
+      }
+      
+      
+      .new-version-badge {
+        xbackground-color:#ff3333;
+        font-family:Myriad Pro, Helvetica Neue, Helvetica, sans-serif;
+        color:#ff3333;
+        font-weight:bold;
+        font-size:14px;
+        xwidth:95px;
+        line-height:20px;
+        height:20px;
+        padding-top:3px;;
+        xtext-align:center;
+        border-radius:12px;
+        -moz-border-radius:15px;
+        margin-left:145px;
+        margin-top:25px;
+        margin-bottom:-25px;
+      }
+
+      .badge-new,
+      .badge-updated {
+        background-color:#ff3333;
+        color: white;
+        font-weight:normal;
+        font-size:11px;
+        width:24px;
+        text-align:center;
+        border-radius:8px;
+        -moz-border-radius:8px;
+        padding-left:5px;
+        padding-right:5px;
+        padding-bottom:2px;
+      }
+            
+      
+    </style>
+    
+    <script type="text/javascript" language="javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-16845160-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+  </head>
+  <body class="home">
+    
+    <div id="top-block">
+      <div id="top-left-block">
+        <div class="new-version-badge">new version</div>
+        <h1>Gitbox</h1>
+        <h2>Linus made Git for himself.<br/>Gitbox&nbsp;brings&nbsp;Git to&nbsp;everyone.</h2>
+        <p>
+          A new intuitive interface makes everyday tasks amazingly simple. In a single 
+        window you see all your repositories, history and working directory state.
+        Commit, pull and push with a single click. Creating, sharing and comparing branches
+        becomes so easy, you will start to actually use them.
+        </p>
+        <p>✔&nbsp; One-click commit, pull and push.
+        <p>✔&nbsp; Automatic fetching of remote commits.
+        <p>✔&nbsp; Compare local and remote branches.
+        <p>✔&nbsp; Integration with many popular Diff tools.
+        
+        <div class="payment-buttons">
+          <a href="http://d1mbodn4o8l7kz.cloudfront.net/gitbox-1.1.zip" class="download">Free Download</a>
+          <a href="http://sites.fastspring.com/oleganza/product/gitbox" class="buy">Buy Now</a>
+        </div>
+        <p class="note">
+          Free for one repository. $39 for multiple repositories. Free&nbsp;updates.
+          <!--br/>
+          <span style="color:#cc0000">Buy before December 1st with coupon GITBOXNOV and get 30% off.</span-->
+        </p>
+      </div>
+      <div id="top-right-block">
+        <img src="gitbox-1.1-screenshot.png" alt="Gitbox" />
+      </div>
+      
+    </div>
+    
+    <div class="features">
+      
+      <div class="feature-block">
+        <img src="feature-sidebar.png?1.1" alt="Gitbox Sidebar" />
+        <h3>Autofetch <span class="badge-new">new</span></h3>
+        <p>Up to date count of non-pulled, non-pushed commits and non-committed files.</p>
+      </div>
+      
+      <div class="feature-block">
+        <img src="feature-history.png?1.1" alt="Gitbox History View" />
+        <h3>History is a diff</h3>
+        <p>History highlights non-pushed and non-merged commits. New commits are fetched automatically.</p>
+      </div>
+      
+      <div class="feature-block">
+        <img src="feature-stage.png?1.1" alt="Gitbox Stage View" />
+        <h3>Visual stage <span class="badge-updated">updated</span></h3>
+        <p>Select changes to commit and hit a button.
+        </p>
+      </div>
+      
+      <div class="feature-block">
+        <img src="feature-restore.png?1.1" alt="Gitbox Stage View" />
+        <h3>Drag across time <span class="badge-new">new</span></h3>
+        <p>Drag the file to restore it from the history.
+        </p>
+      </div>
+      
+      
+      <br clear="both"/>
+      
+      
+      <div class="feature-block">
+        <img src="feature-branch.png?1.1" alt="Gitbox Stage View" />
+        <h3>Branches</h3>
+        <p>Create local and remote branches and switch between them easily.
+        </p>
+      </div>
+      
+      <div class="feature-block">
+        <img src="feature-merge.png?1.1" alt="Gitbox Stage View" />
+        <h3>Merge</h3>
+        <p>Select another local branch instead of a remote one to merge it.
+        </p>
+      </div>
+      
+      
+      <div class="feature-block">
+        <img src="feature-diff.png?1.1" alt="Gitbox Commit View" />
+        <h3>The best diff tools <span class="badge-updated">updated</span></h3>
+        <p>Simple integration with FileMerge, Kaleidoscope, Changes, BBEdit, TextWrangler, Araxis Merge.
+        </p>
+      </div>
+
+      <div class="feature-block">
+        <img src="feature-keyboard.png?1.1" alt="Gitbox Diff with FileMerge" />
+        <h3>Keyboard shortcuts <span class="badge-new">new</span></h3>
+        <p>Navigate with arrow keys, commit with cmd+return and push/pull with P and U. 
+        </p>
+      </div>
+      
+    </div>
+    
+    <div class="thin-line">&nbsp;</div>
+
+    <div class="author">
+      <img src="oleg-andreev.png" class="userpic" alt="Oleg Andreev" width="64" />
+      <p><strong>Author</strong>
+      <p>Gitbox is written by <a href="http://oleganza.com">Oleg Andreev</a>, a passionate software developer from Paris, France.</p>
+      <br/><br/>
+      <p><strong>Support</strong>
+      <p>Follow news and tips on twitter <a href="http://twitter.com/gitboxupdates">@gitboxupdates</a>.</p>
+      <p>Help & bug reports → <a href="mailto:oleganza@gmail.com">oleganza@gmail.com</a>.</p>      
+      <p><a href="faq.html">Questions & Answers</a></p>
+      
+      <br/><br/>
+      
+      <p>Gitbox is rapidly progressing. If you already enjoy it, please buy a license to support the effort. Thank you!</p>
+    </div>
+
+    
+    
+    
+    
+    
+    
+    
+    <div class="more">
+
+      <h3>How to buy</h3>
+      <p>Download Gitbox for free. There is no time trial.
+      <p>Click "Buy Now" button (in the app or on the site).
+      <p>Secure payments are handled by <a href="http://fastspring.com" target="_blank">FastSpring</a> which accepts PayPal and credit cards. You may also specify your tax ID and get an invoice in PDF.
+      <p>Purchase appropriate number of license numbers. <a href="faq.html#license">Learn more about the license</a>.
+      <p>You will receive an automatic e-mail with your license numbers within a minute.
+      <p>Enter the license and enjoy Gitbox.
+      <p>Check for updates regularly: they are free!
+      
+      <h3>System Requirements</h3>
+      <p>Mac OS X 10.6 (Snow Leopard) or later.
+      <p>64-bit Intel processor (Intel Core 2 Duo or later).
+      <p>For additional diff tools to work, you should install their respective command line executables (ksdiff for Kaleidoscope, bbdiff for BBEdit etc.).
+      <p>You <em>don’t</em> need to install Git. <a href="faq.html#gpl">Learn more</a>.</p>
+    </div>
+    
+    <div id="bottom-block">
+      
+      <div id="gitbox-icon-block">
+        <img src="gitbox-1.0-icon.png" alt="Gitbox Icon" />
+        
+        <p class="title">Gitbox 1.1</p>
+        <p>64-bit application for Mac OS X 10.6
+        <p>Free for one repository. $39 for multiple repositories. <a href="faq.html#license">Learn more about the license</a>.
+        </p>
+        <!--p><span style="color:#cc0000">Buy before December 1st with coupon GITBOXNOV and get 30% off.</span-->
+        
+      </div>
+
+      <div class="payment-buttons">
+        <a href="http://d1mbodn4o8l7kz.cloudfront.net/gitbox-1.1.zip" class="download">Free Download</a>
+        <!--a href="/downloads/gitbox-1.1.zip" class="download">Free Download</a-->
+        <a href="http://sites.fastspring.com/oleganza/product/gitbox" class="buy">Buy Now</a>
+      </div>
+      
+      <div class="disclaimer">
+        Copyright © 2010 <a href="http://oleganza.com">Oleg Andreev</a>. All rights reserved.<br/>
+        <br/>
+        <span style="text-transform:uppercase;">
+          The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement of third party rights. In no event shall the copyright holder or holders included in this notice be liable for any claim, or any special indirect or consequential damages, or any damages whatsoever resulting from loss of use, data or profits, whether in an action of contract, negligence or other tortious action, arising out of or in connection with the use or performance of this software.</span>
+      </div>
+      
+    </div>
+  </body>
+</html>

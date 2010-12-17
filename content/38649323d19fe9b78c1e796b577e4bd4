@@ -1,0 +1,589 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>A fast, fuzzy, full-text index using Redis | PlayNice.ly</title>
+
+<link rel="stylesheet" href="http://playnice.ly/blog/wp-content/themes/playnicely/style.css" type="text/css" media="screen" />
+
+<link rel="alternate" type="application/rss+xml" title="PlayNice.ly RSS Feed" href="http://playnice.ly/blog/feed/" />
+<link rel="pingback" href="http://playnice.ly/blog/xmlrpc.php" />
+<link rel="alternate" type="application/rss+xml" title="PlayNice.ly &raquo; A fast, fuzzy, full-text index using Redis Comments Feed" href="http://playnice.ly/blog/2010/05/05/a-fast-fuzzy-full-text-index-using-redis/feed/" />
+<script type='text/javascript' src='http://playnice.ly/blog/wp-includes/js/jquery/jquery.js?ver=1.4.2'></script>
+<script type='text/javascript' src='http://playnice.ly/blog/wp-content/plugins/google-analyticator/external-tracking.min.js?ver=6.1.1'></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://playnice.ly/blog/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://playnice.ly/blog/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='PlayNice.ly' href='http://playnice.ly/blog/' />
+<link rel='start' title='Sssh, not quite ready yet&#8230;' href='http://playnice.ly/blog/2010/03/09/hello-world/' />
+<link rel='prev' title='So what&#8217;s this all about, then?' href='http://playnice.ly/blog/2010/04/23/so-whats-this-all-about-then/' />
+<link rel='next' title='Python library management with Pip, Virtualenv' href='http://playnice.ly/blog/2010/05/12/pip-virtualenv-python-library-package-management/' />
+<meta name="generator" content="WordPress 3.0.1" />
+<link rel='shortlink' href='http://playnice.ly/blog/?p=55' />
+
+<!-- All in One SEO Pack 1.6.12.2 by Michael Torbert of Semper Fi Web Design[303,396] -->
+<meta name="description" content="No matter how much we try to simplify PlayNice.ly:http://playnice.ly, there will always be some features that we *must* include. One of these is" />
+<meta name="keywords" content="full-text search,fuzzy search,redis" />
+<link rel="canonical" href="http://playnice.ly/blog/2010/05/05/a-fast-fuzzy-full-text-index-using-redis/" />
+<!-- /all in one seo pack -->
+<link rel="stylesheet" type="text/css" media="screen" href="http://playnice.ly/blog/wp-content/plugins/social-bookmarks/social_bookmarks.css" />
+
+<link rel="stylesheet" href="http://playnice.ly/blog/wp-content/plugins/wp-syntax/wp-syntax.css" type="text/css" media="screen" />
+<!-- Google Analytics Tracking by Google Analyticator 6.1.1: http://ronaldheft.com/code/analyticator/ -->
+<script type="text/javascript">
+	var analyticsFileTypes = [''];
+	var analyticsEventTracking = 'enabled';
+</script>
+<script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', 'UA-15068503-1']);
+	_gaq.push(['_trackPageview']);
+
+	(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	})();
+</script>
+<script type="text/javascript">
+var uuid = function() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+                return v.toString(16);
+        }).toUpperCase();
+};
+
+var mpq = [];
+mpq.push(["init", "91cef1a1ae77d5f6bf5de353f03e114c"]);
+mpq.push(["identify", uuid()]);
+var x=/^https?:\/\/(app\.)?playnice\.ly(\/blog\/.*)?/;
+var y=/^https?:\/\/([^\/]+)/;
+var e={};
+if(m=document.referrer.match(x)) {
+	e={ referrer_type: "internal", referrer_url: m[2], internal_referrer_path: m[2] }
+} else if(m=document.referrer.match(y)) {
+	e={ referrer_type: "external", referrer_url: m[1], external_referrer_domain: m[1], external_referrer_url: document.referrer }
+} else {
+	e={ referrer_type: "none", referrer_url: "none" }
+}
+var post=document.location.href.match(/\/([^\/]+)\/$/);
+e["post"] = post ? post[1] : "unknown";
+mpq.push(["register_once", e]);
+mpq.push(["track", "blog.view2"]);
+(function() {
+var mp = document.createElement("script"); mp.type = "text/javascript"; mp.async = true;
+mp.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + "//api.mixpanel.com/site_media/js/api/mixpanel.js";
+var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(mp, s);
+})();
+</script>
+</head>
+<body>
+<div id="page">
+
+<div id="header">
+	<div id="headerimg">
+		<h1><a href="http://playnice.ly/blog/">PlayNice.ly</a></h1>
+		<div class="description">The official PlayNice.ly blog</div>
+
+	</div>
+</div>
+<hr />
+
+	<div id="content" class="widecolumn">
+
+	
+		<div class="navigation">
+			<div class="alignleft">&laquo; <a href="http://playnice.ly/blog/2010/04/23/so-whats-this-all-about-then/" rel="prev">So what&#8217;s this all about, then?</a></div>
+			<div class="alignright"><a href="http://playnice.ly/blog/2010/05/12/pip-virtualenv-python-library-package-management/" rel="next">Python library management with Pip, Virtualenv</a> &raquo;</div>
+		</div>
+		<br style="clear: both;" />
+
+		<div class="post" id="post-55">
+			<h2>A fast, fuzzy, full-text index using Redis</h2>
+			<small>May 5th, 2010 by adam</small>
+
+			<div class="entry">
+					<p>No matter how much we try to simplify <a href="http://playnice.ly" title="">PlayNice.ly</a>, there will always be some features that we <strong>must</strong> include. One of these is search.</p>
+
+	<p>Say "search" to a developer and many will think of <a href="http://dev.mysql.com/doc/refman/5.1/en/fulltext-search.html" title="">MySQL/MyISAM</a> or <a href="http://lucene.apache.org/java/docs/" title="">Lucene</a>. Both of these are pretty rockin' in their own way. MySQL's MyISAM storage engine can work as a pretty straight-forward search system, and Lucene is very powerful, and great for larger datasets.</p>
+
+	<p>However, we have found that MySQL's full-text search can get pretty sluggish when you are dealing with gigabytes of data. Lucene was a very strong candidate, but we felt there could be a third option&#8230;</p>
+
+	<p>PlayNice.ly is entirely based on a data-structure server called <a href="http://code.google.com/p/redis/" title="">Redis</a>. Redis is one of several new key-value databases which break away from traditional relational data architecture. It is simple, flexible, and <em>blazingly</em> fast. So why not use the tools we have already?</p>
+
+	<p>On a winter afternoon, we came up with the following&#8230; <span id="more-55"></span></p>
+
+	<h2>Step 1: Indexing</h2>
+
+	<p>Indexing your content into an easily searchable format is the first step with most search systems. But what format should we use?</p>
+
+	<p>At the most basic level, we would need to create a lookup to provide a list of item IDs for a given search keyword.&#160;In PlayNice.ly terms, an 'item' is a bug or task. Really though, it could be any piece of content, it just depends on your application. At PlayNice.ly we have items, so that's what we use here. <img src='http://playnice.ly/blog/wp-includes/images/smilies/icon_smile.gif' alt=':)' class='wp-smiley' /></p>
+
+	<p>So, in Redis, we would create a <a href="http://code.google.com/p/redis/wiki/CommandReference#Commands_operating_on_sets" title="">set</a> of item IDs for each word found in every item. Each set would be identified by a key containing the word. For example:</p>
+
+	<p>
+<div class="wp_syntax"><div class="code"><pre class="python" style="font-family:monospace;">word:python = SET<span style="color: black;">&#40;</span><span style="color: #ff4500;">9</span>, <span style="color: #ff4500;">12</span>, <span style="color: #ff4500;">23</span><span style="color: black;">&#41;</span>
+word:exception = SET<span style="color: black;">&#40;</span><span style="color: #ff4500;">2</span>, <span style="color: #ff4500;">11</span><span style="color: black;">&#41;</span>
+...</pre></div></div>
+</p>
+
+
+	<p>We create these sets by extracting words from item descriptions, title, tags, comments etc. So if a user searched for 'exception', we could instantly find out which items contained the word 'exception'.</p>
+
+	<p>Yes, this system could result in a lot of keys. However, there are only a few hundred thousand words in the English language, and even that many keys is not likely to give Redis any problems!</p>
+
+	<h3>Step 1.5: Fuzzy indexing</h3>
+
+	<p>That is all well and good, but what if someone searched for 'exceptions'? Or what if, like me, their spelling was somewhat sub-par and they typed 'exceptins'? Well, they would be out of luck. So the forgiving world of PlayNice.ly needed to do better.</p>
+
+	<p>Enter <a href="http://en.wikipedia.org/wiki/Phonetic_algorithm" title="">phonetic algorithms</a>, a blessing to the linguistically challenged.</p>
+
+	<p>Phonetic algorithms are actually pretty simple. They are just a way of taking a word, dropping out some letters (according to a set of rules), and providing you with a rough representation of how that word sounds. Common phonetic algorithms are <a href="http://en.wikipedia.org/wiki/Soundex" title="">Soundex</a> and <a href="http://en.wikipedia.org/wiki/Metaphone" title="">Metaphone</a>. The former is pretty dated now, but we understand the latter to be more up-to-scratch (any to play nicely with other Western languages).</p>
+
+	<p>To give you an example, if you were to take the Metaphone of 'steven', then you would get 'STFN'. You would also get the same value for 'steeven' or 'stefen'.</p>
+
+	<p>So if we use the above example again, the Metaphones for 'python' and 'exception' are 'P0N' and 'AKSPXN' respectively. We can now use those values <em>instead</em> of the words in our Redis keys:</p>
+
+	<p>
+<div class="wp_syntax"><div class="code"><pre class="python" style="font-family:monospace;"><span style="color: #808080; font-style: italic;"># using the Metaphone phonetic algorithm</span>
+word:P0N = SET<span style="color: black;">&#40;</span><span style="color: #ff4500;">9</span>, <span style="color: #ff4500;">12</span>, <span style="color: #ff4500;">23</span><span style="color: black;">&#41;</span>
+word:AKSPXN = SET<span style="color: black;">&#40;</span><span style="color: #ff4500;">2</span>, <span style="color: #ff4500;">11</span><span style="color: black;">&#41;</span>
+...</pre></div></div>
+</p>
+
+
+	<p>So now we will get matches as long as our spelling has a reasonable resemblance to the word we mean.</p>
+
+	<p>We actually took our system slightly further and used the <a href="http://en.wikipedia.org/wiki/Double_Metaphone" title="">Double Metaphone</a> phonetic algorithm (<a href="http://atomboy.isa-geek.com/plone/Members/acoil/programing/double-metaphone" title="">python lib</a>), which may return two values for words with different possible pronunciations (sort of). So now, 'python' actually gets two codes, 'P0N' and 'PTN', which each get their own keys:</p>
+
+	<p>
+<div class="wp_syntax"><div class="code"><pre class="python" style="font-family:monospace;"><span style="color: #808080; font-style: italic;"># using the Double Metaphone phonetic algorithm</span>
+word:P0N = SET<span style="color: black;">&#40;</span><span style="color: #ff4500;">9</span>, <span style="color: #ff4500;">12</span>, <span style="color: #ff4500;">23</span><span style="color: black;">&#41;</span>
+word:PTN = SET<span style="color: black;">&#40;</span><span style="color: #ff4500;">9</span>, <span style="color: #ff4500;">12</span>, <span style="color: #ff4500;">23</span><span style="color: black;">&#41;</span>
+word:AKSPXN = SET<span style="color: black;">&#40;</span><span style="color: #ff4500;">2</span>, <span style="color: #ff4500;">11</span><span style="color: black;">&#41;</span>
+...</pre></div></div>
+</p>
+
+
+	<p>Yes this is more storage, but we thought it would be a worth it for the sake of a more lenient search engine.</p>
+
+	<h2>Step 2: Searching (and the <span class="caps">SPEED</span>)</h2>
+
+	<p>So now we actually want to do a search. This is a two step process, but each step is lightning fast:</p>
+
+	<ol>
+		<li>Take the Metaphone of our keyword</li>
+			<li>Get the contents of that set from Redis.</li>
+	</ol>
+
+	<p>That can be summed up with this single line of pseudo-code:</p>
+
+	<p>
+<div class="wp_syntax"><div class="code"><pre class="python" style="font-family:monospace;">redis.<span style="color: black;">smembers</span><span style="color: black;">&#40;</span><span style="color: #483d8b;">&quot;word:&quot;</span> + metaphone<span style="color: black;">&#40;</span><span style="color: #483d8b;">&quot;python&quot;</span><span style="color: black;">&#41;</span><span style="color: black;">&#41;</span></pre></div></div>
+</p>
+
+
+	<p>And that is it, and Redis could easily cope with doing <strong>tens of thousands of these searches per second</strong>, even on the most basic hardware.</p>
+
+	<p>But let's make it a little more complex. Say we want to search for multiple keywords:</p>
+
+	<p>
+<div class="wp_syntax"><div class="code"><pre class="python" style="font-family:monospace;"><span style="color: #808080; font-style: italic;"># Search for multiple keywords</span>
+keywords = <span style="color: black;">&#91;</span><span style="color: #483d8b;">&quot;python&quot;</span>, <span style="color: #483d8b;">&quot;exception&quot;</span><span style="color: black;">&#93;</span>
+metaphones = <span style="color: black;">&#91;</span>metaphone<span style="color: black;">&#40;</span>k<span style="color: black;">&#41;</span> <span style="color: #ff7700;font-weight:bold;">for</span> k <span style="color: #ff7700;font-weight:bold;">in</span> keywords<span style="color: black;">&#93;</span>
+redis_keys = <span style="color: black;">&#91;</span><span style="color: #483d8b;">&quot;word:&quot;</span> + m <span style="color: #ff7700;font-weight:bold;">for</span> m <span style="color: #ff7700;font-weight:bold;">in</span> metaphones<span style="color: black;">&#93;</span>
+item_ids = redis.<span style="color: black;">sunion</span><span style="color: black;">&#40;</span>redis_keys<span style="color: black;">&#41;</span></pre></div></div>
+</p>
+
+
+	<p>Here we use the <a href="http://code.google.com/p/redis/wiki/SunionCommand" title=""><span class="caps">SUNION</span></a> Redis command to perform a union (i.e. an "OR") on all of our results. If you want to perform an "AND" on the keywords, then you can use the <a href="http://code.google.com/p/redis/wiki/SinterCommand" title=""><span class="caps">SINTER</span></a> Redis command instead.</p>
+
+	<h2>Summing up</h2>
+
+	<p>I hope this has shown how simple it can be to implement blazingly fast fuzzy searching using Redis. PlayNice.ly performs all of its searching and filtering operations within Redis using nothing more than sets and sunion/sinter commands.</p>
+
+	<p>For the inquisitive, we put a stand-alone version of our indexing code here:</p>
+
+	<p><a href="http://gist.github.com/389875" title="">http://gist.github.com/389875</a></p>
+
+	<p>In the future we hope to cover more advanced Redis searching functionality.</p>
+
+	<p>If you liked this blog post then we would absolutely love you to tell us what you think. Please post comments and talk to us on <a href="http://twitter.com/playnicelyapp" title="">Twitter</a>, we are all very friendly. <img src='http://playnice.ly/blog/wp-includes/images/smilies/icon_smile.gif' alt=':)' class='wp-smiley' />  And if you'd like to talk more about Redis, definitely <a href="http://www.meetup.com/Redis-London/" title="">join our Redis London group on Meetup</a>.</p>
+ <!-- Social Bookmarks BEGIN -->
+<div class="social_bookmark">
+<a><strong><em> </em></strong></a>
+<br />
+<div class="d">
+<br />
+<a href="http://buzz.yahoo.com/submit?submitUrl=http%3A%2F%2Fplaynice.ly%2Fblog%2F2010%2F05%2F05%2Fa-fast-fuzzy-full-text-index-using-redis%2F&amp;submitHeadline=A+fast%2C+fuzzy%2C+full-text+index+using+Redis&amp;submitSummary=" rel="nofollow" title="Add to&nbsp;Buzz"><img class="social_img" src="http://playnice.ly/blog/wp-content/plugins/social-bookmarks/images/buzz.png" title="Add to&nbsp;Buzz" alt="Add to&nbsp;Buzz" /></a>
+<a href="http://del.icio.us/post?url=http%3A%2F%2Fplaynice.ly%2Fblog%2F2010%2F05%2F05%2Fa-fast-fuzzy-full-text-index-using-redis%2F&amp;title=A+fast%2C+fuzzy%2C+full-text+index+using+Redis" rel="nofollow" title="Add to&nbsp;Del.icio.us"><img class="social_img" src="http://playnice.ly/blog/wp-content/plugins/social-bookmarks/images/delicious.png" title="Add to&nbsp;Del.icio.us" alt="Add to&nbsp;Del.icio.us" /></a>
+<a href="http://digg.com/submit?phase=2&amp;url=http%3A%2F%2Fplaynice.ly%2Fblog%2F2010%2F05%2F05%2Fa-fast-fuzzy-full-text-index-using-redis%2F&amp;title=A+fast%2C+fuzzy%2C+full-text+index+using+Redis" rel="nofollow" title="Add to&nbsp;digg"><img class="social_img" src="http://playnice.ly/blog/wp-content/plugins/social-bookmarks/images/digg.png" title="Add to&nbsp;digg" alt="Add to&nbsp;digg" /></a>
+<a href="http://www.facebook.com/sharer.php?u=http%3A%2F%2Fplaynice.ly%2Fblog%2F2010%2F05%2F05%2Fa-fast-fuzzy-full-text-index-using-redis%2F" rel="nofollow" title="Add to&nbsp;Facebook"><img class="social_img" src="http://playnice.ly/blog/wp-content/plugins/social-bookmarks/images/facebook.png" title="Add to&nbsp;Facebook" alt="Add to&nbsp;Facebook" /></a>
+<a href="http://www.google.com/bookmarks/mark?op=edit&amp;output=popup&amp;bkmk=http%3A%2F%2Fplaynice.ly%2Fblog%2F2010%2F05%2F05%2Fa-fast-fuzzy-full-text-index-using-redis%2F&amp;title=A+fast%2C+fuzzy%2C+full-text+index+using+Redis" rel="nofollow" title="Add to&nbsp;Google Bookmarks"><img class="social_img" src="http://playnice.ly/blog/wp-content/plugins/social-bookmarks/images/google.png" title="Add to&nbsp;Google Bookmarks" alt="Add to&nbsp;Google Bookmarks" /></a>
+<a href="http://www.linkedin.com/shareArticle?mini=true&amp;url=http%3A%2F%2Fplaynice.ly%2Fblog%2F2010%2F05%2F05%2Fa-fast-fuzzy-full-text-index-using-redis%2F&amp;title=A+fast%2C+fuzzy%2C+full-text+index+using+Redis" rel="nofollow" title="Add to&nbsp;LinkedIn"><img class="social_img" src="http://playnice.ly/blog/wp-content/plugins/social-bookmarks/images/linkedin.png" title="Add to&nbsp;LinkedIn" alt="Add to&nbsp;LinkedIn" /></a>
+<a href="http://reddit.com/submit?url=http%3A%2F%2Fplaynice.ly%2Fblog%2F2010%2F05%2F05%2Fa-fast-fuzzy-full-text-index-using-redis%2F&amp;title=A+fast%2C+fuzzy%2C+full-text+index+using+Redis" rel="nofollow" title="Add to&nbsp;reddit"><img class="social_img" src="http://playnice.ly/blog/wp-content/plugins/social-bookmarks/images/reddit.png" title="Add to&nbsp;reddit" alt="Add to&nbsp;reddit" /></a>
+<a href="http://slashdot.org/bookmark.pl?url=http%3A%2F%2Fplaynice.ly%2Fblog%2F2010%2F05%2F05%2Fa-fast-fuzzy-full-text-index-using-redis%2F&amp;title=A+fast%2C+fuzzy%2C+full-text+index+using+Redis" rel="nofollow" title="Add to&nbsp;Slashdot"><img class="social_img" src="http://playnice.ly/blog/wp-content/plugins/social-bookmarks/images/slashdot.png" title="Add to&nbsp;Slashdot" alt="Add to&nbsp;Slashdot" /></a>
+<a href="http://www.stumbleupon.com/submit?url=http%3A%2F%2Fplaynice.ly%2Fblog%2F2010%2F05%2F05%2Fa-fast-fuzzy-full-text-index-using-redis%2F&amp;title=A+fast%2C+fuzzy%2C+full-text+index+using+Redis" rel="nofollow" title="Add to&nbsp;Stumble Upon"><img class="social_img" src="http://playnice.ly/blog/wp-content/plugins/social-bookmarks/images/stumbleupon.png" title="Add to&nbsp;Stumble Upon" alt="Add to&nbsp;Stumble Upon" /></a>
+<a href="http://www.technorati.com/faves?add=http%3A%2F%2Fplaynice.ly%2Fblog%2F2010%2F05%2F05%2Fa-fast-fuzzy-full-text-index-using-redis%2F" rel="nofollow" title="Add to&nbsp;Technorati"><img class="social_img" src="http://playnice.ly/blog/wp-content/plugins/social-bookmarks/images/technorati.png" title="Add to&nbsp;Technorati" alt="Add to&nbsp;Technorati" /></a>
+<a href="http://twitter.com/home/?status=Check+out+A+fast%2C+fuzzy%2C+full-text+index+using+Redis+@+http%3A%2F%2Fplaynice.ly%2Fblog%2F2010%2F05%2F05%2Fa-fast-fuzzy-full-text-index-using-redis%2F" rel="nofollow" title="Add to&nbsp;Twitter"><img class="social_img" src="http://playnice.ly/blog/wp-content/plugins/social-bookmarks/images/twitter.png" title="Add to&nbsp;Twitter" alt="Add to&nbsp;Twitter" /></a>
+<a href="http://myweb2.search.yahoo.com/myresults/bookmarklet?u=http%3A%2F%2Fplaynice.ly%2Fblog%2F2010%2F05%2F05%2Fa-fast-fuzzy-full-text-index-using-redis%2F&amp;t=A+fast%2C+fuzzy%2C+full-text+index+using+Redis" rel="nofollow" title="Add to&nbsp;Yahoo My Web"><img class="social_img" src="http://playnice.ly/blog/wp-content/plugins/social-bookmarks/images/yahoo.png" title="Add to&nbsp;Yahoo My Web" alt="Add to&nbsp;Yahoo My Web" /></a>
+<br />
+</div>
+</div>
+<!-- Social Bookmarks END -->
+
+								
+				<p id="tags">Tags: <a href="http://playnice.ly/blog/tag/full-text-search/" rel="tag">full-text search</a>, <a href="http://playnice.ly/blog/tag/fuzzy-search/" rel="tag">fuzzy search</a>, <a href="http://playnice.ly/blog/tag/redis/" rel="tag">Redis</a></p>
+				<p class="postmetadata alt">
+					<small>
+						This entry was posted
+												on Wednesday, May 5th, 2010 at 4:06 pm						and is filed under <a href="http://playnice.ly/blog/category/development/" title="View all posts in Development" rel="category tag">Development</a>.
+						You can follow any responses to this entry through the <a href='http://playnice.ly/blog/2010/05/05/a-fast-fuzzy-full-text-index-using-redis/feed/'>RSS 2.0</a> feed.
+
+													You can <a href="#respond">leave a response</a>, or <a href="http://playnice.ly/blog/2010/05/05/a-fast-fuzzy-full-text-index-using-redis/trackback/" rel="trackback">trackback</a> from your own site.
+
+						
+					</small>
+				</p>
+
+			</div>
+		</div>
+
+	
+<!-- You can start editing here. -->
+
+	<h3 id="comments">19 Responses to &#8220;A fast, fuzzy, full-text index using Redis&#8221;</h3>
+
+	<ol class="commentlist">
+
+	
+		<li class="alt" id="comment-6">
+			<img alt='' src='http://1.gravatar.com/avatar/348a20c3a576b2cb26674f1bc9eaf012?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' />			<cite><a href='http://streamhacker.com' rel='external nofollow' class='url'>Jacob</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-6" title="">May 5th, 2010 at 6:04 pm</a> </small>
+
+			<p>Are you considering doing any tf-idf style indexing with Redis?</p>
+
+		</li>
+
+	
+	
+		<li id="comment-8">
+			<img alt='' src='http://0.gravatar.com/avatar/a4fd7a5440d9a91578860a61576fb0f2?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' />			<cite><a href='http://playnice.ly' rel='external nofollow' class='url'>adam</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-8" title="">May 5th, 2010 at 6:42 pm</a> </small>
+
+			<p>Hey Jacob! Yep, this is something we have thought about but we have yet to see a use-case for it in PlayNice.ly. This simply due to the way our filtering interface works, which places emphasis on speed and quick feedback.</p>
+<p>However, there are a couple of ways I could imagine this working:</p>
+<p>* Counting frequency of words<br />
+* Assigning weightings to different fields (a word in the subject is probably worth more than a word in a comment)<br />
+* Looking at differences between the search keyword and the word which the metaphone represents (using something like the Levenshtein Difference)</p>
+<p>But if you do need this added complexity then you may be better served by something like Sphinx/Lucene. But who knows, maybe someone will develop an equivalent which backs onto Redis <img src='http://playnice.ly/blog/wp-includes/images/smilies/icon_smile.gif' alt=':)' class='wp-smiley' /> </p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-13">
+			<img alt='' src='http://1.gravatar.com/avatar/b870177af9bbfc1a8d8cb1979e1e1a6e?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' />			<cite><a href='http://sheep.art.pl' rel='external nofollow' class='url'>Radomir Dopieralski</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-13" title="">May 6th, 2010 at 12:32 am</a> </small>
+
+			<p>When I was making indexed search for my wiki, I discovered that finding the items is just a part of the task. A much more difficult task is ordering them. At first I just did a simple sort by the number of hits, but in the end I get the best results with word relevancy &#8212; the number of hits in given item divided by the number of hits of the given word in all items together, summed for all words in the search.</p>
+<p>This may be a little problematic with your model, especially since you don&#8217;t record how many times the word appeared in given item.</p>
+
+		</li>
+
+	
+	
+		<li id="comment-15">
+			<img alt='' src='http://1.gravatar.com/avatar/3a6356ff036a4332f34b5d3c736d4be4?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' />			<cite><a href='http://labs.mudynamics.com' rel='external nofollow' class='url'>kowsik</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-15" title="">May 6th, 2010 at 2:18 am</a> </small>
+
+			<p>Have you tried lucene/solr and/or ferret? These optimize the hell out of inverted indexes and baked for many years. xtractr (<a href="http://www.pcapr.net/xtractr" rel="nofollow">http://www.pcapr.net/xtractr</a>) uses ferret, for example.</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-18">
+			<img alt='' src='http://0.gravatar.com/avatar/632b7ce9c47322cef54b98be0e70c721?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' />			<cite><a href='http://chouyu-31.livejournal.com/' rel='external nofollow' class='url'>Josiah Carlson</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-18" title="">May 6th, 2010 at 10:56 pm</a> </small>
+
+			<p>The get_words_from_text() function will skip checking any word that immediately follows a stopword or a word that is too short.</p>
+<p>This is the list comprehension that does what you want it to do:</p>
+<p>words = [word for word in text.split() if len(word) &gt;= MIN_WORD_LENGTH and word.lower() not in STOP_WORDS]</p>
+
+		</li>
+
+	
+	
+		<li id="comment-19">
+			<img alt='' src='http://0.gravatar.com/avatar/a4fd7a5440d9a91578860a61576fb0f2?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' />			<cite><a href='http://playnice.ly' rel='external nofollow' class='url'>adam</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-19" title="">May 7th, 2010 at 9:20 am</a> </small>
+
+			<p>Ah yes, well noticed! I have updated the gist.</p>
+<p>Thank you <img src='http://playnice.ly/blog/wp-includes/images/smilies/icon_smile.gif' alt=':)' class='wp-smiley' /> </p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-21">
+			<img alt='' src='http://0.gravatar.com/avatar/c51d39fe0d256f16e0d743cde9f71cc2?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' />			<cite><a href='http://www.la-grange.net/karl/' rel='external nofollow' class='url'>karl</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-21" title="">May 7th, 2010 at 6:33 pm</a> </small>
+
+			<p>You said: &#8220;Lucene was a very strong candidate, but we felt there could be a third option&#8221;</p>
+<p>That would be interesting to try both lucene and the solution with redis and do a few benchmarks and/or see if you get stucked on any issues.</p>
+
+		</li>
+
+	
+	
+		<li id="comment-23">
+			<img alt='' src='http://0.gravatar.com/avatar/a4fd7a5440d9a91578860a61576fb0f2?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' />			<cite><a href='http://playnice.ly' rel='external nofollow' class='url'>adam</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-23" title="">May 8th, 2010 at 12:47 am</a> </small>
+
+			<p>Indeed it would. I strongly suspect that this Redis solution would outperform Lucene purely because, a) Redis is outrageously fast, but mostly because b) the solution above is <strong>much</strong> simpler and lighter than Lucene. However, we really should do some benchmarking when we get the chance.</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-41">
+			<img alt='' src='http://1.gravatar.com/avatar/91e1c15e36579360558f82380e749ae1?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' />			<cite><a href='http://splitweet.com' rel='external nofollow' class='url'>Albert</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-41" title="">May 11th, 2010 at 12:07 pm</a> </small>
+
+			<p>I like very much the solution! I&#8217;d like to remark something regarding updating the information.</p>
+<p>Let&#8217;s imagine you change the descriptions of one single item (that&#8217;s pretty common in any real world situation). Your Sets would quickly be outdated because the sets would contain item IDs that are no longer in a specific metaphone.</p>
+<p>To solve this, you should compare the old description with the new description and create a list of removed words (difference), and then parse remove the unused IDs from those sets. If you do not update descriptions quite often is assumable, but in any case must be taken into account.</p>
+<p>Excellent article!</p>
+<p>Off the record: I am Sphinx and Redis lover <img src='http://playnice.ly/blog/wp-includes/images/smilies/icon_smile.gif' alt=':)' class='wp-smiley' /> </p>
+
+		</li>
+
+	
+	
+		<li id="comment-42">
+			<img alt='' src='http://0.gravatar.com/avatar/a4fd7a5440d9a91578860a61576fb0f2?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' />			<cite><a href='http://playnice.ly' rel='external nofollow' class='url'>adam</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-42" title="">May 11th, 2010 at 12:59 pm</a> </small>
+
+			<p>Hey Albert! Thanks for the comment &#8211; the idea of doing a diff hadn&#8217;t occurred to me.</p>
+<p>It is true that, in this implementation, words will remain in the index even if they get removed from an item. We don&#8217;t actually think this will be a problem for us (and may even make the search more useful), but it is something we are going to keep an eye on.</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-45">
+			<img alt='' src='http://0.gravatar.com/avatar/65e52d9e5b88abcd8648d581db1bf606?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' />			<cite><a href='http://spinn3r.com' rel='external nofollow' class='url'>Kevin Burton</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-45" title="">May 11th, 2010 at 10:47 pm</a> </small>
+
+			<p>I&#8217;m assuming you&#8217;re going to see horrible index compression here.</p>
+<p>Most search frameworks spend a good deal of time on index maintenance and compression &#8230; Lucene does a decent job.</p>
+
+		</li>
+
+	
+	
+		<li id="comment-46">
+			<img alt='' src='http://0.gravatar.com/avatar/a4fd7a5440d9a91578860a61576fb0f2?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' />			<cite><a href='http://playnice.ly' rel='external nofollow' class='url'>adam</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-46" title="">May 11th, 2010 at 11:40 pm</a> </small>
+
+			<p>Hi Kevin. I must confess that I am not too familiar with index compression (and Google hasn&#8217;t been massively forthcoming). Do you have a URL where I can read up on it?</p>
+<p>I will take a stab in the dark and point out that Redis will optimise the storage of sets of integers, which can greatly reduce memory usage. However, by the look of Spinn3r I guess that you are dealing with a much greater data volume than we initially expect.</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-56">
+						<cite><a href='http://playnice.ly/blog/2010/05/19/join-us-at-the-first-london-redis-meetup-on-26-may-2010/' rel='external nofollow' class='url'>Join us at the first London Redis Meetup on 26 May 2010 | PlayNice.ly</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-56" title="">May 19th, 2010 at 2:20 pm</a> </small>
+
+			<p>[...] you know, we&#8217;re big fans of Redis. Along with other NoSQL datastores, Redis is changing the way web apps are built. With its [...]</p>
+
+		</li>
+
+	
+	
+		<li id="comment-85">
+						<cite><a href='http://playnice.ly/blog/2010/05/24/redis-multi-field-searching-and-filtering/' rel='external nofollow' class='url'>Redis multi-field searching and filtering | PlayNice.ly</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-85" title="">May 24th, 2010 at 1:08 pm</a> </small>
+
+			<p>[...] post follows on from A fast, fuzzy, full-text index using Redis. Also, there are still a few places left for the first London Redis Meetup on [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-264">
+			<img alt='' src='http://0.gravatar.com/avatar/ccd6cb21b3b9bd55fe318c057a9ad7bd?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' />			<cite><a href='http://antoniomele.es' rel='external nofollow' class='url'>Zenx</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-264" title="">August 18th, 2010 at 10:39 pm</a> </small>
+
+			<p>I really like this approach. </p>
+<p>You could use a sorted zset to assign weightings to different fields. For example you could increment score by 2 when indexing if the term is in the title and 1 if the word is in any other field. You could also increment score several times if it&#8217;s found more than 1 time.</p>
+
+		</li>
+
+	
+	
+		<li id="comment-265">
+			<img alt='' src='http://0.gravatar.com/avatar/a4fd7a5440d9a91578860a61576fb0f2?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' />			<cite><a href='http://playnice.ly' rel='external nofollow' class='url'>adam</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-265" title="">August 18th, 2010 at 11:11 pm</a> </small>
+
+			<p>Hi Zenx, that could be a very good idea, especially now that Redis has the  ZUNIONSTORE / ZINTERSTORE commands.</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-284">
+						<cite><a href='http://blog.boo-box.com/br/2010/utilizando-banco-nosql-redis/' rel='external nofollow' class='url'>Utilizando o banco NoSQL Redis para otimizar sistemas de alta escalabilidade</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-284" title="">September 15th, 2010 at 2:14 pm</a> </small>
+
+			<p>[...] quem quer se aprofundar neste case, sugiro a leitura do artigo indicado pelo @jdrowell que mostra um case similar de busca de textos utilizando o [...]</p>
+
+		</li>
+
+	
+	
+		<li id="comment-341">
+						<cite><a href='http://playnice.ly/blog/2010/10/19/getting-started-redis-python/' rel='external nofollow' class='url'>Getting Started: Redis &amp; Python | PlayNice.ly</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-341" title="">October 19th, 2010 at 6:32 pm</a> </small>
+
+			<p>[...] have been covering some fairly complex Redis topics here so far, so I thought it would be nice to do a good ol&#39; getting started [...]</p>
+
+		</li>
+
+	
+	
+		<li class="alt" id="comment-916">
+			<img alt='' src='http://1.gravatar.com/avatar/73cc2773e1aab4cf163c61d4ec9d6eba?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' />			<cite><a href='http://www.protocolostomy.com' rel='external nofollow' class='url'>Brian K. Jones</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-916" title="">December 9th, 2010 at 1:59 pm</a> </small>
+
+			<p>Hi, and thanks for the post. </p>
+<p>Maybe I&#8217;m missing something, but how do you provide support for searching terms and phrases that are *not* in the english language? Sometimes source code and error message references seem like they contain *mostly* non-english words, and there are symbols and other special characters to consider. Do you just punt on these? Supporting them seems like it would grow the potential list of keys dramatically. On the other hand, not supporting them seems like it&#8217;d kill any usefulness of the search, since a really common use case for search is &#8220;I got this weird error&#8230;&#8221; and another is &#8220;I think the function name is &#8216;def x_this_for_me&#8217;&#8221;</p>
+
+		</li>
+
+	
+	
+	</ol>
+
+ 
+
+
+<h3 id="respond">Leave a Reply</h3>
+
+
+<form action="http://playnice.ly/blog/wp-comments-post.php" method="post" id="commentform">
+
+
+<p><input type="text" name="author" id="author" value="" size="22" tabindex="1" aria-required='true' />
+<label for="author"><small>Name (required)</small></label></p>
+
+<p><input type="text" name="email" id="email" value="" size="22" tabindex="2" aria-required='true' />
+<label for="email"><small>Mail (will not be published) (required)</small></label></p>
+
+<p><input type="text" name="url" id="url" value="" size="22" tabindex="3" />
+<label for="url"><small>Website</small></label></p>
+
+
+<!--<p><small><strong>XHTML:</strong> You can use these tags: <code>&lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;strike&gt; &lt;strong&gt; &lt;pre lang=&quot;&quot; line=&quot;&quot; escaped=&quot;&quot;&gt; </code></small></p>-->
+
+<p><textarea name="comment" id="comment" cols="100%" rows="10" tabindex="4"></textarea></p>
+
+<p><input name="submit" type="submit" id="submit" tabindex="5" value="Submit Comment" />
+<input type="hidden" name="comment_post_ID" value="55" />
+</p>
+
+</form>
+
+
+
+	
+	</div>
+	
+		<div id="sidebar">
+
+				<ul>
+			<li id="text-5" class="widget widget_text">			<div class="textwidget"><div class="teaser">
+
+<p><strong><a href="/">PlayNice.ly home</a></strong></p>
+
+<p>PlayNice.ly is the perfect collaboration platform for developers, designers, product managers, clients and anyone else involved in your projects.</p>
+
+<a class="greenButton" href="http://app.playnice.ly/signup/">Sign Up Now<br /><span>30-day free trial</span></a>
+</div>
+
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+
+<a href="http://twitter.com/playnicelyapp"><img src="http://twitter-badges.s3.amazonaws.com/follow_us-a.png" alt="Follow @playnicelyapp on Twitter" /></a></div>
+		</li>		<li id="recent-posts-3" class="widget widget_recent_entries">		<h2 class="widgettitle">Recent posts</h2>		<ul>
+				<li><a href="http://playnice.ly/blog/2010/11/29/redis-london-video-cluster/" title="What&#8217;s new in Redis 2.2 and Redis Cluster">What&#8217;s new in Redis 2.2 and Redis Cluster</a></li>
+				<li><a href="http://playnice.ly/blog/2010/11/15/new-in-playnice-ly-import-from-github-fogbugz/" title="New in PlayNice.ly: Import from GitHub &amp; FogBugz">New in PlayNice.ly: Import from GitHub &#038; FogBugz</a></li>
+				<li><a href="http://playnice.ly/blog/2010/11/09/playnice-ly-fun-fast-bug-tracking-launches-today/" title="PlayNice.ly: Fun, fast bug tracking launches today">PlayNice.ly: Fun, fast bug tracking launches today</a></li>
+				<li><a href="http://playnice.ly/blog/2010/10/29/take-a-sneak-peek-at-playnice-lys-pricing/" title="Take a sneak peek at PlayNice.ly&#8217;s pricing">Take a sneak peek at PlayNice.ly&#8217;s pricing</a></li>
+				<li><a href="http://playnice.ly/blog/2010/10/27/playnice-ly-nominated-in-theeuropas/" title="PlayNice.ly nominated in #TheEuropas!">PlayNice.ly nominated in #TheEuropas!</a></li>
+				</ul>
+		</li>		</ul>
+	</div>
+
+
+
+<hr />
+<div id="footer">
+<!-- If you'd like to support WordPress, having the "powered by" link somewhere on your blog is the best way; it's our only promotion or advertising. -->
+	<p>
+		<a href="http://playnice.ly/blog/feed/">Entries (RSS)</a> and <a href="http://playnice.ly/blog/comments/feed/">Comments (RSS)</a>.<br />
+		&copy; 2010 PlayNice.ly. 
+	</p>
+</div>
+</div>
+		
+</body>
+</html>
+
+<!-- Dynamic page generated in 0.288 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2010-12-17 06:06:14 -->
+<!-- super cache -->

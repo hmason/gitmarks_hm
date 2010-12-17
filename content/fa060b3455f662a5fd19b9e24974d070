@@ -1,0 +1,246 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head>
+<link rel="stylesheet" href="blog.css" type="text/css">
+<link rel="shortcut icon" href="icon.gif" type="image/gif" >
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-19316387-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</head><body>
+<div class="t-t">
+<!-- img style="vertical-align: top" src="icon.gif" -->
+<a href="../">Luigi Rizzo's</a> Kindle blog
+</div>
+<a name="Kindle3-information"><h3 class="e-hdr">Kindle3 information</h3></a>
+<div class="e-body">
+This page contains some informations (features, bugs, etc.)
+on the Kindle. Unless specified otherwise, I will mostly
+refer to the Kindle3 WiFi which is what I have.</div>
+
+<a name="&nbsp;"><h3 class="e-hdr">&nbsp;</h3></a>
+<div class="e-body"></div>
+
+
+<table><tr>
+<td class="t-l">&nbsp;</td>
+<td class="t-r"> <a name="standalone-kindle-terminal"><h3 class="e-hdr">standalone kindle terminal<span class="e-posted"> (posted 2010-12-08)</span></h3></a>
+<div class="e-body">
+Below is a standalone C program which lets you run a
+shell from the Kindle's keyboard and screen
+<a href="20101208-kindle-terminal.jpg">
+<img src="20101208-kindle-terminal.jpg" style="width: 10%; float:right;"></a><br/>
+<a  href="http://info.iet.unipi.it/~luigi/kindle/kiterm-20101208.tgz">http://info.iet.unipi.it/~luigi/kindle/kiterm-20101208.tgz</a><br/>
+Extract the archive, look at the source and possibly
+rebuild it to make sure you don't have surprises (there is a
+precompiled binary if you trust it). Copy myts.arm and the two
+.ini files in a directory on the kindle and manually start
+the program in background.<br/>
+The program acts as a "launchpad", i.e. it recognises certain
+key sequences and executes actions (e.g. run programs) as defined
+in the config file launchpad.ini".<br/>
+In particular, the "Shift" t sequence enters terminal mode,
+from which you can exit pressing "Left<" (the "Page Back" key on
+the upper left side of the screen). ESC is "Left>",
+other Key mappings for the terminal
+are shown on the on-screen window.<br/>
+The font is CP437- 8x16 so you can see 75 chars in vertical
+mode, and the full 80 chars in horizontal.<br/>
+The KindleDX keys might need some tweaks -- see keydefs.ini<br/>
+Thanks to the author of
+<a href="http://www.mobileread.com/forums/showthread.php?t=97636">launchpad</a>
+for code examples on how to access the kindle's inputs and framebuffer.
+</div>
+
+<a name="TCC-for-Kindle"><h3 class="e-hdr">TCC for Kindle<span class="e-posted"> (posted 2010-11-12)</span></h3></a>
+<div class="e-body">
+I have prepared a version of the
+<a  href="http://bellard.org/tcc/"> Tiny C compiler</a>
+for the Kindle.  You can find it at
+<a  href="http://info.iet.unipi.it/~luigi/kindle/tcc-kindle-20101102.tgz">http://info.iet.unipi.it/~luigi/kindle/tcc-kindle-20101102.tgz</a><br/>
+Headers are still missing, you have to find it somewhere else
+(I am working on it).</div>
+
+<a name="Kindle-terminal-update"><h3 class="e-hdr">Kindle terminal update<span class="e-posted"> (posted 2010-11-07)</span></h3></a>
+<div class="e-body">
+An updated version of Ajaxterm which lets you configure ports,
+commands etc through the command line, plus many simplifications
+<a  href="http://info.iet.unipi.it/~luigi/kindle/kiterm-20101107.tgz">http://info.iet.unipi.it/~luigi/kindle/kiterm-20101107.tgz</a></div>
+
+<a name="Kindle-terminal"><h3 class="e-hdr">Kindle terminal<span class="e-posted"> (posted 2010-11-05)</span></h3></a>
+<div class="e-body">
+One way to run a shell on a kindle is to use the browser as
+the user interface.<br/>
+<a  href="http://info.iet.unipi.it/~luigi/kindle/kiterm-20101105.tgz">http://info.iet.unipi.it/~luigi/kindle/kiterm-20101105.tgz</a>
+is a simplified and stripped down port of the AjaxTerm
+program that is suitable for operation on the Kindle.<br/>
+<p>
+AjaxTerm uses some simple javascript on the client to access a
+server in charge of forking shells (and keeping them alive)
+and pass tty data across the HTTP connection.
+This approach is especially useful on the kindle, where
+running an xterm or a shell in console mode is challenging.
+Instead, the browser can be used for this.<br/>
+<p>
+The original AjaxTerm uses a Python script, with the usual amount
+of classes, to implement its services.
+I have completely reimplemented the program in C, using a
+single process that handles multiple connections and forks
+the child shells as desired.
+The javascript has also been heavily simplified, removing
+unnecessary libraries.<br/>
+The tarball includes:
+<li> this README
+<li> myts.c (source code for the server)
+<li> myts.arm      -- a version of the server compiled for the kindle
+<li> ajaxterm.{html,js,css},               html files<br/>
+<p>
+To use the program you must run the server from the
+directory where the javascript files are, and then
+launch a browser to<br/>
+         http://localhost:8022/<br/>
+On the kindle, ALT maps to CTRL, and the ESC key is the
+"page back" key on the left of the screen.<br/>
+<b>TODO:</b><br/>
+At this stage the program is still a bit experimental in that it
+still needs work on two areas, namely process management
+and terminal emulation. In particular:<br/>
+<ul>
+    <li> complete ANSI control code emulation.
+        Not all ANSI sequences are recognised, though
+        most things work (top, vi, ...). The missing sequences
+        mostly refer to color handling.<br/>
+    <li> reconnect to existing sessions.
+        at the moment each session uses a random key so
+        if the browser dies or disconnects, you cannot
+        reach the existing session anymore<br/>
+    <li> session termination.
+        shells remain alive until the server terminates.
+        I should implement a way to explicitly kill
+        a session or connect to one of the existing ones.
+</ul>
+</div>
+
+<a name="Refresh-content-after-modifying-filesystem"><h3 class="e-hdr">Refresh content after modifying filesystem<span class="e-posted"> (posted 2010-11-01)</span></h3></a>
+<div class="e-body">
+In order to refresh content after modifying the files in /mnt/us
+you should run
+<pre>
+dbus-send --system /default com.lab126.powerd.resuming int32:1
+</pre></div>
+
+<a name="Browser-does-not-open-links-in-new-tab"><h3 class="e-hdr">Browser does not open links in new tab<span class="e-posted"> (posted 2010-10-28)</span></h3></a>
+<div class="e-body">
+An annoying feature of the browser is that it refuses to open
+links in a new window. And since there is no way to capture
+the link or store it as a bookmark, you cannot navigate
+on links which have 'target="..."' set.<br/>
+The error message is
+<pre>
+Web Browser could not open this link because opening multiple
+windows is not supported.
+</pre>
+in variable messages.error.new_window_suppressed
+called by Browser.jar: com/amazon/ebook/booklet/browser/r.class</div>
+
+<a name="Browser-supported-formats"><h3 class="e-hdr">Browser supported formats<span class="e-posted"> (posted 2010-10-28)</span></h3></a>
+<div class="e-body">
+Another slightly annoying feature of the browser is that
+it will not display or download a pdf file (even if the
+reader is able to display it).</div>
+
+<a name="System-configuration"><h3 class="e-hdr">System configuration<span class="e-posted"> (posted 2010-10-27)</span></h3></a>
+<div class="e-body">
+Some information on the Kindle3 hardware and software
+<pre>
+ # more /proc/cpuinfo
+Processor        : ARMv6-compatible processor rev 3 (v6l)
+BogoMIPS        : 255.59
+Features        : swp half thumb fastmult vfp edsp java
+CPU implementer        : 0x41
+CPU architecture: 6TEJ
+CPU variant        : 0x1
+CPU part        : 0xb36
+CPU revision        : 3
+Cache type        : write-back
+Cache clean        : cp15 c7 ops
+Cache lockdown        : format C
+Cache format        : Harvard
+I size                : 16384
+I assoc                : 4
+I line length        : 32
+I sets                : 128
+D size                : 16384
+D assoc                : 4
+D line length        : 32
+D sets                : 128
+ # more /proc/meminfo
+MemTotal:       256568 kB
+ # df
+Filesystem           1k-blocks      Used Available Use% Mounted on
+/dev/mmcblk0p1          662362    492797    142941  78% /
+tmpfs                   128284        20    128264   0% /dev
+rwfs                     32768       696     32072   2% /mnt/rwfs
+shm                     128284         0    128284   0% /dev/shm
+rwfs                     32768       696     32072   2% /var
+/dev/mmcblk0p2           23797      1492     21077   7% /var/local
+fsp                    3247200    119968   3127232   4% /mnt/us
+fsp                    3247200    119968   3127232   4% /opt/amazon/screen_saver/600x800
+/dev/loop/0            3247200    119968   3127232   4% /mnt/base-us
+</pre></div>
+
+<a name="Browser-and-Javascript-or-SVG"><h3 class="e-hdr">Browser and Javascript or SVG<span class="e-posted"> (posted 2010-10-25)</span></h3></a>
+<div class="e-body">
+I have some applications such as <a  href="http://info.iet.unipi.it/~luigi/sttp/">http://info.iet.unipi.it/~luigi/sttp/</a>
+which use Javascript for polling a server, and some other which even
+do SVG rendering, and they seem to work fine on the Kindle's browser.</div>
+
+<a name="Image-viewer"><h3 class="e-hdr">Image viewer<span class="e-posted"> (posted 2010-10-24)</span></h3></a>
+<div class="e-body">
+As mentioned by other blogs <a  href="http://wiki.mobileread.com/wiki/Kindle_HowTo:_Picture_Viewer">http://wiki.mobileread.com/wiki/Kindle_HowTo:_Picture_Viewer</a>,
+there is a picture viewer on the Kindle but is not very robust.<br/>
+You need to create a <span class="tt"> pictures</span> directory under the root
+of your filesystem, then a subdirectory for each set
+of pictures, and then use ALT-Z to refresh the window.
+The set of pictures will be listed as a separate document
+in the home menu.</div>
+
+<a name="Support-for-file:///"><h3 class="e-hdr">Support for file:///<span class="e-posted"> (posted 2010-10-22)</span></h3></a>
+<div class="e-body">
+Some blogs <a  href="http://www.mobileread.com/forums/showthread.php?t=24127">http://www.mobileread.com/forums/showthread.php?t=24127</a>
+suggest that Kindle2 supports the file:///URLs.<br/>
+This is not true anymore on Kindle3 with 3.0.2 or 3.0.3 .
+The GUI on the browser replies with this message
+<blockquote>
+Web Browser cannot download files using this protocol.
+Only HTTP: and HTTPS: protocols are supported.
+</blockquote></div>
+
+<a name="Issues-with-WiFi-on-open-networks"><h3 class="e-hdr">Issues with WiFi on open networks<span class="e-posted"> (posted 2010-10-21)</span></h3></a>
+<div class="e-body">
+The Kindle3 seems to have issues connecting to open WiFi networks in
+DHCP mode. Setting the network as STATIC and supply entries manually
+might help a little. 3.0.3 does not seem to work much better.<br/>
+You can get a bit of information by doing Home->Settings->711
+as the page is dynamic.
+You see that it often refuses to accept certain DHCP offers,
+for reasons unknown to me.</div>
+
+<a name="Useful-links"><h3 class="e-hdr">Useful links<span class="e-posted"> (posted 2010-10-20)</span></h3></a>
+<div class="e-body">
+Useful links:
+<li> <a  href="http://wiki.mobileread.com/wiki/Amazon_Kindle_Keyboard_Shortcuts"> keyboar
+d shortcuts</a>
+<li> <a  href="http://adq.livejournal.com/106967.html">http://adq.livejournal.com/106967.html</a></div>
+
+ </td>
+</tr></table>
+</body></html>

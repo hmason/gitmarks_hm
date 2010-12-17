@@ -1,0 +1,1098 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Introducing Apache Mahout</title>
+<meta http-equiv="PICS-Label" content='(PICS-1.1 "http://www.icra.org/ratingsv02.html" l gen true r (cz 1 lz 1 nz 1 oz 1 vz 1) "http://www.rsac.org/ratingsv01.html" l gen true r (n 0 s 0 v 0 l 0) "http://www.classify.org/safesurf/" l gen true r (SS~~000 1))'/>
+<link rel="schema.DC" href="http://purl.org/DC/elements/1.0/"/>
+<link rel="SHORTCUT ICON" href="http://www.ibm.com/favicon.ico"/>
+<meta name="Owner" content="developerWorks Content/Raleigh/IBM"/>
+<meta name="DC.Language" scheme="rfc1766" content="en"/>
+<meta name="IBM.Country" content="ZZ"/>
+<meta name="Security" content="Public"/>
+<meta name="IBM.SpecialPurpose" content="SP001"/>
+<meta name="IBM.PageAttributes" content="sid=1003"/>
+<meta name="Source" content="v16 Template Generator"/>
+<meta name="Robots" content="index,follow"/>
+<meta name="Abstract" content="Once the exclusive domain of academics and corporations with large research budgets, intelligent applications that learn from data and user input are becoming more common. The need for machine-learning techniques like clustering, collaborative filtering, and categorization has never been greater, be it for finding commonalities among large groups of people or automatically tagging large volumes of Web content. The Apache Mahout project aims to make building intelligent applications easier and faster. Mahout co-founder Grant Ingersoll introduces the basic concepts of machine learning and then demonstrates how to use Mahout to cluster documents, make recommendations, and organize content."/>
+<meta name="Description" content="Once the exclusive domain of academics and corporations with large research budgets, intelligent applications that learn from data and user input are becoming more common. The need for machine-learning techniques like clustering, collaborative filtering, and categorization has never been greater, be it for finding commonalities among large groups of people or automatically tagging large volumes of Web content. The Apache Mahout project aims to make building intelligent applications easier and faster. Mahout co-founder Grant Ingersoll introduces the basic concepts of machine learning and then demonstrates how to use Mahout to cluster documents, make recommendations, and organize content."/>
+<meta name="Keywords" content="Apache Mahout, Mahout, machine learning, cloud, cloud computing, collaborative filtering, CF, clustering, classification, Hadoop, Grant Ingersoll, tttjca, tttosca"/>
+<meta name="DC.Date" scheme="iso8601" content="2009-09-08"/>
+<meta name="DC.Type" scheme="IBM_ContentClassTaxonomy" content="CT316"/>
+<meta name="DC.Subject" scheme="IBM_SubjectTaxonomy" content="TT300"/>
+<meta scheme="IBM_WTMCategory" name="IBM.WTMCategory" content="SOFDCJVAZZ" />
+<meta name="DC.Rights" content="© Copyright IBM Corporation 2009"/>
+<meta name="IBM.Effective" scheme="W3CDTF" content="2009-09-08"/>
+<meta name="title" content="Introducing Apache Mahout"/>
+
+<!-- HEADER_SCRIPTS_AND_CSS_INCLUDE -->
+<link href="//dw1.s81c.com/common/v16/css/all.css" media="all" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/screen.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/screen-uas.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/zz/en/screen-fonts.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/handheld.css" media="handheld" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/print.css" media="print" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/common/v16/css/overlay.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+
+<!-- dW-specific CSS -->
+<link href="//dw1.s81c.com/developerworks/css/dw-screen.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/developerworks/css/dw-screen-comments-ratings-signin.css" media="screen,projection" rel="stylesheet" title="www" type="text/css"/>
+<link href="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.cluetip.css" media="screen,projection" rel="stylesheet"  title="www" type="text/css" />
+
+<script src="//dw1.s81c.com/common/js/ibmcommon.js" type="text/javascript">//</script>
+<script src="//dw1.s81c.com/common/js/dynamicnav.js" type="text/javascript">//</script>
+
+<!-- dW functional JS -->
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/urltactic.js" type="text/javascript"></script>
+<!-- Rating_START -->
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/artrating/showrating.js" type="text/javascript"></script>
+<style type="text/css">
+.metavalue {
+  display: none;
+}
+</style>
+<!-- Rating_END --><!-- RESERVED_HEADER_INCLUDE -->
+<script language="javascript" src="//dw1.s81c.com/developerworks/js/ajax1.js" type="text/javascript"></script>
+<script language="javascript" src="//dw1.s81c.com/developerworks/js/search_counter-maverick.js" type="text/javascript"></script>
+<script language="javascript" src="//dw1.s81c.com/developerworks/js/request_referer_capture-maverick.js" type="text/javascript"></script>
+<script language="JavaScript" type="text/javascript">
+ <!--
+ setDefaultQuery('javaart');
+ //-->
+</script>
+<script language="JavaScript" type="text/javascript">
+ <!--
+ function openNewWindow(url,tar,arg){window.open(url,tar,arg);}
+ //-->
+</script>
+<!-- Include file support -->
+<script language="JavaScript" type="text/javascript">
+(function($) {
+	jQuery.extend({
+		getInc: function(u,d){
+			if(u==null)return;
+			jQuery.ajax({
+	    		type: "GET",
+			url: u,
+			dataType: "text",
+	        	success: function(t) {
+				jQuery(d).html(t);
+				ibmCommon.initShowHide(jQuery(d).children()[0]);			
+			},
+			async: true
+			});
+		}
+	});
+})(jQuery);
+</script>
+</head>
+
+<body id="ibm-com">
+<div id="ibm-top" class="ibm-landing-page">
+
+<!-- MASTHEAD_BEGIN -->
+<div class="ibm-access"><a href="#ibm-content">Skip to main content</a></div>
+<div id="ibm-masthead">
+<div id="ibm-logo"><a href="http://www.ibm.com/"><img height="50" src="//dw1.s81c.com/i/v16/t/ibm-logo.gif" width="110" alt="IBM®" /></a></div>
+<ul id="ibm-geo"><li id="ibm-country" class="ibm-first">Country/region</li><li id="ibm-change-country">[ <a href="http://www.ibm.com/developerworks/country/">select</a> ]</li></ul>
+  <form id="ibm-search-form" action="//www.ibm.com/developerworks/search/searchResults.jsp" method="get" name="form1"><input type="hidden" name="searchType" value="1"/><input type="hidden" name="searchSite" value="dW"/><p>
+<span id="ibm-search-scope">
+<label for="sn"><img src="//dw1.s81c.com/i/c.gif" width="1" height="1" alt="Search in:"/></label>
+<select name="searchScope" id="sn">
+<option value="dW" selected="selected">All of dW</option>
+<option value="dW">-----------------</option>
+<option value="aixunix">&nbsp;AIX and UNIX</option>
+<option value="db2">&nbsp;Information Mgmt</option>
+<option value="lotus">&nbsp;Lotus</option>
+<option value="rdd">&nbsp;Rational</option>
+<option value="tivoli">&nbsp;Tivoli</option>  
+<option value="WSDD">&nbsp;WebSphere</option>
+<option value="dW">-----------------</option> 
+<option value="javaZ">&nbsp;Java technology</option> 
+<option value="linuxZ">&nbsp;Linux</option> 
+<option value="opensrcZ">&nbsp;Open source</option>
+<option value="webservZ">&nbsp;SOA/Web services</option>
+<option value="webarchZ">&nbsp;Web development</option>  
+<option value="xmlZ">&nbsp;XML</option>
+<option value="dW">-----------------</option>
+<option value="forums">&nbsp;dW forums</option> 
+<option value="dW">-----------------</option>
+<option value="aI">University</option>
+<option value="dW">-----------------</option>
+<option value="aW">alphaWorks</option>
+<option value="dW">-----------------</option>
+<option value="all">All of IBM</option>
+</select>
+</span>
+
+<label for="q"><img alt="Search for:" height="1" width="1" src="//dw1.s81c.com/i/c.gif" /></label><input type="text" name="query" maxlength="100" id="q"/><input type="submit" id="ibm-search" class="ibm-btn-search" name="Search" value="Search" /></p></form>
+<div id="ibm-site-name">
+<!-- IBM site name container -->
+</div>
+<div id="ibm-universal-nav">
+<ul><li id="ibm-unav-home" class="ibm-first"><a href="http://www.ibm.com/">Home</a></li><li id="ibm-unav-solutions"><a href="http://www.ibm.com/solutions/">Solutions</a></li><li id="ibm-unav-services"><a href="http://www.ibm.com/technologyservices/">Services</a></li><li id="ibm-unav-products"><a href="http://www.ibm.com/products/">Products</a></li><li id="ibm-unav-support"><a href="http://www.ibm.com/support/">Support &amp; downloads</a></li><li id="ibm-unav-myibm"><a href="http://www.ibm.com/account/">My IBM</a></li></ul>
+</div>
+</div>
+<!-- MASTHEAD_END -->
+
+<div id="ibm-pcon">
+
+<!-- CONTENT_BEGIN -->
+<div id="ibm-content">
+
+<!-- Navigation_Trail_BEGIN -->
+<!-- &nbsp; -->
+      <div id="ibm-content-head"><ul id="ibm-navigation-trail"><li class="ibm-first"><a href="http://www.ibm.com/developerworks/">developerWorks</a></li><li><a href="http://www.ibm.com/developerworks/java/">Java technology</a></li><li><a href="http://www.ibm.com/developerworks/views/java/library.jsp">Technical library</a></li></ul></div>
+<!-- Navigation_Trail_END -->
+
+<!-- dW_Summary Area_START -->
+<div id="dw-summary-article">
+
+<div class="dw-content-head">
+<h1>Introducing Apache Mahout</h1><p><em>Scalable, commercial-friendly machine learning for building intelligent applications</em></p>
+</div>
+
+<div class="ibm-container-body ibm-two-column">
+
+<div class="ibm-column ibm-first">
+<div class="author"><a class="dwauthor" rel="#authortip1" href="#author1">Grant Ingersoll</a> (<a href="mailto:grant@lucidimagination.com?subject=Introducing Apache Mahout&amp;cc=jaloi@us.ibm.com">grant@lucidimagination.com</a>), Member, Technical Staff, Lucid Imagination</div><div id="authortip1" class="dwauthor-onload-state ibm-no-print"><div class="position"><img src="http://www.ibm.com/developerworks/i/p-gingersoll.jpg" width="64" height="80" alt="Grant Ingersoll" /></div>Grant Ingersoll is a founder and member of the technical staff at Lucid Imagination. Grant's programming interests include information retrieval, machine learning, text categorization, and extraction. Grant is the co-founder of the Apache Mahout machine-learning project, as well as a committer and speaker on both the Apache Lucene and Apache Solr projects. He is also the co-author of <i>Taming Text</i> (Manning, forthcoming) covering open source tools for natural-language processing.</div>
+<p></p>
+<p><b>Summary:</b>&nbsp; Once the exclusive domain of academics and corporations with large research budgets, intelligent applications that learn from data and user input are becoming more common. The need for machine-learning techniques like clustering, collaborative filtering, and categorization has never been greater, be it for finding commonalities among large groups of people or automatically tagging large volumes of Web content. The Apache Mahout project aims to make building intelligent applications easier and faster. Mahout co-founder Grant Ingersoll introduces the basic concepts of machine learning and then demonstrates how to use Mahout to cluster documents, make recommendations, and organize content.</p>
+
+<div id="dw-tag-content" class="ibm-no-print"></div><div id="dw-moretags-access" class="ibm-access"></div>
+<p class="ibm-no-print"><div id="dw-tag-this" class="ibm-no-print"><a class="ibm-external-link" onclick="jQuery.launchTagThisWindow(); return false;" href="#">Tag this!</a></div><div id="interestShow" class="ibm-no-print"></div></p>
+</div>
+
+<div class="ibm-column ibm-second">
+<p class="leading"><b>Date:</b>&nbsp; 08 Sep 2009
+<br /><b>Level: </b>&nbsp;Intermediate
+<br class="ibm-ind-link"/><b>PDF:</b>&nbsp; <a href="http://download.boulder.ibm.com/ibmdl/pub/software/dw/java/j-mahout-pdf.pdf">A4 and Letter</a> (109KB | 19 pages)<a class="ibm-external-link" href="http://www.adobe.com/products/acrobat/readstep2.html">Get Adobe&#174; Reader&#174;</a>
+<br /><b>Also available in:&nbsp;</b>
+&nbsp;<a href="http://www.ibm.com/developerworks/cn/java/j-mahout/">Chinese</a>
+&nbsp;<a href="http://www.ibm.com/developerworks/kr/library/j-mahout/">Korean</a> 
+
+&nbsp;<a href="http://www.ibm.com/developerworks/jp/java/library/j-mahout/">Japanese</a> 
+&nbsp;<a href="http://www.ibm.com/developerworks/vn/library/j-mahout/">Vietnamese</a> 
+&nbsp;<a href="http://www.ibm.com/developerworks/br/java/library/j-mahout/">Portuguese</a> 
+
+<br />
+<br /><b>Activity:</b>&nbsp; 73510 views
+<br /><b>Comments:</b> &nbsp; <span id="nCmts"><img alt="" src="//dw1.s81c.com/developerworks/i/circle-preloader.gif" height="12" width="50" /><img alt="" src="//dw1.s81c.com/i/c.gif" height="14" width="1" /></span>
+<!-- Rating_Area_Begin -->
+<div id="art-rating-summary"></div>
+<!-- Rating_Area_End -->
+</p>
+</div>
+
+</div>
+</div>
+<!-- dW_Summary_Area_END -->
+
+<!-- CONTENT_BODY -->
+<div id="ibm-content-body">
+
+<!-- MAIN_COLUMN_BEGIN -->
+<div id="ibm-content-main">
+
+<!-- Related_Searches_Area -->
+<!-- Related_Searches_Area_Begin -->
+<script type="text/javascript" language="javascript">
+	     capture_referrer();
+</script>
+
+<div id="dw-related-searches-article" style="display:none">
+<div class="ibm-container ibm-alternate-two">
+<div class="ibm-container-body">
+
+<!--  START : HTML FOR ARTICLE SEARCH -->
+  <div id="article_results" style="display:block"></div>
+<!--  END : HTML FOR ARTICLE SEARCH -->
+
+</div>
+</div>
+</div>
+<!-- Related_Searches_Area_End -->
+<!-- MAIN_COLUMN_CONTAINER_BEGIN -->
+<div class="ibm-container">
+
+<!-- MAIN_COLUMN_CONTENT_BEGIN -->
+<p>Increasingly, the success of companies and individuals in the information age depends
+    on how quickly and efficiently they turn vast amounts of data into actionable information. Whether it's for processing hundreds or thousands of personal e-mail messages a day or divining user intent from petabytes of weblogs, the need for tools that can organize and enhance data has never been greater. Therein lies the premise and the promise of the field of <i>machine learning</i> and the project this article introduces: Apache Mahout (see <a href="#resources">Resources</a>).</p>
+
+<p>Machine learning is a subfield of artificial intelligence concerned with techniques
+    that allow computers to improve their outputs based on previous experiences. The field
+    is closely related to data mining and often uses techniques from statistics,
+    probability theory, pattern recognition, and a host of other areas. Although machine
+    learning is not a new field, it is definitely growing. Many large companies, including
+    IBM&#174;, Google, Amazon, Yahoo!, and Facebook, have implemented machine-learning algorithms in their applications. Many, many more companies would benefit from leveraging machine learning in their applications to learn from users and past situations.</p>
+
+
+
+<p>After giving a brief overview of machine-learning concepts, I'll introduce you to the Apache Mahout project's features,  history, and goals. Then I'll show you how to use Mahout to do some interesting machine-learning tasks using the freely available Wikipedia data set.</p>
+
+<p><a name="N1008B"><span class="atitle">Machine learning 101</span></a></p>
+<p>Machine learning uses run the gamut from game playing to fraud detection to stock-market analysis. It's used to build systems like those at Netflix and Amazon that recommend products to users based on past purchases, or systems that find all of the similar news articles on a given day. It can also be used to categorize Web pages automatically according to genre (sports, economy, war, and so on) or to mark e-mail messages as spam. The uses of machine learning are more numerous than I can cover in this article. If you're interested in exploring the field in more depth, I encourage you to refer to the <a href="#resources">Resources</a>.</p>
+
+<p>Several approaches to machine learning are used to solve problems. I'll focus on the two most commonly used ones &#8212; <i> supervised</i> and <i>unsupervised</i> learning &#8212; because they are the main ones supported by Mahout.</p>
+
+<p>Supervised learning is tasked with learning a function from labeled training data in order to predict the value of any valid input. Common examples of supervised learning include classifying e-mail messages as spam, labeling Web pages according to their genre, and recognizing handwriting. Many algorithms are used to create supervised learners, the most common being neural networks, Support Vector Machines (SVMs), and Naive Bayes classifiers.</p>
+
+<p>Unsupervised learning, as you might guess, is tasked with making sense of data without any examples of what is correct or incorrect. It is most commonly used for clustering similar input into logical groups. It also can be used to reduce the number of dimensions in a data set in order to focus on only the most useful attributes, or to detect trends. Common approaches to unsupervised learning include k-Means, hierarchical clustering, and self-organizing maps.</p>
+
+<p>For this article, I'll focus on three specific machine-learning tasks that Mahout currently implements. They also happen to be three areas that are quite commonly used in real applications:</p>
+<ul>
+<li>Collaborative filtering</li>
+<li>Clustering</li>
+<li>Categorization</li>
+</ul>
+<p>I'll take a deeper look at each of these tasks at the conceptual level before exploring their implementations in Mahout.</p>
+
+<p><a name="N100BC"><span class="smalltitle">Collaborative filtering</span></a></p>
+<p><i>Collaborative filtering</i> (CF) is a technique, popularized by Amazon and others, that uses user information such as ratings, clicks, and purchases to provide recommendations to other site users. CF is often used to recommend consumer items such as books, music, and movies, but it is also used in other applications where multiple actors need to collaborate to narrow down data. Chances are you've seen CF in action on Amazon, as shown in <a href="#cf-example">Figure 1</a>:</p>
+
+
+<br /><a name="N100CC"><b>Figure 1. Example of collaborative filter on Amazon</b></a><br />
+<img alt="Example of collaborative filtering" height="272" src="cf-example.jpg" width="550"/>
+<br />
+
+<p>Given a set of users and items, CF applications provide recommendations to the current user of the system. Four ways of generating recommendations are typical:</p>
+<ul>
+<li><b>User-based</b>: Recommend items by finding similar users. This is often harder to scale because of the dynamic nature of users.<br /><br /></li>
+<li><b>Item-based</b>: Calculate similarity between items and make recommendations. Items usually don't change much, so this often can be computed offline.<br /><br /></li>
+<li><b>Slope-One</b>: A very fast and simple item-based recommendation approach applicable when users have given ratings (and not just boolean preferences).<br /><br /></li>
+<li><b>Model-based</b>: Provide recommendations based on developing a model of users and their ratings.</li>
+</ul>
+<p>All CF approaches end up calculating a notion of similarity between users and their rated items. There are many ways to compute similarity, and most CF systems allow you to plug in different measures so that you can determine which one works best for your data.
+</p>
+
+<p><a name="N100FC"><span class="smalltitle">Clustering</span></a></p>
+<p>Given large data sets, whether they are text or numeric, it is often useful to group
+    together, or <i>cluster</i>, similar items automatically. For instance, given all of the news for the day from all of the newspapers in the United States, you might want to group all of the articles about the same story together automatically; you can then choose to focus on specific clusters and stories without needing to wade through a lot of unrelated ones. Another example: Given the output from sensors on a machine over time, you could cluster the outputs to determine normal versus problematic operation, because normal operations would all cluster together and abnormal operations would be in outlying clusters.</p>
+
+<p>Like CF, clustering calculates the similarity between items in the collection, but its only job is to group together similar items. In many implementations of clustering, items in the collection are represented as vectors in an <i>n</i>-dimensional space. Given the vectors, one can calculate the distance between two items using measures such as the Manhattan Distance, Euclidean distance, or cosine similarity. Then, the actual clusters can be calculated by grouping together the items that are close in distance.</p>
+
+<p>There are many approaches to calculating the clusters, each with its own trade-offs. Some approaches work from the bottom up, building up larger clusters from smaller ones, whereas others break a single large cluster into smaller and smaller clusters. Both have criteria for exiting the process at some point before they break down into a trivial cluster representation (all items in one cluster or all items in their own cluster). Popular approaches include k-Means and hierarchical clustering. As I'll show later, Mahout comes with several different clustering approaches.</p>
+
+<p><a name="N10110"><span class="smalltitle">Categorization</span></a></p>
+<p>The goal of <i>categorization</i> (often also called <i>classification</i>) is to label unseen documents, thus grouping them together. Many classification approaches in machine learning calculate a variety of statistics that associate the features of a document with the specified label, thus creating a model that can be used later to classify unseen documents. For example, a simple approach to classification might keep track of the words associated with a label, as well as the number of times those words are seen for a given label. Then, when a new document is classified, the words in the document are looked up in the model, probabilities are calculated, and the best result is output, usually along with a score indicating the confidence the result is correct.
+</p>
+
+<p>Features for classification might include words, weights for those words (based on frequency, for instance), parts of speech, and so on. Of course, features really can be anything that helps associate a document with a label and can be incorporated into the algorithm.</p>
+
+<p>The field of machine learning is large and robust. Instead of focusing further on the theoretical, which is impossible to do proper justice to here, I'll move on and dive into Mahout and its usage.</p>
+
+<div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N10124"><span class="atitle">Introducing Mahout</span></a></p>
+<p>Apache Mahout is a new open source project by the Apache Software Foundation (ASF) with the primary goal of creating scalable machine-learning algorithms that are free to use under the Apache license. The project is entering its second year, with one public release under its belt. Mahout contains implementations for clustering, categorization, CF, and evolutionary programming. Furthermore, where prudent, it uses the Apache Hadoop library to enable Mahout to scale effectively in the cloud (see <a href="#resources">Resources</a>).</p>
+
+<p><a name="N10130"><span class="smalltitle">Mahout history</span></a></p>
+
+<div class="ibm-container ibm-alt-header dw-container-sidebar"><h2>What's in a name?</h2><div class="ibm-container-body">
+
+<p>A <i>mahout</i> is a person who keeps and drives an elephant.  The name Mahout comes from the project's (sometime) use of Apache Hadoop &#8212; which has a yellow elephant as its logo &#8212; for scalability and fault tolerance.</p>
+</div></div>
+
+
+<p>The Mahout project was started by several people involved in the Apache Lucene (open source search) community with an active interest in machine learning and a desire for robust, well-documented, scalable implementations of common machine-learning algorithms for clustering and categorization. The community was initially driven by Ng et al.'s paper "Map-Reduce for Machine Learning on Multicore" (see <a href="#resources">Resources</a>) but has since evolved to cover much broader machine-learning approaches. Mahout also aims to:</p>
+<ul>
+<li>Build and support a community of users and contributors such that the code outlives
+    any particular contributor's involvement or any particular company or university's funding.<br /><br /></li>
+<li>Focus on real-world, practical use cases as opposed to bleeding-edge research or
+    unproven techniques.<br /><br /></li>
+<li>Provide quality documentation and examples.</li>
+</ul>
+
+<p><a name="N1015F"><span class="smalltitle">Features</span></a></p>
+<p>Although relatively young in open source terms, Mahout already has a large amount of functionality, especially in relation to clustering and CF. Mahout's primary features are:</p>
+
+<div class="ibm-container ibm-alt-header dw-container-sidebar"><h2>A few words on Map-Reduce</h2><div class="ibm-container-body">
+
+
+<p>Map-Reduce is a distributed programming API pioneered by Google and implemented in the Apache Hadoop project. Combined with a distributed file system, it often makes parallelizing problems easier by giving programmers a well-defined API for describing parallel computation tasks. (See  <a href="#resources">Resources</a> for more information.)
+</p>
+</div></div>
+
+
+<ul>
+<li>Taste CF. Taste is an open source project for CF started by Sean Owen on SourceForge and donated to Mahout in 2008.<br /><br /></li>
+<li>Several Map-Reduce enabled clustering implementations, including k-Means, fuzzy k-Means, Canopy, Dirichlet, and Mean-Shift.<br /><br /></li>
+<li>Distributed Naive Bayes and Complementary Naive Bayes classification implementations.<br /><br /></li>
+<li>Distributed fitness function capabilities for evolutionary programming.<br /><br /></li>
+<li>Matrix and vector libraries.<br /><br /></li>
+<li>Examples of all of the above algorithms.</li>
+</ul>
+
+
+
+
+<p><a name="get.started"><span class="smalltitle">Getting started with Mahout</span></a></p>
+<p>Getting up and running with Mahout is relatively straightforward. To start, you need to install the following prerequisites:</p>
+<ul>
+<li><a href="http://developers.sun.com/downloads/">JDK 1.6 or higher</a></li>
+<li><a href="http://ant.apache.org/">Ant 1.7 or higher</a></li>
+<li>If you want to build the Mahout source, <a href="http://maven.apache.org/download.html">Maven 2.0.9 or 2.0.10</a></li>
+</ul>
+
+<p>You also need this article's  sample code (see <a href="#download">Download</a>), which includes a copy of Mahout and its dependencies. Follow these steps to install the sample code:</p>
+<ol>
+<li><code>unzip sample.zip</code></li>
+<li><code>cd apache-mahout-examples</code></li>
+<li><code>ant install</code> </li>
+</ol>
+
+<p>Step 3 downloads the necessary Wikipedia files and compiles the code.  The Wikipedia file used is approximately 2.5 gigabytes, so download times will depend on your bandwidth.</p>
+
+<div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N101CE"><span class="atitle">Building a recommendation engine</span></a></p>
+<p>Mahout currently provides tools for building a recommendation engine through the Taste library &#8212; a fast and flexible engine for CF. Taste supports both user-based and item-based recommendations and comes with many choices for making recommendations, as well as interfaces for you to define your own. Taste consists of five primary components that work with <code>User</code>s, <code>Item</code>s and <code>Preference</code>s:</p>
+<ul>
+<li><code>DataModel</code>: Storage for <code>User</code>s, <code>Item</code>s, and <code>Preference</code>s</li>
+<li><code>UserSimilarity</code>: Interface defining the similarity between two users</li>
+<li><code>ItemSimilarity</code>: Interface defining the similarity between two items</li>
+<li><code>Recommender</code>: Interface for providing recommendations</li>
+<li><code>UserNeighborhood</code>: Interface for computing a neighborhood of similar users that can then be used by the <code>Recommender</code>s</li>
+</ul>
+
+<p>These components and their implementations make it possible to build out complex recommendation systems for either real-time-based recommendations or offline recommendations. Real-time-based recommendations often can handle only a few thousand users, whereas offline recommendations can scale much higher. Taste even comes with tools for leveraging Hadoop to calculate recommendations offline. In many cases, this is a reasonable approach that allows you to meet the demands of a large system with a lot of users, items, and preferences.
+</p>
+
+<p>To demonstrate building a simple recommendation system, I need some users, items, and ratings. For this purpose, I randomly generated a large set of <code>User</code>s and <code>Preference</code>s for the Wikipedia documents (<code>Item</code>s in Taste-speak) using the code in <code>cf.wikipedia.GenerateRatings</code> (included in the source with the sample code) and then supplemented this with a set of hand-crafted ratings around a specific topic (Abraham Lincoln) to create the final recommendations.txt file included in the sample. The idea behind this approach is to show how CF can guide fans of a specific topic to other documents of interest within the topic. In the example data are 990 (labeled 0 to 989) random users who have randomly assigned ratings to all the articles in the collection, and 10 users (labeled 990 to 999) who have rated one or more of the 17 articles in the collection containing the phrase <i>Abraham Lincoln</i>.</p>
+
+<div class="ibm-container ibm-alt-header dw-container-sidebar"><h2>Beware made-up data!</h2><div class="ibm-container-body">
+
+<p>The example presented here contains purely made-up data. I did all of the ratings myself, simulating 10 actual users who like information about Abraham Lincoln. While I believe the concept behind the data is interesting, the data itself and the values used are not. If you want real data, I suggest checking out the GroupLens project at the University of Minnesota and the Taste documentation (see <a href="#resources">Resources</a>). I chose to make up the data because I wanted to use a single data set across all of the examples.</p> </div></div>
+
+<p>To start, I'll demonstrate how to create recommendations for a user given the set of
+    ratings in recommendations.txt. As is the case with most uses of Taste, the first step
+    is to load the data containing the recommendations and store it in a <code>DataModel</code>. Taste comes with several different implementations of
+    <code>DataModel</code> for working with files and databases. For this
+    example, I'll keep things simple and use the <code>FileDataModel</code>
+    class, which expects each line to be of the form: user ID, item ID, preference &#8212; where both the user ID and the item ID are strings, while the preference can be a
+    double. Given a model, I then need to tell Taste how it should compare users by
+    declaring a <code>UserSimilarity</code> implementation. Depending on the
+    <code>UserSimilarity</code> implementation used, you might also need to
+    tell Taste how to infer preferences in the absence of an explicit setting for the
+    user.  Listing 1 puts all of these words into code. (<code>cf.wikipedia.WikipediaTasteUserDemo</code> in the <a href="#download">sample
+code</a> contains the full listing.)</p>
+
+<br /><a name="listing.1"><b>Listing 1. Creating the model and defining user similarity</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+//create the data model
+FileDataModel dataModel = new FileDataModel(new File(recsFile));
+UserSimilarity userSimilarity = new PearsonCorrelationSimilarity(dataModel);
+// Optional:
+userSimilarity.setPreferenceInferrer(new AveragingPreferenceInferrer(dataModel));
+</pre></td></tr></table><br />
+
+<p>In <a href="#listing.1">Listing 1</a>, I use the <code>PearsonCorrelationSimilarity</code>, which measures the correlation between two variables, but other <code>UserSimilarity</code> measures are available. Choice of a similarity measure depends on the type of data present and your testing.  For this data, I found this combination to work best while still demonstrating the issues. You'll find more information on choosing a similarity measure at the Mahout Web site (see <a href="#resources">Resources</a>). </p>
+
+<p>To complete the example, I construct a <code>UserNeighborhood</code> and a <code>Recommender</code>. The <code>UserNeighborhood</code> identifies users similar to my user and is handed off to the <code>Recommender</code>, which then does the work of creating a ranked list of recommended items. Listing 2 captures these ideas in code:</p>
+
+<br /><a name="listing.2"><b>Listing 2. Generating recommendations</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+//Get a neighborhood of users
+UserNeighborhood neighborhood =
+        new NearestNUserNeighborhood(neighborhoodSize, userSimilarity, dataModel);
+//Create the recommender
+Recommender recommender =
+        new GenericUserBasedRecommender(dataModel, neighborhood, userSimilarity);
+User user = dataModel.getUser(userId);
+System.out.println("-----");
+System.out.println("User: " + user);
+//Print out the users own preferences first
+TasteUtils.printPreferences(user, handler.map);
+//Get the top 5 recommendations
+List&lt;RecommendedItem&gt; recommendations =
+        recommender.recommend(userId, 5);
+TasteUtils.printRecs(recommendations, handler.map);
+</pre></td></tr></table><br />
+
+<p>You can run the full example on the command line by executing <code>ant user-demo</code> in the directory containing the sample. Running this command prints the preferences and recommendations for the mythical user 995, who just happens to be a fan of Lincoln. Listing 3 shows the output from running <code>ant user-demo</code>:</p>
+
+<br /><a name="listing.3"><b>Listing 3. Output from user recommendation</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+ [echo] Getting similar items for user: 995 with a neighborhood of 5
+     [java] 09/08/20 08:13:51 INFO file.FileDataModel: Creating FileDataModel
+            for file src/main/resources/recommendations.txt
+     [java] 09/08/20 08:13:51 INFO file.FileDataModel: Reading file info...
+     [java] 09/08/20 08:13:51 INFO file.FileDataModel: Processed 100000 lines
+     [java] 09/08/20 08:13:51 INFO file.FileDataModel: Read lines: 111901
+     [java] Data Model: Users: 1000 Items: 2284
+     [java] -----
+     [java] User: 995
+     [java] Title: August 21 Rating: 3.930000066757202
+     [java] Title: April Rating: 2.203000068664551
+     [java] Title: April 11 Rating: 4.230000019073486
+     [java] Title: Battle of Gettysburg Rating: 5.0
+     [java] Title: Abraham Lincoln Rating: 4.739999771118164
+     [java] Title: History of The Church of Jesus Christ of Latter-day Saints
+              Rating: 3.430000066757202
+     [java] Title: Boston Corbett Rating: 2.009999990463257
+     [java] Title: Atlanta, Georgia Rating: 4.429999828338623
+     [java] Recommendations:
+     [java] Doc Id: 50575 Title: April 10 Score: 4.98
+     [java] Doc Id: 134101348 Title: April 26 Score: 4.860541
+     [java] Doc Id: 133445748 Title: Folklore of the United States Score: 4.4308662
+     [java] Doc Id: 1193764 Title: Brigham Young Score: 4.404066
+     [java] Doc Id: 2417937 Title: Andrew Johnson Score: 4.24178
+</pre></td></tr></table><br />
+
+<p>From the results in Listing 3, you can see that the system recommended several articles with various levels of confidence. In fact, each of these items was rated by other Lincoln fans, but not by user 995. If you want to see the results for other users, just pass in the <code>-Duser.id=<i>USER-ID</i></code> parameter on the command line, where <code><i>USER-ID</i></code> is a number between <code>0</code> and <code>999</code>. You can also change the size of the neighborhood by passing in <code>-Dneighbor.size=<i>X</i></code>, where <i><code>X</code></i> is an integer greater than 0. In fact, changing the neighborhood size to <code>10</code> yields very different results, which are influenced by the fact that one of the random users is in the neighborhood. To see the neighborhood of users and the items in common, add <code>-Dcommon=true</code> to the command line.</p>
+
+<p>Now, if you happened to enter a number not in the range of users, you might have noticed that the example spits out a <code>NoSuchUserException</code>. Indeed, your application would need to handle what to do when a new user enters the system. For instance, you might just show the 10 most popular articles, a random selection of articles, or a selection of "dissimilar" articles &#8212; or, for that matter, nothing at all.</p>
+
+<p>As I mentioned earlier, the user-based approach often does not scale. In this case, it is better to use an item-item based approach. Thankfully, Taste makes using an item-item approach just as straightforward. The basic code to get up and running with item-item similarity isn't much different, as you can see in Listing 4:</p>
+
+<br /><a name="listing.4"><b>Listing 4. Example of item-item similarity (from <code>cf.wikipedia.WikipediaTasteItemItemDemo</code>)
+ </b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+//create the data model
+FileDataModel dataModel = new FileDataModel(new File(recsFile));
+//Create an ItemSimilarity
+ItemSimilarity itemSimilarity = new LogLikelihoodSimilarity(dataModel);
+//Create an Item Based Recommender
+ItemBasedRecommender recommender =
+        new GenericItemBasedRecommender(dataModel, itemSimilarity);
+//Get the recommendations
+List&lt;RecommendedItem&gt; recommendations =
+        recommender.recommend(userId, 5);
+TasteUtils.printRecs(recommendations, handler.map);
+</pre></td></tr></table><br />
+
+<p>Just as in <a href="#listing.1">Listing 1</a>, I create a <code>DataModel</code> from the recommendations file, but this time, instead of instantiating a <code>UserSimilarity</code> instance, I create an <code>ItemSimilarity</code> using the <code>LogLikelihoodSimilarity</code>, which helps handle rare events. After that, I feed the <code>ItemSimilarity</code> to an <code>ItemBasedRecommender</code> and then ask for the recommendations. That's it! You can run this in the sample code via the <code>ant item-demo</code> command. From here, of course, you'd want to set your system up to do these calculations offline, and you can also explore other <code>ItemSimilarity</code> measures.  Note that, because of the
+randomness of the data in this example, the recommendations may not be as expected.  In fact, it is important to make sure you evaluate your results during testing and try different similarity metrics, as many of the common metrics have certain edge cases that
+break down when insufficient data is available to give proper recommendations.</p>
+
+<p>Revisiting the new-user example, the problem of what to do in the absence of user preferences becomes a lot easier to address once the user navigates to an item. In that case, you can take advantage of the item-item calculations and ask the <code>ItemBasedRecommender</code> for the items that are most similar to the current item. Listing 5 demonstrates this in code:</p>
+
+<br /><a name="listing.5"><b>Listing 5. Similar items demo (from <code>cf.wikipedia.WikipediaTasteItemRecDemo</code>)</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+//create the data model
+FileDataModel dataModel = new FileDataModel(new File(recsFile));
+//Create an ItemSimilarity
+ItemSimilarity itemSimilarity = new LogLikelihoodSimilarity(dataModel);
+//Create an Item Based Recommender
+ItemBasedRecommender recommender =
+        new GenericItemBasedRecommender(dataModel, itemSimilarity);
+//Get the recommendations for the Item
+List&lt;RecommendedItem&gt; simItems
+        = recommender.mostSimilarItems(itemId, numRecs);
+TasteUtils.printRecs(simItems, handler.map);
+</pre></td></tr></table><br />
+
+<p>You can run <a href="#listing.5">Listing 5</a> from the command line by executing <code>ant sim-item-demo</code>. The only real difference from <a href="#listing.4">Listing 4</a> is that <a href="#listing.5">Listing 5</a>, instead of asking for recommendations, asks for the most similar items to the input item.</p>
+
+<p>From here, you should have enough to dig in with Taste. To learn more, refer to the Taste documentation and the mahout-user@lucene.apache.org mailing list (see <a href="#resources">Resources</a>). Next up, I'll take a look at how to find similar articles by leveraging some of Mahout's clustering capabilities.</p>
+
+<div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N10342"><span class="atitle">Clustering with Mahout</span></a></p>
+<p>Mahout supports several clustering-algorithm implementations, all written in Map-Reduce, each with its own set of goals and criteria:</p>
+
+<ul>
+<li><b>Canopy</b>: A fast clustering algorithm often used to create initial seeds for
+    other clustering algorithms.<br /><br /></li>
+<li><b>k-Means</b> (and <b>fuzzy k-Means</b>): Clusters items into k clusters based on the
+    distance the items are from the centroid, or center, of the previous iteration.<br /><br /></li>
+<li><b>Mean-Shift</b>: Algorithm that does not require any <i>a priori</i> knowledge about
+    the number of clusters and can produce arbitrarily shaped clusters.<br /><br /></li>
+<li><b>Dirichlet</b>: Clusters based on the mixing of many probabilistic models giving it
+    the advantage that it doesn't need to commit to a particular view of the clusters prematurely.</li>
+</ul>
+
+<p>From a practical standpoint, the names and implementations aren't as important as the results they produce. With that in mind, I'll show how k-Means works and leave the others for you to explore. Keep in mind that each algorithm has its own needs for making it run efficiently.
+</p>
+<p>In outline (with more details to follow), the steps involved in clustering data using Mahout are:</p>
+<ol>
+<li>Prepare the input. If clustering text, you need to convert the text to a numeric representation.</li>
+<li>Run the clustering algorithm of choice using one of the many Hadoop-ready driver programs available in Mahout.</li>
+<li>Evaluate the results.</li>
+<li>Iterate if necessary.</li>
+</ol>
+
+
+<p>First and foremost, clustering algorithms require data that is in a format suitable for processing. In machine learning, the data is often represented as a <i>vector</i>, sometimes called a <i>feature vector</i>. In clustering, a vector is an array of weights that represent the data. I'll demonstrate clustering using vectors produced from Wikipedia documents, but the vectors can come from other areas, such as sensor data or user profiles. Mahout comes with two <code>Vector</code> representations: <code>DenseVector</code> and <code>SparseVector</code>. Depending on your data, you will need to choose an appropriate implementation in order to gain good performance. Generally speaking, text-based problems are sparse, making <code>SparseVector</code> the correct choice for them.  On the
+other hand, if most values for most vectors are non-zero, then a <code>DenseVector</code> is more appropriate.  If you are unsure, try both and see which one works faster on a subset of your data.</p>
+
+<p>To produce vectors from the Wikipedia content (which I have done for you):</p>
+
+<ol>
+<li>Index the content into Lucene, being sure to store term vectors for the field you want to generate vectors from. I won't cover the details of this &#8212; it's outside the article's scope &#8212;  but I'll provide some brief hints along with some references on Lucene. Lucene comes with a class called the <code>EnWikiDocMaker</code> (in Lucene's <code>contrib/benchmark</code> package) that can read in a Wikipedia file dump and produce documents for indexing in Lucene.<br /><br /></li>
+<li>Create vectors from the Lucene index using the <code>org.apache.mahout.utils.vectors.lucene.Driver</code> class located in Mahout's <code>utils</code> module. This driver program comes with a lot of options for creating vectors. The Mahout wiki page entitled Creating Vectors from Text has more information (see <a href="#resources">Resources</a>). </li>
+</ol>
+
+<p>The results of running these two steps is a file like the n2.tar.gz file you downloaded in the <a href="#get.started">Getting started with Mahout</a> section. For completeness, the n2.tar.gz file consists of vectors created from the indexing of all the documents in the Wikipedia "chunks" file that was automatically downloaded by the <code>ant install</code> method earlier.  The vectors were normalized using the Euclidean norm (or L<sup>2</sup> norm; see  <a href="#resources">Resources</a>). In your use of Mahout, you will likely want to try creating vectors in a variety of ways to see which yields the best results.</p>
+
+<div class="ibm-container ibm-alt-header dw-container-sidebar"><h2>Evaluating your results</h2><div class="ibm-container-body">
+
+<p>There are many approaches to evaluating your cluster results. Many people start simply by using manual inspection and ad-hoc testing. However, to be truly satisfied, it is often necessary to use more in-depth evaluation techniques such as developing a gold standard using several judges. To learn more about evaluating your results, see <a href="#resources">Resources</a>. For my examples, I used manual inspection to see if some of the results that were clustered together actually made sense. If I were to put this in production, I would use a much more rigorous process. </p>
+</div></div>
+
+
+<p>Given a set of vectors, the next step is to run the k-Means clustering algorithm.
+    Mahout provides driver programs for all of the clustering algorithms, including the k-Means algorithm, aptly named the <code>KMeansDriver</code>. The driver is straightforward to use as a stand-alone program without Hadoop, as demonstrated by running <code>ant k-means</code>. Feel free to examine the Ant k-means target in the build.xml for more information on the arguments <code>KMeansDriver</code> accepts. After the process completes, you can print out the results using the <code>ant dump</code> command.</p>
+
+<p>After you've successfully run in stand-alone mode, you can proceed to run in distributed mode on Hadoop. To do so, you need the Mahout Job JAR, which is located in the hadoop directory in the sample code. A Job JAR packages up all of the code and dependencies into a single JAR file for easy loading into Hadoop. You will also need to download Hadoop 0.20 and follow the directions on the Hadoop tutorial for running first in pseudo-distributed mode (that is, a cluster of one) and then fully distributed. For more information, see the Hadoop Web site and resources, as well as the IBM cloud computing resources (see <a href="#resources">Resources</a>).</p>
+
+
+
+<div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N10401"><span class="atitle">Categorizing content with Mahout</span></a></p>
+<p>Mahout currently supports two related approaches to categorizing/classifying content based on bayesian statistics. The first approach is a simple Map-Reduce-enabled Naive Bayes classifier. Naive Bayes classifiers are known to be fast and fairly accurate, despite their very simple (and often incorrect) assumptions about the data being completely independent. Naive Bayes classifiers often break down when the size of the training examples per class are not balanced or when the data is not independent enough. The second approach, called Complementary Naive Bayes, tries to correct some of the problems with the Naive Bayes approach while still maintaining its simplicity and speed. However, for this article, I'll show only the Naive Bayes approach, because it demonstrates the overall problem and inputs in Mahout.</p>
+
+<p>In a nutshell, a Naive Bayes classifier is a two-part process that involves keeping track of the features (words) associated with a particular document and category and then using that information to predict the category of new, unseen content. The first step, called <i>training</i>, creates a model by looking at examples of already classified content and then keeps track of the probabilities that each word is associated with a particular content. The second step, called <i>classification</i>, uses the model created during training and the content of a new, unseen document, along with the Bayes Theorem, to predict the category of the passed-in document. Thus, to run Mahout's classifier, you need to first train the model and then use that model to classify new content. The next section will demonstrate how to do this using the Wikipedia data set.</p>
+
+<p><a name="N10412"><span class="smalltitle">Running the Naive Bayes classifier</span></a></p>
+<p>Before you can run the trainer and classifier, you need to do just a little prep work
+    to set up a set of documents for training and a set of documents for testing. You can prepare the Wikipedia files (from those you downloaded via the <code>install</code> target) by running <code>ant prepare-docs</code>. This splits up the Wikipedia input files using the <code>WikipediaDatasetCreatorDriver</code> class included in the Mahout examples. Documents are split based on whether the document has a category that matches one of the categories of interest. The categories of interest can be any valid Wikipedia category (or even any substring of a Wikipedia category). For instance, in this example, I've included two categories: Science and History. Thus, any Wikipedia category that has a category containing the word <i>science</i> or <i>history</i> (it doesn't have to be an exact match) will be put into a bucket with other documents for that category. Also, each document is tokenized and normalized to remove punctuation, Wikipedia markup, and other features that are not needed for this task. The final results are stored in a single file labeled with the category name, one document per line, which is the input format that Mahout expects. Likewise, running <code>ant prepare-test-docs</code> does the same work for the test documents. It is important that the test and training documents do not overlap, which could skew the results. In theory, using the training documents for testing should result in perfect results, but even this is not likely in practice.</p>
+
+<p>After the training and test sets are set up, it's time to run the <code>TrainClassifier</code> class via the <code>ant train</code> target. This should yield a large amount of logging from both Mahout and Hadoop. Once completed, <code>ant test</code> takes the sample test documents and tries to classify them using the model that was built during training. The output from such a test in Mahout is a data structure called a <i>confusion matrix</i>. A confusion matrix describes how many results were correctly classified and how many were incorrectly classified for each of the categories.</p>
+
+<p>In summary, you run the following steps to produce classification results:</p>
+<ol>
+<li><code>ant prepare-docs</code></li>
+<li><code>ant prepare-test-docs</code></li>
+<li><code>ant train</code></li>
+<li><code>ant test</code></li>
+</ol>
+
+<p>Running all of these (the Ant target <code>classifier-example</code> captures all of them in one call), yielding the summary and confusion matrix shown in Listing 6:</p>
+
+<br /><a name="conf.matrix"><b>
+Listing 6. Results from running Bayes classifier for history and science</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+[java] 09/07/22 18:10:45 INFO bayes.TestClassifier: history
+                                  95.458984375    3910/4096.0
+[java] 09/07/22 18:10:46 INFO bayes.TestClassifier: science
+                                  15.554072096128172      233/1498.0
+[java] 09/07/22 18:10:46 INFO bayes.TestClassifier: =================
+[java] Summary
+[java] -------------------------------------------------------
+[java] Correctly Classified Instances          :       4143
+                                                    74.0615%
+[java] Incorrectly Classified Instances        :       1451
+                                                    25.9385%
+[java] Total Classified Instances              :       5594
+[java]
+[java] =======================================================
+[java] Confusion Matrix
+[java] -------------------------------------------------------
+[java] a           b       &lt;--Classified as
+[java] 3910        186      |  4096        a     = history
+[java] 1265        233      |  1498        b     = science
+[java] Default Category: unknown: 2
+</pre></td></tr></table><br />
+
+<p>The results of the intermediate processes are stored in the directory named wikipedia in the base directory.</p>
+
+<p>With a results set in hand, the obvious question is: "How did I do?" The summary states
+    that I got roughly 75 percent correct and 25 percent incorrect. At first glance this
+    seems pretty reasonable, especially because it means I did better than randomly guessing. Closer examination shows, however, that I did really well at predicting history (approximately 95 percent correctly) and really poorly at predicting science (approximately 15 percent). In looking for reasons why, a quick look at the input files for training shows that I have a lot more examples of history than science (the file size is nearly double), which is likely one potential problem.</p>
+
+<p>For the test, you can add the <code>-Dverbose=true</code> option to <code>ant test</code>, which spits out information about each test input and whether it was correctly labeled or not. Digging into this output, you can look up document and examine it for clues as to why it might have been incorrectly classified. I might also try different input parameters and also more science data and retrain the model to see if I can improve the results.</p>
+
+<p>It is also important to think about feature selection for training the model. For these examples, I used the <code>WikipediaTokenizer</code> from Apache Lucene to tokenize the original documents, but I did not make much effort to remove common terms or junk terms that might have been incorrectly tokenized. If I were looking to put this classifier in production, I would make a much deeper examination of the inputs and other settings, trying to eke out every last bit of performance.</p>
+
+<p>Just to see if the Science results were a fluke, I tried a different set of categories: Republicans and Democrats. In this case, I want to predict whether a new document is about Republicans or Democrats. To let you try this on your own, I created the repubs-dems.txt in src/test/resources. I then ran the classification steps
+via:</p>
+<table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">ant classifier-example -Dcategories.file=./src/test/resources/repubs-dems.txt -Dcat.dir=rd</pre></td></tr></table><br />
+<p>The two <code>-D</code> values simply point to the category file and the name of the directory to put the intermediate results in under the wikipedia directory. The summary and confusion matrix from this run looks like Listing 7:</p>
+
+<br /><a name="conf.mat.rep"><b>Listing 7. Results from running Bayes classifier for Republicans and Democrats</b></a><br /><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="code-outline"><pre class="displaycode">
+ [java] 09/07/23 17:06:38 INFO bayes.TestClassifier: --------------
+ [java] 09/07/23 17:06:38 INFO bayes.TestClassifier: Testing:
+                                wikipedia/rd/prepared-test/democrats.txt
+ [java] 09/07/23 17:06:38 INFO bayes.TestClassifier: democrats      70.0
+                                                                    21/30.0
+ [java] 09/07/23 17:06:38 INFO bayes.TestClassifier: --------------
+ [java] 09/07/23 17:06:38 INFO bayes.TestClassifier: Testing:
+                              wikipedia/rd/prepared-test/republicans.txt
+ [java] 09/07/23 17:06:38 INFO bayes.TestClassifier: republicans    81.3953488372093
+                                                                    35/43.0
+ [java] 09/07/23 17:06:38 INFO bayes.TestClassifier:
+ [java] Summary
+ [java] -------------------------------------------------------
+ [java] Correctly Classified Instances          :         56           76.7123%
+ [java] Incorrectly Classified Instances        :         17           23.2877%
+ [java] Total Classified Instances              :         73
+ [java]
+ [java] =======================================================
+ [java] Confusion Matrix
+ [java] -------------------------------------------------------
+ [java] a           b       &lt;--Classified as
+ [java] 21          9        |  30          a     = democrats
+ [java] 8           35       |  43          b     = republicans
+ [java] Default Category: unknown: 2
+</pre></td></tr></table><br />
+
+<p>Although the end result is about the same in terms of correctness, you can see that I did a better job of deciding between the two categories. A quick examination of the wikipedia/rd/prepared directory containing the input documents shows that the two training files were much more balanced in terms of training examples. The examination also shows I have a lot fewer examples overall in comparison to the history/science run, because each file is much smaller than either the history or science training set. Overall, the results at least seem a lot more balanced. Bigger training sets would likely balance out the differences between Republicans and Democrats, although if it didn't, that might imply that one group is better at sticking to its message on Wikipedia &#8212; but I'll leave that to the political pundits to decide.</p>
+
+<p>Now that I've shown how to run classification in stand-alone mode, the next steps are to take the code to the cloud and run on a Hadoop cluster. Just as with the clustering code, you will need the Mahout Job JAR. Beyond that, all the algorithms I mentioned earlier are Map-Reduce-ready and should just work when running under the Job submission process outlined in the Hadoop tutorial.</p>
+
+<div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><a name="N104A3"><span class="atitle">What's next for Mahout?</span></a></p>
+<p>Apache Mahout has come a long way in just over a year, with significant capabilities for clustering, categorization, and CF, but it also has plenty of room for growth. On the immediate horizon are Map-Reduce implementations of random decision forests for classification, association rules, Latent Dirichlet Allocation for identifying topics in documents, and more categorization options using HBase and other backing storage options. Beyond these new implementations, look for more demos, increased documentation, and bug fixes.</p>
+
+<p>Finally, just as a real mahout leverages the strength and capabilities of the elephant, so too can Apache Mahout help you leverage the strength and capabilities of the yellow elephant that is Apache Hadoop. The next time you have a need to cluster, categorize, or recommend content, especially at large scale, give Apache Mahout a look.</p>
+    
+<p><a name="N104AE"><span class="smalltitle">Acknowledgments</span></a></p>
+<p>Special thanks to fellow Mahout committers Ted Dunning and Sean Owen for their review and insights on this article.</p>  
+<!-- CMA ID: 426950 --> <!-- Site ID: 1 --> <!-- XSLT stylesheet used to transform this file: dw-document-html-6.0.xsl -->
+<br /><div class="ibm-alternate-rule"><hr/></div><p class="ibm-ind-link ibm-back-to-top"><a href="#ibm-pcon" class="ibm-anchor-up-link">Back to top</a></p><p><span class="atitle"><a name="download">Download</a></span></p><table width="100%" class="ibm-data-table" cellspacing="0" cellpadding="0" border="0"><tr><th scope="col">Description</th><th scope="col">Name</th><th scope="col">Size</th><th scope="col">Download method</th></tr><tr><td class="tb-row" scope="row">Sample code</td><td nowrap="nowrap">j-mahout.zip</td><td nowrap="nowrap">90MB</td><td nowrap="nowrap"><a class="fbox" href="http://www.ibm.com/developerworks/apps/download/index.jsp?contentid=426950&amp;filename=j-mahout.zip&amp;method=http&amp;locale=">HTTP</a></td></tr></table><p><a href="/developerworks/library/whichmethod.html" class="ibm-forward-link">Information about download methods</a></p><br />
+<p><a name="resources"><span class="atitle">Resources</span></a></p><p><b>Learn</b></p><ul><li>
+<b>Machine learning</b>
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/Machine_learning">Machine Learning</a>: Wikipedia's page contains some useful starting information as well as many good references to learn more about machine learning, including  approaches such as supervised learning.<br /><br /></li>
+
+
+<li>
+<a href="http://oreilly.com/catalog/9780596529321/"><i>Programming Collective Intelligence</i></a> (Toby Segaran, O'Reilly, 2007): This book is an excellent starting point for many machine-learning tasks.
+<br /><br /></li>
+
+
+
+<li><a href="http://see.stanford.edu/see/courseinfo.aspx?coll=348ca38a-3a6d-4052-937d-cb017338d7b1">Artificial Intelligence |
+Machine Learning</a>: Take Andrew Ng's class at Stanford.
+<br /><br /></li>
+
+
+<li><a href="http://nlp.stanford.edu/IR-book/html/htmledition/evaluation-of-clustering-1.html">Evaluation of clustering</a>:  Learn more about evaluating clustering. Also see the <a href="http://www.lucidimagination.com/search/document/ae2931825df60d94/validating_clustering_output#dab8c1f3c3addcfe">discussion</a> on the Mahout mailing list.
+<br /><br /></li>
+
+
+<li><a href="http://en.wikipedia.org/wiki/Bayes_theorem">Bayes Theorem</a>: Read up on how the Bayes Theorem works.<br /><br /></li>
+
+<li><a href="http://en.wikipedia.org/wiki/Lp_space">L<sup>p</sup> space</a>: Understand L<sup>p</sup> norms.</li>
+
+</ul>
+<br /></li><li>
+<b>Apache Mahout and Apache Lucene</b>
+<ul>
+<li>
+<a href="http://lucene.apache.org/mahout">Mahout project home page</a>: Discover all that is Mahout.<br /><br /></li>
+
+
+<li>"<a href="http://www.cs.stanford.edu/people/ang/papers/nips06-mapreducemulticore.pdf">Map-Reduce for Machine Learning on Multicore</a>": Read the paper that helped launch Mahout.<br /><br /></li>
+
+
+
+<li> "<a href="http://labs.google.com/papers/mapreduce.html">MapReduce: Simplified Data Processing on Large Clusters</a>" (Google Research Publications): Read the original paper on Map-Reduce.<br /><br /></li>
+
+<li><a href="http://lucene.apache.org/mahout/taste.html">Taste</a>: Explore the Taste documentation.<br /><br /></li>
+
+
+<li><a href="http://lucene.apache.org/java">Apache Lucene</a>: Learn more about Lucene.<br /><br /></li>
+
+<li><a href="http://www.ibm.com/developerworks/search/searchResults.jsp?searchType=1&amp;searchSite=dW&amp;searchScope=dW&amp;query=Lucene&amp;Search=Search">Apache Lucene on developerWorks</a>: Explore Lucene in these articles.<br /><br /></li>
+
+
+
+
+<li><a href="http://cwiki.apache.org/confluence/display/MAHOUT/Creating+Vectors+from+Text">Creating Vectors from Text</a>: Read this entry in the Mahout Wiki to learn more on converting your data to Mahout's <code>Vector</code> class.<br /><br /></li>
+
+<li><a href="http://cwiki.apache.org/confluence/display/MAHOUT/ClusteringYourData">Cluster Your Data</a>: Check out this Mahout Wiki page to find out more about how to cluster your data.<br /><br /></li>
+
+</ul>
+
+
+
+<br /></li><li>
+<b>Apache Hadoop:</b>
+<ul>
+
+<li><a href="http://hadoop.apache.org">Apache Hadoop</a>: Find out more about Hadoop.<br /><br /></li>
+
+<li><a href="http://hadoop.apache.org/core/docs/current/quickstart.html">Hadoop Quick Start Tutorial</a>: Learn how to run a Hadoop Job.<br /><br /></li>
+
+<li><a href="http://hadoop.apache.org/hbase">HBase</a>: Understand the Hadoop database.</li>
+</ul>
+<br /></li><li>
+Browse the
+<a href="http://www.ibm.com/developerworks/apps/SendTo?bookstore=safari">technology bookstore</a> for books on these and other technical topics.
+<br /><br /></li><li><a href="http://www.ibm.com/developerworks/spaces/cloud">Cloud Computing</a>: Visit the developerWorks Cloud Computing space.
+<br /><br /></li><li>
+<a href="http://www.ibm.com/developerworks/java">developerWorks Java technology zone</a>: Find hundreds of articles about every aspect of Java programming.
+<br /><br /></li></ul><p><b>Get products and technologies</b></p><ul><li>
+Download <a href="http://www.apache.org/dyn/closer.cgi/hadoop/core/">Hadoop 0.20.0</a>.
+<br /><br /></li><li>
+Download a <a href="http://people.apache.org/~gsingers/wikipedia/chunks.tar.gz">subset of Wikipedia</a>.
+<br /><br /></li><li>
+Download a <a href="http://people.apache.org/~gsingers/wikipedia/part-1000.dat">subset of Wikipedia </a> as vectors.
+<br /><br /></li><li>
+Get real movie-rating data from the <a href="http://www.grouplens.org/">GroupLens</a> project.
+<br /><br /></li></ul><p><b>Discuss</b></p><ul><li>
+Participate in the Mahout community at <a href="http://lucene.apache.org/mahout/mailinglists.html">mahout-user@lucene.apache.org</a>.
+<br /><br /></li><li>Get involved in the <a href="http://www.ibm.com/developerworks/mydeveloperworks">My developerWorks community</a>.
+<br /><br /></li></ul>
+<p><a name="author"><span class="atitle">About the author</span></a></p><div class="ibm-container ibm-portrait-module ibm-alternate-two"><div class="ibm-container-body"><img src="http://www.ibm.com/developerworks/i/p-gingersoll.jpg" width="64" height="80" alt="Grant Ingersoll" /><p><a name="author1"></a>Grant Ingersoll is a founder and member of the technical staff at Lucid Imagination. Grant's programming interests include information retrieval, machine learning, text categorization, and extraction. Grant is the co-founder of the Apache Mahout machine-learning project, as well as a committer and speaker on both the Apache Lucene and Apache Solr projects. He is also the co-author of <i>Taming Text</i> (Manning, forthcoming) covering open source tools for natural-language processing.</p></div></div>
+<!-- MAIN_COLUMN_CONTENT_END -->
+
+<!-- OVERLAYS_START -->
+<!-- Report_Abuse_Start -->
+<div class="ibm-common-overlay ibm-no-print" id="reportabuseoverlay">
+   <div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#">Close [x]</a></p></div>
+   <div class="ibm-body">
+      <div class="ibm-main">
+         <a class="ibm-access" name="reportabuseoverlay">Report abuse help</a>   
+         <div class="ibm-title"><h1>Report abuse</h1></div>
+         <div class="ibm-container ibm-alternate">
+            <p><strong>Thank you.</strong>  This entry has been flagged for moderator attention.</p>
+            <div class="ibm-overlay-rule"><hr /></div>
+            <div class="ibm-buttons-row">
+               <input type="button" onclick="ibmCommon.Overlays.hide('reportabuseoverlay');return false;" class="ibm-btn-cancel-sec dw-btn-cancel-sec" name="ibm-cancel" value="Close" />
+            </div>
+         </div>
+      </div> 
+   </div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Report_Abuse_Error_Start -->
+<div class="ibm-common-overlay ibm-no-print" id="reportabuseoverlayerror">
+   <div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#">Close [x]</a></p></div>
+   <div class="ibm-body">
+      <div class="ibm-main">
+         <a class="ibm-access" name="reportabuseoverlayerror">Report abuse help</a>   
+         <div class="ibm-title"><h1>Report abuse</h1></div>
+         <div class="ibm-container ibm-alternate">
+            <p class="ibm-ind-error"><strong>Report abuse submission failed.  Please try again later.</strong></p>
+            <div class="ibm-overlay-rule"><hr /></div>
+            <div class="ibm-buttons-row">
+               <input type="button" onclick="ibmCommon.Overlays.hide('reportabuseoverlayerror');return false;" class="ibm-btn-cancel-sec dw-btn-cancel-sec" name="ibm-cancel" value="Close" />
+            </div>
+         </div>
+      </div> 
+   </div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Sign in OVERLAY STARTS HERE --> 
+<div id="fdiv"></div>
+<div class="ibm-common-overlay" id="signin_overlay">
+<div class="ibm-head">
+<p><a class="ibm-common-overlay-close" href="#" onclick="clearForm();">Close [x]</a></p>
+</div>
+<div class="ibm-body">
+<div class="ibm-main">
+<div class="ibm-title ibm-subtitle">
+<h1>developerWorks: Sign in</h1>
+<div id="ibm-overlay-error-signin" class="no-display"></div>
+</div>
+
+<div class="ibm-container ibm-alternate ibm-buttons-last">
+<div class="ibm-container-body">
+<p class="ibm-overlay-intro">If you do not have an IBM ID and password, <a href="#" onclick="(function () {window.location='/developerworks/dwwi/DWAuthRouter?m=reg&amp;d='+encodeURIComponent(location.href);})();">register here</a>.</p>
+<form class="ibm-column-form" id="sFormId" action="" method="post" name="sForm" onsubmit="return false;">
+<p><label for="ibmid">IBM ID:</label><span><input name="ibm-id" id="ibmid" size="25" value="" class="required" type="text" onkeypress="handleEP(event,this.form);" /><br /><a class="ibm-forward-link" href="/developerworks/dwwi/jsp/WSHelp.jsp?lang=en_US">Forgot your IBM ID?</a></span>   
+</p> 
+<p><label for="password">Password:</label><span><input name="password" id="password" size="25" value="" class="required" type="password" onkeypress="handleEP(event,this.form);" /><br /><a class="ibm-forward-link" href="#" onclick="(function () {window.location='https://www.ibm.com/account/profile?page=forgot&amp;lang=en_US&amp;appname=ibm&amp;required=null&amp;d='+encodeURIComponent(getAuthUrl())+'%3Fm%3Dloginpage%26lang%3Den_US%26d%3D'+encodeURIComponent(location.href);})();">Forgot your password?</a><br /><a class="ibm-forward-link" href="#" onclick="(function () {window.location='https://www.ibm.com/account/profile?page=chpw&amp;lang=en_US&amp;appname=ibm&amp;required=null&amp;d='+encodeURIComponent(location.href);})();">Change your password?</a></span></p> 
+<p class="no-bottom-padding"> 
+   <label for="AfterSignIn">After sign in:</label> 
+   <span>
+
+      <select name="SignInAction" id="AfterSignIn">
+          <option value="">Stay on the current page</option>
+          <option value="/developerworks/mydeveloperworks/profiles/html/myProfileView.do">Go to My developerWorks profile</option>
+          <option value="/developerworks/mydeveloperworks/homepage/">Go to My developerWorks homepage</option>
+      </select>
+   </span>
+</p>
+<div class="ibm-overlay-rule"><hr /></div>
+<p>By clicking <strong>Submit</strong>, you agree to the developerWorks <a href="/developerworks/mydeveloperworks/terms?lang=en">terms of use</a>.</p>
+<div class="ibm-buttons-row">
+   <p><input class="ibm-btn-arrow-pri" name="ibm-submit" value="Submit" onclick="signin();return false;" type="button" /><span class="ibm-sep">&nbsp;</span>
+<input value="Cancel" type="button" name="ibm-cancel" class="ibm-btn-cancel-sec" onclick="clearForm();ibmCommon.Overlays.hide('signin_overlay');return false;"/></p>
+</div>
+</form>
+<div class="ibm-overlay-rule"><hr /></div>
+<p>The first time you sign into developerWorks, a My developerWorks profile is created for you. This profile includes the first name, last name, and display name contained in the profile you created when you registered with My developerWorks. Selected information in your My developerWorks profile is displayed to the public, but you may edit the information at any time. Your first name, last name (unless you choose to hide them), and display name will accompany the content that you post. </p>
+<div class="dw-overlay-legal"><p>All information submitted is secure.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Sign in OVERLAY ENDS HERE --> 
+ 
+
+<!-- Display name OVERLAY STARTS HERE --> 
+<div class="ibm-common-overlay" id="displayname_overlay">
+<div class="ibm-head">
+<p><a class="ibm-common-overlay-close" href="#" onclick="clearForm();">Close [x]</a></p>
+</div>
+<div class="ibm-body">
+<div class="ibm-main">
+<div class="ibm-title ibm-subtitle">
+<h1>Choose your display name</h1>
+<div id="ibm-overlay-error-dname" class="no-display"></div>
+</div>
+<div class="ibm-container ibm-alternate ibm-buttons-last">
+<div class="ibm-container-body">
+<p class="ibm-overlay-intro">The first time you sign in to developerWorks a profile is created for you, so you need to choose a display name.  Your display name accompanies the content you post on developerWorks.</p>
+
+<form id="dFormId" method="post" action="" name="dForm" onsubmit="return false;" class="ibm-column-form">
+<p><label for="displayname">Display name:</label><span><input name="displayname" id="displayname" size="25" value="" type="text" onkeypress="handleEP(event,this.form);" /></span><span class="ibm-form-note">(Must be between 3 &ndash; 31 characters.)</span>
+</p>
+<p><strong>Note:</strong>  Please choose a display name between 3-31 characters. Your display name must be unique in the developerWorks community and should not be your email for privacy reasons.</p>
+<div class="ibm-overlay-rule"><hr />
+</div>
+<p>By clicking Submit, you agree to the developerWorks <a href="/developerworks/mydeveloperworks/terms?lang=en">terms of use</a>.</p>
+<div class="ibm-buttons-row">
+   <p><input class="ibm-btn-arrow-pri" name="ibm-submit" value="Submit" onclick="signin();return false;" type="button" /><span class="ibm-sep">&nbsp;</span>
+<input value="Cancel" type="button" name="ibm-cancel" class="ibm-btn-cancel-sec" onclick="clearForm();ibmCommon.Overlays.hide('displayname_overlay');return false;" /></p>
+</div>
+</form>
+<div class="ibm-overlay-rule"><hr /></div>
+<div class="dw-overlay-legal"><p>All information submitted is secure.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Display name OVERLAY ENDS HERE -->
+<!-- OVERLAYS_END -->
+
+<!-- RATINGS START -->
+<p class="ibm-no-print"><span class="atitle"><a name="iratings">Rate this article</a></span></p>
+<input id="art-rating" name="ratinga" type="hidden" value="0"/><div id="art-rating-module"></div>
+<script language="JavaScript" type="text/javascript">
+// <![CDATA[
+   // widget div id and article id as args
+   window.artRating.init('art-rating-module','art-rating-summary');
+// ]]>
+</script>
+<!-- RATINGS END -->
+
+<!-- INLINE_COMMENTS_START -->
+<p class="ibm-no-print"><span class="atitle"><a name="icomments">Comments</a></span></p>
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/showcomments.js" type="text/javascript">//</script>
+<div id="threadShow"></div>
+<script language="JavaScript" type="text/javascript">
+// <![CDATA[
+ jQuery('threadShow').showComments('95%',5,'nCmts','icomments');
+// ]]>
+</script>
+<!-- INLINE_COMMENTS_END -->
+
+<p class="ibm-ind-link ibm-back-to-top"><a class="ibm-anchor-up-link" href="#ibm-pcon">Back to top</a></p>
+<p><a href="http://www.ibm.com/developerworks/ibm/trademarks/">Trademarks</a> &nbsp;|&nbsp; <a href="https://www.ibm.com/developerworks/mydeveloperworks/terms/">My developerWorks terms and conditions</a></p>
+
+<!-- Overlays -->
+<!-- Zone/Leaf_Interest_Overlay_Start -->
+<div class="ibm-common-overlay ibm-no-print" id="dwmyinterestadd">
+<div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#close">Close [x]</a></p></div>
+<div class="ibm-body">
+<div class="ibm-main">
+<a class="ibm-access" name="dwmyinterestaddhelp">Help: Update or add to My dW interests</a>   
+<div class="ibm-title"><h1>What's this?</h1></div>
+<div class="ibm-container ibm-alternate">
+<p>This little timesaver lets you update your My developerWorks profile with just one click!  The general subject of this content (AIX and UNIX, Information Management, Lotus, Rational, Tivoli, WebSphere, Java, Linux, Open source, SOA and Web services, Web development, or XML) will be added to the interests section of your profile, if it's not there already.  You only need to be logged in to My developerWorks.</p>
+<p>And what's the point of adding your interests to your profile?  That's how you find other users with the same interests as yours, and see what they're reading and contributing to the community.  Your interests also help us recommend relevant developerWorks content to you.</p>
+<p><a href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/home.do?lang=en">View your My developerWorks profile</a></p>
+<p class="ibm-access"><a href="#interestShow">Return from help</a></p>
+</div> 
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+
+<div class="ibm-common-overlay ibm-no-print" id="dwmyinterestremove">
+<div class="ibm-head"><p><a class="ibm-common-overlay-close" href="#close">Close [x]</a></p></div>
+<div class="ibm-body">
+<div class="ibm-main">
+<a class="ibm-access" name="dwmyinterestremovehelp">Help: Remove from My dW interests</a> 
+<div class="ibm-title"><h1>What's this?</h1></div>
+<div class="ibm-container ibm-alternate">
+<p>Removing this interest does not alter your profile, but rather removes this piece of content from a list of all content for which you've indicated interest.  In a future enhancement to My developerWorks, you'll be able to see a record of that content.</p>
+<p><a href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/home.do?lang=en">View your My developerWorks profile</a></p>
+<p class="ibm-access"><a href="#interestShow">Return from help</a></p>
+</div> 
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Zone/Leaf_Interest_Overlay_End --></div>
+<!-- MAIN_COLUMN_CONTAINER_END -->
+
+<!-- Rating_Meta_BEGIN -->
+<!--Rating_Meta_BEGIN--><div class="metavalue">static.content.url=http://www.ibm.com/developerworks/js/artrating/</div><div class="metavalue">SITE_ID=1</div><div class="metavalue">Zone=Java technology, Open source</div><div class="metavalue">ArticleID=426950</div><div class="metavalue">ArticleTitle=Introducing Apache Mahout</div><div class="metavalue">publish-date=09082009</div><div class="metavalue">author1-email=grant@lucidimagination.com</div><div class="metavalue">author1-email-cc=jaloi@us.ibm.com</div><script language="javascript" type="text/javascript">document.write('<div class="metavalue">url='+location.href.replace('<', '%3C')+'</div>');</script><!--Rating_Meta_END-->
+<!-- Rating_Meta_END -->
+
+</div>
+<!-- MAIN_COLUMN_END-->
+
+<!-- RIGHT_COLUMN_BEGIN -->
+<div id="ibm-content-sidebar">
+<div id="ibm-social-tools-sidebar" class="ibm-share-this"></div>
+
+<!-- RIGHT_COLUMN_CONTENT_BEGIN --> 
+<div class="ibm-container"><h2>Table of contents</h2><div class="ibm-container-body"><img alt="" height="1" width="1" src="//www.ibm.com/i/c.gif"/><ul class="ibm-bullet-list"><li><a class="ibm-feature-link" href="#N1008B">Machine learning 101</a></li><li><a class="ibm-feature-link" href="#N10124">Introducing Mahout</a></li><li><a class="ibm-feature-link" href="#N101CE">Building a recommendation engine</a></li><li><a class="ibm-feature-link" href="#N10342">Clustering with Mahout</a></li><li><a class="ibm-feature-link" href="#N10401">Categorizing content with Mahout</a></li><li><a class="ibm-feature-link" href="#N104A3">What's next for Mahout?</a></li><li><a class="ibm-feature-link" href="#download">Download</a></li><li><a class="ibm-feature-link" href="#resources">Resources</a></li><li><a class="ibm-feature-link" href="#author">About the author</a></li><li><a class="ibm-feature-link" href="#icomments">Comments</a></li></ul></div></div>
+<!--XSLT stylesheet used to transform this content: s-nextsteps.xsl--><div class="ibm-container"><h2>Next steps from IBM</h2><div class="ibm-container-body"><img width="188" height="58" border="0" alt="" src="//www.ibm.com/developerworks/i/next-steps-cloud.jpg"/><p>Learn more, join the cloud community, and get started with cloud computing tools from
+   IBM</p><div class="ibm-rule"><hr/></div><ul class="ibm-bullet-list"><li><a href="http://www.ibm.com/developerworks/offers/techbriefings/details/cloudfordevelopers.html" class="ibm-feature-link">Briefing: Cloud computing for developers</a></li><li><a href="http://www.ibm.com/developerworks/newsletter/" class="ibm-feature-link">Community: Subscribe to the dW weekly edition newsletter and customize for cloud</a></li><li><a href="http://www.ibm.com/developerworks/cloud/devtest.html" class="ibm-feature-link">Buy: Try IBM software on the IBM Development and Test Cloud</a></li></ul></div></div>
+<!--XSLT stylesheet used to transform this content: s-community.xsl--><div class="ibm-container"><h2>My developerWorks community</h2><div class="ibm-container-body"><p>Interact, share, and communicate with developers worldwide.</p><div class="ibm-rule"><hr/></div><ul class="ibm-bullet-list"><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/homepage/web/getuserpref?ca=dma-" class="ibm-feature-link">My Home</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/home.do?lang=en&amp;ca=dma-" class="ibm-feature-link">Profiles</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/groups/service/html/allcommunities?ca=dma-" class="ibm-feature-link">Groups</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/blogs/?ca=dma-" class="ibm-feature-link">Blogs</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/bookmarks/?ca=dma-" class="ibm-feature-link">Bookmarks</a></li><li><a href="https://www.ibm.com/developerworks/mydeveloperworks/activities/service/html/mainpage?ca=dma-" class="ibm-feature-link">Activities</a></li><li><a href="http://www.ibm.com/developerworks/mydeveloperworks/files?ca=dma-" class="ibm-feature-link">Files</a></li><li><a href="http://www.ibm.com/developerworks/mydeveloperworks/wikis?ca=dma-" class="ibm-feature-link">Wikis</a></li><li><a href="http://www.ibm.com/developerworks/forums/?ca=dma-" class="ibm-feature-link">Forums</a></li><li><a href="http://www.ibm.com/developerworks/podcast/?ca=dma-" class="ibm-feature-link">Podcasts</a></li></ul><div class="ibm-rule"><hr/></div><p class="ibm-ind-link"><a href="https://www.ibm.com/developerworks/mydeveloperworks/?ca=dma-" class="ibm-forward-link">My developerWorks overview</a></p></div></div>
+<!-- Tagging_Start -->
+<div id="dw-tag-cloud-container" class="ibm-container dw-hidetag"><h2>Tags</h2>
+<div id="dw-tag-help"><a class="dwauthor" rel="#tagtip" id="dwtagtip"><img alt="Help" height="16" width="16" align="top" src="//dw1.s81c.com/developerworks/i/help_icon.gif"/></a></div>
+<div id="tagtip" class="dwauthor-onload-state ibm-no-print">Use the <strong>search field</strong> to find all types of content in My developerWorks with that tag.<p>Use the <strong>slider bar</strong> to see more or fewer tags.</p><p>For articles in technology zones (such as Java technology, Linux, Open source, XML), <strong>Popular tags</strong> shows the top tags 
+for <em>all technology zones</em>.  For articles in product zones (such as Info Mgmt, Rational, WebSphere), <strong>Popular tags</strong> shows the top tags for <em>just that product zone</em>.</p><p>For articles in technology zones (such as Java technology, Linux, Open source, XML), <strong>My tags</strong> shows your tags for <em>all technology zones</em>.  For articles in product zones (such as Info Mgmt, Rational, WebSphere), <strong>My tags</strong> shows your tags for <em>just that product zone</em>.</p></div>
+<div class="ibm-access">Use the search field to find all types of content in My developerWorks with that tag.  <em>Popular tags</em> shows the top tags for this particular content zone (for example, Java technology, Linux, WebSphere).  <em>My tags</em> shows your tags for this particular content zone (for example, Java technology, Linux, WebSphere).</div>
+<div class="ibm-container-body">
+<div class="dw-tag-search"><form action="//www.ibm.com/developerworks/mydeveloperworks/bookmarks/html?lang=en" method="get" id="actualtagform" onsubmit="popupform(this, 'join')">
+<p><label for="tagfield"><strong>Search all tags</strong></label><input id="tagfield" name="tag" type="text" maxlength="20" size="17" />&nbsp;<input src="//dw1.s81c.com/i/v16/buttons/short-btn.gif" type="image" class="ibm-btn-view" alt="submit search" title="submit search" value="Search" /></p></form></div>
+<div class="ibm-rule"><hr/></div>
+<div id="dw-tag-select">
+<div id="dw-tag-select-popular"><p><strong>Popular article tags</strong>&nbsp;|&nbsp;<br /><a id="a-my" href="javascript:;">My article tags</a><a href="#dw-tag-access" class="ibm-access">Skip to tags list</a></p></div>
+<div id="dw-tag-select-my" class="dw-hidetag"><p><a id="a-popular" href="javascript:;">Popular article tags</a>&nbsp;|&nbsp;<br /><strong>My article tags</strong></p><a href="#dw-tag-access" class="ibm-access">Skip to tags list</a></div>
+<div id="dw-tag-cloud"></div>  
+</div>   
+</div>
+</div>
+<!-- Tagging_End -->
+<!-- Dig_Deeper -->
+<div class="ibm-container"><h2>Dig deeper into Java on developerWorks</h2><div class="ibm-container-body"><ul class="ibm-link-list"><li class="ibm-first"><a href="http://www.ibm.com/developerworks/java/" class="ibm-forward-link">Overview</a></li><li><a href="http://www.ibm.com/developerworks/java/newto/" class="ibm-forward-link">New to Java programming</a></li><li><a href="http://www.ibm.com/developerworks/views/java/downloads.jsp" class="ibm-forward-link">Downloads and products</a></li><li><a href="http://www.ibm.com/developerworks/views/java/projects.jsp" class="ibm-forward-link">Open source projects</a></li><li><a href="http://www.ibm.com/developerworks/views/java/standards.jsp" class="ibm-forward-link">Standards</a></li><li><a href="http://www.ibm.com/developerworks/views/java/library.jsp" class="ibm-forward-link">Technical library (articles, tutorials, and more)</a></li><li><a href="http://www.ibm.com/developerworks/java/training/" class="ibm-forward-link">Training</a></li><li><a href="http://www.ibm.com/developerworks/forums/dw_jforums.jsp" class="ibm-forward-link">Forums</a></li><li><a href="http://www.ibm.com/developerworks/views/java/events.jsp" class="ibm-forward-link">Events</a></li><li><a href="http://www.ibm.com/developerworks/newsletter/" class="ibm-forward-link">Newsletter</a></li></ul></div></div>
+<!-- High_Visibility_Offer -->
+<!--XSLT stylesheet used to transform this content: s-highvisibilityoffer.xsl--><div class="ibm-container"><h2>Stay ahead of the latest cloud trends</h2><div class="ibm-container-body"><img width="188" height="70" border="0" alt="Stay ahead of the latest cloud trends" src="//www.ibm.com/developerworks/i/hivis-w-cloudzone.jpg"/><p class="ibm-ind-link"><a href="https://www.ibm.com/developerworks/cloud/index.html?ca=dti-cloudzone" class="ibm-forward-link">Cloud Computing resources from developerWorks</a></p></div></div>
+<!-- Special_Offers -->
+<div class="ibm-container"><h2>Special offers</h2><div class="ibm-container-body"><p class="dw-special-offers"><a href="https://www-304.ibm.com/partnerworld/wps/servlet/ContentHandler/2011_beacon_awards_developerworks.html?ca=dti-dwbeacon"><img src="//www.ibm.com/developerworks/i/tile_v16_beacon2010.gif" width="158" height="50" border="0" alt="Partner Award Most Innovative use of dW" /></a></p><p class="dw-special-offers"><a href="http://www.ibm.com/developerworks/downloads/?ca=dti-rdownload#rational"><img src="//www.ibm.com/developerworks/i/tile_v16_r-download.gif" width="158" height="50" border="0" alt="Download and evaluate Rational software" /></a></p><p class="dw-special-offers"><a href="http://www.ibm.com/developerworks/views/linux/libraryview.jsp?type_by=Tutorials&amp;ca=dti-linuxtutorial"><img src="//www.ibm.com/developerworks/i/tile_v16_learnfast-l.gif" width="158" height="50" border="0" alt="Learn fast with free IBM Linux tutorials" /></a></p><div class="ibm-rule"><hr/></div><p class="ibm-ind-link"><a class="ibm-forward-link" href="http://www.ibm.com/developerworks/downloads/?ca=dti-tilemoreoffers">Trial software offers</a></p></div></div>
+<!-- RIGHT_COLUMN_CONTENT_END -->
+
+</div>
+<!-- RIGHT_COLUMN_END -->
+
+<!-- CONTENT_BODY_END -->
+</div>
+
+</div>
+<!-- CONTENT_END -->
+
+ <!-- END_IBM-PCON -->
+</div>
+
+<!-- FOOTER_BEGIN -->
+<div id="ibm-page-tools">
+<!-- IBM page tools container -->
+</div>
+<div id="ibm-footer">
+<ul>
+<li class="ibm-first"><a href="http://www.ibm.com/ibm/">About IBM</a></li>
+<li><a href="http://www.ibm.com/privacy/">Privacy</a></li>
+<li><a href="http://www.ibm.com/contact/">Contact</a></li>
+<li><a href="http://www.ibm.com/legal/">Terms of use</a></li>
+</ul>
+</div>
+<!-- FOOTER_END -->
+
+ <!-- END_IBM-TOP -->
+</div>
+ 
+ <!-- SCRIPTS_INCLUDE_BEGIN -->
+<!-- JQuery start -->
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.dimensions-1.2.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.hoverIntent.minified.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/jquery.cluetip.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/tagging/ui.core-1.7.1.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/tagging/ui.slider-1.7.1.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/jquery/tagging/dwjquerytags.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/si/flash-detect.js"></script>
+<script type="text/javascript" language="JavaScript" src="//dw1.s81c.com/developerworks/js/si/dwsi.js"></script>
+<script type="text/javascript" language="JavaScript">
+	jQuery.noConflict();     
+	// Put all your code in your document ready area
+	jQuery(document).ready(function(jQuery) {
+	// Do jQuery stuff using jQuery 
+	jQuery('a.dwauthor').cluetip({
+		local: true,
+		showTitle: false,
+		positionBy: 'bottomTop',
+		sticky: true,	
+		mouseOutClose: true,
+		closeText: '<img src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/i/x.gif" alt="Close" />',
+		arrows: false,
+		dropShadow: true,
+		cluetipClass: 'dwbasic'
+		});
+
+		//tagging
+		login="false";
+		userid="";
+		whichTags = "init";
+		pCont = "";
+		mCont = "";
+		signInMCont = "";
+		accessCont = "";
+		pValue = 0;
+		mValue = 0;
+
+		rBHash = null;
+		rBHash = new Object();
+		rBHash['viperLang'] = 'en';
+		rBHash['urlLang'] = 'en';
+		rBHash['tagThisWinTitle'] = 'Tagit';
+		rBHash['pTags1'] = 'Popular tags';
+		rBHash['pTags2'] = 'End of Popular tags';
+		rBHash['mTags1'] = 'My tags';
+		rBHash['mTags2'] = 'End of My tags';
+		rBHash['alt1'] = 'Loading Content';
+		rBHash['noATags'] = 'No active tags';
+		rBHash['signIn1'] = 'Please ';
+		rBHash['signIn2'] = 'sign in';
+		rBHash['signIn3'] = ' to access';
+		rBHash['signIn4'] = 'My Tags';
+		rBHash['signIn5'] = 'To access My Tags, please ';
+		rBHash['signIn6'] = 'sign in';
+		rBHash['signIn7'] = 'Read Popular tags';
+
+		zoneHash = new Object();
+		zoneHash['aix'] = 'AIX and UNIX zone';
+		zoneHash['data'] = 'Information Management zone';
+		zoneHash['lotus'] = 'Lotus zone';
+		zoneHash['rational'] = 'Rational zone';
+		zoneHash['tivoli'] = 'Tivoli zone';
+		zoneHash['websphere'] = 'WebSphere zone';
+		zoneHash['architecture'] = 'Technical library';
+		zoneHash['autonomic'] = 'Technical library';
+		zoneHash['java'] = 'Technical library';
+		zoneHash['cloud'] = 'Technical library';
+		zoneHash['industry'] = 'Technical library';
+		zoneHash['library'] = 'Technical library';
+		zoneHash['linux'] = 'Technical library';
+		zoneHash['opensource'] = 'Technical library';
+		zoneHash['power'] = 'Technical library';
+		zoneHash['webservices'] = 'Technical library';
+		zoneHash['web'] = 'Technical library';
+		zoneHash['xml'] = 'Technical library';
+		zoneHash['wireless'] = 'Technical library';
+		jQuery.checkRB();
+		jQuery.getPopularTags("/developerworks/dwtags/dwjquerytabtags?lang=" + rBHash['viperLang'] + "&base=" + jQuery.getNormalizedZoneUrl(location.href));
+		jQuery.getUserTags();
+		if(jQuery.isTutorial(location.href) == "true") {
+			jQuery.getTagsForContent("/developerworks/tagging/UseCaseServlet?lang=" + rBHash['viperLang'] + "&format=maverick&cType=tutorials&use_case=geturltags&action=gettags&url=" + jQuery.normalizeUrl(location.href));
+		}
+		else {
+			jQuery.getTagsForContent("/developerworks/tagging/UseCaseServlet?lang=" + rBHash['viperLang'] + "&format=maverick&cType=articles&use_case=geturltags&action=gettags&url=" + jQuery.normalizeUrl(location.href));
+
+		}
+		
+		// si
+		initSI();
+	});
+ </script>
+ <!-- JQuery end -->
+ <!-- Overlay js -->
+<script language="JavaScript" src="//dw1.s81c.com/common/js/overlay.js" type="text/javascript"></script>
+<!-- My dW Interest article -->
+<script language="JavaScript" src="//dw1.s81c.com/developerworks/js/showinterest.js" type="text/javascript">//</script>
+<script language="JavaScript" type="text/javascript">
+        // <![CDATA[
+			var contentId = '';
+			var contentAreas = '';
+			var caArr = [];
+			contentId = '426950';
+			contentAreas = 'java,opensource';
+			if(contentAreas != ''){caArr = contentAreas.split(',');}
+			var loginLink = 'https://www.ibm.com/developerworks/dwwi/DWAuthRouter?m=loginpage&d=' + encodeURIComponent(window.location);jQuery('interestShow').showInterest(contentId,'dw-article',{'int_tops':[263,214,382,9],'int_prods':[], 'int_prod_fam':[],'int_cont_area':caArr},
+'<div id="dw-interest-anon"><a id="intAnonBtn" class="ibm-external-link" href="">Update My dW interests</a> (<a class="dw-interest" href="' + loginLink + '">Log in</a> | <a class="dw-interest" href="#overlay" onclick="ibmCommon.Overlays.show(\'dwmyinterestadd\', this);return false;">What\'s this?</a>) <a class="ibm-access" href="#dwmyinterestaddhelp">Skip to help for Update My dW interests</a></div>',
+'<div id="dw-interest-add"><a id="intSelectBtn" class="ibm-external-link" href="">Add to My dW interests</a> (<a class="dw-interest" href="#overlay" onclick="ibmCommon.Overlays.show(\'dwmyinterestadd\', this);return false;">What\'s this?</a>) <a class="ibm-access" href="#dwmyinterestaddhelp">Skip to help for Add to My dW interests</a></div>',
+'<div id="dw-interest-remove">Added to My dW interests (<a class="dw-interest" href="https://www.ibm.com/developerworks/mydeveloperworks/profiles/html/myProfileView.do?lang=en">Edit</a>)</div>'
+);
+// ]]>
+</script><!-- BEGIN: Use this section to set page specific variables for the Unica Page Tag -->
+<script language="JavaScript">var NTPT_PGEXTRA="ibmSkillLevel=3&ibmAdoptPhase=-&ibmRole=-";</script>
+<!--END --><!-- SCRIPTS_INCLUDE_END -->
+
+<div id="ibm-metrics">
+<script src="//dw1.s81c.com/common/stats/stats.js" type="text/javascript">//</script>
+</div>
+
+</body>
+</html>

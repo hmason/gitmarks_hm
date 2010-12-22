@@ -1,0 +1,297 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
+<head profile="http://gmpg.org/xfn/11">
+	<title>Blackbird Pie &#8211; Twitter Media</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<link rel="stylesheet" type="text/css" href="http://media.twitter.com/wp-content/themes/sandbox/960.css" />
+	<link rel="stylesheet" type="text/css" href="http://media.twitter.com/wp-content/themes/sandbox/style.css" />
+	
+	<script type="text/javascript">var _sf_startpt=(new Date()).getTime()</script>
+		
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	<script type="text/javascript" src="date.format.js"></script>
+	<script type="text/javascript" src="twitter-text.js"></script>
+	<script type="text/javascript" src="mustache.js"></script>
+
+	<script type="text/javascript" src="http://use.typekit.com/nru8spd.js"></script>
+	<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+	
+<script src="http://platform.twitter.com/anywhere.js?PTu5hIuVvOlKsX50ifcmtQ" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+applyHC = function(){
+	twttr.anywhere('pre', function(twitter) {
+    	twitter.hovercards();
+    	twitter(".twitter-account").hovercards({
+	        username: function(node) { return node.title; }
+	    });
+    });
+}
+    
+var PROXY_BASE = "http://media.twitter.com/tweetproxy/?url=";
+var API_CALL_BASE = "http://api.twitter.com/1/statuses/show.json?id=";
+
+setTweetContent = function(t){
+	
+	// t will become my mustache 'view' object... but i need to make some mods to it
+	
+	var tweetView = t;
+	tweetView.tweetText = TwitterText.auto_link(t.tweetText);
+
+	// remember, triple stache gives you unescaped code
+
+	var tweetTemplate = "<!-- {{{tweetURL}}} --> ";
+tweetTemplate += "<style type='text/css'>.bbpBox{{id}} {background:url({{{profileBackgroundImage}}}) #{{{profileBackgroundColor}}};padding:20px;} p.bbpTweet{background:#fff;padding:10px 12px 10px 12px;margin:0;min-height:48px;color:#000;font-size:18px !important;line-height:22px;-moz-border-radius:5px;-webkit-border-radius:5px} p.bbpTweet span.metadata{display:block;width:100%;clear:both;margin-top:8px;padding-top:12px;height:40px;border-top:1px solid #fff;border-top:1px solid #e6e6e6} p.bbpTweet span.metadata span.author{line-height:19px} p.bbpTweet span.metadata span.author img{float:left;margin:0 7px 0 0px;width:38px;height:38px} p.bbpTweet a:hover{text-decoration:underline}p.bbpTweet span.timestamp{font-size:12px;display:block}</style> ";
+
+tweetTemplate += "<div class='bbpBox{{id}}'><p class='bbpTweet'>{{{tweetText}}}<span class='timestamp'><a title='{{timeStamp}}' href='{{{tweetURL}}}'>less than a minute ago</a> via {{{source}}}</span><span class='metadata'><span class='author'><a href='http://twitter.com/{{screenName}}'><img src='{{profilePic}}' /></a><strong><a href='http://twitter.com/{{screenName}}'>{{realName}}</a></strong><br/>{{screenName}}</span></span></p></div>";
+
+	tweetTemplate += " <!-- end of tweet -->";
+	
+	var tweetMarkup = Mustache.to_html(tweetTemplate, tweetView);
+		
+	// whew
+	
+	$('#tweetContent').html(tweetMarkup);
+	$('#tweetMarkupDisplay').val(tweetMarkup);
+	
+	$('#tweetResult').show();
+	
+}
+
+$.ready = function() {
+	$('.tweetFade').fadeTo(0);
+	
+	$('#tweetForm').submit(function(){
+		tweetSourceURL = $('#tweetSource').val();
+		matches = tweetSourceURL.match(/^http(s)*:\/\/twitter\.com\/(\w+)\/status(es)*\/(\d+)$/);
+		if (!matches) {
+			 matches = tweetSourceURL.match(/^http(s)*:\/\/twitter\.com\/(\#\!)\/(\w+)\/status\/(\d+)$/);
+		}
+		if (matches) {
+			// matches[3] is the id
+			proxiedAPIRequest = PROXY_BASE+encodeURIComponent(API_CALL_BASE+matches[4]);
+			$.getJSON(proxiedAPIRequest,function(data){
+				if (data.status.http_code == "200") {
+					setTweetContent({
+						id : data.contents.id,
+						tweetURL : matches[0],
+						screenName : data.contents.user.screen_name,
+						realName : data.contents.user.name,
+						tweetText : data.contents.text,
+						source : data.contents.source,
+						profilePic : data.contents.user.profile_image_url,
+						profileBackgroundColor : data.contents.user.profile_background_color,
+						profileBackgroundImage : data.contents.user.profile_background_image_url,
+						profileTextColor : data.contents.user.profile_text_color,
+						profileLinkColor : data.contents.user.profile_link_color,
+						timeStamp : data.contents.created_at,
+						utcOffset : data.contents.user.utc_offset
+					});				
+				} else {
+					alert("Alas! An error. Possibly mine.");
+				}
+			});
+		} else {
+			alert("Nope! This recipe calls for a full, valid tweet URL.");
+		}
+		
+		// i always forget about this	
+		return false;
+	});
+	
+}
+
+</script>
+
+<style>
+	
+	#container {
+		width: 100%;
+	}
+	
+	.info { margin-bottom: 10px; }
+	.info .gray { color: #999; }
+
+	#tweetSource {
+		font-size: 18px;
+		font-weight: bold;
+		font-family: Arial,Verdana,sans-serif;
+		width: 500px;
+	}
+
+	#tweetForm {
+		margin-bottom: 10px;
+	}
+	
+	#tweetSubmit {
+		font-size: 18px;
+		padding: 2px;
+		font-weight: bold;
+		font-family: Arial,Verdana,sans-serif;
+	}
+	
+	#tweetResult {
+		display: none;	
+	}
+	
+	#tweetContent {
+		margin-bottom: 10px;
+	}
+	
+	#tweetMarkupDisplay {
+		font-size: 12px;
+		font-family: Arial,Verdana,sans-serif;
+		color: #333;
+		width: 100%;
+		height: 250px;
+		margin-bottom: 10px;
+	}
+	
+</style>
+
+</head>
+
+<body>
+
+	<div class="header">
+		<div class="container_12">
+			<div class="grid_9 logo"><a href="http://media.twitter.com/" title="Twitter Media" rel="home" class="logo">Twitter Media</a></div>
+			<div class="grid_3 icons">
+				<a href="http://media.twitter.com/feed" class="rss" title="RSS Feed">Twitter.com</a>
+				<a href="http://twitter.com" class="twitter" title="Back to Twitter.com">Twitter.com</a>
+			</div>
+
+			<div class="clear"></div>
+		</div>
+	</div>
+		<div class="container_12 container">
+			<div class="grid_9 posts">
+
+			<div id="post-0" class="post">
+				<h2 class="entry-title">Blackbird Pie</h2>
+				<div class="entry-content">
+				
+					<div id="container">
+						<form id="tweetForm">
+						<p class="info">This is what @robinsloan uses to snag tweets for blog posts. (<a href="http://media.twitter.com/411/fresh-baked-tweets">Here's some context.</a>)<br/><span class="gray">You can use it, too... but only at your own risk. Paste a tweet URL below:</span></p>
+						<input id="tweetSource" type="text" />
+				
+						<input id="tweetSubmit" type="submit" value="Bake it" />
+						</form>
+				
+						<div id="tweetResult">
+						<p class="info">1. Here's how the tweet will look:</p>						<div id="tweetContent">&nbsp;</div>
+						
+						<p class="info">2. Here's the code:</p>
+						<textarea id="tweetMarkupDisplay"></textarea>
+						
+						<p class="info">3. Copy and paste!</p>						
+						<p class="info"><span class="gray">Note that this is not guaranteed to work on your platform; it works for me here on a very plain WordPress install. If it does work, when you paste the tweet into your post, it will pick up some of your styling, e.g. the font-family you use on your &lt;p&gt; tags. That's intentional!</span></p>
+						<p class="info"><span class="gray"><strong>TO DO:</strong> shorter code; real timestamp.</span></p>
+						</div>
+						
+						<p><b>Other options:</b>
+						<ul><li>Publitweet has <a href="http://publitweet.com/blog/2010/05/06/blackbird-script-for-your-site-allow-tweet-embedding/">a dynamic alternative</a>.</li><li>I like <a href="http://themergency.com/twitter-blackbird-pie-wordpress-plugin/">this WordPress plugin</a> a lot.</li><li>And here's <a href="http://github.com/jmillerinc/blackbirdpy">a Python implementation</a>.</li><li><a href="http://tweetpaste.thingamaweb.com/">TweetPaste</a> is quite nice.</li></ul></p>
+						
+					</div>
+
+				</div>
+			</div><!-- .post -->
+
+		</div><!-- #content -->
+	</div><!-- #container -->
+
+
+<div class="grid_3 side">
+<ul>	
+	<li><strong>platform</strong></li>
+
+	<li><a href="/tag/tv">tv</a></li>
+	<li><a href="/tag/web">web</a></li>
+	
+	<li><strong>type</strong></li>
+	<li><a href="/tag/case-studies">case studies</a></li>
+	<li><a href="/tag/howto">howto</a></li>
+		
+	<li><strong>topic</strong></li>
+
+	<li><a href="/tag/api">api</a></li>
+	<!--<li><a href="/tag/curation">curation</a></li>-->
+	<li><a href="/tag/design">design</a></li>
+	<!--<li><a href="/tag/elections">elections</a></li>-->
+	<li><a href="/tag/legal">legal</a></li>
+	<li><a href="/tag/lists">lists</a></li>
+	<li><a href="/tag/metrics">metrics</a></li>
+
+	<li><a href="/tag/news">news</a></li>
+	<li><a href="/tag/tweeting">tweeting</a></li>
+	
+	<li><strong class="sep">follow us</strong></li>
+	<li><a class="twitter-account" title="twittermedia" href="http://twitter.com/twittermedia">@twittermedia</a></li>
+</ul>
+</div>
+	
+	</div>
+	<div class="clear"></div>
+
+</div>
+
+<div class="container_12">
+			<div class="grid_12 footer">
+        <ul>
+          <li class="first">&copy; 2010 Twitter</li>
+          <li><a href="http://twitter.com/about">About Us</a></li>
+          <li><a href="http://twitter.com/about/contact">Contact</a></li>
+
+          <li><a href="http://blog.twitter.com/">Blog</a></li>
+          <li><a href="http://status.twitter.com/">Status</a></li>
+          <li><a href="http://apiwiki.twitter.com/">API</a></li>
+          <li><a href="http://twitter.com/help">Help</a></li>
+          <li><a href="http://twitter.com/jobs">Jobs</a></li>
+          <li><a href="http://twitter.com/tos">TOS</a></li>
+
+          <li><a href="http://twitter.com/privacy">Privacy</a></li>
+        </ul>
+     </div>
+    </div>
+
+	<!-- Google Analytics for WordPress - async tracking beta | http://yoast.com/wordpress/google-analytics/ -->
+	<script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push( 
+		['_setAccount','UA-52123-8'],
+		['_trackPageview'] 
+	);
+	</script>
+	<script type="text/javascript">
+	(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+	})();
+	</script>
+	<!-- End of Google Analytics async tracking beta code -->
+
+<script type="text/javascript">
+var _sf_async_config={uid:2074,domain:"media.twitter.com"};
+(function(){
+  function loadChartbeat() {
+    window._sf_endpt=(new Date()).getTime();
+    var e = document.createElement('script');
+    e.setAttribute('language', 'javascript');
+    e.setAttribute('type', 'text/javascript');
+    e.setAttribute('src',
+       (("https:" == document.location.protocol) ? "https://s3.amazonaws.com/" : "http://") +
+       "static.chartbeat.com/js/chartbeat.js");
+    document.body.appendChild(e);
+  }
+  var oldonload = window.onload;
+  window.onload = (typeof window.onload != 'function') ?
+     loadChartbeat : function() { oldonload(); loadChartbeat(); };
+})();
+
+</script>
+
+</body>
+</html>

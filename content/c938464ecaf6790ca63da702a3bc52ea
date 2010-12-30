@@ -1,0 +1,1006 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US" xml:lang="en-US">
+<head profile="http://gmpg.org/xfn/11">
+<title>Staging Servers, Source Control &#038; Deploy Workflows, And Other Stuff Nobody Teaches You: MicroISV on a Shoestring</title>
+
+<link rel="stylesheet" href="http://images2.bingocardcreator.com/blog-images/leviathan/style.css" type="text/css" media="screen" />
+<meta name="verify-v1" content="BgY02vPj8Wm3szTGtI3W5DO2eZE0qor6NHX4BF8KOTM=" />
+<meta http-equiv="Content-Type" content="text/html charset=UTF-8" />
+<meta name="robots" content="index,follow" />
+<meta name="author" content="Patrick McKenzie" />
+<meta name="copyright" content="Copyright (c) December 2010" />
+<meta name="revised" content="Sunday, December 12th, 2010, 8:47 am" />
+<meta name="description" content="This blog is about the business aspects of running Bingo Card Creator, a small software company. Want more great articles? I keep a list of my best work curated. A brief summary of the last few years is available here. If you like what you see, I encourage you to sign up for the RSS [...]" />
+<meta name="keywords" content="Uncategorized" />
+<meta name="template" content="Hybrid 0.4.2" />
+<meta name="generator" content="WordPress 3.0.3" />
+<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://www.kalzumeus.com/feed/" />
+<link rel="alternate" type="application/rss+xml" title="RDF/RSS 1.0" href="http://www.kalzumeus.com/feed/rdf/" />
+<link rel="alternate" type="text/xml" title="RSS .92" href="http://www.kalzumeus.com/feed/rss/" />
+<link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="http://www.kalzumeus.com/feed/atom/" />
+<link rel="alternate" type="applcation/rss+xml" title="Comments RSS 2.0" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/feed/" />
+<link rel="pingback" href="http://www.kalzumeus.com/xmlrpc.php" />
+
+<link rel="home" title="MicroISV on a Shoestring" href="http://www.kalzumeus.com" />
+<link rel="bookmark" title="Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches You" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/" />
+<link rel="previous" title="Appointment Reminder Has Launched" href="http://www.kalzumeus.com/2010/12/06/appointment-reminder-has-launched/" />
+<link rel="next" title="Bingo Card Creator (&amp; etc) Year In Review 2010" href="http://www.kalzumeus.com/2010/12/17/bingo-card-creator-etc-year-in-review-2010/" />
+
+<link rel="alternate" type="application/rss+xml" title="MicroISV on a Shoestring &raquo; Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches You Comments Feed" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/feed/" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.kalzumeus.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.kalzumeus.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='MicroISV on a Shoestring' href='http://www.kalzumeus.com/' />
+<link rel='start' title='Dev Journal: First Three Days in the Trenches' href='http://www.kalzumeus.com/2006/06/27/dev-journal-first-three-days-in-the-trenches/' />
+<link rel='prev' title='Appointment Reminder Has Launched' href='http://www.kalzumeus.com/2010/12/06/appointment-reminder-has-launched/' />
+<link rel='next' title='Bingo Card Creator (&amp; etc) Year In Review 2010' href='http://www.kalzumeus.com/2010/12/17/bingo-card-creator-etc-year-in-review-2010/' />
+<link rel='canonical' href='http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/' />
+<link rel='shortlink' href='http://www.kalzumeus.com/?p=1102' />
+<meta name="tweetmeme-title" content="Staging Servers, Source Control &#038; Deploy Workflows, And Other Stuff Nobody Teaches You" /><link rel='stylesheet' id='hybrid-print-css'  href='http://www.kalzumeus.com/wp-content/themes/hybrid/library/css/print.css?ver=0.2' type='text/css' media='print' />
+	<style type="text/css">.recentcomments a{display:inline !important;padding:0 !important;margin:0 !important;}</style>
+	<link type="text/css" rel="stylesheet" href="http://www.kalzumeus.com/wp-content/plugins/syntaxhighlighter-plus/syntaxhighlighter/styles/shCore.css"></link>
+	<link type="text/css" rel="stylesheet" href="http://www.kalzumeus.com/wp-content/plugins/syntaxhighlighter-plus/syntaxhighlighter/styles/shThemeDefault.css"></link>
+</head>
+
+<body class="single single-1102 single-category-uncategorized single-author-bingocards not-logged-in unknown-os unknown-browser primary-active secondary-inactive subsidiary-inactive">
+
+
+<div id="body-container">
+
+	
+	<div id="header-container">
+
+		<div id="header">
+
+			<div id="site-title"><a href="http://www.kalzumeus.com" title="MicroISV on a Shoestring"><span>MicroISV on a Shoestring</span></a></div>
+			<div id="site-description"><span>B2C stands for "Bingo To Customer"</span></div>
+
+		<div id='search' class='search'>
+			<form method="get" class="search-form" id="search-form" action="http://www.kalzumeus.com/"><div><input class="search-text" type="text" name="s" id="search-text" tabindex="7" value="Search this site..." onfocus="if(this.value==this.defaultValue)this.value='';" onblur="if(this.value=='')this.value=this.defaultValue;" /><input class="search-submit button" name="submit" type="submit" id="search-submit" tabindex="8" value="Search" /></div></form>
+		</div>
+
+		</div>
+
+	</div>
+
+	<div id="navigation"><div id="page-nav" class="page-nav"><ul><li ><a href="http://www.kalzumeus.com/" title="Home">Home</a></li><li class="page_item page-item-67"><a href="http://www.kalzumeus.com/start-here-if-youre-new/" title="Start Here If You&#8217;re New">Start Here If You&#8217;re New</a></li><li class="page_item page-item-1016"><a href="http://www.kalzumeus.com/greatest-hits/" title="Greatest Hits">Greatest Hits</a></li><li class="page_item page-item-533"><a href="http://www.kalzumeus.com/about/" title="About This Blog">About This Blog</a></li><li class="feed-url"><a href="http://www.kalzumeus.com/feed/" title="Subscribe to the feed">Subscribe</a></li></ul></div></div><div class="breadcrumb breadcrumbs"><div class="breadcrumb-trail"><span class="breadcrumb-title">Browse:</span> <a href="http://www.kalzumeus.com" title="MicroISV on a Shoestring" class="trail-begin">Home</a> / <a href="http://www.kalzumeus.com/category/uncategorized/" title="Uncategorized">Uncategorized</a> / <span class="trail-end">Staging Servers, Source Control &#038; Deploy Workflows, And Other Stuff Nobody Teaches You</span></div></div>
+	<div id="container">
+
+		
+		<div id="content">
+
+			
+
+	<div class="post-1102 post type-post hentry category-uncategorized  post-1 odd">
+
+		<h1 class="single-title entry-title"><a href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/" title="Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches You" rel="bookmark">Staging Servers, Source Control &#038; Deploy Workflows, And Other Stuff Nobody Teaches You</a></h1>
+		<p class="byline">
+			<span class="text">By</span> <span class="author vcard"><a class="url fn n" href="http://www.kalzumeus.com/author/admin/" title="Patrick">Patrick</a></span> <span class="text">on</span> <abbr class="published" title="Sunday, December 12th, 2010, 7:18 am">December 12, 2010</abbr> 
+					</p>
+
+		<div class="entry-content entry">
+			<p>I worked for almost three years as a cog in a Japanese megacorporation, and one of the best parts about that experience (perhaps even worth the 70 hour weeks) was that they taught me how to be a <strong>professional</strong> engineer.  Prior to doing so, my workflow generally involved a whole lot of bubble gum, duct tape, and praying.  I spent a lot of time firefighting broken software as a result, to the detriment of both my customers and myself.  Talking to other software developers has made me realize that I&#8217;m not the only person who was never taught that there are options superior to bubblegum.  If you aren&#8217;t lucky enough to work at a company that has good engineering in its very DNA, you&#8217;re likely to not know much about&nbsp;them.</p>
+<p>This strikes me as the industry&#8217;s attitude to source control a few years ago, prior to a concerted evangelization movement by people like <a href="http://www.joelonsoftware.com/articles/fog0000000043.html" onclick="javascript:pageTracker._trackPageview('/outbound/article/http://www.joelonsoftware.com/articles/fog0000000043.html');">Joel Spolsky</a>.  It is virtually impossible to overstate how much using source control improves software development.  Our industry has changed in major ways since 2000, but our best practices (and knowledge of those best practices) are lagging a few years behind.  We could really use a Joel Test 2010 edition, for a world where &#8220;you should have build scripts for desktop software which can complete the build in one step&#8221; is largely an anachronism and where the front page to the website is no longer hand-coded in Notepad but, rather, is a shipping piece of software which can break in two hundred&nbsp;ways.</p>
+<p>You&#8217;re not going to get the Joel Test 2010 here, mostly because I&#8217;m not Joel and there is no particular reason any company should judge its development practices relative to mine.  What I <em>would</em> like to give is some practical pointers for implementing three practices which, if you&#8217;re not already doing, will <strong>greatly improve</strong> the experience of writing software for the&nbsp;web:</p>
+<ol>
+<li>Staging&nbsp;servers</li>
+<li>Version control&nbsp;workflows</li>
+<li>Tested, repeatable&nbsp;deployments</li>
+</ol>
+<h2>Staging&nbsp;Servers</h2>
+<p>What is a staging server?  The basic idea is that it is <strong>staging = production&thinsp;&#8211;&thinsp;users.</strong> (If you&#8217;re Facebook, Google, or IMVU, you are lightyears ahead of this article and have some system where there are multiple levels of staging/production and where you can dynamically change them.  You already have geniuses working on your infrastructure.  Listen to them.  This article is for people who don&#8217;t have any option between &#8220;code runs on developer&#8217;s laptop&#8221; and &#8220;code runs in&nbsp;production.&#8221;)</p>
+<p>Why do we have staging servers?  So that anything that is going to break on production <strong>breaks on the staging server first</strong>.  For this reason, you want your staging server to be as <strong>similar to the production environment as you can possibly make it</strong>.  If the production environment processes credit cards, the staging environment processes credit cards.  This means that if, e.g., your configuration for the payment gateway is borked, you&#8217;ll find out about that on the staging server prior to pushing it live to production and, whoopsie, not actually being able to get money from people.  If your production server uses Ruby 1.9, your staging server uses 1.9.  If the production server uses memcached on port 12345, the staging server uses memcached on port&nbsp;12345.</p>
+<p>(Many folks have systems which exist on more than one physical machine.  I don&#8217;t&thinsp;&#8212;&thinsp;I&#8217;m a small business where 2 GB of RAM is enough for anything I want to do.  If you have multiple machines, strike &#8220;staging server&#8221; and read as &#8220;staging system&#8221; below: all the benefits for having a separate staging server are still beneficial when your staging environment actually has fifteen physical servers running 47&nbsp;VMs.)</p>
+<p>Setting up a staging server <em>should be easy</em>.  If it is not easy, <em>you already have a problem</em> in your infrastructure, you just don&#8217;t know it yet: you&#8217;ve cobbled together your production server over time, usually by manually SSHing into it and tweaking things without keeping a log of what you have done.  (Been there, done that, got the &#8220;I Created A Monster&#8221; T-shirt.)  There isn&#8217;t a written procedure or automated script for creating it from the bare metal.  If you had that procedure written, you should be able to execute it and create a staging server that works inside of an&nbsp;hour.</p>
+<p>Most people won&#8217;t be able to do this if they haven&#8217;t given thought to the matter before.  That is fixable, and should be fixed.  It has substantial benefits: if you have a repeatable procedure for provisioning a production system, then when disaster strikes you will be able to confidently execute that procedure and end up with a production system.  (Confidence is important since you&#8217;ll probably be terrified and rushed when you need to do this, and rushed terrified people make unnecessary&nbsp;mistakes.)</p>
+<p>If you&#8217;re working on Rails, I highly recommend using <a href="https://github.com/mbailey/deprec" onclick="javascript:pageTracker._trackPageview('/outbound/article/https://github.com/mbailey/deprec');">Deprec</a>/<a href="https://github.com/capistrano/capistrano" onclick="javascript:pageTracker._trackPageview('/outbound/article/https://github.com/capistrano/capistrano');">Capistrano </a>with all new projects.  In addition to making it very easy to get a full Rails stack working on your deployment environment of choice , it helps automate routine deployment and server maintenance, and has mostly sensible defaults.  (I have only one quibble with deprec : it installs software from source rather than using your system&#8217;s package manager.  That means that upgrading e.g. Nginx two years down the road is needlessly hard and error prone, when instead you could just have used apt-get in the first place and then updating is a piece of&nbsp;cake.)</p>
+<p>You can also use Fabric, Chef, Fog, or a similar system to script up building new environments.  Pick whichever strikes your fancy.  Try to recreate your production environment, down to a T, on another host at your VPS/cloud/etc provider, or on another physical machine if you actually still own machines.  Keep tweaking the script until it produces something which actually matches your production environment.  You now have a procedure for creating a staging server, and as an added bonus it also works for documenting your production environment in a reproducible&nbsp;fashion.</p>
+<p>One nice thing about keeping your server configuration in scripts rather than just splayed across fifteen different places on the server (/etc/environment, /etc/crontab, /usr/local/nginx/conf/apps/AppName.conf, etc) is that it lives in source control.  Your cron jobs?  If they&#8217;re in source control, you&#8217;ll have a written record of what they are, what they&#8217;re supposed to do, and why they just blew up when you bork the underlying assumptions eight months down the line.  Your Nginx config?  If it is in source control, you&#8217;ll understand <em>why</em> you added that new location setting for static images only.  The voodoo in your postfix config?  A suitably descriptive commit note means you&#8217;ll never have to think about reproducing the voodoo&nbsp;again.</p>
+<p>After you have the script which will produce your staging environment, you probably want to make a minimum number of alterations from production.  Many companies will want their staging environment to be non-public&thinsp;&#8212;&thinsp;that way, customers don&#8217;t see code before it is ready, and critical issues never affect the outside world.  There are many ways to do this: ideally, you&#8217;d just tweak a setting on your firewall and bam, nobody from the public Internet can get to your staging environment.  However, this is a wee bit difficult to pull off for some of us.  For one, I don&#8217;t actually have a hardware firewall (I use iptables on each VPS&nbsp;individually).</p>
+<p>My staging environment simply includes a snippet in Nginx which denies access to everyone except a particular host (which I can proxy through).  This breaks integration with a few outside services (e.g. Twilio and Spreedly, which needs callbacks), so I make exceptions for the URLs those two need to access.  The more complicated your staging server configuration gets relative to production, the more likely you are to compromise its utility<strong>.  Try to avoid&nbsp;exceptions.</strong></p>
+<p><strong></strong>That said, there are a couple that are too valuable to not make.  For example, my staging server has a whitelist of email addresses and phone numbers owned by me.  Through the <a href="http://www.pastie.org/1370140" onclick="javascript:pageTracker._trackPageview('/outbound/article/http://www.pastie.org/1370140');">magic of monkeypatching</a>, attempting to contact anyone else raises an exception.  That sounded a little paranoid until that day when I accidentally created an infinite loop and rang every number in the database a hundred times.  (My cell phone company <em>loves</em> me, but folks who accidentally collided with test data sure would not&nbsp;have.)</p>
+<p>How do you get data to populate the staging server?  I use seed scripts and add more data by hand.  (I also have DB dumps available, but they tend to go stale against the current schema distressingly quickly: I recommend seed scripts.)  You can also dump the production DB and load it into the staging DB.  <strong>Think long and hard before you do this.</strong> For one, it is likely to be way, way the heck out of bounds for regulated industries.  For another, your staging server is probably going to periodically be insecure&thinsp;&#8212;&thinsp;insecurity is failure and <strong>failure is what the staging server is for</strong>.  Slurping all of the data out of a staging environment has caused many companies smarter than you to have to go into disaster management mode.  <strong>Please be&nbsp;careful</strong>.</p>
+<h3>So you&#8217;ve got a staging server?  Now&nbsp;what?</h3>
+<p>At the simplest, you access your staging server with a browser and try to break things.  When you break things, you fix things, then you redeploy the staging server and try to break them again.  This is what you are probably doing right now with production, except that your customers don&#8217;t have to see broken things when you break&nbsp;things.</p>
+<p>Eventually, you can script up attempts to break things, using e.g. Selenium.  Then when you break things, you add them to the list of things that Selenium tries to break.  If you run that against the staging server after every code check in (a process known as continuous integration), you&#8217;ll quickly catch regressions before they disrupt paying customers.  This is a wee bit harder than just having a staging server&thinsp;&#8212;&thinsp;OK, a lot harder&thinsp;&#8212;&thinsp;but <strong>you&#8217;ll get clear, obvious advantage out of every increment of work you do</strong> on this path, so don&#8217;t let present inability to be Google prevent you from getting&nbsp;started.</p>
+<h2>Version Control &amp; Deployment&nbsp;Workflows</h2>
+<p>Everyone should use version control, but people tend to use version control differently.  Git is very popular in the Rails community, but<em> there are probably no two companies using git the same way</em>.  The key thing is that you agree with your team on how you use version control&thinsp;&#8212;&thinsp;document your assumptions, document your processes, then apply them religiously.  This will reduce conflicts on the team, reduce mistakes, and help you get more out of your&nbsp;tools.</p>
+<p>There are a million ways to use version control and most of them are perfectly OK.  I&#8217;m going to mention mine, but it isn&#8217;t the canonical Right Way, it is just one way which works for a (very) small company.  Yours will likely be different, but you can see some of the things which go into design of a version control&nbsp;workflow.</p>
+<h3>Assumptions I Make About Life, The Universe, And&nbsp;Everything</h3>
+<ol>
+<li>I use git.  Git has notion of branches, tags, and remotes (physically distinct repositories)&thinsp;&#8212;&thinsp;if you don&#8217;t know what these are, Google for [getting started with&nbsp;git].</li>
+<li><strong>I generally work alone or with a very small team. </strong>(This assumption underpins very important parts of my workflow.  It won&#8217;t expand very well to a 200 man distributed team, but it might well work for 2 ~ 5&nbsp;people.)</li>
+<li>There is exactly one canonical repository, origin.  Developers maintain other repositories on their workstation.  Automated processes like deployment happen only with reference to the origin.  Code existing outside of the origin does not officially exist yet, for any purpose.  The history preserved in the origin is, in principle,&nbsp;sacred.</li>
+<li>There is a branch called deploy.  The HEAD of deploy (the most recent code on it) is presumptively ready to be put into&nbsp;production.</li>
+<li>Tags are used to take snapshots of the code base and preserve them in amber with a human readable name.  Right before we deploy to either production or staging, the HEAD gets tagged, so that we can easily find it later, with a simple naming convention (I use production_release_X and staging_release_X, where X just increments upwards&thinsp;&#8212;&thinsp;some people might prefer timestamps).  Production release tags are never deleted.  Staging tags get periodically culled when convenient to do&nbsp;so.</li>
+<li>Development of any feature expected to take longer than a few hours happens on a feature branch.  (I do occasional work right on deploy locally, for issues of the &#8220;Minor copy edit on dashboard.&#8221; variety.  This would be one of the first things to go if I were working on a larger&nbsp;team.)</li>
+</ol>
+<p>So how does this actually work in practice?  Let&#8217;s say I&#8217;m implementing a new feature.  I create a new branch to work on.  I code a bit, creating local commits with <em>wild abandon</em> any time I have accomplished something which I don&#8217;t want to lose.  When I believe code to be functional, I fire a capistrano task which tags the current head of my branch, pushes that tag to origin, and deploys it to the staging server.  I then continue testing on the staging server, for example verifying that Twilio integration actually works with Twilio (which cannot conveniently access localhost:3000 on my laptop).  I continue writing code, committing, tagging, and pushing to the staging server until the feature is&nbsp;ready.</p>
+<p>Then, I switch back to the deploy branch and merge in my feature branch (with&thinsp;&#8211;&thinsp;no-ff, which creates a commit message just for the merge&thinsp;&#8212;&thinsp;this handily groups the twenty or thirty commits I just made into one easily readable story for myself later).  I then tag a production release (manually&thinsp;&#8212;&thinsp;this is entirely to force me to think through whether I&#8217;m ready for a production release), verify that there is no diff between it and the most recent staging release, and then push the new tag to origin.  I then fire the Capistrano task which checks out the new deployment tag and restarts the&nbsp;server.</p>
+<p>What does this get me versus my previous SVN workflow for Bingo Card Creator, which was &#8220;Work only on one branch, commit stuff when I think it is ready, and deploy the trunk manually on&nbsp;occasion&#8221;?</p>
+<ol>
+<li>I cause much less downtime for the production server due to reasons like <em>svn commit -m &#8216;Whoops, forgot a setting in production.rb&#8217; </em>and <em>svn commit -m &#8216;r1234 introduced dependency on foobar gem without putting it in environment file, causing rake gems:install to not load it.  Mongrels then failed to&nbsp;restart.&#8217;</em></li>
+<li>My deploy branch has a <em>relatively</em> clean history, so when things start to break next year in production, finding the change sets which eventually caused the breakage will be less of a needle in the haystack search than finding them in SVN is.  SVN&#8217;s history is 1800 unedited commits, recording my stream of consciousness as they happened.  My stream of consciousness is frequently stupid, particularly when I&#8217;m panicking because the server is&nbsp;down.</li>
+<li>This decouples the staging server from production in a clean fashion (so that I can advance the staging server a feature or three at a time if I want to), but guarantees that when I&#8217;m actually ready to deploy, I&#8217;m deploying exactly what did not break on the staging&nbsp;server.</li>
+<li>Tagging releases gives you an Oh Crikey button, as in Oh Crikey, that last release broke stuff.  You can quickly rollback the deploy to a known good tag, isolate the changes which broke production, and fix&nbsp;them.</li>
+<li>Deploy scripts manage releases with multiple moving parts a lot better than I do, even when I&#8217;m working from a&nbsp;checklist.</li>
+</ol>
+<p>By the way, git gives you many options for recovering from problems&thinsp;&#8212;&thinsp;even severe problems&thinsp;&#8212;&thinsp;without requiring either gymnastics or a full-blown CSI investigation to discover what happened later.  For example, let&#8217;s pretend I just deployed tag production_deploy_82, and have discovered some issue serious enough to require an immediate rollback to production_deploy_81, which is known to be&nbsp;good:</p>
+<pre class="brush: ruby">
+
+#Assuming we are on our local workstation on the deploy branch.
+
+git branch something-in-here-is-broken
+
+git reset --hard production_deploy_81  #All changes made between deploy 81 and 82 just vanished from the deploy branch locally.
+
+#Clean up the deploy, using any option discussed below.
+
+git checkout something-in-here-is-broken  #Those changes which you just disappeared are now living on this branch, ready for you to fix.  After you&#039;ve fixed and verified it works on the staging server (and, ahem, that you have addressed the issue that allowed this to get OKed for release last time), you merge this branch back into deploy, and do a tag-and-release cycle.</pre>
+<p>How you clean up the mess on the server is up to you: good options include &#8220;deploy 81 again&#8221;, &#8220;tag a release 83 equivalent to 81, then deploy it&#8221;, and &#8220;rollback to the copy of 81 which still exists on the server.&#8221;  (Capistrano includes deploy:rollback, which will do exactly this.)  Any of these will work, just always do it the same way to avoid stepping on each others&#8217; toes.  I prefer tagging a new release so that I can add a descriptive message explaining why 82 just created an&nbsp;emergency.</p>
+<p>This is important because it leaves a paper trail&thinsp;&#8212;&thinsp;if you&#8217;re pulling a release from production, something just went seriously wrong with your processes.  <strong>Emergencies are not supposed to happen </strong>&thinsp;&#8211;&thinsp;anything that lets an issue get that far isn&#8217;t just a one-off failure of whatever broke, it is a series of failures of the systems/processes designed to prevent failures from getting that far.  After you&#8217;ve put out the fire, <a href="http://www.startuplessonslearned.com/2009/07/how-to-conduct-five-whys-root-cause.html" onclick="javascript:pageTracker._trackPageview('/outbound/article/http://www.startuplessonslearned.com/2009/07/how-to-conduct-five-whys-root-cause.html');">investigate what went wrong</a> and tweak your processes such that a similar failure in the future gets caught prior to bringing down production.  <strong>The sleep you save may be your&nbsp;own</strong>.</p>
+<p><strong>Scaling this to more programmers</strong>: Do whatever works for you!  I would probably create a staging branch and have folks integrate stuff into the staging branch when it was ready to go to the official staging environment.  I also might make per-developer staging environments: since creating one from the bare metal is supposed to be essentially free, let them all have their own where they can be reckless without spoiling the experience of other developers.  We can worry about code interaction on the &#8220;real&#8221; staging server.  Then, have folks communicate when they consider everything they have on staging ready for release, and release when everybody says it is&nbsp;ready.</p>
+<p>The important thing is that, whatever process you use, you document it, teach it, and enforce&nbsp;it.</p>
+<h2>Stuff Your Deployment Script Might Not Do Today But Probably&nbsp;Should</h2>
+<ol>
+<li>Depending on your scale and how you use e.g. memcached, it might be safe to purge the cache on every re-deploy, which will prevent some hard to diagnose bugs.  At a certain scale, this is virtually a recipe for taking your site down in a cache stampede, but I&#8217;m not Facebook and having capacity problems means that I am probably already vacationing at my hollowed-out volcano&nbsp;lair.</li>
+<li>Tell everybody on the team that you just deployed.  I know some teams who have an IRC channel with a bot who announces redeploys.  A quick email CCed to five developers also probably&nbsp;suffices.</li>
+<li>Restart worker processes.  This is easy to forget but, if you do it by hand, you&#8217;ll eventually forget and then have two versions of the application in production at once.  If you&#8217;re not prepared for that, it <em>will</em> bite you on the hindquarters when, e.g., the application servers ask the workers to execute methods that the workers do not know now exist in the code&nbsp;base.</li>
+<li>Do sanity checks.  You can go arbitrarily deep with complexity here.  For a first cut, mine for Appointment Reminder restarts the application server, counts ten seconds, then tries to access an internal URL.  If the application server isn&#8217;t up, or if the action at that URL blows up for any reason, the deployment script fails the deploy, rolls back to a known-good version, and sends me a very crossly worded email.  (You can do this for the staging server,&nbsp;too.)</li>
+<li>Integrate with other systems which manage the state of your code/business.  For example, I use <a href="http://www.hoptoadapp.com" onclick="javascript:pageTracker._trackPageview('/outbound/article/http://www.hoptoadapp.com');">Hoptoad</a>.  Hoptoad keeps track of exceptions and mails you when they happen, in such a fashion that your inbox doesn&#8217;t get buried by e.g. Googlebot deciding to do an impromptu fuzz test on your website.  I mark all exceptions as resolved every time I deploy to the environment they happened in.  You could also e.g. update an internal wiki by adding a new page specific to the deployment, automatically update your bug tracker to change the status of the bugs that you (presumably) just squashed, or start a new cohort for your stats&nbsp;tracking.</li>
+</ol>
+<h2>Is There Anything You Would Like To&nbsp;Add?</h2>
+<p>The trend towards openness with regards to technical practices on the Internet is a major, major win for everybody in our industry.  Best practices do not have to be passed from master to apprentice as oral lore.  Like OSS, since they&#8217;re often glue rather than competitive advantages (for many companies&thinsp;&#8212;&thinsp;not all), sharing them mostly doesn&#8217;t hurt you and can improve the situation of everybody.  So, in that spirit, if you&#8217;ve got anything you&#8217;d like to add, particularly for how you do things or how you would adapt this advice outside the scope of a very small business, I&#8217;d love to hear about it either in the comments or on your own blog (feel free to leave a link if it is&nbsp;relevant.)</p>
+					</div>
+
+		<p class="entry-meta post-meta-data">
+			<span class="categories"><span class="text">Posted in</span> <a href="http://www.kalzumeus.com/category/uncategorized/" title="View all posts in Uncategorized" rel="category tag">Uncategorized</a></span> 
+			 
+		</p>
+
+	</div>
+
+	
+		<div class="author-profile vcard">
+		<img alt='' src='http://0.gravatar.com/avatar/e95ff07fb5eaedf8fcc7428099675490?s=96&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D96&amp;r=G' class='avatar avatar-96 photo' height='96' width='96' />		<h4 class="author-name fn n"><a href="http://www.kalzumeus.com/author/admin/" title="Posts by Patrick">Patrick</a></h4>
+		<p class="author-description author-bio">
+					</p>
+	</div>
+<div id="utility-after-single" class="utility"><div id="text-366088982" class="widget widget_text widget-widget_text"><div class="widget-inside"><h3 class="widget-title widget-header">Like this blog?</h3>			<div class="textwidget"><div style="border:thin dotted black; padding:3mm; margin-bottom: 5px; ">New to this blog?
+
+<ul>
+  <li>My story since 2006, summarized <a href="http://www.kalzumeus.com/start-here-if-youre-new/">here</a>.</li>
+  <li>The <a href="http://www.kalzumeus.com/greatest-hits">best posts of this blog.</a></li>
+  <li>Like what you see?  Sign up for my <a href="http://www.kalzumeus.com/feed/">RSS feed</a>
+</ul>
+
+Thanks for visiting!  If you like what you see, I'd really appreciate you linking to it or otherwise sharing it with people you think would find it useful.</div></div>
+		</div></div></div>
+	
+<div id="comments-template">
+
+	<div id="comments">
+
+		<h3 id="comments-number" class="comments-header">
+			28 responses to &#8220;Staging Servers, Source Control &#038; Deploy Workflows, And Other Stuff Nobody Teaches You&#8221;		</h3>
+
+		<ol class="comment-list">
+			
+	<li id="comment-7565" class="pingback even thread-even depth-1 reader">
+
+		<a href="http://yahyasheikho786.wordpress.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you-microisv-on-a-shoestring/" rel="external nofollow" title="Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches You: MicroISV on a Shoestring &laquo; Yahyasheikho786&#039;s Blog"><img alt='Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches You: MicroISV on a Shoestring &laquo; Yahyasheikho786&#039;s Blog' src='http://0.gravatar.com/avatar/?d=http://www.kalzumeus.com/wp-content/themes/hybrid/images/pingback.jpg&amp;s=80' class='photo avatar avatar-80 photo avatar-default' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://yahyasheikho786.wordpress.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you-microisv-on-a-shoestring/"><a href="http://yahyasheikho786.wordpress.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you-microisv-on-a-shoestring/" title="Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches You: MicroISV on a Shoestring &laquo; Yahyasheikho786&#039;s Blog" class="url external nofollow">Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches You: MicroISV on a Shoestring &laquo; Yahyasheikho786&#039;s Blog</a></cite>			</div>
+
+			<abbr class="comment-time" title="Sunday, December 12th, 2010, 8:44 am">
+				December 12, 2010 at 8:44 am			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7565" title="Permalink to comment 7565">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>[...] Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches You: MicroISV&#8230;. [...]</p>
+		</div>
+</li>
+	<li id="comment-7569" class="comment odd alt thread-odd thread-alt depth-1 reader microid-mailto+http:sha1:2ffcfd46a898adc32fd8dc1b433d6f52a43eaea6">
+
+		<a href="http://floatapp.com" rel="external nofollow" title="Philip Roberts"><img alt='Philip Roberts' src='http://0.gravatar.com/avatar/4836178b6f11d9cf5616eabf187fa94d?s=80&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D80&amp;r=G' class='photo avatar avatar-80 photo' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://floatapp.com"><a href="http://floatapp.com" title="Philip Roberts" class="url external nofollow">Philip Roberts</a></cite>			</div>
+
+			<abbr class="comment-time" title="Sunday, December 12th, 2010, 9:33 am">
+				December 12, 2010 at 9:33 am			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7569" title="Permalink to comment 7569">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>Thanks for this Patrick. We are transitioning from the stage where there are just two of us ever using the system, to now having actual customers beta testing it &#8212; and all the while we are trying to rapidly push out new code.</p>
+<p>A couple of little deployment blunders recently (forgetting to run db:migrate after pushing new code) have reminded me to get on top of improving our procedure here, so this post couldn&#8217;t come at a better time!</p>
+<p>Cheers,<br />
+Phil</p>
+		</div>
+</li>
+	<li id="comment-7584" class="comment even thread-even depth-1 reader microid-mailto+http:sha1:f2f1a390ef58342397d50dcdca7ece76b91e247f">
+
+		<a href="http://www.schwertly.com" rel="external nofollow" title="Stan Schwertly"><img alt='Stan Schwertly' src='http://0.gravatar.com/avatar/a4b3598d81f87cf19c089df9707ede15?s=80&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D80&amp;r=G' class='photo avatar avatar-80 photo' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://www.schwertly.com"><a href="http://www.schwertly.com" title="Stan Schwertly" class="url external nofollow">Stan Schwertly</a></cite>			</div>
+
+			<abbr class="comment-time" title="Sunday, December 12th, 2010, 11:13 am">
+				December 12, 2010 at 11:13 am			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7584" title="Permalink to comment 7584">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>Really phenomenal post. It&#8217;s a short addendum to &#8220;The Practice of System and Network Administration&#8221; :)</p>
+		</div>
+</li>
+	<li id="comment-7586" class="comment odd alt thread-odd thread-alt depth-1 reader microid-mailto+http:sha1:2f2f64d3762b996616e1360b1b23d34757594e4b">
+
+		<a href="http://yahoo" rel="external nofollow" title="chona"><img alt='chona' src='http://0.gravatar.com/avatar/ac3fd2de41dee40ae5aec484845114e9?s=80&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D80&amp;r=G' class='photo avatar avatar-80 photo' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://yahoo"><a href="http://yahoo" title="chona" class="url external nofollow">chona</a></cite>			</div>
+
+			<abbr class="comment-time" title="Sunday, December 12th, 2010, 11:25 am">
+				December 12, 2010 at 11:25 am			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7586" title="Permalink to comment 7586">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>Wow Patrick, there&#8217;s a lot of information on data basis that could be very helpful in the future.</p>
+		</div>
+</li>
+	<li id="comment-7587" class="comment even thread-even depth-1 reader microid-mailto+http:sha1:f88dc18a337c39077da4b330af45ac969671a31b">
+
+		<a href="http://plugin-developer.com" rel="external nofollow" title="Nick Ohrn"><img alt='Nick Ohrn' src='http://0.gravatar.com/avatar/0fe5c50f561c95bab886a53bf739d6b0?s=80&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D80&amp;r=G' class='photo avatar avatar-80 photo' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://plugin-developer.com"><a href="http://plugin-developer.com" title="Nick Ohrn" class="url external nofollow">Nick Ohrn</a></cite>			</div>
+
+			<abbr class="comment-time" title="Sunday, December 12th, 2010, 11:26 am">
+				December 12, 2010 at 11:26 am			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7587" title="Permalink to comment 7587">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>One of the teams I work on is composed of me, the main developed, a PM, and two designers.  Each of us needed to be able to deploy to our staging server at any time and the designers don&#8217;t have the technical sophistication (nor want to learn) to use the command line to run a deployment script.</p>
+<p>As such, I created a web interface using Symfony that tracks deployments over time.  It tracks what revision is being pushed out and to which environment (QA, staging, production) and also handles access control so some users can only push to staging and some to production.  Finally, the solution allows for tagging a new tag from trunk at any time.  That way non-technical people can create tags on staging for possible later deploy to production.</p>
+<p>It has worked out ridiculously well and I don&#8217;t think that we would have been able to complete the project recently without it.</p>
+<p>As a note, the Symfony project simply queues the deployment which is then passed to the deploy script.</p>
+		</div>
+</li>
+	<li id="comment-7592" class="comment odd alt thread-odd thread-alt depth-1 reader">
+
+		<img alt='Tuomas koski' src='http://1.gravatar.com/avatar/ff70685b37022042e9068a69f9467823?s=80&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D80&amp;r=G' class='photo avatar avatar-80 photo' height='80' width='80' /><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn">Tuomas koski</cite>			</div>
+
+			<abbr class="comment-time" title="Sunday, December 12th, 2010, 12:28 pm">
+				December 12, 2010 at 12:28 pm			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7592" title="Permalink to comment 7592">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>To have an environment that is automatically testing that your backups are working, is something worth of having as well.</p>
+		</div>
+</li>
+	<li id="comment-7593" class="comment even thread-even depth-1 reader microid-mailto+http:sha1:dee63d0bff5652fad14b8b9240f66a6eac543cea">
+
+		<a href="http://ericleads.com/" rel="external nofollow" title="Eric Leads"><img alt='Eric Leads' src='http://0.gravatar.com/avatar/a42a7350945138024ad1d83df2fe7b9b?s=80&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D80&amp;r=G' class='photo avatar avatar-80 photo' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://ericleads.com/"><a href="http://ericleads.com/" title="Eric Leads" class="url external nofollow">Eric Leads</a></cite>			</div>
+
+			<abbr class="comment-time" title="Sunday, December 12th, 2010, 12:30 pm">
+				December 12, 2010 at 12:30 pm			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7593" title="Permalink to comment 7593">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>This is a bit spooky. I was just sharing a blog post I wrote last night with my friend, and he told me he just read this one.</p>
+<p>&#8220;Must be something with the position of the moon or something.&#8221;</p>
+<p>I&#8217;m glad that people are giving this subject active consideration. My post discusses the subject from a slightly different perspective. Check it out.</p>
+<p><a href="http://ericleads.com/2010/12/basic-website-deployment-strategy/" onclick="javascript:pageTracker._trackPageview('/outbound/comment/http://ericleads.com/2010/12/basic-website-deployment-strategy/');" rel="nofollow">http://ericleads.com/2010/12/basic-website-deployment-strategy/</a></p>
+		</div>
+</li>
+	<li id="comment-7594" class="comment odd alt thread-odd thread-alt depth-1 reader microid-mailto+http:sha1:9c08b15282dc401a9b3d2343453004d72cf13a8c">
+
+		<a href="http://retracile.net" rel="external nofollow" title="Eli"><img alt='Eli' src='http://1.gravatar.com/avatar/1ef10621a85769f9554cd0cbf67be94e?s=80&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D80&amp;r=G' class='photo avatar avatar-80 photo' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://retracile.net"><a href="http://retracile.net" title="Eli" class="url external nofollow">Eli</a></cite>			</div>
+
+			<abbr class="comment-time" title="Sunday, December 12th, 2010, 12:58 pm">
+				December 12, 2010 at 12:58 pm			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7594" title="Permalink to comment 7594">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>This addresses the code side of things, but how do you deal with your production data?</p>
+<p>What do you do when production_deploy_82 includes a substantive database change (such as schema modifications)?  Presumably you don&#8217;t want to drop the orders that have come in since that deployment in spite of whatever brokenness is driving the move to rollback.  Do you wind up writing and testing database downgrade tools for every deploy or what?</p>
+		</div>
+</li>
+	<li id="comment-7596" class="pingback even thread-even depth-1 reader">
+
+		<a href="http://www.edugeek.net/forums/nix/67476-staging-servers-source-control-deploy-workflows-other-stuff-nobody-teaches.html#post602686" rel="external nofollow" title="Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches"><img alt='Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches' src='http://0.gravatar.com/avatar/?d=http://www.kalzumeus.com/wp-content/themes/hybrid/images/pingback.jpg&amp;s=80' class='photo avatar avatar-80 photo avatar-default' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://www.edugeek.net/forums/nix/67476-staging-servers-source-control-deploy-workflows-other-stuff-nobody-teaches.html#post602686"><a href="http://www.edugeek.net/forums/nix/67476-staging-servers-source-control-deploy-workflows-other-stuff-nobody-teaches.html#post602686" title="Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches" class="url external nofollow">Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches</a></cite>			</div>
+
+			<abbr class="comment-time" title="Sunday, December 12th, 2010, 1:03 pm">
+				December 12, 2010 at 1:03 pm			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7596" title="Permalink to comment 7596">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>[...] Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches      Staging Servers, Source Control &#038; Deploy Workflows, And Other Stuff Nobody Teaches You: Mic&#8230;             Reply With Quote [...]</p>
+		</div>
+</li>
+	<li id="comment-7601" class="comment odd alt thread-odd thread-alt depth-1 reader">
+
+		<img alt='anon' src='http://0.gravatar.com/avatar/25d93fcfb2ba8b602f604cabd60aeadd?s=80&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D80&amp;r=G' class='photo avatar avatar-80 photo' height='80' width='80' /><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn">anon</cite>			</div>
+
+			<abbr class="comment-time" title="Sunday, December 12th, 2010, 2:19 pm">
+				December 12, 2010 at 2:19 pm			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7601" title="Permalink to comment 7601">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>The approach we&#8217;ve used where I work to staging servers is to use virtual machines. We&#8217;ve got an environment that runs on one virtual machine, on which we have web servers, SOAP server, databases, customer service interface, and so on.</p>
+<p>We use a hosts file that points our production names for all of these to localhost. For those cases where there is a conflict (someone in ancient times unfortunately decided to run SOAP on port 80) we point one to some non-existant IP address, and use iptables to remap that to localhost on some non-conflicting port. We also have something that intercepts all outgoing SMTP connections and acts as a dummy SMTP server, recording a nice log of the attempted emails. All other outgoing requests are blocked.</p>
+<p>In this environment, we CAN safely run copies of our live databases, and all our production code can run in the environment with no changes to either its code or configuration. (We omit the credit card database, or course, so as to not run into PCI problems). We have dummy payment gateways in the virtual machine, and a way to encode in the payment request whether we want it to be approved or declined.</p>
+<p>We also have a script that can take the customer orders from our live database for a range of days, and turn them into a script that can be run in the virtual environment to place those orders, using dummy credit cards, of course, not real ones.</p>
+<p>This is really nice because it lets every developer have his own staging environment, and he can make snapshots and rollback easily.</p>
+		</div>
+</li>
+	<li id="comment-7620" class="comment even thread-even depth-1 reader microid-mailto+http:sha1:da1ab060fa402b939ddbe4541db138200ea831a3">
+
+		<a href="http://twitter.com/sammthomson" rel="external nofollow" title="Sam Thomson"><img alt='Sam Thomson' src='http://1.gravatar.com/avatar/bc371a1d6773a6d5eda7c9325f1b3e60?s=80&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D80&amp;r=G' class='photo avatar avatar-80 photo' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://twitter.com/sammthomson"><a href="http://twitter.com/sammthomson" title="Sam Thomson" class="url external nofollow">Sam Thomson</a></cite>			</div>
+
+			<abbr class="comment-time" title="Sunday, December 12th, 2010, 7:19 pm">
+				December 12, 2010 at 7:19 pm			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7620" title="Permalink to comment 7620">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>Great post! I strongly disagree with you here though:</p>
+<p>&gt; &#8220;I have only one quibble with deprec : it installs software from source rather than using your system’s package manager.&#8221;</p>
+<p>deprec is right; you should always be installing from source. Otherwise you won&#8217;t &#8220;be able to confidently execute [your] procedure and end up with a production system.&#8221; The fact that your code works with the versions of third party packages that you&#8217;re currently using is no guarantee that your code will work with every combination of later versions. You need to be just as careful with third party code as you are with your own!</p>
+<p>Upgrading  might be slightly easier with apt-get, but when that upgrade breaks your website, you&#8217;ll wish you had the source at hand for the version you used to use.</p>
+		</div>
+</li>
+	<li id="comment-7624" class="pingback odd alt thread-odd thread-alt depth-1 reader">
+
+		<a href="http://paudelp.wordpress.com/2010/12/13/deployment-workflow/" rel="external nofollow" title="Deployment workflow &laquo; Programming and Beyond"><img alt='Deployment workflow &laquo; Programming and Beyond' src='http://0.gravatar.com/avatar/?d=http://www.kalzumeus.com/wp-content/themes/hybrid/images/pingback.jpg&amp;s=80' class='photo avatar avatar-80 photo avatar-default' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://paudelp.wordpress.com/2010/12/13/deployment-workflow/"><a href="http://paudelp.wordpress.com/2010/12/13/deployment-workflow/" title="Deployment workflow &laquo; Programming and Beyond" class="url external nofollow">Deployment workflow &laquo; Programming and Beyond</a></cite>			</div>
+
+			<abbr class="comment-time" title="Sunday, December 12th, 2010, 10:23 pm">
+				December 12, 2010 at 10:23 pm			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7624" title="Permalink to comment 7624">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>[...] Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches You (  Link), has correctly pointed out that only few companies and teams have tried to improve in this area. A [...]</p>
+		</div>
+</li>
+	<li id="comment-7631" class="comment even thread-even depth-1 reader microid-mailto+http:sha1:f0820a350f703b66bef8fa0df089124ac4ba3e0d">
+
+		<a href="http://www.danielrose.com.au" rel="external nofollow" title="Daniel Rose"><img alt='Daniel Rose' src='http://0.gravatar.com/avatar/6c084a97a4115af54c47237a9ba45326?s=80&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D80&amp;r=G' class='photo avatar avatar-80 photo' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://www.danielrose.com.au"><a href="http://www.danielrose.com.au" title="Daniel Rose" class="url external nofollow">Daniel Rose</a></cite>			</div>
+
+			<abbr class="comment-time" title="Monday, December 13th, 2010, 1:53 am">
+				December 13, 2010 at 1:53 am			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7631" title="Permalink to comment 7631">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>What you say is very true, even outside the narrow area of software development. I know this might not have been the purpose of your post, but it rings true the becoming process driven have many benefits. It assists with numerous things, including management of knowledge, quality, and productivity.<br />
+Thanks for the post!</p>
+		</div>
+</li>
+	<li id="comment-7654" class="comment odd alt thread-odd thread-alt depth-1 reader">
+
+		<img alt='Siegfried' src='http://1.gravatar.com/avatar/5ec919527e46f4cfcd0e5c8c32c0f918?s=80&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D80&amp;r=G' class='photo avatar avatar-80 photo' height='80' width='80' /><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn">Siegfried</cite>			</div>
+
+			<abbr class="comment-time" title="Monday, December 13th, 2010, 7:01 am">
+				December 13, 2010 at 7:01 am			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7654" title="Permalink to comment 7654">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>Great article, really interesting read.<br />
+But what I missed is information about database changes. I mean what happens when you have deployed a version that doesn&#8217;t work (with database changes) and you need to roll it back. Do you roll back the database changes as well?<br />
+Thanks</p>
+		</div>
+</li>
+	<li id="comment-7658" class="comment even thread-even depth-1 reader">
+
+		<img alt='Andreas Alexelis' src='http://1.gravatar.com/avatar/76b7286668ab813a3533ce03d446e6d4?s=80&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D80&amp;r=G' class='photo avatar avatar-80 photo' height='80' width='80' /><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn">Andreas Alexelis</cite>			</div>
+
+			<abbr class="comment-time" title="Monday, December 13th, 2010, 10:17 am">
+				December 13, 2010 at 10:17 am			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7658" title="Permalink to comment 7658">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>About DB changes, which applies to the previous comments by<br />
+@Eli,Siegfried<br />
+[With a background similar to Patrick's, i.e. a cog educated at a Japanese company, and talking strictly in the context of adherence to process control,  ]<br />
+we are advised to follow the principles bellow, wherever applicable:<br />
+[These admonitions come from enterprise internal system's development practices, so I am not sure how applicable they might be "as-is" for wide web deployment.]</p>
+<p>1.Treat serious DB modifications as major version upgrade development: Push as much of it as possible out of the critical path: for critical operations, your user should always know there is risk and have an alternative for their operations in case things go wrong. Then you seriously do QA and try to minimize that possibility.</p>
+<p>2. Decouple code and DB changes. For instance, if your next modification needs an additional field &#8220;X&#8221;, always add it as a not necessary field with a default value, test your current code against this DB change and only then deploy the code update. If things go wrong, you can fallback to your previous code which was tested to work even with the altered DB.<br />
+Sometimes you might even have to make an interim release, for instance if you had a relationship &#8220;1:1&#8243; and you need to change it to &#8220;many:1&#8243;, you will probably need to introduce some kind of association table, instead<br />
+of the current single reference. First you create code that implements a union of current 1:1 relationships and the new many:1 relationships ( you can always fall back to the old code if not OK), then you add the part of new functionality which should work with the current 1:1 relationships as a special case of the new many:1,<br />
+and ONLY THEN do you introduce the parts that actually create many:1 data.</p>
+<p>[BTW, it goes without saying but, the alter table SQL statements, together with any initial data insert, update or delete are contained in a SQL file, subject to version control, deployed by the release script, executed automatically or manually with a single statement, leaving a timestamped log]</p>
+		</div>
+</li>
+	<li id="comment-7659" class="comment odd alt thread-odd thread-alt depth-1 reader microid-mailto+http:sha1:0bb67fe6df267ced486ea58c97adc3a938c0a827">
+
+		<a href="http://blog.angelbob.com" rel="external nofollow" title="Noah Gibbs"><img alt='Noah Gibbs' src='http://0.gravatar.com/avatar/2fbb8092e2cbe2619cb4683871059a35?s=80&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D80&amp;r=G' class='photo avatar avatar-80 photo' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://blog.angelbob.com"><a href="http://blog.angelbob.com" title="Noah Gibbs" class="url external nofollow">Noah Gibbs</a></cite>			</div>
+
+			<abbr class="comment-time" title="Monday, December 13th, 2010, 10:27 am">
+				December 13, 2010 at 10:27 am			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7659" title="Permalink to comment 7659">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>On the &#8220;restarting workers&#8221; thing, Passenger would have your back on this.  You touch a file called &#8220;tmp/restart.txt&#8221;, and next time a worker wants to serve a request, it restarts if it hasn&#8217;t since that file was last touched.</p>
+<p>It&#8217;s a great way to handle this problem when you don&#8217;t know how many workers you&#8217;re dealing with (Passenger scales dynamically) and you want to make sure you&#8217;re never running two different versions.</p>
+<p>This is a wonderful article.  I&#8217;d love to see more about doing software engineering as real engineering, in pretty much every way.</p>
+		</div>
+</li>
+	<li id="comment-7670" class="trackback even thread-even depth-1 reader">
+
+		<a href="http://www.quora.com/How-should-you-setup-a-staging-server#ans179256" rel="external nofollow" title="Quora"><img alt='Quora' src='http://0.gravatar.com/avatar/?d=http://www.kalzumeus.com/wp-content/themes/hybrid/images/trackback.jpg&amp;s=80' class='photo avatar avatar-80 photo avatar-default' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://www.quora.com/How-should-you-setup-a-staging-server#ans179256"><a href="http://www.quora.com/How-should-you-setup-a-staging-server#ans179256" title="Quora" class="url external nofollow">Quora</a></cite>			</div>
+
+			<abbr class="comment-time" title="Monday, December 13th, 2010, 3:25 pm">
+				December 13, 2010 at 3:25 pm			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7670" title="Permalink to comment 7670">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p><strong>How should you setup a staging server?&#8230;</strong></p>
+<p>Read this: http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/&#8230;</p>
+		</div>
+</li>
+	<li id="comment-7713" class="pingback odd alt thread-odd thread-alt depth-1 reader">
+
+		<a href="http://orangeyolk.com/?p=111" rel="external nofollow" title="Reading materials"><img alt='Reading materials' src='http://0.gravatar.com/avatar/?d=http://www.kalzumeus.com/wp-content/themes/hybrid/images/pingback.jpg&amp;s=80' class='photo avatar avatar-80 photo avatar-default' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://orangeyolk.com/?p=111"><a href="http://orangeyolk.com/?p=111" title="Reading materials" class="url external nofollow">Reading materials</a></cite>			</div>
+
+			<abbr class="comment-time" title="Tuesday, December 14th, 2010, 1:08 am">
+				December 14, 2010 at 1:08 am			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7713" title="Permalink to comment 7713">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>[...] Stuff no one tells you about Servers, Source Control and Workflow Systems [...]</p>
+		</div>
+</li>
+	<li id="comment-7740" class="pingback even thread-even depth-1 reader">
+
+		<a href="http://creditcardprocessingonlinemerchant.com/18/credit-card-merchant-company-what-is-needed/" rel="external nofollow" title="Credit Card Merchant Company what is needed?"><img alt='Credit Card Merchant Company what is needed?' src='http://0.gravatar.com/avatar/?d=http://www.kalzumeus.com/wp-content/themes/hybrid/images/pingback.jpg&amp;s=80' class='photo avatar avatar-80 photo avatar-default' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://creditcardprocessingonlinemerchant.com/18/credit-card-merchant-company-what-is-needed/"><a href="http://creditcardprocessingonlinemerchant.com/18/credit-card-merchant-company-what-is-needed/" title="Credit Card Merchant Company what is needed?" class="url external nofollow">Credit Card Merchant Company what is needed?</a></cite>			</div>
+
+			<abbr class="comment-time" title="Tuesday, December 14th, 2010, 11:50 am">
+				December 14, 2010 at 11:50 am			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7740" title="Permalink to comment 7740">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>[...] Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches You: MicroIS&#8230; [...]</p>
+		</div>
+</li>
+	<li id="comment-7741" class="comment odd alt thread-odd thread-alt depth-1 reader microid-mailto+http:sha1:2fb507b540e81e52df088d65956c6e66a04e9d0b">
+
+		<a href="http://www.gslsolutions.com/" rel="external nofollow" title="Tyler Clendenin"><img alt='Tyler Clendenin' src='http://0.gravatar.com/avatar/656585fdb250e9bda7ec9d854841ff13?s=80&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D80&amp;r=G' class='photo avatar avatar-80 photo' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://www.gslsolutions.com/"><a href="http://www.gslsolutions.com/" title="Tyler Clendenin" class="url external nofollow">Tyler Clendenin</a></cite>			</div>
+
+			<abbr class="comment-time" title="Tuesday, December 14th, 2010, 12:19 pm">
+				December 14, 2010 at 12:19 pm			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7741" title="Permalink to comment 7741">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>Check out Git Flow</p>
+<p><a href="https://github.com/nvie/gitflow" onclick="javascript:pageTracker._trackPageview('/outbound/comment/https://github.com/nvie/gitflow');" rel="nofollow">https://github.com/nvie/gitflow</a></p>
+<p>It is great for workflow management.  It gives you additional git commands to help you keep a consistent workflow.</p>
+		</div>
+</li>
+	<li id="comment-7746" class="pingback even thread-even depth-1 reader">
+
+		<a href="http://codebix.com/posts/post/150181/Staging-Servers-Source-Control--Deploy-Workflows-And-Other-Stuff-Nobody-Teaches-You" rel="external nofollow" title="Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches You"><img alt='Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches You' src='http://0.gravatar.com/avatar/?d=http://www.kalzumeus.com/wp-content/themes/hybrid/images/pingback.jpg&amp;s=80' class='photo avatar avatar-80 photo avatar-default' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://codebix.com/posts/post/150181/Staging-Servers-Source-Control--Deploy-Workflows-And-Other-Stuff-Nobody-Teaches-You"><a href="http://codebix.com/posts/post/150181/Staging-Servers-Source-Control--Deploy-Workflows-And-Other-Stuff-Nobody-Teaches-You" title="Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches You" class="url external nofollow">Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches You</a></cite>			</div>
+
+			<abbr class="comment-time" title="Tuesday, December 14th, 2010, 7:49 pm">
+				December 14, 2010 at 7:49 pm			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7746" title="Permalink to comment 7746">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>[...] weeks) was that they taught me how to be a professional engineer. Prior to doing so, my workflow&#8230;  [full post]    Patrick     MicroISV on a Shoestring   uncategorized            0        0        0        0     [...]</p>
+		</div>
+</li>
+	<li id="comment-7753" class="pingback odd alt thread-odd thread-alt depth-1 reader">
+
+		<a href="http://www.bootstrappingindependence.com/technology/web-programming-best-practices/" rel="external nofollow" title="Web Programming Best Practices | Bootstrapping Independence"><img alt='Web Programming Best Practices | Bootstrapping Independence' src='http://0.gravatar.com/avatar/?d=http://www.kalzumeus.com/wp-content/themes/hybrid/images/pingback.jpg&amp;s=80' class='photo avatar avatar-80 photo avatar-default' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://www.bootstrappingindependence.com/technology/web-programming-best-practices/"><a href="http://www.bootstrappingindependence.com/technology/web-programming-best-practices/" title="Web Programming Best Practices | Bootstrapping Independence" class="url external nofollow">Web Programming Best Practices | Bootstrapping Independence</a></cite>			</div>
+
+			<abbr class="comment-time" title="Wednesday, December 15th, 2010, 4:03 am">
+				December 15, 2010 at 4:03 am			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7753" title="Permalink to comment 7753">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>[...] Patrick had a great post on web coding best practices. I wanted to echo some of his points, and enhance it with a few of my own.  As products have moved [...]</p>
+		</div>
+</li>
+	<li id="comment-7760" class="comment even thread-even depth-1 reader microid-mailto+http:sha1:ff57c33c365581d2132b887afe6e11a38f220801">
+
+		<a href="http://www.bootstrappingindependence.com" rel="external nofollow" title="Charlie B"><img alt='Charlie B' src='http://1.gravatar.com/avatar/7acd71ecb6d7374cf07c7142d584d471?s=80&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D80&amp;r=G' class='photo avatar avatar-80 photo' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://www.bootstrappingindependence.com"><a href="http://www.bootstrappingindependence.com" title="Charlie B" class="url external nofollow">Charlie B</a></cite>			</div>
+
+			<abbr class="comment-time" title="Wednesday, December 15th, 2010, 11:19 am">
+				December 15, 2010 at 11:19 am			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7760" title="Permalink to comment 7760">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>OK I will bite. I had to add my own testing methodology as well!</p>
+<p><a href="http://www.bootstrappingindependence.com/technology/web-programming-best-practices/" onclick="javascript:pageTracker._trackPageview('/outbound/comment/http://www.bootstrappingindependence.com/technology/web-programming-best-practices/');" rel="nofollow">http://www.bootstrappingindependence.com/technology/web-programming-best-practices/</a></p>
+		</div>
+</li>
+	<li id="comment-7781" class="pingback odd alt thread-odd thread-alt depth-1 reader">
+
+		<a href="http://arnoldit.com/wordpress/2010/12/17/tips-for-deploying-a-project-like-enterprise-search/" rel="external nofollow" title="Tips for Deploying a Project Like Enterprise Search : Beyond Search"><img alt='Tips for Deploying a Project Like Enterprise Search : Beyond Search' src='http://0.gravatar.com/avatar/?d=http://www.kalzumeus.com/wp-content/themes/hybrid/images/pingback.jpg&amp;s=80' class='photo avatar avatar-80 photo avatar-default' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://arnoldit.com/wordpress/2010/12/17/tips-for-deploying-a-project-like-enterprise-search/"><a href="http://arnoldit.com/wordpress/2010/12/17/tips-for-deploying-a-project-like-enterprise-search/" title="Tips for Deploying a Project Like Enterprise Search : Beyond Search" class="url external nofollow">Tips for Deploying a Project Like Enterprise Search : Beyond Search</a></cite>			</div>
+
+			<abbr class="comment-time" title="Friday, December 17th, 2010, 4:45 am">
+				December 17, 2010 at 4:45 am			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7781" title="Permalink to comment 7781">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>[...] recommend “Staging Servers, Source Control &amp; Deploy workflows, and Other Stuff Nobody Teaches You.” The article by Patrick in the MicroISV blog is an excellent description of some engineering [...]</p>
+		</div>
+</li>
+	<li id="comment-7788" class="comment even thread-even depth-1 reader">
+
+		<img alt='Alex' src='http://1.gravatar.com/avatar/1e77ece0aafa2a5ab31a38bae4a6d2a0?s=80&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D80&amp;r=G' class='photo avatar avatar-80 photo' height='80' width='80' /><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn">Alex</cite>			</div>
+
+			<abbr class="comment-time" title="Friday, December 17th, 2010, 2:22 pm">
+				December 17, 2010 at 2:22 pm			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7788" title="Permalink to comment 7788">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>Great article! I&#8217;ve read so many of your posts, and I can&#8217;t believe that I&#8217;ve never noticed that you put 2 spaces after your periods. Did you know that double spacing after a period is really only valid for a monospaced font on a typewriter?</p>
+		</div>
+</li>
+	<li id="comment-7855" class="pingback odd alt thread-odd thread-alt depth-1 reader">
+
+		<a href="http://blog.boxedice.com/2010/12/19/sysadmin-sunday-10/" rel="external nofollow" title="Sysadmin Sunday #10 &laquo; Boxed Ice Blog"><img alt='Sysadmin Sunday #10 &laquo; Boxed Ice Blog' src='http://0.gravatar.com/avatar/?d=http://www.kalzumeus.com/wp-content/themes/hybrid/images/pingback.jpg&amp;s=80' class='photo avatar avatar-80 photo avatar-default' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://blog.boxedice.com/2010/12/19/sysadmin-sunday-10/"><a href="http://blog.boxedice.com/2010/12/19/sysadmin-sunday-10/" title="Sysadmin Sunday #10 &laquo; Boxed Ice Blog" class="url external nofollow">Sysadmin Sunday #10 &laquo; Boxed Ice Blog</a></cite>			</div>
+
+			<abbr class="comment-time" title="Sunday, December 19th, 2010, 8:03 am">
+				December 19, 2010 at 8:03 am			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7855" title="Permalink to comment 7855">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>[...] Amazon announces Route 5Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches You [...]</p>
+		</div>
+</li>
+	<li id="comment-7892" class="pingback even thread-even depth-1 reader">
+
+		<a href="http://blog.noliosoft.com/2010/12/review-staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/" rel="external nofollow" title="Review: Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches You &laquo; Nolio &#8211; Application Service Automation"><img alt='Review: Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches You &laquo; Nolio &#8211; Application Service Automation' src='http://0.gravatar.com/avatar/?d=http://www.kalzumeus.com/wp-content/themes/hybrid/images/pingback.jpg&amp;s=80' class='photo avatar avatar-80 photo avatar-default' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://blog.noliosoft.com/2010/12/review-staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/"><a href="http://blog.noliosoft.com/2010/12/review-staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/" title="Review: Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches You &laquo; Nolio &#8211; Application Service Automation" class="url external nofollow">Review: Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches You &laquo; Nolio &#8211; Application Service Automation</a></cite>			</div>
+
+			<abbr class="comment-time" title="Tuesday, December 21st, 2010, 12:49 am">
+				December 21, 2010 at 12:49 am			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7892" title="Permalink to comment 7892">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>[...] must add that this overview of Patrick&#8217;s detailed blog post does not do it justice, and if you want the real spiel and have a good 30 minutes reading time, [...]</p>
+		</div>
+</li>
+	<li id="comment-7918" class="comment odd alt thread-odd thread-alt depth-1 reader microid-mailto+http:sha1:d727304359a6f465163ac5e6693baaabd45a884c">
+
+		<a href="http://twoalpha.blogspot.com/" rel="external nofollow" title="Matisse Enzer"><img alt='Matisse Enzer' src='http://0.gravatar.com/avatar/a78fc4984e3473b4e23e25a874c8554a?s=80&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D80&amp;r=G' class='photo avatar avatar-80 photo' height='80' width='80' /></a><div class="comment-meta-data">
+
+			<div class="comment-author vcard">
+				<cite class="fn" title="http://twoalpha.blogspot.com/"><a href="http://twoalpha.blogspot.com/" title="Matisse Enzer" class="url external nofollow">Matisse Enzer</a></cite>			</div>
+
+			<abbr class="comment-time" title="Wednesday, December 22nd, 2010, 6:28 pm">
+				December 22, 2010 at 6:28 pm			</abbr> 
+
+			<span class="separator">|</span> 
+			<a class="permalink" href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7918" title="Permalink to comment 7918">Permalink</a>
+
+			
+			 
+
+			
+		</div>
+
+		<div class="comment-text">
+			<p>I would add &#8220;Continuous Integration.&#8221;</p>
+<p>This is some mechanism for watching every commit that happens to your source control system and running the automated test suite(s) right away.</p>
+<p>Set up buildbot or cruisecontrol or one of the many listed at <a href="http://confluence.public.thoughtworks.org/display/CC/CI+Feature+Matrix" onclick="javascript:pageTracker._trackPageview('/outbound/comment/http://confluence.public.thoughtworks.org/display/CC/CI+Feature+Matrix');" rel="nofollow">http://confluence.public.thoughtworks.org/display/CC/CI+Feature+Matrix</a></p>
+		</div>
+</li>		</ol>
+
+		
+	</div>
+
+
+
+	<div id="respond">
+
+		<h3 id="reply">
+			Leave a Reply		</h3>
+
+		<p id="cancel-comment-reply">
+			<a rel="nofollow" id="cancel-comment-reply-link" href="/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#respond" style="display:none;">Click here to cancel reply.</a>		</p>
+
+	
+		<form action="http://www.kalzumeus.com/wp-comments-post.php" method="post" id="commentform">
+
+			
+				<p class="form-author">
+					<label for="author">Name <span class="required">*</span></label>
+					<input type="text" class="text-input" name="author" id="author" value="" size="40" tabindex="1" />
+				</p>
+
+				<p class="form-email">
+					<label for="email">Email  <span class="required">*</span></label>
+					<input type="text" class="text-input" name="email" id="email" value="" size="40" tabindex="2" />
+				</p>
+
+				<p class="form-url">
+					<label for="url">Website</label>
+					<input type="text" class="text-input" name="url" id="url" value="" size="40" tabindex="3" />
+				</p>
+
+			
+			<p class="form-textarea">
+				<label for="comment">Comment</label>
+				<textarea name="comment" id="comment" cols="60" rows="10" tabindex="4"></textarea>
+			</p>
+
+			<p class="form-submit">
+				<input class="submit-comment button" name="submit" type="submit" id="submit" tabindex="5" value="Submit" />
+				<input class="reset-comment button" name="reset" type="reset" id="reset" tabindex="6" value="Reset" />
+				<input type='hidden' name='comment_post_ID' value='1102' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+			</p>
+
+			<div class="comment-action">
+							</div>
+
+		</form>
+
+	
+	</div>
+
+
+</div>
+
+			
+		<div class="navigation-links">
+			<span class="previous">&laquo; <a href="http://www.kalzumeus.com/2010/12/06/appointment-reminder-has-launched/" rel="prev">Appointment Reminder Has Launched</a></span> 
+			<span class="next"><a href="http://www.kalzumeus.com/2010/12/17/bingo-card-creator-etc-year-in-review-2010/" rel="next">Bingo Card Creator (&#038; etc) Year In Review 2010</a> &raquo;</span>		</div>
+	
+		</div>
+
+		<div id="primary"><div id="text-366088981" class="widget widget_text widget-widget_text"><div class="widget-inside">			<div class="textwidget"><b>Teachers!</b>  Our software for printing bingo cards and resources for teaching are located at our other site.  Click the image below to go there.
+<p>
+<a href="http://www.bingocardcreator.com"><img src="http://images1.bingocardcreator.com/blog-images/bcc-blog-logo.jpg" alt="Bingo Card Creator"></a>
+<p>
+<b>Small business owners!</b>  Our appointment reminder software is located at our other site.  Click the image below to go there.
+<p>
+<a href="http://www.appointmentreminder.org"><img src="http://static1.appointmentreminder.org/images/appointment-reminder-logo.png" alt="Appointment Reminder"></a>
+<p>
+This blog has a <a href="http://www.hearablog.com/site/22/MicroISV-on-a-Shoestring">podcast</a> through <a href="http://www.hearablog.com">HearABlog</a> (<a href="http://hearablog.com/site/feed/22/MicroISV-on-a-Shoestring">RSS feed</a>).
+<p>
+People are Googling for patio11 blog due to the amount of time I spend posting under that name.
+
+</div>
+		</div></div><div id="hybrid-pages-366089951" class="widget pages widget-pages"><div class="widget-inside"><h3 class="widget-title widget-header">About Me</h3><ul class="xoxo pages"><li class="page_item page-item-1016"><a href="http://www.kalzumeus.com/greatest-hits/" title="Greatest Hits">Greatest Hits</a></li><li class="page_item page-item-67"><a href="http://www.kalzumeus.com/start-here-if-youre-new/" title="Start Here If You&#8217;re New">Start Here If You&#8217;re New</a></li><li class="page_item page-item-533"><a href="http://www.kalzumeus.com/about/" title="About This Blog">About This Blog</a></li></ul></div></div><div id="hybrid-archives-366091441" class="widget archives widget-archives"><div class="widget-inside"><h3 class="widget-title widget-header">Recent Posts</h3><ul class="xoxo archives"><li><a href='http://www.kalzumeus.com/2010/12/17/bingo-card-creator-etc-year-in-review-2010/' title='Bingo Card Creator (&amp; etc) Year In Review 2010'>Bingo Card Creator (&#038; etc) Year In Review 2010</a></li><li><a href='http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/' title='Staging Servers, Source Control &amp; Deploy Workflows, And Other Stuff Nobody Teaches You'>Staging Servers, Source Control &#038; Deploy Workflows, And Other Stuff Nobody Teaches You</a></li><li><a href='http://www.kalzumeus.com/2010/12/06/appointment-reminder-has-launched/' title='Appointment Reminder Has Launched'>Appointment Reminder Has Launched</a></li><li><a href='http://www.kalzumeus.com/2010/11/16/getting-a-new-product-off-the-ground-part-two/' title='Getting A New Product Off The Ground: Part Two'>Getting A New Product Off The Ground: Part Two</a></li><li><a href='http://www.kalzumeus.com/2010/11/04/getting-a-new-product-off-the-ground-part-one/' title='Getting A New Product Off The Ground: Part One'>Getting A New Product Off The Ground: Part One</a></li></ul></div></div><div id="recent-comments-2" class="widget widget_recent_comments widget-widget_recent_comments"><div class="widget-inside"><h3 class="widget-title widget-header">Recent Comments</h3><ul id="recentcomments"><li class="recentcomments"><a href="http://www.ashwinjayaprakash.com" onclick="javascript:pageTracker._trackPageview('/outbound/commentauthor/http://www.ashwinjayaprakash.com');"  rel='external nofollow' class='url'>Ashwin Jayaprakash</a> on <a href="http://www.kalzumeus.com/2010/12/17/bingo-card-creator-etc-year-in-review-2010/#comment-7972">Bingo Card Creator (&#038; etc) Year In Review 2010</a></li><li class="recentcomments"><a href="http://jasonmar.com" onclick="javascript:pageTracker._trackPageview('/outbound/commentauthor/http://jasonmar.com');"  rel='external nofollow' class='url'>Jason Mar</a> on <a href="http://www.kalzumeus.com/2010/12/17/bingo-card-creator-etc-year-in-review-2010/#comment-7932">Bingo Card Creator (&#038; etc) Year In Review 2010</a></li><li class="recentcomments"><a href="http://fiveamsoftware.com" onclick="javascript:pageTracker._trackPageview('/outbound/commentauthor/http://fiveamsoftware.com');"  rel='external nofollow' class='url'>Walter</a> on <a href="http://www.kalzumeus.com/start-here-if-youre-new/#comment-7919">Start Here If You&#8217;re New</a></li><li class="recentcomments"><a href="http://twoalpha.blogspot.com/" onclick="javascript:pageTracker._trackPageview('/outbound/commentauthor/http://twoalpha.blogspot.com/');"  rel='external nofollow' class='url'>Matisse Enzer</a> on <a href="http://www.kalzumeus.com/2010/12/12/staging-servers-source-control-deploy-workflows-and-other-stuff-nobody-teaches-you/#comment-7918">Staging Servers, Source Control &#038; Deploy Workflows, And Other Stuff Nobody Teaches You</a></li><li class="recentcomments"><a href="http://www.killianspost.com" onclick="javascript:pageTracker._trackPageview('/outbound/commentauthor/http://www.killianspost.com');"  rel='external nofollow' class='url'>Killians Post</a> on <a href="http://www.kalzumeus.com/2009/12/29/twilio-phone-call-web-api-is-crazy-fun/#comment-7917">Twilio (phone call web API) is crazy fun</a></li></ul></div></div><div id="hybrid-categories-366092861" class="widget categories widget-categories"><div class="widget-inside"><h3 class="widget-title widget-header">Categories</h3><ul class="xoxo categories"><li class="cat-item cat-item-3"><a href="http://www.kalzumeus.com/category/30days/" title="View all posts filed under 30days">30days</a></li><li class="cat-item cat-item-49"><a href="http://www.kalzumeus.com/category/ab-testing/" title="View all posts filed under ab-testing">ab-testing</a></li><li class="cat-item cat-item-4"><a href="http://www.kalzumeus.com/category/advertising/" title="View all posts filed under advertising">advertising</a></li><li class="cat-item cat-item-5"><a href="http://www.kalzumeus.com/category/adwords/" title="View all posts filed under AdWords">AdWords</a></li><li class="cat-item cat-item-6"><a href="http://www.kalzumeus.com/category/analytics/" title="View all posts filed under Analytics">Analytics</a></li><li class="cat-item cat-item-50"><a href="http://www.kalzumeus.com/category/appointment-reminder/" title="View all posts filed under Appointment Reminder">Appointment Reminder</a></li><li class="cat-item cat-item-7"><a href="http://www.kalzumeus.com/category/bingo/" title="View all posts filed under bingo">bingo</a></li><li class="cat-item cat-item-8"><a href="http://www.kalzumeus.com/category/blogging/" title="View all posts filed under blogging">blogging</a></li><li class="cat-item cat-item-9"><a href="http://www.kalzumeus.com/category/bugs/" title="View all posts filed under bugs">bugs</a></li><li class="cat-item cat-item-10"><a href="http://www.kalzumeus.com/category/checkout/" title="View all posts filed under Checkout">Checkout</a></li><li class="cat-item cat-item-11"><a href="http://www.kalzumeus.com/category/customer-service/" title="View all posts filed under customer service">customer service</a></li><li class="cat-item cat-item-12"><a href="http://www.kalzumeus.com/category/japanese/" title="View all posts filed under Japanese">Japanese</a></li><li class="cat-item cat-item-13"><a href="http://www.kalzumeus.com/category/kalzumeus/" title="View all posts filed under Kalzumeus">Kalzumeus</a></li><li class="cat-item cat-item-14"><a href="http://www.kalzumeus.com/category/marketing/" title="View all posts filed under marketing">marketing</a></li><li class="cat-item cat-item-15"><a href="http://www.kalzumeus.com/category/microisv/" title="View all posts filed under microISV">microISV</a></li><li class="cat-item cat-item-16"><a href="http://www.kalzumeus.com/category/paypal/" title="View all posts filed under Paypal">Paypal</a></li><li class="cat-item cat-item-17"><a href="http://www.kalzumeus.com/category/piracy/" title="View all posts filed under piracy">piracy</a></li><li class="cat-item cat-item-18"><a href="http://www.kalzumeus.com/category/popular/" title="View all posts filed under popular">popular</a></li><li class="cat-item cat-item-19"><a href="http://www.kalzumeus.com/category/rails/" title="View all posts filed under Rails">Rails</a></li><li class="cat-item cat-item-20"><a href="http://www.kalzumeus.com/category/ruby/" title="View all posts filed under Ruby">Ruby</a></li><li class="cat-item cat-item-21"><a href="http://www.kalzumeus.com/category/search/" title="View all posts filed under search">search</a></li><li class="cat-item cat-item-22"><a href="http://www.kalzumeus.com/category/seo/" title="View all posts filed under SEO">SEO</a></li><li class="cat-item cat-item-23"><a href="http://www.kalzumeus.com/category/sight-words/" title="View all posts filed under sight words">sight words</a></li><li class="cat-item cat-item-51"><a href="http://www.kalzumeus.com/category/startups/" title="View all posts filed under startups">startups</a></li><li class="cat-item cat-item-24"><a href="http://www.kalzumeus.com/category/stats/" title="View all posts filed under stats">stats</a></li><li class="cat-item cat-item-25"><a href="http://www.kalzumeus.com/category/support/" title="View all posts filed under support">support</a></li><li class="cat-item cat-item-26"><a href="http://www.kalzumeus.com/category/taxes/" title="View all posts filed under taxes">taxes</a></li><li class="cat-item cat-item-27"><a href="http://www.kalzumeus.com/category/teaching/" title="View all posts filed under teaching">teaching</a></li><li class="cat-item cat-item-1"><a href="http://www.kalzumeus.com/category/uncategorized/" title="View all posts filed under Uncategorized">Uncategorized</a></li><li class="cat-item cat-item-28"><a href="http://www.kalzumeus.com/category/web-design/" title="View all posts filed under web design">web design</a></li><li class="cat-item cat-item-29"><a href="http://www.kalzumeus.com/category/yahoo/" title="View all posts filed under Yahoo">Yahoo</a></li><li class="cat-item cat-item-30"><a href="http://www.kalzumeus.com/category/ysm/" title="View all posts filed under YSM">YSM</a></li></ul></div></div></div>
+	</div>
+
+	<div id="footer-container">
+
+		
+		<div id="footer">
+
+			<p class="copyright"><span class="text">Copyright &#169; 2010</span> <a href="http://www.kalzumeus.com" title="MicroISV on a Shoestring" rel="bookmark"><span>MicroISV on a Shoestring</span></a>. </p><p class="credit"><span class="text">Powered by</span> <a href="http://wordpress.org" class="wp-link" title="Powered by WordPress, state-of-the-art semantic personal publishing platform"><span>WordPress</span></a> <span class="text">and</span>  <a class="hybrid-link" href="http://themehybrid.com/themes/hybrid" title="Hybrid Theme Framework">Hybrid</a>.</p>
+				<!-- Google Analytics for WordPress | http://yoast.com/wordpress/google-analytics/ -->
+	<script type="text/javascript">
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	</script>
+	<script type="text/javascript">
+		try {
+			var pageTracker = _gat._getTracker("UA-442511-8");
+		} catch(err) {}
+	</script>
+	<script type="text/javascript">
+		try {
+			// Cookied already: 
+			pageTracker._trackPageview();
+		} catch(err) {}
+	</script>
+	<!-- End of Google Analytics code -->
+	<script src="http://stats.wordpress.com/e-201052.js" type="text/javascript"></script>
+<script type="text/javascript">
+st_go({blog:'6761086',v:'ext',post:'1102'});
+var load_cmc = function(){linktracker_init(6761086,1102,2);};
+if ( typeof addLoadEvent != 'undefined' ) addLoadEvent(load_cmc);
+else load_cmc();
+</script>
+
+<!-- SyntaxHighlighter Stuff -->
+<script type="text/javascript" src="http://www.kalzumeus.com/wp-content/plugins/syntaxhighlighter-plus/syntaxhighlighter/src/shCore.js"></script>
+	<script type="text/javascript" src="http://www.kalzumeus.com/wp-content/plugins/syntaxhighlighter-plus/syntaxhighlighter/scripts/shBrushRuby.js"></script>
+	<!-- Reassign aliases -->
+	<script type="text/javascript">
+				SyntaxHighlighter.brushes.Ruby.aliases = ["rb", "ruby", "rails", "ror"];
+	</script>
+<script type="text/javascript">
+	SyntaxHighlighter.all();
+</script>
+
+
+		</div>
+
+		
+	</div>
+
+</div>
+
+
+</body>
+</html>
+<!-- Dynamic page generated in 1.685 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2010-12-30 13:20:59 -->
+<!-- super cache -->
